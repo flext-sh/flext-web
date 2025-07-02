@@ -133,8 +133,8 @@ src/flext_web/
 
 ### 🏛️ Enterprise Integration
 
-| Library                                | Purpose               | Integration Point       |
-| -------------------------------------- | --------------------- | ----------------------- |
+| Library                                  | Purpose               | Integration Point       |
+| ---------------------------------------- | --------------------- | ----------------------- |
 | **flext_core.config.django_integration** | Unified configuration | All Django settings     |
 | **flext_core.grpc.client**               | gRPC communication    | Real-time data access   |
 | **flext_core.domain**                    | Enterprise patterns   | Model validation, types |
@@ -371,7 +371,7 @@ graph TD
 
 | Service          | Connection Type | Purpose                    | Configuration                 |
 | ---------------- | --------------- | -------------------------- | ----------------------------- |
-| **FLEXT Daemon**   | gRPC            | Real-time data, operations | `config.network.grpc_*`       |
+| **FLEXT Daemon** | gRPC            | Real-time data, operations | `config.network.grpc_*`       |
 | **Redis**        | TCP/Unix Socket | Caching, Celery broker     | `config.network.redis_*`      |
 | **PostgreSQL**   | Database        | Data persistence           | `config.database.*`           |
 | **Frontend SPA** | HTTP/WebSocket  | User interface             | Static serving, API endpoints |

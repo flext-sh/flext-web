@@ -34,8 +34,8 @@ COPY manage.py .
 RUN pip install -e .
 
 # Create directories and set permissions
-RUN mkdir -p /app/logs /app/staticfiles /app/media && \
-    chown -R flext:flext /app
+RUN mkdir -p /app/logs /app/staticfiles /app/media \
+    && chown -R flext:flext /app
 
 # Collect static files
 RUN python manage.py collectstatic --noinput

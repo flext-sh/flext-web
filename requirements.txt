@@ -1,0 +1,46 @@
+# FLEXT Web - Django Production Dependencies
+# Auto-generated for Docker builds
+
+# Django Framework
+Django==5.0.0
+django-extensions==3.2.3
+django-cors-headers==4.3.1
+django-environ==0.11.2
+
+# Database & ORM
+psycopg2-binary==2.9.9
+redis==5.0.1
+django-redis==5.4.0
+
+# Web Server
+gunicorn==21.2.0
+whitenoise==6.6.0
+
+# API Integration
+httpx==0.25.2
+grpcio==1.60.0
+grpcio-tools==1.60.0
+
+# Forms & Templates
+django-crispy-forms==2.1
+crispy-bootstrap5==0.7
+
+# Monitoring & Observability
+django-prometheus==2.3.1
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-instrumentation-django==0.42b0
+
+# Security
+django-csp==3.7
+django-security==0.19.0
+
+# Static Files & Media
+Pillow==10.1.0
+
+# Validation & Serialization
+pydantic==2.5.0
+
+# Development utilities
+click==8.1.7
+rich==13.7.0

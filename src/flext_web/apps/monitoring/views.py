@@ -28,10 +28,10 @@ from flext_observability.monitoring.business_metrics import EnterpriseBusinessMe
 from flext_observability.monitoring.error_patterns import ProductionErrorHandler
 
 # Python 3.13 type aliases for monitoring domain
-type MonitoringStats = dict[str, int | float | list[dict[str, Any]]]
-type AlertData = dict[str, str | int | float]
-type SecurityStats = dict[str, int | dict[str, Any]]
-type HealthData = dict[str, bool | dict[str, Any]]
+MonitoringStats = dict[str, int | float | list[dict[str, Any]]]
+AlertData = dict[str, str | int | float]
+SecurityStats = dict[str, int | dict[str, Any]]
+HealthData = dict[str, bool | dict[str, Any]]
 
 
 class EnterpriseMonitoringService:

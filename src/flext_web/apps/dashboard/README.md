@@ -130,8 +130,8 @@ urlpatterns = [
 ### **templates/dashboard/index.html** - Dashboard Template
 
 ```html
-{% extends "base.html" %} {% block title %}FLEXT Dashboard{% endblock %} {% block
-content %}
+{% extends "base.html" %} {% block title %}FLEXT Dashboard{% endblock %} {%
+block content %}
 <div class="dashboard-container">
   <div class="row">
     <div class="col-md-3">

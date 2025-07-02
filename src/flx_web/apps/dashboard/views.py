@@ -33,9 +33,9 @@ else:
     from flx_grpc.proto import flx_pb2
 
 # Python 3.13 type aliases for dashboard domain
-type DashboardStats = dict[str, int | float]
-type HealthStatus = dict[str, bool | dict[str, Any]]
-type ExecutionData = dict[str, str | None]
+DashboardStats = dict[str, int | float]
+HealthStatus = dict[str, bool | dict[str, Any]]
+ExecutionData = dict[str, str | None]
 
 
 class FlxDashboardGrpcClient(FlxGrpcClientBase):
