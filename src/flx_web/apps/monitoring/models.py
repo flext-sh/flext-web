@@ -10,6 +10,8 @@ Models for storing and tracking monitoring data including:
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
@@ -69,8 +71,10 @@ class BusinessMetricHistory(models.Model):
     timestamp = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
-        ordering = ["-timestamp"]
-        indexes = [
+        """Django model configuration."""
+
+        ordering: ClassVar = ["-timestamp"]
+        indexes: ClassVar = [
             models.Index(fields=["name", "-timestamp"]),
             models.Index(fields=["metric_type", "-timestamp"]),
         ]
@@ -108,8 +112,10 @@ class SecurityViolationLog(models.Model):
     resolution_notes = models.TextField(null=True, blank=True)
 
     class Meta:
-        ordering = ["-timestamp"]
-        indexes = [
+        """Django model configuration."""
+
+        ordering: ClassVar = ["-timestamp"]
+        indexes: ClassVar = [
             models.Index(fields=["threat_level", "-timestamp"]),
             models.Index(fields=["validation_type", "-timestamp"]),
             models.Index(fields=["source_ip", "-timestamp"]),
@@ -138,8 +144,10 @@ class ErrorPatternLog(models.Model):
     metadata = models.JSONField(default=dict)
 
     class Meta:
-        ordering = ["-last_seen"]
-        indexes = [
+        """Django model configuration."""
+
+        ordering: ClassVar = ["-last_seen"]
+        indexes: ClassVar = [
             models.Index(fields=["category", "-last_seen"]),
             models.Index(fields=["severity", "-last_seen"]),
             models.Index(fields=["pattern_id", "-last_seen"]),
@@ -160,8 +168,10 @@ class SystemHealthCheck(models.Model):
     timestamp = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
-        ordering = ["-timestamp"]
-        indexes = [
+        """Django model configuration."""
+
+        ordering: ClassVar = ["-timestamp"]
+        indexes: ClassVar = [
             models.Index(fields=["component_name", "-timestamp"]),
             models.Index(fields=["healthy", "-timestamp"]),
         ]
@@ -223,8 +233,10 @@ class MonitoringAlert(models.Model):
     metadata = models.JSONField(default=dict)
 
     class Meta:
-        ordering = ["-created_at"]
-        indexes = [
+        """Django model configuration."""
+
+        ordering: ClassVar = ["-created_at"]
+        indexes: ClassVar = [
             models.Index(fields=["severity", "active", "-created_at"]),
             models.Index(fields=["alert_type", "active", "-created_at"]),
             models.Index(fields=["source_system", "active", "-created_at"]),

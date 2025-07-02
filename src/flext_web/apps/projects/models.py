@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import Any, ClassVar
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -39,7 +39,7 @@ class ProjectTemplate(models.Model):
         """Meta configuration for ProjectTemplate model."""
 
         db_table = "flext_project_templates"
-        ordering = ["-created_at"]
+        ordering: ClassVar = ["-created_at"]
         verbose_name = "Project Template"
         verbose_name_plural = "Project Templates"
 
@@ -92,7 +92,7 @@ class MeltanoProject(models.Model):
         """Meta configuration for MeltanoProject model."""
 
         db_table = "flext_meltano_projects"
-        ordering = ["-created_at"]
+        ordering: ClassVar = ["-created_at"]
         verbose_name = "Meltano Project"
         verbose_name_plural = "Meltano Projects"
 
@@ -143,8 +143,8 @@ class ProjectMembership(models.Model):
         """Meta configuration for ProjectMembership model."""
 
         db_table = "flext_project_memberships"
-        unique_together = ["project", "user"]
-        ordering = ["role", "user__username"]
+        unique_together: ClassVar = ["project", "user"]
+        ordering: ClassVar = ["role", "user__username"]
         verbose_name = "Project Membership"
         verbose_name_plural = "Project Memberships"
 
@@ -200,10 +200,10 @@ class ProjectDeployment(models.Model):
         """Meta configuration for ProjectDeployment model."""
 
         db_table = "flext_project_deployments"
-        ordering = ["-started_at"]
+        ordering: ClassVar = ["-started_at"]
         verbose_name = "Project Deployment"
         verbose_name_plural = "Project Deployments"
-        indexes = [
+        indexes: ClassVar = [
             models.Index(fields=["project", "environment"]),
             models.Index(fields=["status"]),
         ]
