@@ -1,0 +1,51 @@
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+pytest-django = "^4.9.0"
+pytest-cov = "^6.0.0"
+pytest-xdist = "^3.6.0"
+pytest-mock = "^3.14.0"
+pytest-timeout = "^2.3.0"
+django-debug-toolbar = "^4.4.0"
+factory-boy = "^3.3.0"
+model-bakery = "^1.19.0"
+ruff = "^0.8.4"
+mypy = "^1.13.0"
+black = "^24.10.0"
+isort = "^5.13.0"
+django-stubs = "^5.1.0"
+djangorestframework-stubs = "^3.15.0"
+types-redis = "^4.6.0"
+types-requests = "^2.32.0"
+types-python-dateutil = "^2.9.0"
+types-pillow = "^10.2.0"
+pre-commit = "^4.0.0"
+mkdocs = "^1.6.0"
+mkdocs-material = "^9.5.0"
+ipython = "^8.29.0"
+django-silk = "^5.1.0"
+
+[tool.poetry.group.security.dependencies]
+bandit = { extras = ["toml"], version = "^1.7.0" }
+safety = "^3.2.0"
+
+[tool.poetry.group.build.dependencies]
+build = "^1.2.0"
+twine = "^6.0.0"
+
+[tool.poetry.group.test.dependencies]
+pytest-benchmark = "^4.0.0"
+selenium = "^4.27.0"
+playwright = "^1.48.0"
+locust = "^2.32.0"
+
+[tool.poetry.group.deploy.dependencies]
+fabric = "^3.2.0"
+docker = "^7.1.0"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+fix = true
+exclude = ["migrations", "__pycache__", ".venv", ".git", "build", "dist", "static", "media"]
+
+[tool.ruff.lint]
