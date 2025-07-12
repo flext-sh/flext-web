@@ -33,7 +33,7 @@ class TestDashboardViews(TestCase):
     def test_dashboard_with_authenticated_user(self) -> None:
         """Test dashboard access with logged in user."""
         self.client.login(username="testuser", password="testpass123")
-        
+
         # Mock gRPC calls
         with patch("flext_web.apps.dashboard.views._fetch_grpc_stats") as mock_stats:
             mock_stats.return_value = {
@@ -41,9 +41,9 @@ class TestDashboardViews(TestCase):
                 "executions": 50,
                 "success_rate": 95.0,
             }
-            
+
             response = self.client.get(reverse("dashboard:home"))
-            
+
         assert response.status_code == 200
         assert b"Dashboard" in response.content
         assert b"pipelines" in response.content
@@ -51,12 +51,12 @@ class TestDashboardViews(TestCase):
     def test_dashboard_handles_grpc_failure(self) -> None:
         """Test dashboard gracefully handles gRPC failures."""
         self.client.login(username="testuser", password="testpass123")
-        
+
         with patch("flext_web.apps.dashboard.views._fetch_grpc_stats") as mock_stats:
             mock_stats.side_effect = Exception("gRPC connection failed")
-            
+
             response = self.client.get(reverse("dashboard:home"))
-            
+
         assert response.status_code == 200
         assert b"Unable to fetch statistics" in response.content
 
@@ -94,9 +94,9 @@ class TestProjectViews(TestCase):
             "description": "Test project description",
             "repository_url": "https://github.com/test/repo",
         }
-        
+
         response = self.client.post(reverse("projects:create"), data)
-        
+
         assert response.status_code == 302  # Redirect after success
         assert Project.objects.filter(name="Test Project").exists()
 
@@ -113,7 +113,7 @@ class TestPipelineViews(TestCase):
             password="testpass123",
         )
         self.client.login(username="testuser", password="testpass123")
-        
+
         # Create test project and pipeline
         self.project = Project.objects.create(
             name="Test Project",
@@ -124,7 +124,7 @@ class TestPipelineViews(TestCase):
     def test_pipeline_list_view(self) -> None:
         """Test pipeline list view."""
         response = self.client.get(
-            reverse("pipelines:list", kwargs={"project_id": self.project.id})
+            reverse("pipelines:list", kwargs={"project_id": self.project.id}),
         )
         assert response.status_code == 200
         assert b"Pipelines" in response.content
@@ -136,14 +136,14 @@ class TestPipelineViews(TestCase):
             project=self.project,
             config={"tap": "tap-github", "target": "target-postgres"},
         )
-        
+
         with patch("flext_web.apps.pipelines.views._execute_pipeline_grpc") as mock_exec:
             mock_exec.return_value = {"execution_id": "test-123", "status": "running"}
-            
+
             response = self.client.post(
-                reverse("pipelines:execute", kwargs={"pipeline_id": pipeline.id})
+                reverse("pipelines:execute", kwargs={"pipeline_id": pipeline.id}),
             )
-            
+
         assert response.status_code == 302
         assert mock_exec.called
 
@@ -170,9 +170,9 @@ class TestMonitoringViews(TestCase):
                 "memory_usage": 62.1,
                 "disk_usage": 78.5,
             }
-            
+
             response = self.client.get(reverse("monitoring:dashboard"))
-            
+
         assert response.status_code == 200
         assert b"System Monitoring" in response.content
         assert b"45.2" in response.content  # CPU usage
@@ -185,9 +185,9 @@ class TestMonitoringViews(TestCase):
             message="CPU usage exceeded 90%",
             severity="warning",
         )
-        
+
         response = self.client.get(reverse("monitoring:alerts"))
-        
+
         assert response.status_code == 200
         assert b"High CPU Usage" in response.content
 
@@ -212,12 +212,12 @@ class TestUserAuthentication(TestCase):
             email="test@example.com",
             password="testpass123",
         )
-        
+
         response = self.client.post(
             reverse("users:login"),
             {"username": "testuser", "password": "testpass123"},
         )
-        
+
         assert response.status_code == 302
         assert response.url == reverse("dashboard:home")
 
@@ -227,7 +227,7 @@ class TestUserAuthentication(TestCase):
             reverse("users:login"),
             {"username": "baduser", "password": "wrongpass"},
         )
-        
+
         assert response.status_code == 200
         assert b"Invalid username or password" in response.content
 
@@ -239,9 +239,9 @@ class TestUserAuthentication(TestCase):
             password="testpass123",
         )
         self.client.login(username="testuser", password="testpass123")
-        
+
         response = self.client.post(reverse("users:logout"))
-        
+
         assert response.status_code == 302
         assert response.url == reverse("users:login")
 
@@ -258,7 +258,7 @@ class TestDatabaseIntegration:
             description="Test description",
             owner=user,
         )
-        
+
         assert project.id is not None
         assert project.name == "Test Project"
         assert project.owner == user
@@ -276,16 +276,16 @@ class TestDatabaseIntegration:
             project=project,
             config={"tap": "tap-github"},
         )
-        
+
         assert pipeline.project == project
         assert pipeline in project.pipelines.all()
 
 
 # Import models after Django setup
 try:
-    from flext_web.apps.projects.models import Project
-    from flext_web.apps.pipelines.models import Pipeline
     from flext_web.apps.monitoring.models import Alert
+    from flext_web.apps.pipelines.models import Pipeline
+    from flext_web.apps.projects.models import Project
 except ImportError:
     # Models might not be available in test environment
     Project = MagicMock()
