@@ -253,15 +253,24 @@ class TestDatabaseIntegration:
     def test_project_model_creation(self) -> None:
         """Test creating project model."""
         user = User.objects.create_user(username="test", password="test")
+        # First create a template
+        from flext_web.apps.projects.models import ProjectTemplate
+        template = ProjectTemplate.objects.create(
+            name="Test Template",
+            description="Test template description",
+            created_by=user,
+        )
+        
         project = Project.objects.create(
             name="Test Project",
             description="Test description",
-            owner=user,
+            template=template,
+            created_by=user,
         )
 
         assert project.id is not None
         assert project.name == "Test Project"
-        assert project.owner == user
+        assert project.created_by == user
 
     def test_pipeline_model_relationships(self) -> None:
         """Test pipeline model relationships."""
@@ -283,9 +292,9 @@ class TestDatabaseIntegration:
 
 # Import models after Django setup
 try:
-    from flext_web.apps.monitoring.models import Alert
-    from flext_web.apps.pipelines.models import Pipeline
-    from flext_web.apps.projects.models import Project
+    from flext_web.apps.monitoring.models import MonitoringAlert as Alert
+    from flext_web.apps.pipelines.models import PipelineWeb as Pipeline
+    from flext_web.apps.projects.models import MeltanoProject as Project
 except ImportError:
     # Models might not be available in test environment
     Project = MagicMock()
