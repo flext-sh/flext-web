@@ -130,7 +130,7 @@ addopts = [
     "--cov-fail-under=90",
     "--maxfail=1",
     "--tb=short",
-    "--dist=auto",
+    "--numprocesses=auto",
     "--reuse-db",
     "--nomigrations",
 ]
