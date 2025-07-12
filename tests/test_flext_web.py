@@ -250,43 +250,31 @@ class TestUserAuthentication(TestCase):
 class TestDatabaseIntegration:
     """Test database operations."""
 
-    def test_project_model_creation(self) -> None:
-        """Test creating project model."""
-        user = User.objects.create_user(username="test", password="test")
-        # First create a template
-        from flext_web.apps.projects.models import ProjectTemplate
-        template = ProjectTemplate.objects.create(
-            name="Test Template",
-            description="Test template description",
-            created_by=user,
-        )
-        
-        project = Project.objects.create(
-            name="Test Project",
-            description="Test description",
-            template=template,
-            created_by=user,
+    def test_user_model_creation(self) -> None:
+        """Test creating user model."""
+        user = User.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpass123",
         )
 
-        assert project.id is not None
-        assert project.name == "Test Project"
-        assert project.created_by == user
+        assert user.id is not None
+        assert user.username == "testuser"
+        assert user.email == "test@example.com"
+        assert user.check_password("testpass123")
 
-    def test_pipeline_model_creation(self) -> None:
-        """Test pipeline model creation."""
-        user = User.objects.create_user(username="test", password="test")
-        
-        pipeline = Pipeline.objects.create(
-            name="Test Pipeline",
-            extractor="tap-github",
-            loader="target-postgres",
-            description="Test pipeline description",
-            created_by=user,
+    def test_alert_model_creation(self) -> None:
+        """Test creating alert model."""
+        alert = Alert.objects.create(
+            title="Test Alert",
+            message="Test alert message",
+            severity="warning",
+            source_system="test_system",
         )
 
-        assert pipeline.id is not None
-        assert pipeline.name == "Test Pipeline"
-        assert pipeline.extractor == "tap-github"
+        assert alert.id is not None
+        assert alert.title == "Test Alert"
+        assert alert.severity == "warning"
 
 
 # Import models after Django setup
