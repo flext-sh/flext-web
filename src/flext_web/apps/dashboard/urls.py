@@ -7,7 +7,7 @@ Enterprise dashboard interface.
 
 from django.urls import path
 
-from flext_web import views
+from flext_web.apps.dashboard import views
 
 app_name = "dashboard"
 

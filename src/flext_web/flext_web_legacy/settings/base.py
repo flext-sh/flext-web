@@ -6,7 +6,7 @@ FLEXT domain configuration system to maintain a single source of truth for all s
 following the Zero Tolerance architectural principles.
 
 The settings are organized into logical sections:
-- Core Django configuration (security, middleware, installed apps)
+            - Core Django configuration (security, middleware, installed apps)
 - Database and caching configuration from domain config
 - Static and media file handling with WhiteNoise
 - REST Framework API configuration
@@ -18,24 +18,15 @@ All environment-specific values are retrieved from the unified domain configurat
 to prevent configuration duplication and ensure consistency across the FLEXT platform.
 """
 
-import os
 from pathlib import Path
-
-# Get unified domain configuration
-from flext_core.config.django_integration import get_complete_django_settings
-from flext_core.config.domain_config import get_config
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Get ALL Django settings from unified domain configuration
-domain_django_settings = get_complete_django_settings()
-config = get_config()
-
-# Extract core settings
-SECRET_KEY = domain_django_settings["SECRET_KEY"]
-DEBUG = domain_django_settings["DEBUG"]
-ALLOWED_HOSTS = domain_django_settings["ALLOWED_HOSTS"]
+# Simple temporary settings for testing
+SECRET_KEY = "django-insecure-temporary-key-for-testing-please-change-in-production"
+DEBUG = True
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -75,11 +66,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "flext_web.flext_web.urls"
+ROOT_URLCONF = "flext_web.flext_web_legacy.urls"
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "BACKEND":
+             "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -93,14 +85,23 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "flext_web.wsgi.application"
-ASGI_APPLICATION = "flext_web.asgi.application"
+WSGI_APPLICATION = "flext_web.flext_web_legacy.wsgi.application"
+ASGI_APPLICATION = "flext_web.flext_web_legacy.asgi.application"
 
-# Database - from unified domain configuration
-DATABASES = domain_django_settings["DATABASES"]
+# Database - temporary defaults
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    },
+}
 
-# Cache - from unified domain configuration
-CACHES = domain_django_settings["CACHES"]
+# Cache - temporary defaults
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    },
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -120,15 +121,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization - from unified domain configuration
-LANGUAGE_CODE = domain_django_settings["LANGUAGE_CODE"]
-TIME_ZONE = domain_django_settings["TIME_ZONE"]
-USE_I18N = domain_django_settings["USE_I18N"]
-USE_TZ = domain_django_settings["USE_TZ"]
+# Internationalization
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
 
-# Static files (CSS, JavaScript, Images) - from unified domain configuration
-STATIC_URL = domain_django_settings["STATIC_URL"]
-STATIC_ROOT = os.environ.get("DJANGO_STATIC_ROOT", str(BASE_DIR / "staticfiles"))
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = "/static/"
+STATIC_ROOT = str(BASE_DIR / "staticfiles")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
@@ -136,12 +137,12 @@ STATICFILES_DIRS = [
 # WhiteNoise configuration
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Media files - from unified domain configuration
-MEDIA_URL = domain_django_settings["MEDIA_URL"]
-MEDIA_ROOT = BASE_DIR / "media"
+# Media files
+MEDIA_URL = "/media/"
+MEDIA_ROOT = str(BASE_DIR / "media")
 
-# Default primary key field type - from unified domain configuration
-DEFAULT_AUTO_FIELD = domain_django_settings["DEFAULT_AUTO_FIELD"]
+# Default primary key field type
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # REST Framework
 REST_FRAMEWORK = {
@@ -151,47 +152,72 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": config.api["default_page_size"],
+    "PAGE_SIZE": 25,  # Default pagination size
     "DEFAULT_RENDERER_CLASSES": (
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ),
 }
 
-# CORS settings - from unified domain configuration
-CORS_ALLOWED_ORIGINS = domain_django_settings["CORS_ALLOWED_ORIGINS"]
-CORS_ALLOW_ALL_ORIGINS = domain_django_settings["CORS_ALLOW_ALL_ORIGINS"]
-CORS_ALLOW_CREDENTIALS = domain_django_settings["CORS_ALLOW_CREDENTIALS"]
+# CORS settings
+CORS_ALLOWED_ORIGINS = []
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
 
-# Celery Configuration - integrated with unified domain configuration
-CELERY_BROKER_URL = os.environ.get(
-    "FLX_CELERY_BROKER_URL",
-    f"redis://{config.network.redis_host}:{config.network.redis_port}/{config.network.celery_broker_db}",
-)
-CELERY_RESULT_BACKEND = os.environ.get(
-    "FLX_CELERY_RESULT_BACKEND",
-    f"redis://{config.network.redis_host}:{config.network.redis_port}/{config.network.celery_result_db}",
-)
+# Celery Configuration
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = domain_django_settings["TIME_ZONE"]
+CELERY_TIMEZONE = "UTC"
 CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = (
-    config.meltano.celery_timeout_minutes * 60
-)  # From domain configuration
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers: DatabaseScheduler"
+CELERY_TASK_TIME_LIMIT = 300
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-# FLEXT Settings - from unified domain configuration
-FLX_GRPC_HOST = domain_django_settings["FLX_GRPC_HOST"]
-FLX_GRPC_PORT = domain_django_settings["FLX_GRPC_PORT"]
-FLX_API_PORT = domain_django_settings["FLX_API_PORT"]
-FLX_WEB_PORT = domain_django_settings["FLX_WEB_PORT"]
-FLX_WEBSOCKET_PORT = domain_django_settings["FLX_WEBSOCKET_PORT"]
+# Session configuration
+SESSION_COOKIE_AGE = 86400  # 24 hours
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-# Logging - from unified domain configuration
-LOGGING = domain_django_settings["LOGGING"]
+# Basic logging configuration
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "flext_web": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}

@@ -1,8 +1,7 @@
 """FLEXT Projects Django App - Enterprise Project Management.
 
 This module provides enterprise-grade project management functionality
-for the FLEXT Meltano Enterprise platform.
-
-Author: Datacosmos
+for the FLEXT Meltano Enterprise platform.:
+            Author: Datacosmos
 Date: 2025-06-22
 """

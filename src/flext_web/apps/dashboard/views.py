@@ -1,12 +1,12 @@
 """Dashboard views with enterprise architecture patterns.
 
 Implementation features:
-- Eliminated lazy imports for better dependency management
-- Unified configuration through domain_config.py
-- gRPC client consolidation with proper resource management
-- Python 3.13 type system throughout
-- Minimal code duplication with shared gRPC client service
-- Strategic TYPE_CHECKING for optimal imports
+    - Eliminated lazy imports for better dependency management
+    - Unified configuration through domain_config.py
+    - gRPC client consolidation with proper resource management
+    - Python 3.13 type system throughout
+    - Minimal code duplication with shared gRPC client service
+    - Strategic TYPE_CHECKING for optimal imports
 """
 
 from __future__ import annotations
@@ -17,16 +17,17 @@ from typing import TYPE_CHECKING, Any
 
 import grpc
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest, JsonResponse
+from django.http import JsonResponse
 from django.views import View
 from django.views.generic import TemplateView
-
-# Unified gRPC client and configuration from canonical implementation
-from flext_core.config.domain_config import get_domain_constants
 from flext_grpc.client import FlextGrpcClientBase
 from google.protobuf import empty_pb2
 
+# Unified gRPC client and configuration from canonical implementation
+from flext_core.config.domain_config import get_domain_constants
+
 if TYPE_CHECKING:
+    from django.http import HttpRequest
     from flext_grpc.proto import flext_pb2
 else:
     # Real imports at runtime - NO LAZY LOADING VIOLATIONS
@@ -47,16 +48,20 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
     """
 
     def __init__(self) -> None:
-        """Initialize dashboard gRPC client with base functionality."""
         super().__init__()
 
     def get_dashboard_data(self) -> dict[str, Any]:
-        """Get complete dashboard data with single gRPC connection."""
+        """Get complete dashboard data from gRPC server.
+
+        Returns:
+            Dictionary containing stats, health, recent_executions, and error.
+
+        """
         try:
             with self._create_channel() as channel:
                 stub = self._create_stub(channel)
 
-                # Get all data in parallel using gRPC streaming if available
+                # Get all data in parallel using gRPC streaming if available:
                 stats_response = stub.GetSystemStats(empty_pb2.Empty())
                 health_response = stub.HealthCheck(empty_pb2.Empty())
                 constants = get_domain_constants()
@@ -86,7 +91,12 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
             }
 
     def get_stats_only(self) -> dict[str, Any]:
-        """Get only stats for API endpoint with optimized gRPC call."""
+        """Get system statistics and execution data for API endpoints.
+
+        Returns:
+            Dictionary containing stats, health, and recent executions.
+
+        """
         try:
             with self._create_channel() as channel:
                 stub = self._create_stub(channel)
@@ -113,8 +123,7 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
                             **self._format_execution(execution),
                             "started_at": (
                                 execution.started_at.ToDatetime().isoformat()
-                                if execution.started_at
-                                else None
+                                if execution.started_at else None
                             ),
                         }
                         for execution in executions_response.executions
@@ -128,20 +137,6 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
             }
 
     def _format_stats(self, stats_response: object) -> DashboardStats:
-        """Format system statistics response from gRPC into dashboard format.
-
-        Transforms the raw gRPC response into a properly formatted
-        dictionary structure suitable for dashboard display and API responses.
-
-        Args:
-        ----
-            stats_response: Raw gRPC system statistics response
-
-        Returns:
-        -------
-            DashboardStats: Formatted statistics dictionary with typed values
-
-        """
         return {
             "active_pipelines": stats_response.active_pipelines,
             "total_executions": stats_response.total_executions,
@@ -151,17 +146,6 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
         }
 
     def _format_health(self, health_response: object) -> HealthStatus:
-        """Format health status response from gRPC into dashboard format.
-
-        Args:
-        ----
-            health_response: Raw gRPC health status response.
-
-        Returns:
-        -------
-            HealthStatus: Formatted health status with component details.
-
-        """
         components = {}
         for name, comp in health_response.components.items():
             components[name] = {
@@ -176,37 +160,9 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
         }
 
     def _format_executions(self, executions: list[Any]) -> list[ExecutionData]:
-        """Format pipeline executions list from gRPC into dashboard format.
-
-        Transforms the raw gRPC executions list into a properly
-        formatted list suitable for dashboard display.
-
-        Args:
-        ----
-            executions: List of raw gRPC execution responses
-
-        Returns:
-        -------
-            list[ExecutionData]: Formatted execution data list
-
-        """
         return [self._format_execution(execution) for execution in executions]
 
     def _format_execution(self, execution: object) -> ExecutionData:
-        """Format single pipeline execution into dashboard format.
-
-        Transforms a single execution response into a properly formatted
-        dictionary with calculated duration and formatted timestamps.
-
-        Args:
-        ----
-            execution: Raw gRPC execution response
-
-        Returns:
-        -------
-            ExecutionData: Formatted execution data dictionary
-
-        """
         return {
             "id": execution.id,
             "pipeline_name": execution.pipeline_id,
@@ -218,25 +174,13 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
         }
 
     def _calculate_duration(self, execution: object) -> str | None:
-        """Calculate execution duration with proper formatting.
-
-        Args:
-        ----
-            execution: Execution object with timestamp information.
-
-        Returns:
-        -------
-            str | None: Formatted duration string or None if no start time.
-
-        """
         if not execution.started_at:
             return None
 
         start_time = execution.started_at.ToDatetime()
         end_time = (
             execution.completed_at.ToDatetime()
-            if execution.completed_at
-            else datetime.now(UTC)
+            if execution.completed_at else datetime.now(UTC)
         )
 
         duration = end_time - start_time
@@ -253,7 +197,6 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
         return f"{seconds}s"
 
     def _get_default_stats(self) -> DashboardStats:
-        """Get default stats when gRPC unavailable."""
         return {
             "active_pipelines": 0,
             "total_executions": 0,
@@ -263,7 +206,6 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
         }
 
     def _get_default_health(self) -> HealthStatus:
-        """Get default health when gRPC unavailable."""
         return {
             "healthy": False,
             "components": {},
@@ -272,20 +214,6 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
 
 @functools.lru_cache(maxsize=1)
 def get_grpc_client() -> FlextGrpcClientBase:
-    """Get global gRPC client instance for dashboard operations.
-
-    This function provides a singleton pattern for gRPC client access,
-    ensuring efficient resource usage and connection pooling.
-
-    Returns:
-    -------
-        FlextGrpcClientBase: Configured gRPC client instance.
-
-    Note:
-    ----
-        Uses modern Python 3.13 functools.lru_cache for thread-safe singleton pattern.
-
-    """
     return FlextGrpcClientBase()
 
 
@@ -305,11 +233,13 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/index.html"
 
     def get_context_data(self, **kwargs: object) -> dict[str, object]:
-        """Get dashboard context data using unified gRPC client.
+        """Get context data for dashboard template rendering.
 
-        Returns
-        -------
-            dict[str, Any]: Context data including stats, health, and executions.
+        Args:
+            **kwargs: Additional context arguments.
+
+        Returns:
+            Context dictionary with dashboard data for template rendering.
 
         """
         context = super().get_context_data(**kwargs)
@@ -335,13 +265,17 @@ class StatsAPIView(LoginRequiredMixin, View):
     """
 
     def get(
-        self, _request: HttpRequest, *_args: object, **_kwargs: object
+        self, _request: HttpRequest, *_args: object, **_kwargs: object,
     ) -> JsonResponse:
-        """Get current system stats using unified gRPC client.
+        """Handle GET requests for real-time statistics API.
 
-        Returns
-        -------
-            JsonResponse: System statistics or error information.
+        Args:
+            _request: HTTP request object.
+            *_args: Additional positional arguments.
+            **_kwargs: Additional keyword arguments.
+
+        Returns:
+            JSON response with current system statistics or error information.
 
         """
         grpc_client = get_grpc_client()

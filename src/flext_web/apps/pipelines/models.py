@@ -1,290 +1,223 @@
-"""Django models for pipeline management.
+"""Django models for pipeline management using flext-core patterns.
 
-This module defines the database models for managing data pipelines,
-executions, and plugins in the FLEXT Meltano Enterprise platform.
+MIGRATED TO FLEXT-CORE:
+Uses flext-core DomainValueObject and StrEnum patterns
+for structured data and type safety.
 """
 
 from __future__ import annotations
 
 import uuid
-from typing import TYPE_CHECKING, Any, ClassVar
+from enum import Enum
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-from django.utils import timezone
 
-if TYPE_CHECKING:
-    from datetime import datetime
+from flext_core.domain import DomainValueObject
+
+
+class PipelineConfiguration(DomainValueObject):
+    """Pipeline configuration value object using flext-core patterns."""
+
+    def __init__(self, **data):
+        """Initialize pipeline configuration."""
+        super().__init__()
+        self._data = data
+
+    @classmethod
+    def from_dict(cls, data: dict) -> PipelineConfiguration:
+        """Create from dictionary."""
+        return cls(**data)
+
+    def to_dict(self) -> dict:
+        """Convert to dictionary."""
+        return self._data
+
+
+class PipelineType(str, Enum):
+    """Pipeline type enumeration using flext-core StrEnum."""
+
+    ETL = "etl"
+    ELT = "elt"
+    STREAMING = "streaming"
+    BATCH = "batch"
+    REAL_TIME = "real_time"
+
+
+class PipelineStatus(str, Enum):
+    """Pipeline status enumeration using flext-core StrEnum."""
+
+    DRAFT = "draft"
+    ACTIVE = "active"
+    PAUSED = "paused"
+    DISABLED = "disabled"
+    ARCHIVED = "archived"
+
+
+class ExecutionStatus(str, Enum):
+    """Execution status enumeration using flext-core StrEnum."""
+
+    PENDING = "pending"
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+    TIMEOUT = "timeout"
+
+
+class PluginType(str, Enum):
+    """Plugin type enumeration using flext-core StrEnum."""
+
+    EXTRACTOR = "extractor"
+    LOADER = "loader"
+    TRANSFORMER = "transformer"
+    ORCHESTRATOR = "orchestrator"
+    UTILITY = "utility"
+
+
+# Pipeline configuration will be stored as JSONField in Django models
 
 
 class PipelineWeb(models.Model):
-    """Data pipeline model for ETL/ELT operations.
+    """Data pipeline model for ETL/ELT operations using flext-core patterns."""
 
-    Represents a data pipeline configuration including extractor,
-    loader, and optional transformer components. Supports scheduling,
-    configuration management, and execution tracking.
-
-    Attributes
-    ----------
-        id: UUID primary key
-        name: Unique pipeline name
-        description: Optional pipeline description
-        extractor: Name of the data extractor plugin
-        loader: Name of the data loader plugin
-        transform: Optional transformer plugin name
-        config: JSON configuration for pipeline components
-        schedule: Cron expression for scheduled execution
-        is_active: Whether pipeline is enabled
-        last_run: Timestamp of last execution
-        last_status: Status of last execution
-        created_by: User who created the pipeline
-        created_at: Creation timestamp
-        updated_at: Last update timestamp
-
-    """
-
-    id: models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
+    id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    name: models.CharField[str, str] = models.CharField(max_length=255, unique=True)
-    description: models.TextField[str, str] = models.TextField(blank=True)
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True)
 
     # Pipeline components
-    extractor: models.CharField[str, str] = models.CharField(max_length=255)
-    loader: models.CharField[str, str] = models.CharField(max_length=255)
-    transform: models.CharField[str, str] = models.CharField(max_length=255, blank=True)
-
-    # Configuration
-    config: models.JSONField[dict[str, Any], dict[str, Any]] = models.JSONField(
-        default=dict,
+    extractor = models.CharField(max_length=255)
+    loader = models.CharField(max_length=255)
+    transform = models.CharField(
+        max_length=255,
         blank=True,
-    )
-    schedule: models.CharField[str, str] = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Cron expression",
+        help_text="Optional transformer plugin",
     )
 
-    # Status
-    is_active: models.BooleanField[bool, bool] = models.BooleanField(default=True)
-    last_run: models.DateTimeField[datetime | None, datetime | None] = (
-        models.DateTimeField(null=True, blank=True)
-    )
-    last_status: models.CharField[str, str] = models.CharField(
+    # Pipeline configuration and metadata
+    pipeline_type = models.CharField(
         max_length=20,
-        choices=[
-            ("pending", "Pending"),
-            ("running", "Running"),
-            ("success", "Success"),
-            ("failed", "Failed"),
-            ("cancelled", "Cancelled"),
-        ],
+        choices=[(ptype.value, ptype.value.title()) for ptype in PipelineType],
+        default=PipelineType.ETL.value,
+    )
+    config = models.JSONField(
+        default=dict,
+        help_text="Pipeline configuration including extractor, loader, and transform settings",
+    )
+    schedule = models.CharField(
+        max_length=255,
         blank=True,
+        help_text="Cron expression for scheduled execution",
     )
 
-    # Metadata
-    created_by: models.ForeignKey[User, User] = models.ForeignKey(
+    # Status and lifecycle
+    status = models.CharField(
+        max_length=20,
+        choices=[(status.value, status.value.title()) for status in PipelineStatus],
+        default=PipelineStatus.DRAFT.value,
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Whether pipeline is enabled for execution",
+    )
+
+    # Execution tracking
+    last_run = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Timestamp of last execution",
+    )
+    last_status = models.CharField(
+        max_length=20,
+        choices=[(status.value, status.value.title()) for status in ExecutionStatus],
+        blank=True,
+        help_text="Status of last execution",
+    )
+
+    # Audit fields
+    created_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        related_name="pipelines",
+        related_name="created_pipelines",
     )
-    created_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(
-        auto_now_add=True,
-    )
-    updated_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(
-        auto_now=True,
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        """Django model metadata configuration."""
+        """Meta configuration for PipelineWeb model."""
 
-        ordering: ClassVar[list[str]] = ["-created_at"]
+        db_table = "flext_pipelines"
+        ordering = ["-created_at"]
+        verbose_name = "Pipeline"
+        verbose_name_plural = "Pipelines"
+        indexes = [
+            models.Index(fields=["status"]),
+            models.Index(fields=["is_active"]),
+            models.Index(fields=["last_run"]),
+        ]
 
     def __str__(self) -> str:
-        """Return string representation of pipeline."""
-        return self.name
+        return f"{self.name} ({self.pipeline_type_enum.value.title()})"
 
     def get_absolute_url(self) -> str:
-        """Get the absolute URL for pipeline detail view.
+        """Get the absolute URL for this pipeline instance.
 
-        Returns the URL path for accessing this pipeline's detail page
-        in the Django web interface.
-
-        Returns
-        -------
-            str: URL path for pipeline detail view
+        Returns:
+            str: Absolute URL to the pipeline detail view.
 
         """
-        return reverse("pipelines: detail", kwargs={"pk": self.pk})
-
-
-class Execution(models.Model):
-    """Pipeline execution tracking model.
-
-    Records individual pipeline execution instances with status tracking,
-    timing information, and execution results. Links to the parent pipeline
-    and tracks who triggered the execution.
-
-    Attributes
-    ----------
-        id: UUID primary key
-        pipeline: Foreign key to parent Pipeline
-        status: Current execution status (pending/running/success/failed/cancelled)
-        started_at: Execution start timestamp
-        finished_at: Execution completion timestamp
-        duration_seconds: Total execution time in seconds
-        records_processed: Number of records processed
-        error_message: Error details if execution failed
-        triggered_by: User who triggered the execution
-        full_refresh: Whether this was a full refresh execution
-
-    """
-
-    id: models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False,
-    )
-    pipeline: models.ForeignKey[PipelineWeb, PipelineWeb] = models.ForeignKey(
-        PipelineWeb,
-        on_delete=models.CASCADE,
-        related_name="executions",
-    )
-
-    # Status
-    status: models.CharField[str, str] = models.CharField(
-        max_length=20,
-        choices=[
-            ("pending", "Pending"),
-            ("running", "Running"),
-            ("success", "Success"),
-            ("failed", "Failed"),
-            ("cancelled", "Cancelled"),
-        ],
-        default="pending",
-    )
-
-    # Timing
-    started_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(
-        default=timezone.now,
-    )
-    finished_at: models.DateTimeField[datetime | None, datetime | None] = (
-        models.DateTimeField(null=True, blank=True)
-    )
-    duration_seconds: models.IntegerField[int | None, int | None] = models.IntegerField(
-        null=True,
-        blank=True,
-    )
-
-    # Results
-    records_processed: models.IntegerField[int, int] = models.IntegerField(default=0)
-    error_message: models.TextField[str, str] = models.TextField(blank=True)
-
-    # Metadata
-    triggered_by: models.ForeignKey[User | None, User] = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="triggered_executions",
-    )
-    full_refresh: models.BooleanField[bool, bool] = models.BooleanField(default=False)
-
-    class Meta:
-        """Django model metadata configuration."""
-
-        ordering: ClassVar[list[str]] = ["-started_at"]
-
-    def __str__(self) -> str:
-        """Return string representation of execution."""
-        return f"{self.pipeline.name} - {self.started_at}"
+        return reverse("pipelines:detail", kwargs={"pk": self.pk})
 
     @property
-    def is_running(self) -> bool:
-        """Check if execution is currently running.
+    def pipeline_type_enum(self) -> PipelineType:
+        """Get the pipeline type as an enum value.
 
-        Returns whether this execution is in the 'running' status,
-        indicating it is actively processing.
-
-        Returns
-        -------
-            bool: True if execution is running, False otherwise
+        Returns:
+            PipelineType: The pipeline type enum value.
 
         """
-        return self.status == "running"
+        return PipelineType(self.pipeline_type)
 
     @property
-    def is_finished(self) -> bool:
-        """Check if execution has finished.
+    def status_enum(self) -> PipelineStatus:
+        """Get the pipeline status as an enum value.
 
-        Returns whether this execution has completed with any final
-        status (success, failed, or cancelled).
-
-        Returns
-        -------
-            bool: True if execution is finished, False otherwise
+        Returns:
+            PipelineStatus: The pipeline status enum value.
 
         """
-        return self.status in {"success", "failed", "cancelled"}
+        return PipelineStatus(self.status)
 
+    @property
+    def last_status_enum(self) -> ExecutionStatus | None:
+        """Get the last execution status as an enum value.
 
-class PluginWeb(models.Model):
-    """Meltano plugin registry model.
+        Returns:
+            ExecutionStatus | None: The last execution status enum value, or None if not set.
 
-    Tracks installed Meltano plugins including extractors, loaders,
-    transformers, orchestrators, and utilities. Manages plugin
-    configuration and installation status.
+        """
+        return ExecutionStatus(self.last_status) if self.last_status else None
 
-    Attributes
-    ----------
-        name: Plugin name (e.g., 'tap-postgres', 'target-snowflake')
-        type: Plugin type (extractor/loader/transformer/orchestrator/utility)
-        variant: Plugin variant (e.g., 'meltano', 'singer-io')
-        version: Installed version
-        description: Plugin description
-        installed: Whether plugin is currently installed
-        installed_at: Installation timestamp
-        settings: JSON configuration for plugin settings
+    @property
+    def config_object(self) -> PipelineConfiguration:
+        """Get the pipeline configuration as a structured object.
 
-    """
+        Returns:
+            PipelineConfiguration: The pipeline configuration as a domain value object.
 
-    PLUGIN_TYPES: ClassVar[list[tuple[str, str]]] = [
-        ("extractor", "Extractor"),
-        ("loader", "Loader"),
-        ("transformer", "Transformer"),
-        ("orchestrator", "Orchestrator"),
-        ("utility", "Utility"),
-    ]
+        """
+        return PipelineConfiguration.from_dict(self.config)
 
-    name: models.CharField[str, str] = models.CharField(max_length=255)
-    type: models.CharField[str, str] = models.CharField(
-        max_length=20,
-        choices=PLUGIN_TYPES,
-    )
-    variant: models.CharField[str, str] = models.CharField(max_length=255, blank=True)
-    version: models.CharField[str, str] = models.CharField(max_length=50, blank=True)
-    description: models.TextField[str, str] = models.TextField(blank=True)
+    def update_config(self, config: PipelineConfiguration) -> None:
+        """Update the pipeline configuration with a new configuration object.
 
-    # Installation
-    installed: models.BooleanField[bool, bool] = models.BooleanField(default=False)
-    installed_at: models.DateTimeField[datetime | None, datetime | None] = (
-        models.DateTimeField(null=True, blank=True)
-    )
+        Args:
+            config: New pipeline configuration to store.
 
-    # Configuration
-    settings: models.JSONField[dict[str, Any], dict[str, Any]] = models.JSONField(
-        default=dict,
-        blank=True,
-    )
-
-    class Meta:
-        """Django model metadata configuration."""
-
-        unique_together: ClassVar[list[list[str]]] = [["name", "type"]]
-        ordering: ClassVar[list[str]] = ["type", "name"]
-
-    def __str__(self) -> str:
-        """Return string representation of plugin."""
-        return f"{self.get_type_display()}: {self.name}"
+        """
+        self.config = config.to_dict()

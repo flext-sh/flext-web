@@ -11,25 +11,23 @@ from __future__ import annotations
 
 import importlib.util
 
-from django.apps import AppConfig
 
-
-class MonitoringConfig(AppConfig):
+class MonitoringConfig:
     """Django app configuration for enterprise system monitoring.
 
     Provides comprehensive system monitoring, health checks, metrics collection,
     and enterprise-grade observability capabilities.
 
     Features:
-        - Real-time system health monitoring
-        - Pipeline execution monitoring and alerting
-        - Performance metrics collection and visualization
-        - Enterprise audit trails and compliance reporting
-        - Resource utilization tracking and optimization
+    - Real-time system health monitoring
+    - Pipeline execution monitoring and alerting
+    - Performance metrics collection and visualization
+    - Enterprise audit trails and compliance reporting
+    - Resource utilization tracking and optimization
 
     Note:
-    ----
-        Configures Django application for pipeline monitoring, metrics, and health checking.
+        Configures Django application for pipeline monitoring, metrics, and
+        health checking.
 
     """
 
@@ -38,16 +36,7 @@ class MonitoringConfig(AppConfig):
     verbose_name = "FLEXT Enterprise System Monitoring"
 
     def ready(self) -> None:
-        """Initialize app with enterprise configuration and signal handlers.
-
-        Sets up monitoring signals, health check schedules, and enterprise
-        integration patterns for production-ready system monitoring.
-
-        Note:
-        ----
-            Called by Django during application startup after all models are loaded.
-
-        """
+        """Configure monitoring app on Django startup."""
         # Signal handlers are required for enterprise monitoring
         # If signals module exists, import it for auto-registration
 

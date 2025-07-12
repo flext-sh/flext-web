@@ -27,21 +27,7 @@ from django.core.management import execute_from_command_line
 
 
 def main() -> None:
-    """Run Django REDACTED_LDAP_BIND_PASSWORDistrative tasks.
-
-    Sets up the Django settings module and executes management commands
-    from the command line. This is the entry point for all Django
-    management operations like runserver, migrate, collectstatic, etc.
-
-    The settings module is set to 'flext_web.flext_web.settings' by default
-    but can be overridden with the DJANGO_SETTINGS_MODULE environment variable.
-
-    Raises
-    ------
-        ImportError: If Django is not installed or not in PYTHONPATH.
-
-    """
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "flext_web.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "flext_web.flext_web_legacy.settings.development")
     execute_from_command_line(sys.argv)
 
 

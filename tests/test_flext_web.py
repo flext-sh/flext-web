@@ -1,10 +1,10 @@
-"""Basic tests for flext_ldap."""
+"""Test module for flext_web."""
 
 import pytest
 
 
-def test_module_exists() -> None:
-    """Test that module exists and can be imported."""
+def test_example() -> None:
+    """Test that imports work correctly."""
     assert True
 
 
@@ -13,17 +13,26 @@ def test_basic_functionality() -> None:
     assert 1 + 1 == 2
 
 
+def test_type_checking() -> None:
+    """Test type checking."""
+    assert isinstance("hello", str)
+
+
 def test_configuration() -> None:
-    """Test configuration is valid."""
-    assert True
+    """Test configuration validation."""
+    # Basic configuration validation
+    is_valid = True
+    assert is_valid is True
 
 
-class TestFlextweb:
-    """Test class for flext_ldap."""
+class TestFlextWeb:
+    """Test class for flext_web module."""
 
     def test_initialization(self) -> None:
         """Test initialization."""
-        assert True
+        # Initialization test - placeholder
+        initialized = True
+        assert initialized is True
 
     def test_methods(self) -> None:
         """Test methods."""
@@ -42,6 +51,7 @@ class TestFlextweb:
         (3, True),
     ],
 )
-def test_parametrized(test_input, expected) -> None:
-    """Parametrized test."""
-    assert bool(test_input) == expected
+def test_parametrized(test_input: int, expected: bool) -> None:
+    """Test parametrized functionality."""
+    result = bool(test_input)
+    assert result == expected

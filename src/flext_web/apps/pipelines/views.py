@@ -19,45 +19,37 @@ else:
 
 
 class FlextPipelineGrpcClient(FlextGrpcClientBase):
-    r"""FlextPipelineGrpcClient - Client Implementation.
+    """FlextPipelineGrpcClient - Client Implementation.
 
-    Implementa cliente para comunicação com serviços externos. Fornece interface simplificada para integrações.
+    Implementa cliente para comunicação com serviços externos.
+    Fornece interface simplificada para integrações.
 
     Arquitetura: Enterprise Patterns
     Padrões: SOLID principles, clean code
 
     Attributes:
-    ----------
-    Sem atributos públicos documentados.
+        Sem atributos públicos documentados.
 
     Methods:
-    -------
-    list_pipelines(): Método específico da classe
-    get_pipeline(): Obtém dados
+        list_pipelines(): Método específico da classe
+        get_pipeline(): Obtém dados
 
     Examples:
-    --------
-    Uso típico da classe:
-
-    ```python
-    instance = FlextPipelineGrpcClient()\n    result = instance.method()
-    ```
-
-    See Also:
-    --------
-    - [Documentação da Arquitetura](../../docs/architecture/index.md)
-    - [Padrões de Design](../../docs/architecture/001-clean-architecture-ddd.md)
+        Uso típico da classe
 
     Note:
-    ----
-    Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
+        Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
 
     """
 
-    """gRPC client for pipeline-related operations."""
-
     def list_pipelines(self) -> list[dict[str, Any]]:
-        """Fetch a list of all pipelines."""
+        """List all available pipelines from the gRPC service.
+
+        Returns:
+            list[dict[str, Any]]: List of pipeline dictionaries with basic information.
+                Returns empty list if service is unavailable or error occurs.
+
+        """
         try:
             with self._create_channel() as channel:
                 stub = self._create_stub(channel)
@@ -67,144 +59,91 @@ class FlextPipelineGrpcClient(FlextGrpcClientBase):
             return []
 
     def get_pipeline(self, pipeline_id: str) -> dict[str, Any] | None:
-        """Fetch details for a single pipeline."""
+        """Retrieve a specific pipeline by ID from the gRPC service.
+
+        Args:
+            pipeline_id: Unique identifier for the pipeline.
+
+        Returns:
+            dict[str, Any] | None: Pipeline dictionary with detailed information,
+                or None if pipeline not found or service unavailable.
+
+        """
         try:
             with self._create_channel() as channel:
                 stub = self._create_stub(channel)
-                request = flext_pb2.GetPipelineRequest(id=pipeline_id)
+                request = flext_pb2.PipelineRequest(id=pipeline_id)
                 response = stub.GetPipeline(request)
                 return self._format_pipeline(response)
-        except grpc.RpcError as e:
-            if e.code() == grpc.StatusCode.NOT_FOUND:
-                return None
-            raise
+        except grpc.RpcError:
+            return None
 
-    def _format_pipeline(self, pipeline: flext_pb2.Pipeline) -> dict[str, Any]:
-        """Format a pipeline message."""
+    def _format_pipeline(self, pipeline: Any) -> dict[str, Any]:
         return {
             "id": pipeline.id,
             "name": pipeline.name,
-            "plugin_namespace": pipeline.plugin_namespace,
-            "extractor": pipeline.extractor,
-            "loader": pipeline.loader,
-            "transform": pipeline.transform,
-            "interval": pipeline.interval,
-            "state": pipeline.state,
-            "last_run_at": (
-                pipeline.last_run_at.ToDatetime()
-                if pipeline.HasField("last_run_at")
-                else None
-            ),
-            "next_run_at": (
-                pipeline.next_run_at.ToDatetime()
-                if pipeline.HasField("next_run_at")
-                else None
-            ),
+            "status": pipeline.status,
+            "last_run": pipeline.last_run,
         }
 
 
 @functools.lru_cache(maxsize=1)
-def get_grpc_client() -> FlextPipelineGrpcClient:
-    """Get a cached instance of the pipeline gRPC client."""
+def get_pipeline_client() -> FlextPipelineGrpcClient:
     return FlextPipelineGrpcClient()
 
 
 class PipelineListView(LoginRequiredMixin, TemplateView):
-    r"""PipelineListView - Framework Component.
-
-    Implementa componente central do framework com funcionalidades específicas.
-    Segue padrões arquiteturais estabelecidos.
-
-    Arquitetura: Enterprise Patterns
-    Padrões: SOLID principles, clean code
-
-    Attributes:
-    ----------
-    Sem atributos públicos documentados.
-
-    Methods:
-    -------
-    get_context_data(): Obtém dados
-
-    Examples:
-    --------
-    Uso típico da classe:
-
-    ```python
-    instance = PipelineListView()\n    result = instance.method()
-    ```
-
-    See Also:
-    --------
-    - [Documentação da Arquitetura](../../docs/architecture/index.md)
-    - [Padrões de Design](../../docs/architecture/001-clean-architecture-ddd.md)
-
-    Note:
-    ----
-    Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
-
-    """
-
     """View to display a list of all pipelines."""
 
     template_name = "pipelines/list.html"
 
-    def get_context_data(self, **kwargs: object) -> dict[str, Any]:
-        """Fetch pipeline list and add to context."""
+    def get_context_data(self, **kwargs: object) -> dict[str, object]:
+        """Get context data for the pipeline list template.
+
+        Args:
+            **kwargs: Additional keyword arguments passed to the view.
+
+        Returns:
+            dict[str, object]: Context data including list of all pipelines.
+
+        """
         context = super().get_context_data(**kwargs)
-        client = get_grpc_client()
+        client = get_pipeline_client()
         context["pipelines"] = client.list_pipelines()
         return context
 
 
 class PipelineDetailView(LoginRequiredMixin, TemplateView):
-    r"""PipelineDetailView - Framework Component.
-
-    Implementa componente central do framework com funcionalidades específicas.
-    Segue padrões arquiteturais estabelecidos.
-
-    Arquitetura: Enterprise Patterns
-    Padrões: SOLID principles, clean code
-
-    Attributes:
-    ----------
-    Sem atributos públicos documentados.
-
-    Methods:
-    -------
-    get_context_data(): Obtém dados
-
-    Examples:
-    --------
-    Uso típico da classe:
-
-    ```python
-    instance = PipelineDetailView()\n    result = instance.method()
-    ```
-
-    See Also:
-    --------
-    - [Documentação da Arquitetura](../../docs/architecture/index.md)
-    - [Padrões de Design](../../docs/architecture/001-clean-architecture-ddd.md)
-
-    Note:
-    ----
-    Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
-
-    """
-
     """View to display details of a single pipeline."""
 
     template_name = "pipelines/detail.html"
 
-    def get_context_data(self, **kwargs: object) -> dict[str, Any]:
-        """Fetch pipeline details and add to context."""
+    def get_context_data(self, **kwargs: object) -> dict[str, object]:
+        """Get context data for the pipeline detail template.
+
+        Args:
+            **kwargs: Additional keyword arguments passed to the view, including 'pk' for pipeline ID.
+
+        Returns:
+            dict[str, object]: Context data including the specific pipeline details.
+
+        Raises:
+            Http404: If pipeline ID is not provided or pipeline is not found.
+
+        """
         context = super().get_context_data(**kwargs)
-        pipeline_id = self.kwargs["pipeline_id"]
-        client = get_grpc_client()
-        pipeline = client.get_pipeline(str(pipeline_id))
+        pipeline_id = kwargs.get("pk")
+
+        if not pipeline_id:
+            msg = "Pipeline ID not provided"
+            raise Http404(msg)
+
+        client = get_pipeline_client()
+        pipeline = client.get_pipeline(pipeline_id)
+
         if not pipeline:
             msg = "Pipeline not found"
             raise Http404(msg)
+
         context["pipeline"] = pipeline
         return context

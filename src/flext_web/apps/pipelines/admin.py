@@ -8,7 +8,8 @@ from typing import ClassVar
 
 from django.contrib import REDACTED_LDAP_BIND_PASSWORD
 
-from flext_web.models import Execution, PipelineWeb, PluginWeb
+# from flext_web.models import Execution, PipelineWeb, PluginWeb
+from .models import PipelineWeb
 
 
 @REDACTED_LDAP_BIND_PASSWORD.register(PipelineWeb)
@@ -72,7 +73,7 @@ class PipelineAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
     )
 
 
-@REDACTED_LDAP_BIND_PASSWORD.register(Execution)
+# @REDACTED_LDAP_BIND_PASSWORD.register(Execution)
 class ExecutionAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
     """Django REDACTED_LDAP_BIND_PASSWORD configuration for Execution model.
 
@@ -81,7 +82,7 @@ class ExecutionAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
     error investigation capabilities.
 
     Features:
-        - Execution status monitoring
+            - Execution status monitoring
         - Performance metrics (duration, records)
         - Error message search
         - Filtering by pipeline and status
@@ -132,7 +133,7 @@ class ExecutionAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
     )
 
 
-@REDACTED_LDAP_BIND_PASSWORD.register(PluginWeb)
+# @REDACTED_LDAP_BIND_PASSWORD.register(PluginWeb)
 class PluginAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
     """Django REDACTED_LDAP_BIND_PASSWORD configuration for Plugin model.
 
@@ -141,7 +142,7 @@ class PluginAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
     of plugins (extractors, loaders, transformers, etc).
 
     Features:
-        - Plugin type categorization
+            - Plugin type categorization
         - Installation status tracking
         - Version and variant management
         - JSON configuration editor

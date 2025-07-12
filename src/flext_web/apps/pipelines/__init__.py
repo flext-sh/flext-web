@@ -3,7 +3,8 @@
 Provides Django models, views, and templates for pipeline management
 including CRUD operations, execution, and monitoring through web interface.
 
-Module provides: Pipeline CRUD operations
+Module provides:
+            Pipeline CRUD operations
     Pipeline execution management
     Pipeline monitoring and status tracking
 

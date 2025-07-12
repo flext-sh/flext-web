@@ -3,13 +3,12 @@
 This module configures the Users app for the FLEXT Meltano Enterprise platform,
 providing user management, authentication, and role-based access control.
 
-Author: Datacosmos
+Author:
+            Datacosmos
 Date: 2025-06-22
 """
 
 from __future__ import annotations
-
-import importlib.util
 
 from django.apps import AppConfig
 
@@ -28,7 +27,6 @@ class UsersConfig(AppConfig):
         - Enterprise authentication and authorization
 
     Note:
-    ----
         Configures Django application with user management, authentication, and permissions.
 
     """
@@ -38,19 +36,13 @@ class UsersConfig(AppConfig):
     verbose_name = "FLEXT Enterprise User Management"
 
     def ready(self) -> None:
-        """Initialize app with enterprise configuration and signal handlers.
-
-        Sets up user management signals, profile creation hooks, and enterprise
-        integration patterns for production-ready user management.
-
-        Note:
-        ----
-            Called by Django during application startup after all models are loaded.
-
+        """Django app ready hook for enterprise user management setup.
+        
+        Initializes signal handlers and enterprise user management components.
         """
         # ZERO TOLERANCE - Signal handlers are REQUIRED for enterprise user management
         # If signals module exists, import it for auto-registration
-
-        signals_spec = importlib.util.find_spec(".signals", package=__name__)
-        if signals_spec is not None:
-            pass  # Signal auto-registration on import
+        try:
+            from . import signals  # Signal auto-registration on import
+        except ImportError:
+            pass  # Signals module doesn't exist

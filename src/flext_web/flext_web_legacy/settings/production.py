@@ -4,7 +4,7 @@ This module provides production-specific Django settings with security hardening
 logging configuration, and optimizations for production deployment.
 
 Features:
-    - Security headers and SSL configuration
+            - Security headers and SSL configuration
     - Production logging with file rotation and compression
     - Type-safe logging configuration with structured logs
     - Secure cookie settings with SameSite protection
@@ -19,7 +19,6 @@ import copy
 from typing import Any
 
 from flext_core.config.domain_config import get_config
-
 from flext_web.base import *
 
 # Security settings

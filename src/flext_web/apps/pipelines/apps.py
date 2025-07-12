@@ -1,13 +1,11 @@
-"""Pipelines Django application configuration.
+"""FLEXT Pipelines Django App Configuration - Pipeline Management.
 
-This module configures the pipelines application for the FLEXT Meltano Enterprise
+This module configures the Pipelines application for the FLEXT Django
 web interface, providing data pipeline CRUD operations and management.
 """
 
-from django.apps import AppConfig
 
-
-class PipelinesConfig(AppConfig):
+class PipelinesConfig:
     """Django application configuration for Pipeline Management.
 
     Configures the pipelines application that handles data pipeline
@@ -21,8 +19,7 @@ class PipelinesConfig(AppConfig):
         - Integration with Meltano extractors and loaders
         - Pipeline versioning and history
 
-    Attributes
-    ----------
+    Attributes:
         default_auto_field: Uses BigAutoField for primary keys
         name: Full Python path to the application
         verbose_name: Human-readable name for REDACTED_LDAP_BIND_PASSWORD interface

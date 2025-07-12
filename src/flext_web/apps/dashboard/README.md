@@ -127,7 +127,7 @@ urlpatterns = [
 
 ## 🎨 TEMPLATE ARCHITECTURE
 
-### **templates/dashboard/index.html** - Dashboard Template
+### **templates/dashboard/index.HTML** - Dashboard Template
 
 ```html
 {% extends "base.html" %} {% block title %}FLEXT Dashboard{% endblock %} {%

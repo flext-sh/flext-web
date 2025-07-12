@@ -4,7 +4,7 @@ This module provides development-specific Django settings that extend the base
 configuration with debugging tools and development-friendly features.
 
 Features:
-    - Debug mode enabled with detailed error pages
+            - Debug mode enabled with detailed error pages
     - Django Debug Toolbar for performance profiling
     - Console email backend for testing email functionality
     - Permissive CORS settings for frontend development
@@ -19,22 +19,22 @@ Warning:
 
 """
 
-from flext_web.base import *
+from flext_web.flext_web_legacy.settings.base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# Additional apps for development
-INSTALLED_APPS += [
-    "debug_toolbar",
-]
+# Additional apps for development - debug toolbar disabled for testing
+# INSTALLED_APPS += [
+#     "debug_toolbar",
+# ]
 
-# Additional middleware for development
-MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+# Additional middleware for development - debug toolbar disabled for testing
+# MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
 # Debug toolbar settings
 INTERNAL_IPS = [
-    config.network.host,
+    "127.0.0.1",
     "localhost",  # Fallback for development
 ]
 

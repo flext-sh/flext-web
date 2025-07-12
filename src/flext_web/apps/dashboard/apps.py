@@ -21,8 +21,7 @@ class DashboardConfig(AppConfig):
         - User activity tracking
         - System health monitoring
 
-    Attributes
-    ----------
+    Attributes:
         default_auto_field: Uses BigAutoField for primary keys
         name: Full Python path to the application
         verbose_name: Human-readable name for REDACTED_LDAP_BIND_PASSWORD interface

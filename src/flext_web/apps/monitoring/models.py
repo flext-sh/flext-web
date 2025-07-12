@@ -80,14 +80,25 @@ class BusinessMetricHistory(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"{self.name}: {self.current_value} ({self.timestamp.strftime('%Y-%m-%d %H:%M')})"
+        return (
+            f"{self.name}: {self.current_value} "
+            f"({self.timestamp.strftime('%Y-%m-%d %H:%M')})"
+        )
 
     @property
     def trend_percentage(self) -> float | None:
-        """Calculate trend percentage change."""
+        """Calculate percentage change from previous value.
+
+        Returns:
+            Percentage change from previous to current value, or None if previous_value is None or 0.
+
+        """
         if self.previous_value is None or self.previous_value == 0:
             return None
-        return ((self.current_value - self.previous_value) / self.previous_value) * 100
+        return (
+            (self.current_value - self.previous_value)
+            / self.previous_value
+        ) * 100
 
 
 class SecurityViolationLog(models.Model):
@@ -101,8 +112,12 @@ class SecurityViolationLog(models.Model):
     )
     validation_type = models.CharField(max_length=50, db_index=True)
     description = models.TextField()
-    source_ip = models.GenericIPAddressField(null=True, blank=True, db_index=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    source_ip = models.GenericIPAddressField(
+        null=True, blank=True, db_index=True,
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+    )
     endpoint = models.CharField(max_length=200, null=True, blank=True)
     user_agent = models.TextField(null=True, blank=True)
     payload = models.JSONField(default=dict)
@@ -122,7 +137,11 @@ class SecurityViolationLog(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"Security Violation: {self.validation_type} ({self.threat_level}) - {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+        return (
+            f"Security Violation: {self.validation_type} "
+            f"({self.threat_level}) - "
+            f"{self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+        )
 
 
 class ErrorPatternLog(models.Model):
@@ -154,7 +173,10 @@ class ErrorPatternLog(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"Error Pattern: {self.category} ({self.severity}) - {self.occurrence_count} occurrences"
+        return (
+            f"Error Pattern: {self.category} ({self.severity}) - "
+            f"{self.occurrence_count} occurrences"
+        )
 
 
 class SystemHealthCheck(models.Model):
@@ -178,142 +200,52 @@ class SystemHealthCheck(models.Model):
 
     def __str__(self) -> str:
         status = "Healthy" if self.healthy else "Unhealthy"
-        return f"{self.component_name}: {status} ({self.timestamp.strftime('%Y-%m-%d %H:%M')})"
+        return (
+            f"{self.component_name}: {status} "
+            f"({self.timestamp.strftime('%Y-%m-%d %H:%M')})"
+        )
 
 
 class MonitoringAlert(models.Model):
     """Enterprise monitoring alerts across all systems."""
 
     alert_id = models.CharField(max_length=100, unique=True, db_index=True)
-    alert_type = models.CharField(
-        max_length=50,
-        db_index=True,
-    )  # business_metric, error_pattern, security_violation
-    title = models.CharField(max_length=200)
-    description = models.TextField()
     severity = models.CharField(
         max_length=20,
         choices=AlertSeverity.choices,
         db_index=True,
     )
-    source_system = models.CharField(
-        max_length=50,
-        db_index=True,
-    )  # business_metrics, error_patterns, security_validation
-
-    # Alert status tracking
-    active = models.BooleanField(default=True, db_index=True)
-    acknowledged = models.BooleanField(default=False)
+    component = models.CharField(max_length=100, db_index=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    metadata = models.JSONField(default=dict)
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+    acknowledged = models.BooleanField(default=False, db_index=True)
     acknowledged_by = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="acknowledged_alerts",
+        User, on_delete=models.SET_NULL, null=True, blank=True,
     )
     acknowledged_at = models.DateTimeField(null=True, blank=True)
-
-    # Alert resolution
     resolved = models.BooleanField(default=False, db_index=True)
-    resolved_by = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="resolved_alerts",
-    )
     resolved_at = models.DateTimeField(null=True, blank=True)
-    resolution_notes = models.TextField(null=True, blank=True)
-
-    # Timestamps
-    created_at = models.DateTimeField(default=timezone.now, db_index=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    # Additional metadata
-    metadata = models.JSONField(default=dict)
 
     class Meta:
         """Django model configuration."""
 
         ordering: ClassVar = ["-created_at"]
         indexes: ClassVar = [
-            models.Index(fields=["severity", "active", "-created_at"]),
-            models.Index(fields=["alert_type", "active", "-created_at"]),
-            models.Index(fields=["source_system", "active", "-created_at"]),
+            models.Index(fields=["severity", "-created_at"]),
+            models.Index(fields=["component", "-created_at"]),
+            models.Index(fields=["acknowledged", "-created_at"]),
             models.Index(fields=["resolved", "-created_at"]),
         ]
 
     def __str__(self) -> str:
-        status = "Active" if self.active else "Inactive"
-        return f"{self.title} ({self.severity}) - {status}"
-
-    def acknowledge(self, user: User) -> None:
-        """Acknowledge the alert."""
-        self.acknowledged = True
-        self.acknowledged_by = user
-        self.acknowledged_at = timezone.now()
-        self.save(
-            update_fields=[
-                "acknowledged",
-                "acknowledged_by",
-                "acknowledged_at",
-                "updated_at",
-            ],
+        return (
+            f"Alert: {self.title} ({self.severity}) - "
+            f"{self.created_at.strftime('%Y-%m-%d %H:%M')}"
         )
 
-    def resolve(self, user: User, notes: str | None = None) -> None:
-        """Resolve the alert."""
-        self.resolved = True
-        self.resolved_by = user
-        self.resolved_at = timezone.now()
-        self.active = False
-        if notes:
-            self.resolution_notes = notes
-        self.save(
-            update_fields=[
-                "resolved",
-                "resolved_by",
-                "resolved_at",
-                "active",
-                "resolution_notes",
-                "updated_at",
-            ],
-        )
-
-
-class MonitoringDashboardConfig(models.Model):
-    """Configuration settings for monitoring dashboard per user."""
-
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="monitoring_config",
-    )
-
-    # Dashboard preferences
-    refresh_interval_seconds = models.PositiveIntegerField(default=30)
-    show_business_metrics = models.BooleanField(default=True)
-    show_security_violations = models.BooleanField(default=True)
-    show_error_patterns = models.BooleanField(default=True)
-    show_health_status = models.BooleanField(default=True)
-
-    # Alert preferences
-    email_alerts = models.BooleanField(default=True)
-    alert_severity_threshold = models.CharField(
-        max_length=20,
-        choices=AlertSeverity.choices,
-        default=AlertSeverity.WARNING,
-    )
-
-    # Display preferences
-    metrics_chart_type = models.CharField(
-        max_length=20,
-        default="line",
-    )  # line, bar, area
-    time_range_hours = models.PositiveIntegerField(default=24)  # Default 24 hour view
-
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self) -> str:
-        return f"Monitoring Config for {self.user.username}"
+    @property
+    def is_active(self) -> bool:
+        """Check if alert is still active (not resolved)."""
+        return not self.resolved

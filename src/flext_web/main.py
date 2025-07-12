@@ -7,23 +7,21 @@ import asyncio
 from django.http import JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
+
 from flext_core.universe import universal_http
 
 
 @csrf_exempt
 def universal_django_view(request: object, command: str) -> JsonResponse:
-    """Universal Django view handling all commands."""
     body = getattr(request, "body", None)
-
     status, data = asyncio.run(universal_http(request.method, command, body))
-
     response_data = data if isinstance(data, dict) else {"result": data}
     return JsonResponse(response_data, status=status)
 
 
 urlpatterns = [
     # Universal view for all commands - ZERO TOLERANCE ARCHITECTURE
-    path("<path: command>", universal_django_view, name="universal"),
+    path("<path:command>", universal_django_view, name="universal"),
     path(
         "",
         lambda _: JsonResponse({"service": "FLEXT Universal Web", "status": "active"}),

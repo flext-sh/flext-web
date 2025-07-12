@@ -2,7 +2,7 @@
 
 This module defines the URL routing configuration for the pipeline management
 functionality within the FLEXT web application, providing RESTful endpoints
-for pipeline operations.
+for pipeline operations.:
 """
 
 from django.urls import path

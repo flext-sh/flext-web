@@ -1,56 +1,31 @@
-"""FLEXT Projects Django App Configuration - Enterprise Grade.
+"""FLEXT Projects Django App Configuration - Project Management.
 
-This module configures the Projects app for the FLEXT Meltano Enterprise platform,
-providing project lifecycle management and Meltano project integration.
-
-Author: Datacosmos
-Date: 2025-06-22
+This module configures the Projects application for the FLEXT Django
+web interface, providing enterprise project management capabilities.
 """
 
-from __future__ import annotations
 
-import importlib.util
+class ProjectsConfig:
+    """Django application configuration for Project Management.
 
-from django.apps import AppConfig
-
-
-class ProjectsConfig(AppConfig):
-    """Django app configuration for enterprise project management.
-
-    Provides project lifecycle management, Meltano project integration,
-    and enterprise-grade project REDACTED_LDAP_BIND_PASSWORDistration capabilities.
+    Configures the projects application that handles enterprise project
+    creation, template management, deployment tracking, and team collaboration
+    within the FLEXT Meltano Enterprise platform.
 
     Features:
-        - Meltano project integration and orchestration
-        - Project lifecycle management (creation, configuration, deployment)
-        - Enterprise security and permission management
-        - Project template management and standardization
-        - Multi-environment project configuration
+        - Project CRUD operations with templates
+        - Team member management and permissions
+        - Deployment tracking and environment management
+        - Integration with Meltano project structure
+        - Enterprise audit trails and compliance
 
-    Note:
-    ----
-        Configures Django application for Meltano project management and pipeline operations.
+    Attributes:
+        default_auto_field: Uses BigAutoField for primary keys
+        name: Full Python path to the application
+        verbose_name: Human-readable name for REDACTED_LDAP_BIND_PASSWORD interface
 
     """
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "flext_web.apps.projects"
-    verbose_name = "FLEXT Enterprise Project Management"
-
-    def ready(self) -> None:
-        """Initialize app with enterprise configuration and signal handlers.
-
-        Sets up project management signals, validation rules, and enterprise
-        integration patterns for production-ready project management.
-
-        Note:
-        ----
-            Called by Django during application startup after all models are loaded.
-
-        """
-        # ZERO TOLERANCE - Signal handlers are REQUIRED for enterprise project management
-        # If signals module exists, import it for auto-registration
-
-        signals_spec = importlib.util.find_spec(".signals", package=__name__)
-        if signals_spec is not None:
-            pass  # Signal auto-registration on import
+    verbose_name = "Projects"

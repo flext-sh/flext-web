@@ -3,7 +3,8 @@
 This module defines URL patterns for the FLEXT Projects app,
 providing RESTful endpoints for enterprise project management operations.
 
-Author: Datacosmos
+Author:
+            Datacosmos
 Date: 2025-06-22
 """
 

@@ -14,18 +14,22 @@ import asyncio
 import functools
 import operator
 from datetime import UTC, datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest, JsonResponse
+from django.http import JsonResponse
 from django.views import View
 from django.views.generic import TemplateView
+
 from flext_core.config.domain_config import get_config
 from flext_core.security.advanced_validation import AdvancedSecurityValidator
 from flext_observability.health import HealthChecker
 from flext_observability.metrics import MetricsCollector
 from flext_observability.monitoring.business_metrics import EnterpriseBusinessMetrics
 from flext_observability.monitoring.error_patterns import ProductionErrorHandler
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 # Python 3.13 type aliases for monitoring domain
 MonitoringStats = dict[str, int | float | list[dict[str, Any]]]
@@ -42,7 +46,6 @@ class EnterpriseMonitoringService:
     """
 
     def __init__(self) -> None:
-        """Initialize enterprise monitoring service with all components."""
         self.config = get_config()
         self.metrics_collector = MetricsCollector()
         self.business_metrics = EnterpriseBusinessMetrics(self.metrics_collector)
@@ -51,16 +54,11 @@ class EnterpriseMonitoringService:
         self.security_validator = AdvancedSecurityValidator()
 
     async def get_comprehensive_monitoring_data(self) -> dict[str, Any]:
-        """Get complete monitoring data from all enterprise systems.
+        """Collect comprehensive monitoring data from all enterprise systems.
 
-        Returns
-        -------
-            dict[str, Any]: Comprehensive monitoring data including:
-                - business_metrics: Business intelligence metrics
-                - error_patterns: Error analysis and recovery patterns
-                - security_stats: Security validation statistics
-                - health_status: System health monitoring data
-                - alerts: Active alerts across all systems
+        Returns:
+            dict[str, Any]: Comprehensive monitoring data including business metrics,
+                error patterns, security stats, health status, and consolidated alerts.
 
         """
         try:
@@ -91,7 +89,6 @@ class EnterpriseMonitoringService:
             }
 
     async def _get_business_metrics_data(self) -> dict[str, Any]:
-        """Get business metrics data with trend analysis."""
         metrics = await self.business_metrics.collect_business_metrics()
 
         # Group metrics by type for dashboard display
@@ -130,7 +127,6 @@ class EnterpriseMonitoringService:
         }
 
     async def _get_error_patterns_data(self) -> dict[str, Any]:
-        """Get error patterns analysis data."""
         error_stats = self.error_handler.get_error_statistics()
         recent_violations = self.error_handler.get_recent_violations(limit=20)
 
@@ -153,7 +149,6 @@ class EnterpriseMonitoringService:
         }
 
     async def _get_security_stats_data(self) -> dict[str, Any]:
-        """Get security validation statistics."""
         security_stats = self.security_validator.get_security_statistics()
         recent_violations = self.security_validator.get_recent_violations(limit=15)
 
@@ -175,7 +170,6 @@ class EnterpriseMonitoringService:
         }
 
     async def _get_health_status_data(self) -> dict[str, Any]:
-        """Get comprehensive health status data."""
         try:
             health_status = await self.health_monitor.check_health()
 
@@ -205,7 +199,6 @@ class EnterpriseMonitoringService:
             }
 
     async def _consolidate_alerts(self) -> list[dict[str, Any]]:
-        """Consolidate alerts from all monitoring systems."""
         # Business metric alerts
         alerts = [
             {
@@ -258,13 +251,6 @@ class EnterpriseMonitoringService:
 
 @functools.lru_cache(maxsize=1)
 def get_monitoring_service() -> EnterpriseMonitoringService:
-    """Get singleton monitoring service instance.
-
-    Returns
-    -------
-        EnterpriseMonitoringService: Configured monitoring service instance.
-
-    """
     return EnterpriseMonitoringService()
 
 
@@ -282,11 +268,13 @@ class MonitoringDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "monitoring/dashboard.html"
 
     def get_context_data(self, **kwargs: object) -> dict[str, object]:
-        """Get monitoring dashboard context data.
+        """Get context data for the monitoring dashboard template.
 
-        Returns
-        -------
-            dict[str, Any]: Context data including comprehensive monitoring data.
+        Args:
+            **kwargs: Additional keyword arguments passed to the view.
+
+        Returns:
+            dict[str, object]: Context data including comprehensive monitoring information.
 
         """
         context = super().get_context_data(**kwargs)
@@ -305,14 +293,16 @@ class MonitoringDashboardView(LoginRequiredMixin, TemplateView):
 class BusinessMetricsAPIView(LoginRequiredMixin, View):
     """API endpoint for real-time business metrics data."""
 
-    def get(
-        self, _request: HttpRequest, *_args: object, **_kwargs: object
-    ) -> JsonResponse:
-        """Get current business metrics data.
+    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+        """Handle GET request for business metrics API endpoint.
 
-        Returns
-        -------
-            JsonResponse: Business metrics data or error information.
+        Args:
+            _request: The HTTP request object (unused).
+            *_args: Additional positional arguments (unused).
+            **_kwargs: Additional keyword arguments (unused).
+
+        Returns:
+            JsonResponse: JSON response containing business metrics data or error information.
 
         """
         try:
@@ -341,14 +331,16 @@ class BusinessMetricsAPIView(LoginRequiredMixin, View):
 class SecurityMonitoringAPIView(LoginRequiredMixin, View):
     """API endpoint for real-time security monitoring data."""
 
-    def get(
-        self, _request: HttpRequest, *_args: object, **_kwargs: object
-    ) -> JsonResponse:
-        """Get current security monitoring data.
+    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+        """Handle GET request for security monitoring API endpoint.
 
-        Returns
-        -------
-            JsonResponse: Security monitoring data or error information.
+        Args:
+            _request: The HTTP request object (unused).
+            *_args: Additional positional arguments (unused).
+            **_kwargs: Additional keyword arguments (unused).
+
+        Returns:
+            JsonResponse: JSON response containing security monitoring data or error information.
 
         """
         try:
@@ -377,14 +369,16 @@ class SecurityMonitoringAPIView(LoginRequiredMixin, View):
 class ErrorPatternsAPIView(LoginRequiredMixin, View):
     """API endpoint for error patterns and recovery data."""
 
-    def get(
-        self, _request: HttpRequest, *_args: object, **_kwargs: object
-    ) -> JsonResponse:
-        """Get current error patterns data.
+    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+        """Handle GET request for error patterns API endpoint.
 
-        Returns
-        -------
-            JsonResponse: Error patterns data or error information.
+        Args:
+            _request: The HTTP request object (unused).
+            *_args: Additional positional arguments (unused).
+            **_kwargs: Additional keyword arguments (unused).
+
+        Returns:
+            JsonResponse: JSON response containing error patterns data or error information.
 
         """
         try:
@@ -413,14 +407,16 @@ class ErrorPatternsAPIView(LoginRequiredMixin, View):
 class HealthStatusAPIView(LoginRequiredMixin, View):
     """API endpoint for comprehensive health status monitoring."""
 
-    def get(
-        self, _request: HttpRequest, *_args: object, **_kwargs: object
-    ) -> JsonResponse:
-        """Get current health status data.
+    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+        """Handle GET request for health status API endpoint.
 
-        Returns
-        -------
-            JsonResponse: Health status data or error information.
+        Args:
+            _request: The HTTP request object (unused).
+            *_args: Additional positional arguments (unused).
+            **_kwargs: Additional keyword arguments (unused).
+
+        Returns:
+            JsonResponse: JSON response containing health status data or error information.
 
         """
         try:
@@ -449,14 +445,16 @@ class HealthStatusAPIView(LoginRequiredMixin, View):
 class AlertsAPIView(LoginRequiredMixin, View):
     """API endpoint for consolidated alerts across all monitoring systems."""
 
-    def get(
-        self, _request: HttpRequest, *_args: object, **_kwargs: object
-    ) -> JsonResponse:
-        """Get current consolidated alerts.
+    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+        """Handle GET request for alerts API endpoint.
 
-        Returns
-        -------
-            JsonResponse: Consolidated alerts data or error information.
+        Args:
+            _request: The HTTP request object (unused).
+            *_args: Additional positional arguments (unused).
+            **_kwargs: Additional keyword arguments (unused).
+
+        Returns:
+            JsonResponse: JSON response containing consolidated alerts data or error information.
 
         """
         try:
@@ -494,14 +492,16 @@ class AlertsAPIView(LoginRequiredMixin, View):
 class MonitoringStatsAPIView(LoginRequiredMixin, View):
     """API endpoint for comprehensive monitoring statistics."""
 
-    def get(
-        self, _request: HttpRequest, *_args: object, **_kwargs: object
-    ) -> JsonResponse:
-        """Get comprehensive monitoring statistics.
+    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+        """Handle GET request for monitoring statistics API endpoint.
 
-        Returns
-        -------
-            JsonResponse: Monitoring statistics or error information.
+        Args:
+            _request: The HTTP request object (unused).
+            *_args: Additional positional arguments (unused).
+            **_kwargs: Additional keyword arguments (unused).
+
+        Returns:
+            JsonResponse: JSON response containing comprehensive monitoring statistics or error information.
 
         """
         try:

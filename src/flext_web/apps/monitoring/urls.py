@@ -1,7 +1,7 @@
 """Enterprise monitoring URL configuration.
 
 URL patterns for comprehensive enterprise monitoring interface including:
-- Main monitoring dashboard
+            - Main monitoring dashboard
 - Real-time API endpoints for metrics
 - Security monitoring interfaces
 - Error pattern analysis endpoints

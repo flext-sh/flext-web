@@ -34,7 +34,7 @@ test-coverage: ## Run tests with coverage
 # Code Quality - Maximum Strictness
 lint: ## Run all linters with maximum strictness
 	@echo "🔍 Running maximum strictness linting for flext-web..."
-	poetry run ruff check . --output-format=verbose
+	poetry run ruff check . --output-format=full
 	@echo "✅ Ruff linting complete"
 
 format: ## Format code with strict standards
@@ -123,3 +123,6 @@ api-dev: ## Run API in development mode
 api-test: ## Test API endpoints
 	@echo "🧪 Testing API endpoints..."
 	poetry run pytest tests/ -v -m "not slow"
+
+# Include standardized build system
+include Makefile.build
