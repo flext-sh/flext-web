@@ -27,7 +27,9 @@ from django.core.management import execute_from_command_line
 
 
 def main() -> None:
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "flext_web.flext_web_legacy.settings.development")
+    os.environ.setdefault(
+        "DJANGO_SETTINGS_MODULE", "flext_web.flext_web_legacy.settings.development",
+    )
     execute_from_command_line(sys.argv)
 
 

@@ -31,6 +31,31 @@ test-coverage: ## Run tests with coverage
 	@echo "🧪 Running tests with coverage for flext-web..."
 	@python -m pytest tests/ --cov=src --cov-report=html --cov-report=term
 
+# Django Commands
+django-migrate: ## Run Django migrations
+	@echo "🚀 Running Django migrations..."
+	python scripts/manage.py migrate
+
+django-makemigrations: ## Create Django migrations
+	@echo "🚀 Creating Django migrations..."
+	python scripts/manage.py makemigrations
+
+django-runserver: ## Run Django development server
+	@echo "🚀 Starting Django development server..."
+	python scripts/manage.py runserver
+
+django-shell: ## Open Django shell
+	@echo "🚀 Opening Django shell..."
+	python scripts/manage.py shell
+
+django-collectstatic: ## Collect static files
+	@echo "🚀 Collecting static files..."
+	python scripts/manage.py collectstatic --noinput
+
+django-createsuperuser: ## Create Django superuser
+	@echo "🚀 Creating Django superuser..."
+	python scripts/manage.py createsuperuser
+
 # Code Quality - Maximum Strictness
 lint: ## Run all linters with maximum strictness
 	@echo "🔍 Running maximum strictness linting for flext-web..."
@@ -118,7 +143,7 @@ export FLEXT_WEB_DEV := true
 # API-specific commands
 api-dev: ## Run API in development mode
 	@echo "🚀 Starting API development server..."
-	PYTHONPATH=src poetry run uvicorn {project_name.replace('-', '_')}.main:app --reload --host 0.0.0.0 --port 8000
+	PYTHONPATH=src poetry run uvicorn flext_web.main:app --reload --host 0.0.0.0 --port 8000
 
 api-test: ## Test API endpoints
 	@echo "🧪 Testing API endpoints..."

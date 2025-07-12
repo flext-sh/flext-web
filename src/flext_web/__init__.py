@@ -19,11 +19,11 @@ except ImportError:
     pass
 
 # Configuration exports
-try:
-    from flext_web.infrastructure.container import WebContainer
-except ImportError:
+import contextlib
+
+with contextlib.suppress(ImportError):
     # Infrastructure layer not yet refactored
-    pass
+    from flext_web.infrastructure.container import WebContainer
 
 __all__ = [
     "Deployment",

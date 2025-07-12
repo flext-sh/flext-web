@@ -468,7 +468,9 @@ class UserSessionEndedEvent(DomainEvent):
 
     session_id: EntityId = Field(..., description="Session ID")
     user_id: UserId = Field(..., description="User ID")
-    duration_minutes: int | None = Field(None, description="Session duration in minutes")
+    duration_minutes: int | None = Field(
+        None, description="Session duration in minutes",
+    )
     pages_viewed: int | None = Field(None, description="Number of pages viewed")
 
 

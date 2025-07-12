@@ -1,0 +1,1 @@
+"""FLEXT Web domain layer."""

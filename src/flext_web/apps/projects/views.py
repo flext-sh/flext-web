@@ -30,9 +30,13 @@ class ProjectListView(LoginRequiredMixin, ListView):
             QuerySet: Active MeltanoProject instances with related templates.
 
         """
-        return MeltanoProject.objects.filter(
-            is_active=True,
-        ).select_related("template").order_by("-created_at")
+        return (
+            MeltanoProject.objects.filter(
+                is_active=True,
+            )
+            .select_related("template")
+            .order_by("-created_at")
+        )
 
 
 class ProjectDetailView(LoginRequiredMixin, DetailView):
@@ -98,16 +102,20 @@ class ProjectDashboardView(LoginRequiredMixin, TemplateView):
         # Get user's recent projects
         recent_projects = MeltanoProject.objects.filter(
             is_active=True,
-        ).order_by("-updated_at")[:5]
+        ).order_by(
+            "-updated_at",
+        )[:5]
 
         # Get project statistics
         total_projects = MeltanoProject.objects.filter(is_active=True).count()
         active_templates = ProjectTemplate.objects.filter(is_active=True).count()
 
-        context.update({
-            "recent_projects": recent_projects,
-            "total_projects": total_projects,
-            "active_templates": active_templates,
-        })
+        context.update(
+            {
+                "recent_projects": recent_projects,
+                "total_projects": total_projects,
+                "active_templates": active_templates,
+            },
+        )
 
         return context

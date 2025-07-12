@@ -293,7 +293,9 @@ class MonitoringDashboardView(LoginRequiredMixin, TemplateView):
 class BusinessMetricsAPIView(LoginRequiredMixin, View):
     """API endpoint for real-time business metrics data."""
 
-    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+    def get(
+        self, _request: HttpRequest, *_args: object, **_kwargs: object,
+    ) -> JsonResponse:
         """Handle GET request for business metrics API endpoint.
 
         Args:
@@ -331,7 +333,9 @@ class BusinessMetricsAPIView(LoginRequiredMixin, View):
 class SecurityMonitoringAPIView(LoginRequiredMixin, View):
     """API endpoint for real-time security monitoring data."""
 
-    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+    def get(
+        self, _request: HttpRequest, *_args: object, **_kwargs: object,
+    ) -> JsonResponse:
         """Handle GET request for security monitoring API endpoint.
 
         Args:
@@ -369,7 +373,9 @@ class SecurityMonitoringAPIView(LoginRequiredMixin, View):
 class ErrorPatternsAPIView(LoginRequiredMixin, View):
     """API endpoint for error patterns and recovery data."""
 
-    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+    def get(
+        self, _request: HttpRequest, *_args: object, **_kwargs: object,
+    ) -> JsonResponse:
         """Handle GET request for error patterns API endpoint.
 
         Args:
@@ -407,7 +413,9 @@ class ErrorPatternsAPIView(LoginRequiredMixin, View):
 class HealthStatusAPIView(LoginRequiredMixin, View):
     """API endpoint for comprehensive health status monitoring."""
 
-    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+    def get(
+        self, _request: HttpRequest, *_args: object, **_kwargs: object,
+    ) -> JsonResponse:
         """Handle GET request for health status API endpoint.
 
         Args:
@@ -445,7 +453,9 @@ class HealthStatusAPIView(LoginRequiredMixin, View):
 class AlertsAPIView(LoginRequiredMixin, View):
     """API endpoint for consolidated alerts across all monitoring systems."""
 
-    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+    def get(
+        self, _request: HttpRequest, *_args: object, **_kwargs: object,
+    ) -> JsonResponse:
         """Handle GET request for alerts API endpoint.
 
         Args:
@@ -492,7 +502,9 @@ class AlertsAPIView(LoginRequiredMixin, View):
 class MonitoringStatsAPIView(LoginRequiredMixin, View):
     """API endpoint for comprehensive monitoring statistics."""
 
-    def get(self, _request: HttpRequest, *_args: object, **_kwargs: object) -> JsonResponse:
+    def get(
+        self, _request: HttpRequest, *_args: object, **_kwargs: object,
+    ) -> JsonResponse:
         """Handle GET request for monitoring statistics API endpoint.
 
         Args:

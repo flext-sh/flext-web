@@ -24,39 +24,41 @@ class DashboardView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         # Provide mock data for testing
-        context.update({
-            "stats": {
-                "active_pipelines": 5,
-                "total_executions": 42,
-                "success_rate": 95.2,
-                "cpu_usage": 23.1,
-                "memory_usage": 67.8,
+        context.update(
+            {
+                "stats": {
+                    "active_pipelines": 5,
+                    "total_executions": 42,
+                    "success_rate": 95.2,
+                    "cpu_usage": 23.1,
+                    "memory_usage": 67.8,
+                },
+                "health": {
+                    "healthy": True,
+                    "components": {
+                        "database": {"healthy": True, "message": "Connected"},
+                        "redis": {"healthy": True, "message": "Connected"},
+                    },
+                },
+                "recent_executions": [
+                    {
+                        "id": "exec-001",
+                        "pipeline_name": "Customer ETL",
+                        "status": "success",
+                        "started_at": "2025-07-11T01:00:00Z",
+                        "duration": "2m 34s",
+                    },
+                    {
+                        "id": "exec-002",
+                        "pipeline_name": "Sales Analytics",
+                        "status": "running",
+                        "started_at": "2025-07-11T01:15:00Z",
+                        "duration": "45s",
+                    },
+                ],
+                "error": None,
             },
-            "health": {
-                "healthy": True,
-                "components": {
-                    "database": {"healthy": True, "message": "Connected"},
-                    "redis": {"healthy": True, "message": "Connected"},
-                },
-            },
-            "recent_executions": [
-                {
-                    "id": "exec-001",
-                    "pipeline_name": "Customer ETL",
-                    "status": "success",
-                    "started_at": "2025-07-11T01:00:00Z",
-                    "duration": "2m 34s",
-                },
-                {
-                    "id": "exec-002",
-                    "pipeline_name": "Sales Analytics",
-                    "status": "running",
-                    "started_at": "2025-07-11T01:15:00Z",
-                    "duration": "45s",
-                },
-            ],
-            "error": None,
-        })
+        )
 
         return context
 

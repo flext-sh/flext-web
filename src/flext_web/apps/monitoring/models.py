@@ -95,10 +95,7 @@ class BusinessMetricHistory(models.Model):
         """
         if self.previous_value is None or self.previous_value == 0:
             return None
-        return (
-            (self.current_value - self.previous_value)
-            / self.previous_value
-        ) * 100
+        return ((self.current_value - self.previous_value) / self.previous_value) * 100
 
 
 class SecurityViolationLog(models.Model):
@@ -113,10 +110,15 @@ class SecurityViolationLog(models.Model):
     validation_type = models.CharField(max_length=50, db_index=True)
     description = models.TextField()
     source_ip = models.GenericIPAddressField(
-        null=True, blank=True, db_index=True,
+        null=True,
+        blank=True,
+        db_index=True,
     )
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True,
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
     endpoint = models.CharField(max_length=200, null=True, blank=True)
     user_agent = models.TextField(null=True, blank=True)
@@ -222,7 +224,10 @@ class MonitoringAlert(models.Model):
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
     acknowledged = models.BooleanField(default=False, db_index=True)
     acknowledged_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True,
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
     acknowledged_at = models.DateTimeField(null=True, blank=True)
     resolved = models.BooleanField(default=False, db_index=True)

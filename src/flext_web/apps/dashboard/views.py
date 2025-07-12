@@ -123,7 +123,8 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
                             **self._format_execution(execution),
                             "started_at": (
                                 execution.started_at.ToDatetime().isoformat()
-                                if execution.started_at else None
+                                if execution.started_at
+                                else None
                             ),
                         }
                         for execution in executions_response.executions
@@ -180,7 +181,8 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
         start_time = execution.started_at.ToDatetime()
         end_time = (
             execution.completed_at.ToDatetime()
-            if execution.completed_at else datetime.now(UTC)
+            if execution.completed_at
+            else datetime.now(UTC)
         )
 
         duration = end_time - start_time
@@ -265,7 +267,10 @@ class StatsAPIView(LoginRequiredMixin, View):
     """
 
     def get(
-        self, _request: HttpRequest, *_args: object, **_kwargs: object,
+        self,
+        _request: HttpRequest,
+        *_args: object,
+        **_kwargs: object,
     ) -> JsonResponse:
         """Handle GET requests for real-time statistics API.
 

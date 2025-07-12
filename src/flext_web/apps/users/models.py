@@ -93,9 +93,7 @@ class UserProfile(models.Model):
         default=False,
     )
     account_locked = models.BooleanField(default=False)
-    last_password_change = (
-        models.DateTimeField(null=True, blank=True)
-    )
+    last_password_change = models.DateTimeField(null=True, blank=True)
 
     # Metadata
     created_at = models.DateTimeField(
@@ -104,9 +102,7 @@ class UserProfile(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True,
     )
-    last_login_ip = (
-        models.GenericIPAddressField(null=True, blank=True)
-    )
+    last_login_ip = models.GenericIPAddressField(null=True, blank=True)
     failed_login_attempts = models.IntegerField(
         default=0,
     )
@@ -408,11 +404,9 @@ class UserActivity(models.Model):
     )  # Additional context
 
     # Request context
-    ip_address = (
-        models.GenericIPAddressField(
-            null=True,
-            blank=True,
-        )
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True,
     )
     user_agent = models.TextField(blank=True)
     session_key = models.CharField(
@@ -450,7 +444,19 @@ class UserActivity(models.Model):
         return f"{user_name} - {action_display} - {self.timestamp}"
 
     @classmethod
-    def log_activity(cls, *, user: User, action_type: ActionType, description: str, target_object_type: str = "", target_object_id: str = "", metadata: dict[str, object] | None = None, ip_address: str | None = None, user_agent: str = "", session_key: str = "") -> UserActivity:
+    def log_activity(
+        cls,
+        *,
+        user: User,
+        action_type: ActionType,
+        description: str,
+        target_object_type: str = "",
+        target_object_id: str = "",
+        metadata: dict[str, object] | None = None,
+        ip_address: str | None = None,
+        user_agent: str = "",
+        session_key: str = "",
+    ) -> UserActivity:
         """Log a user activity for audit trails.
 
         Args:
@@ -519,23 +525,17 @@ class APIKey(models.Model):
 
     # Status and lifecycle
     is_active = models.BooleanField(default=True)
-    expires_at = (
-        models.DateTimeField(null=True, blank=True)
-    )
-    last_used_at = (
-        models.DateTimeField(null=True, blank=True)
-    )
+    expires_at = models.DateTimeField(null=True, blank=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
     usage_count = models.IntegerField(default=0)
 
     # Metadata
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
-    created_by_ip = (
-        models.GenericIPAddressField(
-            null=True,
-            blank=True,
-        )
+    created_by_ip = models.GenericIPAddressField(
+        null=True,
+        blank=True,
     )
 
     class Meta:
