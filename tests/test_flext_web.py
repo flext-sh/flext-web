@@ -272,22 +272,21 @@ class TestDatabaseIntegration:
         assert project.name == "Test Project"
         assert project.created_by == user
 
-    def test_pipeline_model_relationships(self) -> None:
-        """Test pipeline model relationships."""
+    def test_pipeline_model_creation(self) -> None:
+        """Test pipeline model creation."""
         user = User.objects.create_user(username="test", password="test")
-        project = Project.objects.create(
-            name="Test Project",
-            description="Test description",
-            owner=user,
-        )
+        
         pipeline = Pipeline.objects.create(
             name="Test Pipeline",
-            project=project,
-            config={"tap": "tap-github"},
+            extractor="tap-github",
+            loader="target-postgres",
+            description="Test pipeline description",
+            created_by=user,
         )
 
-        assert pipeline.project == project
-        assert pipeline in project.pipelines.all()
+        assert pipeline.id is not None
+        assert pipeline.name == "Test Pipeline"
+        assert pipeline.extractor == "tap-github"
 
 
 # Import models after Django setup
