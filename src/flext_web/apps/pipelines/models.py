@@ -8,7 +8,7 @@ for structured data and type safety.
 from __future__ import annotations
 
 import uuid
-from enum import Enum
+from enum import StrEnum
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -20,7 +20,7 @@ from flext_core.domain import DomainValueObject
 class PipelineConfiguration(DomainValueObject):
     """Pipeline configuration value object using flext-core patterns."""
 
-    def __init__(self, **data):
+    def __init__(self, **data) -> None:
         """Initialize pipeline configuration."""
         super().__init__()
         self._data = data
@@ -35,7 +35,7 @@ class PipelineConfiguration(DomainValueObject):
         return self._data
 
 
-class PipelineType(str, Enum):
+class PipelineType(StrEnum):
     """Pipeline type enumeration using flext-core StrEnum."""
 
     ETL = "etl"
@@ -45,7 +45,7 @@ class PipelineType(str, Enum):
     REAL_TIME = "real_time"
 
 
-class PipelineStatus(str, Enum):
+class PipelineStatus(StrEnum):
     """Pipeline status enumeration using flext-core StrEnum."""
 
     DRAFT = "draft"
@@ -55,7 +55,7 @@ class PipelineStatus(str, Enum):
     ARCHIVED = "archived"
 
 
-class ExecutionStatus(str, Enum):
+class ExecutionStatus(StrEnum):
     """Execution status enumeration using flext-core StrEnum."""
 
     PENDING = "pending"
@@ -66,7 +66,7 @@ class ExecutionStatus(str, Enum):
     TIMEOUT = "timeout"
 
 
-class PluginType(str, Enum):
+class PluginType(StrEnum):
     """Plugin type enumeration using flext-core StrEnum."""
 
     EXTRACTOR = "extractor"

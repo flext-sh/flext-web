@@ -37,7 +37,7 @@ class UsersConfig(AppConfig):
 
     def ready(self) -> None:
         """Django app ready hook for enterprise user management setup.
-        
+
         Initializes signal handlers and enterprise user management components.
         """
         # ZERO TOLERANCE - Signal handlers are REQUIRED for enterprise user management
