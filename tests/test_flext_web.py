@@ -11,6 +11,19 @@ from django.urls import reverse
 
 User = get_user_model()
 
+# Import models
+try:
+    from flext_web.apps.monitoring.models import MonitoringAlert as Alert
+    from flext_web.apps.pipelines.models import PipelineWeb as Pipeline
+    from flext_web.apps.projects.models import MeltanoProject as Project
+    from flext_web.apps.projects.models import ProjectTemplate
+except ImportError:
+    # Models might not be available in test environment
+    Project = MagicMock()
+    Pipeline = MagicMock()
+    Alert = MagicMock()
+    ProjectTemplate = MagicMock()
+
 
 class TestDashboardViews(TestCase):
     """Test dashboard views."""
@@ -89,10 +102,17 @@ class TestProjectViews(TestCase):
 
     def test_project_create_view_post(self) -> None:
         """Test project creation submission."""
+        # First create a template
+        template = ProjectTemplate.objects.create(
+            name="Default Template",
+            description="Default template for testing",
+        )
+
         data = {
             "name": "Test Project",
             "description": "Test project description",
-            "repository_url": "https://github.com/test/repo",
+            "template": template.id,
+            "status": "draft",
         }
 
         response = self.client.post(reverse("projects:create"), data)
@@ -114,11 +134,16 @@ class TestPipelineViews(TestCase):
         )
         self.client.login(username="testuser", password="testpass123")
 
-        # Create test project and pipeline
+        # Create test template and project
+        self.template = ProjectTemplate.objects.create(
+            name="Default Template",
+            description="Default template for testing",
+        )
         self.project = Project.objects.create(
             name="Test Project",
             description="Test description",
-            owner=self.user,
+            template=self.template,
+            created_by=self.user,
         )
 
     def test_pipeline_list_view(self) -> None:
@@ -233,7 +258,7 @@ class TestUserAuthentication(TestCase):
 
     def test_logout_view(self) -> None:
         """Test logout functionality."""
-        user = User.objects.create_user(
+        User.objects.create_user(
             username="testuser",
             email="test@example.com",
             password="testpass123",
@@ -263,6 +288,33 @@ class TestDatabaseIntegration:
         assert user.email == "test@example.com"
         assert user.check_password("testpass123")
 
+    def test_project_model_creation(self) -> None:
+        """Test creating project model."""
+        user = User.objects.create_user(
+            username="projectowner",
+            email="owner@example.com",
+            password="testpass123",
+        )
+
+        template = ProjectTemplate.objects.create(
+            name="Test Template",
+            description="Template for testing",
+        )
+
+        project = Project.objects.create(
+            name="Test Project",
+            description="Test project description",
+            template=template,
+            created_by=user,
+            status="draft",
+        )
+
+        assert project.id is not None
+        assert project.name == "Test Project"
+        assert project.template == template
+        assert project.created_by == user
+        assert project.status == "draft"
+
     def test_alert_model_creation(self) -> None:
         """Test creating alert model."""
         alert = Alert.objects.create(
@@ -277,13 +329,3 @@ class TestDatabaseIntegration:
         assert alert.severity == "warning"
 
 
-# Import models after Django setup
-try:
-    from flext_web.apps.monitoring.models import MonitoringAlert as Alert
-    from flext_web.apps.pipelines.models import PipelineWeb as Pipeline
-    from flext_web.apps.projects.models import MeltanoProject as Project
-except ImportError:
-    # Models might not be available in test environment
-    Project = MagicMock()
-    Pipeline = MagicMock()
-    Alert = MagicMock()
