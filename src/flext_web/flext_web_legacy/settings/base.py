@@ -183,6 +183,11 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
+# Authentication URLs
+LOGIN_URL = "/users/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/users/login/"
+
 # Basic logging configuration
 LOGGING = {
     "version": 1,

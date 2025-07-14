@@ -8,7 +8,7 @@ import sys
 def main() -> None:
     """Run REDACTED_LDAP_BIND_PASSWORDistrative tasks."""
     os.environ.setdefault(
-        "DJANGO_SETTINGS_MODULE", 
+        "DJANGO_SETTINGS_MODULE",
         "flext_web.flext_web_legacy.settings.development_simple"
     )
     try:
