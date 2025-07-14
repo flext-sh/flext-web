@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+
+import pytest
 
 User = get_user_model()
 
@@ -327,5 +328,3 @@ class TestDatabaseIntegration:
         assert alert.id is not None
         assert alert.title == "Test Alert"
         assert alert.severity == "warning"
-
-

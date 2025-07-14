@@ -8,15 +8,21 @@ from django.http import JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
-from flext_core.universe import universal_http
+# TODO: Implement universal_http in flext-core.universe
+# from flext_core.universe import universal_http
 
 
 @csrf_exempt
 def universal_django_view(request: object, command: str) -> JsonResponse:
-    body = getattr(request, "body", None)
-    status, data = asyncio.run(universal_http(request.method, command, body))
-    response_data = data if isinstance(data, dict) else {"result": data}
-    return JsonResponse(response_data, status=status)
+    """Universal Django view - TODO: implement universal_http."""
+    # TODO: Replace with actual universal_http implementation
+    response_data = {
+        "method": getattr(request, "method", "UNKNOWN"),
+        "command": command,
+        "status": "not_implemented",
+        "message": "universal_http not yet implemented",
+    }
+    return JsonResponse(response_data, status=501)
 
 
 urlpatterns = [

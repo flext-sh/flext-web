@@ -6,7 +6,7 @@ Uses modern Python 3.13 patterns with comprehensive configuration management.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
@@ -15,10 +15,14 @@ from flext_core.config.base import BaseSettings
 from flext_core.domain.pydantic_base import DomainValueObject, Field
 from flext_core.domain.types import (
     FlextConstants,
-    LogLevelLiteral,
-    ProjectName,
-    Version,
 )
+
+if TYPE_CHECKING:
+    from flext_core.domain.types import (
+        LogLevelLiteral,
+        ProjectName,
+        Version,
+    )
 
 
 class DjangoSecurityConfig(DomainValueObject):
@@ -174,7 +178,7 @@ class WebConfig(BaseSettings):
 
     # Global logging configuration
     log_level: LogLevelLiteral = Field(
-        default=FlextConstants.DEFAULT_LOG_LEVEL,
+        default=FlextConstants.DEFAULT_LOG_LEVEL,  # type: ignore[attr-defined]
         description="Global log level",
     )
     debug: bool = Field(default=False, description="Enable debug mode")

@@ -23,7 +23,7 @@ import contextlib
 
 with contextlib.suppress(ImportError):
     # Infrastructure layer not yet refactored
-    from flext_web.infrastructure.container import WebContainer
+    from flext_web.infrastructure.container import WebContainerConfig as WebContainer
 
 __all__ = [
     "Deployment",

@@ -10,13 +10,14 @@ URL patterns for comprehensive enterprise monitoring interface including:
 
 from django.urls import path
 
-from flext_web import views
+from flext_web.apps.monitoring import views
 
 app_name = "monitoring"
 
 urlpatterns = [
     # Main monitoring dashboard
     path("", views.MonitoringDashboardView.as_view(), name="dashboard"),
+    path("list/", views.MonitoringDashboardView.as_view(), name="list"),
     # API endpoints for real-time data
     path(
         "api/business-metrics/",

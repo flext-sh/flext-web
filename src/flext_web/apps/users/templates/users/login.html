@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Login - FLEXT Enterprise{% endblock %}
+
+{% block content %}
+<div class="container-fluid h-100">
+  <div class="row justify-content-center align-items-center h-100">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-lg">
+        <div class="card-header text-center bg-primary text-white">
+          <h3><i class="fas fa-sign-in-alt"></i> Login</h3>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+              <div class="alert alert-danger">
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    {{ error }}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+            <div class="mb-3">
+              <label for="id_username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="id_username" name="username" required>
+            </div>
+            <div class="mb-3">
+              <label for="id_password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="id_password" name="password" required>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Login
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer text-center">
+          <small class="text-muted">FLEXT Enterprise Platform</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

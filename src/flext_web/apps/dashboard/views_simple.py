@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.http import JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import TemplateView
@@ -19,7 +19,7 @@ class DashboardView(TemplateView):
 
     template_name = "dashboard/index.html"
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         """Get context data for dashboard template rendering."""
         context = super().get_context_data(**kwargs)
 
@@ -66,7 +66,7 @@ class DashboardView(TemplateView):
 class StatsAPIView(View):
     """API endpoint for real-time system statistics retrieval."""
 
-    def get(self, request, *args, **kwargs) -> JsonResponse:
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         """Handle GET requests for real-time statistics API."""
         # Return mock stats data for testing
         stats_data = {
@@ -99,8 +99,8 @@ class StatsAPIView(View):
         return JsonResponse(stats_data)
 
 
-def simple_dashboard_view(request):
-    """Simple function-based view for testing basic Django functionality."""
+def simple_dashboard_view(request: HttpRequest) -> HttpResponse:
+    """Return simple dashboard view for testing basic Django functionality."""
     context = {
         "title": "FLEXT Web Dashboard",
         "message": "Django application is working correctly!",

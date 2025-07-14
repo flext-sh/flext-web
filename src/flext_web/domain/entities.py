@@ -12,8 +12,7 @@ from typing import TYPE_CHECKING, Any
 from flext_core.domain.pydantic_base import DomainEntity, DomainEvent, Field
 from flext_core.domain.types import FlextConstants, StrEnum
 
-if TYPE_CHECKING:
-    from flext_core.domain.types import EntityId, UserId
+from flext_core.domain.types import EntityId, UserId
 
 
 class PageType(StrEnum):
@@ -60,12 +59,12 @@ class Project(DomainEntity):
     name: str = Field(
         ...,
         min_length=1,
-        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,
+        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,  # type: ignore[attr-defined]
         description="Project name",
     )
     description: str | None = Field(
         None,
-        max_length=FlextConstants.MAX_ERROR_MESSAGE_LENGTH,
+        max_length=FlextConstants.MAX_ERROR_MESSAGE_LENGTH,  # type: ignore[attr-defined]
         description="Project description",
     )
 
@@ -98,12 +97,12 @@ class Pipeline(DomainEntity):
     name: str = Field(
         ...,
         min_length=1,
-        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,
+        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,  # type: ignore[attr-defined]
         description="Pipeline name",
     )
     description: str | None = Field(
         None,
-        max_length=FlextConstants.MAX_ERROR_MESSAGE_LENGTH,
+        max_length=FlextConstants.MAX_ERROR_MESSAGE_LENGTH,  # type: ignore[attr-defined]
         description="Pipeline description",
     )
 
@@ -154,7 +153,7 @@ class Deployment(DomainEntity):
     name: str = Field(
         ...,
         min_length=1,
-        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,
+        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,  # type: ignore[attr-defined]
         description="Deployment name",
     )
 
@@ -195,13 +194,13 @@ class DashboardWidget(DomainEntity):
     name: str = Field(
         ...,
         min_length=1,
-        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,
+        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,  # type: ignore[attr-defined]
         description="Widget name",
     )
     widget_type: str = Field(
         ...,
         min_length=1,
-        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,
+        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,  # type: ignore[attr-defined]
         description="Widget type identifier",
     )
 
@@ -221,7 +220,7 @@ class DashboardWidget(DomainEntity):
     data_source: str | None = Field(None, description="Data source identifier")
     query: str | None = Field(None, description="Data query")
     refresh_interval: int = Field(
-        default=FlextConstants.DEFAULT_TIMEOUT,
+        default=FlextConstants.DEFAULT_TIMEOUT,  # type: ignore[attr-defined]
         ge=5,
         description="Refresh interval in seconds",
     )
@@ -230,7 +229,7 @@ class DashboardWidget(DomainEntity):
     title: str | None = Field(None, description="Widget title")
     description: str | None = Field(
         None,
-        max_length=FlextConstants.MAX_ERROR_MESSAGE_LENGTH,
+        max_length=FlextConstants.MAX_ERROR_MESSAGE_LENGTH,  # type: ignore[attr-defined]
         description="Widget description",
     )
 
@@ -259,13 +258,13 @@ class WebPage(DomainEntity):
     title: str = Field(
         ...,
         min_length=1,
-        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,
+        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,  # type: ignore[attr-defined]
         description="Page title",
     )
     slug: str = Field(
         ...,
         min_length=1,
-        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,
+        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,  # type: ignore[attr-defined]
         description="URL slug",
     )
     page_type: PageType = Field(
@@ -377,13 +376,13 @@ class WebNotification(DomainEntity):
     title: str = Field(
         ...,
         min_length=1,
-        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,
+        max_length=FlextConstants.MAX_ENTITY_NAME_LENGTH,  # type: ignore[attr-defined]
         description="Notification title",
     )
     message: str = Field(
         ...,
         min_length=1,
-        max_length=FlextConstants.MAX_ERROR_MESSAGE_LENGTH,
+        max_length=FlextConstants.MAX_ERROR_MESSAGE_LENGTH,  # type: ignore[attr-defined]
         description="Notification message",
     )
 
@@ -469,7 +468,8 @@ class UserSessionEndedEvent(DomainEvent):
     session_id: EntityId = Field(..., description="Session ID")
     user_id: UserId = Field(..., description="User ID")
     duration_minutes: int | None = Field(
-        None, description="Session duration in minutes",
+        None,
+        description="Session duration in minutes",
     )
     pages_viewed: int | None = Field(None, description="Number of pages viewed")
 
@@ -482,3 +482,20 @@ class NotificationCreatedEvent(DomainEvent):
     title: str = Field(..., description="Notification title")
     notification_type: NotificationType = Field(..., description="Notification type")
     priority: NotificationPriority = Field(..., description="Notification priority")
+
+
+# Rebuild models to resolve forward references
+Project.model_rebuild()
+Pipeline.model_rebuild()
+Deployment.model_rebuild()
+DashboardWidget.model_rebuild()
+WebPage.model_rebuild()
+UserSession.model_rebuild()
+WebNotification.model_rebuild()
+ProjectCreatedEvent.model_rebuild()
+PipelineExecutedEvent.model_rebuild()
+DeploymentCompletedEvent.model_rebuild()
+PagePublishedEvent.model_rebuild()
+UserSessionStartedEvent.model_rebuild()
+UserSessionEndedEvent.model_rebuild()
+NotificationCreatedEvent.model_rebuild()

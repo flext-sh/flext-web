@@ -24,7 +24,7 @@ from flext_grpc.client import FlextGrpcClientBase
 from google.protobuf import empty_pb2
 
 # Unified gRPC client and configuration from canonical implementation
-from flext_core.config.domain_config import get_domain_constants
+from flext_core.config import get_config
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -64,10 +64,10 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
                 # Get all data in parallel using gRPC streaming if available:
                 stats_response = stub.GetSystemStats(empty_pb2.Empty())
                 health_response = stub.HealthCheck(empty_pb2.Empty())
-                constants = get_domain_constants()
+                get_config()
                 executions_response = stub.ListExecutions(
                     flext_pb2.ListExecutionsRequest(
-                        limit=constants.DEFAULT_EXECUTION_LIMIT,
+                        limit=50,  # Default execution limit
                         offset=0,
                     ),
                 )
@@ -104,10 +104,10 @@ class FlextDashboardGrpcClient(FlextGrpcClientBase):
                 # Parallel requests for minimal latency
                 stats_response = stub.GetSystemStats(empty_pb2.Empty())
                 health_response = stub.HealthCheck(empty_pb2.Empty())
-                constants = get_domain_constants()
+                get_config()
                 executions_response = stub.ListExecutions(
                     flext_pb2.ListExecutionsRequest(
-                        limit=constants.PIPELINE_RECENT_EXECUTIONS_LIMIT,
+                        limit=50,  # Default recent executions limit
                         offset=0,
                     ),
                 )

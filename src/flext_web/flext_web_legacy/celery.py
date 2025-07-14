@@ -1,18 +1,21 @@
 """Celery configuration for FLEXT Web."""
 
 import os
+from typing import TYPE_CHECKING
 
 from celery import Celery
-from celery.app.task import Task
 
-# Use centralized logger from flext-observability - ELIMINATE DUPLICATION
 from flext_observability.logging import get_logger
+
+if TYPE_CHECKING:
+    from celery.app.task import Task as CeleryTask
 
 logger = get_logger(__name__)
 
 # Set the default Django settings module
 os.environ.setdefault(
-    "DJANGO_SETTINGS_MODULE", "flext_web.flext_web_legacy.settings.production",
+    "DJANGO_SETTINGS_MODULE",
+    "flext_web.flext_web_legacy.settings.production",
 )
 
 # Create Celery app
@@ -25,7 +28,8 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 
-@app.task(bind=True)  # type: ignore[misc]
-def debug_task(self: Task) -> str:
+@app.task(bind=True)
+def debug_task(self: "CeleryTask") -> str:
+    """Debug task for testing Celery functionality."""
     logger.info("Request: %r", self.request)
     return "Debug task completed"

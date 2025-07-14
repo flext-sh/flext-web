@@ -15,7 +15,7 @@ def get_web_settings() -> WebConfig:
 
 
 def setup_web(settings: WebConfig | None = None) -> ServiceResult[bool]:
-    """Setup web application."""
+    """Set up web application."""
     try:
         if settings is None:
             settings = WebConfig()

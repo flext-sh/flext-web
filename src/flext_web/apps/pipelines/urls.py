@@ -7,11 +7,11 @@ for pipeline operations.:
 
 from django.urls import path
 
-from flext_web.views import PipelineDetailView, PipelineListView
+from flext_web.apps.pipelines.views import PipelineDetailView, PipelineListView
 
 app_name = "pipelines"
 
 urlpatterns = [
     path("", PipelineListView.as_view(), name="list"),
-    path("<uuid: pipeline_id>/", PipelineDetailView.as_view(), name="detail"),
+    path("<uuid:pipeline_id>/", PipelineDetailView.as_view(), name="detail"),
 ]

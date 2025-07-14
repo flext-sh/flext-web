@@ -6,7 +6,6 @@ from flext_core.config import get_container, singleton
 from flext_web.config import WebConfig
 
 
-@singleton()
 class WebContainerConfig:
     """Web container configuration using flext-core patterns."""
 

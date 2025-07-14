@@ -14,11 +14,11 @@ urlpatterns = [
     path("REDACTED_LDAP_BIND_PASSWORD/", REDACTED_LDAP_BIND_PASSWORD.site.urls),
     # Working dashboard for Django functionality testing
     path("", include("flext_web.apps.dashboard.urls_simple")),
-    # Other app URLs will be enabled after testing completes
-    # path("pipelines/", include("flext_web.apps.pipelines.urls")),
-    # path("monitoring/", include("flext_web.apps.monitoring.urls")),
-    # path("projects/", include("flext_web.apps.projects.urls")),
-    # path("users/", include("flext_web.apps.users.urls")),
+    # Enterprise app URLs - now enabled
+    path("pipelines/", include("flext_web.apps.pipelines.urls")),
+    path("monitoring/", include("flext_web.apps.monitoring.urls")),
+    path("projects/", include("flext_web.apps.projects.urls")),
+    path("users/", include("flext_web.apps.users.urls")),
 ]
 
 if settings.DEBUG:

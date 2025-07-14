@@ -11,7 +11,6 @@ Date: 2025-06-22
 from __future__ import annotations
 
 import uuid
-from datetime import timezone
 from typing import TYPE_CHECKING, ClassVar
 
 from django.contrib.auth.models import User

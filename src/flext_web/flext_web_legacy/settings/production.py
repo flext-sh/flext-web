@@ -19,7 +19,13 @@ import copy
 from typing import Any
 
 from flext_core.config.domain_config import get_config
-from flext_web.base import *
+from flext_web.flext_web_legacy.settings.base import (
+    ALLOWED_HOSTS,
+    INSTALLED_APPS,
+    MIDDLEWARE,
+    ROOT_URLCONF,
+    STATIC_URL,
+)
 
 # Security settings
 DEBUG = False

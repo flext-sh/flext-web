@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Simple settings for testing
 SECRET_KEY = "django-insecure-temporary-key-for-testing-please-change-in-production"
 DEBUG = True
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -19,8 +19,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Local apps - temporarily commented out until they are fixed
-    # "flext_web.apps.dashboard",
+    # Local apps - now enabled with namespace fixes
+    "flext_web.apps.dashboard",
+    "flext_web.apps.users",
+    "flext_web.apps.projects",
+    "flext_web.apps.pipelines",
+    "flext_web.apps.monitoring",
 ]
 
 MIDDLEWARE = [

@@ -10,6 +10,8 @@ Date: 2025-06-22
 
 from __future__ import annotations
 
+import contextlib
+
 from django.apps import AppConfig
 
 
@@ -42,7 +44,7 @@ class UsersConfig(AppConfig):
         """
         # ZERO TOLERANCE - Signal handlers are REQUIRED for enterprise user management
         # If signals module exists, import it for auto-registration
-        try:
-            from . import signals  # Signal auto-registration on import
-        except ImportError:
-            pass  # Signals module doesn't exist
+        with contextlib.suppress(ImportError):
+            from flext_web.apps.users import (
+                signals,  # Signal auto-registration on import
+            )
