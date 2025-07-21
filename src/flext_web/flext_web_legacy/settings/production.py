@@ -18,8 +18,6 @@ from __future__ import annotations
 import copy
 from typing import Any
 
-from flext_core.config import get_config
-
 # Security settings
 DEBUG = False
 SECURE_SSL_REDIRECT = False
@@ -28,9 +26,7 @@ CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
-# Get HSTS settings from unified domain configuration
-_security_config = get_config()
-SECURE_HSTS_SECONDS = _security_config.security.hsts_max_age_seconds
+SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
@@ -50,8 +46,8 @@ _LOGGING_CONFIG: dict[str, Any] = copy.deepcopy(_BASE_LOGGING)
 _LOGGING_CONFIG["handlers"]["file"] = {
     "class": "logging.handlers.RotatingFileHandler",
     "filename": "/var/log/flext-api.web.flext-web/django.log",
-    "maxBytes": _security_config.monitoring.max_log_file_size_mb * 1024 * 1024,
-    "backupCount": _security_config.monitoring.log_file_backup_count,
+    "maxBytes": 100 * 1024 * 1024,  # 100MB
+    "backupCount": 5,
     "formatter": "verbose",
 }
 

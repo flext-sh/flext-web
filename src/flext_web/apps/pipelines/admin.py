@@ -6,7 +6,7 @@ executions, and plugins in the FLEXT Meltano Enterprise platform.
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from django.contrib import REDACTED_LDAP_BIND_PASSWORD
 
@@ -15,7 +15,7 @@ from .models import PipelineWeb
 
 
 @REDACTED_LDAP_BIND_PASSWORD.register(PipelineWeb)
-class PipelineAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
+class PipelineAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[PipelineWeb]):
     """Django REDACTED_LDAP_BIND_PASSWORD configuration for Pipeline model.
 
     Provides a comprehensive REDACTED_LDAP_BIND_PASSWORD interface for managing data pipelines
@@ -76,7 +76,7 @@ class PipelineAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
 
 
 # @REDACTED_LDAP_BIND_PASSWORD.register(Execution)
-class ExecutionAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
+class ExecutionAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[Any]):
     """Django REDACTED_LDAP_BIND_PASSWORD configuration for Execution model.
 
     Provides detailed monitoring and management interface for pipeline
@@ -136,7 +136,7 @@ class ExecutionAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
 
 
 # @REDACTED_LDAP_BIND_PASSWORD.register(PluginWeb)
-class PluginAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
+class PluginAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[Any]):
     """Django REDACTED_LDAP_BIND_PASSWORD configuration for Plugin model.
 
     Manages Meltano plugin registry with installation tracking,

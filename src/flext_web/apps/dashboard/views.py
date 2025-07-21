@@ -23,17 +23,18 @@ from django.views.generic import TemplateView
 
 # Import gRPC with fallback for testing environments
 try:
-    from flext_grpc.client import FlextGrpcClientBase
+    from flext_grpc.client import FlextGrpcClientBase  # type: ignore[import-untyped]
     from google.protobuf import empty_pb2
 
     GRPC_AVAILABLE = True
 except ImportError:
-    FlextGrpcClientBase = None  # type: ignore[misc,assignment]
-    empty_pb2 = None  # type: ignore[misc,assignment]
+    FlextGrpcClientBase = None
+    empty_pb2 = None  # type: ignore[assignment]
     GRPC_AVAILABLE = False
 
 # Unified gRPC client and configuration from canonical implementation
 from flext_core.config import get_config
+from flext_core.domain.shared_models import SecurityConfig
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -50,7 +51,7 @@ ExecutionData = dict[str, str | None]
 
 if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
 
-    class FlextDashboardGrpcClient(FlextGrpcClientBase):
+    class FlextDashboardGrpcClient(FlextGrpcClientBase):  # type: ignore[misc]
         """Dashboard gRPC client extending base with dashboard-specific functionality.
 
         Inherits from FlextGrpcClientBase to eliminate duplication while providing
@@ -75,9 +76,9 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                     # Get all data in parallel using gRPC streaming if available:
                     stats_response = stub.GetSystemStats(empty_pb2.Empty())
                     health_response = stub.HealthCheck(empty_pb2.Empty())
-                    get_config()
+                    get_config(SecurityConfig)  # type: ignore[type-var]
                     executions_response = stub.ListExecutions(
-                        flext_pb2.ListExecutionsRequest(
+                        flext_pb2.ListExecutionsRequest(  # type: ignore[attr-defined]
                             limit=50,  # Default execution limit
                             offset=0,
                         ),
@@ -88,7 +89,7 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                         "stats": self._format_stats(stats_response),
                         "health": self._format_health(health_response),
                         "recent_executions": self._format_executions(
-                            executions_response.executions,
+                            getattr(executions_response, "executions", []),
                         ),
                         "error": None,
                     }
@@ -115,9 +116,9 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                     # Parallel requests for minimal latency
                     stats_response = stub.GetSystemStats(empty_pb2.Empty())
                     health_response = stub.HealthCheck(empty_pb2.Empty())
-                    get_config()
+                    get_config(SecurityConfig)  # type: ignore[type-var]
                     executions_response = stub.ListExecutions(
-                        flext_pb2.ListExecutionsRequest(
+                        flext_pb2.ListExecutionsRequest(  # type: ignore[attr-defined]
                             limit=50,  # Default recent executions limit
                             offset=0,
                         ),
@@ -126,7 +127,9 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                     return {
                         "stats": {
                             **self._format_stats(stats_response),
-                            "uptime_seconds": stats_response.uptime_seconds,
+                            "uptime_seconds": getattr(
+                                stats_response, "uptime_seconds", 0,
+                            ),
                         },
                         "health": self._format_health(health_response),
                         "recent_executions": [
@@ -134,11 +137,15 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                                 **self._format_execution(execution),
                                 "started_at": (
                                     execution.started_at.ToDatetime().isoformat()
-                                    if execution.started_at
+                                    if hasattr(execution, "started_at")
+                                    and execution.started_at
+                                    and hasattr(execution.started_at, "ToDatetime")
                                     else None
                                 ),
                             }
-                            for execution in executions_response.executions
+                            for execution in getattr(
+                                executions_response, "executions", [],
+                            )
                         ],
                     }
 
@@ -150,24 +157,25 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
 
         def _format_stats(self, stats_response: object) -> DashboardStats:
             return {
-                "active_pipelines": stats_response.active_pipelines,
-                "total_executions": stats_response.total_executions,
-                "success_rate": round(stats_response.success_rate, 1),
-                "cpu_usage": round(stats_response.cpu_usage, 1),
-                "memory_usage": round(stats_response.memory_usage, 1),
+                "active_pipelines": getattr(stats_response, "active_pipelines", 0),
+                "total_executions": getattr(stats_response, "total_executions", 0),
+                "success_rate": round(getattr(stats_response, "success_rate", 0.0), 1),
+                "cpu_usage": round(getattr(stats_response, "cpu_usage", 0.0), 1),
+                "memory_usage": round(getattr(stats_response, "memory_usage", 0.0), 1),
             }
 
         def _format_health(self, health_response: object) -> HealthStatus:
             components = {}
-            for name, comp in health_response.components.items():
-                components[name] = {
-                    "healthy": comp.healthy,
-                    "message": comp.message,
-                    "metadata": dict(comp.metadata),
-                }
+            if hasattr(health_response, "components"):
+                for name, comp in health_response.components.items():
+                    components[name] = {
+                        "healthy": getattr(comp, "healthy", False),
+                        "message": getattr(comp, "message", ""),
+                        "metadata": dict(getattr(comp, "metadata", {})),
+                    }
 
             return {
-                "healthy": health_response.healthy,
+                "healthy": getattr(health_response, "healthy", False),
                 "components": components,
             }
 
@@ -175,26 +183,46 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
             return [self._format_execution(execution) for execution in executions]
 
         def _format_execution(self, execution: object) -> ExecutionData:
+            started_at_str = None
+            if (hasattr(execution, "started_at")
+                and execution.started_at
+                and hasattr(execution.started_at, "ToDatetime")):
+                try:
+                    started_at_str = execution.started_at.ToDatetime().isoformat()
+                except Exception:
+                    started_at_str = None
+
             return {
-                "id": execution.id,
-                "pipeline_name": execution.pipeline_id,
-                "status": execution.status,
-                "started_at": (
-                    execution.started_at.ToDatetime() if execution.started_at else None
-                ),
+                "id": getattr(execution, "id", ""),
+                "pipeline_name": getattr(execution, "pipeline_id", ""),
+                "status": getattr(execution, "status", "unknown"),
+                "started_at": started_at_str,
                 "duration": self._calculate_duration(execution),
             }
 
         def _calculate_duration(self, execution: object) -> str | None:
-            if not execution.started_at:
+            if not hasattr(execution, "started_at") or not execution.started_at:
                 return None
 
-            start_time = execution.started_at.ToDatetime()
-            end_time = (
-                execution.completed_at.ToDatetime()
-                if execution.completed_at
-                else datetime.now(UTC)
-            )
+            try:
+                start_time = (
+                    execution.started_at.ToDatetime()
+                    if hasattr(execution.started_at, "ToDatetime")
+                    else datetime.now(UTC)
+                )
+            except Exception:
+                start_time = datetime.now(UTC)
+
+            try:
+                end_time = (
+                    execution.completed_at.ToDatetime()
+                    if hasattr(execution, "completed_at")
+                    and execution.completed_at
+                    and hasattr(execution.completed_at, "ToDatetime")
+                    else datetime.now(UTC)
+                )
+            except Exception:
+                end_time = datetime.now(UTC)
 
             duration = end_time - start_time
             total_seconds = int(duration.total_seconds())
@@ -226,7 +254,7 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
 
 else:
     # Fallback class when gRPC is not available
-    class FlextDashboardGrpcClient:
+    class FlextDashboardGrpcClient:  # type: ignore[no-redef]
         """Fallback dashboard client when gRPC is not available."""
 
         def __init__(self) -> None:

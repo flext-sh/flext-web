@@ -7,6 +7,7 @@ import contextlib
 # Real universal HTTP implementation using flext-core patterns
 import json
 import logging
+from typing import TYPE_CHECKING
 
 from django.http import HttpRequest, JsonResponse
 from django.urls import path
@@ -14,6 +15,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 # ALWAYS use flext-core imports - NO FALLBACKS
 from flext_core.application.pipeline import PipelineService
+from flext_core.domain.pipeline import Pipeline
+from flext_core.infrastructure.memory import InMemoryRepository
+
+if TYPE_CHECKING:
+    from flext_core.infrastructure.persistence.base import Repository
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +29,8 @@ def universal_django_view(request: HttpRequest, command: str) -> JsonResponse:
     try:
         # Use real pipeline service from flext-core - ALWAYS available
         # Initialize the service with proper configuration
-        PipelineService()
+        repository: Repository[Pipeline, object] = InMemoryRepository[Pipeline, object]()
+        PipelineService(repository)
 
         # Prepare request data
         request_data = {

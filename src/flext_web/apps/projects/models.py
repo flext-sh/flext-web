@@ -9,7 +9,12 @@ from __future__ import annotations
 
 import uuid
 from enum import StrEnum
-from typing import ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
+
+if TYPE_CHECKING:
+    from datetime import datetime
+else:
+    pass
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -45,28 +50,28 @@ class DeploymentEnvironment(StrEnum):
 class ProjectTemplate(models.Model):
     """Project template model for standardized project creation."""
 
-    id = models.UUIDField(
+    id : models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
-    category = models.CharField(max_length=100)
-    version = models.CharField(max_length=50, default="1.0.0")
+    name : models.CharField[str, str] = models.CharField(max_length=255, unique=True)
+    description : models.TextField[str, str] = models.TextField()
+    category : models.CharField[str, str] = models.CharField(max_length=100)
+    version : models.CharField[str, str] = models.CharField(max_length=50, default="1.0.0")
 
     # Template configuration
-    template_config = models.JSONField(
+    template_config : models.JSONField[dict[str, Any], dict[str, Any]] = models.JSONField(
         default=dict,
         help_text="Template configuration and default settings",
     )
 
     # Status
-    is_active = models.BooleanField(default=True)
+    is_active : models.BooleanField[bool, bool] = models.BooleanField(default=True)
 
     # Audit fields
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at : models.DateTimeField[datetime, datetime] = models.DateTimeField(auto_now_add=True)
+    updated_at : models.DateTimeField[datetime, datetime] = models.DateTimeField(auto_now=True)
 
     class Meta:
         """Meta configuration for ProjectTemplate model."""
@@ -83,43 +88,43 @@ class ProjectTemplate(models.Model):
 class MeltanoProject(models.Model):
     """Meltano project model with enterprise features."""
 
-    id = models.UUIDField(
+    id : models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(blank=True)
+    name : models.CharField[str, str] = models.CharField(max_length=255, unique=True)
+    description : models.TextField[str, str] = models.TextField(blank=True)
 
     # Project relationship
-    template = models.ForeignKey(
+    template : models.ForeignKey[ProjectTemplate, ProjectTemplate] = models.ForeignKey(
         ProjectTemplate,
         on_delete=models.PROTECT,
         related_name="projects",
     )
 
     # Project configuration
-    project_config = models.JSONField(
+    project_config : models.JSONField[dict[str, Any], dict[str, Any]] = models.JSONField(
         default=dict,
         help_text="Project-specific configuration",
     )
 
     # Status
-    status = models.CharField(
+    status : models.CharField[str, str] = models.CharField(
         max_length=20,
         choices=[(status.value, status.value.title()) for status in ProjectStatus],
         default=ProjectStatus.DRAFT.value,
     )
-    is_active = models.BooleanField(default=True)
+    is_active : models.BooleanField[bool, bool] = models.BooleanField(default=True)
 
     # Audit fields
-    created_by = models.ForeignKey(
+    created_by : models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
         related_name="created_projects",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at : models.DateTimeField[datetime, datetime] = models.DateTimeField(auto_now_add=True)
+    updated_at : models.DateTimeField[datetime, datetime] = models.DateTimeField(auto_now=True)
 
     class Meta:
         """Meta configuration for MeltanoProject model."""
@@ -130,40 +135,40 @@ class MeltanoProject(models.Model):
         verbose_name_plural = "Meltano Projects"
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
 
 class ProjectMembership(models.Model):
     """Project team membership model."""
 
-    id = models.UUIDField(
+    id : models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    project = models.ForeignKey(
+    project : models.ForeignKey[MeltanoProject, MeltanoProject] = models.ForeignKey(
         MeltanoProject,
         on_delete=models.CASCADE,
         related_name="memberships",
     )
-    user = models.ForeignKey(
+    user : models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="project_memberships",
     )
-    role = models.CharField(
+    role : models.CharField[str, str] = models.CharField(
         max_length=20,
         choices=[(role.value, role.value.title()) for role in ProjectRole],
         default=ProjectRole.VIEWER.value,
     )
 
     # Audit fields
-    created_by = models.ForeignKey(
+    created_by : models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
         related_name="created_memberships",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at : models.DateTimeField[datetime, datetime] = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         """Meta configuration for ProjectMembership model."""
@@ -180,25 +185,25 @@ class ProjectMembership(models.Model):
 class ProjectDeployment(models.Model):
     """Project deployment tracking model."""
 
-    id = models.UUIDField(
+    id : models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    project = models.ForeignKey(
+    project : models.ForeignKey[MeltanoProject, MeltanoProject] = models.ForeignKey(
         MeltanoProject,
         on_delete=models.CASCADE,
         related_name="deployments",
     )
-    environment = models.CharField(
+    environment : models.CharField[str, str] = models.CharField(
         max_length=20,
         choices=[(env.value, env.value.title()) for env in DeploymentEnvironment],
     )
-    status = models.CharField(max_length=50, default="deployed")
+    status : models.CharField[str, str] = models.CharField(max_length=50, default="deployed")
 
     # Deployment metadata
-    deployed_at = models.DateTimeField(default=timezone.now)
-    deployed_by = models.ForeignKey(
+    deployed_at : models.DateTimeField[datetime, datetime] = models.DateTimeField(default=timezone.now)
+    deployed_by : models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
         related_name="deployments",

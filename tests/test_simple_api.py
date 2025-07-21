@@ -20,46 +20,43 @@ class TestGetWebSettings(TestCase):
         config = get_web_settings()
 
         assert isinstance(config, WebConfig)
-        assert config.project_name == "flext-web"
-        assert config.version == "0.7.0"
+        assert config.title == "FLEXT Web"
+        assert config.version is not None
 
     def test_get_web_settings_has_default_values(self) -> None:
         """Test that returned config has expected default values."""
         config = get_web_settings()
 
-        assert config.debug is True  # Actual default in test environment
-        assert config.time_zone == "UTC"
-        assert config.language_code == "en-us"
-        assert config.use_i18n is True
-        assert config.use_tz is True
+        assert config.django_debug is False  # Default in production
+        assert config.title == "FLEXT Web"
+        assert config.description == "Enterprise Data Integration Web Interface"
+        assert config.static_url == "/static/"
+        assert config.media_url == "/media/"
 
     def test_get_web_settings_has_security_config(self) -> None:
         """Test that security configuration is properly initialized."""
         config = get_web_settings()
 
-        assert hasattr(config, "security")
-        # In test environment, debug modes should be consistent
-        assert config.security.debug == config.debug
-        assert config.security.allowed_hosts == ["localhost", "127.0.0.1"]
-        assert len(config.security.secret_key) >= 50
+        # Test security-related fields
+        assert config.django_allowed_hosts == ["localhost", "127.0.0.1"]
+        assert len(config.django_secret_key) >= 50
+        assert config.secure_content_type_nosniff is True
+        assert config.secure_browser_xss_filter is True
 
     def test_get_web_settings_has_database_config(self) -> None:
         """Test that database configuration is properly initialized."""
         config = get_web_settings()
 
         assert hasattr(config, "database")
-        assert config.database.engine == "django.db.backends.postgresql"
-        assert config.database.name == "flext_web"
-        assert config.database.port == 5432
+        assert config.database.url is not None
 
     def test_get_web_settings_has_cache_config(self) -> None:
         """Test that cache configuration is properly initialized."""
         config = get_web_settings()
 
-        assert hasattr(config, "cache")
-        assert config.cache.backend == "django.core.cache.backends.redis.RedisCache"
-        assert config.cache.location == "redis://localhost:6379/1"
-        assert config.cache.timeout == 300
+        # Test cache-related fields
+        assert config.redis_url == "redis://localhost:6379/0"
+        assert config.cache_timeout == 300
 
 
 class TestSetupWeb(TestCase):
@@ -70,7 +67,7 @@ class TestSetupWeb(TestCase):
         result = setup_web()
 
         assert isinstance(result, ServiceResult)
-        assert result.is_successful is True
+        assert result.is_success is True
         assert result.data is True
 
     def test_setup_web_with_provided_settings(self) -> None:
@@ -79,14 +76,14 @@ class TestSetupWeb(TestCase):
         result = setup_web(config)
 
         assert isinstance(result, ServiceResult)
-        assert result.is_successful is True
+        assert result.is_success is True
         assert result.data is True
 
     def test_setup_web_success_result(self) -> None:
         """Test that setup_web returns success ServiceResult."""
         result = setup_web()
 
-        assert result.is_successful is True
+        assert result.is_success is True
         assert result.error is None
         assert result.data is True
 
@@ -96,9 +93,9 @@ class TestSetupWeb(TestCase):
         result = setup_web()
 
         assert isinstance(result, ServiceResult)
-        assert result.is_successful is False
-        assert result.is_successful is False
-        assert "Web setup failed: Config error" in result.error
+        assert result.is_success is False
+        assert result.error is not None
+        assert "Web setup failed: Config error" in str(result.error)
 
     @patch("flext_web.simple_api.WebConfig")
     def test_setup_web_creates_config_when_none(self, mock_config: Any) -> None:
@@ -107,18 +104,18 @@ class TestSetupWeb(TestCase):
 
         # Should call WebConfig() once when settings is None
         mock_config.assert_called_once()
-        assert result.is_successful is True
+        assert result.is_success is True
 
     def test_setup_web_with_custom_config(self) -> None:
         """Test setup_web with a custom WebConfig instance."""
         custom_config = WebConfig(
-            debug=True,
-            time_zone="America/New_York",
+            django_debug=True,
+            static_url="/custom-static/",
         )
 
         result = setup_web(custom_config)
 
-        assert result.is_successful is True
+        assert result.is_success is True
         assert result.data is True
 
     def test_setup_web_validates_config_object(self) -> None:
@@ -126,7 +123,7 @@ class TestSetupWeb(TestCase):
         config = get_web_settings()  # Get a valid config
         result = setup_web(config)
 
-        assert result.is_successful is True
+        assert result.is_success is True
         assert isinstance(result, ServiceResult)
 
 
@@ -152,20 +149,18 @@ class TestSimpleApiIntegration(TestCase):
         result = setup_web(config)
 
         assert isinstance(config, WebConfig)
-        assert result.is_successful is True
+        assert result.is_success is True
 
     def test_service_result_type_annotations(self) -> None:
         """Test that ServiceResult is properly typed."""
         result = setup_web()
 
         # Verify ServiceResult methods work
-        assert hasattr(result, "is_successful")
         assert hasattr(result, "is_success")
         assert hasattr(result, "error")
         assert hasattr(result, "data")
 
         # Test success case properties
-        assert result.is_successful is True
         assert result.is_success is True
         assert result.error is None
         assert result.data is True

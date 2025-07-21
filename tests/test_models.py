@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 from django.contrib.auth import get_user_model
+
+if TYPE_CHECKING:
+    from django.contrib.auth.models import AbstractUser
 
 from flext_web.apps.monitoring.models import MonitoringAlert
 from flext_web.apps.pipelines.models import PipelineWeb
 from flext_web.apps.projects.models import MeltanoProject, ProjectTemplate
 
-User = get_user_model()
+User: type[AbstractUser] = get_user_model()
 
 
 @pytest.mark.django_db
@@ -114,7 +119,7 @@ class TestMonitoringModels:
             component="monitoring-service",
         )
 
-        assert alert.id is not None
+        assert alert.pk is not None
         assert alert.alert_id == "test-alert-001"
         assert alert.title == "High CPU Usage"
         assert alert.severity == "critical"

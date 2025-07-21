@@ -20,7 +20,7 @@ from django.views.generic import DetailView, ListView, TemplateView
 from flext_web.apps.projects.models import MeltanoProject, ProjectTemplate
 
 
-class ProjectListView(LoginRequiredMixin, ListView):
+class ProjectListView(LoginRequiredMixin, ListView[MeltanoProject]):
     """View to display a list of all projects."""
 
     model = MeltanoProject
@@ -44,14 +44,16 @@ class ProjectListView(LoginRequiredMixin, ListView):
         )
 
 
-class ProjectDetailView(LoginRequiredMixin, DetailView):
+class ProjectDetailView(LoginRequiredMixin, DetailView[MeltanoProject]):
     """View to display details of a single project."""
 
     model = MeltanoProject
     template_name = "projects/detail.html"
     context_object_name = "project"
 
-    def get_object(self) -> MeltanoProject:
+    def get_object(
+        self, queryset: QuerySet[MeltanoProject] | None = None,
+    ) -> MeltanoProject:
         """Get the specific project object for the detail view.
 
         Returns:
@@ -68,7 +70,7 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
         )
 
 
-class ProjectTemplateListView(LoginRequiredMixin, ListView):
+class ProjectTemplateListView(LoginRequiredMixin, ListView[ProjectTemplate]):
     """View to display available project templates."""
 
     model = ProjectTemplate
@@ -191,7 +193,7 @@ class ProjectDeploymentsView(LoginRequiredMixin, TemplateView):
     template_name = "projects/deployments.html"
 
 
-class TemplateListView(LoginRequiredMixin, ListView):
+class TemplateListView(LoginRequiredMixin, ListView[ProjectTemplate]):
     """View for listing project templates."""
 
     model = ProjectTemplate
@@ -205,7 +207,7 @@ class TemplateCreateView(LoginRequiredMixin, TemplateView):
     template_name = "projects/template_create.html"
 
 
-class TemplateDetailView(LoginRequiredMixin, DetailView):
+class TemplateDetailView(LoginRequiredMixin, DetailView[ProjectTemplate]):
     """View for displaying template details."""
 
     model = ProjectTemplate

@@ -27,4 +27,5 @@ try:
 except ImportError:
     # Celery not available - graceful degradation
     # In production, celery should be installed for background tasks
-    __all__ = ()
+    celery_app = None
+    __all__ = ("celery_app",)

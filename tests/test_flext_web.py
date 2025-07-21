@@ -5,7 +5,7 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -13,8 +13,6 @@ from flext_web.apps.dashboard.views import FlextDashboardGrpcClient
 from flext_web.apps.monitoring.models import MonitoringAlert as Alert
 from flext_web.apps.pipelines.models import PipelineWeb as Pipeline
 from flext_web.apps.projects.models import MeltanoProject as Project, ProjectTemplate
-
-User = get_user_model()
 
 
 class TestDashboardViews(TestCase):
@@ -270,7 +268,7 @@ class TestUserAuthentication(TestCase):
         response = self.client.post(reverse("users:logout"))
 
         assert response.status_code == 302
-        assert response.url == reverse("users:login")
+        assert response["Location"] == reverse("users:login")
 
 
 @pytest.mark.django_db
@@ -285,7 +283,7 @@ class TestDatabaseIntegration:
             password="testpass123",
         )
 
-        assert user.id is not None
+        assert user.pk is not None
         assert user.username == "testuser"
         assert user.email == "test@example.com"
         assert user.check_password("testpass123")
@@ -311,7 +309,7 @@ class TestDatabaseIntegration:
             status="draft",
         )
 
-        assert project.id is not None
+        assert project.pk is not None
         assert project.name == "Test Project"
         assert project.template == template
         assert project.created_by == user
@@ -327,6 +325,6 @@ class TestDatabaseIntegration:
             component="test_system",
         )
 
-        assert alert.id is not None
+        assert alert.pk is not None
         assert alert.title == "Test Alert"
         assert alert.severity == "warning"

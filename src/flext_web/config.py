@@ -8,14 +8,8 @@ This module provides Django web configuration using consolidated flext-core patt
 
 from __future__ import annotations
 
-from flext_core import (
-    BaseSettings,
-    DatabaseConfig,
-    Field,
-    JWTConfig,
-    MonitoringConfig,
-    PerformanceConfig,
-)
+from flext_core import BaseSettings, Field
+from flext_core.config.database import DatabaseConfig
 from flext_core.domain.constants import ConfigDefaults, FlextFramework
 from pydantic import field_validator
 from pydantic_settings import SettingsConfigDict
@@ -48,27 +42,6 @@ class WebConfig(BaseSettings):
         description="Database configuration using consolidated patterns",
     )
 
-    # Consolidated JWT authentication configuration
-    auth: JWTConfig = Field(
-        default_factory=lambda: JWTConfig(
-            secret_key="django-secret-key-change-in-production",
-            algorithm="HS256",
-            access_token_expire_minutes=30,
-        ),
-        description="JWT authentication using consolidated patterns",
-    )
-
-    # Consolidated monitoring configuration
-    monitoring: MonitoringConfig = Field(
-        default_factory=MonitoringConfig,
-        description="Monitoring configuration using consolidated patterns",
-    )
-
-    # Consolidated performance configuration
-    performance: PerformanceConfig = Field(
-        default_factory=PerformanceConfig,
-        description="Performance configuration using consolidated patterns",
-    )
 
     # Django-specific settings
     django_secret_key: str = Field(
@@ -266,7 +239,7 @@ class WebConfig(BaseSettings):
         return not self.is_development
 
     @property
-    def django_database_config(self) -> dict[str, str]:
+    def django_database_config(self) -> dict[str, dict[str, str]]:
         """Get Django database configuration."""
         return {
             "default": {

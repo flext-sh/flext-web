@@ -26,11 +26,11 @@ class PipelineConfiguration(DomainValueObject):
         self._data = data
 
     @classmethod
-    def from_dict(cls, data: dict) -> PipelineConfiguration:
+    def from_dict(cls, data: dict[str, Any]) -> PipelineConfiguration:
         """Create from dictionary."""
         return cls(**data)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return self._data
 
@@ -82,16 +82,16 @@ class PluginType(StrEnum):
 class PipelineWeb(models.Model):
     """Data pipeline model for ETL/ELT operations using flext-core patterns."""
 
-    id = models.UUIDField(
+    id: models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(blank=True)
+    name: models.CharField[str, str] = models.CharField(max_length=255, unique=True)
+    description: models.TextField[str, str] = models.TextField(blank=True)
 
     # Project relationship
-    project = models.ForeignKey(
+    project: models.ForeignKey[Any, Any] = models.ForeignKey(
         "projects.MeltanoProject",
         on_delete=models.CASCADE,
         related_name="pipelines",
@@ -99,50 +99,50 @@ class PipelineWeb(models.Model):
     )
 
     # Pipeline components
-    extractor = models.CharField(max_length=255)
-    loader = models.CharField(max_length=255)
-    transform = models.CharField(
+    extractor: models.CharField[str, str] = models.CharField(max_length=255)
+    loader: models.CharField[str, str] = models.CharField(max_length=255)
+    transform: models.CharField[str, str] = models.CharField(
         max_length=255,
         blank=True,
         help_text="Optional transformer plugin",
     )
 
     # Pipeline configuration and metadata
-    pipeline_type = models.CharField(
+    pipeline_type: models.CharField[str, str] = models.CharField(
         max_length=20,
         choices=[(ptype.value, ptype.value.title()) for ptype in PipelineType],
         default=PipelineType.ETL.value,
     )
-    config = models.JSONField(
+    config: models.JSONField[dict[str, Any], dict[str, Any]] = models.JSONField(
         default=dict,
         help_text=(
             "Pipeline configuration including extractor, loader, and transform settings"
         ),
     )
-    schedule = models.CharField(
+    schedule: models.CharField[str, str] = models.CharField(
         max_length=255,
         blank=True,
         help_text="Cron expression for scheduled execution",
     )
 
     # Status and lifecycle
-    status = models.CharField(
+    status: models.CharField[str, str] = models.CharField(
         max_length=20,
         choices=[(status.value, status.value.title()) for status in PipelineStatus],
         default=PipelineStatus.DRAFT.value,
     )
-    is_active = models.BooleanField(
+    is_active: models.BooleanField[bool, bool] = models.BooleanField(
         default=True,
         help_text="Whether pipeline is enabled for execution",
     )
 
     # Execution tracking
-    last_run = models.DateTimeField(
+    last_run: models.DateTimeField[Any | None, Any | None] = models.DateTimeField(
         null=True,
         blank=True,
         help_text="Timestamp of last execution",
     )
-    last_status = models.CharField(
+    last_status: models.CharField[str, str] = models.CharField(
         max_length=20,
         choices=[(status.value, status.value.title()) for status in ExecutionStatus],
         blank=True,
@@ -150,13 +150,13 @@ class PipelineWeb(models.Model):
     )
 
     # Audit fields
-    created_by = models.ForeignKey(
+    created_by: models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
         related_name="created_pipelines",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at: models.DateTimeField[Any, Any] = models.DateTimeField(auto_now_add=True)
+    updated_at: models.DateTimeField[Any, Any] = models.DateTimeField(auto_now=True)
 
     class Meta:
         """Meta configuration for PipelineWeb model."""

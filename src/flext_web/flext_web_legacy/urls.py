@@ -7,12 +7,22 @@ enterprise Meltano platform.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import REDACTED_LDAP_BIND_PASSWORD
 from django.urls import include, path
 
-urlpatterns = [
+if TYPE_CHECKING:
+    from django.urls.resolvers import URLPattern, URLResolver
+
+    URLPatternType = URLPattern | URLResolver
+else:
+    from typing import Any
+    URLPatternType = Any
+
+urlpatterns: list[URLPatternType] = [
     path("REDACTED_LDAP_BIND_PASSWORD/", REDACTED_LDAP_BIND_PASSWORD.site.urls),
     # Working dashboard for Django functionality testing
     path("", include("flext_web.apps.dashboard.urls_simple")),

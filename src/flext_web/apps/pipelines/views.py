@@ -9,16 +9,21 @@ import grpc
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.views.generic import TemplateView
-from flext_grpc.client import FlextGrpcClientBase
 from google.protobuf import empty_pb2
 
 if TYPE_CHECKING:
+    from flext_grpc.client import FlextGrpcClientBase
     from flext_grpc.proto import flext_pb2
 else:
-    from flext_grpc.proto import flext_pb2
+    try:
+        from flext_grpc.client import FlextGrpcClientBase
+        from flext_grpc.proto import flext_pb2
+    except ImportError:
+        FlextGrpcClientBase = object
+        flext_pb2 = None
 
 
-class FlextPipelineGrpcClient(FlextGrpcClientBase):
+class FlextPipelineGrpcClient(FlextGrpcClientBase):  # type: ignore[misc]
     """FlextPipelineGrpcClient - Client Implementation.
 
     Implementa cliente para comunicação com serviços externos.
@@ -69,10 +74,12 @@ class FlextPipelineGrpcClient(FlextGrpcClientBase):
                 or None if pipeline not found or service unavailable.
 
         """
+        if flext_pb2 is None:
+            return None
         try:
             with self._create_channel() as channel:
                 stub = self._create_stub(channel)
-                request = flext_pb2.PipelineRequest(id=pipeline_id)
+                request = flext_pb2.PipelineRequest(id=pipeline_id)  # type: ignore[attr-defined]
                 response = stub.GetPipeline(request)
                 return self._format_pipeline(response)
         except grpc.RpcError:
@@ -148,7 +155,7 @@ class PipelineDetailView(LoginRequiredMixin, TemplateView):
 
         client = get_pipeline_client()
         if client:
-            pipeline = client.get_pipeline(pipeline_id)
+            pipeline = client.get_pipeline(str(pipeline_id))
             if not pipeline:
                 msg = "Pipeline not found"
                 raise Http404(msg)

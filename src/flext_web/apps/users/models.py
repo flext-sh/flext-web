@@ -20,7 +20,11 @@ from django.utils import timezone
 # from flext_core.config.domain_config import get_domain_constants
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from django.db.models.query import QuerySet
+else:
+    pass
 
 
 class UserProfile(models.Model):
@@ -95,16 +99,16 @@ class UserProfile(models.Model):
         default=False,
     )
     account_locked: models.BooleanField[bool, bool] = models.BooleanField(default=False)
-    last_password_change: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    last_password_change: models.DateTimeField[datetime | None, datetime | None] = models.DateTimeField(
         null=True,
         blank=True,
     )
 
     # Metadata
-    created_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    created_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(
         auto_now_add=True,
     )
-    updated_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    updated_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(
         auto_now=True,
     )
     last_login_ip: models.GenericIPAddressField[str, str] = models.GenericIPAddressField(
@@ -112,7 +116,7 @@ class UserProfile(models.Model):
         blank=True,
     )
     failed_login_attempts: models.IntegerField[int, int] = models.IntegerField(default=0)
-    last_failed_login: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    last_failed_login: models.DateTimeField[datetime | None, datetime | None] = models.DateTimeField(
         null=True,
         blank=True,
     )
@@ -168,7 +172,7 @@ class UserProfile(models.Model):
 
         """
         try:
-            return hasattr(user, "profile") and user.profile.manager == self.user  # type: ignore[attr-defined]
+            return hasattr(user, "profile") and user.profile.manager == self.user
         except UserProfile.DoesNotExist:
             return False
 
@@ -254,10 +258,10 @@ class Organization(models.Model):
     address: models.TextField[str, str] = models.TextField(blank=True)
 
     # Metadata
-    created_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    created_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(
         auto_now_add=True,
     )
-    updated_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    updated_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(
         auto_now=True,
     )
     created_by: models.ForeignKey[User, User] = models.ForeignKey(
@@ -337,7 +341,7 @@ class OrganizationMembership(models.Model):
     )
 
     # Membership details
-    joined_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    joined_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(
         auto_now_add=True,
     )
     invited_by: models.ForeignKey[User, User] = models.ForeignKey(
@@ -422,7 +426,7 @@ class UserActivity(models.Model):
     )
 
     # Timestamp
-    timestamp: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    timestamp: models.DateTimeField[datetime, datetime] = models.DateTimeField(
         auto_now_add=True,
     )
 
@@ -532,18 +536,18 @@ class APIKey(models.Model):
 
     # Status and lifecycle
     is_active: models.BooleanField[bool, bool] = models.BooleanField(default=True)
-    expires_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    expires_at: models.DateTimeField[datetime | None, datetime | None] = models.DateTimeField(
         null=True,
         blank=True,
     )
-    last_used_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    last_used_at: models.DateTimeField[datetime | None, datetime | None] = models.DateTimeField(
         null=True,
         blank=True,
     )
     usage_count: models.IntegerField[int, int] = models.IntegerField(default=0)
 
     # Metadata
-    created_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+    created_at: models.DateTimeField[datetime, datetime] = models.DateTimeField(
         auto_now_add=True,
     )
     created_by_ip: models.GenericIPAddressField[str, str] = models.GenericIPAddressField(

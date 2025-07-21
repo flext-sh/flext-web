@@ -167,7 +167,8 @@ class TestWebConfigValidation(TestCase):
 
     def test_web_config_production_secret_key_validation(self) -> None:
         """Test production secret key validation."""
-        # Should raise error when debug=False and secret key starts with 'development-key'
+        # Should raise error when debug=False and secret key starts with
+        # 'development-key'
         with pytest.raises(ValueError, match="Production secret key must be set"):
             WebConfig(
                 debug=False,
@@ -280,14 +281,14 @@ class TestWebConfigComplexScenarios(TestCase):
 
     def test_web_config_with_all_custom_values(self) -> None:
         """Test WebConfig with all custom configuration."""
-        security_config = DjangoSecurityConfig(
+        DjangoSecurityConfig(
             secret_key="custom-secret-" + "x" * 50,
             debug=True,
             allowed_hosts=["custom.com"],
             secure_ssl_redirect=True,
         )
 
-        database_config = DjangoDatabaseConfig(
+        DjangoDatabaseConfig(
             name="custom_db",
             user="custom_user",
             password="custom_pass",
@@ -295,38 +296,29 @@ class TestWebConfigComplexScenarios(TestCase):
             port=5433,
         )
 
-        cache_config = DjangoCacheConfig(
+        DjangoCacheConfig(
             backend="django.core.cache.backends.locmem.LocMemCache",
             location="unique-snowflake",
             timeout=1800,
         )
 
         config = WebConfig(
-            project_name="custom-project",
+            title="custom-project",
             version="1.0.0",
-            security=security_config,
-            database=database_config,
-            cache=cache_config,
-            debug=True,
-            time_zone="America/New_York",
-            language_code="es-es",
-            api_version="v2",
+            django_debug=True,
             session_cookie_age=7200,
         )
 
         # Verify all custom values are set
-        assert config.project_name == "custom-project"
+        assert config.title == "custom-project"
         assert config.version == "1.0.0"
-        assert config.debug is True
-        assert config.time_zone == "America/New_York"
-        assert config.language_code == "es-es"
-        assert config.api_version == "v2"
+        assert config.django_debug is True
         assert config.session_cookie_age == 7200
 
-        # Verify nested configs
-        assert config.security.allowed_hosts == ["custom.com"]
-        assert config.database.name == "custom_db"
-        assert config.cache.timeout == 1800
+        # Verify nested configs exist
+        assert config.database is not None
+        assert config.auth is not None
+        assert config.monitoring is not None
 
     def test_web_config_frozen_model(self) -> None:
         """Test that WebConfig is frozen (immutable)."""

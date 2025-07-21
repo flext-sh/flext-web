@@ -137,8 +137,8 @@ class TestDashboardView(TestCase):
         context = view.get_context_data()
 
         # The dashboard view spreads the data directly into context, not under 'dashboard_data' key
-        assert context["stats"]["pipelines"] == 5
-        assert context["health"]["healthy"] is True
+        assert context["stats"]["pipelines"] == 5  # type: ignore[index]
+        assert context["health"]["healthy"] is True  # type: ignore[index]
         assert context["recent_executions"] == []
         assert context["error"] is None
         mock_client.get_dashboard_data.assert_called_once()

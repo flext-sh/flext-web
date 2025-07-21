@@ -20,7 +20,7 @@ from flext_web.apps.projects.models import (
     ProjectTemplate,
 )
 
-User = get_user_model()
+User = get_user_model()  # Remove type annotation to avoid mismatch
 
 
 @pytest.mark.django_db
@@ -136,7 +136,7 @@ class TestPipelineWebMethods:
 
     def test_pipeline_web_str(self) -> None:
         """Test PipelineWeb __str__ method."""
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # type: ignore[attr-defined]
             username="testuser",
             email="test@example.com",
             password="testpass123",
@@ -169,7 +169,7 @@ class TestPipelineWebMethods:
 
     def test_pipeline_web_get_absolute_url(self) -> None:
         """Test get_absolute_url method."""
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # type: ignore[attr-defined]
             username="testuser",
             email="test@example.com",
             password="testpass123",
@@ -206,7 +206,7 @@ class TestPipelineWebMethods:
 
     def test_pipeline_web_properties(self) -> None:
         """Test pipeline properties."""
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # type: ignore[attr-defined]
             username="testuser",
             email="test@example.com",
             password="testpass123",
@@ -238,6 +238,7 @@ class TestPipelineWebMethods:
         # Test enum properties
         assert pipeline.pipeline_type_enum.value == "streaming"
         assert pipeline.status_enum.value == "active"
+        assert pipeline.last_status_enum is not None
         assert pipeline.last_status_enum.value == "success"
 
         # Test config object
@@ -271,7 +272,7 @@ class TestProjectModelsMethods:
 
     def test_meltano_project_str(self) -> None:
         """Test MeltanoProject __str__ method."""
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # type: ignore[attr-defined]
             username="testuser",
             email="test@example.com",
             password="testpass123",
@@ -294,13 +295,13 @@ class TestProjectModelsMethods:
 
     def test_project_membership_str(self) -> None:
         """Test ProjectMembership __str__ method."""
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # type: ignore[attr-defined]
             username="testuser",
             email="test@example.com",
             password="testpass123",
         )
 
-        creator = User.objects.create_user(
+        creator = User.objects.create_user(  # type: ignore[attr-defined]
             username="creator",
             email="creator@example.com",
             password="testpass123",
@@ -331,7 +332,7 @@ class TestProjectModelsMethods:
 
     def test_project_deployment_str(self) -> None:
         """Test ProjectDeployment __str__ method."""
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # type: ignore[attr-defined]
             username="testuser",
             email="test@example.com",
             password="testpass123",
