@@ -25,7 +25,7 @@ from .models import (
 
 
 @REDACTED_LDAP_BIND_PASSWORD.register(ProjectTemplate)
-class ProjectTemplateAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[ProjectTemplate]):  # type: ignore[misc]
+class ProjectTemplateAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[ProjectTemplate]):
     """Django REDACTED_LDAP_BIND_PASSWORD configuration for ProjectTemplate model.
 
     Provides comprehensive template management with enterprise features
@@ -65,7 +65,9 @@ class MeltanoProjectAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[MeltanoProject]
     ]
     list_filter: ClassVar[list[str]] = ["template", "status", "is_active"]
     search_fields: ClassVar[list[str]] = ["name", "description"]
-    inlines: ClassVar[list[type[REDACTED_LDAP_BIND_PASSWORD.TabularInline[Any, Any]]]] = [ProjectMembershipInline]
+    inlines: ClassVar[list[type[REDACTED_LDAP_BIND_PASSWORD.TabularInline[Any, Any]]]] = [
+        ProjectMembershipInline
+    ]
 
 
 @REDACTED_LDAP_BIND_PASSWORD.register(ProjectDeployment)
