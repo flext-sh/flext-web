@@ -231,16 +231,13 @@
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.resolver_match.app_name == 'monitoring' %}active{% endif %}"
-                  href="{% url 'monitoring:overview' %}"
+                  href="{% url 'monitoring:dashboard' %}"
                 >
                   <i class="fas fa-chart-line me-2"></i> Monitoring
                 </a>
               </li>
               <li class="nav-item">
-                <a
-                  class="nav-link {% if request.resolver_match.app_name == 'api' %}active{% endif %}"
-                  href="{% url 'api:docs' %}"
-                >
+                <a class="nav-link" href="/api/docs" target="_blank">
                   <i class="fas fa-code me-2"></i> API Docs
                 </a>
               </li>
@@ -281,7 +278,9 @@
             </div>
             {% endfor %}
           </div>
-          {% endif %} {% block content %}{% endblock %}
+          {% endif %}
+
+{% block content %}{% endblock %}
         </main>
         {% else %}
         <!-- Full width for non-authenticated users -->

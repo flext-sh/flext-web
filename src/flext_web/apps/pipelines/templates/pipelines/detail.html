@@ -1,5 +1,9 @@
-{% extends "base.html" %} {% block title %}{{ pipeline.name }} - Pipelines -
-FLEXT Enterprise{% endblock %} {% block content %}
+{% extends "base.html" %}
+
+{% block title %}{{ pipeline.name }} - Pipelines -
+FLEXT Enterprise{% endblock %}
+
+{% block content %}
 <div class="container mx-auto px-4 py-8">
   <a
     href="{% url 'pipelines:list' %}"
@@ -62,7 +66,9 @@ FLEXT Enterprise{% endblock %} {% block content %}
     </div>
   </div>
 </div>
-{% endblock %} {% block extra_js %}
+{% endblock %}
+
+{% block extra_js %}
 <script>
   let ws = null;
   const WS_URL = `ws://localhost:8000/api/ws/pipeline-{{ pipeline.id }}-{{ user.id }}`;

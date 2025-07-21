@@ -1,12 +1,17 @@
-"""Simplified Django settings for flext-web testing."""
+"""Simplified Django settings for flext-api.web.flext-web testing."""
 
+import os
 from pathlib import Path
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Simple settings for testing
-SECRET_KEY = "django-insecure-temporary-key-for-testing-please-change-in-production"
+
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-temporary-key-for-testing-please-change-in-production",
+)
 DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 

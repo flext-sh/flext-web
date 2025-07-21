@@ -1,10 +1,11 @@
 """Celery configuration for FLEXT Web."""
 
+from __future__ import annotations
+
 import os
 from typing import TYPE_CHECKING
 
 from celery import Celery
-
 from flext_observability.logging import get_logger
 
 if TYPE_CHECKING:
@@ -29,7 +30,7 @@ app.autodiscover_tasks()
 
 
 @app.task(bind=True)
-def debug_task(self: "CeleryTask") -> str:
+def debug_task(self: CeleryTask) -> str:
     """Debug task for testing Celery functionality."""
     logger.info("Request: %r", self.request)
     return "Debug task completed"

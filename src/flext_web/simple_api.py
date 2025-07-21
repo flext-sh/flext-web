@@ -6,6 +6,7 @@ Provides simple functions for web configuration and setup.
 from __future__ import annotations
 
 from flext_core import ServiceResult
+
 from flext_web.config import WebConfig
 
 
@@ -21,6 +22,6 @@ def setup_web(settings: WebConfig | None = None) -> ServiceResult[bool]:
             settings = WebConfig()
 
         # Basic setup logic here
-        return ServiceResult.success(True)
+        return ServiceResult.ok(True)
     except Exception as e:
         return ServiceResult.fail(f"Web setup failed: {e}")

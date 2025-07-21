@@ -7,12 +7,11 @@ Web-specific domain models for Django enterprise application.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from enum import StrEnum
+from typing import Any
 
 from flext_core.domain.pydantic_base import DomainEntity, DomainEvent, Field
-from flext_core.domain.types import FlextConstants, StrEnum
-
-from flext_core.domain.types import EntityId, UserId
+from flext_core.domain.types import EntityId, FlextConstants, UserId
 
 
 class PageType(StrEnum):

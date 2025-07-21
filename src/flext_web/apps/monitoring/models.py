@@ -90,7 +90,8 @@ class BusinessMetricHistory(models.Model):
         """Calculate percentage change from previous value.
 
         Returns:
-            Percentage change from previous to current value, or None if previous_value is None or 0.
+            Percentage change from previous to current value, or None if
+            previous_value is None or 0.
 
         """
         if self.previous_value is None or self.previous_value == 0:
@@ -120,13 +121,13 @@ class SecurityViolationLog(models.Model):
         null=True,
         blank=True,
     )
-    endpoint = models.CharField(max_length=200, null=True, blank=True)
-    user_agent = models.TextField(null=True, blank=True)
+    endpoint = models.CharField(max_length=200, blank=True, default="")
+    user_agent = models.TextField(blank=True, default="")
     payload = models.JSONField(default=dict)
     timestamp = models.DateTimeField(default=timezone.now, db_index=True)
     blocked = models.BooleanField(default=True)
     resolved = models.BooleanField(default=False)
-    resolution_notes = models.TextField(null=True, blank=True)
+    resolution_notes = models.TextField(blank=True, default="")
 
     class Meta:
         """Django model configuration."""

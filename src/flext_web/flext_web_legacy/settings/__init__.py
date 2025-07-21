@@ -11,3 +11,5 @@ Available settings modules:
     - production:
         Production environment with security hardening
 """
+
+from __future__ import annotations

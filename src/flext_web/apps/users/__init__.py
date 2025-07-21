@@ -5,3 +5,5 @@ for the FLEXT Meltano Enterprise platform.:
             Author: Datacosmos
 Date: 2025-06-22
 """
+
+from __future__ import annotations

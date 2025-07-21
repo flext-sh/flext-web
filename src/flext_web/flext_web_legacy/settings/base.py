@@ -18,13 +18,20 @@ All environment-specific values are retrieved from the unified domain configurat
 to prevent configuration duplication and ensure consistency across the FLEXT platform.
 """
 
+from __future__ import annotations
+
+import os
 from pathlib import Path
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Simple temporary settings for testing
-SECRET_KEY = "django-insecure-temporary-key-for-testing-please-change-in-production"
+
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-temporary-key-for-testing-please-change-in-production",
+)
 DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 
@@ -159,7 +166,7 @@ REST_FRAMEWORK = {
 }
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS: list[str] = []
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 

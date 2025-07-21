@@ -7,6 +7,8 @@ It exposes the WSGI callable as a module-level variable named ``application``
 which is used by Django-compatible web servers to serve the application.
 """
 
+from __future__ import annotations
+
 import os
 
 from django.core.wsgi import get_wsgi_application

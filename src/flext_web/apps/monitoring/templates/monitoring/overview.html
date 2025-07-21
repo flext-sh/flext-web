@@ -1,5 +1,8 @@
-{% extends "base.html" %} {% block title %}Monitoring - FLEXT Enterprise{%
-endblock %} {% block content %}
+{% extends "base.html" %}
+
+{% block title %}Monitoring - FLEXT Enterprise{% endblock %}
+
+{% block content %}
 <div class="py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h2">System Monitoring</h1>
@@ -264,7 +267,9 @@ endblock %} {% block content %}
     </div>
   </div>
 </div>
-{% endblock %} {% block extra_js %}
+{% endblock %}
+
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
   // WebSocket connection for real-time updates

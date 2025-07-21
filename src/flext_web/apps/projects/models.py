@@ -1,18 +1,19 @@
 """Django models for project management using flext-core patterns.
 
 MIGRATED TO FLEXT-CORE:
-Uses flext-core DomainValueObject and StrEnum patterns for structured data and type safety.
+Uses flext-core DomainValueObject and StrEnum patterns for structured data and
+type safety.
 """
 
 from __future__ import annotations
 
 import uuid
+from enum import StrEnum
+from typing import ClassVar
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-
-from flext_core.domain.types import StrEnum
 
 
 class ProjectRole(StrEnum):
@@ -68,8 +69,10 @@ class ProjectTemplate(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        """Meta configuration for ProjectTemplate model."""
+
         db_table = "flext_project_templates"
-        ordering = ["category", "name"]
+        ordering: ClassVar[list[str]] = ["category", "name"]
         verbose_name = "Project Template"
         verbose_name_plural = "Project Templates"
 
@@ -119,8 +122,10 @@ class MeltanoProject(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        """Meta configuration for MeltanoProject model."""
+
         db_table = "flext_meltano_projects"
-        ordering = ["-created_at"]
+        ordering: ClassVar[list[str]] = ["-created_at"]
         verbose_name = "Meltano Project"
         verbose_name_plural = "Meltano Projects"
 
@@ -161,8 +166,10 @@ class ProjectMembership(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        """Meta configuration for ProjectMembership model."""
+
         db_table = "flext_project_memberships"
-        unique_together = ["project", "user"]
+        unique_together: ClassVar[list[str]] = ["project", "user"]
         verbose_name = "Project Membership"
         verbose_name_plural = "Project Memberships"
 
@@ -198,8 +205,10 @@ class ProjectDeployment(models.Model):
     )
 
     class Meta:
+        """Meta configuration for ProjectDeployment model."""
+
         db_table = "flext_project_deployments"
-        ordering = ["-deployed_at"]
+        ordering: ClassVar[list[str]] = ["-deployed_at"]
         verbose_name = "Project Deployment"
         verbose_name_plural = "Project Deployments"
 

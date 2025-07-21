@@ -1,5 +1,8 @@
-{% extends "base.html" %} {% block title %}Dashboard - FLEXT Enterprise{%
-endblock %} {% block content %}
+{% extends "base.html" %}
+
+{% block title %}Dashboard - FLEXT Enterprise{% endblock %}
+
+{% block content %}
 <div class="py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h2">Dashboard</h1>
@@ -129,8 +132,9 @@ endblock %} {% block content %}
                   <td>{{ execution.duration|default:"-" }}</td>
                   <td>
                     <a
-                      href="{% url 'pipelines:execution_detail' execution.id %}"
+                      href="#"
                       class="btn btn-sm btn-outline-primary"
+                      onclick="alert('Pipeline details not available')"
                     >
                       <i class="fas fa-eye"></i>
                     </a>
@@ -226,7 +230,9 @@ endblock %} {% block content %}
     </div>
   </div>
 </div>
-{% endblock %} {% block extra_js %}
+{% endblock %}
+
+{% block extra_js %}
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
@@ -453,7 +459,7 @@ endblock %} {% block content %}
 
   // Refresh stats via AJAX
   function refreshStats() {
-    $.get('{% url "dashboard:stats" %}', function (data) {
+    $.get('{% url "dashboard:api_stats" %}', function (data) {
       updateStats(data.stats);
       updateHealth(data.health);
 
@@ -520,7 +526,7 @@ endblock %} {% block content %}
       // Actions
       const tdActions = document.createElement("td");
       const viewBtn = document.createElement("a");
-      viewBtn.href = `/pipelines/execution/${execution.id}/`;
+      viewBtn.href = `#`;
       viewBtn.className = "btn btn-sm btn-outline-primary";
       viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
       tdActions.appendChild(viewBtn);

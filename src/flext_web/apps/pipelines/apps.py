@@ -4,6 +4,8 @@ This module configures the Pipelines application for the FLEXT Django
 web interface, providing data pipeline CRUD operations and management.
 """
 
+from __future__ import annotations
+
 
 class PipelinesConfig:
     """Django application configuration for Pipeline Management.

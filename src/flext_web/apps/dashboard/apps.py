@@ -4,6 +4,8 @@ This module configures the dashboard application for the FLEXT Meltano Enterpris
 web interface, providing pipeline monitoring and management capabilities.
 """
 
+from __future__ import annotations
+
 from django.apps import AppConfig
 
 

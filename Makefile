@@ -1,153 +1,387 @@
-# FLEXT-WEB Makefile - API Service
-# ===================================
+# FLEXT WEB - Django Enterprise Web Application
+# =============================================
+# Modern Django web interface with Clean Architecture + DDD
+# Python 3.13 + Django 5.1+ + Zero Tolerance Quality Gates
 
-.PHONY: help install test clean lint format build docs dev security type-check pre-commit
+.PHONY: help check validate test lint type-check security format format-check fix
+.PHONY: install dev-install setup pre-commit build clean
+.PHONY: coverage coverage-html test-unit test-integration test-web
+.PHONY: deps-update deps-audit deps-tree deps-outdated
+.PHONY: migrate makemigrations collectstatic runserver shell createsuperuser
 
-# Default target
+# ============================================================================
+# 🎯 HELP & INFORMATION
+# ============================================================================
+
 help: ## Show this help message
-	@echo "🏗️  Flext Web - API Service"
-	@echo "========================="
+	@echo "🌐 FLEXT WEB - Django Enterprise Web Application"
+	@echo "=============================================="
+	@echo "🎯 Clean Architecture + DDD + Python 3.13 + Django 5.1+ Enterprise Standards"
+	@echo ""
+	@echo "📦 Modern Django web interface for FLEXT data integration platform"
+	@echo "🔒 Zero tolerance quality gates with Django security"
+	@echo "🧪 90%+ test coverage requirement with Django testing"
+	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-# Installation & Setup
-install: ## Install dependencies with Poetry
-	@echo "📦 Installing dependencies for flext-web..."
-	poetry install --all-extras
+# ============================================================================
+# 🎯 CORE QUALITY GATES - ZERO TOLERANCE
+# ============================================================================
 
-install-dev: ## Install with dev dependencies
-	@echo "🛠️  Installing dev dependencies..."
-	poetry install --all-extras --group dev --group test --group security
+validate: lint type-check security test ## STRICT compliance validation (all must pass)
+	@echo "✅ ALL QUALITY GATES PASSED - FLEXT WEB COMPLIANT"
 
-# Testing
-test: ## Run tests
-	@echo "🧪 Running tests for flext-web..."
-	@if [ -d tests ]; then \
-		python -m pytest tests/ -v; \
-	else \
-		echo "No tests directory found"; \
-	fi
+check: lint type-check test ## Essential quality checks (pre-commit standard)
+	@echo "✅ Essential checks passed"
 
-test-coverage: ## Run tests with coverage
-	@echo "🧪 Running tests with coverage for flext-web..."
-	@python -m pytest tests/ --cov=src --cov-report=html --cov-report=term
+lint: ## Ruff linting (17 rule categories, ALL enabled)
+	@echo "🔍 Running ruff linter (ALL rules enabled)..."
+	@poetry run ruff check src/ tests/ --fix --unsafe-fixes
+	@echo "✅ Linting complete"
 
-# Django Commands
-django-migrate: ## Run Django migrations
-	@echo "🚀 Running Django migrations..."
-	python scripts/manage.py migrate
-
-django-makemigrations: ## Create Django migrations
-	@echo "🚀 Creating Django migrations..."
-	python scripts/manage.py makemigrations
-
-django-runserver: ## Run Django development server
-	@echo "🚀 Starting Django development server..."
-	python scripts/manage.py runserver
-
-django-shell: ## Open Django shell
-	@echo "🚀 Opening Django shell..."
-	python scripts/manage.py shell
-
-django-collectstatic: ## Collect static files
-	@echo "🚀 Collecting static files..."
-	python scripts/manage.py collectstatic --noinput
-
-django-createsuperuser: ## Create Django superuser
-	@echo "🚀 Creating Django superuser..."
-	python scripts/manage.py createsuperuser
-
-# Code Quality - Maximum Strictness
-lint: ## Run all linters with maximum strictness
-	@echo "🔍 Running maximum strictness linting for flext-web..."
-	poetry run ruff check . --output-format=full
-	@echo "✅ Ruff linting complete"
-
-format: ## Format code with strict standards
-	@echo "🎨 Formatting code with strict standards..."
-	poetry run black .
-	poetry run ruff check --fix .
-	@echo "✅ Code formatting complete"
-
-type-check: ## Run strict type checking
-	@echo "🎯 Running strict MyPy type checking..."
-	poetry run mypy src/flext_web --strict --show-error-codes
+type-check: ## MyPy strict mode type checking (zero errors tolerated)
+	@echo "🛡️ Running MyPy strict type checking..."
+	@poetry run mypy src/ tests/ --strict
 	@echo "✅ Type checking complete"
 
-security: ## Run security analysis
-	@echo "🔒 Running security analysis..."
-	poetry run bandit -r src/ -f json -o reports/security.json || true
-	poetry run bandit -r src/ -f txt
-	@echo "✅ Security analysis complete"
+security: ## Security scans (bandit + pip-audit + secrets)
+	@echo "🔒 Running security scans..."
+	@poetry run bandit -r src/ --severity-level medium --confidence-level medium
+	@poetry run pip-audit --ignore-vuln PYSEC-2022-42969
+	@poetry run detect-secrets scan --all-files
+	@echo "✅ Security scans complete"
 
-pre-commit: ## Run pre-commit hooks
-	@echo "🎣 Running pre-commit hooks..."
-	poetry run pre-commit run --all-files
-	@echo "✅ Pre-commit checks complete"
+format: ## Format code with ruff
+	@echo "🎨 Formatting code..."
+	@poetry run ruff format src/ tests/
+	@echo "✅ Formatting complete"
 
-check: lint type-check security test ## Run all quality checks
-	@echo "✅ All quality checks complete for flext-web!"
+format-check: ## Check formatting without fixing
+	@echo "🎨 Checking code formatting..."
+	@poetry run ruff format src/ tests/ --check
+	@echo "✅ Format check complete"
 
-# Build & Distribution
-build: ## Build the package with Poetry
-	@echo "🔨 Building flext-web package..."
-	poetry build
-	@echo "📦 Package built successfully"
+fix: format lint ## Auto-fix all issues (format + imports + lint)
+	@echo "🔧 Auto-fixing all issues..."
+	@poetry run ruff check src/ tests/ --fix --unsafe-fixes
+	@echo "✅ All auto-fixes applied"
 
-build-clean: clean build ## Clean then build
-	@echo "🔄 Clean build for flext-web..."
+# ============================================================================
+# 🧪 TESTING - 90% COVERAGE MINIMUM
+# ============================================================================
 
-publish-test: build ## Publish to TestPyPI
-	@echo "🚀 Publishing to TestPyPI..."
-	poetry publish --repository testpypi
+test: ## Run Django tests with coverage (90% minimum required)
+	@echo "🧪 Running Django tests with coverage..."
+	@poetry run python manage.py test --keepdb --parallel --settings=flext_web.config.settings.test
+	@poetry run coverage run --source='.' manage.py test --keepdb
+	@poetry run coverage report --fail-under=90
+	@echo "✅ Tests complete"
 
-publish: build ## Publish to PyPI
-	@echo "🚀 Publishing flext-web to PyPI..."
-	poetry publish
+test-unit: ## Run unit tests only
+	@echo "🧪 Running unit tests..."
+	@poetry run python manage.py test tests.unit --keepdb --parallel
+	@echo "✅ Unit tests complete"
 
-# Documentation
-docs: ## Generate documentation
-	@echo "📚 Generating documentation for flext-web..."
-	@if [ -f docs/conf.py ]; then \
-		cd docs && make html; \
-	else \
-		echo "No docs configuration found"; \
-	fi
+test-integration: ## Run integration tests only
+	@echo "🧪 Running integration tests..."
+	@poetry run python manage.py test tests.integration --keepdb
+	@echo "✅ Integration tests complete"
 
-# Cleanup
-clean: ## Clean build artifacts
-	@echo "🧹 Cleaning build artifacts for flext-web..."
-	@rm -rf build/ dist/ *.egg-info/
+test-web: ## Run web UI tests
+	@echo "🌐 Running web UI tests..."
+	@poetry run python manage.py test tests.web --keepdb
+	@echo "✅ Web UI tests complete"
+
+coverage: ## Generate detailed coverage report
+	@echo "📊 Generating coverage report..."
+	@poetry run coverage run --source='.' manage.py test --keepdb
+	@poetry run coverage html
+	@echo "✅ Coverage report generated in htmlcov/"
+
+coverage-html: coverage ## Generate HTML coverage report
+	@echo "📊 Opening coverage report..."
+	@python -m webbrowser htmlcov/index.html
+
+# ============================================================================
+# 🚀 DEVELOPMENT SETUP
+# ============================================================================
+
+setup: install pre-commit migrate collectstatic ## Complete development setup
+	@echo "🎯 Development setup complete!"
+
+install: ## Install dependencies with Poetry
+	@echo "📦 Installing dependencies..."
+	@poetry install --all-extras --with dev,test,docs,security
+	@echo "✅ Dependencies installed"
+
+dev-install: install ## Install in development mode
+	@echo "🔧 Setting up development environment..."
+	@poetry install --all-extras --with dev,test,docs,security
+	@poetry run pre-commit install
+	@echo "✅ Development environment ready"
+
+pre-commit: ## Setup pre-commit hooks
+	@echo "🎣 Setting up pre-commit hooks..."
+	@poetry run pre-commit install
+	@poetry run pre-commit run --all-files || true
+	@echo "✅ Pre-commit hooks installed"
+
+# ============================================================================
+# 🗄️ DJANGO DATABASE OPERATIONS
+# ============================================================================
+
+migrate: ## Run Django database migrations
+	@echo "🗄️ Running Django migrations..."
+	@poetry run python manage.py migrate
+	@echo "✅ Database migrations complete"
+
+makemigrations: ## Create new Django migrations
+	@echo "🗄️ Creating Django migrations..."
+	@poetry run python manage.py makemigrations
+	@echo "✅ Migrations created"
+
+migrate-reset: ## Reset and recreate database
+	@echo "🗄️ Resetting database..."
+	@poetry run python manage.py flush --noinput
+	@poetry run python manage.py migrate
+	@echo "✅ Database reset complete"
+
+migrate-check: ## Check for unapplied migrations
+	@echo "🔍 Checking for unapplied migrations..."
+	@poetry run python manage.py showmigrations --plan
+	@echo "✅ Migration check complete"
+
+# ============================================================================
+# 🌐 DJANGO WEB OPERATIONS
+# ============================================================================
+
+runserver: ## Start Django development server
+	@echo "🌐 Starting Django development server..."
+	@echo "📡 Server will be available at: http://localhost:8000"
+	@echo "🔧 Admin interface at: http://localhost:8000/REDACTED_LDAP_BIND_PASSWORD/"
+	@poetry run python manage.py runserver 0.0.0.0:8000
+
+runserver-prod: ## Start Django server with production settings
+	@echo "🌐 Starting Django server (production mode)..."
+	@poetry run python manage.py runserver 0.0.0.0:8000 --settings=flext_web.config.settings.production
+
+collectstatic: ## Collect static files
+	@echo "📦 Collecting static files..."
+	@poetry run python manage.py collectstatic --noinput
+	@echo "✅ Static files collected"
+
+shell: ## Start Django shell
+	@echo "🐚 Starting Django shell..."
+	@poetry run python manage.py shell
+
+shell-plus: ## Start Django shell with extensions
+	@echo "🐚 Starting Django shell plus..."
+	@poetry run python manage.py shell_plus
+
+dbshell: ## Start database shell
+	@echo "🗄️ Starting database shell..."
+	@poetry run python manage.py dbshell
+
+# ============================================================================
+# 👤 DJANGO USER OPERATIONS
+# ============================================================================
+
+createsuperuser: ## Create Django superuser
+	@echo "👤 Creating Django superuser..."
+	@poetry run python manage.py createsuperuser
+
+create-test-data: ## Create test data for development
+	@echo "🌱 Creating test data..."
+	@poetry run python manage.py loaddata fixtures/test_data.json
+	@echo "✅ Test data created"
+
+flush-data: ## Remove all data from database
+	@echo "🧹 Flushing database data..."
+	@poetry run python manage.py flush --noinput
+	@echo "✅ Database data flushed"
+
+# ============================================================================
+# 🔄 DJANGO MANAGEMENT COMMANDS
+# ============================================================================
+
+check-deploy: ## Check Django deployment configuration
+	@echo "🔍 Checking Django deployment configuration..."
+	@poetry run python manage.py check --deploy
+	@echo "✅ Deployment check complete"
+
+validate-templates: ## Validate Django templates
+	@echo "🔍 Validating Django templates..."
+	@poetry run python manage.py validate_templates
+	@echo "✅ Template validation complete"
+
+check-migrations: ## Check for migration issues
+	@echo "🔍 Checking for migration issues..."
+	@poetry run python manage.py makemigrations --dry-run --check
+	@echo "✅ Migration check complete"
+
+# ============================================================================
+# 📦 BUILD & DISTRIBUTION
+# ============================================================================
+
+build: clean collectstatic ## Build distribution packages
+	@echo "🔨 Building distribution..."
+	@poetry build
+	@echo "✅ Build complete - packages in dist/"
+
+build-docker: ## Build Docker image
+	@echo "🐳 Building Docker image..."
+	@docker build -t flext-web:latest .
+	@echo "✅ Docker image built"
+
+# ============================================================================
+# 🧹 CLEANUP
+# ============================================================================
+
+clean: ## Remove all artifacts
+	@echo "🧹 Cleaning up..."
+	@rm -rf build/
+	@rm -rf dist/
+	@rm -rf *.egg-info/
+	@rm -rf .coverage
+	@rm -rf htmlcov/
+	@rm -rf .pytest_cache/
+	@rm -rf staticfiles/
+	@rm -rf media/uploads/
 	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	@find . -name "*.pyc" -delete 2>/dev/null || true
-	@find . -name "*.pyo" -delete 2>/dev/null || true
+	@find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name ".mypy_cache" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	@echo "✅ Cleanup complete"
 
-# Development Workflow
-dev-setup: install-dev ## Complete development setup
-	@echo "🎯 Setting up development environment for flext-web..."
-	poetry run pre-commit install
-	mkdir -p reports
-	@echo "✅ Development setup complete!"
+# ============================================================================
+# 📊 DEPENDENCY MANAGEMENT
+# ============================================================================
 
-dev: ## Run in development mode
-	@echo "🔧 Starting flext-web in development mode..."
-	PYTHONPATH=src poetry run python -m flext_web --debug
+deps-update: ## Update all dependencies
+	@echo "🔄 Updating dependencies..."
+	@poetry update
+	@echo "✅ Dependencies updated"
 
-dev-test: ## Quick development test cycle
-	@echo "⚡ Quick test cycle for development..."
-	poetry run pytest tests/ -v --tb=short
+deps-audit: ## Audit dependencies for vulnerabilities
+	@echo "🔍 Auditing dependencies..."
+	@poetry run pip-audit
+	@echo "✅ Dependency audit complete"
 
-# Environment variables
+deps-tree: ## Show dependency tree
+	@echo "🌳 Dependency tree:"
+	@poetry show --tree
+
+deps-outdated: ## Show outdated dependencies
+	@echo "📋 Outdated dependencies:"
+	@poetry show --outdated
+
+# ============================================================================
+# 🔧 ENVIRONMENT CONFIGURATION
+# ============================================================================
+
+# Python settings
+PYTHON := python3.13
 export PYTHONPATH := $(PWD)/src:$(PYTHONPATH)
-export FLEXT_WEB_DEV := true
+export PYTHONDONTWRITEBYTECODE := 1
+export PYTHONUNBUFFERED := 1
 
-# API-specific commands
-api-dev: ## Run API in development mode
-	@echo "🚀 Starting API development server..."
-	PYTHONPATH=src poetry run uvicorn flext_web.main:app --reload --host 0.0.0.0 --port 8000
+# Django settings
+export DJANGO_SETTINGS_MODULE := flext_web.config.settings.development
+export DJANGO_DEBUG := true
+export DJANGO_SECRET_KEY := dev-secret-key-change-in-production
+export DJANGO_ALLOWED_HOSTS := localhost,127.0.0.1
 
-api-test: ## Test API endpoints
-	@echo "🧪 Testing API endpoints..."
-	poetry run pytest tests/ -v -m "not slow"
+# Database settings
+export DATABASE_URL := postgresql://localhost/flext_web_dev
+export FLEXT_WEB_DATABASE_URL := postgresql://localhost/flext_web_dev
 
-# Include standardized build system
-include Makefile.build
+# Redis settings
+export REDIS_URL := redis://localhost:6379/0
+export FLEXT_WEB_REDIS_URL := redis://localhost:6379/0
+
+# Static files settings
+export DJANGO_STATIC_URL := /static/
+export DJANGO_MEDIA_URL := /media/
+
+# Poetry settings
+export POETRY_VENV_IN_PROJECT := false
+export POETRY_CACHE_DIR := $(HOME)/.cache/pypoetry
+
+# Quality gate settings
+export MYPY_CACHE_DIR := .mypy_cache
+export RUFF_CACHE_DIR := .ruff_cache
+
+# ============================================================================
+# 📝 PROJECT METADATA
+# ============================================================================
+
+# Project information
+PROJECT_NAME := flext-web
+PROJECT_VERSION := $(shell poetry version -s)
+PROJECT_DESCRIPTION := FLEXT Web - Django Enterprise Web Application
+
+.DEFAULT_GOAL := help
+
+# ============================================================================
+# 🎯 DJANGO VALIDATION COMMANDS
+# ============================================================================
+
+django-validate: check-deploy validate-templates check-migrations ## Validate Django setup
+	@echo "✅ Django validation complete"
+
+django-security: ## Check Django security
+	@echo "🔒 Checking Django security..."
+	@poetry run python manage.py check --deploy --fail-level WARNING
+	@echo "✅ Django security check complete"
+
+django-performance: ## Check Django performance
+	@echo "⚡ Checking Django performance..."
+	@poetry run python manage.py check --debug-mode --fail-level WARNING
+	@echo "✅ Django performance check complete"
+
+# ============================================================================
+# 🎯 WEB APPLICATION TESTING
+# ============================================================================
+
+test-api: ## Test Django REST API endpoints
+	@echo "🔌 Testing Django REST API..."
+	@poetry run python manage.py test tests.api --keepdb
+	@echo "✅ API tests complete"
+
+test-forms: ## Test Django forms
+	@echo "📋 Testing Django forms..."
+	@poetry run python manage.py test tests.forms --keepdb
+	@echo "✅ Form tests complete"
+
+test-views: ## Test Django views
+	@echo "👁️ Testing Django views..."
+	@poetry run python manage.py test tests.views --keepdb
+	@echo "✅ View tests complete"
+
+test-models: ## Test Django models
+	@echo "🗄️ Testing Django models..."
+	@poetry run python manage.py test tests.models --keepdb
+	@echo "✅ Model tests complete"
+
+# ============================================================================
+# 🎯 FLEXT ECOSYSTEM INTEGRATION
+# ============================================================================
+
+ecosystem-check: ## Verify FLEXT ecosystem compatibility
+	@echo "🌐 Checking FLEXT ecosystem compatibility..."
+	@echo "📦 Web project: $(PROJECT_NAME) v$(PROJECT_VERSION)"
+	@echo "🏗️ Architecture: Clean Architecture + DDD"
+	@echo "🐍 Python: 3.13"
+	@echo "🌐 Framework: Django 5.1+ with Django REST Framework"
+	@echo "📊 Quality: Zero tolerance enforcement"
+	@echo "✅ Ecosystem compatibility verified"
+
+workspace-info: ## Show workspace integration info
+	@echo "🏢 FLEXT Workspace Integration"
+	@echo "==============================="
+	@echo "📁 Project Path: $(PWD)"
+	@echo "🏆 Role: Django Web Interface (enterprise UI)"
+	@echo "🔗 Dependencies: flext-core, flext-auth, flext-api, flext-grpc"
+	@echo "📦 Provides: Web UI, REST API, Admin interface"
+	@echo "🎯 Standards: Enterprise Django patterns with Clean Architecture"

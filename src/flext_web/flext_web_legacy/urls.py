@@ -5,6 +5,8 @@ including REDACTED_LDAP_BIND_PASSWORD interface, dashboard, and API endpoints fo
 enterprise Meltano platform.
 """
 
+from __future__ import annotations
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import REDACTED_LDAP_BIND_PASSWORD

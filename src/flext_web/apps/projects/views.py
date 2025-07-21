@@ -6,10 +6,15 @@ implementing comprehensive CRUD operations and project lifecycle management.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.http import HttpRequest, HttpResponse, JsonResponse
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 
 from flext_web.apps.projects.models import MeltanoProject, ProjectTemplate
@@ -23,7 +28,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
     context_object_name = "projects"
     paginate_by = 20
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[MeltanoProject]:
         """Get the queryset of active projects ordered by creation date.
 
         Returns:
@@ -46,7 +51,7 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
     template_name = "projects/detail.html"
     context_object_name = "project"
 
-    def get_object(self):
+    def get_object(self) -> MeltanoProject:
         """Get the specific project object for the detail view.
 
         Returns:
@@ -70,7 +75,7 @@ class ProjectTemplateListView(LoginRequiredMixin, ListView):
     template_name = "projects/templates.html"
     context_object_name = "templates"
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[ProjectTemplate]:
         """Get the queryset of active project templates ordered by category.
 
         Returns:
@@ -122,10 +127,38 @@ class ProjectDashboardView(LoginRequiredMixin, TemplateView):
 
 
 # Missing view classes for URL patterns
-class ProjectCreateView(LoginRequiredMixin, TemplateView):
+
+
+class ProjectCreateView(LoginRequiredMixin, View):
     """View for creating new projects."""
 
     template_name = "projects/create.html"
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Handle GET request for project creation form."""
+        from django.shortcuts import render
+
+        templates = ProjectTemplate.objects.filter(is_active=True)
+        return render(request, self.template_name, {"templates": templates})
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Handle POST request for project creation."""
+        name = request.POST.get("name")
+        description = request.POST.get("description", "")
+        template_id = request.POST.get("template")
+
+        if name and template_id:
+            template = get_object_or_404(ProjectTemplate, id=template_id)
+            MeltanoProject.objects.create(
+                name=name,
+                description=description,
+                template=template,
+                created_by=request.user,
+            )
+            return redirect("projects:list")
+
+        # If validation fails, redirect back to form
+        return redirect("projects:create")
 
 
 class ProjectUpdateView(LoginRequiredMixin, TemplateView):
@@ -181,13 +214,12 @@ class TemplateDetailView(LoginRequiredMixin, DetailView):
 
 
 # API Views for JSON responses
-from django.http import JsonResponse
 
 
 class ProjectAPIView(LoginRequiredMixin, TemplateView):
     """API view for project operations."""
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         projects = list(MeltanoProject.objects.values("id", "name", "status"))
         return JsonResponse({"projects": projects})
 
@@ -195,12 +227,12 @@ class ProjectAPIView(LoginRequiredMixin, TemplateView):
 class ProjectStatusAPIView(LoginRequiredMixin, TemplateView):
     """API view for project status."""
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         return JsonResponse({"status": "active", "health": "healthy"})
 
 
 class DeploymentAPIView(LoginRequiredMixin, TemplateView):
     """API view for deployments."""
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         return JsonResponse({"deployments": []})

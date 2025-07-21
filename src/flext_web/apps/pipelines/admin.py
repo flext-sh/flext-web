@@ -4,6 +4,8 @@ This module configures the Django REDACTED_LDAP_BIND_PASSWORD interface for mana
 executions, and plugins in the FLEXT Meltano Enterprise platform.
 """
 
+from __future__ import annotations
+
 from typing import ClassVar
 
 from django.contrib import REDACTED_LDAP_BIND_PASSWORD

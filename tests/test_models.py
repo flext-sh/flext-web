@@ -1,4 +1,4 @@
-"""Test Django models for flext-web."""
+"""Test Django models for flext-api.web.flext-web."""
 
 from __future__ import annotations
 
@@ -71,8 +71,21 @@ class TestPipelineModels:
             password="testpass123",
         )
 
+        template = ProjectTemplate.objects.create(
+            name="Pipeline Template",
+            description="Template for pipelines",
+        )
+
+        project = MeltanoProject.objects.create(
+            name="Test Pipeline Project",
+            description="Test project for pipelines",
+            template=template,
+            created_by=user,
+        )
+
         pipeline = PipelineWeb.objects.create(
             name="Data Sync Pipeline",
+            project=project,
             extractor="tap-postgres",
             loader="target-snowflake",
             created_by=user,

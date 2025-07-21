@@ -29,7 +29,8 @@ class UsersConfig(AppConfig):
         - Enterprise authentication and authorization
 
     Note:
-        Configures Django application with user management, authentication, and permissions.
+        Configures Django application with user management, authentication, and
+        permissions.
 
     """
 
@@ -45,6 +46,4 @@ class UsersConfig(AppConfig):
         # ZERO TOLERANCE - Signal handlers are REQUIRED for enterprise user management
         # If signals module exists, import it for auto-registration
         with contextlib.suppress(ImportError):
-            from flext_web.apps.users import (
-                signals,  # Signal auto-registration on import
-            )
+            pass

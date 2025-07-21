@@ -1,5 +1,7 @@
 {% extends "base.html" %} {% load static %} {% block title %}Update {{
-project.display_name }} - FLEXT Meltano Enterprise{% endblock %} {% block
+project.display_name }} - FLEXT Meltano Enterprise{% endblock %}
+
+{% block
 content %}
 <div class="container mx-auto px-4 py-8 max-w-2xl">
   <a
@@ -56,7 +58,9 @@ content %}
     </form>
   </div>
 </div>
-{% endblock %} {% block extra_js %}
+{% endblock %}
+
+{% block extra_js %}
 <script>
   // Add Tailwind classes to form fields
   document.addEventListener("DOMContentLoaded", function () {

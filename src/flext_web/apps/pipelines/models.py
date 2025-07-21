@@ -9,18 +9,18 @@ from __future__ import annotations
 
 import uuid
 from enum import StrEnum
+from typing import Any, ClassVar
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-
 from flext_core.domain import DomainValueObject
 
 
 class PipelineConfiguration(DomainValueObject):
     """Pipeline configuration value object using flext-core patterns."""
 
-    def __init__(self, **data) -> None:
+    def __init__(self, **data: Any) -> None:
         """Initialize pipeline configuration."""
         super().__init__()
         self._data = data
@@ -90,6 +90,14 @@ class PipelineWeb(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True)
 
+    # Project relationship
+    project = models.ForeignKey(
+        "projects.MeltanoProject",
+        on_delete=models.CASCADE,
+        related_name="pipelines",
+        help_text="Project this pipeline belongs to",
+    )
+
     # Pipeline components
     extractor = models.CharField(max_length=255)
     loader = models.CharField(max_length=255)
@@ -107,7 +115,9 @@ class PipelineWeb(models.Model):
     )
     config = models.JSONField(
         default=dict,
-        help_text="Pipeline configuration including extractor, loader, and transform settings",
+        help_text=(
+            "Pipeline configuration including extractor, loader, and transform settings"
+        ),
     )
     schedule = models.CharField(
         max_length=255,
@@ -152,10 +162,10 @@ class PipelineWeb(models.Model):
         """Meta configuration for PipelineWeb model."""
 
         db_table = "flext_pipelines"
-        ordering = ["-created_at"]
+        ordering: ClassVar[list[str]] = ["-created_at"]
         verbose_name = "Pipeline"
         verbose_name_plural = "Pipelines"
-        indexes = [
+        indexes: ClassVar[list[models.Index]] = [
             models.Index(fields=["status"]),
             models.Index(fields=["is_active"]),
             models.Index(fields=["last_run"]),
@@ -198,7 +208,8 @@ class PipelineWeb(models.Model):
         """Get the last execution status as an enum value.
 
         Returns:
-            ExecutionStatus | None: The last execution status enum value, or None if not set.
+            ExecutionStatus | None: The last execution status enum value, or
+            None if not set.
 
         """
         return ExecutionStatus(self.last_status) if self.last_status else None

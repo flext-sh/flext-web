@@ -18,14 +18,7 @@ from __future__ import annotations
 import copy
 from typing import Any
 
-from flext_core.config.domain_config import get_config
-from flext_web.flext_web_legacy.settings.base import (
-    ALLOWED_HOSTS,
-    INSTALLED_APPS,
-    MIDDLEWARE,
-    ROOT_URLCONF,
-    STATIC_URL,
-)
+from flext_core.config import get_config
 
 # Security settings
 DEBUG = False
@@ -56,7 +49,7 @@ _LOGGING_CONFIG: dict[str, Any] = copy.deepcopy(_BASE_LOGGING)
 # Add file handler configuration
 _LOGGING_CONFIG["handlers"]["file"] = {
     "class": "logging.handlers.RotatingFileHandler",
-    "filename": "/var/log/flext-web/django.log",
+    "filename": "/var/log/flext-api.web.flext-web/django.log",
     "maxBytes": _security_config.monitoring.max_log_file_size_mb * 1024 * 1024,
     "backupCount": _security_config.monitoring.log_file_backup_count,
     "formatter": "verbose",

@@ -9,12 +9,12 @@ Date: 2025-07-13
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any, ClassVar
 
-from django.contrib.auth import get_user_model, login, authenticate
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.http import JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import (
     DetailView,
@@ -23,20 +23,17 @@ from django.views.generic import (
     UpdateView,
 )
 
-if TYPE_CHECKING:
-    from django.http import HttpRequest
-
 User = get_user_model()
 
 
 class UserLoginView(LoginView):
     """User login view."""
-    
+
     template_name = "users/login.html"
     success_url = reverse_lazy("dashboard:index")
     redirect_authenticated_user = True
-    
-    def form_invalid(self, form):
+
+    def form_invalid(self, form: Any) -> HttpResponse:
         """Add custom error message for invalid login."""
         form.add_error(None, "Invalid username or password")
         return super().form_invalid(form)
@@ -44,7 +41,7 @@ class UserLoginView(LoginView):
 
 class UserLogoutView(LogoutView):
     """User logout view."""
-    
+
     next_page = reverse_lazy("users:login")
 
 
@@ -70,7 +67,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
     model = User
     template_name = "users/update.html"
-    fields = ["first_name", "last_name", "email"]
+    fields: ClassVar[list[str]] = ["first_name", "last_name", "email"]
     context_object_name = "user"
 
 

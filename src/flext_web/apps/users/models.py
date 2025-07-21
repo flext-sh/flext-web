@@ -4,14 +4,14 @@ This module defines database models for enterprise user management,
 extending Django's built-in User model with enterprise features.
 
 Author:
-            Datacosmos
+    Datacosmos
 Date: 2025-06-22
 """
 
 from __future__ import annotations
 
 import uuid
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -20,7 +20,6 @@ from django.utils import timezone
 # from flext_core.config.domain_config import get_domain_constants
 
 if TYPE_CHECKING:
-
     from django.db.models.query import QuerySet
 
 
@@ -31,30 +30,30 @@ class UserProfile(models.Model):
     fields and functionality for comprehensive user management.
     """
 
-    id = models.UUIDField(
+    id: models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    user = models.OneToOneField(
+    user: models.OneToOneField[User, User] = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         related_name="profile",
     )
 
     # Enterprise profile information
-    employee_id = models.CharField(
+    employee_id: models.CharField[str, str] = models.CharField(
         max_length=50,
         unique=True,
         null=True,
         blank=True,
     )
-    department = models.CharField(
+    department: models.CharField[str, str] = models.CharField(
         max_length=100,
         blank=True,
     )
-    job_title = models.CharField(max_length=150, blank=True)
-    manager = models.ForeignKey(
+    job_title: models.CharField[str, str] = models.CharField(max_length=150, blank=True)
+    manager: models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
@@ -63,49 +62,57 @@ class UserProfile(models.Model):
     )
 
     # Contact information
-    phone_number = models.CharField(
+    phone_number: models.CharField[str, str] = models.CharField(
         max_length=20,
         blank=True,
     )
-    office_location = models.CharField(
+    office_location: models.CharField[str, str] = models.CharField(
         max_length=200,
         blank=True,
     )
-    timezone = models.CharField(
+    timezone: models.CharField[str, str] = models.CharField(
         max_length=50,
         default="UTC",
     )
 
     # Enterprise settings
-    preferred_language = models.CharField(
+    preferred_language: models.CharField[str, str] = models.CharField(
         max_length=10,
         default="en",
     )
-    notification_preferences: models.JSONField = models.JSONField(default=dict)
-    dashboard_settings: models.JSONField = models.JSONField(default=dict)
+    notification_preferences: models.JSONField[dict[str, Any], dict[str, Any]] = (
+        models.JSONField(default=dict)
+    )
+    dashboard_settings: models.JSONField[dict[str, Any], dict[str, Any]] = (
+        models.JSONField(default=dict)
+    )
 
     # Account status
-    is_enterprise_REDACTED_LDAP_BIND_PASSWORD = models.BooleanField(
+    is_enterprise_REDACTED_LDAP_BIND_PASSWORD: models.BooleanField[bool, bool] = models.BooleanField(
         default=False,
     )
-    is_project_manager = models.BooleanField(
+    is_project_manager: models.BooleanField[bool, bool] = models.BooleanField(
         default=False,
     )
-    account_locked = models.BooleanField(default=False)
-    last_password_change = models.DateTimeField(null=True, blank=True)
+    account_locked: models.BooleanField[bool, bool] = models.BooleanField(default=False)
+    last_password_change: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
 
     # Metadata
-    created_at = models.DateTimeField(
+    created_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
         auto_now_add=True,
     )
-    updated_at = models.DateTimeField(
+    updated_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
         auto_now=True,
     )
-    last_login_ip = models.GenericIPAddressField(null=True, blank=True)
-    failed_login_attempts = models.IntegerField(
-        default=0,
+    last_login_ip: models.GenericIPAddressField[str, str] = models.GenericIPAddressField(
+        null=True,
+        blank=True,
     )
-    last_failed_login = models.DateTimeField(
+    failed_login_attempts: models.IntegerField[int, int] = models.IntegerField(default=0)
+    last_failed_login: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
         null=True,
         blank=True,
     )
@@ -113,10 +120,10 @@ class UserProfile(models.Model):
     class Meta:
         """Meta configuration for UserProfile model."""
 
-        db_table = "flext_user_profiles"
+        db_table: ClassVar[str] = "flext_user_profiles"
         ordering: ClassVar[list[str]] = ["user__username"]
-        verbose_name = "User Profile"
-        verbose_name_plural = "User Profiles"
+        verbose_name: ClassVar[str] = "User Profile"
+        verbose_name_plural: ClassVar[str] = "User Profiles"
 
         indexes: ClassVar[list[models.Index]] = [
             models.Index(fields=["employee_id"]),
@@ -161,11 +168,9 @@ class UserProfile(models.Model):
 
         """
         try:
-            profile = user.profile
-        except AttributeError:
+            return hasattr(user, "profile") and user.profile.manager == self.user  # type: ignore[attr-defined]
+        except UserProfile.DoesNotExist:
             return False
-        else:
-            return profile.manager == self.user
 
     def get_direct_reports(self) -> QuerySet[User]:
         """Get all users who report directly to this user.
@@ -179,10 +184,11 @@ class UserProfile(models.Model):
     def reset_failed_login_attempts(self) -> None:
         """Reset the failed login attempts counter.
 
-        Resets the failed login attempts to zero and clears the last failed login timestamp.
+        Resets the failed login attempts to zero and clears the last failed
+        login timestamp.
         """
         self.failed_login_attempts = 0
-        self.last_failed_login = None  # type: ignore[assignment]
+        self.last_failed_login = None
         self.save(update_fields=["failed_login_attempts", "last_failed_login"])
 
     def record_failed_login(self, ip_address: str | None = None) -> None:
@@ -212,47 +218,49 @@ class Organization(models.Model):
     hierarchical access control and resource organization.
     """
 
-    id = models.UUIDField(
+    id: models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    name = models.CharField(max_length=255, unique=True)
-    display_name = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
+    name: models.CharField[str, str] = models.CharField(max_length=255, unique=True)
+    display_name: models.CharField[str, str] = models.CharField(max_length=255)
+    description: models.TextField[str, str] = models.TextField(blank=True)
 
     # Organizational hierarchy
-    parent = models.ForeignKey(
+    parent: models.ForeignKey[Organization, Organization] = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="children",
     )
-    level = models.IntegerField(
+    level: models.IntegerField[int, int] = models.IntegerField(
         default=0,
     )  # Depth in hierarchy
 
     # Organization settings
-    settings: models.JSONField = models.JSONField(default=dict)
-    is_active = models.BooleanField(default=True)
+    settings: models.JSONField[dict[str, Any], dict[str, Any]] = models.JSONField(
+        default=dict,
+    )
+    is_active: models.BooleanField[bool, bool] = models.BooleanField(default=True)
 
     # Contact information
-    contact_email = models.EmailField(blank=True)
-    contact_phone = models.CharField(
+    contact_email: models.EmailField[str, str] = models.EmailField(blank=True)
+    contact_phone: models.CharField[str, str] = models.CharField(
         max_length=20,
         blank=True,
     )
-    address = models.TextField(blank=True)
+    address: models.TextField[str, str] = models.TextField(blank=True)
 
     # Metadata
-    created_at = models.DateTimeField(
+    created_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
         auto_now_add=True,
     )
-    updated_at = models.DateTimeField(
+    updated_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
         auto_now=True,
     )
-    created_by = models.ForeignKey(
+    created_by: models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
         related_name="created_organizations",
@@ -309,35 +317,35 @@ class OrganizationMembership(models.Model):
         ADMIN = "REDACTED_LDAP_BIND_PASSWORD", "Admin"
         OWNER = "owner", "Owner"
 
-    id = models.UUIDField(
+    id: models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    organization = models.ForeignKey(
+    organization: models.ForeignKey[Organization, Organization] = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
     )
-    user = models.ForeignKey(
+    user: models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
-    role = models.CharField(
+    role: models.CharField[str, str] = models.CharField(
         max_length=20,
         choices=Role.choices,
         default=Role.MEMBER,
     )
 
     # Membership details
-    joined_at = models.DateTimeField(
+    joined_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
         auto_now_add=True,
     )
-    invited_by = models.ForeignKey(
+    invited_by: models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
         related_name="sent_invitations",
     )
-    is_active = models.BooleanField(default=True)
+    is_active: models.BooleanField[bool, bool] = models.BooleanField(default=True)
 
     class Meta:
         """Meta configuration for OrganizationMembership model."""
@@ -373,58 +381,58 @@ class UserActivity(models.Model):
         ADMIN_ACTION = "REDACTED_LDAP_BIND_PASSWORD_action", "Admin Action"
         API_ACCESS = "api_access", "API Access"
 
-    id = models.UUIDField(
+    id: models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    user = models.ForeignKey(
+    user: models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="activities",
     )
-    action_type = models.CharField(
+    action_type: models.CharField[str, str] = models.CharField(
         max_length=50,
         choices=ActionType.choices,
     )
 
     # Action details
-    description = models.CharField(max_length=500)
-    target_object_type = models.CharField(
+    description: models.CharField[str, str] = models.CharField(max_length=500)
+    target_object_type: models.CharField[str, str] = models.CharField(
         max_length=100,
         blank=True,
     )  # Content type
-    target_object_id = models.CharField(
+    target_object_id: models.CharField[str, str] = models.CharField(
         max_length=100,
         blank=True,
     )  # Object ID
-    metadata: models.JSONField[dict[str, object], dict[str, object]] = models.JSONField(
+    metadata: models.JSONField[dict[str, Any], dict[str, Any]] = models.JSONField(
         default=dict,
     )  # Additional context
 
     # Request context
-    ip_address = models.GenericIPAddressField(
+    ip_address: models.GenericIPAddressField[str, str] = models.GenericIPAddressField(
         null=True,
         blank=True,
     )
-    user_agent = models.TextField(blank=True)
-    session_key = models.CharField(
+    user_agent: models.TextField[str, str] = models.TextField(blank=True)
+    session_key: models.CharField[str, str] = models.CharField(
         max_length=40,
         blank=True,
     )
 
     # Timestamp
-    timestamp = models.DateTimeField(
+    timestamp: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
         auto_now_add=True,
     )
 
     class Meta:
         """Meta configuration for UserActivity model."""
 
-        db_table = "flext_user_activities"
+        db_table: ClassVar[str] = "flext_user_activities"
         ordering: ClassVar[list[str]] = ["-timestamp"]
-        verbose_name = "User Activity"
-        verbose_name_plural = "User Activities"
+        verbose_name: ClassVar[str] = "User Activity"
+        verbose_name_plural: ClassVar[str] = "User Activities"
 
         indexes: ClassVar[list[models.Index]] = [
             models.Index(fields=["user", "timestamp"]),
@@ -493,24 +501,24 @@ class APIKey(models.Model):
     programmatically with proper access control and monitoring.
     """
 
-    id = models.UUIDField(
+    id: models.UUIDField[uuid.UUID, uuid.UUID] = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
     )
-    user = models.ForeignKey(
+    user: models.ForeignKey[User, User] = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="api_keys",
     )
-    name = models.CharField(max_length=255)
+    name: models.CharField[str, str] = models.CharField(max_length=255)
 
     # Key details
-    key = models.CharField(
+    key: models.CharField[str, str] = models.CharField(
         max_length=64,
         unique=True,
     )  # Hashed key
-    prefix = models.CharField(
+    prefix: models.CharField[str, str] = models.CharField(
         max_length=8,
     )  # First 8 chars for identification
 
@@ -518,21 +526,27 @@ class APIKey(models.Model):
     scopes: models.JSONField[list[str], list[str]] = models.JSONField(
         default=list,
     )  # List of allowed scopes
-    rate_limit = models.IntegerField(
+    rate_limit: models.IntegerField[int, int] = models.IntegerField(
         default=1000,  # Default rate limit
     )  # Requests per hour
 
     # Status and lifecycle
-    is_active = models.BooleanField(default=True)
-    expires_at = models.DateTimeField(null=True, blank=True)
-    last_used_at = models.DateTimeField(null=True, blank=True)
-    usage_count = models.IntegerField(default=0)
+    is_active: models.BooleanField[bool, bool] = models.BooleanField(default=True)
+    expires_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    last_used_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    usage_count: models.IntegerField[int, int] = models.IntegerField(default=0)
 
     # Metadata
-    created_at = models.DateTimeField(
+    created_at: models.DateTimeField[timezone.datetime, timezone.datetime] = models.DateTimeField(
         auto_now_add=True,
     )
-    created_by_ip = models.GenericIPAddressField(
+    created_by_ip: models.GenericIPAddressField[str, str] = models.GenericIPAddressField(
         null=True,
         blank=True,
     )
@@ -540,10 +554,10 @@ class APIKey(models.Model):
     class Meta:
         """Meta configuration for APIKey model."""
 
-        db_table = "flext_api_keys"
+        db_table: ClassVar[str] = "flext_api_keys"
         ordering: ClassVar[list[str]] = ["-created_at"]
-        verbose_name = "API Key"
-        verbose_name_plural = "API Keys"
+        verbose_name: ClassVar[str] = "API Key"
+        verbose_name_plural: ClassVar[str] = "API Keys"
 
         indexes: ClassVar[list[models.Index]] = [
             models.Index(fields=["user"]),

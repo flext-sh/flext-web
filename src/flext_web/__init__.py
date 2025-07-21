@@ -8,9 +8,15 @@ Uses Django patterns with flext-core domain models.
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
+import importlib.metadata
 
-# Core exports
+try:
+    __version__ = importlib.metadata.version("flext-web")
+except importlib.metadata.PackageNotFoundError:
+    __version__ = "0.0.0-dev"
+
+__version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
+
 try:
     from flext_web.config import WebConfig
     from flext_web.domain.entities import Deployment, Pipeline, Project
@@ -35,4 +41,5 @@ __all__ = [
     "WebContainer",
     # Version
     "__version__",
+    "__version_info__",
 ]

@@ -1,35 +1,29 @@
 #!/usr/bin/env python
-"""Django's command-line utility for REDACTED_LDAP_BIND_PASSWORDistrative tasks.
+"""Django's command-line utility for REDACTED_LDAP_BIND_PASSWORDistrative tasks."""
 
-Provides Django management commands for running the web application,
-database migrations, static file collection, and REDACTED_LDAP_BIND_PASSWORDistrative tasks.
-
-Examples:
---------
-    Basic module usage:
-
-    ```python
-    python manage.py runserver
-    python manage.py migrate
-    ```
-
-Note:
-----
-    Standard Django management entry point for web application REDACTED_LDAP_BIND_PASSWORDistration.
-
-
-"""
+from __future__ import annotations
 
 import os
 import sys
 
-from django.core.management import execute_from_command_line
-
 
 def main() -> None:
+    """Run REDACTED_LDAP_BIND_PASSWORDistrative tasks."""
     os.environ.setdefault(
-        "DJANGO_SETTINGS_MODULE", "flext_web.flext_web_legacy.settings.development",
+        "DJANGO_SETTINGS_MODULE",
+        "flext_web.flext_web_legacy.settings.development_simple",
     )
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError as exc:
+        msg = (
+            "Couldn't import Django. Are you sure it's installed and "
+            "available on your PYTHONPATH environment variable? Did you "
+            "forget to activate a virtual environment?"
+        )
+        raise ImportError(
+            msg,
+        ) from exc
     execute_from_command_line(sys.argv)
 
 

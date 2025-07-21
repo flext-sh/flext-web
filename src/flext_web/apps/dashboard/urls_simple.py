@@ -1,5 +1,7 @@
 """Simple dashboard URL configuration for testing Django functionality."""
 
+from __future__ import annotations
+
 from django.urls import path
 
 from flext_web.apps.dashboard.views_simple import (

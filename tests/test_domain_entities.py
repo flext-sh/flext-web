@@ -5,7 +5,6 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-import pytest
 from flext_web.domain.entities import (
     DashboardWidget,
     Deployment,
@@ -698,7 +697,7 @@ class TestDeployment:
         """Test deployment string representation."""
         deployment = Deployment(
             name="Staging Deploy",
-            project_id="proj-456",
+            project_id=TEST_PROJECT_ID,
             version="1.1.0",
             environment="staging",
             status="pending",
@@ -714,7 +713,7 @@ class TestDeployment:
         """Test marking deployment as completed."""
         deployment = Deployment(
             name="Test Deploy",
-            project_id="proj-789",
+            project_id=TEST_PROJECT_ID,
             version="1.0.0",
             environment="development",
             status="pending",
@@ -733,7 +732,7 @@ class TestDeployment:
         """Test marking deployment as failed."""
         deployment = Deployment(
             name="Failed Deploy",
-            project_id="proj-fail",
+            project_id=TEST_PROJECT_ID,
             version="0.9.0",
             environment="testing",
             status="pending",
@@ -748,7 +747,7 @@ class TestDeployment:
         """Test deployment with associated pipeline."""
         deployment = Deployment(
             name="Pipeline Deploy",
-            project_id="proj-pipeline",
+            project_id=TEST_PROJECT_ID,
             pipeline_id=TEST_PIPELINE_ID,
             version="2.0.0",
             environment="production",

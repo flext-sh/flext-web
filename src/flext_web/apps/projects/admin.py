@@ -6,7 +6,7 @@ providing comprehensive REDACTED_LDAP_BIND_PASSWORDistrative capabilities for pr
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from django.contrib import REDACTED_LDAP_BIND_PASSWORD
 
@@ -65,7 +65,7 @@ class MeltanoProjectAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin):
     ]
     list_filter: ClassVar[list[str]] = ["template", "status", "is_active"]
     search_fields: ClassVar[list[str]] = ["name", "description"]
-    inlines = [ProjectMembershipInline]
+    inlines: ClassVar[list[Any]] = [ProjectMembershipInline]
 
 
 @REDACTED_LDAP_BIND_PASSWORD.register(ProjectDeployment)

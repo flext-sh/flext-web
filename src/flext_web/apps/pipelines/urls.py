@@ -5,6 +5,8 @@ functionality within the FLEXT web application, providing RESTful endpoints
 for pipeline operations.:
 """
 
+from __future__ import annotations
+
 from django.urls import path
 
 from flext_web.apps.pipelines.views import PipelineDetailView, PipelineListView

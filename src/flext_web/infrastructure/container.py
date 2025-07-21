@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from flext_core.config import get_container, singleton
+from flext_core.config import get_container
+
 from flext_web.config import WebConfig
 
 

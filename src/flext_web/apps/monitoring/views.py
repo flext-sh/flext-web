@@ -7,7 +7,7 @@ without external dependencies for URL namespace registration.
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
@@ -35,7 +35,7 @@ class MonitoringDashboardView(LoginRequiredMixin, TemplateView):
                 "total_executions": 127,
                 "success_rate": 98.4,
                 "timestamp": datetime.now(UTC).isoformat(),
-            }
+            },
         )
 
         return context
@@ -45,7 +45,10 @@ class BusinessMetricsAPIView(LoginRequiredMixin, View):
     """API endpoint for real-time business metrics data."""
 
     def get(
-        self, request: HttpRequest, *args: object, **kwargs: object
+        self,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
     ) -> JsonResponse:
         """Handle GET request for business metrics API endpoint."""
         return JsonResponse(
@@ -58,7 +61,7 @@ class BusinessMetricsAPIView(LoginRequiredMixin, View):
                 },
                 "timestamp": datetime.now(UTC).isoformat(),
                 "status": "healthy",
-            }
+            },
         )
 
 
@@ -66,7 +69,10 @@ class SecurityMonitoringAPIView(LoginRequiredMixin, View):
     """API endpoint for security monitoring data."""
 
     def get(
-        self, request: HttpRequest, *args: object, **kwargs: object
+        self,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
     ) -> JsonResponse:
         """Handle GET request for security monitoring API endpoint."""
         return JsonResponse(
@@ -79,7 +85,7 @@ class SecurityMonitoringAPIView(LoginRequiredMixin, View):
                 },
                 "status": "secure",
                 "timestamp": datetime.now(UTC).isoformat(),
-            }
+            },
         )
 
 
@@ -87,7 +93,10 @@ class ErrorPatternsAPIView(LoginRequiredMixin, View):
     """API endpoint for error pattern analysis."""
 
     def get(
-        self, request: HttpRequest, *args: object, **kwargs: object
+        self,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
     ) -> JsonResponse:
         """Handle GET request for error patterns API endpoint."""
         return JsonResponse(
@@ -101,7 +110,7 @@ class ErrorPatternsAPIView(LoginRequiredMixin, View):
                 },
                 "recent_errors": [],
                 "timestamp": datetime.now(UTC).isoformat(),
-            }
+            },
         )
 
 
@@ -109,7 +118,10 @@ class HealthStatusAPIView(LoginRequiredMixin, View):
     """API endpoint for system health status."""
 
     def get(
-        self, request: HttpRequest, *args: object, **kwargs: object
+        self,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
     ) -> JsonResponse:
         """Handle GET request for health status API endpoint."""
         return JsonResponse(
@@ -123,7 +135,7 @@ class HealthStatusAPIView(LoginRequiredMixin, View):
                 },
                 "uptime_seconds": 86400,
                 "timestamp": datetime.now(UTC).isoformat(),
-            }
+            },
         )
 
 
@@ -131,7 +143,10 @@ class AlertsAPIView(LoginRequiredMixin, View):
     """API endpoint for system alerts."""
 
     def get(
-        self, request: HttpRequest, *args: object, **kwargs: object
+        self,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
     ) -> JsonResponse:
         """Handle GET request for alerts API endpoint."""
         return JsonResponse(
@@ -141,7 +156,7 @@ class AlertsAPIView(LoginRequiredMixin, View):
                 "critical_alerts": 0,
                 "warning_alerts": 0,
                 "timestamp": datetime.now(UTC).isoformat(),
-            }
+            },
         )
 
 
@@ -149,7 +164,10 @@ class MonitoringStatsAPIView(LoginRequiredMixin, View):
     """API endpoint for monitoring statistics."""
 
     def get(
-        self, request: HttpRequest, *args: object, **kwargs: object
+        self,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
     ) -> JsonResponse:
         """Handle GET request for monitoring stats API endpoint."""
         return JsonResponse(
@@ -163,5 +181,5 @@ class MonitoringStatsAPIView(LoginRequiredMixin, View):
                 },
                 "performance_score": 94.5,
                 "timestamp": datetime.now(UTC).isoformat(),
-            }
+            },
         )

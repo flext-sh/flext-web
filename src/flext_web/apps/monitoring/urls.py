@@ -8,6 +8,8 @@ URL patterns for comprehensive enterprise monitoring interface including:
 - Health status monitoring
 """
 
+from __future__ import annotations
+
 from django.urls import path
 
 from flext_web.apps.monitoring import views

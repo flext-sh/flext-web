@@ -19,7 +19,9 @@ Warning:
 
 """
 
-from flext_web.flext_web_legacy.settings.base import *
+from __future__ import annotations
+
+from flext_web.flext_web_legacy.settings.base import *  # noqa: F403
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

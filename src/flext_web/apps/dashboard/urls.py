@@ -5,6 +5,8 @@ mapping URLs to their corresponding views for the FLEXT Meltano
 Enterprise dashboard interface.
 """
 
+from __future__ import annotations
+
 from django.urls import path
 
 from flext_web.apps.dashboard import views

@@ -4,6 +4,8 @@ This module configures the Projects application for the FLEXT Django
 web interface, providing enterprise project management capabilities.
 """
 
+from __future__ import annotations
+
 
 class ProjectsConfig:
     """Django application configuration for Project Management.

@@ -20,8 +20,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views import View
 from django.views.generic import TemplateView
-from flext_grpc.client import FlextGrpcClientBase
-from google.protobuf import empty_pb2
+
+# Import gRPC with fallback for testing environments
+try:
+    from flext_grpc.client import FlextGrpcClientBase
+    from google.protobuf import empty_pb2
+
+    GRPC_AVAILABLE = True
+except ImportError:
+    FlextGrpcClientBase = None  # type: ignore[misc,assignment]
+    empty_pb2 = None  # type: ignore[misc,assignment]
+    GRPC_AVAILABLE = False
 
 # Unified gRPC client and configuration from canonical implementation
 from flext_core.config import get_config
@@ -39,184 +48,213 @@ HealthStatus = dict[str, bool | dict[str, Any]]
 ExecutionData = dict[str, str | None]
 
 
-class FlextDashboardGrpcClient(FlextGrpcClientBase):
-    """Dashboard gRPC client extending base with dashboard-specific functionality.
+if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
 
-    Inherits from FlextGrpcClientBase to eliminate duplication while providing
-    specialized dashboard data formatting and retrieval methods.
-    Renamed from FlextGrpcClient to avoid conflict with CLI FlextGrpcClient.
-    """
+    class FlextDashboardGrpcClient(FlextGrpcClientBase):
+        """Dashboard gRPC client extending base with dashboard-specific functionality.
 
-    def __init__(self) -> None:
-        super().__init__()
-
-    def get_dashboard_data(self) -> dict[str, Any]:
-        """Get complete dashboard data from gRPC server.
-
-        Returns:
-            Dictionary containing stats, health, recent_executions, and error.
-
+        Inherits from FlextGrpcClientBase to eliminate duplication while providing
+        specialized dashboard data formatting and retrieval methods.
+        Renamed from FlextGrpcClient to avoid conflict with CLI FlextGrpcClient.
         """
-        try:
-            with self._create_channel() as channel:
-                stub = self._create_stub(channel)
 
-                # Get all data in parallel using gRPC streaming if available:
-                stats_response = stub.GetSystemStats(empty_pb2.Empty())
-                health_response = stub.HealthCheck(empty_pb2.Empty())
-                get_config()
-                executions_response = stub.ListExecutions(
-                    flext_pb2.ListExecutionsRequest(
-                        limit=50,  # Default execution limit
-                        offset=0,
-                    ),
-                )
+        def __init__(self) -> None:
+            super().__init__()
 
-                # Format dashboard data
+        def get_dashboard_data(self) -> dict[str, Any]:
+            """Get complete dashboard data from gRPC server.
+
+            Returns:
+                Dictionary containing stats, health, recent_executions, and error.
+
+            """
+            try:
+                with self._create_channel() as channel:
+                    stub = self._create_stub(channel)
+
+                    # Get all data in parallel using gRPC streaming if available:
+                    stats_response = stub.GetSystemStats(empty_pb2.Empty())
+                    health_response = stub.HealthCheck(empty_pb2.Empty())
+                    get_config()
+                    executions_response = stub.ListExecutions(
+                        flext_pb2.ListExecutionsRequest(
+                            limit=50,  # Default execution limit
+                            offset=0,
+                        ),
+                    )
+
+                    # Format dashboard data
+                    return {
+                        "stats": self._format_stats(stats_response),
+                        "health": self._format_health(health_response),
+                        "recent_executions": self._format_executions(
+                            executions_response.executions,
+                        ),
+                        "error": None,
+                    }
+
+            except grpc.RpcError as e:
                 return {
-                    "stats": self._format_stats(stats_response),
-                    "health": self._format_health(health_response),
-                    "recent_executions": self._format_executions(
-                        executions_response.executions,
-                    ),
-                    "error": None,
+                    "stats": self._get_default_stats(),
+                    "health": self._get_default_health(),
+                    "recent_executions": [],
+                    "error": f"Unable to connect to FLEXT daemon: {e.details()}",
                 }
 
-        except grpc.RpcError as e:
+        def get_stats_only(self) -> dict[str, Any]:
+            """Get system statistics and execution data for API endpoints.
+
+            Returns:
+                Dictionary containing stats, health, and recent executions.
+
+            """
+            try:
+                with self._create_channel() as channel:
+                    stub = self._create_stub(channel)
+
+                    # Parallel requests for minimal latency
+                    stats_response = stub.GetSystemStats(empty_pb2.Empty())
+                    health_response = stub.HealthCheck(empty_pb2.Empty())
+                    get_config()
+                    executions_response = stub.ListExecutions(
+                        flext_pb2.ListExecutionsRequest(
+                            limit=50,  # Default recent executions limit
+                            offset=0,
+                        ),
+                    )
+
+                    return {
+                        "stats": {
+                            **self._format_stats(stats_response),
+                            "uptime_seconds": stats_response.uptime_seconds,
+                        },
+                        "health": self._format_health(health_response),
+                        "recent_executions": [
+                            {
+                                **self._format_execution(execution),
+                                "started_at": (
+                                    execution.started_at.ToDatetime().isoformat()
+                                    if execution.started_at
+                                    else None
+                                ),
+                            }
+                            for execution in executions_response.executions
+                        ],
+                    }
+
+            except grpc.RpcError as e:
+                return {
+                    "error": f"gRPC error: {e.details()}",
+                    "status_code": 503,
+                }
+
+        def _format_stats(self, stats_response: object) -> DashboardStats:
             return {
-                "stats": self._get_default_stats(),
-                "health": self._get_default_health(),
+                "active_pipelines": stats_response.active_pipelines,
+                "total_executions": stats_response.total_executions,
+                "success_rate": round(stats_response.success_rate, 1),
+                "cpu_usage": round(stats_response.cpu_usage, 1),
+                "memory_usage": round(stats_response.memory_usage, 1),
+            }
+
+        def _format_health(self, health_response: object) -> HealthStatus:
+            components = {}
+            for name, comp in health_response.components.items():
+                components[name] = {
+                    "healthy": comp.healthy,
+                    "message": comp.message,
+                    "metadata": dict(comp.metadata),
+                }
+
+            return {
+                "healthy": health_response.healthy,
+                "components": components,
+            }
+
+        def _format_executions(self, executions: list[Any]) -> list[ExecutionData]:
+            return [self._format_execution(execution) for execution in executions]
+
+        def _format_execution(self, execution: object) -> ExecutionData:
+            return {
+                "id": execution.id,
+                "pipeline_name": execution.pipeline_id,
+                "status": execution.status,
+                "started_at": (
+                    execution.started_at.ToDatetime() if execution.started_at else None
+                ),
+                "duration": self._calculate_duration(execution),
+            }
+
+        def _calculate_duration(self, execution: object) -> str | None:
+            if not execution.started_at:
+                return None
+
+            start_time = execution.started_at.ToDatetime()
+            end_time = (
+                execution.completed_at.ToDatetime()
+                if execution.completed_at
+                else datetime.now(UTC)
+            )
+
+            duration = end_time - start_time
+            total_seconds = int(duration.total_seconds())
+
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            seconds = total_seconds % 60
+
+            if hours > 0:
+                return f"{hours}h {minutes}m"
+            if minutes > 0:
+                return f"{minutes}m {seconds}s"
+            return f"{seconds}s"
+
+        def _get_default_stats(self) -> DashboardStats:
+            return {
+                "active_pipelines": 0,
+                "total_executions": 0,
+                "success_rate": 0,
+                "cpu_usage": 0,
+                "memory_usage": 0,
+            }
+
+        def _get_default_health(self) -> HealthStatus:
+            return {
+                "healthy": False,
+                "components": {},
+            }
+
+else:
+    # Fallback class when gRPC is not available
+    class FlextDashboardGrpcClient:
+        """Fallback dashboard client when gRPC is not available."""
+
+        def __init__(self) -> None:
+            pass
+
+        def get_dashboard_data(self) -> dict[str, Any]:
+            """Return fallback dashboard data."""
+            return {
+                "stats": {"pipelines": 0, "executions": 0, "active_connections": 0},
+                "health": {"healthy": False, "components": {}},
                 "recent_executions": [],
-                "error": f"Unable to connect to FLEXT daemon: {e.details()}",
+                "error": "gRPC service not available - running in fallback mode",
             }
 
-    def get_stats_only(self) -> dict[str, Any]:
-        """Get system statistics and execution data for API endpoints.
-
-        Returns:
-            Dictionary containing stats, health, and recent executions.
-
-        """
-        try:
-            with self._create_channel() as channel:
-                stub = self._create_stub(channel)
-
-                # Parallel requests for minimal latency
-                stats_response = stub.GetSystemStats(empty_pb2.Empty())
-                health_response = stub.HealthCheck(empty_pb2.Empty())
-                get_config()
-                executions_response = stub.ListExecutions(
-                    flext_pb2.ListExecutionsRequest(
-                        limit=50,  # Default recent executions limit
-                        offset=0,
-                    ),
-                )
-
-                return {
-                    "stats": {
-                        **self._format_stats(stats_response),
-                        "uptime_seconds": stats_response.uptime_seconds,
-                    },
-                    "health": self._format_health(health_response),
-                    "recent_executions": [
-                        {
-                            **self._format_execution(execution),
-                            "started_at": (
-                                execution.started_at.ToDatetime().isoformat()
-                                if execution.started_at
-                                else None
-                            ),
-                        }
-                        for execution in executions_response.executions
-                    ],
-                }
-
-        except grpc.RpcError as e:
+        def get_stats_only(self) -> dict[str, Any]:
+            """Return fallback stats data."""
             return {
-                "error": f"gRPC error: {e.details()}",
-                "status_code": 503,
+                "stats": {"pipelines": 0, "executions": 0, "active_connections": 0},
+                "health": {"healthy": False, "components": {}},
+                "recent_executions": [],
+                "error": "gRPC service not available",
             }
-
-    def _format_stats(self, stats_response: object) -> DashboardStats:
-        return {
-            "active_pipelines": stats_response.active_pipelines,
-            "total_executions": stats_response.total_executions,
-            "success_rate": round(stats_response.success_rate, 1),
-            "cpu_usage": round(stats_response.cpu_usage, 1),
-            "memory_usage": round(stats_response.memory_usage, 1),
-        }
-
-    def _format_health(self, health_response: object) -> HealthStatus:
-        components = {}
-        for name, comp in health_response.components.items():
-            components[name] = {
-                "healthy": comp.healthy,
-                "message": comp.message,
-                "metadata": dict(comp.metadata),
-            }
-
-        return {
-            "healthy": health_response.healthy,
-            "components": components,
-        }
-
-    def _format_executions(self, executions: list[Any]) -> list[ExecutionData]:
-        return [self._format_execution(execution) for execution in executions]
-
-    def _format_execution(self, execution: object) -> ExecutionData:
-        return {
-            "id": execution.id,
-            "pipeline_name": execution.pipeline_id,
-            "status": execution.status,
-            "started_at": (
-                execution.started_at.ToDatetime() if execution.started_at else None
-            ),
-            "duration": self._calculate_duration(execution),
-        }
-
-    def _calculate_duration(self, execution: object) -> str | None:
-        if not execution.started_at:
-            return None
-
-        start_time = execution.started_at.ToDatetime()
-        end_time = (
-            execution.completed_at.ToDatetime()
-            if execution.completed_at
-            else datetime.now(UTC)
-        )
-
-        duration = end_time - start_time
-        total_seconds = int(duration.total_seconds())
-
-        hours = total_seconds // 3600
-        minutes = (total_seconds % 3600) // 60
-        seconds = total_seconds % 60
-
-        if hours > 0:
-            return f"{hours}h {minutes}m"
-        if minutes > 0:
-            return f"{minutes}m {seconds}s"
-        return f"{seconds}s"
-
-    def _get_default_stats(self) -> DashboardStats:
-        return {
-            "active_pipelines": 0,
-            "total_executions": 0,
-            "success_rate": 0,
-            "cpu_usage": 0,
-            "memory_usage": 0,
-        }
-
-    def _get_default_health(self) -> HealthStatus:
-        return {
-            "healthy": False,
-            "components": {},
-        }
 
 
 @functools.lru_cache(maxsize=1)
-def get_grpc_client() -> FlextGrpcClientBase:
-    return FlextGrpcClientBase()
+def get_grpc_client() -> FlextDashboardGrpcClient:
+    """Get gRPC client with fallback support."""
+    return FlextDashboardGrpcClient()
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -283,17 +321,24 @@ class StatsAPIView(LoginRequiredMixin, View):
             JSON response with current system statistics or error information.
 
         """
-        grpc_client = get_grpc_client()
-        stats_data = grpc_client.get_stats_only()
+        try:
+            grpc_client = get_grpc_client()
+            stats_data = grpc_client.get_stats_only()
 
-        # Handle error response
-        if "error" in stats_data:
+            # Handle error response
+            if "error" in stats_data:
+                return JsonResponse(
+                    {"error": stats_data["error"]},
+                    status=stats_data.get("status_code", 503),
+                )
+
+            return JsonResponse(stats_data)
+        except Exception as e:
+            # Handle unexpected exceptions
             return JsonResponse(
-                {"error": stats_data["error"]},
-                status=stats_data.get("status_code", 503),
+                {"error": f"Unexpected error: {e}"},
+                status=500,
             )
-
-        return JsonResponse(stats_data)
 
 
 # ZERO TOLERANCE CONSOLIDATION: Backward compatibility alias

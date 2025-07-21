@@ -89,7 +89,6 @@ class FlextPipelineGrpcClient(FlextGrpcClientBase):
 
 @functools.lru_cache(maxsize=1)
 def get_pipeline_client() -> FlextPipelineGrpcClient | None:
-    """Get pipeline client with graceful error handling for tests."""
     try:
         return FlextPipelineGrpcClient()
     except Exception:
@@ -130,7 +129,8 @@ class PipelineDetailView(LoginRequiredMixin, TemplateView):
         """Get context data for the pipeline detail template.
 
         Args:
-            **kwargs: Additional keyword arguments passed to the view, including 'pk' for pipeline ID.
+            **kwargs: Additional keyword arguments passed to the view, including
+                'pk' for pipeline ID.
 
         Returns:
             dict[str, object]: Context data including the specific pipeline details.
@@ -140,7 +140,7 @@ class PipelineDetailView(LoginRequiredMixin, TemplateView):
 
         """
         context = super().get_context_data(**kwargs)
-        pipeline_id = kwargs.get("pk")
+        pipeline_id = kwargs.get("pipeline_id")
 
         if not pipeline_id:
             msg = "Pipeline ID not provided"
