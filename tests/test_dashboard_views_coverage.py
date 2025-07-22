@@ -1,5 +1,4 @@
 """Additional tests for dashboard views to improve coverage."""
-
 from __future__ import annotations
 
 import json
@@ -29,13 +28,11 @@ class TestFlextDashboardGrpcClientFallback(TestCase):
         """Test fallback get_dashboard_data method."""
         client = FlextDashboardGrpcClient()
         data = client.get_dashboard_data()
-
         assert isinstance(data, dict)
         assert "stats" in data
         assert "health" in data
         assert "recent_executions" in data
         assert "error" in data
-
         # The actual method calls gRPC and gets real response or error
         # Since we're using the real client, check for proper structure
         if data.get("error"):
@@ -51,9 +48,7 @@ class TestFlextDashboardGrpcClientFallback(TestCase):
         """Test fallback get_stats_only method."""
         client = FlextDashboardGrpcClient()
         data = client.get_stats_only()
-
         assert isinstance(data, dict)
-
         # The actual method calls gRPC and gets real response or error
         # Since we're using the real client, check for proper structure
         if data.get("error"):
@@ -82,7 +77,6 @@ class TestGetGrpcClient(TestCase):
         """Test that get_grpc_client uses LRU cache."""
         client1 = get_grpc_client()
         client2 = get_grpc_client()
-
         # Should return the same instance due to caching
         assert client1 is client2
 
@@ -107,10 +101,8 @@ class TestDashboardView(TestCase):
         """Test that DashboardView requires login."""
         request = self.factory.get("/dashboard/")
         request.user = self.user
-
         view = DashboardView()
         view.setup(request)
-
         # Should not raise exception with authenticated user
         assert hasattr(view, "request")
         assert view.request.user == self.user
@@ -127,18 +119,14 @@ class TestDashboardView(TestCase):
             "error": None,
         }
         mock_get_client.return_value = mock_client
-
         request = self.factory.get("/dashboard/")
         request.user = self.user
-
         view = DashboardView()
         view.setup(request)
-
         context = view.get_context_data()
-
         # The dashboard view spreads the data directly into context, not under 'dashboard_data' key
-        assert context["stats"]["pipelines"] == 5  # type: ignore[index]
-        assert context["health"]["healthy"] is True  # type: ignore[index]
+        assert context["stats"]["pipelines"] == 5
+        assert context["health"]["healthy"] is True
         assert context["recent_executions"] == []
         assert context["error"] is None
         mock_client.get_dashboard_data.assert_called_once()
@@ -154,14 +142,11 @@ class TestDashboardView(TestCase):
             "error": "Connection failed",
         }
         mock_get_client.return_value = mock_client
-
         request = self.factory.get("/dashboard/")
         request.user = self.user
-
         view = DashboardView()
         view.setup(request)
         context = view.get_context_data()
-
         # The dashboard view spreads the data directly into context, not under 'dashboard_data' key
         assert context["error"] == "Connection failed"
 
@@ -194,13 +179,10 @@ class TestStatsAPIView(TestCase):
             ],
         }
         mock_get_client.return_value = mock_client
-
         request = self.factory.get("/api/stats/")
         request.user = self.user
-
         view = StatsAPIView()
         response = view.get(request)
-
         assert response.status_code == 200
         data = json.loads(response.content)
         assert data["stats"]["pipelines"] == 3
@@ -217,13 +199,10 @@ class TestStatsAPIView(TestCase):
             "status_code": 503,
         }
         mock_get_client.return_value = mock_client
-
         request = self.factory.get("/api/stats/")
         request.user = self.user
-
         view = StatsAPIView()
         response = view.get(request)
-
         assert response.status_code == 503
         data = json.loads(response.content)
         assert "error" in data
@@ -235,13 +214,10 @@ class TestStatsAPIView(TestCase):
         mock_client = Mock()
         mock_client.get_stats_only.side_effect = Exception("Unexpected error")
         mock_get_client.return_value = mock_client
-
         request = self.factory.get("/api/stats/")
         request.user = self.user
-
         view = StatsAPIView()
         response = view.get(request)
-
         assert response.status_code == 500
         data = json.loads(response.content)
         assert "error" in data
@@ -251,7 +227,6 @@ class TestStatsAPIView(TestCase):
         """Test that StatsAPIView requires authentication."""
         view = StatsAPIView()
         assert hasattr(view, "dispatch")
-
         # Check that LoginRequiredMixin is in the class hierarchy
         assert any("LoginRequiredMixin" in str(cls) for cls in view.__class__.__mro__)
 
@@ -262,7 +237,6 @@ class TestDashboardModuleIntegration(TestCase):
     def test_module_imports_correctly(self) -> None:
         """Test that dashboard views module imports correctly."""
         from flext_web.apps.dashboard import views
-
         assert hasattr(views, "DashboardView")
         assert hasattr(views, "StatsAPIView")
         assert hasattr(views, "FlextDashboardGrpcClient")
@@ -271,7 +245,6 @@ class TestDashboardModuleIntegration(TestCase):
     def test_grpc_availability_constant(self) -> None:
         """Test GRPC_AVAILABLE constant."""
         from flext_web.apps.dashboard.views import GRPC_AVAILABLE
-
         # Should be True since we have protobuf available in the environment
         assert GRPC_AVAILABLE is True
 
@@ -280,13 +253,10 @@ class TestDashboardModuleIntegration(TestCase):
         # DashboardView should inherit from LoginRequiredMixin and TemplateView
         mro = DashboardView.__mro__
         class_names = [cls.__name__ for cls in mro]
-
         assert "LoginRequiredMixin" in class_names
         assert "TemplateView" in class_names
-
         # StatsAPIView should inherit from LoginRequiredMixin and View
         mro = StatsAPIView.__mro__
         class_names = [cls.__name__ for cls in mro]
-
         assert "LoginRequiredMixin" in class_names
         assert "View" in class_names

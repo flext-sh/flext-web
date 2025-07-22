@@ -1,51 +1,41 @@
 """Development settings for FLEXT Meltano Enterprise Web application.
-
 This module provides development-specific Django settings that extend the base
 configuration with debugging tools and development-friendly features.
-
 Features:
             - Debug mode enabled with detailed error pages
     - Django Debug Toolbar for performance profiling
     - Console email backend for testing email functionality
     - Permissive CORS settings for frontend development
     - Dummy caching to avoid Redis dependency in development
-    - Hot reloading support for template and static file changes
+    - Hot reloading support for template and static file changes.
 
 Warning:
 -------
     These settings should NEVER be used in production environments
     as they expose sensitive debugging information.
 
-
 """
-
 from __future__ import annotations
 
 from flext_web.flext_web_legacy.settings.base import *  # noqa: F403
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 # Additional apps for development - debug toolbar disabled for testing
 # INSTALLED_APPS += [
 #     "debug_toolbar",
 # ]
-
 # Additional middleware for development - debug toolbar disabled for testing
 # MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
-
 # Debug toolbar settings
 INTERNAL_IPS = [
     "127.0.0.1",
     "localhost",  # Fallback for development
 ]
-
 # Email backend for development
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
 # Allow all origins in development
 CORS_ALLOW_ALL_ORIGINS = True
-
 # Disable caching in development
 CACHES = {
     "default": {

@@ -9,7 +9,7 @@ This module provides Django web configuration using consolidated flext-core patt
 from __future__ import annotations
 
 from flext_core import BaseSettings, Field
-from flext_core.config.database import DatabaseConfig
+from flext_core.config.flext_config import FlextDatabaseConfig as DatabaseConfig
 from flext_core.domain.constants import ConfigDefaults, FlextFramework
 from pydantic import field_validator
 from pydantic_settings import SettingsConfigDict
@@ -41,7 +41,6 @@ class WebConfig(BaseSettings):
         default_factory=lambda: DatabaseConfig(url="postgresql://localhost/flext_web"),
         description="Database configuration using consolidated patterns",
     )
-
 
     # Django-specific settings
     django_secret_key: str = Field(
@@ -216,6 +215,15 @@ class WebConfig(BaseSettings):
         if len(v) < 50:
             msg = "Django secret key must be at least 50 characters"
             raise ValueError(msg)
+        return v
+
+    @field_validator("csrf_trusted_origins", "django_allowed_hosts", "celery_accept_content", "allowed_upload_types", mode="before")
+    @classmethod
+    def validate_list_fields(cls, v: list[str] | str) -> list[str]:
+        """Validate list fields - convert comma-separated strings to lists."""
+        if isinstance(v, str):
+            # Split by comma and strip whitespace
+            return [item.strip() for item in v.split(",") if item.strip()]
         return v
 
     @field_validator("x_frame_options")

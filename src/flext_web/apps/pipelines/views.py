@@ -1,5 +1,4 @@
 """Pipeline views for listing and detailing project pipelines."""
-
 from __future__ import annotations
 
 import functools
@@ -16,32 +15,29 @@ if TYPE_CHECKING:
     from flext_grpc.proto import flext_pb2
 else:
     try:
-        from flext_grpc.client import FlextGrpcClientBase
+        from flext_grpc.client import (
+            FlextGrpcClientBase,
+        )
         from flext_grpc.proto import flext_pb2
     except ImportError:
         FlextGrpcClientBase = object
         flext_pb2 = None
 
 
-class FlextPipelineGrpcClient(FlextGrpcClientBase):  # type: ignore[misc]
+class FlextPipelineGrpcClient(FlextGrpcClientBase):
     """FlextPipelineGrpcClient - Client Implementation.
-
     Implementa cliente para comunicação com serviços externos.
     Fornece interface simplificada para integrações.
-
     Arquitetura: Enterprise Patterns
     Padrões: SOLID principles, clean code
-
     Attributes:
         Sem atributos públicos documentados.
 
     Methods:
         list_pipelines(): Método específico da classe
         get_pipeline(): Obtém dados
-
     Examples:
         Uso típico da classe
-
     Note:
         Esta classe segue os padrões Enterprise Patterns estabelecidos no projeto.
 
@@ -79,7 +75,7 @@ class FlextPipelineGrpcClient(FlextGrpcClientBase):  # type: ignore[misc]
         try:
             with self._create_channel() as channel:
                 stub = self._create_stub(channel)
-                request = flext_pb2.PipelineRequest(id=pipeline_id)  # type: ignore[attr-defined]
+                request = flext_pb2.PipelineRequest(id=pipeline_id)
                 response = stub.GetPipeline(request)
                 return self._format_pipeline(response)
         except grpc.RpcError:
@@ -148,11 +144,9 @@ class PipelineDetailView(LoginRequiredMixin, TemplateView):
         """
         context = super().get_context_data(**kwargs)
         pipeline_id = kwargs.get("pipeline_id")
-
         if not pipeline_id:
             msg = "Pipeline ID not provided"
             raise Http404(msg)
-
         client = get_pipeline_client()
         if client:
             pipeline = client.get_pipeline(str(pipeline_id))
@@ -167,6 +161,5 @@ class PipelineDetailView(LoginRequiredMixin, TemplateView):
                 "status": "unknown",
                 "last_run": None,
             }
-
         context["pipeline"] = pipeline
         return context

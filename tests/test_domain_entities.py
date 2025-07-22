@@ -1,5 +1,4 @@
 """Tests for domain entities to improve coverage."""
-
 from __future__ import annotations
 
 import uuid
@@ -40,7 +39,6 @@ class TestPipeline:
             last_run=None,
             next_run=None,
         )
-
         assert pipeline.name == "Test Pipeline"
         assert pipeline.description == "Test pipeline description"
         assert pipeline.project_id == project_id
@@ -58,7 +56,6 @@ class TestPipeline:
             last_run=None,
             next_run=None,
         )
-
         str_repr = str(pipeline)
         assert isinstance(str_repr, str)
         assert len(str_repr) > 0
@@ -73,21 +70,17 @@ class TestPipeline:
             last_run=None,
             next_run=None,
         )
-
         # Test start run
         assert pipeline.running is False
         assert pipeline.run_count == 0
-
         pipeline.start_run()
         assert pipeline.running is True
         assert pipeline.run_count == 1
         assert pipeline.last_run is not None
-
         # Test complete run - success
         pipeline.complete_run(success=True)
         assert pipeline.running is False
         assert pipeline.success_count == 1
-
         # Test another run - failure
         pipeline.start_run()
         pipeline.complete_run(success=False)
@@ -104,12 +97,9 @@ class TestPipeline:
             last_run=None,
             next_run=None,
         )
-
         assert pipeline.enabled is True
-
         pipeline.disable()
         assert pipeline.enabled is False
-
         pipeline.enable()
         assert pipeline.enabled is True
 
@@ -126,7 +116,6 @@ class TestProject:
             branch="main",
             owner_id=TEST_USER_ID,
         )
-
         assert project.name == "Test Project"
         assert project.description == "Test project description"
         assert project.repository_url == "https://github.com/user/repo"
@@ -143,7 +132,6 @@ class TestProject:
             branch="main",
             owner_id=TEST_USER_ID,
         )
-
         str_repr = str(project)
         assert isinstance(str_repr, str)
         assert len(str_repr) > 0
@@ -157,12 +145,9 @@ class TestProject:
             branch="main",
             owner_id=TEST_USER_ID,
         )
-
         assert project.active is True
-
         project.deactivate()
         assert project.active is False
-
         project.activate()
         assert project.active is True
 
@@ -171,7 +156,6 @@ class TestProject:
         project = Project(
             name="Default Project",
         )
-
         assert project.description is None
         assert project.repository_url is None
         assert project.branch == "main"
@@ -197,7 +181,6 @@ class TestWebNotification:
             action_url="https://example.com/cpu-alert",
             action_label="View Details",
         )
-
         assert notification.user_id == TEST_USER_ID
         assert notification.title == "High CPU Usage"
         assert notification.message == "CPU usage exceeded 90%"
@@ -218,7 +201,6 @@ class TestWebNotification:
             action_url="https://example.com/database-alert",
             action_label="View Details",
         )
-
         str_repr = str(notification)
         assert isinstance(str_repr, str)
         assert len(str_repr) > 0
@@ -236,10 +218,8 @@ class TestWebNotification:
             action_url="https://example.com/valid-alert",
             action_label="View Details",
         )
-
         assert notification.read is False
         assert notification.read_at is None
-
         notification.mark_as_read()
         assert notification.read is True
         assert notification.read_at is not None
@@ -247,7 +227,6 @@ class TestWebNotification:
     def test_web_notification_expiration(self) -> None:
         """Test notification expiration."""
         from datetime import timedelta
-
         # Create expired notification
         past_time = datetime.now() - timedelta(hours=1)
         notification = WebNotification(
@@ -260,9 +239,7 @@ class TestWebNotification:
             action_url="https://example.com/expired-alert",
             action_label="View Details",
         )
-
         assert notification.is_expired is True
-
         # Create future notification
         future_time = datetime.now() + timedelta(hours=1)
         notification2 = WebNotification(
@@ -275,7 +252,6 @@ class TestWebNotification:
             action_url="https://example.com/future-alert",
             action_label="View Details",
         )
-
         assert notification2.is_expired is False
 
 
@@ -299,7 +275,6 @@ class TestDashboardWidget:
             title="CPU Usage",
             description="CPU usage over time",
         )
-
         assert widget.name == "CPU Monitor"
         assert widget.widget_type == "metric_chart"
         assert widget.x == 0
@@ -322,7 +297,6 @@ class TestDashboardWidget:
             description="Memory usage over time",
             user_id=TEST_USER_ID,
         )
-
         str_repr = str(widget)
         assert isinstance(str_repr, str)
         assert len(str_repr) > 0
@@ -339,12 +313,10 @@ class TestDashboardWidget:
             description="Memory usage over time",
             user_id=TEST_USER_ID,
         )
-
         assert widget.x == 0
         assert widget.y == 0
         assert widget.width == 4
         assert widget.height == 4
-
         widget.update_position(x=2, y=3, width=8, height=6)
         assert widget.x == 2
         assert widget.y == 3
@@ -364,9 +336,7 @@ class TestDashboardWidget:
             description="Memory usage over time",
             user_id=TEST_USER_ID,
         )
-
         assert widget.config["columns"] == ["name", "status"]
-
         new_config = {"columns": ["name", "status", "created"], "sort": "name"}
         widget.update_config(new_config)
         assert widget.config["columns"] == ["name", "status", "created"]
@@ -379,7 +349,6 @@ class TestUserSession:
     def test_user_session_creation(self) -> None:
         """Test basic user session creation."""
         from datetime import timedelta
-
         expires_at = datetime.now() + timedelta(hours=24)
         session = UserSession(
             user_id=TEST_USER_ID,
@@ -397,7 +366,6 @@ class TestUserSession:
             os="Windows",
             device="Desktop",
         )
-
         assert session.user_id == TEST_USER_ID
         assert session.session_token == "token-abc-123"
         assert session.ip_address == "192.168.1.100"
@@ -409,7 +377,6 @@ class TestUserSession:
     def test_user_session_str(self) -> None:
         """Test user session string representation."""
         from datetime import timedelta
-
         session = UserSession(
             user_id=TEST_USER_ID,
             session_token="token-def-456",
@@ -419,15 +386,12 @@ class TestUserSession:
             current_page=None,
             last_activity=datetime.now(),
             preferences={"theme": "dark", "language": "en"},
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
             browser="Chrome",
             os="Windows",
             device="Desktop",
             ip_address="192.168.1.100",
             user_agent="Mozilla/5.0 Chrome",
         )
-
         str_repr = str(session)
         assert isinstance(str_repr, str)
         assert len(str_repr) > 0
@@ -435,7 +399,6 @@ class TestUserSession:
     def test_user_session_validity(self) -> None:
         """Test session validity checks."""
         from datetime import timedelta
-
         # Valid session
         future_time = datetime.now() + timedelta(hours=1)
         valid_session = UserSession(
@@ -447,18 +410,14 @@ class TestUserSession:
             current_page=None,
             last_activity=datetime.now(),
             preferences={"theme": "dark", "language": "en"},
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
             browser="Chrome",
             os="Windows",
             device="Desktop",
             ip_address="192.168.1.100",
             user_agent="Mozilla/5.0 Chrome",
         )
-
         assert valid_session.is_expired is False
         assert valid_session.is_valid is True
-
         # Expired session
         past_time = datetime.now() - timedelta(hours=1)
         expired_session = UserSession(
@@ -470,18 +429,14 @@ class TestUserSession:
             current_page=None,
             last_activity=datetime.now(),
             preferences={"theme": "dark", "language": "en"},
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
             browser="Chrome",
             os="Windows",
             device="Desktop",
             ip_address="192.168.1.100",
             user_agent="Mozilla/5.0 Chrome",
         )
-
         assert expired_session.is_expired is True
         assert expired_session.is_valid is False
-
         # Inactive session
         inactive_session = UserSession(
             user_id=TEST_USER_ID,
@@ -492,22 +447,18 @@ class TestUserSession:
             current_page=None,
             last_activity=datetime.now(),
             preferences={"theme": "dark", "language": "en"},
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
             browser="Chrome",
             os="Windows",
             device="Desktop",
             ip_address="192.168.1.100",
             user_agent="Mozilla/5.0 Chrome",
         )
-
         assert inactive_session.is_expired is False
         assert inactive_session.is_valid is False
 
     def test_user_session_activity_update(self) -> None:
         """Test session activity update."""
         from datetime import timedelta
-
         session = UserSession(
             user_id=TEST_USER_ID,
             session_token="token-activity",
@@ -517,18 +468,14 @@ class TestUserSession:
             current_page=None,
             last_activity=datetime.now(),
             preferences={"theme": "dark", "language": "en"},
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
             browser="Chrome",
             os="Windows",
             device="Desktop",
             ip_address="192.168.1.100",
             user_agent="Mozilla/5.0 Chrome",
         )
-
         original_activity = session.last_activity
         assert session.current_page is None
-
         session.update_activity(page="/dashboard")
         assert session.last_activity > original_activity
         assert session.current_page == "/dashboard"
@@ -536,7 +483,6 @@ class TestUserSession:
     def test_user_session_preferences(self) -> None:
         """Test session preferences management."""
         from datetime import timedelta
-
         session = UserSession(
             user_id=TEST_USER_ID,
             session_token="token-prefs",
@@ -546,18 +492,14 @@ class TestUserSession:
             view_mode=ViewMode.LIGHT,
             current_page=None,
             last_activity=datetime.now(),
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
             browser="Chrome",
             os="Windows",
             device="Desktop",
             ip_address="192.168.1.100",
             user_agent="Mozilla/5.0 Chrome",
         )
-
         assert session.preferences["theme"] == "dark"
         assert session.preferences["language"] == "en"
-
         session.update_preferences({"theme": "light", "notifications": True})
         assert session.preferences["theme"] == "light"
         assert session.preferences["language"] == "en"
@@ -566,7 +508,6 @@ class TestUserSession:
     def test_user_session_end(self) -> None:
         """Test session termination."""
         from datetime import timedelta
-
         session = UserSession(
             user_id=TEST_USER_ID,
             session_token="token-end",
@@ -576,17 +517,13 @@ class TestUserSession:
             current_page=None,
             last_activity=datetime.now(),
             preferences={"theme": "dark", "language": "en"},
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
             browser="Chrome",
             os="Windows",
             device="Desktop",
             ip_address="192.168.1.100",
             user_agent="Mozilla/5.0 Chrome",
         )
-
         assert session.active is True
-
         session.end_session()
         assert session.active is False
 
@@ -602,13 +539,10 @@ class TestWebPage:
             page_type=PageType.DASHBOARD,
             content="Main dashboard page content",
             user_id=TEST_USER_ID,
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
             published=False,
             published_at=None,
             is_public=True,
         )
-
         assert page.title == "Dashboard"
         assert page.slug == "dashboard"
         assert page.page_type == PageType.DASHBOARD
@@ -624,7 +558,6 @@ class TestWebPage:
             slug="api-docs",
             page_type=PageType.API,
         )
-
         str_repr = str(page)
         assert isinstance(str_repr, str)
         assert len(str_repr) > 0
@@ -639,14 +572,11 @@ class TestWebPage:
             published_at=None,
             is_public=True,
         )
-
         assert page.published is False
         assert page.published_at is None
-
         page.publish()
         assert page.published is True
         assert page.published_at is not None
-
         page.unpublish()
         assert page.published is False
         assert page.published_at is None
@@ -661,7 +591,6 @@ class TestWebPage:
             meta_description="Configure your FLEXT settings",
             meta_keywords=["settings", "configuration", "preferences"],
         )
-
         assert page.meta_title == "FLEXT Settings"
         assert page.meta_description == "Configure your FLEXT settings"
         assert "settings" in page.meta_keywords
@@ -684,7 +613,6 @@ class TestDeployment:
             deployed_at=None,
             deployed_by=None,
         )
-
         assert deployment.name == "Production Deploy v1.2.0"
         assert deployment.project_id == TEST_PROJECT_ID
         assert deployment.version == "1.2.0"
@@ -704,7 +632,6 @@ class TestDeployment:
             deployed_at=None,
             deployed_by=None,
         )
-
         str_repr = str(deployment)
         assert isinstance(str_repr, str)
         assert len(str_repr) > 0
@@ -718,11 +645,9 @@ class TestDeployment:
             environment="development",
             status="pending",
         )
-
         assert deployment.status == "pending"
         assert deployment.deployed_at is None
         assert deployment.deployed_by is None
-
         deployment.mark_deployed(user_id=TEST_USER_ID)
         assert deployment.status == "deployed"
         assert deployment.deployed_at is not None
@@ -737,9 +662,7 @@ class TestDeployment:
             environment="testing",
             status="pending",
         )
-
         assert deployment.status == "pending"
-
         deployment.mark_failed()
         assert deployment.status == "failed"
 
@@ -753,6 +676,5 @@ class TestDeployment:
             environment="production",
             notes="Automated deployment via pipeline",
         )
-
         assert deployment.pipeline_id == TEST_PIPELINE_ID
         assert deployment.notes == "Automated deployment via pipeline"

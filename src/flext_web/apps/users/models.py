@@ -23,8 +23,6 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from django.db.models.query import QuerySet
-else:
-    pass
 
 
 class UserProfile(models.Model):

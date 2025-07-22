@@ -1,19 +1,15 @@
 """FLEXT Users Views - Enterprise User Management Interface.
-
 This module provides Django views for enterprise user management,
 implementing comprehensive user operations and profile management.
-
 Author: FLEXT Team
-Date: 2025-07-13
+Date: 2025-07-13.
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import AbstractUser
@@ -52,7 +48,7 @@ class UserLogoutView(LogoutView):
 class UserListView(LoginRequiredMixin, ListView[AbstractUser]):
     """View to display a list of all users."""
 
-    model = User  # type: ignore[assignment]
+    model = User
     template_name = "users/list.html"
     context_object_name = "users"
     paginate_by = 20
@@ -61,7 +57,7 @@ class UserListView(LoginRequiredMixin, ListView[AbstractUser]):
 class UserDetailView(LoginRequiredMixin, DetailView[AbstractUser]):
     """View to display user details."""
 
-    model = User  # type: ignore[assignment]
+    model = User
     template_name = "users/detail.html"
     context_object_name = "user"
 
@@ -71,7 +67,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView[Any, Any]):
 
     model = User
     template_name = "users/update.html"
-    fields: ClassVar[list[str]] = ["first_name", "last_name", "email"]  # type: ignore[misc]
+    fields: ClassVar[list[str]] = ["first_name", "last_name", "email"]
     context_object_name = "user"
 
 
