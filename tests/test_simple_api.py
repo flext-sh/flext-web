@@ -6,7 +6,7 @@ from typing import Any
 from unittest.mock import patch
 
 from django.test import TestCase
-from flext_core import ServiceResult
+from flext_core.domain.shared_types import ServiceResult
 
 from flext_web.config import WebConfig
 from flext_web.simple_api import get_web_settings, setup_web
@@ -67,7 +67,7 @@ class TestSetupWeb(TestCase):
         result = setup_web()
 
         assert isinstance(result, ServiceResult)
-        assert result.is_success is True
+        assert result.success is True
         assert result.data is True
 
     def test_setup_web_with_provided_settings(self) -> None:
@@ -76,14 +76,14 @@ class TestSetupWeb(TestCase):
         result = setup_web(config)
 
         assert isinstance(result, ServiceResult)
-        assert result.is_success is True
+        assert result.success is True
         assert result.data is True
 
     def test_setup_web_success_result(self) -> None:
         """Test that setup_web returns success ServiceResult."""
         result = setup_web()
 
-        assert result.is_success is True
+        assert result.success is True
         assert result.error is None
         assert result.data is True
 
@@ -93,7 +93,7 @@ class TestSetupWeb(TestCase):
         result = setup_web()
 
         assert isinstance(result, ServiceResult)
-        assert result.is_success is False
+        assert result.success is False
         assert result.error is not None
         assert "Web setup failed: Config error" in str(result.error)
 
@@ -104,7 +104,7 @@ class TestSetupWeb(TestCase):
 
         # Should call WebConfig() once when settings is None
         mock_config.assert_called_once()
-        assert result.is_success is True
+        assert result.success is True
 
     def test_setup_web_with_custom_config(self) -> None:
         """Test setup_web with a custom WebConfig instance."""
@@ -115,7 +115,7 @@ class TestSetupWeb(TestCase):
 
         result = setup_web(custom_config)
 
-        assert result.is_success is True
+        assert result.success is True
         assert result.data is True
 
     def test_setup_web_validates_config_object(self) -> None:
@@ -123,7 +123,7 @@ class TestSetupWeb(TestCase):
         config = get_web_settings()  # Get a valid config
         result = setup_web(config)
 
-        assert result.is_success is True
+        assert result.success is True
         assert isinstance(result, ServiceResult)
 
 
@@ -149,7 +149,7 @@ class TestSimpleApiIntegration(TestCase):
         result = setup_web(config)
 
         assert isinstance(config, WebConfig)
-        assert result.is_success is True
+        assert result.success is True
 
     def test_service_result_type_annotations(self) -> None:
         """Test that ServiceResult is properly typed."""
@@ -161,6 +161,6 @@ class TestSimpleApiIntegration(TestCase):
         assert hasattr(result, "data")
 
         # Test success case properties
-        assert result.is_success is True
+        assert result.success is True
         assert result.error is None
         assert result.data is True

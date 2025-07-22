@@ -1,20 +1,14 @@
 """Test Django models for flext-api.web.flext-web."""
-
 from __future__ import annotations
-
-from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.auth import get_user_model
-
-if TYPE_CHECKING:
-    from django.contrib.auth.models import AbstractUser
 
 from flext_web.apps.monitoring.models import MonitoringAlert
 from flext_web.apps.pipelines.models import PipelineWeb
 from flext_web.apps.projects.models import MeltanoProject, ProjectTemplate
 
-User: type[AbstractUser] = get_user_model()
+User = get_user_model()
 
 
 @pytest.mark.django_db
@@ -29,7 +23,6 @@ class TestProjectModels:
             category="etl",
             version="1.0.0",
         )
-
         assert template.id is not None
         assert template.name == "ETL Template"
         assert template.category == "etl"
@@ -42,12 +35,10 @@ class TestProjectModels:
             email="owner@example.com",
             password="testpass123",
         )
-
         template = ProjectTemplate.objects.create(
             name="Default Template",
             description="Default template",
         )
-
         project = MeltanoProject.objects.create(
             name="Test ETL Project",
             description="Test ETL project for data integration",
@@ -55,7 +46,6 @@ class TestProjectModels:
             created_by=user,
             status="active",
         )
-
         assert project.id is not None
         assert project.name == "Test ETL Project"
         assert project.template == template
@@ -75,19 +65,16 @@ class TestPipelineModels:
             email="owner@example.com",
             password="testpass123",
         )
-
         template = ProjectTemplate.objects.create(
             name="Pipeline Template",
             description="Template for pipelines",
         )
-
         project = MeltanoProject.objects.create(
             name="Test Pipeline Project",
             description="Test project for pipelines",
             template=template,
             created_by=user,
         )
-
         pipeline = PipelineWeb.objects.create(
             name="Data Sync Pipeline",
             project=project,
@@ -95,7 +82,6 @@ class TestPipelineModels:
             loader="target-snowflake",
             created_by=user,
         )
-
         assert pipeline.id is not None
         assert pipeline.name == "Data Sync Pipeline"
         assert pipeline.extractor == "tap-postgres"
@@ -118,7 +104,6 @@ class TestMonitoringModels:
             severity="critical",
             component="monitoring-service",
         )
-
         assert alert.pk is not None
         assert alert.alert_id == "test-alert-001"
         assert alert.title == "High CPU Usage"

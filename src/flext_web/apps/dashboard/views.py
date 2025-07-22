@@ -1,14 +1,12 @@
 """Dashboard views with enterprise architecture patterns.
-
 Implementation features:
     - Eliminated lazy imports for better dependency management
     - Unified configuration through domain_config.py
     - gRPC client consolidation with proper resource management
     - Python 3.13 type system throughout
     - Minimal code duplication with shared gRPC client service
-    - Strategic TYPE_CHECKING for optimal imports
+    - Strategic TYPE_CHECKING for optimal imports.
 """
-
 from __future__ import annotations
 
 import functools
@@ -23,15 +21,13 @@ from django.views.generic import TemplateView
 
 # Import gRPC with fallback for testing environments
 try:
-    from flext_grpc.client import FlextGrpcClientBase  # type: ignore[import-untyped]
+    from flext_grpc.client import FlextGrpcClientBase
     from google.protobuf import empty_pb2
-
     GRPC_AVAILABLE = True
 except ImportError:
     FlextGrpcClientBase = None
-    empty_pb2 = None  # type: ignore[assignment]
+    empty_pb2 = None
     GRPC_AVAILABLE = False
-
 # Unified gRPC client and configuration from canonical implementation
 from flext_core.config import get_config
 from flext_core.domain.shared_models import SecurityConfig
@@ -42,18 +38,13 @@ if TYPE_CHECKING:
 else:
     # Real imports at runtime - NO LAZY LOADING VIOLATIONS
     from flext_grpc.proto import flext_pb2
-
 # Python 3.13 type aliases for dashboard domain
 DashboardStats = dict[str, int | float]
 HealthStatus = dict[str, bool | dict[str, Any]]
 ExecutionData = dict[str, str | None]
-
-
 if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
-
-    class FlextDashboardGrpcClient(FlextGrpcClientBase):  # type: ignore[misc]
+    class FlextDashboardGrpcClient(FlextGrpcClientBase):
         """Dashboard gRPC client extending base with dashboard-specific functionality.
-
         Inherits from FlextGrpcClientBase to eliminate duplication while providing
         specialized dashboard data formatting and retrieval methods.
         Renamed from FlextGrpcClient to avoid conflict with CLI FlextGrpcClient.
@@ -72,18 +63,16 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
             try:
                 with self._create_channel() as channel:
                     stub = self._create_stub(channel)
-
                     # Get all data in parallel using gRPC streaming if available:
                     stats_response = stub.GetSystemStats(empty_pb2.Empty())
                     health_response = stub.HealthCheck(empty_pb2.Empty())
-                    get_config(SecurityConfig)  # type: ignore[type-var]
+                    get_config(SecurityConfig)
                     executions_response = stub.ListExecutions(
-                        flext_pb2.ListExecutionsRequest(  # type: ignore[attr-defined]
+                        flext_pb2.ListExecutionsRequest(
                             limit=50,  # Default execution limit
                             offset=0,
                         ),
                     )
-
                     # Format dashboard data
                     return {
                         "stats": self._format_stats(stats_response),
@@ -93,7 +82,6 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                         ),
                         "error": None,
                     }
-
             except grpc.RpcError as e:
                 return {
                     "stats": self._get_default_stats(),
@@ -112,18 +100,16 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
             try:
                 with self._create_channel() as channel:
                     stub = self._create_stub(channel)
-
                     # Parallel requests for minimal latency
                     stats_response = stub.GetSystemStats(empty_pb2.Empty())
                     health_response = stub.HealthCheck(empty_pb2.Empty())
-                    get_config(SecurityConfig)  # type: ignore[type-var]
+                    get_config(SecurityConfig)
                     executions_response = stub.ListExecutions(
-                        flext_pb2.ListExecutionsRequest(  # type: ignore[attr-defined]
+                        flext_pb2.ListExecutionsRequest(
                             limit=50,  # Default recent executions limit
                             offset=0,
                         ),
                     )
-
                     return {
                         "stats": {
                             **self._format_stats(stats_response),
@@ -148,7 +134,6 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                             )
                         ],
                     }
-
             except grpc.RpcError as e:
                 return {
                     "error": f"gRPC error: {e.details()}",
@@ -173,7 +158,6 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                         "message": getattr(comp, "message", ""),
                         "metadata": dict(getattr(comp, "metadata", {})),
                     }
-
             return {
                 "healthy": getattr(health_response, "healthy", False),
                 "components": components,
@@ -191,7 +175,6 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                     started_at_str = execution.started_at.ToDatetime().isoformat()
                 except Exception:
                     started_at_str = None
-
             return {
                 "id": getattr(execution, "id", ""),
                 "pipeline_name": getattr(execution, "pipeline_id", ""),
@@ -203,7 +186,6 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
         def _calculate_duration(self, execution: object) -> str | None:
             if not hasattr(execution, "started_at") or not execution.started_at:
                 return None
-
             try:
                 start_time = (
                     execution.started_at.ToDatetime()
@@ -212,7 +194,6 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                 )
             except Exception:
                 start_time = datetime.now(UTC)
-
             try:
                 end_time = (
                     execution.completed_at.ToDatetime()
@@ -223,14 +204,11 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                 )
             except Exception:
                 end_time = datetime.now(UTC)
-
             duration = end_time - start_time
             total_seconds = int(duration.total_seconds())
-
             hours = total_seconds // 3600
             minutes = (total_seconds % 3600) // 60
             seconds = total_seconds % 60
-
             if hours > 0:
                 return f"{hours}h {minutes}m"
             if minutes > 0:
@@ -251,10 +229,9 @@ if GRPC_AVAILABLE and FlextGrpcClientBase is not None:
                 "healthy": False,
                 "components": {},
             }
-
 else:
     # Fallback class when gRPC is not available
-    class FlextDashboardGrpcClient:  # type: ignore[no-redef]
+    class FlextDashboardGrpcClient:
         """Fallback dashboard client when gRPC is not available."""
 
         def __init__(self) -> None:
@@ -287,15 +264,13 @@ def get_grpc_client() -> FlextDashboardGrpcClient:
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     """Main dashboard view providing comprehensive system overview.
-
     This view renders the main dashboard template with real-time system statistics,
     health monitoring data, and recent execution information using unified gRPC client.
-
     Features:
         - Real-time system metrics display
         - Health status monitoring
         - Recent pipeline execution history
-        - Unified gRPC client for data retrieval
+        - Unified gRPC client for data retrieval.
     """
 
     template_name = "dashboard/index.html"
@@ -311,25 +286,21 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         """
         context = super().get_context_data(**kwargs)
-
         # Get all dashboard data through unified client
         dashboard_data = get_grpc_client().get_dashboard_data()
         context.update(dashboard_data)
-
         return context
 
 
 class StatsAPIView(LoginRequiredMixin, View):
     """API endpoint for real-time system statistics retrieval.
-
     This view provides a JSON API endpoint for retrieving current system
     statistics without full page reload, enabling real-time dashboard updates.
-
     Features:
         - Real-time system metrics API
         - JSON response format
         - Error handling with appropriate status codes
-        - Unified gRPC client integration
+        - Unified gRPC client integration.
     """
 
     def get(
@@ -352,14 +323,12 @@ class StatsAPIView(LoginRequiredMixin, View):
         try:
             grpc_client = get_grpc_client()
             stats_data = grpc_client.get_stats_only()
-
             # Handle error response
             if "error" in stats_data:
                 return JsonResponse(
                     {"error": stats_data["error"]},
                     status=stats_data.get("status_code", 503),
                 )
-
             return JsonResponse(stats_data)
         except Exception as e:
             # Handle unexpected exceptions

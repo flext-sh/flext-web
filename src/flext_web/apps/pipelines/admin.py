@@ -1,9 +1,7 @@
 """Django REDACTED_LDAP_BIND_PASSWORD configuration for pipeline models.
-
 This module configures the Django REDACTED_LDAP_BIND_PASSWORD interface for managing pipelines,
 executions, and plugins in the FLEXT Meltano Enterprise platform.
 """
-
 from __future__ import annotations
 
 from typing import Any, ClassVar
@@ -17,16 +15,14 @@ from .models import PipelineWeb
 @REDACTED_LDAP_BIND_PASSWORD.register(PipelineWeb)
 class PipelineAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[PipelineWeb]):
     """Django REDACTED_LDAP_BIND_PASSWORD configuration for Pipeline model.
-
     Provides a comprehensive REDACTED_LDAP_BIND_PASSWORD interface for managing data pipelines
     including creation, configuration, monitoring, and execution tracking.
-
     Features:
         - List view with key pipeline information
         - Filtering by status, activity, and dates
         - Search across pipeline names and components
         - Organized fieldsets for easy navigation
-        - Read-only fields for computed values
+        - Read-only fields for computed values.
     """
 
     list_display: ClassVar[list[str]] = [
@@ -46,7 +42,6 @@ class PipelineAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[PipelineWeb]):
         "last_run",
         "last_status",
     ]
-
     fieldsets = (
         (
             None,
@@ -78,17 +73,15 @@ class PipelineAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[PipelineWeb]):
 # @REDACTED_LDAP_BIND_PASSWORD.register(Execution)
 class ExecutionAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[Any]):
     """Django REDACTED_LDAP_BIND_PASSWORD configuration for Execution model.
-
     Provides detailed monitoring and management interface for pipeline
     executions, including status tracking, timing information, and
     error investigation capabilities.
-
     Features:
             - Execution status monitoring
         - Performance metrics (duration, records)
         - Error message search
         - Filtering by pipeline and status
-        - Read-only computed fields
+        - Read-only computed fields.
     """
 
     list_display: ClassVar[list[str]] = [
@@ -106,7 +99,6 @@ class ExecutionAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[Any]):
         "finished_at",
         "duration_seconds",
     ]
-
     fieldsets = (
         (
             None,
@@ -138,17 +130,15 @@ class ExecutionAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[Any]):
 # @REDACTED_LDAP_BIND_PASSWORD.register(PluginWeb)
 class PluginAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[Any]):
     """Django REDACTED_LDAP_BIND_PASSWORD configuration for Plugin model.
-
     Manages Meltano plugin registry with installation tracking,
     version management, and configuration settings for all types
     of plugins (extractors, loaders, transformers, etc).
-
     Features:
             - Plugin type categorization
         - Installation status tracking
         - Version and variant management
         - JSON configuration editor
-        - Search by name and description
+        - Search by name and description.
     """
 
     list_display: ClassVar[list[str]] = [
@@ -161,7 +151,6 @@ class PluginAdmin(REDACTED_LDAP_BIND_PASSWORD.ModelAdmin[Any]):
     list_filter: ClassVar[list[str]] = ["type", "installed"]
     search_fields: ClassVar[list[str]] = ["name", "description"]
     readonly_fields: ClassVar[list[str]] = ["installed_at"]
-
     fieldsets = (
         (
             None,
