@@ -30,15 +30,11 @@ classifiers = [
     "Framework :: Django",
 ]
 dependencies = [
-    "flext-grpc @ file:///home/marlonsc/flext/flext-grpc",
-    "pydantic (>=2.11.7)",
-    "pydantic-settings (>=2.10.1)",
-    "celery (>=5.5.3)",
     "flext-core @ file:///home/marlonsc/flext/flext-core",
     "flext-observability @ file:///home/marlonsc/flext/flext-observability",
-    "django (>=5.2.4)",
-    "googleapis-common-protos (>=1.66.0)",
-    "grpcio (>=1.50.0)",
+    "flask (>=3.0.0)",
+    "pydantic (>=2.11.7)",
+    "pydantic-settings (>=2.10.1)",
 ]
 [[project.authors]]
 name = "FLEXT Team"
@@ -57,8 +53,7 @@ Repository = "https://github.com/flext-sh/flext"
 Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
 
 [project.scripts]
-flext-web = "flext_web.manage:main"
-flext-web-server = "flext_web.server:main"
+flext-web = "flext_web.__main__:main"
 
 [tool.ruff]
 target-version = "py313"
@@ -79,6 +74,8 @@ extend-exclude = [
     "dist",
     "htmlcov",
 ]
+
+# Moved to existing per-file-ignores section below
 
 [tool.mypy]
 python_version = "3.13"
@@ -249,6 +246,10 @@ output = "reports/coverage.xml"
 python = ">=3.13,<3.14"
 djangorestframework = ">=3.14.0"
 
+[tool.poetry.group.dev.dependencies]
+detect-secrets = "^1.5.0"
+commitizen = "^4.8.3"
+
 [tool.ruff.lint.isort]
 known-first-party = ["flext"]
 force-single-line = false
@@ -275,6 +276,8 @@ combine-as-imports = true
 "**/*_pb2.py" = ["ALL"]
 "**/*_pb2_grpc.py" = ["ALL"]
 "**/generated/**/*.py" = ["ALL"]
+# Django settings files use wildcard imports by convention
+"*/settings/*.py" = ["F403", "F405"]
 
 [tool.poetry.dependencies.flext-core]
 path = "../flext-core"

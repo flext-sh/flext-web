@@ -1,7 +1,0 @@
-{% extends "base.html" %}
-{% block title %}Update {{ project.display_name }} - FLEXT Meltano Enterprise{% endblock %}
-
-{% block content %}
-{% url 'projects:detail' project.pk as cancel_url %}
-{% include "projects/_form_base.html" with page_title="Update \"{{ project.display_name }}\"" back_url=cancel_url back_text="Back to Project" submit_text="Update Project" show_cancel=True cancel_url=cancel_url %}
-{% endblock %}

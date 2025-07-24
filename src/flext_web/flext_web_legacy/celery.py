@@ -1,10 +1,12 @@
 """Celery configuration for FLEXT Web."""
+
 from __future__ import annotations
 
+# Removed circular dependency - use DI pattern
+# Resolved: Circular dependency issue using DI pattern
+import logging
 import os
 from typing import TYPE_CHECKING, Any
-
-from flext_observability.logging import get_logger
 
 if TYPE_CHECKING:
     from celery import Celery
@@ -16,7 +18,7 @@ else:
     except ImportError:
         Celery = Any
         CeleryTask = Any
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 # Set the default Django settings module
 os.environ.setdefault(
     "DJANGO_SETTINGS_MODULE",

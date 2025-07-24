@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLEXT - FlexCore Management Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+        }
+
+        .header {
+            background: #1e293b;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header .status {
+            background: #10b981;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-card h3 {
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        .btn-success {
+            background: #10b981;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-online {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-offline {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-unknown {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background: white;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 1.5rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .refresh-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinning {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            🚀 FLEXT FlexCore Management
+        </h1>
+        <div class="status">Service Online</div>
+    </div>
+
+    <div class="main-content">
+        <!-- Statistics Dashboard -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>FlexCore Clusters</h3>
+                <div class="value" id="cluster-count">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active Plugins</h3>
+                <div class="value" id="plugin-count">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Running Jobs</h3>
+                <div class="value" id="running-jobs">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Jobs</h3>
+                <div class="value" id="total-jobs">0</div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div class="section">
+            <div class="tabs">
+                <div class="tab active" data-tab="clusters">FlexCore Clusters</div>
+                <div class="tab" data-tab="plugins">Plugins</div>
+                <div class="tab" data-tab="jobs">Jobs</div>
+            </div>
+
+            <!-- Clusters Tab -->
+            <div class="tab-content active" id="clusters">
+                <div class="section-header" style="border: none; padding-bottom: 0;">
+                    <h2>FlexCore Clusters</h2>
+                    <div class="cluster-actions" style="display: flex; gap: 0.5rem;">
+                        <button class="btn" onclick="showAddClusterModal()">+ Network Cluster</button>
+                        <button class="btn btn-secondary" onclick="showLocalInstanceModal()">+ Local Instance</button>
+                        <button class="btn btn-outline" onclick="refreshLocalInstances()">Refresh Local</button>
+                    </div>
+                </div>
+                <div id="clusters-table">
+                    <div class="loading">Loading clusters...</div>
+                </div>
+            </div>
+
+            <!-- Plugins Tab -->
+            <div class="tab-content" id="plugins">
+                <div class="section-header" style="border: none; padding-bottom: 0;">
+                    <h2>Registered Plugins</h2>
+                    <button class="btn" onclick="showAddPluginModal()">+ Register Plugin</button>
+                </div>
+                <div id="plugins-table">
+                    <div class="loading">Loading plugins...</div>
+                </div>
+            </div>
+
+            <!-- Jobs Tab -->
+            <div class="tab-content" id="jobs">
+                <div class="section-header" style="border: none; padding-bottom: 0;">
+                    <h2>Job Execution</h2>
+                    <div>
+                        <button class="btn btn-success" onclick="showCreateJobModal('meltano')">+ Meltano Job</button>
+                        <button class="btn" onclick="showCreateJobModal('ray')" style="margin-left: 0.5rem;">+ Ray Job</button>
+                    </div>
+                </div>
+                <div id="jobs-table">
+                    <div class="loading">Loading jobs...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Cluster Modal -->
+    <div id="add-cluster-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add FlexCore Cluster</h3>
+                <button onclick="closeModal('add-cluster-modal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-cluster-form">
+                    <div class="form-group">
+                        <label for="cluster-name">Cluster Name</label>
+                        <input type="text" id="cluster-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cluster-endpoint">Endpoint URL</label>
+                        <input type="url" id="cluster-endpoint" name="endpoint" required placeholder="http://flexcore-cluster:8080">
+                    </div>
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeModal('add-cluster-modal')" style="background: #6b7280;">Cancel</button>
+                        <button type="submit" class="btn">Add Cluster</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Plugin Modal -->
+    <div id="add-plugin-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Register Plugin</h3>
+                <button onclick="closeModal('add-plugin-modal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-plugin-form">
+                    <div class="form-group">
+                        <label for="plugin-name">Plugin Name</label>
+                        <input type="text" id="plugin-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="plugin-version">Version</label>
+                        <input type="text" id="plugin-version" name="version" required placeholder="1.0.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="plugin-type">Plugin Type</label>
+                        <select id="plugin-type" name="type" required>
+                            <option value="">Select type...</option>
+                            <option value="meltano">Meltano</option>
+                            <option value="ray">Ray</option>
+                            <option value="dbt">dbt</option>
+                            <option value="singer">Singer</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="plugin-cluster">Target Cluster</label>
+                        <select id="plugin-cluster" name="cluster_id" required>
+                            <option value="">Select cluster...</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeModal('add-plugin-modal')" style="background: #6b7280;">Cancel</button>
+                        <button type="submit" class="btn">Register Plugin</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Job Modal -->
+    <div id="create-job-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="job-modal-title">Create Job</h3>
+                <button onclick="closeModal('create-job-modal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="create-job-form">
+                    <div class="form-group">
+                        <label for="job-cluster">Target Cluster</label>
+                        <select id="job-cluster" name="cluster_id" required>
+                            <option value="">Select cluster...</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Meltano Job Fields -->
+                    <div id="meltano-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="meltano-project">Project Path</label>
+                            <input type="text" id="meltano-project" name="project_path" placeholder="/path/to/meltano/project">
+                        </div>
+                        <div class="form-group">
+                            <label for="meltano-command">Command</label>
+                            <input type="text" id="meltano-command" name="command" placeholder="run tap-postgres target-postgres">
+                        </div>
+                    </div>
+
+                    <!-- Ray Job Fields -->
+                    <div id="ray-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="ray-script">Script Path</label>
+                            <input type="text" id="ray-script" name="script_path" placeholder="/path/to/ray/script.py">
+                        </div>
+                        <div class="form-group">
+                            <label for="ray-resources">Resources (JSON)</label>
+                            <textarea id="ray-resources" name="resources" placeholder='{"num_cpus": 2, "num_gpus": 1}'></textarea>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeModal('create-job-modal')" style="background: #6b7280;">Cancel</button>
+                        <button type="submit" class="btn">Create & Execute</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Local Instance Modal -->
+    <div id="local-instance-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Start Local FlexCore Instance</h3>
+                <button onclick="closeModal('local-instance-modal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="local-instance-form">
+                    <div class="form-group">
+                        <label for="instance-name">Instance Name</label>
+                        <input type="text" id="instance-name" name="instance_name" required placeholder="my-local-instance">
+                    </div>
+                    <div class="form-group">
+                        <label for="instance-port">Port</label>
+                        <input type="number" id="instance-port" name="port" value="8080" placeholder="8080">
+                    </div>
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeModal('local-instance-modal')" style="background: #6b7280; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer;">Cancel</button>
+                        <button type="submit" class="btn">Start Instance</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentJobType = 'meltano';
+        let dashboardData = {};
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTabs();
+            loadDashboard();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(loadDashboard, 30000);
+        });
+
+        // Tab functionality
+        function initializeTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === tabName);
+            });
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/v1/flexcore/dashboard');
+                if (!response.ok) throw new Error('Failed to load dashboard');
+                
+                const result = await response.json();
+                console.log('Dashboard data received:', result);
+                
+                if (result.success && result.data) {
+                    dashboardData = result.data;
+                    updateDashboard(dashboardData);
+                } else {
+                    console.error('Dashboard API error:', result.error || 'Unknown error');
+                    showError('Failed to load dashboard data');
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showError('Network error loading dashboard');
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ef4444; color: white; padding: 1rem; border-radius: 0.5rem; z-index: 1000;';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        function updateDashboard(data) {
+            // Update statistics with FLEXT service status
+            document.getElementById('cluster-count').textContent = data.cluster_count || 0;
+            document.getElementById('plugin-count').textContent = data.plugin_stats?.total_plugins || 0;
+            document.getElementById('running-jobs').textContent = data.job_stats?.jobs_by_status?.running || 0;
+            document.getElementById('total-jobs').textContent = data.job_stats?.total_jobs || 0;
+            
+            // Update FLEXT service status display
+            updateFlextServiceStatus(data.flext_service);
+
+            // Update tables
+            updateClustersTable(data.clusters || []);
+            updatePluginsTable(data.plugin_stats);
+            updateJobsTable(data.job_stats);
+        }
+        
+        function updateFlextServiceStatus(flextService) {
+            // Add FLEXT service status indicator
+            let statusHtml = '';
+            if (flextService) {
+                const statusColor = flextService.status === 'healthy' ? '#10b981' : '#ef4444';
+                statusHtml = `
+                    <div style="position: fixed; bottom: 20px; right: 20px; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); z-index: 1000;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: ${statusColor};"></div>
+                            <span style="font-weight: 600; font-size: 0.875rem;">FLEXT Service: ${flextService.status}</span>
+                        </div>
+                        ${flextService.version ? `<div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">${flextService.version}</div>` : ''}
+                    </div>
+                `;
+            }
+            
+            // Remove existing status indicator
+            const existing = document.getElementById('flext-status-indicator');
+            if (existing) existing.remove();
+            
+            // Add new status indicator
+            if (statusHtml) {
+                const indicator = document.createElement('div');
+                indicator.id = 'flext-status-indicator';
+                indicator.innerHTML = statusHtml;
+                document.body.appendChild(indicator);
+            }
+        }
+
+        function updateClustersTable(clusters) {
+            const container = document.getElementById('clusters-table');
+            
+            if (clusters.length === 0) {
+                container.innerHTML = '<div class="empty-state">No FlexCore clusters registered<br><small>Click "Add Cluster" to get started</small></div>';
+                return;
+            }
+
+            const table = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Endpoint</th>
+                            <th>Status</th>
+                            <th>Nodes</th>
+                            <th>Plugins</th>
+                            <th>Last Heartbeat</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${clusters.map(cluster => `
+                            <tr>
+                                <td><strong>${cluster.name}</strong></td>
+                                <td><code>${cluster.endpoint}</code></td>
+                                <td><span class="status-badge status-${cluster.status}">${cluster.status}</span></td>
+                                <td>${cluster.node_count}</td>
+                                <td>${cluster.plugin_count}</td>
+                                <td>${cluster.last_heartbeat ? new Date(cluster.last_heartbeat).toLocaleString() : 'Never'}</td>
+                                <td>
+                                    <button class="btn" onclick="updateClusterStatus('${cluster.cluster_id}', 'online')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Ping</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            container.innerHTML = table;
+        }
+
+        function updatePluginsTable() {
+            const container = document.getElementById('plugins-table');
+            const plugins = [];
+            
+            // Extract plugins from dashboard data
+            if (dashboardData.plugin_stats && dashboardData.clusters) {
+                // This would be populated from the actual API
+            }
+
+            if (plugins.length === 0) {
+                container.innerHTML = '<div class="empty-state">No plugins registered<br><small>Click "Register Plugin" to add one</small></div>';
+                return;
+            }
+
+            // Plugin table would be rendered here
+        }
+
+        function updateJobsTable() {
+            const container = document.getElementById('jobs-table');
+            const jobs = [];
+
+            if (jobs.length === 0) {
+                container.innerHTML = '<div class="empty-state">No jobs created<br><small>Click "Meltano Job" or "Ray Job" to create one</small></div>';
+                return;
+            }
+
+            // Jobs table would be rendered here
+        }
+
+        // Modal functions
+        function showAddClusterModal() {
+            document.getElementById('add-cluster-modal').style.display = 'block';
+        }
+
+        function showAddPluginModal() {
+            populateClusterSelect('plugin-cluster');
+            document.getElementById('add-plugin-modal').style.display = 'block';
+        }
+
+        function showCreateJobModal(type) {
+            currentJobType = type;
+            document.getElementById('job-modal-title').textContent = `Create ${type.charAt(0).toUpperCase() + type.slice(1)} Job`;
+            
+            // Show/hide appropriate fields
+            document.getElementById('meltano-fields').style.display = type === 'meltano' ? 'block' : 'none';
+            document.getElementById('ray-fields').style.display = type === 'ray' ? 'block' : 'none';
+            
+            populateClusterSelect('job-cluster');
+            document.getElementById('create-job-modal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function populateClusterSelect(selectId) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">Select cluster...</option>';
+            
+            if (dashboardData.clusters) {
+                dashboardData.clusters.forEach(cluster => {
+                    select.innerHTML += `<option value="${cluster.cluster_id}">${cluster.name}</option>`;
+                });
+            }
+        }
+
+        // Form submissions
+        document.getElementById('add-cluster-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/api/v1/flexcore/clusters', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: formData.get('name'),
+                        endpoint: formData.get('endpoint')
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to add cluster');
+                
+                closeModal('add-cluster-modal');
+                loadDashboard();
+                e.target.reset();
+            } catch (error) {
+                alert('Error adding cluster: ' + error.message);
+            }
+        });
+
+        document.getElementById('add-plugin-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/api/v1/flexcore/plugins', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: formData.get('name'),
+                        version: formData.get('version'),
+                        type: formData.get('type'),
+                        cluster_id: formData.get('cluster_id')
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to register plugin');
+                
+                closeModal('add-plugin-modal');
+                loadDashboard();
+                e.target.reset();
+            } catch (error) {
+                alert('Error registering plugin: ' + error.message);
+            }
+        });
+
+        document.getElementById('create-job-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const jobData = {
+                cluster_id: formData.get('cluster_id')
+            };
+
+            if (currentJobType === 'meltano') {
+                jobData.project_path = formData.get('project_path');
+                jobData.command = formData.get('command');
+            } else if (currentJobType === 'ray') {
+                jobData.script_path = formData.get('script_path');
+                try {
+                    jobData.resources = JSON.parse(formData.get('resources') || '{}');
+                } catch {
+                    jobData.resources = {};
+                }
+            }
+
+            try {
+                const response = await fetch(`/api/v1/flexcore/jobs/${currentJobType}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(jobData)
+                });
+                
+                if (!response.ok) throw new Error(`Failed to create ${currentJobType} job`);
+                
+                const result = await response.json();
+                
+                // Execute the job immediately
+                await fetch(`/api/v1/flexcore/jobs/${result.job_id}/execute`, {
+                    method: 'POST'
+                });
+                
+                closeModal('create-job-modal');
+                switchTab('jobs');
+                loadDashboard();
+                e.target.reset();
+            } catch (error) {
+                alert(`Error creating ${currentJobType} job: ` + error.message);
+            }
+        });
+
+        async function updateClusterStatus(clusterId, status) {
+            try {
+                const response = await fetch(`/api/v1/flexcore/clusters/${clusterId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update status');
+                loadDashboard();
+            } catch (error) {
+                alert('Error updating cluster status: ' + error.message);
+            }
+        }
+
+        // Local instance functions
+        function showLocalInstanceModal() {
+            showModal('local-instance-modal');
+        }
+
+        async function startLocalInstance(instanceName, port, config) {
+            try {
+                const response = await fetch('/api/v1/flexcore/local/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        instance_name: instanceName,
+                        port: port || 8080,
+                        config: config || {}
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to start local instance');
+                
+                const result = await response.json();
+                alert(`Local instance "${instanceName}" started successfully on port ${result.data.instance_data.port}`);
+                loadDashboard();
+            } catch (error) {
+                alert('Error starting local instance: ' + error.message);
+            }
+        }
+
+        async function refreshLocalInstances() {
+            try {
+                const response = await fetch('/api/v1/flexcore/local/list');
+                const result = await response.json();
+                
+                if (result.data.length === 0) {
+                    alert('No local instances running');
+                } else {
+                    const instances = result.data.map(i => `${i.name} (port: ${i.port})`).join('\n');
+                    alert(`Local instances:\n${instances}`);
+                }
+                loadDashboard();
+            } catch (error) {
+                alert('Error listing local instances: ' + error.message);
+            }
+        }
+
+        // Add local instance form handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const localForm = document.getElementById('local-instance-form');
+            if (localForm) {
+                localForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    
+                    await startLocalInstance(
+                        formData.get('instance_name'),
+                        parseInt(formData.get('port')) || 8080,
+                        {}
+                    );
+                    
+                    closeModal('local-instance-modal');
+                    e.target.reset();
+                });
+            }
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

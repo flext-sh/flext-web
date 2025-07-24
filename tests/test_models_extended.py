@@ -1,6 +1,8 @@
 """Extended model tests to improve coverage."""
 from __future__ import annotations
 
+import logging
+
 import pytest
 from django.contrib.auth import get_user_model
 
@@ -19,6 +21,7 @@ from flext_web.apps.projects.models import (
     ProjectTemplate,
 )
 
+logger = logging.getLogger(__name__)
 User = get_user_model()  # Remove type annotation to avoid mismatch
 @pytest.mark.django_db
 class TestMonitoringModelsMethods:
@@ -170,10 +173,10 @@ class TestPipelineWebMethods:
         try:
             url = pipeline.get_absolute_url()
             assert isinstance(url, str)
-        except Exception:
+        except Exception as e:
             # URL pattern might not exist, but we covered the method
-            # Exception is expected for test coverage
-            pass
+            # Exception is expected for test coverage - log for debugging
+            logger.debug("get_absolute_url() failed as expected during testing: %s", e)
     def test_pipeline_web_properties(self) -> None:
         """Test pipeline properties."""
         user = User.objects.create_user(

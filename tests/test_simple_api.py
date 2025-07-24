@@ -6,7 +6,9 @@ from typing import Any
 from unittest.mock import patch
 
 from django.test import TestCase
-from flext_core.domain.shared_types import ServiceResult
+
+# 🚨 ARCHITECTURAL COMPLIANCE: Using módulo raiz imports
+from flext_core import ServiceResult
 
 from flext_web.config import WebConfig
 from flext_web.simple_api import get_web_settings, setup_web

@@ -49,6 +49,7 @@ async def test_client(web_app: Any) -> AsyncGenerator[Any]:
 @pytest.fixture
 def async_test_client(web_app: Any) -> Any:
     """Async HTTP test client for web application."""
+
     # Simple mock client for testing
     class MockClient:
         async def get(self, url: str) -> dict[str, Any]:

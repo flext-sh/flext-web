@@ -8,10 +8,7 @@ This module provides Django web configuration using consolidated flext-core patt
 
 from __future__ import annotations
 
-from flext_core import BaseSettings, Field
-from flext_core.config.flext_config import FlextDatabaseConfig as DatabaseConfig
-from flext_core.domain.constants import ConfigDefaults, FlextFramework
-from pydantic import field_validator
+from pydantic import BaseSettings, Field, field_validator
 from pydantic_settings import SettingsConfigDict
 
 
@@ -28,18 +25,18 @@ class WebConfig(BaseSettings):
     # Project identification
     title: str = Field(
         default="FLEXT Web",
-        max_length=ConfigDefaults.MAX_ENTITY_NAME_LENGTH,
+        max_length=255,
     )
     description: str = Field(
         default="Enterprise Data Integration Web Interface",
-        max_length=ConfigDefaults.MAX_ERROR_MESSAGE_LENGTH,
+        max_length=500,
     )
-    version: str = Field(default=FlextFramework.VERSION)
+    version: str = Field(default="1.0.0")
 
-    # Consolidated database configuration
-    database: DatabaseConfig = Field(
-        default_factory=lambda: DatabaseConfig(url="postgresql://localhost/flext_web"),
-        description="Database configuration using consolidated patterns",
+    # Database configuration
+    database_url: str = Field(
+        default="postgresql://localhost/flext_web",
+        description="Database connection URL",
     )
 
     # Django-specific settings
@@ -217,7 +214,13 @@ class WebConfig(BaseSettings):
             raise ValueError(msg)
         return v
 
-    @field_validator("csrf_trusted_origins", "django_allowed_hosts", "celery_accept_content", "allowed_upload_types", mode="before")
+    @field_validator(
+        "csrf_trusted_origins",
+        "django_allowed_hosts",
+        "celery_accept_content",
+        "allowed_upload_types",
+        mode="before",
+    )
     @classmethod
     def validate_list_fields(cls, v: list[str] | str) -> list[str]:
         """Validate list fields - convert comma-separated strings to lists."""
@@ -239,7 +242,7 @@ class WebConfig(BaseSettings):
     @property
     def is_development(self) -> bool:
         """Check if running in development mode."""
-        return self.django_debug or "localhost" in self.database.url
+        return self.django_debug or "localhost" in self.database_url
 
     @property
     def is_production(self) -> bool:
@@ -252,24 +255,33 @@ class WebConfig(BaseSettings):
         return {
             "default": {
                 "ENGINE": "django.db.backends.postgresql",
-                "NAME": self.database.url.split("/")[-1]
-                if "/" in self.database.url
-                else "flext_web",
-                "USER": self.database.url.split("//")[1].split(":")[0]
-                if "@" in self.database.url
-                else "",
-                "PASSWORD": self.database.url.split("://")[1]
-                .split("@")[0]
-                .split(":")[1]
-                if "@" in self.database.url
-                and ":" in self.database.url.split("://")[1].split("@")[0]
-                else "",
-                "HOST": self.database.url.split("@")[1].split(":")[0]
-                if "@" in self.database.url
-                else "localhost",
-                "PORT": self.database.url.split("@")[1].split(":")[1].split("/")[0]
-                if "@" in self.database.url and ":" in self.database.url.split("@")[1]
-                else "5432",
+                "NAME": (
+                    self.database_url.split("/")[-1]
+                    if "/" in self.database_url
+                    else "flext_web"
+                ),
+                "USER": (
+                    self.database_url.split("//")[1].split(":")[0]
+                    if "@" in self.database_url
+                    else ""
+                ),
+                "PASSWORD": (
+                    self.database_url.split("://")[1].split("@")[0].split(":")[1]
+                    if "@" in self.database_url
+                    and ":" in self.database_url.split("://")[1].split("@")[0]
+                    else ""
+                ),
+                "HOST": (
+                    self.database_url.split("@")[1].split(":")[0]
+                    if "@" in self.database_url
+                    else "localhost"
+                ),
+                "PORT": (
+                    self.database_url.split("@")[1].split(":")[1].split("/")[0]
+                    if "@" in self.database_url
+                    and ":" in self.database_url.split("@")[1]
+                    else "5432"
+                ),
             },
         }
 

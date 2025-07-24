@@ -223,7 +223,7 @@ check-migrations: ## Check for migration issues
 # 📦 BUILD & DISTRIBUTION
 # ============================================================================
 
-build: clean collectstatic ## Build distribution packages
+build: clean ## Build distribution packages (pure library - no static files needed)
 	@echo "🔨 Building distribution..."
 	@poetry build
 	@echo "✅ Build complete - packages in dist/"

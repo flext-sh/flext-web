@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     URLPatternType = URLPattern | URLResolver
 else:
     from typing import Any
+
     URLPatternType = Any
 
 urlpatterns: list[URLPatternType] = [

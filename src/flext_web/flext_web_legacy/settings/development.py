@@ -1,4 +1,5 @@
 """Development settings for FLEXT Meltano Enterprise Web application.
+
 This module provides development-specific Django settings that extend the base
 configuration with debugging tools and development-friendly features.
 Features:
@@ -15,9 +16,11 @@ Warning:
     as they expose sensitive debugging information.
 
 """
+
 from __future__ import annotations
 
-from flext_web.flext_web_legacy.settings.base import *  # noqa: F403
+# Django settings pattern - inherits all base settings
+from flext_web.flext_web_legacy.settings.base import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
