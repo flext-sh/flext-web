@@ -55,7 +55,7 @@ def async_test_client(web_app: Any) -> Any:
         async def get(self, url: str) -> dict[str, Any]:
             return {"status": 200, "url": url}
 
-        async def post(self, url: str, **kwargs: Any) -> dict[str, Any]:
+        async def post(self, url: str, **kwargs: object) -> dict[str, Any]:
             return {"status": 200, "url": url, "data": kwargs}
 
     return MockClient()

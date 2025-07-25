@@ -4,10 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-# 🚨 ARCHITECTURAL COMPLIANCE: Using DI container for flext-core imports
-from flext_web.infrastructure.di_container import get_service_result
-
-ServiceResult = get_service_result()
+from flext_core import FlextResult
 
 
 def create_response(data: Any, status: int = 200) -> dict[str, Any]:
@@ -26,20 +23,21 @@ def create_success_response(data: Any, message: str = "Success") -> dict[str, An
 
 
 def validate_request_data(
-    data: dict[str, Any], required_fields: list[str]
-) -> ServiceResult[bool]:
+    data: dict[str, Any],
+    required_fields: list[str],
+) -> FlextResult[bool]:
     """Validate request data has required fields."""
     try:
         missing_fields = [field for field in required_fields if field not in data]
 
         if missing_fields:
-            return ServiceResult.fail(
-                f"Missing required fields: {', '.join(missing_fields)}"
+            return FlextResult.fail(
+                f"Missing required fields: {', '.join(missing_fields)}",
             )
 
-        return ServiceResult.ok(True)
+        return FlextResult.ok(True)
     except Exception as e:
-        return ServiceResult.fail(f"Validation failed: {e}")
+        return FlextResult.fail(f"Validation failed: {e}")
 
 
 def format_pagination(page: int, page_size: int, total: int) -> dict[str, Any]:
@@ -54,23 +52,23 @@ def format_pagination(page: int, page_size: int, total: int) -> dict[str, Any]:
     }
 
 
-class SimpleTemplate:
+class FlextSimpleTemplate:
     """Simple template renderer."""
 
     def __init__(self, template_string: str) -> None:
         self.template = template_string
 
-    def render(self, context: dict[str, Any]) -> ServiceResult[str]:
+    def render(self, context: dict[str, Any]) -> FlextResult[str]:
         """Render template with context."""
         try:
             rendered = self.template.format(**context)
-            return ServiceResult.ok(rendered)
+            return FlextResult.ok(rendered)
         except KeyError as e:
-            return ServiceResult.fail(f"Missing template variable: {e}")
+            return FlextResult.fail(f"Missing template variable: {e}")
         except Exception as e:
-            return ServiceResult.fail(f"Template rendering failed: {e}")
+            return FlextResult.fail(f"Template rendering failed: {e}")
 
 
-def create_template(template_string: str) -> SimpleTemplate:
+def create_template(template_string: str) -> FlextSimpleTemplate:
     """Create a simple template."""
-    return SimpleTemplate(template_string)
+    return FlextSimpleTemplate(template_string)

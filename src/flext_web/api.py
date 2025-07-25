@@ -2,27 +2,24 @@
 
 from __future__ import annotations
 
-import logging
 import uuid
 from pathlib import Path
 from typing import Any
 
 from flask import Flask, render_template_string, request
+from flext_core import FlextLoggerFactory, FlextLoggerName
 
 # 🚨 ARCHITECTURAL COMPLIANCE: Using DI container for flext-core imports
-from flext_web.infrastructure.di_container import get_service_result
-
 from .simple_web import (
     create_error_response,
     create_response,
     create_success_response,
     validate_request_data,
 )
-from .web_interface import FlexCoreManager
+from .web_interface import FlextCoreManager
 
-ServiceResult = get_service_result()
-
-logger = logging.getLogger(__name__)
+logger_factory = FlextLoggerFactory()
+logger = logger_factory.create_logger(FlextLoggerName(__name__))
 
 
 class FlextWebAPI:
@@ -30,8 +27,8 @@ class FlextWebAPI:
 
     def __init__(self) -> None:
         self.app = Flask(__name__)
-        self.flexcore_manager = FlexCoreManager()
-        self.logger = logging.getLogger(__name__)
+        self.flexcore_manager = FlextCoreManager()
+        self.logger = logger_factory.create_logger(FlextLoggerName(__name__))
         self._register_routes()
 
     def _register_routes(self) -> None:
@@ -43,47 +40,48 @@ class FlextWebAPI:
         # Cluster management routes
         self.app.route("/api/v1/flexcore/clusters", methods=["GET"])(self.list_clusters)
         self.app.route("/api/v1/flexcore/clusters", methods=["POST"])(
-            self.create_cluster
+            self.create_cluster,
         )
         self.app.route("/api/v1/flexcore/clusters/<cluster_id>", methods=["GET"])(
-            self.get_cluster
+            self.get_cluster,
         )
         self.app.route(
-            "/api/v1/flexcore/clusters/<cluster_id>/status", methods=["PUT"]
+            "/api/v1/flexcore/clusters/<cluster_id>/status",
+            methods=["PUT"],
         )(self.update_cluster_status)
 
         # Plugin management routes
         self.app.route("/api/v1/flexcore/plugins", methods=["GET"])(self.list_plugins)
         self.app.route("/api/v1/flexcore/plugins", methods=["POST"])(
-            self.register_plugin
+            self.register_plugin,
         )
         self.app.route("/api/v1/flexcore/plugins/<plugin_id>", methods=["GET"])(
-            self.get_plugin
+            self.get_plugin,
         )
 
         # Job management routes
         self.app.route("/api/v1/flexcore/jobs/meltano", methods=["POST"])(
-            self.create_meltano_job
+            self.create_meltano_job,
         )
         self.app.route("/api/v1/flexcore/jobs/ray", methods=["POST"])(
-            self.create_ray_job
+            self.create_ray_job,
         )
         self.app.route("/api/v1/flexcore/jobs/<job_id>", methods=["GET"])(
-            self.get_job_status
+            self.get_job_status,
         )
         self.app.route("/api/v1/flexcore/jobs/<job_id>/execute", methods=["POST"])(
-            self.execute_job
+            self.execute_job,
         )
 
         # Local instance routes
         self.app.route("/api/v1/flexcore/local/start", methods=["POST"])(
-            self.start_local_instance
+            self.start_local_instance,
         )
         self.app.route("/api/v1/flexcore/local/stop", methods=["POST"])(
-            self.stop_local_instance
+            self.stop_local_instance,
         )
         self.app.route("/api/v1/flexcore/local/list", methods=["GET"])(
-            self.list_local_instances
+            self.list_local_instances,
         )
 
         # Health check
@@ -99,10 +97,7 @@ class FlextWebAPI:
             return render_template_string(template_content)
         except Exception as e:
             self.logger.exception("Failed to load dashboard template")
-            return (
-                f"<h1>FLEXT Dashboard Error</h1><p>Failed to load dashboard: {e}</p>",
-                500,
-            )
+            return f"<h1>FLEXT Dashboard Error</h1><p>Failed to load dashboard: {e}</p>"
 
     def get_dashboard_data(self) -> dict[str, Any]:
         """Get complete dashboard data with DI service integration."""
@@ -110,7 +105,7 @@ class FlextWebAPI:
             # Get basic dashboard data
             result = self.flexcore_manager.get_dashboard_data()
 
-            if result.success:
+            if result.success and result.data:
                 dashboard_data = result.data
 
                 # Enrich with FLEXT service health check
@@ -120,7 +115,7 @@ class FlextWebAPI:
                     services = get_flext_services()
                     health_result = services.health_check()
 
-                    if health_result.success:
+                    if health_result.success and health_result.data:
                         dashboard_data["flext_service"] = {
                             "status": "healthy",
                             "version": health_result.data["version"],
@@ -129,7 +124,7 @@ class FlextWebAPI:
                     else:
                         dashboard_data["flext_service"] = {
                             "status": "unavailable",
-                            "error": health_result.error_message,
+                            "error": health_result.error or "Health check failed",
                         }
                 except Exception as service_error:
                     dashboard_data["flext_service"] = {
@@ -138,7 +133,7 @@ class FlextWebAPI:
                     }
 
                 return create_response(dashboard_data)
-            return create_error_response(result.error_message, 500)
+            return create_error_response(result.error or "Unknown error", 500)
 
         except Exception as e:
             self.logger.exception("Failed to get dashboard data")
@@ -151,7 +146,7 @@ class FlextWebAPI:
 
             if result.success:
                 return create_response(result.data)
-            return create_error_response(result.error_message, 500)
+            return create_error_response(result.error or "Unknown error", 500)
 
         except Exception as e:
             self.logger.exception("Failed to list clusters")
@@ -167,21 +162,23 @@ class FlextWebAPI:
             # Validate required fields
             validation_result = validate_request_data(data, ["name", "endpoint"])
             if not validation_result.success:
-                return create_error_response(validation_result.error_message, 400)
+                return create_error_response(validation_result.error or "Validation failed", 400)
 
             # Generate cluster ID
             cluster_id = str(uuid.uuid4())
 
             result = self.flexcore_manager.register_cluster(
-                cluster_id=cluster_id, name=data["name"], endpoint=data["endpoint"]
+                cluster_id=cluster_id,
+                name=data["name"],
+                endpoint=data["endpoint"],
             )
 
-            if result.success:
+            if result.success and result.data:
                 self.logger.info(
-                    f"FlexCore cluster created: {data['name']} ({cluster_id})"
+                    f"FlexCore cluster created: {data['name']} ({cluster_id})",
                 )
                 return create_response(result.data.to_dict(), 201)
-            return create_error_response(result.error_message, 400)
+            return create_error_response(result.error or "Unknown error", 400)
 
         except Exception as e:
             self.logger.exception("Failed to create cluster")
@@ -194,7 +191,7 @@ class FlextWebAPI:
 
             if result.success:
                 return create_response(result.data)
-            return create_error_response(result.error_message, 404)
+            return create_error_response(result.error or "Unknown error", 404)
 
         except Exception as e:
             self.logger.exception(f"Failed to get cluster {cluster_id}")
@@ -209,15 +206,16 @@ class FlextWebAPI:
 
             validation_result = validate_request_data(data, ["status"])
             if not validation_result.success:
-                return create_error_response(validation_result.error_message, 400)
+                return create_error_response(validation_result.error or "Validation failed", 400)
 
             result = self.flexcore_manager.update_cluster_status(
-                cluster_id, data["status"]
+                cluster_id,
+                data["status"],
             )
 
             if result.success:
                 return create_response({"status": "updated"})
-            return create_error_response(result.error_message, 404)
+            return create_error_response(result.error or "Unknown error", 404)
 
         except Exception as e:
             self.logger.exception(f"Failed to update cluster status {cluster_id}")
@@ -242,10 +240,11 @@ class FlextWebAPI:
                 return create_error_response("Request body is required", 400)
 
             validation_result = validate_request_data(
-                data, ["name", "version", "type", "cluster_id"]
+                data,
+                ["name", "version", "type", "cluster_id"],
             )
             if not validation_result.success:
-                return create_error_response(validation_result.error_message, 400)
+                return create_error_response(validation_result.error or "Validation failed", 400)
 
             # Generate plugin ID
             plugin_id = str(uuid.uuid4())
@@ -261,12 +260,13 @@ class FlextWebAPI:
 
             if result.success:
                 self.logger.info(
-                    f"Plugin registered: {data['name']} v{data['version']} ({plugin_id})"
+                    f"Plugin registered: {data['name']} v{data['version']} ({plugin_id})",
                 )
                 return create_response(
-                    {"plugin_id": plugin_id, "status": "registered"}, 201
+                    {"plugin_id": plugin_id, "status": "registered"},
+                    201,
                 )
-            return create_error_response(result.error_message, 400)
+            return create_error_response(result.error or "Unknown error", 400)
 
         except Exception as e:
             self.logger.exception("Failed to register plugin")
@@ -293,10 +293,11 @@ class FlextWebAPI:
                 return create_error_response("Request body is required", 400)
 
             validation_result = validate_request_data(
-                data, ["cluster_id", "project_path", "command"]
+                data,
+                ["cluster_id", "project_path", "command"],
             )
             if not validation_result.success:
-                return create_error_response(validation_result.error_message, 400)
+                return create_error_response(validation_result.error or "Validation failed", 400)
 
             # Generate job ID
             job_id = str(uuid.uuid4())
@@ -312,7 +313,7 @@ class FlextWebAPI:
             if result.success:
                 self.logger.info(f"Meltano job created: {job_id}")
                 return create_response(result.data, 201)
-            return create_error_response(result.error_message, 400)
+            return create_error_response(result.error or "Unknown error", 400)
 
         except Exception as e:
             self.logger.exception("Failed to create Meltano job")
@@ -326,10 +327,11 @@ class FlextWebAPI:
                 return create_error_response("Request body is required", 400)
 
             validation_result = validate_request_data(
-                data, ["cluster_id", "script_path"]
+                data,
+                ["cluster_id", "script_path"],
             )
             if not validation_result.success:
-                return create_error_response(validation_result.error_message, 400)
+                return create_error_response(validation_result.error or "Validation failed", 400)
 
             # Generate job ID
             job_id = str(uuid.uuid4())
@@ -345,7 +347,9 @@ class FlextWebAPI:
             if result.success:
                 self.logger.info(f"Ray job created: {job_id}")
                 return create_response(result.data, 201)
-            return create_error_response(result.error_message, 400)
+            return create_error_response(
+                result.error or "Unknown error", 400,
+            )
 
         except Exception as e:
             self.logger.exception("Failed to create Ray job")
@@ -358,7 +362,7 @@ class FlextWebAPI:
 
             if result.success:
                 return create_response(result.data)
-            return create_error_response(result.error_message, 404)
+            return create_error_response(result.error or "Unknown error", 404)
 
         except Exception as e:
             self.logger.exception(f"Failed to get job status {job_id}")
@@ -372,7 +376,7 @@ class FlextWebAPI:
             if result.success:
                 self.logger.info(f"Job executed: {job_id}")
                 return create_response(result.data)
-            return create_error_response(result.error_message, 400)
+            return create_error_response(result.error or "Unknown error", 400)
 
         except Exception as e:
             self.logger.exception(f"Failed to execute job {job_id}")
@@ -388,7 +392,7 @@ class FlextWebAPI:
                 "clusters": len(self.flexcore_manager.clusters),
                 "plugins": len(self.flexcore_manager.plugin_registry.plugins),
                 "jobs": len(self.flexcore_manager.job_executor.jobs),
-            }
+            },
         )
 
     def start_local_instance(self) -> dict[str, Any]:
@@ -400,21 +404,24 @@ class FlextWebAPI:
 
             validation_result = validate_request_data(data, ["instance_name"])
             if not validation_result.success:
-                return create_error_response(validation_result.error_message, 400)
+                return create_error_response(validation_result.error or "Validation failed", 400)
 
             instance_name = data["instance_name"]
             port = data.get("port", 8080)
             config = data.get("config", {})
 
             result = self.flexcore_manager.start_local_instance(
-                instance_name, port, config
+                instance_name,
+                port,
+                config,
             )
 
             if result.success:
                 return create_success_response(
-                    result.data, "Local instance started successfully"
+                    result.data,
+                    "Local instance started successfully",
                 )
-            return create_error_response(result.error_message, 500)
+            return create_error_response(result.error or "Unknown error", 500)
 
         except Exception as e:
             logger.exception(f"Failed to start local instance: {e}")
@@ -429,16 +436,17 @@ class FlextWebAPI:
 
             validation_result = validate_request_data(data, ["instance_name"])
             if not validation_result.success:
-                return create_error_response(validation_result.error_message, 400)
+                return create_error_response(validation_result.error or "Validation failed", 400)
 
             instance_name = data["instance_name"]
             result = self.flexcore_manager.stop_local_instance(instance_name)
 
             if result.success:
                 return create_success_response(
-                    {"stopped": True}, "Local instance stopped successfully"
+                    {"stopped": True},
+                    "Local instance stopped successfully",
                 )
-            return create_error_response(result.error_message, 500)
+            return create_error_response(result.error or "Unknown error", 500)
 
         except Exception as e:
             logger.exception(f"Failed to stop local instance: {e}")
@@ -451,9 +459,10 @@ class FlextWebAPI:
 
             if result.success:
                 return create_success_response(
-                    result.data, "Local instances retrieved successfully"
+                    result.data,
+                    "Local instances retrieved successfully",
                 )
-            return create_error_response(result.error_message, 500)
+            return create_error_response(result.error or "Unknown error", 500)
 
         except Exception as e:
             logger.exception(f"Failed to list local instances: {e}")

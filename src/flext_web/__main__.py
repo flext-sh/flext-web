@@ -3,24 +3,31 @@
 from __future__ import annotations
 
 import argparse
-import logging
 import sys
+
+from flext_core import FlextLoggerFactory, FlextLoggerName
 
 from .api import FlextWebAPI
 
-logger = logging.getLogger(__name__)
+logger_factory = FlextLoggerFactory()
+logger = logger_factory.create_logger(FlextLoggerName(__name__))
 
 
 def main() -> None:
     """Main entry point for FLEXT Web Interface."""
     parser = argparse.ArgumentParser(
-        description="FLEXT FlexCore Management Web Interface"
+        description="FLEXT FlexCore Management Web Interface",
     )
     parser.add_argument(
-        "--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)"
+        "--host",
+        default="0.0.0.0",
+        help="Host to bind to (default: 0.0.0.0)",
     )
     parser.add_argument(
-        "--port", type=int, default=5000, help="Port to bind to (default: 5000)"
+        "--port",
+        type=int,
+        default=5000,
+        help="Port to bind to (default: 5000)",
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
 

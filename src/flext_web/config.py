@@ -8,11 +8,11 @@ This module provides Django web configuration using consolidated flext-core patt
 
 from __future__ import annotations
 
-from pydantic import BaseSettings, Field, field_validator
-from pydantic_settings import SettingsConfigDict
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class WebConfig(BaseSettings):
+class FlextWebConfig(BaseSettings):
     """Django web configuration using consolidated flext-core patterns."""
 
     model_config = SettingsConfigDict(
@@ -313,10 +313,10 @@ class WebConfig(BaseSettings):
 
 
 # Global settings instance
-_settings: WebConfig | None = None
+_settings: FlextWebConfig | None = None
 
 
-def get_web_settings() -> WebConfig:
+def get_web_settings() -> FlextWebConfig:
     """Get Django web configuration settings.
 
     Returns:
@@ -325,17 +325,17 @@ def get_web_settings() -> WebConfig:
     """
     global _settings
     if _settings is None:
-        _settings = WebConfig()
+        _settings = FlextWebConfig()
     return _settings
 
 
 # Export aliases for backward compatibility
-WebSettings = WebConfig
-DjangoSettings = WebConfig
+FlextWebSettings = FlextWebConfig
+DjangoSettings = FlextWebConfig
 
 __all__ = [
     "DjangoSettings",
-    "WebConfig",
-    "WebSettings",
+    "FlextWebConfig",
+    "FlextWebSettings",
     "get_web_settings",
 ]
