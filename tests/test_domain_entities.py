@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
+import pytest
+from pydantic import ValidationError
+
 from flext_web.api import WebApp, WebAppHandler
+
+# Constants
+EXPECTED_TOTAL_PAGES = 8
 
 
 class TestWebApp:
@@ -12,9 +18,14 @@ class TestWebApp:
         """Test WebApp creation."""
         app = WebApp(id="test_app", name="TestApp", port=8080)
 
-        assert app.id == "test_app"
+        if app.id != "test_app":
+
+            msg = f"Expected {"test_app"}, got {app.id}"
+            raise AssertionError(msg)
         assert app.name == "TestApp"
-        assert app.port == 8080
+        if app.port != 8080:
+            msg = f"Expected {8080}, got {app.port}"
+            raise AssertionError(msg)
         assert app.host == "localhost"
         assert not app.is_running
 
@@ -27,9 +38,6 @@ class TestWebApp:
 
     def test_webapp_invalid_port(self) -> None:
         """Test WebApp with invalid port."""
-        import pytest
-        from pydantic import ValidationError
-
         with pytest.raises(ValidationError):
             WebApp(id="test_app", name="TestApp", port=99999)
 
@@ -39,7 +47,9 @@ class TestWebApp:
         result = app.validate_domain_rules()
 
         assert not result.is_success
-        assert "App name is required" in result.error
+        if "App name is required" not in result.error:
+            msg = f"Expected {"App name is required"} in {result.error}"
+            raise AssertionError(msg)
 
     def test_webapp_start(self) -> None:
         """Test WebApp start."""
@@ -73,7 +83,9 @@ class TestWebAppHandler:
         assert result.is_success
         app = result.data
         assert app is not None
-        assert app.name == "TestApp"
+        if app.name != "TestApp":
+            msg = f"Expected {"TestApp"}, got {app.name}"
+            raise AssertionError(msg)
         assert app.port == 8080
 
     def test_handler_start(self) -> None:

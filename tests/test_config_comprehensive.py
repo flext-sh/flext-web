@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import os
+
 import pytest
+from pydantic import ValidationError
 
 from flext_web.config import FlextWebConfig, get_web_settings
 
@@ -13,26 +16,34 @@ class TestWebConfigBasic:
     def test_web_config_creation(self) -> None:
         """Test basic WebConfig creation."""
         config = FlextWebConfig()
-        assert config.app_name == "FLEXT Web"
+        if config.app_name != "FLEXT Web":
+            msg = f"Expected {"FLEXT Web"}, got {config.app_name}"
+            raise AssertionError(msg)
         assert config.version == "2.0.0"
 
     def test_web_config_with_custom_settings(self) -> None:
         """Test WebConfig with custom settings."""
         config = FlextWebConfig(app_name="Custom Web App", version="2.0.0")
-        assert config.app_name == "Custom Web App"
+        if config.app_name != "Custom Web App":
+            msg = f"Expected {"Custom Web App"}, got {config.app_name}"
+            raise AssertionError(msg)
         assert config.version == "2.0.0"
 
     def test_web_config_security_settings(self) -> None:
         """Test security-related settings."""
         config = FlextWebConfig()
         assert config.secret_key is not None
-        assert len(config.secret_key) >= 32
+        if len(config.secret_key) < 32:
+            msg = f"Expected {len(config.secret_key)} >= {32}"
+            raise AssertionError(msg)
         assert isinstance(config.debug, bool)
 
     def test_web_config_server_settings(self) -> None:
         """Test server-related settings."""
         config = FlextWebConfig()
-        assert config.host == "localhost"
+        if config.host != "localhost":
+            msg = f"Expected {"localhost"}, got {config.host}"
+            raise AssertionError(msg)
         assert isinstance(config.port, int)
         assert 1 <= config.port <= 65535
 
@@ -44,8 +55,6 @@ class TestWebConfigBasic:
 
     def test_web_config_port_validation(self) -> None:
         """Test port validation."""
-        from pydantic import ValidationError
-
         with pytest.raises(ValidationError):
             FlextWebConfig(port=0)  # Below minimum
 
@@ -56,7 +65,9 @@ class TestWebConfigBasic:
         """Test get_web_settings function."""
         settings = get_web_settings()
         assert isinstance(settings, FlextWebConfig)
-        assert settings.app_name == "FLEXT Web"
+        if settings.app_name != "FLEXT Web":
+            msg = f"Expected {"FLEXT Web"}, got {settings.app_name}"
+            raise AssertionError(msg)
 
 
 class TestConfigIntegration:
@@ -64,14 +75,14 @@ class TestConfigIntegration:
 
     def test_config_with_environment_variables(self) -> None:
         """Test configuration with environment variables."""
-        import os
-
         # Set environment variable
         os.environ["FLEXT_WEB_APP_NAME"] = "Test App From Env"
 
         try:
             config = FlextWebConfig()
-            assert config.app_name == "Test App From Env"
+            if config.app_name != "Test App From Env":
+                msg = f"Expected {"Test App From Env"}, got {config.app_name}"
+                raise AssertionError(msg)
         finally:
             # Cleanup
             if "FLEXT_WEB_APP_NAME" in os.environ:
@@ -82,4 +93,6 @@ class TestConfigIntegration:
         config = FlextWebConfig(app_name="")
         result = config.validate_config()
         assert not result.is_success
-        assert "App name is required" in result.error
+        if "App name is required" not in result.error:
+            msg = f"Expected {"App name is required"} in {result.error}"
+            raise AssertionError(msg)

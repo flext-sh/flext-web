@@ -160,7 +160,7 @@ class FlextWebAppHandler(FlextHandlers.Handler[FlextWebApp, FlextWebApp]):
                 return FlextResult.fail(validation.error or "Validation failed")
 
             return FlextResult.ok(app)
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError) as e:
             return FlextResult.fail(f"Failed to create app: {e}")
 
     def start(self, app: FlextWebApp) -> FlextResult[FlextWebApp]:

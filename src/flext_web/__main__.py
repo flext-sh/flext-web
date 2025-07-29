@@ -55,7 +55,7 @@ def main() -> None:
         service.run(host=host, port=port, debug=debug)
     except KeyboardInterrupt:
         logger.info("🛑 Shutting down FlextWeb service")
-    except Exception:
+    except (RuntimeError, ValueError, TypeError):
         logger.exception("Failed to start FlextWeb service")
         sys.exit(1)
 

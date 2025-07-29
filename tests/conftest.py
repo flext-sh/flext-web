@@ -10,6 +10,7 @@ import os
 from typing import TYPE_CHECKING, Any
 
 import pytest
+from fastapi.testclient import TestClient
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Generator
@@ -40,8 +41,6 @@ def web_app() -> dict[str, str]:
 @pytest.fixture
 async def test_client(web_app: Any) -> AsyncGenerator[Any]:
     """HTTP test client for web application."""
-    from fastapi.testclient import TestClient
-
     with TestClient(web_app) as client:
         yield client
 
@@ -206,8 +205,6 @@ def plugin_form_data() -> dict[str, Any]:
 @pytest.fixture
 async def websocket_client(web_app: Any) -> AsyncGenerator[Any]:
     """WebSocket test client."""
-    from fastapi.testclient import TestClient
-
     with TestClient(web_app) as client, client.websocket_connect("/ws") as websocket:
         yield websocket
 
