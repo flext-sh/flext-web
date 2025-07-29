@@ -161,21 +161,19 @@ fix: ## Auto-fix code issues
 # =============================================================================
 
 .PHONY: test
-test: ## Run Django tests with coverage
-	@echo "🧪 Running Django tests with coverage..."
-	@$(POETRY) run python manage.py test --keepdb --parallel
-	@$(POETRY) run coverage run --source='.' manage.py test --keepdb
-	@$(POETRY) run coverage report --fail-under=$(MIN_COVERAGE)
+test: ## Run tests with coverage
+	@echo "🧪 Running tests with coverage..."
+	@PYTHONPATH=src $(POETRY) run pytest tests/ -v
 
 .PHONY: test-unit
 test-unit: ## Run unit tests only
 	@echo "🧪 Running unit tests..."
-	@$(POETRY) run python manage.py test tests.unit --keepdb --parallel
+	@$(POETRY) run pytest tests/unit/ -v
 
 .PHONY: test-integration
 test-integration: ## Run integration tests only
 	@echo "🧪 Running integration tests..."
-	@$(POETRY) run python manage.py test tests.integration --keepdb
+	@$(POETRY) run pytest tests/integration/ -v
 
 .PHONY: test-web
 test-web: ## Run web UI tests

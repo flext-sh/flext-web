@@ -47,7 +47,7 @@ async def test_client(web_app: Any) -> AsyncGenerator[Any]:
 
 
 @pytest.fixture
-def async_test_client(web_app: Any) -> Any:
+def async_test_client(web_app: Any) -> object:
     """Async HTTP test client for web application."""
 
     # Simple mock client for testing
@@ -328,7 +328,7 @@ def web_session_data() -> dict[str, Any]:
 
 # Mock external services
 @pytest.fixture
-def mock_pipeline_service() -> Any:
+def mock_pipeline_service() -> object:
     """Mock pipeline service for testing."""
 
     class MockPipelineService:
@@ -345,7 +345,7 @@ def mock_pipeline_service() -> Any:
 
 
 @pytest.fixture
-def mock_plugin_service() -> Any:
+def mock_plugin_service() -> object:
     """Mock plugin service for testing."""
 
     class MockPluginService:

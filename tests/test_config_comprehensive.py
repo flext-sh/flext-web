@@ -13,72 +13,73 @@ class TestWebConfigBasic:
     def test_web_config_creation(self) -> None:
         """Test basic WebConfig creation."""
         config = FlextWebConfig()
-        assert config.title == "FLEXT Web"
-        assert config.version is not None
+        assert config.app_name == "FLEXT Web"
+        assert config.version == "2.0.0"
 
-    def test_web_config_with_custom_title(self) -> None:
-        """Test WebConfig with custom title."""
-        config = FlextWebConfig(title="Custom Web App")
-        assert config.title == "Custom Web App"
+    def test_web_config_with_custom_settings(self) -> None:
+        """Test WebConfig with custom settings."""
+        config = FlextWebConfig(app_name="Custom Web App", version="2.0.0")
+        assert config.app_name == "Custom Web App"
+        assert config.version == "2.0.0"
 
-    def test_web_config_django_settings(self) -> None:
-        """Test Django-related settings."""
+    def test_web_config_security_settings(self) -> None:
+        """Test security-related settings."""
         config = FlextWebConfig()
-        assert config.django_secret_key is not None
-        assert len(config.django_secret_key) >= 50
-        assert isinstance(config.django_debug, bool)
-        assert isinstance(config.django_allowed_hosts, list)
+        assert config.secret_key is not None
+        assert len(config.secret_key) >= 32
+        assert isinstance(config.debug, bool)
 
-    def test_web_config_database_config(self) -> None:
-        """Test database configuration."""
+    def test_web_config_server_settings(self) -> None:
+        """Test server-related settings."""
         config = FlextWebConfig()
-        db_config = config.django_database_config
-        assert "default" in db_config
-        assert "ENGINE" in db_config["default"]
-        assert db_config["default"]["ENGINE"] == "django.db.backends.postgresql"
+        assert config.host == "localhost"
+        assert isinstance(config.port, int)
+        assert 1 <= config.port <= 65535
 
-    def test_web_config_secret_key_validation(self) -> None:
-        """Test secret key validation."""
+    def test_web_config_validation(self) -> None:
+        """Test configuration validation."""
+        config = FlextWebConfig()
+        result = config.validate_config()
+        assert result.is_success
+
+    def test_web_config_port_validation(self) -> None:
+        """Test port validation."""
         from pydantic import ValidationError
 
-        with pytest.raises(
-            ValidationError, match="String should have at least 50 characters",
-        ):
-            FlextWebConfig(django_secret_key="short")
+        with pytest.raises(ValidationError):
+            FlextWebConfig(port=0)  # Below minimum
 
-    def test_web_config_x_frame_options_validation(self) -> None:
-        """Test X-Frame-Options validation."""
-        config = FlextWebConfig(x_frame_options="DENY")
-        assert config.x_frame_options == "DENY"
-
-        config = FlextWebConfig(x_frame_options="sameorigin")
-        assert config.x_frame_options == "SAMEORIGIN"
-
-        from pydantic import ValidationError
-
-        with pytest.raises(ValidationError, match="X-Frame-Options must be one of"):
-            FlextWebConfig(x_frame_options="INVALID")
-
-    def test_web_config_development_production_properties(self) -> None:
-        """Test development/production detection properties."""
-        config = FlextWebConfig(django_debug=True)
-        assert config.is_development is True
-        assert config.is_production is False
-
-        config = FlextWebConfig(django_debug=False)
-        # is_production depends on database URL and debug flag
-        assert isinstance(config.is_production, bool)
-
-    def test_web_config_validation_method(self) -> None:
-        """Test configuration validation method."""
-        config = FlextWebConfig()
-        errors = config.validate_configuration()
-        assert isinstance(errors, list)
+        with pytest.raises(ValidationError):
+            FlextWebConfig(port=65536)  # Above maximum
 
     def test_get_web_settings_function(self) -> None:
-        """Test get_web_settings singleton function."""
-        settings1 = get_web_settings()
-        settings2 = get_web_settings()
+        """Test get_web_settings function."""
+        settings = get_web_settings()
+        assert isinstance(settings, FlextWebConfig)
+        assert settings.app_name == "FLEXT Web"
 
-        assert isinstance(settings1, FlextWebConfig)
-        assert settings1 is settings2  # Should be same instance (singleton)
+
+class TestConfigIntegration:
+    """Integration tests for configuration."""
+
+    def test_config_with_environment_variables(self) -> None:
+        """Test configuration with environment variables."""
+        import os
+
+        # Set environment variable
+        os.environ["FLEXT_WEB_APP_NAME"] = "Test App From Env"
+
+        try:
+            config = FlextWebConfig()
+            assert config.app_name == "Test App From Env"
+        finally:
+            # Cleanup
+            if "FLEXT_WEB_APP_NAME" in os.environ:
+                del os.environ["FLEXT_WEB_APP_NAME"]
+
+    def test_config_validation_empty_name(self) -> None:
+        """Test validation with empty app name."""
+        config = FlextWebConfig(app_name="")
+        result = config.validate_config()
+        assert not result.is_success
+        assert "App name is required" in result.error
