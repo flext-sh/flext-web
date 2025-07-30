@@ -19,8 +19,7 @@ class TestWebApp:
         app = WebApp(id="test_app", name="TestApp", port=8080)
 
         if app.id != "test_app":
-
-            msg = f"Expected {"test_app"}, got {app.id}"
+            msg = f"Expected {'test_app'}, got {app.id}"
             raise AssertionError(msg)
         assert app.name == "TestApp"
         if app.port != 8080:
@@ -48,7 +47,7 @@ class TestWebApp:
 
         assert not result.is_success
         if "App name is required" not in result.error:
-            msg = f"Expected {"App name is required"} in {result.error}"
+            msg = f"Expected {'App name is required'} in {result.error}"
             raise AssertionError(msg)
 
     def test_webapp_start(self) -> None:
@@ -84,7 +83,7 @@ class TestWebAppHandler:
         app = result.data
         assert app is not None
         if app.name != "TestApp":
-            msg = f"Expected {"TestApp"}, got {app.name}"
+            msg = f"Expected {'TestApp'}, got {app.name}"
             raise AssertionError(msg)
         assert app.port == 8080
 

@@ -60,7 +60,11 @@ class FlextWebValidationError(FlextValidationError):
 
         super().__init__(
             f"Web validation: {message}",
-            validation_details=validation_details,
+            validation_details=(
+                validation_details
+                if validation_details is None
+                else dict(validation_details)
+            ),
             context=context,
         )
 
@@ -82,7 +86,13 @@ class FlextWebAuthenticationError(FlextAuthenticationError):
         if route is not None:
             context["route"] = route
 
-        super().__init__(f"Web auth: {message}", **context)
+        route = context.get("route")
+        filtered_context = {k: v for k, v in context.items() if k != "route"}
+        super().__init__(
+            f"Web auth: {message}",
+            route=route if isinstance(route, str) else None,
+            **filtered_context,
+        )
 
 
 class FlextWebConfigurationError(FlextConfigurationError):
@@ -99,7 +109,13 @@ class FlextWebConfigurationError(FlextConfigurationError):
         if config_key is not None:
             context["config_key"] = config_key
 
-        super().__init__(f"Web config: {message}", **context)
+        route = context.get("route")
+        filtered_context = {k: v for k, v in context.items() if k != "route"}
+        super().__init__(
+            f"Web config: {message}",
+            route=route if isinstance(route, str) else None,
+            **filtered_context,
+        )
 
 
 class FlextWebConnectionError(FlextConnectionError):
@@ -119,7 +135,13 @@ class FlextWebConnectionError(FlextConnectionError):
         if port is not None:
             context["port"] = port
 
-        super().__init__(f"Web connection: {message}", **context)
+        route = context.get("route")
+        filtered_context = {k: v for k, v in context.items() if k != "route"}
+        super().__init__(
+            f"Web connection: {message}",
+            route=route if isinstance(route, str) else None,
+            **filtered_context,
+        )
 
 
 class FlextWebProcessingError(FlextProcessingError):
@@ -139,7 +161,13 @@ class FlextWebProcessingError(FlextProcessingError):
         if route is not None:
             context["route"] = route
 
-        super().__init__(f"Web processing: {message}", **context)
+        route = context.get("route")
+        filtered_context = {k: v for k, v in context.items() if k != "route"}
+        super().__init__(
+            f"Web processing: {message}",
+            route=route if isinstance(route, str) else None,
+            **filtered_context,
+        )
 
 
 class FlextWebTimeoutError(FlextTimeoutError):
@@ -159,7 +187,13 @@ class FlextWebTimeoutError(FlextTimeoutError):
         if timeout_seconds is not None:
             context["timeout_seconds"] = timeout_seconds
 
-        super().__init__(f"Web timeout: {message}", **context)
+        route = context.get("route")
+        filtered_context = {k: v for k, v in context.items() if k != "route"}
+        super().__init__(
+            f"Web timeout: {message}",
+            route=route if isinstance(route, str) else None,
+            **filtered_context,
+        )
 
 
 class FlextWebTemplateError(FlextWebError):
@@ -179,7 +213,13 @@ class FlextWebTemplateError(FlextWebError):
         if template_error is not None:
             context["template_error"] = template_error
 
-        super().__init__(f"Web template: {message}", **context)
+        route = context.get("route")
+        filtered_context = {k: v for k, v in context.items() if k != "route"}
+        super().__init__(
+            f"Web template: {message}",
+            route=route if isinstance(route, str) else None,
+            **filtered_context,
+        )
 
 
 class FlextWebRoutingError(FlextWebError):
@@ -217,7 +257,13 @@ class FlextWebSessionError(FlextWebError):
         if session_state is not None:
             context["session_state"] = session_state
 
-        super().__init__(f"Web session: {message}", **context)
+        route = context.get("route")
+        filtered_context = {k: v for k, v in context.items() if k != "route"}
+        super().__init__(
+            f"Web session: {message}",
+            route=route if isinstance(route, str) else None,
+            **filtered_context,
+        )
 
 
 class FlextWebMiddlewareError(FlextWebError):
@@ -237,7 +283,13 @@ class FlextWebMiddlewareError(FlextWebError):
         if stage is not None:
             context["stage"] = stage
 
-        super().__init__(f"Web middleware: {message}", **context)
+        route = context.get("route")
+        filtered_context = {k: v for k, v in context.items() if k != "route"}
+        super().__init__(
+            f"Web middleware: {message}",
+            route=route if isinstance(route, str) else None,
+            **filtered_context,
+        )
 
 
 __all__ = [

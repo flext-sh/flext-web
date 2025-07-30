@@ -17,7 +17,7 @@ class TestWebInterface:
 
         assert app is not None
         if app.name != "flext_web.api":
-            msg = f"Expected {"flext_web.api"}, got {app.name}"
+            msg = f"Expected {'flext_web.api'}, got {app.name}"
             raise AssertionError(msg)
 
     def test_dashboard_route(self) -> None:
@@ -28,10 +28,9 @@ class TestWebInterface:
             response = client.get("/")
 
             if response.status_code != HTTP_OK:
-
                 msg = f"Expected {200}, got {response.status_code}"
                 raise AssertionError(msg)
             if b"FLEXT Web Dashboard" not in response.data:
-                msg = f"Expected {b"FLEXT Web Dashboard"} in {response.data}"
+                msg = f"Expected {b'FLEXT Web Dashboard'} in {response.data}"
                 raise AssertionError(msg)
             assert b"Clean Architecture" in response.data

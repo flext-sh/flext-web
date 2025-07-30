@@ -17,7 +17,7 @@ class TestWebConfigBasic:
         """Test basic WebConfig creation."""
         config = FlextWebConfig()
         if config.app_name != "FLEXT Web":
-            msg = f"Expected {"FLEXT Web"}, got {config.app_name}"
+            msg = f"Expected {'FLEXT Web'}, got {config.app_name}"
             raise AssertionError(msg)
         assert config.version == "0.9.0"
 
@@ -25,7 +25,7 @@ class TestWebConfigBasic:
         """Test WebConfig with custom settings."""
         config = FlextWebConfig(app_name="Custom Web App", version="0.9.0")
         if config.app_name != "Custom Web App":
-            msg = f"Expected {"Custom Web App"}, got {config.app_name}"
+            msg = f"Expected {'Custom Web App'}, got {config.app_name}"
             raise AssertionError(msg)
         assert config.version == "0.9.0"
 
@@ -42,7 +42,7 @@ class TestWebConfigBasic:
         """Test server-related settings."""
         config = FlextWebConfig()
         if config.host != "localhost":
-            msg = f"Expected {"localhost"}, got {config.host}"
+            msg = f"Expected {'localhost'}, got {config.host}"
             raise AssertionError(msg)
         assert isinstance(config.port, int)
         assert 1 <= config.port <= 65535
@@ -66,7 +66,7 @@ class TestWebConfigBasic:
         settings = get_web_settings()
         assert isinstance(settings, FlextWebConfig)
         if settings.app_name != "FLEXT Web":
-            msg = f"Expected {"FLEXT Web"}, got {settings.app_name}"
+            msg = f"Expected {'FLEXT Web'}, got {settings.app_name}"
             raise AssertionError(msg)
 
 
@@ -81,7 +81,7 @@ class TestConfigIntegration:
         try:
             config = FlextWebConfig()
             if config.app_name != "Test App From Env":
-                msg = f"Expected {"Test App From Env"}, got {config.app_name}"
+                msg = f"Expected {'Test App From Env'}, got {config.app_name}"
                 raise AssertionError(msg)
         finally:
             # Cleanup
@@ -94,5 +94,5 @@ class TestConfigIntegration:
         result = config.validate_config()
         assert not result.is_success
         if "App name is required" not in result.error:
-            msg = f"Expected {"App name is required"} in {result.error}"
+            msg = f"Expected {'App name is required'} in {result.error}"
             raise AssertionError(msg)

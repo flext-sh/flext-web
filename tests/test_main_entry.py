@@ -41,7 +41,9 @@ class TestMainEntryPoint:
         # Verify web API creation and run
         mock_web_api.assert_called_once()
         mock_api_instance.run.assert_called_once_with(
-            host="0.0.0.0", port=5000, debug=False,
+            host="0.0.0.0",
+            port=5000,
+            debug=False,
         )
 
     @patch("flext_web.__main__.WebAPI")
