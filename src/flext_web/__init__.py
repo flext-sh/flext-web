@@ -58,7 +58,8 @@ class FlextWebApp(FlextEntity, FlextTimestampMixin, FlextValidatableMixin):
     host: str = Field(default="localhost", description="Host address")
     port: int = Field(default=8000, ge=1, le=65535, description="Port number")
     status: FlextWebAppStatus = Field(
-        default=FlextWebAppStatus.STOPPED, description="Application status",
+        default=FlextWebAppStatus.STOPPED,
+        description="Application status",
     )
 
     def validate_domain_rules(self) -> FlextResult[None]:
@@ -157,7 +158,10 @@ class FlextWebAppHandler(FlextHandlers.Handler[FlextWebApp, FlextWebApp]):
     """Web application handler using flext-core patterns."""
 
     def create(
-        self, name: str, port: int = 8000, host: str = "localhost",
+        self,
+        name: str,
+        port: int = 8000,
+        host: str = "localhost",
     ) -> FlextResult[FlextWebApp]:
         """Create WebApp with validation."""
         try:
@@ -255,7 +259,9 @@ class FlextWebService:
             for app in self.apps.values()
         ]
         return self._create_response(
-            True, "Applications retrieved successfully", {"apps": apps_data},
+            True,
+            "Applications retrieved successfully",
+            {"apps": apps_data},
         )
 
     def create_app(self) -> ResponseReturnValue:
@@ -285,11 +291,15 @@ class FlextWebService:
                     "status": app.status.value,
                 }
                 return self._create_response(
-                    True, "Application created successfully", app_data,
+                    True,
+                    "Application created successfully",
+                    app_data,
                 )
 
         return self._create_response(
-            False, f"Failed to create app: {app_result.error}", status=400,
+            False,
+            f"Failed to create app: {app_result.error}",
+            status=400,
         )
 
     def get_app(self, app_id: str) -> ResponseReturnValue:
@@ -307,7 +317,9 @@ class FlextWebService:
             "status": app.status.value,
         }
         return self._create_response(
-            True, "Application retrieved successfully", app_data,
+            True,
+            "Application retrieved successfully",
+            app_data,
         )
 
     def start_app(self, app_id: str) -> ResponseReturnValue:
@@ -330,11 +342,15 @@ class FlextWebService:
                     "status": started_app.status.value,
                 }
                 return self._create_response(
-                    True, "Application started successfully", app_data,
+                    True,
+                    "Application started successfully",
+                    app_data,
                 )
 
         return self._create_response(
-            False, f"Failed to start app: {start_result.error}", status=400,
+            False,
+            f"Failed to start app: {start_result.error}",
+            status=400,
         )
 
     def stop_app(self, app_id: str) -> ResponseReturnValue:
@@ -357,11 +373,15 @@ class FlextWebService:
                     "status": stopped_app.status.value,
                 }
                 return self._create_response(
-                    True, "Application stopped successfully", app_data,
+                    True,
+                    "Application stopped successfully",
+                    app_data,
                 )
 
         return self._create_response(
-            False, f"Failed to stop app: {stop_result.error}", status=400,
+            False,
+            f"Failed to stop app: {stop_result.error}",
+            status=400,
         )
 
     def dashboard(self) -> str:
