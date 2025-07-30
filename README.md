@@ -1,6 +1,6 @@
 # FLEXT Web Interface
 
-Modern web interface for FLEXT platform management.
+Enterprise web interface for FLEXT platform management built with Flask and Clean Architecture patterns. Provides comprehensive dashboard and API endpoints for monitoring and managing the distributed data integration ecosystem.
 
 ## Features
 

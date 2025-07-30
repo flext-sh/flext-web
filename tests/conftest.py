@@ -193,7 +193,7 @@ def plugin_form_data() -> dict[str, Any]:
         "name": "test-plugin",
         "type": "extractor",
         "package": "tap-test",
-        "version": "1.0.0",
+        "version": "0.9.0",
         "config": {
             "api_key": "test_key",
             "base_url": "https://api.test.com",

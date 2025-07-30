@@ -19,15 +19,15 @@ class TestWebConfigBasic:
         if config.app_name != "FLEXT Web":
             msg = f"Expected {"FLEXT Web"}, got {config.app_name}"
             raise AssertionError(msg)
-        assert config.version == "2.0.0"
+        assert config.version == "0.9.0"
 
     def test_web_config_with_custom_settings(self) -> None:
         """Test WebConfig with custom settings."""
-        config = FlextWebConfig(app_name="Custom Web App", version="2.0.0")
+        config = FlextWebConfig(app_name="Custom Web App", version="0.9.0")
         if config.app_name != "Custom Web App":
             msg = f"Expected {"Custom Web App"}, got {config.app_name}"
             raise AssertionError(msg)
-        assert config.version == "2.0.0"
+        assert config.version == "0.9.0"
 
     def test_web_config_security_settings(self) -> None:
         """Test security-related settings."""

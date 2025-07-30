@@ -1,86 +1,12 @@
-# ============================================================================
-# FLEXT-WEB - Web Frontend Application .gitignore
-# Python 3.13 | FastAPI | React | TypeScript | Poetry | Web Development
-# ============================================================================
-
-# ============================================================================
-# JUNK FILES - NEVER COMMIT THESE
-# ============================================================================
-
-# Archive and backup directories  
-archive/
-archives/
-backup/
-backups/
-.backup/
-*_backup/
-*_backup_*/
-
-# AI-generated files and reports
-*_REPORT*.md
-*_ANALYSIS*.md
-*_SUMMARY*.md  
-*_FINDINGS*.md
-CLAUDE*.md
-CONFIG_MIGRATION*.md
-DEVELOPMENT_STANDARDS*.md
-DUPLICATION_REPORT*.md
-LINT_CORRECTIONS*.md
-*.ai.md
-*.ai.txt
-
-# Backup files with timestamps
-*_20250*.bak
-*_202507*.bak
-*_202506*.bak
-*.md_20250*
-README_20250*.bak
-
-# Generic backup patterns
-*.bak
-*.backup
-*.orig
-*.syntax_backup  
-*.broken
-*.tmp.bak
-*_temp.py
-*_temp.md
-*_temp.js
-*_temp.ts
-
-# Fix scripts and validation files
-fix_*.py
-*_fix.py
-*_validation.py
-validate_*.py
-investigate_*.py
-temp_*.py
-debug_*.py
-fix_*.js
-fix_*.ts
-
-# Tool reports and analysis
-*_analysis.txt
-*_report.txt
-*_output.txt
-analysis_temp/
-report_*/
-reports/
-reports_*/
-temp_test_*/
-
-# ============================================================================
-# PYTHON ARTIFACTS (Backend)
-# ============================================================================
-
-# Python artifacts
+# Python
 __pycache__/
 *.py[cod]
 *.pyc
 *.pyo
 *.pyd
+*.so
 
-# Distribution / packaging
+# Build
 build/
 dist/
 *.egg-info/
@@ -88,7 +14,7 @@ dist/
 *.egg
 MANIFEST
 
-# Testing and coverage
+# Testing
 htmlcov/
 .tox/
 .nox/
@@ -99,7 +25,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Development tools
+# Tools
 .mypy_cache/
 .ruff_cache/
 .pyre/
@@ -112,235 +38,63 @@ env/
 venv/
 ENV/
 
-# ============================================================================
-# NODE.JS ARTIFACTS (Frontend)
-# ============================================================================
-
-# Dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-# Package manager locks (keep only one)
-package-lock.json.bak
-yarn.lock.bak
-pnpm-lock.yaml.bak
-
-# ============================================================================
-# FRONTEND BUILD ARTIFACTS
-# ============================================================================
-
-# Build outputs
-build/
-dist/
-out/
-.next/
-.nuxt/
-.vite/
-.turbo/
-
-# Webpack
-webpack-stats.json
-webpack.config.js.bak
-
-# Vite
-vite.config.ts.bak
-vite.config.js.bak
-
-# Parcel
-.parcel-cache/
-
-# ============================================================================
-# FRONTEND DEVELOPMENT
-# ============================================================================
-
-# TypeScript
-*.tsbuildinfo
-.tscache/
-
-# ESLint
-.eslintcache
-
-# Prettier
-.prettiercache
-
-# Stylelint
-.stylelintcache
-
-# PostCSS
-.postcssrc.js.bak
-
-# Tailwind CSS
-tailwind.config.js.bak
-.tailwindcss-cache/
-
-# ============================================================================
-# WEB ASSETS AND MEDIA
-# ============================================================================
-
-# Compiled assets
-public/build/
-public/dist/
-public/assets/
-static/build/
-static/dist/
-
-# Generated images
-generated/
-optimized/
-thumbnails/
-*.webp.generated
-*.avif.generated
-
-# Uploaded files
-uploads/
-user_uploads/
-media/
-user_media/
-
-# ============================================================================
-# API AND BACKEND SPECIFIC
-# ============================================================================
-
-# FastAPI
-.fastapi/
-fastapi.log
-
-# API documentation
-api_docs/
-swagger/
-redoc/
-
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# Session storage
-sessions/
-*.session
-
-# Cache
-cache/
-.cache/
-redis_cache/
-
-# ============================================================================
-# WEB SECURITY
-# ============================================================================
-
-# SSL certificates
-ssl/
-certificates/
-*.key
-*.pem
-*.crt
-*.csr
-
-# Authentication
-auth_tokens/
-jwt_keys/
-oauth_cache/
-
-# API keys
-api_keys.json
-*.api_key
-
-# ============================================================================
-# IDEs AND EDITORS
-# ============================================================================
-
-# VSCode
+# Editors
 .vscode/
-*.code-workspace
-
-# WebStorm/IntelliJ
 .idea/
-
-# Vim
 *.swp
 *.swo
 *~
 
-# System files
+# System
 .DS_Store
 Thumbs.db
 Desktop.ini
 
-# ============================================================================
-# TESTING AND E2E
-# ============================================================================
+# Flask specific
+instance/
+.webassets-cache
+*.db
+*.sqlite3
 
-# Cypress
-cypress/videos/
-cypress/screenshots/
-cypress/downloads/
+# Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Playwright
-test-results/
-playwright-report/
-playwright/.cache/
+# Static files
+static/build/
+static/dist/
+staticfiles/
 
-# Jest
-coverage/
-jest_cache/
-
-# Testing artifacts
-screenshots/
-test_output/
-e2e_results/
-
-# ============================================================================
-# DOCKER AND DEPLOYMENT
-# ============================================================================
-
-# Docker
-.dockerignore.bak
-docker-compose.override.yml
-
-# Deployment
-deployment/
-deploy_logs/
-.deploy/
-
-# ============================================================================
-# LOGS AND TEMPORARY FILES
-# ============================================================================
+# Documentation
+docs/_build/
+site/
 
 # Logs
 *.log
-logs/
 web_logs/
-access.log
-error.log
 
 # Temporary files
 *.tmp
 temp/
-tmp/
-web_temp/
-
-# Data files
+staging/
+cache/
 data/
-web_data/
+export/
+import/
 
-# Force include critical files
-!pyproject.toml
-!Makefile
-!README.md
-!package.json
-!tsconfig.json
-!vite.config.ts
-!tailwind.config.js
-!docker-compose.yml
-!.env.example
+# Archive/backup
+archive/
+backup/
+*.bak
+*.backup
+*.orig
+*_temp.*
+temp_*
+fix_*
+
+# Reports
+*_REPORT*.md
+*_ANALYSIS*.md
+*_SUMMARY*.md

@@ -30,7 +30,7 @@ from pydantic_settings import BaseSettings
 if TYPE_CHECKING:
     from flask.typing import ResponseReturnValue
 
-__version__ = "2.0.0"
+__version__ = "0.9.0"
 __author__ = "FLEXT Contributors"
 
 logger = get_logger(__name__)
@@ -104,7 +104,7 @@ class FlextWebConfig(BaseSettings, FlextConfig):
     }
 
     app_name: str = Field(default="FLEXT Web", description="Application name")
-    version: str = Field(default="2.0.0", description="Application version")
+    version: str = Field(default="0.9.0", description="Application version")
     debug: bool = Field(default=True, description="Debug mode")
 
     # Server settings
