@@ -170,14 +170,6 @@ exclude = [
     "vendor/",
 ]
 
-[[tool.mypy.overrides]]
-module = "py.path"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = "_pytest.*"
-ignore_missing_imports = true
-
 [tool.bandit]
 exclude_dirs = ["tests", "build", "dist"]
 skips = ["B101", "B601"]

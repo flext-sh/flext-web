@@ -86,11 +86,12 @@ class FlextWebAuthenticationError(FlextAuthenticationError):
         if route is not None:
             context["route"] = route
 
-        route = context.get("route")
+        route_obj = context.get("route")
+        route_str = route_obj if isinstance(route_obj, str) else None
         filtered_context = {k: v for k, v in context.items() if k != "route"}
         super().__init__(
             f"Web auth: {message}",
-            route=route if isinstance(route, str) else None,
+            route=route_str,
             **filtered_context,
         )
 
@@ -109,11 +110,12 @@ class FlextWebConfigurationError(FlextConfigurationError):
         if config_key is not None:
             context["config_key"] = config_key
 
-        route = context.get("route")
+        route_obj = context.get("route")
+        route_str = route_obj if isinstance(route_obj, str) else None
         filtered_context = {k: v for k, v in context.items() if k != "route"}
         super().__init__(
             f"Web config: {message}",
-            route=route if isinstance(route, str) else None,
+            route=route_str,
             **filtered_context,
         )
 
@@ -161,11 +163,12 @@ class FlextWebProcessingError(FlextProcessingError):
         if route is not None:
             context["route"] = route
 
-        route = context.get("route")
+        route_obj = context.get("route")
+        route_str = route_obj if isinstance(route_obj, str) else None
         filtered_context = {k: v for k, v in context.items() if k != "route"}
         super().__init__(
             f"Web processing: {message}",
-            route=route if isinstance(route, str) else None,
+            route=route_str,
             **filtered_context,
         )
 
@@ -187,11 +190,12 @@ class FlextWebTimeoutError(FlextTimeoutError):
         if timeout_seconds is not None:
             context["timeout_seconds"] = timeout_seconds
 
-        route = context.get("route")
+        route_obj = context.get("route")
+        route_str = route_obj if isinstance(route_obj, str) else None
         filtered_context = {k: v for k, v in context.items() if k != "route"}
         super().__init__(
             f"Web timeout: {message}",
-            route=route if isinstance(route, str) else None,
+            route=route_str,
             **filtered_context,
         )
 

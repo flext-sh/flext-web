@@ -51,10 +51,10 @@ def async_test_client(web_app: Any) -> object:
 
     # Simple mock client for testing
     class MockClient:
-        async def get(self, url: str) -> dict[str, Any]:
+        async def get(self, url: str) -> dict[str, object]:
             return {"status": 200, "url": url}
 
-        async def post(self, url: str, **kwargs: object) -> dict[str, Any]:
+        async def post(self, url: str, **kwargs: object) -> dict[str, object]:
             return {"status": 200, "url": url, "data": kwargs}
 
     return MockClient()
@@ -62,7 +62,7 @@ def async_test_client(web_app: Any) -> object:
 
 # Authentication fixtures
 @pytest.fixture
-def test_user_data() -> dict[str, Any]:
+def test_user_data() -> dict[str, object]:
     """Test user data for authentication."""
     return {
         "username": "testuser",
@@ -74,7 +74,7 @@ def test_user_data() -> dict[str, Any]:
 
 
 @pytest.fixture
-def REDACTED_LDAP_BIND_PASSWORD_user_data() -> dict[str, Any]:
+def REDACTED_LDAP_BIND_PASSWORD_user_data() -> dict[str, object]:
     """Test REDACTED_LDAP_BIND_PASSWORD user data."""
     return {
         "username": "REDACTED_LDAP_BIND_PASSWORD",
@@ -86,7 +86,7 @@ def REDACTED_LDAP_BIND_PASSWORD_user_data() -> dict[str, Any]:
 
 
 @pytest.fixture
-def auth_headers(test_user_data: dict[str, Any]) -> dict[str, str]:
+def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:
     """Authentication headers for test requests."""
     # In real implementation, this would generate valid JWT tokens
     return {
@@ -96,7 +96,7 @@ def auth_headers(test_user_data: dict[str, Any]) -> dict[str, str]:
 
 
 @pytest.fixture
-def REDACTED_LDAP_BIND_PASSWORD_auth_headers(REDACTED_LDAP_BIND_PASSWORD_user_data: dict[str, Any]) -> dict[str, str]:
+def REDACTED_LDAP_BIND_PASSWORD_auth_headers(REDACTED_LDAP_BIND_PASSWORD_user_data: dict[str, object]) -> dict[str, str]:
     """Admin authentication headers for test requests."""
     return {
         "Authorization": "Bearer REDACTED_LDAP_BIND_PASSWORD_token",
@@ -106,7 +106,7 @@ def REDACTED_LDAP_BIND_PASSWORD_auth_headers(REDACTED_LDAP_BIND_PASSWORD_user_da
 
 # Dashboard fixtures
 @pytest.fixture
-def dashboard_data() -> dict[str, Any]:
+def dashboard_data() -> dict[str, object]:
     """Sample dashboard data for testing."""
     return {
         "pipelines": {
@@ -135,7 +135,7 @@ def dashboard_data() -> dict[str, Any]:
 
 
 @pytest.fixture
-def pipeline_list_data() -> list[dict[str, Any]]:
+def pipeline_list_data() -> list[dict[str, object]]:
     """Sample pipeline list for testing."""
     return [
         {
@@ -170,7 +170,7 @@ def pipeline_list_data() -> list[dict[str, Any]]:
 
 # Form fixtures
 @pytest.fixture
-def pipeline_form_data() -> dict[str, Any]:
+def pipeline_form_data() -> dict[str, object]:
     """Pipeline form data for testing."""
     return {
         "name": "Test Pipeline",
@@ -187,7 +187,7 @@ def pipeline_form_data() -> dict[str, Any]:
 
 
 @pytest.fixture
-def plugin_form_data() -> dict[str, Any]:
+def plugin_form_data() -> dict[str, object]:
     """Plugin form data for testing."""
     return {
         "name": "test-plugin",
@@ -211,7 +211,7 @@ async def websocket_client(web_app: Any) -> AsyncGenerator[Any]:
 
 # Static files fixtures
 @pytest.fixture
-def static_files_config() -> dict[str, Any]:
+def static_files_config() -> dict[str, object]:
     """Static files configuration for testing."""
     return {
         "static_directory": "static",
@@ -224,7 +224,7 @@ def static_files_config() -> dict[str, Any]:
 
 # Theme and UI fixtures
 @pytest.fixture
-def ui_theme_config() -> dict[str, Any]:
+def ui_theme_config() -> dict[str, object]:
     """UI theme configuration for testing."""
     return {
         "theme": "light",
@@ -239,7 +239,7 @@ def ui_theme_config() -> dict[str, Any]:
 
 # API response fixtures
 @pytest.fixture
-def api_success_response() -> dict[str, Any]:
+def api_success_response() -> dict[str, object]:
     """Standard API success response."""
     return {
         "success": True,
@@ -249,7 +249,7 @@ def api_success_response() -> dict[str, Any]:
 
 
 @pytest.fixture
-def api_error_response() -> dict[str, Any]:
+def api_error_response() -> dict[str, object]:
     """Standard API error response."""
     return {
         "success": False,
@@ -278,7 +278,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
 # Performance fixtures
 @pytest.fixture
-def performance_config() -> dict[str, Any]:
+def performance_config() -> dict[str, object]:
     """Performance testing configuration."""
     return {
         "max_response_time": 2000,  # milliseconds
@@ -290,7 +290,7 @@ def performance_config() -> dict[str, Any]:
 
 # Configuration fixtures
 @pytest.fixture
-def web_config() -> dict[str, Any]:
+def web_config() -> dict[str, object]:
     """Web application configuration for testing."""
     return {
         "host": "127.0.0.1",
@@ -310,7 +310,7 @@ def web_config() -> dict[str, Any]:
 
 # Database fixtures for web sessions
 @pytest.fixture
-def web_session_data() -> dict[str, Any]:
+def web_session_data() -> dict[str, object]:
     """Web session data for testing."""
     return {
         "session_id": "test_session_123",
@@ -329,13 +329,13 @@ def mock_pipeline_service() -> object:
     """Mock pipeline service for testing."""
 
     class MockPipelineService:
-        async def list_pipelines(self) -> list[dict[str, Any]]:
+        async def list_pipelines(self) -> list[dict[str, object]]:
             return []
 
-        async def get_pipeline(self, pipeline_id: str) -> dict[str, Any]:
+        async def get_pipeline(self, pipeline_id: str) -> dict[str, object]:
             return {"id": pipeline_id, "name": "Test Pipeline"}
 
-        async def create_pipeline(self, data: dict[str, Any]) -> dict[str, Any]:
+        async def create_pipeline(self, data: dict[str, object]) -> dict[str, object]:
             return {"id": "new_pipeline", **data}
 
     return MockPipelineService()
@@ -346,13 +346,13 @@ def mock_plugin_service() -> object:
     """Mock plugin service for testing."""
 
     class MockPluginService:
-        async def list_plugins(self) -> list[dict[str, Any]]:
+        async def list_plugins(self) -> list[dict[str, object]]:
             return []
 
-        async def get_plugin(self, plugin_name: str) -> dict[str, Any]:
+        async def get_plugin(self, plugin_name: str) -> dict[str, object]:
             return {"name": plugin_name, "status": "enabled"}
 
-        async def install_plugin(self, data: dict[str, Any]) -> dict[str, Any]:
+        async def install_plugin(self, data: dict[str, object]) -> dict[str, object]:
             return {"name": data["name"], "status": "installed"}
 
     return MockPluginService()
