@@ -1,3 +1,2 @@
-"""Type stubs for basic_service.py example."""
 
 def main() -> None: ...

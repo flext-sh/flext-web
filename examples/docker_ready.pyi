@@ -1,4 +1,3 @@
-"""Type stubs for docker_ready.py example."""
 
 from flext_web import FlextWebConfig
 
