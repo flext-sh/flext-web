@@ -35,7 +35,7 @@ Example:
     >>> from flext_web import create_service, get_web_settings
     >>> config = get_web_settings()
     >>> service = create_service(config)
-    >>> service.run(host='localhost', port=8080)
+    >>> service.run(host="localhost", port=8080)
 
 Author: FLEXT Development Team
 Version: 0.9.0
@@ -77,20 +77,14 @@ logger = get_logger(__name__)
 # =============================================================================
 
 
-
-
 # =============================================================================
 # HANDLERS - Using FlextHandlers patterns
 # =============================================================================
 
 
-
-
 # =============================================================================
 # WEB SERVICE - Flask integration with flext-core patterns
 # =============================================================================
-
-
 
 
 # =============================================================================
@@ -145,10 +139,10 @@ def get_web_settings() -> FlextWebConfig:
         Environment variable configuration:
 
         >>> import os
-        >>> os.environ['FLEXT_WEB_HOST'] = '0.0.0.0'
-        >>> os.environ['FLEXT_WEB_PORT'] = '8080'
+        >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
+        >>> os.environ["FLEXT_WEB_PORT"] = "8080"
         >>> config = get_web_settings()
-        >>> assert config.host == '0.0.0.0'
+        >>> assert config.host == "0.0.0.0"
         >>> assert config.port == 8080
 
     """
@@ -159,8 +153,8 @@ def get_web_settings() -> FlextWebConfig:
 
         # Validate configuration
         validation_result = _config_instance.validate_config()
-        if not validation_result.is_success:
-            msg = f"Configuration validation failed: {validation_result.error}"
+        if not validation_result.success:
+            msg: str = f"Configuration validation failed: {validation_result.error}"
             raise ValueError(msg)
 
     return _config_instance
@@ -195,13 +189,13 @@ def reset_web_settings() -> None:
 
         >>> import os
         >>> # Test with development configuration
-        >>> os.environ['FLEXT_WEB_DEBUG'] = 'true'
+        >>> os.environ["FLEXT_WEB_DEBUG"] = "true"
         >>> config1 = get_web_settings()
         >>> assert config1.debug is True
         >>>
         >>> # Reset and test with production configuration
         >>> reset_web_settings()
-        >>> os.environ['FLEXT_WEB_DEBUG'] = 'false'
+        >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
         >>> config2 = get_web_settings()
         >>> assert config2.debug is False
 
@@ -209,7 +203,7 @@ def reset_web_settings() -> None:
 
         >>> def test_custom_config():
         ...     reset_web_settings()  # Ensure clean state
-        ...     os.environ['FLEXT_WEB_PORT'] = '9000'
+        ...     os.environ["FLEXT_WEB_PORT"] = "9000"
         ...     config = get_web_settings()
         ...     assert config.port == 9000
         ...     reset_web_settings()  # Clean up after test
@@ -262,20 +256,20 @@ def create_service(config: FlextWebConfig | None = None) -> FlextWebService:
         Service creation with custom configuration:
 
         >>> config = FlextWebConfig(
-        ...     host='0.0.0.0',
+        ...     host="0.0.0.0",
         ...     port=8080,
         ...     debug=False,
-        ...     secret_key='production-secret-key'
+        ...     secret_key="production-secret-key",
         ... )
         >>> service = create_service(config)
-        >>> service.run(host='0.0.0.0', port=8080, debug=False)
+        >>> service.run(host="0.0.0.0", port=8080, debug=False)
 
         Production deployment pattern:
 
         >>> import os
-        >>> os.environ['FLEXT_WEB_HOST'] = '0.0.0.0'
-        >>> os.environ['FLEXT_WEB_PORT'] = '8080'
-        >>> os.environ['FLEXT_WEB_DEBUG'] = 'false'
+        >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
+        >>> os.environ["FLEXT_WEB_PORT"] = "8080"
+        >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
         >>> service = create_service()  # Uses environment configuration
         >>> service.run()
 
@@ -327,7 +321,7 @@ def create_app(config: FlextWebConfig | None = None) -> Flask:
 
         >>> app = create_app()
         >>> client = app.test_client()
-        >>> response = client.get('/health')
+        >>> response = client.get("/health")
         >>> assert response.status_code == 200
 
         Custom Flask integration:
@@ -341,14 +335,14 @@ def create_app(config: FlextWebConfig | None = None) -> Flask:
         ...     return "Main application status"
         >>>
         >>> # Mount FLEXT Web Interface under /flext
-        >>> main_app.register_blueprint(flext_app, url_prefix='/flext')
+        >>> main_app.register_blueprint(flext_app, url_prefix="/flext")
 
         Production deployment configuration:
 
         >>> import os
-        >>> os.environ['FLEXT_WEB_HOST'] = '0.0.0.0'
-        >>> os.environ['FLEXT_WEB_DEBUG'] = 'false'
-        >>> os.environ['FLEXT_WEB_SECRET_KEY'] = 'production-secret'
+        >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
+        >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
+        >>> os.environ["FLEXT_WEB_SECRET_KEY"] = "production-secret"
         >>> app = create_app()
         >>> # Deploy with production WSGI server
 
@@ -375,7 +369,7 @@ class FlextWebValidationError(FlextValidationError):
 # =============================================================================
 
 
-__all__ = [
+__all__: list[str] = [
     "FlextWebApp",
     "FlextWebAppHandler",
     "FlextWebAppStatus",

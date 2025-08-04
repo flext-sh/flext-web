@@ -50,7 +50,7 @@ class TestFlextWebService:
 
         assert service.app is not None
         if service.apps != {}:
-            msg = f"Expected {{}}, got {service.apps}"
+            msg: str = f"Expected {{}}, got {service.apps}"
             raise AssertionError(msg)
         assert service.handler is not None
 
@@ -62,14 +62,14 @@ class TestFlextWebService:
             response = client.get("/health")
 
             if response.status_code != HTTP_OK:
-                msg = f"Expected {200}, got {response.status_code}"
+                msg: str = f"Expected {200}, got {response.status_code}"
                 raise AssertionError(msg)
             data = response.get_json()
             if not (data["success"]):
-                msg = f"Expected True, got {data['success']}"
+                msg: str = f"Expected True, got {data['success']}"
                 raise AssertionError(msg)
             if "healthy" not in data["message"]:
-                msg = f"Expected {'healthy'} in {data['message']}"
+                msg: str = f"Expected {'healthy'} in {data['message']}"
                 raise AssertionError(msg)
 
     def test_list_apps_empty(self) -> None:
@@ -80,14 +80,14 @@ class TestFlextWebService:
             response = client.get("/api/v1/apps")
 
             if response.status_code != HTTP_OK:
-                msg = f"Expected {200}, got {response.status_code}"
+                msg: str = f"Expected {200}, got {response.status_code}"
                 raise AssertionError(msg)
             data = response.get_json()
             if not (data["success"]):
-                msg = f"Expected True, got {data['success']}"
+                msg: str = f"Expected True, got {data['success']}"
                 raise AssertionError(msg)
             if data["data"]["apps"] != []:
-                msg = f"Expected {[]}, got {data['data']['apps']}"
+                msg: str = f"Expected {[]}, got {data['data']['apps']}"
                 raise AssertionError(msg)
 
     def test_create_app(self) -> None:
@@ -104,14 +104,14 @@ class TestFlextWebService:
             )
 
             if response.status_code != HTTP_OK:
-                msg = f"Expected {200}, got {response.status_code}"
+                msg: str = f"Expected {200}, got {response.status_code}"
                 raise AssertionError(msg)
             data = response.get_json()
             if not (data["success"]):
-                msg = f"Expected True, got {data['success']}"
+                msg: str = f"Expected True, got {data['success']}"
                 raise AssertionError(msg)
             if data["data"]["name"] != "TestApp":
-                msg = f"Expected {'TestApp'}, got {data['data']['name']}"
+                msg: str = f"Expected {'TestApp'}, got {data['data']['name']}"
                 raise AssertionError(
                     msg,
                 )
@@ -130,10 +130,10 @@ class TestFlextWebService:
             )
 
             if response.status_code != 400:
-                msg = f"Expected {400}, got {response.status_code}"
+                msg: str = f"Expected {400}, got {response.status_code}"
                 raise AssertionError(msg)
             data = response.get_json()
             if data["success"]:
-                msg = f"Expected False, got {data['success']}"
+                msg: str = f"Expected False, got {data['success']}"
                 raise AssertionError(msg)
             assert "App name is required" in data["message"]

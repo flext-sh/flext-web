@@ -21,7 +21,7 @@ def test_line_114_debug_flag_direct() -> None:
             check=False, capture_output=True,
             text=True,
             timeout=5,
-            env=test_env
+            env=test_env,
         )
 
         # Check that debug flag was processed (line 114)
@@ -30,7 +30,7 @@ def test_line_114_debug_flag_direct() -> None:
         assert result.returncode is not None
 
         # Line 114 should be hit regardless of success/failure
-        assert result.returncode in [0, 1, 2], "Debug flag should be processed"
+        assert result.returncode in {0, 1, 2}, "Debug flag should be processed"
 
     except subprocess.TimeoutExpired:
         # Process started but timed out - that's actually good, means line 114 was hit
@@ -51,7 +51,7 @@ def test_line_116_no_debug_flag_direct() -> None:
             check=False, capture_output=True,
             text=True,
             timeout=5,
-            env=test_env
+            env=test_env,
         )
 
         # Check that no-debug flag was processed (line 116)
@@ -59,7 +59,7 @@ def test_line_116_no_debug_flag_direct() -> None:
         assert result.returncode is not None
 
         # Line 116 should be hit regardless of success/failure
-        assert result.returncode in [0, 1, 2], "No-debug flag should be processed"
+        assert result.returncode in {0, 1, 2}, "No-debug flag should be processed"
 
     except subprocess.TimeoutExpired:
         # Process started but timed out - that's actually good, means line 116 was hit
@@ -84,7 +84,7 @@ def test_lines_133_135_exception_handling_direct() -> None:
         check=False, capture_output=True,
         text=True,
         timeout=10,
-        env=bad_env
+        env=bad_env,
     )
 
     # Should exit with code 1 due to exception handling (lines 133-135)
@@ -107,7 +107,7 @@ def test_port_validation_lines_122_123() -> None:
         cmd,
         check=False, capture_output=True,
         text=True,
-        timeout=5
+        timeout=5,
     )
 
     # Should exit with code 1 due to port validation (lines 122-123)
@@ -132,4 +132,3 @@ if __name__ == "__main__":
 
     with contextlib.suppress(Exception):
         test_port_validation_lines_122_123()
-

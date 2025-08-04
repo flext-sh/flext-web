@@ -49,7 +49,7 @@ class TestWebConfigBasic:
         """
         config = FlextWebConfig()
         if config.app_name != "FLEXT Web":
-            msg = f"Expected {'FLEXT Web'}, got {config.app_name}"
+            msg: str = f"Expected {'FLEXT Web'}, got {config.app_name}"
             raise AssertionError(msg)
         assert config.version == "0.9.0"
 
@@ -57,7 +57,7 @@ class TestWebConfigBasic:
         """Test WebConfig with custom settings."""
         config = FlextWebConfig(app_name="Custom Web App", version="0.9.0")
         if config.app_name != "Custom Web App":
-            msg = f"Expected {'Custom Web App'}, got {config.app_name}"
+            msg: str = f"Expected {'Custom Web App'}, got {config.app_name}"
             raise AssertionError(msg)
         assert config.version == "0.9.0"
 
@@ -66,7 +66,7 @@ class TestWebConfigBasic:
         config = FlextWebConfig()
         assert config.secret_key is not None
         if len(config.secret_key) < 32:
-            msg = f"Expected {len(config.secret_key)} >= {32}"
+            msg: str = f"Expected {len(config.secret_key)} >= {32}"
             raise AssertionError(msg)
         assert isinstance(config.debug, bool)
 
@@ -74,7 +74,7 @@ class TestWebConfigBasic:
         """Test server-related settings."""
         config = FlextWebConfig()
         if config.host != "localhost":
-            msg = f"Expected {'localhost'}, got {config.host}"
+            msg: str = f"Expected {'localhost'}, got {config.host}"
             raise AssertionError(msg)
         assert isinstance(config.port, int)
         assert 1 <= config.port <= 65535
@@ -83,7 +83,7 @@ class TestWebConfigBasic:
         """Test configuration validation."""
         config = FlextWebConfig()
         result = config.validate_config()
-        assert result.is_success
+        assert result.success
 
     def test_web_config_port_validation(self) -> None:
         """Test port validation."""
@@ -98,7 +98,7 @@ class TestWebConfigBasic:
         settings = get_web_settings()
         assert isinstance(settings, FlextWebConfig)
         if settings.app_name != "FLEXT Web":
-            msg = f"Expected {'FLEXT Web'}, got {settings.app_name}"
+            msg: str = f"Expected {'FLEXT Web'}, got {settings.app_name}"
             raise AssertionError(msg)
 
 
@@ -113,7 +113,7 @@ class TestConfigIntegration:
         try:
             config = FlextWebConfig()
             if config.app_name != "Test App From Env":
-                msg = f"Expected {'Test App From Env'}, got {config.app_name}"
+                msg: str = f"Expected {'Test App From Env'}, got {config.app_name}"
                 raise AssertionError(msg)
         finally:
             # Cleanup
@@ -124,7 +124,7 @@ class TestConfigIntegration:
         """Test validation with empty app name."""
         config = FlextWebConfig(app_name="")
         result = config.validate_config()
-        assert not result.is_success
+        assert not result.success
         if "App name is required" not in result.error:
-            msg = f"Expected {'App name is required'} in {result.error}"
+            msg: str = f"Expected {'App name is required'} in {result.error}"
             raise AssertionError(msg)

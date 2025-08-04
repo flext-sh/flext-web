@@ -74,13 +74,13 @@ class FlextWebService:
     Example:
         Basic service setup and startup:
 
-        >>> config = FlextWebConfig(host='localhost', port=8080)
+        >>> config = FlextWebConfig(host="localhost", port=8080)
         >>> service = FlextWebService(config)
         >>> service.run()  # Starts Flask development server
 
         Production deployment with custom configuration:
 
-        >>> config = FlextWebConfig(host='0.0.0.0', port=8080, debug=False)
+        >>> config = FlextWebConfig(host="0.0.0.0", port=8080, debug=False)
         >>> service = FlextWebService(config)
         >>> service.run(host=config.host, port=config.port, debug=False)
 
@@ -168,7 +168,7 @@ class FlextWebService:
 
         app_result = self.handler.create(name, port, host)
 
-        if app_result.is_success:
+        if app_result.success:
             app = app_result.data
             if app is not None:
                 self.apps[app.id] = app
@@ -221,7 +221,7 @@ class FlextWebService:
 
         start_result = self.handler.start(app)
 
-        if start_result.is_success:
+        if start_result.success:
             started_app = start_result.data
             if started_app is not None:
                 self.apps[app_id] = started_app
@@ -252,7 +252,7 @@ class FlextWebService:
 
         stop_result = self.handler.stop(app)
 
-        if stop_result.is_success:
+        if stop_result.success:
             stopped_app = stop_result.data
             if stopped_app is not None:
                 self.apps[app_id] = stopped_app

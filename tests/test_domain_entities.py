@@ -51,11 +51,11 @@ class TestFlextWebApp:
         app = FlextWebApp(id="app_test-app", name="TestApp", port=8080)
 
         if app.id != "app_test-app":
-            msg = f"Expected {'app_test-app'}, got {app.id}"
+            msg: str = f"Expected {'app_test-app'}, got {app.id}"
             raise AssertionError(msg)
         assert app.name == "TestApp"
         if app.port != 8080:
-            msg = f"Expected {8080}, got {app.port}"
+            msg: str = f"Expected {8080}, got {app.port}"
             raise AssertionError(msg)
         assert app.host == "localhost"
         assert not app.is_running
@@ -69,7 +69,7 @@ class TestFlextWebApp:
         app = FlextWebApp(id="app_test-app", name="TestApp", port=8080)
         result = app.validate_domain_rules()
 
-        assert result.is_success
+        assert result.success
 
     def test_webapp_invalid_port(self) -> None:
         """Test FlextWebApp with invalid port validation."""
@@ -81,9 +81,9 @@ class TestFlextWebApp:
         app = FlextWebApp(id="app_test-app", name="", port=8080)
         result = app.validate_domain_rules()
 
-        assert not result.is_success
+        assert not result.success
         if "App name is required" not in result.error:
-            msg = f"Expected {'App name is required'} in {result.error}"
+            msg: str = f"Expected {'App name is required'} in {result.error}"
             raise AssertionError(msg)
 
     def test_webapp_start(self) -> None:
@@ -91,7 +91,7 @@ class TestFlextWebApp:
         app = FlextWebApp(id="app_test-app", name="TestApp", port=8080)
         result = app.start()
 
-        assert result.is_success
+        assert result.success
         started_app = result.data
         assert started_app is not None
         assert started_app.is_running
@@ -106,7 +106,7 @@ class TestFlextWebApp:
         )
         result = app.stop()
 
-        assert result.is_success
+        assert result.success
         stopped_app = result.data
         assert stopped_app is not None
         assert not stopped_app.is_running
@@ -120,11 +120,11 @@ class TestFlextWebAppHandler:
         handler = FlextWebAppHandler()
         result = handler.create("TestApp", port=8080)
 
-        assert result.is_success
+        assert result.success
         app = result.data
         assert app is not None
         if app.name != "TestApp":
-            msg = f"Expected {'TestApp'}, got {app.name}"
+            msg: str = f"Expected {'TestApp'}, got {app.name}"
             raise AssertionError(msg)
         assert app.port == 8080
 
@@ -135,7 +135,7 @@ class TestFlextWebAppHandler:
 
         result = handler.start(app)
 
-        assert result.is_success
+        assert result.success
         started_app = result.data
         assert started_app is not None
         assert started_app.is_running
@@ -152,7 +152,7 @@ class TestFlextWebAppHandler:
 
         result = handler.stop(app)
 
-        assert result.is_success
+        assert result.success
         stopped_app = result.data
         assert stopped_app is not None
         assert not stopped_app.is_running

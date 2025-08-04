@@ -11,6 +11,6 @@ All configuration follows flext-core patterns and Twelve-Factor App methodology.
 
 from .settings import FlextWebConfig
 
-__all__ = [
+__all__: list[str] = [
     "FlextWebConfig",
 ]

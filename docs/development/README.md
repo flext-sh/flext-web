@@ -418,7 +418,7 @@ class FlextWebAppHandler(FlextHandlers.Handler):
         )
 
         validation = app.validate_domain_rules()
-        if not validation.is_success:
+        if not validation.success:
             return validation
 
         return self.repository.save(app)
@@ -445,7 +445,7 @@ def create_app():
 
     result = app_handler.create_app(command)
 
-    if result.is_success:
+    if result.success:
         return jsonify({
             "success": True,
             "message": "Application created successfully",
@@ -486,7 +486,7 @@ def create_application(name: str, port: int) -> FlextResult[FlextWebApp]:
 
         # Domain validation
         validation = app.validate_domain_rules()
-        if not validation.is_success:
+        if not validation.success:
             return validation
 
         # Success

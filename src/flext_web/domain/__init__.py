@@ -13,7 +13,7 @@ All entities follow flext-core patterns for consistency and enterprise-grade rel
 from .entities import FlextWebApp, FlextWebAppStatus
 from .handlers import FlextWebAppHandler
 
-__all__ = [
+__all__: list[str] = [
     "FlextWebApp",
     "FlextWebAppHandler",
     "FlextWebAppStatus",

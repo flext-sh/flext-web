@@ -30,34 +30,42 @@ class TestCriticalMissingLines:
     def test_line_261_application_already_starting(self) -> None:
         """Test line 261: 'Application already starting' - CRITICAL state machine transition."""
         # Create app in STARTING status - this status is never tested!
-        app = FlextWebApp.model_validate({
-            "id": "test_starting",
-            "name": "test-app",
-            "port": 8080,
-            "host": "localhost",
-            "status": "starting"  # This creates STARTING status
-        })
+        app = FlextWebApp.model_validate(
+            {
+                "id": "test_starting",
+                "name": "test-app",
+                "port": 8080,
+                "host": "localhost",
+                "status": "starting",  # This creates STARTING status
+            },
+        )
 
         # Try to start an app that's already starting
         result = app.start()
         assert result.is_failure, "Should fail when app is already starting"
-        assert "already starting" in result.error.lower(), f"Wrong error message: {result.error}"
+        assert "already starting" in result.error.lower(), (
+            f"Wrong error message: {result.error}"
+        )
 
     def test_line_303_application_already_stopping(self) -> None:
         """Test line 303: 'Application already stopping' - CRITICAL state machine transition."""
         # Create app in STOPPING status - this status is never tested!
-        app = FlextWebApp.model_validate({
-            "id": "test_stopping",
-            "name": "test-app",
-            "port": 8080,
-            "host": "localhost",
-            "status": "stopping"  # This creates STOPPING status
-        })
+        app = FlextWebApp.model_validate(
+            {
+                "id": "test_stopping",
+                "name": "test-app",
+                "port": 8080,
+                "host": "localhost",
+                "status": "stopping",  # This creates STOPPING status
+            },
+        )
 
         # Try to stop an app that's already stopping
         result = app.stop()
         assert result.is_failure, "Should fail when app is already stopping"
-        assert "already stopping" in result.error.lower(), f"Wrong error message: {result.error}"
+        assert "already stopping" in result.error.lower(), (
+            f"Wrong error message: {result.error}"
+        )
 
     def test_line_68_type_checking_import_coverage(self) -> None:
         """Test line 68: TYPE_CHECKING import path."""
@@ -91,7 +99,7 @@ class TestCriticalMissingLines:
         config = FlextWebConfig(
             host="example.com",
             port=9000,
-            secret_key="test-key-32-characters-long-valid!"
+            secret_key="test-key-32-characters-long-valid!",
         )
 
         # This should hit line 469
@@ -100,9 +108,7 @@ class TestCriticalMissingLines:
 
         # Test with different host/port combinations
         config2 = FlextWebConfig(
-            host="localhost",
-            port=8080,
-            secret_key="test-key-32-characters-long-valid!"
+            host="localhost", port=8080, secret_key="test-key-32-characters-long-valid!",
         )
         url2 = config2.get_server_url()
         assert url2 == "http://localhost:8080"
@@ -120,13 +126,15 @@ class TestCriticalMissingLines:
 
         # Test line 614: start() method validation failure
         # Create app with empty name - this will fail validation in start()
-        invalid_app = FlextWebApp.model_validate({
-            "id": "test_invalid",
-            "name": "",  # Empty name
-            "port": 8080,
-            "host": "localhost",
-            "status": "stopped"  # Can be started
-        })
+        invalid_app = FlextWebApp.model_validate(
+            {
+                "id": "test_invalid",
+                "name": "",  # Empty name
+                "port": 8080,
+                "host": "localhost",
+                "status": "stopped",  # Can be started
+            },
+        )
 
         result = handler.start(invalid_app)
         assert result.is_failure, "Should fail with empty name validation"
@@ -149,28 +157,25 @@ class TestCriticalMissingLines:
         assert response.status_code == 404
 
         # Test malformed requests
-        response = client.post("/api/v1/apps", data="invalid json", content_type="application/json")
+        response = client.post(
+            "/api/v1/apps", data="invalid json", content_type="application/json",
+        )
         assert response.status_code == 400
 
     def test_line_903_config_validation_error(self) -> None:
         """Test line 903: Configuration validation error path."""
         # This line might be in config validation
         with patch("flext_web.FlextWebConfig.validate_config") as mock_validate:
-            mock_validate.return_value = type("Result", (), {
-                "is_success": False,
-                "error": "Config validation failed"
-            })()
+            mock_validate.return_value = type(
+                "Result", (), {"success": False, "error": "Config validation failed"},
+            )()
 
             # Reset to test fresh config creation
             reset_web_settings()
 
-            try:
-                config = get_web_settings()
-                # Should handle validation failure
-                assert config is not None
-            except Exception as e:
-                # Error path triggered
-                assert "validation" in str(e).lower()
+            # Should trigger configuration validation error
+            with pytest.raises(Exception, match=r"validation"):
+                get_web_settings()
 
     def test_lines_804_821_template_rendering_errors(self) -> None:
         """Test lines 804->821: Template rendering error paths."""
@@ -185,20 +190,21 @@ class TestCriticalMissingLines:
             with contextlib.suppress(Exception):
                 response = client.get("/")
                 # Should handle template errors gracefully
-                assert response.status_code in [200, 500]
+                assert response.status_code in {200, 500}
 
     def test_main_module_lines_114_116_122_123_133_135(self) -> None:
         """Test __main__.py lines 114, 116, 122-123, 133-135: CLI argument parsing."""
         # These lines are in CLI argument processing
         # Testing with subprocess to avoid hanging the test suite
 
-
         # Test --debug flag (line 114) - just test that module can handle it
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
         try:
-            result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=5)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=5,
+            )
             # Should handle debug flag without error
-            assert result.returncode in [0, 2]  # 0 for success, 2 for help
+            assert result.returncode in {0, 2}  # 0 for success, 2 for help
         except subprocess.TimeoutExpired:
             # CLI processing working but taking time
             pass
@@ -206,8 +212,10 @@ class TestCriticalMissingLines:
         # Test --no-debug flag (line 116)
         cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
         try:
-            result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=5)
-            assert result.returncode in [0, 2]
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=5,
+            )
+            assert result.returncode in {0, 2}
         except subprocess.TimeoutExpired:
             pass
 
@@ -217,37 +225,47 @@ class TestCriticalMissingLines:
         statuses = list(FlextWebAppStatus)
 
         for status in statuses:
-            app = FlextWebApp.model_validate({
-                "id": f"test_{status.value}",
-                "name": "test-app",
-                "port": 8080,
-                "host": "localhost",
-                "status": status.value
-            })
+            app = FlextWebApp.model_validate(
+                {
+                    "id": f"test_{status.value}",
+                    "name": "test-app",
+                    "port": 8080,
+                    "host": "localhost",
+                    "status": status.value,
+                },
+            )
 
             # Test start from each status
             start_result = app.start()
             if status == FlextWebAppStatus.RUNNING:
-                assert start_result.is_failure, f"Should not be able to start from {status}"
+                assert start_result.is_failure, (
+                    f"Should not be able to start from {status}"
+                )
                 assert "already running" in start_result.error.lower()
             elif status == FlextWebAppStatus.STARTING:
-                assert start_result.is_failure, f"Should not be able to start from {status}"
+                assert start_result.is_failure, (
+                    f"Should not be able to start from {status}"
+                )
                 assert "already starting" in start_result.error.lower()
             else:
                 # STOPPED, STOPPING, ERROR states should allow starting
-                assert start_result.is_success, f"Should be able to start from {status}"
+                assert start_result.success, f"Should be able to start from {status}"
 
             # Test stop from each status
             stop_result = app.stop()
             if status == FlextWebAppStatus.STOPPED:
-                assert stop_result.is_failure, f"Should not be able to stop from {status}"
+                assert stop_result.is_failure, (
+                    f"Should not be able to stop from {status}"
+                )
                 assert "already stopped" in stop_result.error.lower()
             elif status == FlextWebAppStatus.STOPPING:
-                assert stop_result.is_failure, f"Should not be able to stop from {status}"
+                assert stop_result.is_failure, (
+                    f"Should not be able to stop from {status}"
+                )
                 assert "already stopping" in stop_result.error.lower()
             else:
                 # RUNNING, STARTING, ERROR states should allow stopping
-                assert stop_result.is_success, f"Should be able to stop from {status}"
+                assert stop_result.success, f"Should be able to stop from {status}"
 
 
 if __name__ == "__main__":

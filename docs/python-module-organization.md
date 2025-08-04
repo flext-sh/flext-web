@@ -204,7 +204,7 @@ class FlextWebAppHandler(FlextHandlers.Handler[CreateAppCommand, FlextWebApp]):
 
         # Domain validation
         validation = app.validate_domain_rules()
-        if not validation.is_success:
+        if not validation.success:
             return validation
 
         # Persistence through repository
@@ -401,7 +401,7 @@ class AppsAPI:
         # Execute command through handler
         app_result = self.app_handler.create_app(command_result.data)
 
-        if app_result.is_success:
+        if app_result.success:
             return self._success_response(
                 "Application created successfully",
                 app_result.data.dict()
@@ -707,7 +707,7 @@ class APIResponseHandler:
     @staticmethod
     def to_json_response(result: FlextResult[Any], success_status: int = 200) -> tuple:
         """Convert FlextResult to Flask JSON response"""
-        if result.is_success:
+        if result.success:
             return jsonify({
                 "success": True,
                 "message": "Operation completed successfully",
@@ -963,7 +963,7 @@ class WebAppPortConflictService(FlextDomainService):
             host_port = HostPort(host="localhost", port=port)
             availability = self.check_port_availability(host_port)
 
-            if availability.is_success:
+            if availability.success:
                 return FlextResult.ok(port)
 
         return FlextResult.fail("No available ports found")
@@ -1132,7 +1132,7 @@ ConfigurationFactory.register_config("production", ProductionConfig)
 
 # Usage
 config_result = ConfigurationFactory.create_config()
-if config_result.is_success:
+if config_result.success:
     web_service = FlextWebService(config_result.data)
 ```
 
@@ -1219,7 +1219,7 @@ class TestFlextWebApp:
         result = app.start()
 
         # Assert
-        assert result.is_success
+        assert result.success
         assert app.status == WebAppStatus.Status.RUNNING
         assert len(app.domain_events) == 1
         assert app.domain_events[0]["type"] == "AppStartedEvent"
@@ -1440,7 +1440,7 @@ class TestInMemoryFlextWebAppRepository:
         result = repository.save(sample_app)
 
         # Assert
-        assert result.is_success
+        assert result.success
         assert result.data == sample_app
 
     def test_find_by_id_success(self, repository, sample_app):
@@ -1452,7 +1452,7 @@ class TestInMemoryFlextWebAppRepository:
         result = repository.find_by_id("app_sample")
 
         # Assert
-        assert result.is_success
+        assert result.success
         assert result.data.id == "app_sample"
         assert result.data.name == "sample-app"
 
@@ -1471,7 +1471,7 @@ class TestInMemoryFlextWebAppRepository:
         result = repository.find_all()
 
         # Assert
-        assert result.is_success
+        assert result.success
         assert result.data == []
 
     def test_find_all_with_apps(self, repository):
@@ -1489,7 +1489,7 @@ class TestInMemoryFlextWebAppRepository:
         result = repository.find_all()
 
         # Assert
-        assert result.is_success
+        assert result.success
         assert len(result.data) == 2
         assert {app.name for app in result.data} == {"app-1", "app-2"}
 ```
@@ -1625,7 +1625,7 @@ def create_web_application(
     Example:
         >>> app_data = {"name": "web-service", "host": "localhost", "port": 3000}
         >>> result = create_web_application(app_data, handler, port_service)
-        >>> if result.is_success:
+        >>> if result.success:
         ...     print(f"Created: {result.data.name} at {result.data.host_port.address}")
         ... else:
         ...     print(f"Creation failed: {result.error}")

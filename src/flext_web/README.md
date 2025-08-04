@@ -78,7 +78,7 @@ app = FlextWebApp(
 
 # Start application with validation
 result = app.start()
-if result.is_success:
+if result.success:
     running_app = result.data
     print(f"Started: {running_app.name}")
 ```
@@ -116,12 +116,12 @@ handler = FlextWebAppHandler()
 
 # Create application
 result = handler.create("api-service", port=8080, host="0.0.0.0")
-if result.is_success:
+if result.success:
     app = result.data
 
     # Start application
     start_result = handler.start(app)
-    if start_result.is_success:
+    if start_result.success:
         print(f"Application {start_result.data.name} is running")
 ```
 

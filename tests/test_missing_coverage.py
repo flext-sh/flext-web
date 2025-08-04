@@ -34,7 +34,7 @@ class TestMissingCoverage:
                 id="test_invalid_port_high",
                 name="test-app",
                 port=99999,  # Too high for Pydantic
-                host="localhost"
+                host="localhost",
             )
 
         with pytest.raises(ValueError, match="port"):
@@ -42,7 +42,7 @@ class TestMissingCoverage:
                 id="test_invalid_port_low",
                 name="test-app",
                 port=0,  # Too low for Pydantic
-                host="localhost"
+                host="localhost",
             )
 
         # Test normal case where port is valid
@@ -50,10 +50,10 @@ class TestMissingCoverage:
             id="test_valid_port",
             name="test-app",
             port=8080,  # Valid port
-            host="localhost"
+            host="localhost",
         )
         result = app.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_app_empty_name_validation(self) -> None:
         """Test empty name validation failure path."""
@@ -61,7 +61,7 @@ class TestMissingCoverage:
             id="test_empty_name",
             name="",  # Empty name should fail validation
             port=8080,
-            host="localhost"
+            host="localhost",
         )
         result = app.validate_domain_rules()
         assert result.is_failure
@@ -70,11 +70,11 @@ class TestMissingCoverage:
     def test_config_validation_failure_paths(self) -> None:
         """Test configuration validation failure scenarios."""
         # Test invalid port in config
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"port|range"):
             FlextWebConfig(port=70000, secret_key="valid-32-char-key-for-testing-ok!")
 
         # Test invalid secret key length
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"secret.*key|length"):
             FlextWebConfig(secret_key="short")
 
     def test_service_error_response_creation(self) -> None:
@@ -85,9 +85,7 @@ class TestMissingCoverage:
         # Test invalid JSON request
         client = service.app.test_client()
         response = client.post(
-            "/api/v1/apps",
-            data="invalid json",
-            content_type="application/json"
+            "/api/v1/apps", data="invalid json", content_type="application/json",
         )
         assert response.status_code == 400
 
@@ -96,7 +94,7 @@ class TestMissingCoverage:
         handler = FlextWebAppHandler()
 
         # Test with invalid parameters that might cause exceptions
-        with patch("flext_web.FlextWebApp") as mock_app:
+        with patch("flext_web.domain.handlers.FlextWebApp") as mock_app:
             mock_app.side_effect = ValueError("Mock validation error")
 
             result = handler.create("test", 8080, "localhost")
@@ -110,7 +108,7 @@ class TestMissingCoverage:
             name="running-app",
             port=8080,
             host="localhost",
-            status=FlextWebAppStatus.RUNNING
+            status=FlextWebAppStatus.RUNNING,
         )
 
         result = app.start()
@@ -124,7 +122,7 @@ class TestMissingCoverage:
             name="stopped-app",
             port=8080,
             host="localhost",
-            status=FlextWebAppStatus.STOPPED
+            status=FlextWebAppStatus.STOPPED,
         )
 
         result = app.stop()
@@ -144,6 +142,7 @@ class TestMissingCoverage:
         """Test settings singleton and caching behavior."""
         # Clear any cached instance first using the reset function
         from flext_web import reset_web_settings
+
         reset_web_settings()
 
         # Test first call creates instance
@@ -163,12 +162,12 @@ class TestMissingCoverage:
         # Create apps in different states
         service.app.test_client().post(
             "/api/v1/apps",
-            json={"name": "running-app", "port": 3000, "host": "localhost"}
+            json={"name": "running-app", "port": 3000, "host": "localhost"},
         )
 
         service.app.test_client().post(
             "/api/v1/apps",
-            json={"name": "stopped-app", "port": 3001, "host": "localhost"}
+            json={"name": "stopped-app", "port": 3001, "host": "localhost"},
         )
 
         # Test dashboard renders correctly
@@ -200,8 +199,16 @@ class TestMissingCoverage:
         # Test creating app with edge case names
         test_cases = [
             {"name": "a" * 50, "port": 8080, "host": "localhost"},  # Long name
-            {"name": "test-with-dashes", "port": 8081, "host": "0.0.0.0"},  # Different host
-            {"name": "test_with_underscores", "port": 1, "host": "127.0.0.1"},  # Min port
+            {
+                "name": "test-with-dashes",
+                "port": 8081,
+                "host": "0.0.0.0",
+            },  # Different host
+            {
+                "name": "test_with_underscores",
+                "port": 1,
+                "host": "127.0.0.1",
+            },  # Min port
             {"name": "test.with.dots", "port": 65535, "host": "localhost"},  # Max port
         ]
 
@@ -255,10 +262,16 @@ class TestExceptionCoverage:
             (FlextWebConnectionError, ("Connection failed", "localhost", 8080)),
             (FlextWebProcessingError, ("Processing failed", "handler", "/api/process")),
             (FlextWebTimeoutError, ("Timeout", "/api/slow", 30.0)),
-            (FlextWebTemplateError, ("Template error", "index.html", "Missing variable")),
+            (
+                FlextWebTemplateError,
+                ("Template error", "index.html", "Missing variable"),
+            ),
             (FlextWebRoutingError, ("Route error", "/api/missing", "GET")),
             (FlextWebSessionError, ("Session error", "session123", "expired")),
-            (FlextWebMiddlewareError, ("Middleware error", "auth_middleware", "pre_request")),
+            (
+                FlextWebMiddlewareError,
+                ("Middleware error", "auth_middleware", "pre_request"),
+            ),
         ]
 
         for exception_class, args in exceptions_to_test:

@@ -82,7 +82,7 @@ def test_app_creation_with_invalid_port():
     # This should fail gracefully
     result = handler.create("test-app", port=70000)  # Invalid port
 
-    assert not result.is_success
+    assert not result.success
     assert "Port must be between 1 and 65535" in result.error
 ```
 
@@ -281,7 +281,7 @@ class TestFlextWebAppHandler:
         result = self.handler.create(name, port, host)
 
         # Assert
-        assert result.is_success
+        assert result.success
         assert result.data is not None
         assert result.data.name == name
         assert result.data.port == port
@@ -294,7 +294,7 @@ class TestFlextWebAppHandler:
         result = self.handler.create("", 3000, "localhost")
 
         # Assert
-        assert not result.is_success
+        assert not result.success
         assert "App name is required" in result.error
 
     @pytest.mark.parametrize("port", [0, 70000, -1])
@@ -302,7 +302,7 @@ class TestFlextWebAppHandler:
         """Test application creation with invalid ports"""
         result = self.handler.create("test-app", port, "localhost")
 
-        assert not result.is_success
+        assert not result.success
         assert "Invalid port number" in result.error
 ```
 

@@ -8,13 +8,15 @@ T = TypeVar("T")
 
 
 class FlextResult[T]:
-    def __init__(self, success: bool, data: T | None = None, error: str | None = None) -> None:
+    def __init__(
+        self, success: bool, data: T | None = None, error: str | None = None,
+    ) -> None:
         self._success = success
         self._data = data
         self._error = error
 
     @property
-    def is_success(self) -> bool:
+    def success(self) -> bool:
         return self._success
 
     @property

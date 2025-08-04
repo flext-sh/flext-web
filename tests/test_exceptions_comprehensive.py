@@ -203,7 +203,7 @@ class TestExceptionUtilities:
 
     def test_multiple_exception_handling(self) -> None:
         """Test handling multiple related exceptions."""
-        errors = []
+        errors: list[Exception] = []
 
         # Simulate multiple validation errors
         errors.extend((FlextWebValidationError("Name required"), FlextWebValidationError("Port invalid"), FlextWebValidationError("Host invalid")))
@@ -218,7 +218,7 @@ class TestExceptionUtilities:
         serialized = error.to_dict()
 
         assert "error_code" in serialized
-        assert "Application startup failed" in serialized["message"]
+        assert "Application startup failed" in str(serialized["message"])
         assert "context" in serialized or "details" in serialized
 
     def test_route_context_handling(self) -> None:

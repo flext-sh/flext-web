@@ -41,7 +41,7 @@ class TestExamplesDeepValidation:
         import os
         test_env = {
             **os.environ,
-            "FLEXT_WEB_PORT": "9003"  # Use different port to avoid conflicts
+            "FLEXT_WEB_PORT": "9003",  # Use different port to avoid conflicts
         }
 
         cmd = [sys.executable, str(example_path)]
@@ -50,7 +50,7 @@ class TestExamplesDeepValidation:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            env=test_env
+            env=test_env,
         )
 
         try:
@@ -59,7 +59,7 @@ class TestExamplesDeepValidation:
 
             # Check if process is running or failed gracefully
             if process.poll() is not None:
-                stdout, stderr = process.communicate()
+                _stdout, stderr = process.communicate()
                 # If it failed due to port conflicts or other issues, that's acceptable
                 pytest.skip(f"Service exited early (possibly port conflict): {stderr}")
 
@@ -95,7 +95,7 @@ class TestExamplesDeepValidation:
                 "get_application_status",
                 "stop_application",
                 "list_applications",
-                "demo_application_lifecycle"
+                "demo_application_lifecycle",
             ]
 
             for func_name in functions_to_test:
@@ -142,7 +142,7 @@ class TestExamplesDeepValidation:
             "FLEXT_WEB_SECRET_KEY": "test-secret-key-32-characters-long!",
             "FLEXT_WEB_HOST": "127.0.0.1",
             "FLEXT_WEB_PORT": "9001",  # Use different port to avoid conflicts
-            "FLEXT_WEB_DEBUG": "false"
+            "FLEXT_WEB_DEBUG": "false",
         }
 
         cmd = [sys.executable, str(example_path)]
@@ -151,7 +151,7 @@ class TestExamplesDeepValidation:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            env=test_env
+            env=test_env,
         )
 
         try:
@@ -172,7 +172,7 @@ class TestExamplesDeepValidation:
 
         test_env = {
             **os.environ,
-            "FLEXT_WEB_PORT": "invalid_port"
+            "FLEXT_WEB_PORT": "invalid_port",
         }
 
         cmd = [sys.executable, "examples/docker_ready.py"]
@@ -202,7 +202,7 @@ class TestExamplesDeepValidation:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            env=test_env
+            env=test_env,
         )
 
         try:
@@ -212,7 +212,7 @@ class TestExamplesDeepValidation:
             # Check if process is still running
             if process.poll() is not None:
                 # Process already exited, probably due to error
-                stdout, stderr = process.communicate()
+                _stdout, stderr = process.communicate()
                 pytest.skip(f"Process exited early, likely port conflict: {stderr}")
 
             # Send SIGTERM (graceful shutdown signal)
@@ -222,7 +222,7 @@ class TestExamplesDeepValidation:
             return_code = process.wait(timeout=10)
 
             # Should exit gracefully (code 0) or with controlled shutdown
-            assert return_code in [0, 1], f"Unexpected return code {return_code}"
+            assert return_code in {0, 1}, f"Unexpected return code {return_code}"
 
         except subprocess.TimeoutExpired:
             # Force kill if graceful shutdown didn't work
@@ -245,7 +245,7 @@ class TestExamplesDeepValidation:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            env=test_env
+            env=test_env,
         )
 
         try:
@@ -270,7 +270,7 @@ class TestExamplesDeepValidation:
         required_files = [
             "basic_service.py",
             "api_usage.py",
-            "docker_ready.py"
+            "docker_ready.py",
         ]
 
         for file_name in required_files:
@@ -282,7 +282,7 @@ class TestExamplesDeepValidation:
             assert file_path.stat().st_size > 0, f"{file_name} is empty"
 
             # Check file is valid Python syntax
-            with open(file_path) as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
                 try:
                     compile(content, str(file_path), "exec")
@@ -294,7 +294,7 @@ class TestExamplesDeepValidation:
         examples_dir = Path("examples")
 
         for py_file in examples_dir.glob("*.py"):
-            with open(py_file) as f:
+            with open(py_file, encoding="utf-8") as f:
                 content = f.read()
 
             # Should have module docstring

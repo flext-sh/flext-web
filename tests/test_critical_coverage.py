@@ -27,10 +27,7 @@ class TestCriticalMissingCoverage:
         """
         # Create app with valid Pydantic port
         app = FlextWebApp(
-            id="test_port_validation",
-            name="test-app",
-            port=8080,
-            host="localhost"
+            id="test_port_validation", name="test-app", port=8080, host="localhost",
         )
 
         # Use model_copy to create new instance with invalid port
@@ -55,19 +52,34 @@ class TestCriticalMissingCoverage:
         """
         # Test --debug flag (line 114)
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10,
+        )
         assert result.returncode == 0
 
         # Test --no-debug flag (line 116)
         cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10,
+        )
         assert result.returncode == 0
 
     def test_cli_host_port_override_lines_110_111(self) -> None:
         """Test CLI host/port override that could be missing in coverage."""
         # Test custom host/port via CLI
-        cmd = [sys.executable, "-m", "flext_web", "--host", "127.0.0.1", "--port", "9000", "--help"]
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=10)
+        cmd = [
+            sys.executable,
+            "-m",
+            "flext_web",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "9000",
+            "--help",
+        ]
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10,
+        )
         assert result.returncode == 0
 
     def test_type_checking_import_line_68(self) -> None:
@@ -89,7 +101,7 @@ class TestCriticalMissingCoverage:
         handler = FlextWebAppHandler()
 
         # Test create with invalid data to trigger error path
-        with patch("flext_web.FlextWebApp") as mock_app:
+        with patch("flext_web.domain.handlers.FlextWebApp") as mock_app:
             mock_app.side_effect = ValueError("Validation failed")
             result = handler.create("test", 8080, "localhost")
             assert result.is_failure
@@ -104,10 +116,9 @@ class TestCriticalMissingCoverage:
 
         # Mock validation failure
         with patch("flext_web.FlextWebConfig.validate_config") as mock_validate:
-            mock_validate.return_value = type("Result", (), {
-                "is_success": False,
-                "error": "Mock validation error"
-            })()
+            mock_validate.return_value = type(
+                "Result", (), {"success": False, "error": "Mock validation error"},
+            )()
 
             # Should raise ValueError (line 1036) not FlextWebConfigurationError
             with pytest.raises(ValueError, match="Configuration validation failed"):
@@ -129,7 +140,9 @@ class TestCriticalMissingCoverage:
         """Test main module execution paths including error handling."""
         # Test module execution with invalid arguments
         cmd = [sys.executable, "-m", "flext_web", "--port", "invalid"]
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10,
+        )
         # Should fail with argument parsing error
         assert result.returncode != 0
 
@@ -143,18 +156,18 @@ class TestCriticalMissingCoverage:
             name="branch-app",
             port=8080,
             host="localhost",
-            status=FlextWebAppStatus.STOPPED
+            status=FlextWebAppStatus.STOPPED,
         )
 
         # Test start from stopped state
         start_result = app.start()
-        assert start_result.is_success
+        assert start_result.success
         running_app = start_result.data
         assert running_app.status == FlextWebAppStatus.RUNNING
 
         # Test stop from running state
         stop_result = running_app.stop()
-        assert stop_result.is_success
+        assert stop_result.success
         stopped_app = stop_result.data
         assert stopped_app.status == FlextWebAppStatus.STOPPED
 
@@ -165,10 +178,10 @@ class TestCriticalMissingCoverage:
                 name="test-app",
                 port=8080,
                 host="localhost",
-                status=status
+                status=status,
             )
             validation_result = test_app.validate_domain_rules()
-            assert validation_result.is_success
+            assert validation_result.success
 
 
 if __name__ == "__main__":

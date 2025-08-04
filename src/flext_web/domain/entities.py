@@ -99,15 +99,14 @@ class FlextWebApp(FlextEntity, FlextTimestampMixin, FlextValidatableMixin):
         Creating and managing an application:
 
         >>> app = FlextWebApp(
-        ...     id="app_web-service",
-        ...     name="web-service",
-        ...     host="localhost",
-        ...     port=3000
+        ...     id="app_web-service", name="web-service", host="localhost", port=3000
         ... )
         >>> result = app.start()
-        >>> if result.is_success:
+        >>> if result.success:
         ...     updated_app = result.data
-        ...     print(f"Started: {updated_app.name} on {updated_app.host}:{updated_app.port}")
+        ...     print(
+        ...         f"Started: {updated_app.name} on {updated_app.host}:{updated_app.port}"
+        ...     )
 
     """
 
@@ -139,7 +138,7 @@ class FlextWebApp(FlextEntity, FlextTimestampMixin, FlextValidatableMixin):
         Example:
             >>> app = FlextWebApp(name="test", host="localhost", port=3000)
             >>> result = app.validate_domain_rules()
-            >>> if result.is_success:
+            >>> if result.success:
             ...     print("Application is valid")
             ... else:
             ...     print(f"Validation failed: {result.error}")
@@ -200,7 +199,7 @@ class FlextWebApp(FlextEntity, FlextTimestampMixin, FlextValidatableMixin):
         Example:
             >>> app = FlextWebApp(name="service", status=FlextWebAppStatus.STOPPED)
             >>> result = app.start()
-            >>> if result.is_success:
+            >>> if result.success:
             ...     running_app = result.data
             ...     print(f"Started {running_app.name}: {running_app.is_running}")
             ... else:
@@ -242,7 +241,7 @@ class FlextWebApp(FlextEntity, FlextTimestampMixin, FlextValidatableMixin):
         Example:
             >>> app = FlextWebApp(name="service", status=FlextWebAppStatus.RUNNING)
             >>> result = app.stop()
-            >>> if result.is_success:
+            >>> if result.success:
             ...     stopped_app = result.data
             ...     print(f"Stopped {stopped_app.name}: {not stopped_app.is_running}")
             ... else:

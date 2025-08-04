@@ -166,7 +166,7 @@ def dashboard(self) -> str:
 # FlextResult Pattern (Railway-Oriented Programming)
 def create_app(self) -> ResponseReturnValue:
     app_result = self.handler.create(name, port, host)
-    if app_result.is_success:
+    if app_result.success:
         return self._create_response(True, "Success", app_data)
     return self._create_response(False, f"Failed: {app_result.error}")
 

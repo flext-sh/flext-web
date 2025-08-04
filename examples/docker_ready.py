@@ -35,7 +35,7 @@ def create_docker_config() -> FlextWebConfig:
 
     # Validate configuration
     validation_result = config.validate_config()
-    if not validation_result.is_success:
+    if not validation_result.success:
         logger.error(f"Configuration validation failed: {validation_result.error}")
         sys.exit(1)
 

@@ -14,7 +14,7 @@ def test_line_903_stop_app_failure_precise() -> None:
     create_response = client.post("/api/v1/apps", json={
         "name": "test-stop-failure",
         "port": 8080,
-        "host": "localhost"
+        "host": "localhost",
     })
     assert create_response.status_code == 200
     app_data = create_response.json["data"]

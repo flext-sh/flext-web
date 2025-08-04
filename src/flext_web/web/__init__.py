@@ -11,6 +11,6 @@ All components follow flext-core patterns for enterprise-grade reliability.
 
 from .service import FlextWebService
 
-__all__ = [
+__all__: list[str] = [
     "FlextWebService",
 ]

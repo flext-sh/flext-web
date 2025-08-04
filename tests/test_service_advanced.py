@@ -65,7 +65,8 @@ class TestFlextWebServiceAdvanced:
         """Test app creation with validation errors."""
         # Test empty name
         response = service.app.test_client().post(
-            "/api/v1/apps", json={"name": "", "port": 3000, "host": "localhost"},
+            "/api/v1/apps",
+            json={"name": "", "port": 3000, "host": "localhost"},
         )
         assert response.status_code == 400
         data = response.get_json()
@@ -85,7 +86,8 @@ class TestFlextWebServiceAdvanced:
     def test_create_app_with_missing_fields(self, service: FlextWebService) -> None:
         """Test app creation with missing optional fields uses defaults."""
         response = service.app.test_client().post(
-            "/api/v1/apps", json={"name": "test-app"},
+            "/api/v1/apps",
+            json={"name": "test-app"},
         )
         assert response.status_code == 200
         data = response.get_json()
@@ -119,7 +121,9 @@ class TestFlextWebServiceAdvanced:
     def test_invalid_json_request(self, service: FlextWebService) -> None:
         """Test API with invalid JSON."""
         response = service.app.test_client().post(
-            "/api/v1/apps", data="invalid json", content_type="application/json",
+            "/api/v1/apps",
+            data="invalid json",
+            content_type="application/json",
         )
         assert response.status_code == 400
 
@@ -175,29 +179,33 @@ class TestFlextWebConfigAdvanced:
         """Test configuration validation edge cases."""
         # Test minimum valid port
         config = FlextWebConfig(
-            port=1, secret_key="valid-secret-key-32-characters-long!",
+            port=1,
+            secret_key="valid-secret-key-32-characters-long!",
         )
         result = config.validate_config()
-        assert result.is_success
+        assert result.success
 
         # Test maximum valid port
         config = FlextWebConfig(
-            port=65535, secret_key="valid-secret-key-32-characters-long!",
+            port=65535,
+            secret_key="valid-secret-key-32-characters-long!",
         )
         result = config.validate_config()
-        assert result.is_success
+        assert result.success
 
     def test_config_production_detection(self) -> None:
         """Test production environment detection."""
         # Test debug=False as production indicator
         config = FlextWebConfig(
-            debug=False, secret_key="prod-secret-key-32-characters-long!!",
+            debug=False,
+            secret_key="prod-secret-key-32-characters-long!!",
         )
         assert config.is_production() is True
 
         # Test debug=True as development indicator
         config = FlextWebConfig(
-            debug=True, secret_key="dev-secret-key-32-characters-long!!!",
+            debug=True,
+            secret_key="dev-secret-key-32-characters-long!!!",
         )
         assert config.is_production() is False
 
@@ -205,7 +213,8 @@ class TestFlextWebConfigAdvanced:
         """Test secret key validation scenarios."""
         # Test production with default key (should fail)
         config = FlextWebConfig(
-            debug=False, secret_key="change-in-production-placeholder-key",
+            debug=False,
+            secret_key="change-in-production-placeholder-key",
         )
         result = config.validate_config()
         assert result.is_failure
@@ -241,21 +250,24 @@ class TestFlextWebAppAdvanced:
 
         # Test validation
         result = app.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_app_edge_case_ports(self) -> None:
         """Test application with edge case ports."""
         # Test minimum port
         app = FlextWebApp(id="min_port", name="min-port-app", port=1, host="localhost")
         result = app.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
         # Test maximum port
         app = FlextWebApp(
-            id="max_port", name="max-port-app", port=65535, host="localhost",
+            id="max_port",
+            name="max-port-app",
+            port=65535,
+            host="localhost",
         )
         result = app.validate_domain_rules()
-        assert result.is_success
+        assert result.success
 
     def test_app_host_variations(self) -> None:
         """Test application with different host formats."""
@@ -263,10 +275,13 @@ class TestFlextWebAppAdvanced:
 
         for i, host in enumerate(hosts):
             app = FlextWebApp(
-                id=f"host_test_{i}", name=f"host-app-{i}", port=3000 + i, host=host,
+                id=f"host_test_{i}",
+                name=f"host-app-{i}",
+                port=3000 + i,
+                host=host,
             )
             result = app.validate_domain_rules()
-            assert result.is_success
+            assert result.success
 
 
 class TestFlextWebAppHandlerAdvanced:
@@ -278,14 +293,17 @@ class TestFlextWebAppHandlerAdvanced:
 
         # Create a valid app first
         result = handler.create("test-app", 8000, "localhost")
-        assert result.is_success
+        assert result.success
         app = result.data
 
         # Test stopping a stopped app
         result = handler.stop(app)
         # App is already stopped, so this should fail with appropriate message
         assert result.is_failure
-        assert "already stopped" in result.error.lower() or "not running" in result.error.lower()
+        assert (
+            "already stopped" in result.error.lower()
+            or "not running" in result.error.lower()
+        )
 
     def test_handler_duplicate_app_creation(self) -> None:
         """Test creating applications with same name but different ports."""
@@ -293,11 +311,11 @@ class TestFlextWebAppHandlerAdvanced:
 
         # Create first app
         result1 = handler.create("duplicate-test", 5000, "localhost")
-        assert result1.is_success
+        assert result1.success
 
         # Create another app with same name but different port (allowed)
         result2 = handler.create("duplicate-test", 5001, "localhost")
-        assert result2.is_success
+        assert result2.success
         # Apps have same name but different ports
         assert result1.data.name == result2.data.name
         assert result1.data.port != result2.data.port
@@ -308,12 +326,12 @@ class TestFlextWebAppHandlerAdvanced:
 
         # Create app
         result = handler.create("state-test", 6000, "localhost")
-        assert result.is_success
+        assert result.success
         app = result.data
 
         # Start app
         result = handler.start(app)
-        assert result.is_success
+        assert result.success
         assert result.data.status == FlextWebAppStatus.RUNNING
         running_app = result.data
 
@@ -324,14 +342,17 @@ class TestFlextWebAppHandlerAdvanced:
 
         # Stop app
         result = handler.stop(running_app)
-        assert result.is_success
+        assert result.success
         assert result.data.status == FlextWebAppStatus.STOPPED
         stopped_app = result.data
 
         # Try to stop already stopped app
         result = handler.stop(stopped_app)
         assert result.is_failure
-        assert "already stopped" in result.error.lower() or "not running" in result.error.lower()
+        assert (
+            "already stopped" in result.error.lower()
+            or "not running" in result.error.lower()
+        )
 
 
 class TestServiceIntegration:

@@ -57,10 +57,10 @@ class FlextWebAppHandler(FlextHandlers.Handler[FlextWebApp, FlextWebApp]):
 
         >>> handler = FlextWebAppHandler()
         >>> result = handler.create("web-service", 3000, "localhost")
-        >>> if result.is_success:
+        >>> if result.success:
         ...     app = result.data
         ...     start_result = handler.start(app)
-        ...     if start_result.is_success:
+        ...     if start_result.success:
         ...         print(f"Started {start_result.data.name}")
 
     """
@@ -102,7 +102,7 @@ class FlextWebAppHandler(FlextHandlers.Handler[FlextWebApp, FlextWebApp]):
         Example:
             >>> handler = FlextWebAppHandler()
             >>> result = handler.create("web-api", 8080, "0.0.0.0")
-            >>> if result.is_success:
+            >>> if result.success:
             ...     app = result.data
             ...     print(f"Created: {app.name} [{app.id}] at {app.host}:{app.port}")
             ... else:
@@ -115,7 +115,7 @@ class FlextWebAppHandler(FlextHandlers.Handler[FlextWebApp, FlextWebApp]):
 
             # Validate domain rules before returning
             validation = app.validate_domain_rules()
-            if not validation.is_success:
+            if not validation.success:
                 return FlextResult.fail(validation.error or "Domain validation failed")
 
             return FlextResult.ok(app)
@@ -157,16 +157,18 @@ class FlextWebAppHandler(FlextHandlers.Handler[FlextWebApp, FlextWebApp]):
             >>> handler = FlextWebAppHandler()
             >>> app = FlextWebApp(name="service", status=FlextWebAppStatus.STOPPED)
             >>> result = handler.start(app)
-            >>> if result.is_success:
+            >>> if result.success:
             ...     running_app = result.data
-            ...     print(f"Started: {running_app.name} is now {running_app.status.value}")
+            ...     print(
+            ...         f"Started: {running_app.name} is now {running_app.status.value}"
+            ...     )
             ... else:
             ...     print(f"Start failed: {result.error}")
 
         """
         # Validate domain rules before attempting state change
         validation = app.validate_domain_rules()
-        if not validation.is_success:
+        if not validation.success:
             return FlextResult.fail("App name is required")
 
         # Delegate to domain entity for state transition
@@ -208,16 +210,18 @@ class FlextWebAppHandler(FlextHandlers.Handler[FlextWebApp, FlextWebApp]):
             >>> handler = FlextWebAppHandler()
             >>> app = FlextWebApp(name="service", status=FlextWebAppStatus.RUNNING)
             >>> result = handler.stop(app)
-            >>> if result.is_success:
+            >>> if result.success:
             ...     stopped_app = result.data
-            ...     print(f"Stopped: {stopped_app.name} is now {stopped_app.status.value}")
+            ...     print(
+            ...         f"Stopped: {stopped_app.name} is now {stopped_app.status.value}"
+            ...     )
             ... else:
             ...     print(f"Stop failed: {result.error}")
 
         """
         # Validate domain rules before attempting state change
         validation = app.validate_domain_rules()
-        if not validation.is_success:
+        if not validation.success:
             return FlextResult.fail("App name is required")
 
         # Delegate to domain entity for state transition

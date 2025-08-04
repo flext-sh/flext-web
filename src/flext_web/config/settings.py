@@ -57,9 +57,9 @@ class FlextWebConfig(BaseSettings, FlextConfig):
         Environment-based configuration:
 
         >>> import os
-        >>> os.environ['FLEXT_WEB_HOST'] = '0.0.0.0'
-        >>> os.environ['FLEXT_WEB_PORT'] = '8080'
-        >>> os.environ['FLEXT_WEB_DEBUG'] = 'false'
+        >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
+        >>> os.environ["FLEXT_WEB_PORT"] = "8080"
+        >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
         >>> config = FlextWebConfig()
         >>> print(f"Server: {config.get_server_url()}")
         >>> print(f"Production: {config.is_production()}")
@@ -114,7 +114,7 @@ class FlextWebConfig(BaseSettings, FlextConfig):
         Example:
             >>> config = FlextWebConfig(debug=False, secret_key="short")
             >>> result = config.validate_config()
-            >>> if not result.is_success:
+            >>> if not result.success:
             ...     print(f"Configuration invalid: {result.error}")
 
         """

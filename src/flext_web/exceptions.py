@@ -90,7 +90,7 @@ class FlextWebError(FlextError):
         ...     "Service unavailable",
         ...     route="/api/v1/apps",
         ...     status_code=503,
-        ...     retry_after=30
+        ...     retry_after=30,
         ... )
         >>> logger.error("Web service error", error=error)
 
@@ -117,7 +117,7 @@ class FlextWebError(FlextError):
             ...     "Database connection failed",
             ...     route="/api/v1/users",
             ...     method="POST",
-            ...     status_code=500
+            ...     status_code=500,
             ... )
 
         """
@@ -160,7 +160,7 @@ class FlextWebValidationError(FlextValidationError):
         ...     "Email format is invalid",
         ...     field="email",
         ...     value="invalid-email",
-        ...     form_name="user_registration"
+        ...     form_name="user_registration",
         ... )
         >>> return {"error": error.message, "field": error.field}
 
@@ -192,7 +192,7 @@ class FlextWebValidationError(FlextValidationError):
             ...     "Port must be between 1 and 65535",
             ...     field="port",
             ...     value=70000,
-            ...     form_name="app_creation"
+            ...     form_name="app_creation",
             ... )
 
         """
@@ -444,7 +444,7 @@ class FlextWebMiddlewareError(FlextWebError):
         )
 
 
-__all__ = [
+__all__: list[str] = [
     "FlextWebAuthenticationError",
     "FlextWebConfigurationError",
     "FlextWebConnectionError",

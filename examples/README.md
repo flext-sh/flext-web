@@ -146,7 +146,7 @@ class EnterpriseWebConfig(FlextWebConfig):
     def validate_config(self):
         """Additional enterprise validation"""
         result = super().validate_config()
-        if not result.is_success:
+        if not result.success:
             return result
 
         # Enterprise-specific validations
@@ -165,7 +165,7 @@ def deploy_enterprise_service():
 
     # Validate enterprise requirements
     validation_result = config.validate_config()
-    if not validation_result.is_success:
+    if not validation_result.success:
         logger.error(f"Configuration validation failed: {validation_result.error}")
         return
 
@@ -307,18 +307,18 @@ class TestApplicationWorkflow:
 
         # Create application
         create_result = handler.create("test-app", 3000, "localhost")
-        assert create_result.is_success
+        assert create_result.success
         app = create_result.data
 
         # Start application
         start_result = handler.start(app)
-        assert start_result.is_success
+        assert start_result.success
         running_app = start_result.data
         assert running_app.is_running
 
         # Stop application
         stop_result = handler.stop(running_app)
-        assert stop_result.is_success
+        assert stop_result.success
         stopped_app = stop_result.data
         assert not stopped_app.is_running
 
@@ -331,7 +331,7 @@ class TestApplicationWorkflow:
             debug=True
         )
         result = config.validate_config()
-        assert result.is_success
+        assert result.success
 
         # Invalid configuration
         invalid_config = FlextWebConfig(

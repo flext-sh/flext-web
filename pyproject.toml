@@ -131,7 +131,7 @@ platform = "linux"
 # Package structure
 explicit_package_bases = true
 namespace_packages = true
-mypy_path = ["src"]
+mypy_path = ["src", "examples"]
 files = ["src", "tests"]
 
 # Plugins
@@ -157,7 +157,6 @@ exclude = [
     ".*/generate_config.py",
     ".*/manage.py",
     ".*/scripts/",
-    ".*/tests/",
     ".coverage.*",
     ".git/",
     ".mypy_cache/",

@@ -61,7 +61,7 @@ def test_successful_operation():
     """Test successful operation returns FlextResult.ok()"""
     result = handler.create_app("test-app", 3000)
 
-    assert result.is_success
+    assert result.success
     assert result.data is not None
     assert result.error is None
 
@@ -83,7 +83,7 @@ def test_domain_business_rules():
 
     # Test state transitions
     result = app.start()
-    assert result.is_success
+    assert result.success
     assert app.status == FlextWebAppStatus.RUNNING
 
     # Test invalid state transition

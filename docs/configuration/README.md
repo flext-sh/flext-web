@@ -192,7 +192,7 @@ except ValueError as e:
 # Manual validation
 config = FlextWebConfig()
 validation_result = config.validate_config()
-if not validation_result.is_success:
+if not validation_result.success:
     print(f"Validation failed: {validation_result.error}")
 ```
 
@@ -376,7 +376,7 @@ os.environ['FLEXT_WEB_DEBUG'] = 'false'
 try:
     config = FlextWebConfig()
     result = config.validate_config()
-    if not result.is_success:
+    if not result.success:
         print(f'Validation error: {result.error}')
 except Exception as e:
     print(f'Configuration error: {e}')

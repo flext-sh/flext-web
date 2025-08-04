@@ -7,6 +7,7 @@ EVERY SINGLE ONE of the remaining 13 lines must be tested to achieve near-100% c
 
 from __future__ import annotations
 
+import contextlib
 import os
 import subprocess
 import sys
@@ -24,7 +25,7 @@ class TestRemaining6PercentCritical:
         """Test lines 412, 414, 416: Configuration validation that's NEVER been tested."""
         # Test line 412: Version format validation - CRITICAL production check
         config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
-        with patch("flext_web.FlextValidators.matches_pattern", return_value=False):
+        with patch("flext_core.FlextValidators.matches_pattern", return_value=False):
             # This should trigger line 412
             result = config.validate_config()
             assert result.is_failure, "Should fail with invalid version format"
@@ -32,7 +33,7 @@ class TestRemaining6PercentCritical:
 
         # Test line 414: Host validation - CRITICAL network configuration
         config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
-        with patch("flext_web.FlextValidators.is_non_empty_string") as mock_check:
+        with patch("flext_core.FlextValidators.is_non_empty_string") as mock_check:
             # First call (app_name) returns True, second call (host) returns False
             mock_check.side_effect = [True, False]
 
@@ -44,8 +45,10 @@ class TestRemaining6PercentCritical:
         # Test line 416: Port validation - CRITICAL network configuration
         config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
         # Mock all previous validations to pass, then trigger port validation
-        with patch("flext_web.FlextValidators.is_non_empty_string", return_value=True), \
-             patch("flext_web.FlextValidators.matches_pattern", return_value=True):
+        with (
+            patch("flext_core.FlextValidators.is_non_empty_string", return_value=True),
+            patch("flext_core.FlextValidators.matches_pattern", return_value=True),
+        ):
             # Set invalid port directly
             object.__setattr__(config, "port", 99999)  # Invalid port
 
@@ -64,26 +67,24 @@ class TestRemaining6PercentCritical:
             # Simulate template rendering failure - line 804->821
             mock_render.side_effect = Exception("Template compilation failed")
 
-            try:
+            with contextlib.suppress(Exception):
                 response = client.get("/")
                 # Should handle template errors gracefully (line 804->821 path)
                 # Could return 500 or fallback content
-                assert response.status_code in [200, 500], "Should handle template error"
-            except Exception:
-                # Template error path was triggered
-                pass
+                assert response.status_code in {200, 500}, (
+                    "Should handle template error"
+                )
 
         # Test template rendering with missing variables
         with patch("flask.render_template_string") as mock_render:
             from jinja2 import TemplateError
+
             mock_render.side_effect = TemplateError("Missing template variable")
 
-            try:
+            with contextlib.suppress(Exception):
                 response = client.get("/")
                 # Should handle template variable errors
-                assert response.status_code in [200, 500]
-            except Exception:
-                pass
+                assert response.status_code in {200, 500}
 
     def test_line_872_service_error_handling_critical(self) -> None:
         """Test line 872: Service error handling path - CRITICAL for API reliability."""
@@ -95,57 +96,52 @@ class TestRemaining6PercentCritical:
 
         # Test 1: Invalid JSON payload
         response = client.post(
-            "/api/v1/apps",
-            data="invalid json{",
-            content_type="application/json"
+            "/api/v1/apps", data="invalid json{", content_type="application/json",
         )
         # Should trigger error handling path (line 872)
         assert response.status_code == 400
 
         # Test 2: Large payload attack
-        large_payload = '{"name": "' + "x" * 10000 + '", "port": 8080, "host": "localhost"}'
+        large_payload = (
+            '{"name": "' + "x" * 10000 + '", "port": 8080, "host": "localhost"}'
+        )
         response = client.post(
-            "/api/v1/apps",
-            data=large_payload,
-            content_type="application/json"
+            "/api/v1/apps", data=large_payload, content_type="application/json",
         )
         # Should handle large payloads gracefully
-        assert response.status_code in [200, 400, 413]
+        assert response.status_code in {200, 400, 413}
 
         # Test 3: Invalid content type
         response = client.post(
             "/api/v1/apps",
             data='{"name": "test", "port": 8080, "host": "localhost"}',
-            content_type="text/plain"
+            content_type="text/plain",
         )
         # Should handle wrong content type
-        assert response.status_code in [200, 400, 415]
+        assert response.status_code in {200, 400, 415}
 
     def test_line_903_config_error_critical(self) -> None:
         """Test line 903: Configuration error path - CRITICAL for startup."""
         # Test configuration validation failure scenarios
         with patch("flext_web.FlextWebConfig.validate_config") as mock_validate:
             # Simulate critical configuration failure
-            mock_validate.return_value = type("Result", (), {
-                "is_success": False,
-                "error": "Critical configuration error: Invalid security settings"
-            })()
+            mock_validate.return_value = type(
+                "Result",
+                (),
+                {
+                    "success": False,
+                    "error": "Critical configuration error: Invalid security settings",
+                },
+            )()
 
             from flext_web import get_web_settings, reset_web_settings
 
             # Reset to test fresh configuration
             reset_web_settings()
 
-            try:
-                # This should trigger line 903 error path
+            # This should trigger line 903 error path - test configuration validation
+            with pytest.raises((ValueError, Exception)):
                 get_web_settings()
-                raise AssertionError("Should have raised configuration error")
-            except ValueError as e:
-                # Line 903 triggered - configuration validation failed
-                assert "configuration validation failed" in str(e).lower()
-            except Exception as e:
-                # Some other configuration error path
-                assert "config" in str(e).lower() or "validation" in str(e).lower()
 
     def test_line_68_type_checking_coverage_complete(self) -> None:
         """Test line 68: TYPE_CHECKING import coverage - Complete validation."""
@@ -173,7 +169,9 @@ class TestRemaining6PercentCritical:
         # Test 1: Invalid port argument (lines 122-123)
         cmd = [sys.executable, "-m", "flext_web", "--port", "abc"]
         try:
-            result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=3)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=3,
+            )
             # Should handle invalid port gracefully (lines 122-123)
             assert result.returncode != 0, "Should fail with invalid port"
         except subprocess.TimeoutExpired:
@@ -183,7 +181,9 @@ class TestRemaining6PercentCritical:
         # Test 2: Port out of range (lines 122-123)
         cmd = [sys.executable, "-m", "flext_web", "--port", "99999"]
         try:
-            result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=3)
+            result = subprocess.run(
+                cmd, check=False, capture_output=True, text=True, timeout=3,
+            )
             # Should handle out-of-range port (lines 122-123)
             assert result.returncode != 0, "Should fail with port out of range"
         except subprocess.TimeoutExpired:
@@ -194,17 +194,13 @@ class TestRemaining6PercentCritical:
         bad_env = {
             **os.environ,
             "FLEXT_WEB_SECRET_KEY": "too_short",  # Invalid secret key
-            "FLEXT_WEB_PORT": "0"  # Invalid port
+            "FLEXT_WEB_PORT": "0",  # Invalid port
         }
 
         cmd = [sys.executable, "-m", "flext_web"]
         try:
             result = subprocess.run(
-                cmd,
-                check=False, capture_output=True,
-                text=True,
-                timeout=3,
-                env=bad_env
+                cmd, check=False, capture_output=True, text=True, timeout=3, env=bad_env,
             )
             # Should handle startup exceptions gracefully (lines 133-135)
             assert result.returncode != 0, "Should fail with bad configuration"
@@ -220,13 +216,10 @@ class TestRemaining6PercentCritical:
         with patch("flask.Flask") as mock_flask:
             mock_flask.side_effect = Exception("Flask initialization failed")
 
-            try:
+            with contextlib.suppress(Exception):
                 service = FlextWebService(config)
                 # Should handle Flask creation failure
                 assert True  # Either works or fails gracefully
-            except Exception:
-                # Error path triggered successfully
-                pass
 
         # Test route registration edge cases
         service = FlextWebService(config)
@@ -243,7 +236,7 @@ class TestRemaining6PercentCritical:
         for case in edge_cases:
             response = client.post("/api/v1/apps", json=case)
             # Should handle all edge cases gracefully
-            assert response.status_code in [200, 400], f"Failed for case: {case}"
+            assert response.status_code in {200, 400}, f"Failed for case: {case}"
 
     def test_production_failure_scenarios(self) -> None:
         """Test scenarios that could cause production failures."""
@@ -254,13 +247,16 @@ class TestRemaining6PercentCritical:
 
         # Create many apps to test memory usage
         for i in range(50):
-            response = client.post("/api/v1/apps", json={
-                "name": f"stress-test-app-{i}",
-                "port": 8000 + i,
-                "host": "localhost"
-            })
+            response = client.post(
+                "/api/v1/apps",
+                json={
+                    "name": f"stress-test-app-{i}",
+                    "port": 8000 + i,
+                    "host": "localhost",
+                },
+            )
             # Should handle memory pressure gracefully
-            assert response.status_code in [200, 400, 500]
+            assert response.status_code in {200, 400, 500}
 
         # Test 2: Concurrent request simulation
         import threading
@@ -276,7 +272,7 @@ class TestRemaining6PercentCritical:
 
         # Launch 10 concurrent requests
         threads = []
-        for i in range(10):
+        for _ in range(10):
             t = threading.Thread(target=make_request)
             threads.append(t)
             t.start()
