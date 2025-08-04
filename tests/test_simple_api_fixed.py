@@ -1,32 +1,64 @@
-"""Tests for API functionality."""
+"""FLEXT Web Interface - REST API Integration Testing Suite.
+
+Enterprise-grade test suite for REST API endpoints, HTTP request/response handling,
+and service integration patterns. Ensures API follows enterprise standards with
+proper error handling, validation, and response formatting.
+
+Test Coverage:
+    - REST API endpoint functionality and response validation
+    - HTTP status code handling and error responses
+    - JSON request/response serialization and validation
+    - Application lifecycle management through API
+    - Health check and monitoring endpoint validation
+
+Integration:
+    - Tests Flask integration with enterprise patterns
+    - Validates FlextWebService API endpoint implementation
+    - Ensures proper error handling and response formatting
+    - Verifies CQRS handler integration through API layer
+
+Author: FLEXT Development Team
+Version: 0.9.0
+Status: Enterprise API testing with comprehensive HTTP validation
+"""
 
 from __future__ import annotations
 
-from flext_web.api import WebAPI
+from flext_web import create_service
 
 # Constants
 HTTP_OK = 200
 EXPECTED_TOTAL_PAGES = 8
 
 
-class TestWebAPI:
-    """Test WebAPI functionality."""
+class TestFlextWebService:
+    """Enterprise REST API testing for FlextWebService functionality.
 
-    def test_api_creation(self) -> None:
-        """Test API creation."""
-        api = WebAPI()
+    Comprehensive test suite covering REST API endpoint implementation,
+    HTTP request/response handling, and service integration patterns.
+    Ensures API follows enterprise standards with proper validation.
+    """
 
-        assert api.app is not None
-        if api._apps != {}:
-            msg = f"Expected {{}}, got {api._apps}"
+    def test_service_creation(self) -> None:
+        """Test FlextWebService creation with proper initialization.
+
+        Validates that service instance creates successfully with Flask
+        application, route registration, and handler initialization.
+        Tests fundamental service patterns used in enterprise deployment.
+        """
+        service = create_service()
+
+        assert service.app is not None
+        if service.apps != {}:
+            msg = f"Expected {{}}, got {service.apps}"
             raise AssertionError(msg)
-        assert api._handler is not None
+        assert service.handler is not None
 
     def test_health_check(self) -> None:
         """Test health check endpoint."""
-        api = WebAPI()
+        service = create_service()
 
-        with api.app.test_client() as client:
+        with service.app.test_client() as client:
             response = client.get("/health")
 
             if response.status_code != HTTP_OK:
@@ -42,9 +74,9 @@ class TestWebAPI:
 
     def test_list_apps_empty(self) -> None:
         """Test listing empty apps."""
-        api = WebAPI()
+        service = create_service()
 
-        with api.app.test_client() as client:
+        with service.app.test_client() as client:
             response = client.get("/api/v1/apps")
 
             if response.status_code != HTTP_OK:
@@ -60,9 +92,9 @@ class TestWebAPI:
 
     def test_create_app(self) -> None:
         """Test creating an app."""
-        api = WebAPI()
+        service = create_service()
 
-        with api.app.test_client() as client:
+        with service.app.test_client() as client:
             response = client.post(
                 "/api/v1/apps",
                 json={
@@ -87,9 +119,9 @@ class TestWebAPI:
 
     def test_create_app_missing_name(self) -> None:
         """Test creating app with missing name."""
-        api = WebAPI()
+        service = create_service()
 
-        with api.app.test_client() as client:
+        with service.app.test_client() as client:
             response = client.post(
                 "/api/v1/apps",
                 json={

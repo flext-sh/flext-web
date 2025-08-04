@@ -1,9 +1,49 @@
-"""Web service exception hierarchy using flext-core patterns.
+"""FLEXT Web Interface - Domain-Specific Exception Hierarchy.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 
-Domain-specific exceptions for web service operations inheriting from flext-core.
+Comprehensive exception hierarchy for web service operations extending flext-core
+foundation patterns. Provides structured error handling with context information,
+route tracking, and consistent error reporting across the web interface.
+
+The exception hierarchy follows enterprise patterns with detailed context capture,
+structured error codes, and integration with flext-core's logging and monitoring
+systems. All exceptions maintain backward compatibility and provide comprehensive
+debugging information for operational visibility.
+
+Exception Categories:
+    - FlextWebError: Base web service exception with route context
+    - FlextWebValidationError: Input validation failures with field details
+    - FlextWebAuthenticationError: Authentication and authorization failures
+    - FlextWebConfigurationError: Configuration and setup errors
+    - FlextWebConnectionError: Network and connectivity issues
+    - FlextWebProcessingError: Business logic and processing failures
+    - FlextWebTimeoutError: Operation timeout and performance issues
+    - FlextWebTemplateError: Template rendering and UI errors
+    - FlextWebRoutingError: URL routing and endpoint resolution
+    - FlextWebSessionError: Session management and state issues
+    - FlextWebMiddlewareError: Middleware processing failures
+
+Integration:
+    - Built on flext-core exception foundation patterns
+    - Integrates with structured logging for operational visibility
+    - Provides context information for debugging and monitoring
+    - Compatible with Flask error handling and HTTP status mapping
+    - Supports enterprise error reporting and alerting systems
+
+Example:
+    Basic exception usage with context:
+
+    >>> try:
+    ...     validate_user_input(data)
+    ... except FlextWebValidationError as e:
+    ...     logger.error("Validation failed", error=e, context=e.context)
+
+Author: FLEXT Development Team
+Version: 0.9.0
+Status: Development (targeting 1.0.0 production release)
+
 """
 
 from __future__ import annotations
@@ -20,7 +60,41 @@ from flext_core.exceptions import (
 
 
 class FlextWebError(FlextError):
-    """Base exception for web service operations."""
+    """Base exception for all web service operations with route context tracking.
+
+    Serves as the foundation exception for all FLEXT Web Interface operations,
+    providing structured error handling with route context and comprehensive
+    debugging information. Extends flext-core's FlextError with web-specific
+    context including route information and HTTP-related metadata.
+
+    The exception supports structured error reporting, integration with monitoring
+    systems, and consistent error handling patterns across all web operations.
+    All web-specific exceptions inherit from this base class.
+
+    Attributes:
+        message: Human-readable error description
+        route: HTTP route where the error occurred (optional)
+        context: Additional context information for debugging
+        error_code: Structured error code for programmatic handling
+
+    Integration:
+        - Extends flext-core FlextError foundation patterns
+        - Compatible with Flask error handling middleware
+        - Integrates with structured logging systems
+        - Supports monitoring and alerting integration
+
+    Example:
+        Creating web service error with route context:
+
+        >>> error = FlextWebError(
+        ...     "Service unavailable",
+        ...     route="/api/v1/apps",
+        ...     status_code=503,
+        ...     retry_after=30
+        ... )
+        >>> logger.error("Web service error", error=error)
+
+    """
 
     def __init__(
         self,
@@ -28,7 +102,25 @@ class FlextWebError(FlextError):
         route: str | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize web service error with context."""
+        """Initialize web service error with comprehensive context information.
+
+        Creates a new web service error with structured context including route
+        information and additional metadata for debugging and monitoring purposes.
+
+        Args:
+            message: Human-readable error description
+            route: HTTP route where error occurred (e.g., "/api/v1/apps")
+            **kwargs: Additional context information (status_code, method, etc.)
+
+        Example:
+            >>> error = FlextWebError(
+            ...     "Database connection failed",
+            ...     route="/api/v1/users",
+            ...     method="POST",
+            ...     status_code=500
+            ... )
+
+        """
         context = kwargs.copy()
         if route is not None:
             context["route"] = route
@@ -37,7 +129,42 @@ class FlextWebError(FlextError):
 
 
 class FlextWebValidationError(FlextValidationError):
-    """Web service validation errors."""
+    """Web service input validation errors with detailed field information.
+
+    Specialized validation exception for web interface operations providing
+    detailed field-level validation information, form context, and structured
+    error reporting. Extends flext-core's FlextValidationError with web-specific
+    validation context including field names, values, and form information.
+
+    The exception supports comprehensive validation error reporting with
+    field-specific details, truncated values for security, and integration
+    with form validation systems and client-side error display.
+
+    Attributes:
+        message: Human-readable validation error description
+        field: Name of the field that failed validation (optional)
+        value: Truncated field value for debugging (optional)
+        form_name: Name of the form being validated (optional)
+        validation_details: Structured validation information
+
+    Integration:
+        - Extends flext-core FlextValidationError patterns
+        - Compatible with Flask-WTF and form validation
+        - Integrates with client-side error display
+        - Supports structured API error responses
+
+    Example:
+        Field validation error with context:
+
+        >>> error = FlextWebValidationError(
+        ...     "Email format is invalid",
+        ...     field="email",
+        ...     value="invalid-email",
+        ...     form_name="user_registration"
+        ... )
+        >>> return {"error": error.message, "field": error.field}
+
+    """
 
     def __init__(
         self,
@@ -47,7 +174,28 @@ class FlextWebValidationError(FlextValidationError):
         form_name: str | None = None,
         **kwargs: object,
     ) -> None:
-        """Initialize web validation error with context."""
+        """Initialize web validation error with comprehensive field context.
+
+        Creates validation error with detailed field information and context
+        for debugging and client-side error display. Values are truncated
+        for security and logging safety.
+
+        Args:
+            message: Human-readable validation error description
+            field: Name of field that failed validation
+            value: Field value that failed (truncated to 100 chars)
+            form_name: Name of form containing the field
+            **kwargs: Additional context (route, method, etc.)
+
+        Example:
+            >>> error = FlextWebValidationError(
+            ...     "Port must be between 1 and 65535",
+            ...     field="port",
+            ...     value=70000,
+            ...     form_name="app_creation"
+            ... )
+
+        """
         validation_details = {}
         if field is not None:
             validation_details["field"] = field

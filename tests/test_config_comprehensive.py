@@ -1,4 +1,26 @@
-"""Comprehensive tests for config.py to improve coverage."""
+"""FLEXT Web Interface - Comprehensive Configuration Testing.
+
+Enterprise-grade test suite for FlextWebConfig validation, environment variable
+integration, and configuration management patterns. Ensures configuration
+follows business rules, security requirements, and production deployment standards.
+
+Test Categories:
+    - Basic configuration creation and validation
+    - Environment variable integration and precedence
+    - Production vs development mode behavior
+    - Security validation for production deployment
+    - Configuration error handling and validation
+
+Integration:
+    - Tests flext-core configuration patterns
+    - Validates environment-based settings management
+    - Ensures production safety and security compliance
+    - Verifies enterprise deployment scenarios
+
+Author: FLEXT Development Team
+Version: 0.9.0
+Status: Enterprise testing standards with comprehensive coverage
+"""
 
 from __future__ import annotations
 
@@ -7,14 +29,24 @@ import os
 import pytest
 from pydantic import ValidationError
 
-from flext_web.config import FlextWebConfig, get_web_settings
+from flext_web import FlextWebConfig, get_web_settings
 
 
 class TestWebConfigBasic:
-    """Test WebConfig basic functionality."""
+    """Enterprise configuration testing for basic functionality and validation.
+
+    Test suite covering fundamental FlextWebConfig creation, default values,
+    and basic validation patterns. Ensures configuration follows enterprise
+    standards with proper type safety and business rule enforcement.
+    """
 
     def test_web_config_creation(self) -> None:
-        """Test basic WebConfig creation."""
+        """Test basic FlextWebConfig creation with default values.
+
+        Validates that configuration instance creates successfully with
+        all default values properly set and business rules satisfied.
+        Tests fundamental configuration patterns used throughout the system.
+        """
         config = FlextWebConfig()
         if config.app_name != "FLEXT Web":
             msg = f"Expected {'FLEXT Web'}, got {config.app_name}"
