@@ -14,9 +14,8 @@ import sys
 from unittest.mock import patch
 
 import pytest
-from jinja2 import TemplateError
-
 from flext_web import FlextWebConfig, FlextWebService
+from jinja2 import TemplateError
 
 
 class TestFinal8LinesSurgical:

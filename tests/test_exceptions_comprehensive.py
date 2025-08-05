@@ -8,7 +8,6 @@ error codes, and integration with flext-core patterns.
 from __future__ import annotations
 
 import pytest
-
 from flext_web.exceptions import (
     FlextWebAuthenticationError,
     FlextWebConfigurationError,

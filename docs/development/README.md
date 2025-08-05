@@ -267,16 +267,8 @@ markers = [
 
 ```toml
 # pyproject.toml - Ruff configuration
-[tool.ruff]
-target-version = "py313"
-line-length = 88
-select = ["ALL"]  # Enable all rules
-ignore = [
-    "COM812", "D203", "D213", "ISC001",  # Formatting conflicts
-    "ANN401", "ARG001", "BLE001",        # Type annotations, arguments
-    "D102", "D103", "D105", "D107",      # Docstring requirements
-    "S103", "S104", "S105", "S106"       # Security hardcoded values
-]
+extend = "../.ruff-shared.toml"
+lint.isort.known-first-party = ["flext_web"]
 ```
 
 ### Type Checking (MyPy)

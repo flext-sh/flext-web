@@ -14,7 +14,6 @@ import sys
 from unittest.mock import patch
 
 import pytest
-
 from flext_web import FlextWebConfig, FlextWebService
 
 
