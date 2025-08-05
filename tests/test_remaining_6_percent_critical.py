@@ -14,6 +14,7 @@ import sys
 from unittest.mock import patch
 
 import pytest
+
 from flext_web import FlextWebConfig, FlextWebService
 
 
@@ -95,7 +96,9 @@ class TestRemaining6PercentCritical:
 
         # Test 1: Invalid JSON payload
         response = client.post(
-            "/api/v1/apps", data="invalid json{", content_type="application/json",
+            "/api/v1/apps",
+            data="invalid json{",
+            content_type="application/json",
         )
         # Should trigger error handling path (line 872)
         assert response.status_code == 400
@@ -105,7 +108,9 @@ class TestRemaining6PercentCritical:
             '{"name": "' + "x" * 10000 + '", "port": 8080, "host": "localhost"}'
         )
         response = client.post(
-            "/api/v1/apps", data=large_payload, content_type="application/json",
+            "/api/v1/apps",
+            data=large_payload,
+            content_type="application/json",
         )
         # Should handle large payloads gracefully
         assert response.status_code in {200, 400, 413}
@@ -169,7 +174,11 @@ class TestRemaining6PercentCritical:
         cmd = [sys.executable, "-m", "flext_web", "--port", "abc"]
         try:
             result = subprocess.run(
-                cmd, check=False, capture_output=True, text=True, timeout=3,
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=3,
             )
             # Should handle invalid port gracefully (lines 122-123)
             assert result.returncode != 0, "Should fail with invalid port"
@@ -181,7 +190,11 @@ class TestRemaining6PercentCritical:
         cmd = [sys.executable, "-m", "flext_web", "--port", "99999"]
         try:
             result = subprocess.run(
-                cmd, check=False, capture_output=True, text=True, timeout=3,
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=3,
             )
             # Should handle out-of-range port (lines 122-123)
             assert result.returncode != 0, "Should fail with port out of range"
@@ -199,7 +212,12 @@ class TestRemaining6PercentCritical:
         cmd = [sys.executable, "-m", "flext_web"]
         try:
             result = subprocess.run(
-                cmd, check=False, capture_output=True, text=True, timeout=3, env=bad_env,
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=3,
+                env=bad_env,
             )
             # Should handle startup exceptions gracefully (lines 133-135)
             assert result.returncode != 0, "Should fail with bad configuration"

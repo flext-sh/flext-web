@@ -14,8 +14,9 @@ import sys
 from unittest.mock import patch
 
 import pytest
-from flext_web import FlextWebConfig, FlextWebService
 from jinja2 import TemplateError
+
+from flext_web import FlextWebConfig, FlextWebService
 
 
 class TestFinal8LinesSurgical:
@@ -134,7 +135,11 @@ class TestFinal8LinesSurgical:
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
         try:
             result = subprocess.run(
-                cmd, check=False, capture_output=True, text=True, timeout=5,
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             # Should handle debug flag without error (line 114)
             assert result.returncode in {0, 2}, "Should handle --debug flag"
@@ -148,7 +153,11 @@ class TestFinal8LinesSurgical:
         cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
         try:
             result = subprocess.run(
-                cmd, check=False, capture_output=True, text=True, timeout=5,
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             # Should handle no-debug flag without error (line 116)
             assert result.returncode in {0, 2}, "Should handle --no-debug flag"
@@ -168,7 +177,12 @@ class TestFinal8LinesSurgical:
         cmd = [sys.executable, "-m", "flext_web"]
         try:
             result = subprocess.run(
-                cmd, check=False, capture_output=True, text=True, timeout=5, env=bad_env,
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
+                env=bad_env,
             )
             # Should handle startup exceptions gracefully (lines 133-135)
             assert result.returncode != 0, "Should fail with bad configuration"
@@ -213,7 +227,9 @@ class TestFinal8LinesSurgical:
                 response = client.get(case["url"])
             else:
                 response = client.post(
-                    case["url"], data=case["data"], content_type=case["content_type"],
+                    case["url"],
+                    data=case["data"],
+                    content_type=case["content_type"],
                 )
 
             # Should handle all cases gracefully

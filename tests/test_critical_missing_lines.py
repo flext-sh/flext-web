@@ -13,6 +13,7 @@ import sys
 from unittest.mock import patch
 
 import pytest
+
 from flext_web import (
     FlextWebApp,
     FlextWebAppStatus,
@@ -107,7 +108,9 @@ class TestCriticalMissingLines:
 
         # Test with different host/port combinations
         config2 = FlextWebConfig(
-            host="localhost", port=8080, secret_key="test-key-32-characters-long-valid!",
+            host="localhost",
+            port=8080,
+            secret_key="test-key-32-characters-long-valid!",
         )
         url2 = config2.get_server_url()
         assert url2 == "http://localhost:8080"
@@ -157,7 +160,9 @@ class TestCriticalMissingLines:
 
         # Test malformed requests
         response = client.post(
-            "/api/v1/apps", data="invalid json", content_type="application/json",
+            "/api/v1/apps",
+            data="invalid json",
+            content_type="application/json",
         )
         assert response.status_code == 400
 
@@ -166,7 +171,9 @@ class TestCriticalMissingLines:
         # This line might be in config validation
         with patch("flext_web.FlextWebConfig.validate_config") as mock_validate:
             mock_validate.return_value = type(
-                "Result", (), {"success": False, "error": "Config validation failed"},
+                "Result",
+                (),
+                {"success": False, "error": "Config validation failed"},
             )()
 
             # Reset to test fresh config creation
@@ -200,7 +207,11 @@ class TestCriticalMissingLines:
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
         try:
             result = subprocess.run(
-                cmd, check=False, capture_output=True, text=True, timeout=5,
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             # Should handle debug flag without error
             assert result.returncode in {0, 2}  # 0 for success, 2 for help
@@ -212,7 +223,11 @@ class TestCriticalMissingLines:
         cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
         try:
             result = subprocess.run(
-                cmd, check=False, capture_output=True, text=True, timeout=5,
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             assert result.returncode in {0, 2}
         except subprocess.TimeoutExpired:

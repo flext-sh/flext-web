@@ -27,8 +27,9 @@ from __future__ import annotations
 import os
 
 import pytest
-from flext_web import FlextWebConfig, get_web_settings
 from pydantic import ValidationError
+
+from flext_web import FlextWebConfig, get_web_settings
 
 
 class TestWebConfigBasic:

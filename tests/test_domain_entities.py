@@ -25,8 +25,9 @@ Status: Enterprise domain testing with comprehensive business logic coverage
 from __future__ import annotations
 
 import pytest
-from flext_web import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
 from pydantic import ValidationError
+
+from flext_web import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
 
 # Constants
 EXPECTED_TOTAL_PAGES = 8

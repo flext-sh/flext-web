@@ -18,7 +18,8 @@ def test_line_114_debug_flag_direct() -> None:
         # Use timeout to prevent hanging
         result = subprocess.run(
             cmd,
-            check=False, capture_output=True,
+            check=False,
+            capture_output=True,
             text=True,
             timeout=5,
             env=test_env,
@@ -48,7 +49,8 @@ def test_line_116_no_debug_flag_direct() -> None:
     try:
         result = subprocess.run(
             cmd,
-            check=False, capture_output=True,
+            check=False,
+            capture_output=True,
             text=True,
             timeout=5,
             env=test_env,
@@ -73,15 +75,16 @@ def test_lines_133_135_exception_handling_direct() -> None:
     bad_env = {
         **os.environ,
         "FLEXT_WEB_SECRET_KEY": "x",  # Too short, will cause validation error
-        "FLEXT_WEB_PORT": "70000",    # Invalid port range
-        "FLEXT_WEB_HOST": "",         # Empty host
+        "FLEXT_WEB_PORT": "70000",  # Invalid port range
+        "FLEXT_WEB_HOST": "",  # Empty host
     }
 
     cmd = [sys.executable, "-m", "flext_web"]
 
     result = subprocess.run(
         cmd,
-        check=False, capture_output=True,
+        check=False,
+        capture_output=True,
         text=True,
         timeout=10,
         env=bad_env,
@@ -94,7 +97,9 @@ def test_lines_133_135_exception_handling_direct() -> None:
     # Check that proper error was logged (indicates exception handling was hit)
     combined_output = result.stdout + result.stderr
     error_indicators = ["error", "failed", "exception", "invalid", "validation"]
-    has_error = any(indicator in combined_output.lower() for indicator in error_indicators)
+    has_error = any(
+        indicator in combined_output.lower() for indicator in error_indicators
+    )
     assert has_error, "Should have error message indicating exception was handled"
 
 
@@ -105,7 +110,8 @@ def test_port_validation_lines_122_123() -> None:
 
     result = subprocess.run(
         cmd,
-        check=False, capture_output=True,
+        check=False,
+        capture_output=True,
         text=True,
         timeout=5,
     )
@@ -120,7 +126,6 @@ def test_port_validation_lines_122_123() -> None:
 
 
 if __name__ == "__main__":
-
     with contextlib.suppress(Exception):
         test_line_114_debug_flag_direct()
 

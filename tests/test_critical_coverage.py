@@ -12,6 +12,7 @@ import sys
 from unittest.mock import patch
 
 import pytest
+
 from flext_web import FlextWebApp, FlextWebAppStatus
 
 
@@ -26,7 +27,10 @@ class TestCriticalMissingCoverage:
         """
         # Create app with valid Pydantic port
         app = FlextWebApp(
-            id="test_port_validation", name="test-app", port=8080, host="localhost",
+            id="test_port_validation",
+            name="test-app",
+            port=8080,
+            host="localhost",
         )
 
         # Use model_copy to create new instance with invalid port
@@ -52,14 +56,22 @@ class TestCriticalMissingCoverage:
         # Test --debug flag (line 114)
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
         result = subprocess.run(
-            cmd, check=False, capture_output=True, text=True, timeout=10,
+            cmd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         assert result.returncode == 0
 
         # Test --no-debug flag (line 116)
         cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
         result = subprocess.run(
-            cmd, check=False, capture_output=True, text=True, timeout=10,
+            cmd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         assert result.returncode == 0
 
@@ -77,7 +89,11 @@ class TestCriticalMissingCoverage:
             "--help",
         ]
         result = subprocess.run(
-            cmd, check=False, capture_output=True, text=True, timeout=10,
+            cmd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         assert result.returncode == 0
 
@@ -116,7 +132,9 @@ class TestCriticalMissingCoverage:
         # Mock validation failure
         with patch("flext_web.FlextWebConfig.validate_config") as mock_validate:
             mock_validate.return_value = type(
-                "Result", (), {"success": False, "error": "Mock validation error"},
+                "Result",
+                (),
+                {"success": False, "error": "Mock validation error"},
             )()
 
             # Should raise ValueError (line 1036) not FlextWebConfigurationError
@@ -140,7 +158,11 @@ class TestCriticalMissingCoverage:
         # Test module execution with invalid arguments
         cmd = [sys.executable, "-m", "flext_web", "--port", "invalid"]
         result = subprocess.run(
-            cmd, check=False, capture_output=True, text=True, timeout=10,
+            cmd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         # Should fail with argument parsing error
         assert result.returncode != 0

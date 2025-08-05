@@ -8,6 +8,7 @@ error codes, and integration with flext-core patterns.
 from __future__ import annotations
 
 import pytest
+
 from flext_web.exceptions import (
     FlextWebAuthenticationError,
     FlextWebConfigurationError,
@@ -205,7 +206,13 @@ class TestExceptionUtilities:
         errors: list[Exception] = []
 
         # Simulate multiple validation errors
-        errors.extend((FlextWebValidationError("Name required"), FlextWebValidationError("Port invalid"), FlextWebValidationError("Host invalid")))
+        errors.extend(
+            (
+                FlextWebValidationError("Name required"),
+                FlextWebValidationError("Port invalid"),
+                FlextWebValidationError("Host invalid"),
+            )
+        )
 
         assert len(errors) == 3
         assert all(isinstance(e, FlextWebValidationError) for e in errors)

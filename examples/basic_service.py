@@ -17,7 +17,6 @@ def main() -> None:
     service = create_service(config)
 
     try:
-
         service.run(host=config.host, port=config.port, debug=config.debug)
     except KeyboardInterrupt:
         pass

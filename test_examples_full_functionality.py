@@ -52,7 +52,11 @@ class ExamplesFullFunctionalityTest:
 
         try:
             result = subprocess.run(
-                start_cmd, check=False, capture_output=True, text=True, timeout=10,
+                start_cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             if result.returncode != 0:
                 return False
@@ -133,7 +137,6 @@ class ExamplesFullFunctionalityTest:
                 if app_id:
                     start_result = api_usage.start_application(app_id)
                     if start_result:
-
                         # Test 4: Get status function
                         status = api_usage.get_application_status(app_id)
                         if status:
@@ -263,7 +266,15 @@ class ExamplesFullFunctionalityTest:
             results = []
 
             # Test each example thoroughly
-            results.extend((("basic_service", self.test_basic_service_full_functionality()), ("api_usage", self.test_api_usage_full_functionality()), ("docker_ready", self.test_docker_ready_full_functionality()), ("integration", self.test_examples_integration_functionality()), ("error_handling", self.test_examples_error_handling())))
+            results.extend(
+                (
+                    ("basic_service", self.test_basic_service_full_functionality()),
+                    ("api_usage", self.test_api_usage_full_functionality()),
+                    ("docker_ready", self.test_docker_ready_full_functionality()),
+                    ("integration", self.test_examples_integration_functionality()),
+                    ("error_handling", self.test_examples_error_handling()),
+                )
+            )
 
             # Results summary
 

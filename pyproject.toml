@@ -58,8 +58,11 @@ Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
 [project.scripts]
 flext-web = "flext_web.__main__:main"
 
+[tool.ruff]
 extend = "../.ruff-shared.toml"
-lint.isort.known-first-party = ["flext_web"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["flext_web"]
 
 [tool.mypy]
 # Strict mode - enables all recommended checks

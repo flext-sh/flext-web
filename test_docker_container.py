@@ -19,8 +19,12 @@ def run_command(cmd, timeout=30, capture_output=True):
     """Run command with timeout and error handling."""
     try:
         result = subprocess.run(
-            cmd, check=False, shell=True, timeout=timeout,
-            capture_output=capture_output, text=True,
+            cmd,
+            check=False,
+            shell=True,
+            timeout=timeout,
+            capture_output=capture_output,
+            text=True,
         )
         return result.returncode, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
@@ -56,7 +60,6 @@ def test_container_pytest() -> bool:
     returncode2, _stdout2, _stderr2 = run_command(cmd_pytest, timeout=30)
 
     if returncode2 == 0:
-
         # Test 3: Run critical coverage tests
         cmd_critical = """docker run --rm flext-web-test \
         sh -c 'cd /app && python -m pytest tests/test_critical_coverage.py -v --tb=short -x'
@@ -181,7 +184,6 @@ def test_examples_in_container():
     success_count = 0
 
     for example_file, _description in examples:
-
         # Test example in container with timeout
         cmd = f"""docker run --rm --name flext-web-example-test \
         -e FLEXT_WEB_SECRET_KEY="example-test-key-32-characters-long!" \
@@ -189,7 +191,11 @@ def test_examples_in_container():
 
         returncode, stdout, stderr = run_command(cmd, timeout=10)
 
-        if "Expected timeout" in stdout or "timeout" in stderr.lower() or returncode == 0:
+        if (
+            "Expected timeout" in stdout
+            or "timeout" in stderr.lower()
+            or returncode == 0
+        ):
             success_count += 1
 
     return success_count == len(examples)

@@ -14,7 +14,8 @@ def test_docker_memory_stress() -> bool | None:
     # Build if needed
     build_result = subprocess.run(
         ["docker", "build", "-t", "flext-web-stress", "."],
-        check=False, capture_output=True,
+        check=False,
+        capture_output=True,
         text=True,
     )
 
@@ -23,18 +24,27 @@ def test_docker_memory_stress() -> bool | None:
 
     # Run with memory limit
     cmd = [
-        "docker", "run", "--rm", "-d",
+        "docker",
+        "run",
+        "--rm",
+        "-d",
         "--memory=256m",  # Memory limit
         "--memory-swap=256m",
-        "-p", "8090:8080",
-        "-e", "FLEXT_WEB_SECRET_KEY=test-memory-stress-key-32-chars!",
-        "-e", "FLEXT_WEB_DEBUG=false",
-        "--name", "flext-memory-test",
+        "-p",
+        "8090:8080",
+        "-e",
+        "FLEXT_WEB_SECRET_KEY=test-memory-stress-key-32-chars!",
+        "-e",
+        "FLEXT_WEB_DEBUG=false",
+        "--name",
+        "flext-memory-test",
         "flext-web-stress",
     ]
 
     try:
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10
+        )
         if result.returncode != 0:
             return False
 
@@ -52,24 +62,37 @@ def test_docker_memory_stress() -> bool | None:
 
     finally:
         # Cleanup
-        subprocess.run(["docker", "stop", "flext-memory-test"],
-                      check=False, capture_output=True, timeout=10)
+        subprocess.run(
+            ["docker", "stop", "flext-memory-test"],
+            check=False,
+            capture_output=True,
+            timeout=10,
+        )
 
 
 def test_docker_concurrent_requests():
     """Test Docker container with concurrent requests."""
     # Start container for concurrency test
     cmd = [
-        "docker", "run", "--rm", "-d",
-        "-p", "8091:8080",
-        "-e", "FLEXT_WEB_SECRET_KEY=test-concurrent-key-32-characters!",
-        "-e", "FLEXT_WEB_DEBUG=false",
-        "--name", "flext-concurrent-test",
+        "docker",
+        "run",
+        "--rm",
+        "-d",
+        "-p",
+        "8091:8080",
+        "-e",
+        "FLEXT_WEB_SECRET_KEY=test-concurrent-key-32-characters!",
+        "-e",
+        "FLEXT_WEB_DEBUG=false",
+        "--name",
+        "flext-concurrent-test",
         "flext-web-stress",
     ]
 
     try:
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10
+        )
         if result.returncode != 0:
             return False
 
@@ -89,7 +112,9 @@ def test_docker_concurrent_requests():
         # 20 concurrent requests
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
             futures = [executor.submit(make_request, i) for i in range(20)]
-            results = [future.result() for future in concurrent.futures.as_completed(futures)]
+            results = [
+                future.result() for future in concurrent.futures.as_completed(futures)
+            ]
 
         success_count = sum(results)
 
@@ -97,24 +122,37 @@ def test_docker_concurrent_requests():
 
     finally:
         # Cleanup
-        subprocess.run(["docker", "stop", "flext-concurrent-test"],
-                      check=False, capture_output=True, timeout=10)
+        subprocess.run(
+            ["docker", "stop", "flext-concurrent-test"],
+            check=False,
+            capture_output=True,
+            timeout=10,
+        )
 
 
 def test_docker_api_workflow():
     """Test complete API workflow in Docker container."""
     # Start container for API test
     cmd = [
-        "docker", "run", "--rm", "-d",
-        "-p", "8092:8080",
-        "-e", "FLEXT_WEB_SECRET_KEY=test-api-workflow-key-32-characters!",
-        "-e", "FLEXT_WEB_DEBUG=false",
-        "--name", "flext-api-test",
+        "docker",
+        "run",
+        "--rm",
+        "-d",
+        "-p",
+        "8092:8080",
+        "-e",
+        "FLEXT_WEB_SECRET_KEY=test-api-workflow-key-32-characters!",
+        "-e",
+        "FLEXT_WEB_DEBUG=false",
+        "--name",
+        "flext-api-test",
         "flext-web-stress",
     ]
 
     try:
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10
+        )
         if result.returncode != 0:
             return False
 
@@ -136,30 +174,40 @@ def test_docker_api_workflow():
 
         # Test 2: Create app
         try:
-            response = requests.post(f"{base_url}/api/v1/apps", json={
-                "name": "docker-test-app",
-                "port": 3000,
-                "host": "localhost",
-            }, timeout=10)
+            response = requests.post(
+                f"{base_url}/api/v1/apps",
+                json={
+                    "name": "docker-test-app",
+                    "port": 3000,
+                    "host": "localhost",
+                },
+                timeout=10,
+            )
             if response.status_code == 200:
                 app_data = response.json()["data"]
                 app_id = app_data["id"]
                 success_count += 1
 
                 # Test 3: Start app
-                response = requests.post(f"{base_url}/api/v1/apps/{app_id}/start", timeout=10)
+                response = requests.post(
+                    f"{base_url}/api/v1/apps/{app_id}/start", timeout=10
+                )
                 if response.status_code == 200:
                     success_count += 1
 
                     # Test 4: Get app status
-                    response = requests.get(f"{base_url}/api/v1/apps/{app_id}", timeout=10)
+                    response = requests.get(
+                        f"{base_url}/api/v1/apps/{app_id}", timeout=10
+                    )
                     if response.status_code == 200:
                         app_status = response.json()["data"]
                         if app_status["is_running"]:
                             success_count += 1
 
                     # Test 5: Stop app
-                    response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=10)
+                    response = requests.post(
+                        f"{base_url}/api/v1/apps/{app_id}/stop", timeout=10
+                    )
                     if response.status_code == 200:
                         success_count += 1
         except Exception:
@@ -169,27 +217,42 @@ def test_docker_api_workflow():
 
     finally:
         # Cleanup
-        subprocess.run(["docker", "stop", "flext-api-test"],
-                      check=False, capture_output=True, timeout=10)
+        subprocess.run(
+            ["docker", "stop", "flext-api-test"],
+            check=False,
+            capture_output=True,
+            timeout=10,
+        )
 
 
 def test_docker_examples_stress() -> bool | None:
     """Test Docker examples under stress."""
     # Test docker_ready.py in container with stress
     cmd = [
-        "docker", "run", "--rm", "-d",
+        "docker",
+        "run",
+        "--rm",
+        "-d",
         "--memory=128m",  # Very limited memory
-        "-e", "FLEXT_WEB_SECRET_KEY=test-examples-stress-key-32-chars!",
-        "-e", "FLEXT_WEB_HOST=0.0.0.0",
-        "-e", "FLEXT_WEB_PORT=8080",
-        "-e", "FLEXT_WEB_DEBUG=false",
-        "--name", "flext-examples-stress",
+        "-e",
+        "FLEXT_WEB_SECRET_KEY=test-examples-stress-key-32-chars!",
+        "-e",
+        "FLEXT_WEB_HOST=0.0.0.0",
+        "-e",
+        "FLEXT_WEB_PORT=8080",
+        "-e",
+        "FLEXT_WEB_DEBUG=false",
+        "--name",
+        "flext-examples-stress",
         "flext-web-stress",
-        "python", "examples/docker_ready.py",
+        "python",
+        "examples/docker_ready.py",
     ]
 
     try:
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=5)
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=5
+        )
         result.stdout.strip()
 
         # Wait a bit to see if it crashes
@@ -198,15 +261,21 @@ def test_docker_examples_stress() -> bool | None:
         # Check if still running
         check_result = subprocess.run(
             ["docker", "ps", "-q", "-f", "name=flext-examples-stress"],
-            check=False, capture_output=True, text=True,
+            check=False,
+            capture_output=True,
+            text=True,
         )
 
         return bool(check_result.stdout.strip())
 
     finally:
         # Cleanup
-        subprocess.run(["docker", "stop", "flext-examples-stress"],
-                      check=False, capture_output=True, timeout=10)
+        subprocess.run(
+            ["docker", "stop", "flext-examples-stress"],
+            check=False,
+            capture_output=True,
+            timeout=10,
+        )
 
 
 def main():

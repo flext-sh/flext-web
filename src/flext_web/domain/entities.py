@@ -150,6 +150,10 @@ class FlextWebApp(FlextEntity, FlextTimestampMixin, FlextValidatableMixin):
             return FlextResult.fail("Invalid port number")
         return FlextResult.ok(None)
 
+    def validate_business_rules(self) -> FlextResult[None]:
+        """Validate business rules required by FlextEntity abstract method."""
+        return self.validate_domain_rules()
+
     @property
     def is_running(self) -> bool:
         """Check if application is currently in running state.

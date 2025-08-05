@@ -28,9 +28,11 @@ class TestExamplesDeepValidation:
         # Test 2: Basic service doesn't have command line args - it's meant to be simple
         # Test that it can be imported without errors
         import sys
+
         sys.path.insert(0, "examples")
         try:
             import basic_service
+
             assert hasattr(basic_service, "main"), "main function missing"
             assert callable(basic_service.main), "main function not callable"
         finally:
@@ -39,6 +41,7 @@ class TestExamplesDeepValidation:
 
         # Test 3: Direct execution with timeout (should start server)
         import os
+
         test_env = {
             **os.environ,
             "FLEXT_WEB_PORT": "9003",  # Use different port to avoid conflicts
@@ -82,6 +85,7 @@ class TestExamplesDeepValidation:
         """Test api_usage.py example with comprehensive edge cases."""
         # Import the module to test all functions
         import sys
+
         sys.path.insert(0, "examples")
 
         try:
@@ -100,11 +104,15 @@ class TestExamplesDeepValidation:
 
             for func_name in functions_to_test:
                 assert hasattr(api_usage, func_name), f"Function {func_name} missing"
-                assert callable(getattr(api_usage, func_name)), f"Function {func_name} not callable"
+                assert callable(getattr(api_usage, func_name)), (
+                    f"Function {func_name} not callable"
+                )
 
             # Test 2: Health check returns boolean result
             health_result = api_usage.check_service_health()
-            assert isinstance(health_result, (bool, type(None))), "Health check should return bool or None"
+            assert isinstance(health_result, (bool, type(None))), (
+                "Health check should return bool or None"
+            )
 
             # Test 3: Create application returns expected type
             create_result = api_usage.create_application("test-app", 3000)
@@ -113,7 +121,9 @@ class TestExamplesDeepValidation:
 
             # Test 4: List applications returns expected type
             apps_result = api_usage.list_applications()
-            assert isinstance(apps_result, list)  # Should return list (empty or with apps)
+            assert isinstance(
+                apps_result, list
+            )  # Should return list (empty or with apps)
 
         finally:
             if "examples" in sys.path:
@@ -126,9 +136,11 @@ class TestExamplesDeepValidation:
 
         # Test 1: Import test - docker_ready doesn't handle CLI args, uses environment
         import sys
+
         sys.path.insert(0, "examples")
         try:
             import docker_ready
+
             assert hasattr(docker_ready, "main"), "main function missing"
             assert callable(docker_ready.main), "main function not callable"
         finally:
@@ -137,6 +149,7 @@ class TestExamplesDeepValidation:
 
         # Test 2: Environment variable handling
         import os
+
         test_env = {
             **os.environ,
             "FLEXT_WEB_SECRET_KEY": "test-secret-key-32-characters-long!",
@@ -176,7 +189,9 @@ class TestExamplesDeepValidation:
         }
 
         cmd = [sys.executable, "examples/docker_ready.py"]
-        subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=5, env=test_env)
+        subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=5, env=test_env
+        )
         # Should either handle gracefully or fail cleanly
         # (Implementation may vary, but shouldn't hang)
 
@@ -229,7 +244,9 @@ class TestExamplesDeepValidation:
             process.kill()
             process.wait()
             # This is acceptable - signal handling can be complex in test environments
-            pytest.skip("Signal handling test timed out - acceptable in test environment")
+            pytest.skip(
+                "Signal handling test timed out - acceptable in test environment"
+            )
 
     def test_examples_error_handling_paths(self) -> None:
         """Test examples handle various error conditions."""
@@ -237,7 +254,9 @@ class TestExamplesDeepValidation:
         import os
 
         # Remove secret key from environment if present
-        test_env = {k: v for k, v in os.environ.items() if not k.startswith("FLEXT_WEB_SECRET")}
+        test_env = {
+            k: v for k, v in os.environ.items() if not k.startswith("FLEXT_WEB_SECRET")
+        }
 
         cmd = [sys.executable, "examples/docker_ready.py"]
         process = subprocess.Popen(
@@ -255,7 +274,10 @@ class TestExamplesDeepValidation:
 
             # Should contain warning about temporary key
             combined_output = stdout + stderr
-            assert "temporary key" in combined_output.lower() or "generated" in combined_output.lower()
+            assert (
+                "temporary key" in combined_output.lower()
+                or "generated" in combined_output.lower()
+            )
 
         except subprocess.TimeoutExpired:
             process.kill()
@@ -315,6 +337,7 @@ class TestExamplesDeepValidation:
         ]
 
         import sys
+
         sys.path.insert(0, "examples")
 
         try:
@@ -323,7 +346,9 @@ class TestExamplesDeepValidation:
                 try:
                     # Import but don't execute main
                     module = __import__(example_name)
-                    assert hasattr(module, "main"), f"{example_name} missing main function"
+                    assert hasattr(module, "main"), (
+                        f"{example_name} missing main function"
+                    )
                     assert callable(module.main), f"{example_name} main not callable"
                 except ImportError as e:
                     pytest.fail(f"Failed to import {example_name}: {e}")

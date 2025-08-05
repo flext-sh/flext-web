@@ -11,6 +11,7 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
+
 from flext_web import (
     FlextWebApp,
     FlextWebAppHandler,
@@ -84,7 +85,9 @@ class TestMissingCoverage:
         # Test invalid JSON request
         client = service.app.test_client()
         response = client.post(
-            "/api/v1/apps", data="invalid json", content_type="application/json",
+            "/api/v1/apps",
+            data="invalid json",
+            content_type="application/json",
         )
         assert response.status_code == 400
 

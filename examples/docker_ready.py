@@ -10,6 +10,7 @@ import signal
 import sys
 
 from flext_core import get_logger
+
 from flext_web import FlextWebConfig, create_service
 
 logger = get_logger(__name__)
