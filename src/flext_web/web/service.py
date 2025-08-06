@@ -161,7 +161,9 @@ class FlextWebService:
         data = request.get_json()
 
         if not data or not data.get("name"):
-            return self._create_response(success=False, message="App name is required", status=400)
+            return self._create_response(
+                success=False, message="App name is required", status=400,
+            )
 
         name = data["name"]
         port = data.get("port", 8000)
@@ -198,7 +200,9 @@ class FlextWebService:
         """Get application information."""
         app = self.apps.get(app_id)
         if not app:
-            return self._create_response(success=False, message="Application not found", status=404)
+            return self._create_response(
+                success=False, message="Application not found", status=404,
+            )
 
         app_data = {
             "id": app.id,
@@ -218,7 +222,9 @@ class FlextWebService:
         """Start application using handler."""
         app = self.apps.get(app_id)
         if not app:
-            return self._create_response(success=False, message="Application not found", status=404)
+            return self._create_response(
+                success=False, message="Application not found", status=404,
+            )
 
         start_result = self.handler.start(app)
 
@@ -249,7 +255,9 @@ class FlextWebService:
         """Stop application using handler."""
         app = self.apps.get(app_id)
         if not app:
-            return self._create_response(success=False, message="Application not found", status=404)
+            return self._create_response(
+                success=False, message="Application not found", status=404,
+            )
 
         stop_result = self.handler.stop(app)
 
@@ -324,6 +332,7 @@ class FlextWebService:
         self,
         host: str | None = None,
         port: int | None = None,
+        *,
         debug: bool | None = None,
     ) -> None:
         """Run the web service."""
@@ -331,5 +340,7 @@ class FlextWebService:
         run_port = port or self.config.port
         run_debug = debug if debug is not None else self.config.debug
 
-        self.logger.info(f"Starting {self.config.app_name} on {run_host}:{run_port}")
+        self.logger.info(
+            "Starting %s on %s:%d", self.config.app_name, run_host, run_port,
+        )
         self.app.run(host=run_host, port=run_port, debug=run_debug)

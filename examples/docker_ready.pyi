@@ -1,4 +1,3 @@
-
 from flext_web import FlextWebConfig
 
 def create_docker_config() -> FlextWebConfig: ...

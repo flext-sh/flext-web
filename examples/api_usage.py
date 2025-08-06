@@ -13,7 +13,8 @@ BASE_URL = "http://localhost:8080"
 # Constants for HTTP status codes
 HTTP_OK = 200
 
-def check_service_health() -> bool | None    :
+
+def check_service_health() -> bool | None:
     """Check if the service is running and healthy."""
     try:
         response = requests.get(f"{BASE_URL}/health", timeout=5)
@@ -25,7 +26,9 @@ def check_service_health() -> bool | None    :
         return False
 
 
-def create_application(name: str, port: int, host: str = "localhost") -> dict[str, object] | None | bool:
+def create_application(
+    name: str, port: int, host: str = "localhost"
+) -> dict[str, object] | None | bool:
     """Create a new application."""
     data = {"name": name, "port": port, "host": host}
 

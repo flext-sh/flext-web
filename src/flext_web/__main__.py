@@ -124,8 +124,10 @@ def main() -> None:
         sys.exit(1)
 
     try:
-        logger.info(f"🚀 Starting {config.app_name} v{config.version} on {host}:{port}")
-        logger.info(f"📊 Debug: {debug} | Production: {config.is_production()}")
+        logger.info(
+            "🚀 Starting %s v%s on %s:%d", config.app_name, config.version, host, port,
+        )
+        logger.info("📊 Debug: %s | Production: %s", debug, config.is_production())
 
         service = create_service(config)
         service.run(host=host, port=port, debug=debug)

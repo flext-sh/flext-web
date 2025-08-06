@@ -15,7 +15,9 @@ import time
 import requests
 
 
-def run_command(cmd, timeout=30, capture_output=True):
+def run_command(
+    cmd: str, timeout: int = 30, capture_output: bool = True
+) -> tuple[int, str, str]:
     """Run command with timeout and error handling."""
     try:
         result = subprocess.run(

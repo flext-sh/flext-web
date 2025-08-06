@@ -1,6 +1,6 @@
 # Minimal flext-core mock for standalone Docker operation
 import logging
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel
 
@@ -35,11 +35,11 @@ class FlextResult[T]:
         return self._error
 
     @classmethod
-    def ok(cls, data: T | None = None):
+    def ok(cls, data: T | None = None) -> FlextResult[T]:
         return cls(True, data)
 
     @classmethod
-    def fail(cls, error: str):
+    def fail(cls, error: str) -> FlextResult[T]:
         return cls(False, None, error)
 
 
@@ -71,7 +71,7 @@ class FlextValidationError(FlextError):
 
 class FlextValidators:
     @staticmethod
-    def is_non_empty_string(value: Any) -> bool:
+    def is_non_empty_string(value: object) -> bool:
         return isinstance(value, str) and len(value.strip()) > 0
 
     @staticmethod

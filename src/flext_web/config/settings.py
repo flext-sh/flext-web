@@ -18,12 +18,12 @@ Integration:
 
 from __future__ import annotations
 
-from flext_core import FlextConfig, FlextResult, FlextValidators
-from pydantic import Field
-from pydantic_settings import BaseSettings
+from flext_core import FlextBaseSettings, FlextConfig, FlextResult, FlextValidators
+from pydantic import ConfigDict, Field
+from pydantic_settings import SettingsConfigDict
 
 
-class FlextWebConfig(BaseSettings, FlextConfig):
+class FlextWebConfig(FlextBaseSettings, FlextConfig):
     """Web interface configuration with environment-based settings and validation.
 
     Enterprise configuration management class integrating Pydantic Settings with
@@ -66,11 +66,17 @@ class FlextWebConfig(BaseSettings, FlextConfig):
 
     """
 
-    model_config = {
-        "env_prefix": "FLEXT_WEB_",
-        "case_sensitive": False,
-        "validate_assignment": True,
-    }
+    model_config = SettingsConfigDict(
+        frozen=True,  # Ensure immutability for configuration
+        env_prefix="FLEXT_WEB_",
+        case_sensitive=False,
+        validate_assignment=True,
+        extra="ignore",  # Ignore extra environment variables not defined as fields
+        json_schema_extra={
+            "description": "Web interface configuration",
+            "examples": [{"app_name": "My Web App", "host": "0.0.0.0", "port": 8080}],
+        },
+    )
 
     app_name: str = Field(default="FLEXT Web", description="Application name")
     version: str = Field(default="0.9.0", description="Application version")
