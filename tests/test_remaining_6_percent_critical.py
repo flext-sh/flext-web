@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Remaining 6% Critical Coverage Tests - Target the exact 13 missing lines.
 
 These tests target the specific uncovered lines that could cause production failures.

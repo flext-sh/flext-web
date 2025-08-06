@@ -107,6 +107,7 @@ class FlextWebService:
 
     def _create_response(
         self,
+        *,
         success: bool,
         message: str,
         data: dict[str, object] | None = None,
@@ -126,9 +127,9 @@ class FlextWebService:
     def health_check(self) -> ResponseReturnValue:
         """Health check endpoint."""
         return self._create_response(
-            True,
-            "FLEXT Web Service is healthy",
-            {
+            success=True,
+            message="FLEXT Web Service is healthy",
+            data={
                 "status": "healthy",
                 "version": self.config.version,
                 "apps_count": len(self.apps),
@@ -150,9 +151,9 @@ class FlextWebService:
             for app in self.apps.values()
         ]
         return self._create_response(
-            True,
-            "Applications retrieved successfully",
-            {"apps": apps_data},
+            success=True,
+            message="Applications retrieved successfully",
+            data={"apps": apps_data},
         )
 
     def create_app(self) -> ResponseReturnValue:
@@ -160,7 +161,7 @@ class FlextWebService:
         data = request.get_json()
 
         if not data or not data.get("name"):
-            return self._create_response(False, "App name is required", status=400)
+            return self._create_response(success=False, message="App name is required", status=400)
 
         name = data["name"]
         port = data.get("port", 8000)
@@ -182,14 +183,14 @@ class FlextWebService:
                     "status": app.status.value,
                 }
                 return self._create_response(
-                    True,
-                    "Application created successfully",
-                    app_data,
+                    success=True,
+                    message="Application created successfully",
+                    data=app_data,
                 )
 
         return self._create_response(
-            False,
-            f"Failed to create app: {app_result.error}",
+            success=False,
+            message=f"Failed to create app: {app_result.error}",
             status=400,
         )
 
@@ -197,7 +198,7 @@ class FlextWebService:
         """Get application information."""
         app = self.apps.get(app_id)
         if not app:
-            return self._create_response(False, "Application not found", status=404)
+            return self._create_response(success=False, message="Application not found", status=404)
 
         app_data = {
             "id": app.id,
@@ -208,16 +209,16 @@ class FlextWebService:
             "status": app.status.value,
         }
         return self._create_response(
-            True,
-            "Application retrieved successfully",
-            app_data,
+            success=True,
+            message="Application retrieved successfully",
+            data=app_data,
         )
 
     def start_app(self, app_id: str) -> ResponseReturnValue:
         """Start application using handler."""
         app = self.apps.get(app_id)
         if not app:
-            return self._create_response(False, "Application not found", status=404)
+            return self._create_response(success=False, message="Application not found", status=404)
 
         start_result = self.handler.start(app)
 
@@ -233,14 +234,14 @@ class FlextWebService:
                     "status": started_app.status.value,
                 }
                 return self._create_response(
-                    True,
-                    "Application started successfully",
-                    app_data,
+                    success=True,
+                    message="Application started successfully",
+                    data=app_data,
                 )
 
         return self._create_response(
-            False,
-            f"Failed to start app: {start_result.error}",
+            success=False,
+            message=f"Failed to start app: {start_result.error}",
             status=400,
         )
 
@@ -248,7 +249,7 @@ class FlextWebService:
         """Stop application using handler."""
         app = self.apps.get(app_id)
         if not app:
-            return self._create_response(False, "Application not found", status=404)
+            return self._create_response(success=False, message="Application not found", status=404)
 
         stop_result = self.handler.stop(app)
 
@@ -264,14 +265,14 @@ class FlextWebService:
                     "status": stopped_app.status.value,
                 }
                 return self._create_response(
-                    True,
-                    "Application stopped successfully",
-                    app_data,
+                    success=True,
+                    message="Application stopped successfully",
+                    data=app_data,
                 )
 
         return self._create_response(
-            False,
-            f"Failed to stop app: {stop_result.error}",
+            success=False,
+            message=f"Failed to stop app: {stop_result.error}",
             status=400,
         )
 

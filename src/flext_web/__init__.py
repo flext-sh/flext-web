@@ -45,7 +45,8 @@ Status: Development (targeting 1.0.0 production release)
 
 from __future__ import annotations
 
-from flask import Flask  # noqa: TC002
+from typing import TYPE_CHECKING
+
 from flext_core import (
     FlextError,
     FlextValidationError,
@@ -57,6 +58,9 @@ from .config import FlextWebConfig
 # Import domain entities from new structure
 from .domain import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
 from .web import FlextWebService
+
+if TYPE_CHECKING:
+    from flask import Flask
 
 __version__ = "0.9.0"
 __author__ = "FLEXT Contributors"

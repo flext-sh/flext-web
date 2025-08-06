@@ -124,7 +124,8 @@ class FlextWebConfig(BaseSettings, FlextConfig):
             return FlextResult.fail("Invalid version format (use x.y.z)")
         if not FlextValidators.is_non_empty_string(self.host):
             return FlextResult.fail("Host is required")
-        if not (1 <= self.port <= 65535):
+        MAX_PORT_NUMBER = 65535
+        if not (1 <= self.port <= MAX_PORT_NUMBER):
             return FlextResult.fail("Port must be between 1 and 65535")
         # Security validation in production
         if not self.debug and "change-in-production" in self.secret_key:

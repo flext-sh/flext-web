@@ -10,11 +10,14 @@ import requests
 BASE_URL = "http://localhost:8080"
 
 
-def check_service_health() -> bool | None:
+# Constants for HTTP status codes
+HTTP_OK = 200
+
+def check_service_health() -> bool | None    :
     """Check if the service is running and healthy."""
     try:
         response = requests.get(f"{BASE_URL}/health", timeout=5)
-        if response.status_code == 200:
+        if response.status_code == HTTP_OK:
             response.json()
             return True
         return False
@@ -22,13 +25,13 @@ def check_service_health() -> bool | None:
         return False
 
 
-def create_application(name, port, host="localhost"):
+def create_application(name: str, port: int, host: str = "localhost") -> dict[str, object] | None | bool:
     """Create a new application."""
     data = {"name": name, "port": port, "host": host}
 
     try:
-        response = requests.post(f"{BASE_URL}/api/v1/apps", json=data)
-        if response.status_code == 200:
+        response = requests.post(f"{BASE_URL}/api/v1/apps", json=data, timeout=5)
+        if response.status_code == HTTP_OK:
             return response.json()["data"]
         response.json()
         return None
@@ -36,11 +39,11 @@ def create_application(name, port, host="localhost"):
         return None
 
 
-def start_application(app_id):
+def start_application(app_id: str) -> dict[str, object] | None | bool:
     """Start an application."""
     try:
-        response = requests.post(f"{BASE_URL}/api/v1/apps/{app_id}/start")
-        if response.status_code == 200:
+        response = requests.post(f"{BASE_URL}/api/v1/apps/{app_id}/start", timeout=5)
+        if response.status_code == HTTP_OK:
             return response.json()["data"]
         response.json()
         return None
@@ -48,22 +51,22 @@ def start_application(app_id):
         return None
 
 
-def get_application_status(app_id):
+def get_application_status(app_id: str) -> dict[str, object] | None | bool:
     """Get application status."""
     try:
-        response = requests.get(f"{BASE_URL}/api/v1/apps/{app_id}")
-        if response.status_code == 200:
+        response = requests.get(f"{BASE_URL}/api/v1/apps/{app_id}", timeout=5)
+        if response.status_code == HTTP_OK:
             return response.json()["data"]
         return None
     except requests.RequestException:
         return None
 
 
-def stop_application(app_id):
+def stop_application(app_id: str) -> dict[str, object] | None | bool:
     """Stop an application."""
     try:
-        response = requests.post(f"{BASE_URL}/api/v1/apps/{app_id}/stop")
-        if response.status_code == 200:
+        response = requests.post(f"{BASE_URL}/api/v1/apps/{app_id}/stop", timeout=5)
+        if response.status_code == HTTP_OK:
             return response.json()["data"]
         response.json()
         return None
@@ -71,11 +74,11 @@ def stop_application(app_id):
         return None
 
 
-def list_applications():
+def list_applications() -> list[dict[str, object]]:
     """List all applications."""
     try:
-        response = requests.get(f"{BASE_URL}/api/v1/apps")
-        if response.status_code == 200:
+        response = requests.get(f"{BASE_URL}/api/v1/apps", timeout=5)
+        if response.status_code == HTTP_OK:
             data = response.json()["data"]
             apps = data["apps"]
             for app in apps:
@@ -95,7 +98,7 @@ def demo_application_lifecycle() -> None:
 
     # Create applications
     app1 = create_application("web-service", 3000)
-    app2 = create_application("api-gateway", 4000, "0.0.0.0")
+    app2 = create_application("api-gateway", 4000, "0.0.0.0")  # noqa: S104
 
     if not app1 or not app2:
         return
