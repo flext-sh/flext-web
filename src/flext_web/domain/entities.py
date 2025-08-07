@@ -146,8 +146,8 @@ class FlextWebApp(FlextEntity, FlextTimestampMixin, FlextValidatableMixin):
         """
         if not FlextValidators.is_non_empty_string(self.name):
             return FlextResult.fail("App name is required")
-        MAX_PORT_NUMBER = 65535
-        if not (1 <= self.port <= MAX_PORT_NUMBER):
+        max_port_number = 65535
+        if not (1 <= self.port <= max_port_number):
             return FlextResult.fail("Invalid port number")
         return FlextResult.ok(None)
 

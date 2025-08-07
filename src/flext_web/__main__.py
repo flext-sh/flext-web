@@ -118,8 +118,8 @@ def main() -> None:
         debug = config.debug
 
     # Validate port
-    MAX_PORT_NUMBER = 65535
-    if not (1 <= port <= MAX_PORT_NUMBER):
+    max_port_number = 65535
+    if not (1 <= port <= max_port_number):
         logger.error("Port must be between 1 and 65535")
         sys.exit(1)
 

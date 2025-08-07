@@ -19,7 +19,7 @@ Integration:
 from __future__ import annotations
 
 from flext_core import FlextBaseSettings, FlextConfig, FlextResult, FlextValidators
-from pydantic import ConfigDict, Field
+from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 
@@ -74,7 +74,7 @@ class FlextWebConfig(FlextBaseSettings, FlextConfig):
         extra="ignore",  # Ignore extra environment variables not defined as fields
         json_schema_extra={
             "description": "Web interface configuration",
-            "examples": [{"app_name": "My Web App", "host": "0.0.0.0", "port": 8080}],
+            "examples": [{"app_name": "My Web App", "host": "0.0.0.0", "port": 8080}],  # noqa: S104 # documentation example
         },
     )
 
@@ -130,8 +130,8 @@ class FlextWebConfig(FlextBaseSettings, FlextConfig):
             return FlextResult.fail("Invalid version format (use x.y.z)")
         if not FlextValidators.is_non_empty_string(self.host):
             return FlextResult.fail("Host is required")
-        MAX_PORT_NUMBER = 65535
-        if not (1 <= self.port <= MAX_PORT_NUMBER):
+        max_port_number = 65535
+        if not (1 <= self.port <= max_port_number):
             return FlextResult.fail("Port must be between 1 and 65535")
         # Security validation in production
         if not self.debug and "change-in-production" in self.secret_key:

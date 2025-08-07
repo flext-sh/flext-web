@@ -145,7 +145,7 @@ def get_web_settings() -> FlextWebConfig:
         >>> assert config.port == 8080
 
     """
-    global _config_instance
+    global _config_instance  # noqa: PLW0603 # legitimate singleton pattern
 
     if _config_instance is None:
         _config_instance = FlextWebConfig()
@@ -208,7 +208,7 @@ def reset_web_settings() -> None:
         ...     reset_web_settings()  # Clean up after test
 
     """
-    global _config_instance
+    global _config_instance  # noqa: PLW0603 # legitimate singleton pattern
     _config_instance = None
 
 
