@@ -63,7 +63,6 @@ extend = "../.ruff-shared.toml"
 
 [tool.ruff.lint.isort]
 known-first-party = ["flext_web"]
-
 [tool.mypy]
 # Strict mode - enables all recommended checks
 strict = true
@@ -114,7 +113,7 @@ platform = "linux"
 # Package structure
 explicit_package_bases = true
 namespace_packages = true
-mypy_path = ["src", "examples"]
+mypy_path = ["src"]
 files = ["src", "tests"]
 
 # Plugins
@@ -136,10 +135,8 @@ warn_incomplete_stub = true
 
 exclude = [
     "__pycache__/",
-    ".*/examples/",
     ".*/generate_config.py",
     ".*/manage.py",
-    ".*/scripts/",
     ".coverage.*",
     ".git/",
     ".mypy_cache/",
@@ -151,7 +148,6 @@ exclude = [
     "node_modules/",
     "vendor/",
 ]
-
 [tool.bandit]
 exclude_dirs = ["tests", "build", "dist"]
 skips = ["B101", "B601"]

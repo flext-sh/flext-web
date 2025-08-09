@@ -41,7 +41,7 @@ FlextWebTimeoutError = _web_exceptions["FlextWebTimeoutError"]
 # =============================================================================
 
 
-class FlextWebTemplateError(FlextWebError):  # type: ignore[valid-type,misc]
+class FlextWebTemplateError(FlextWebError):
     """Web service template errors using DRY foundation."""
 
     def __init__(
@@ -61,7 +61,7 @@ class FlextWebTemplateError(FlextWebError):  # type: ignore[valid-type,misc]
         super().__init__(f"Web template: {message}", **context)
 
 
-class FlextWebRoutingError(FlextWebError):  # type: ignore[valid-type,misc]
+class FlextWebRoutingError(FlextWebError):
     """Web service routing errors using DRY foundation."""
 
     def __init__(
@@ -81,7 +81,7 @@ class FlextWebRoutingError(FlextWebError):  # type: ignore[valid-type,misc]
         super().__init__(f"Web routing: {message}", **context)
 
 
-class FlextWebSessionError(FlextWebError):  # type: ignore[valid-type,misc]
+class FlextWebSessionError(FlextWebError):
     """Web service session errors using DRY foundation."""
 
     def __init__(
@@ -101,7 +101,7 @@ class FlextWebSessionError(FlextWebError):  # type: ignore[valid-type,misc]
         super().__init__(f"Web session: {message}", **context)
 
 
-class FlextWebMiddlewareError(FlextWebError):  # type: ignore[valid-type,misc]
+class FlextWebMiddlewareError(FlextWebError):
     """Web service middleware errors using DRY foundation."""
 
     def __init__(

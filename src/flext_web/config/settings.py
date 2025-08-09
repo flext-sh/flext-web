@@ -18,12 +18,12 @@ Integration:
 
 from __future__ import annotations
 
-from flext_core import FlextBaseSettings, FlextConfig, FlextResult, FlextValidators
+from flext_core import FlextConfig, FlextResult, FlextSettings, FlextValidators
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 
-class FlextWebConfig(FlextBaseSettings, FlextConfig):
+class FlextWebConfig(FlextSettings, FlextConfig):
     """Web interface configuration with environment-based settings and validation.
 
     Enterprise configuration management class integrating Pydantic Settings with
@@ -74,7 +74,7 @@ class FlextWebConfig(FlextBaseSettings, FlextConfig):
         extra="ignore",  # Ignore extra environment variables not defined as fields
         json_schema_extra={
             "description": "Web interface configuration",
-            "examples": [{"app_name": "My Web App", "host": "0.0.0.0", "port": 8080}],  # noqa: S104 # documentation example
+            "examples": [{"app_name": "My Web App", "host": "0.0.0.0", "port": 8080}],
         },
     )
 

@@ -69,8 +69,8 @@ class ExamplesFullFunctionalityTest:
                     response = requests.get(f"{self.service_url}/health", timeout=2)
                     if response.status_code == 200:
                         return True
-                except:
-                    pass
+                except Exception:
+                    self.logger.exception("Failed to get health check")
                 time.sleep(1)
 
             return False
@@ -243,7 +243,8 @@ class ExamplesFullFunctionalityTest:
             assert create_result is None, "Should return None when service down"
 
             apps = api_usage.list_applications()
-            assert isinstance(apps, list) and len(apps) == 0, "Should return empty list"
+            assert isinstance(apps, list), "Should return empty list"
+            assert len(apps) == 0, "Should return empty list"
 
             # Restore original URL
             api_usage.BASE_URL = original_url
@@ -256,7 +257,7 @@ class ExamplesFullFunctionalityTest:
             if "examples" in sys.path:
                 sys.path.remove("examples")
 
-    def run_full_functionality_test(self):
+    def run_full_functionality_test(self) -> bool:
         """Executa teste COMPLETO de toda funcionalidade dos examples."""
         # Start Docker service for testing
         if not self.start_service_in_docker():

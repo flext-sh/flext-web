@@ -70,7 +70,7 @@ def test_docker_memory_stress() -> bool | None:
         )
 
 
-def test_docker_concurrent_requests():
+def test_docker_concurrent_requests() -> bool:
     """Test Docker container with concurrent requests."""
     # Start container for concurrency test
     cmd = [
@@ -130,7 +130,7 @@ def test_docker_concurrent_requests():
         )
 
 
-def test_docker_api_workflow():
+def test_docker_api_workflow() -> bool:
     """Test complete API workflow in Docker container."""
     # Start container for API test
     cmd = [
@@ -278,7 +278,7 @@ def test_docker_examples_stress() -> bool | None:
         )
 
 
-def main():
+def main() -> bool:
     """Run comprehensive Docker stress tests."""
     tests = [
         ("Memory Stress", test_docker_memory_stress),
@@ -301,7 +301,7 @@ def main():
     passed = sum(1 for _, result in results if result)
     total = len(results)
 
-    for test_name, result in results:
+    for _test_name, _result in results:
         pass
 
     if passed == total or passed >= total * 0.8:

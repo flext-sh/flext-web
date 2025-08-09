@@ -101,7 +101,7 @@ def demo_application_lifecycle() -> None:
 
     # Create applications
     app1 = create_application("web-service", 3000)
-    app2 = create_application("api-gateway", 4000, "0.0.0.0")  # noqa: S104
+    app2 = create_application("api-gateway", 4000, "0.0.0.0")
 
     if not app1 or not app2:
         return
