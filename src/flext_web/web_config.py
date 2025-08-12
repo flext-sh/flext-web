@@ -18,12 +18,14 @@ Integration:
 
 from __future__ import annotations
 
-from flext_core import FlextConfig, FlextResult, FlextSettings, FlextValidators
+import re
+
+from flext_core import FlextResult, FlextSettings, FlextValidators
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
 
 
-class FlextWebConfig(FlextSettings, FlextConfig):
+class FlextWebConfig(FlextSettings):
     """Web interface configuration with environment-based settings and validation.
 
     Enterprise configuration management class integrating Pydantic Settings with
@@ -74,7 +76,7 @@ class FlextWebConfig(FlextSettings, FlextConfig):
         extra="ignore",  # Ignore extra environment variables not defined as fields
         json_schema_extra={
             "description": "Web interface configuration",
-            "examples": [{"app_name": "My Web App", "host": "0.0.0.0", "port": 8080}],
+            "examples": [{"app_name": "My Web App", "host": "localhost", "port": 8080}],
         },
     )
 
@@ -93,49 +95,54 @@ class FlextWebConfig(FlextSettings, FlextConfig):
         description="Secret key for cryptographic operations",
     )
 
-    def validate_config(self) -> FlextResult[None]:
-        """Validate configuration according to business rules and security requirements.
+    def _validate_app_name(self) -> str | None:
+        if hasattr(FlextValidators, "is_non_empty_string"):
+            if not FlextValidators.is_non_empty_string(self.app_name):
+                return "App name is required"
+        elif not self.app_name or not self.app_name.strip():
+            return "App name is required"
+        return None
 
-        Performs comprehensive validation of all configuration settings using
-        flext-core validation patterns. Ensures configuration is safe for
-        the target environment and meets operational requirements.
+    def _validate_version(self) -> str | None:
+        pattern = r"^\d+\.\d+\.\d+$"
+        if hasattr(FlextValidators, "matches_pattern"):
+            if not FlextValidators.matches_pattern(self.version, pattern):
+                return "Invalid version format (use x.y.z)"
+        elif not re.fullmatch(pattern, self.version):
+            return "Invalid version format (use x.y.z)"
+        return None
 
-        Returns:
-            FlextResult[None]: Success if all validations pass, failure with
-            detailed error message identifying the specific validation failure.
+    def _validate_host(self) -> str | None:
+        if hasattr(FlextValidators, "is_non_empty_string"):
+            if not FlextValidators.is_non_empty_string(self.host):
+                return "Host is required"
+        elif not self.host or not self.host.strip():
+            return "Host is required"
+        return None
 
-        Validation Rules:
-            - Application name must be non-empty string
-            - Version must follow semantic versioning (x.y.z)
-            - Host must be valid network address
-            - Port must be within valid range (1-65535)
-            - Secret key must be changed from default in production
-            - Secret key must meet minimum length requirements
-
-        Production-Specific Validations:
-            - Debug mode must be disabled in production
-            - Secret key cannot contain default values
-            - Additional security validations for production deployment
-
-        Example:
-            >>> config = FlextWebConfig(debug=False, secret_key="short")
-            >>> result = config.validate_config()
-            >>> if not result.success:
-            ...     print(f"Configuration invalid: {result.error}")
-
-        """
-        if not FlextValidators.is_non_empty_string(self.app_name):
-            return FlextResult.fail("App name is required")
-        if not FlextValidators.matches_pattern(self.version, r"^\d+\.\d+\.\d+$"):
-            return FlextResult.fail("Invalid version format (use x.y.z)")
-        if not FlextValidators.is_non_empty_string(self.host):
-            return FlextResult.fail("Host is required")
+    def _validate_port(self) -> str | None:
         max_port_number = 65535
         if not (1 <= self.port <= max_port_number):
-            return FlextResult.fail("Port must be between 1 and 65535")
-        # Security validation in production
+            return "Port must be between 1 and 65535"
+        return None
+
+    def _validate_security(self) -> str | None:
         if not self.debug and "change-in-production" in self.secret_key:
-            return FlextResult.fail("Secret key must be changed in production")
+            return "Secret key must be changed in production"
+        return None
+
+    def validate_config(self) -> FlextResult[None]:
+        """Validate configuration according to business rules and security requirements."""
+        for check in (
+            self._validate_app_name,
+            self._validate_version,
+            self._validate_host,
+            self._validate_port,
+            self._validate_security,
+        ):
+            error = check()
+            if error:
+                return FlextResult.fail(error)
         return FlextResult.ok(None)
 
     def is_production(self) -> bool:

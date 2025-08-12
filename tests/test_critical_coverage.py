@@ -116,7 +116,7 @@ class TestCriticalMissingCoverage:
         handler = FlextWebAppHandler()
 
         # Test create with invalid data to trigger error path
-        with patch("flext_web.domain.handlers.FlextWebApp") as mock_app:
+        with patch("flext_web.web_models.FlextWebApp") as mock_app:
             mock_app.side_effect = ValueError("Validation failed")
             result = handler.create("test", 8080, "localhost")
             assert result.is_failure

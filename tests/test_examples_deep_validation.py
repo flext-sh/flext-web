@@ -304,7 +304,7 @@ class TestExamplesDeepValidation:
             assert file_path.stat().st_size > 0, f"{file_name} is empty"
 
             # Check file is valid Python syntax
-            with open(file_path, encoding="utf-8") as f:
+            with file_path.open(encoding="utf-8") as f:
                 content = f.read()
                 try:
                     compile(content, str(file_path), "exec")
@@ -316,7 +316,7 @@ class TestExamplesDeepValidation:
         examples_dir = Path("examples")
 
         for py_file in examples_dir.glob("*.py"):
-            with open(py_file, encoding="utf-8") as f:
+            with py_file.open(encoding="utf-8") as f:
                 content = f.read()
 
             # Should have module docstring

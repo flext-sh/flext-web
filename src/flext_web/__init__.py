@@ -1,43 +1,87 @@
-"""FLEXT Web Interface - Enterprise Web Management Console.
+"""FLEXT Web Interface - Enterprise Web Management Console for FLEXT ecosystem.
 
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+This module provides a comprehensive web-based management console and dashboard for
+the FLEXT distributed data integration platform. It implements enterprise-grade
+web interfaces for monitoring, managing, and orchestrating data integration workflows
+across the entire FLEXT ecosystem.
 
-Enterprise web interface for the FLEXT distributed data integration platform.
-Provides comprehensive dashboard and REST API endpoints for monitoring and managing
-applications within the FLEXT ecosystem.
+The web interface follows Clean Architecture patterns with Domain-Driven Design,
+providing both human-friendly dashboards and programmatic REST API endpoints for
+comprehensive platform management and monitoring.
 
-This module implements Clean Architecture patterns with Domain-Driven Design,
-integrating with flext-core foundation patterns for consistent error handling,
-configuration management, and enterprise-grade reliability.
+Architecture (Clean Architecture + Web Patterns):
+    - Presentation Layer: Flask-based web interface with responsive dashboard
+    - Application Layer: Web application services and API endpoint handlers
+    - Domain Layer: Web-specific entities and business rules
+    - Infrastructure Layer: Template rendering, static assets, and external integrations
+
+Key Features:
+    - Enterprise Dashboard: Comprehensive monitoring dashboard with real-time metrics
+    - REST API Endpoints: Full programmatic access to FLEXT platform capabilities
+    - Authentication Integration: Seamless integration with flext-auth for secure access
+    - Real-Time Monitoring: Live updates of pipeline status, system health, and metrics
+    - Configuration Management: Web-based configuration interface for all FLEXT services
+    - Audit Logging: Comprehensive audit trails for all web-based operations
+    - Responsive Design: Modern, mobile-friendly interface design
+    - Multi-User Support: Role-based access control with user management
+
+Dashboard Capabilities:
+    - Pipeline Monitoring: Real-time status of data integration pipelines
+    - System Health: Overall health status of FlexCore and FLEXT Service
+    - Performance Metrics: Resource usage, throughput, and performance analytics
+    - Error Management: Centralized error tracking and resolution workflows
+    - Configuration Overview: Visual configuration management across all services
+    - User Management: User accounts, roles, and permission management
+    - Audit Trails: Comprehensive activity logging and audit reporting
 
 Key Components:
     - FlextWebApp: Domain entity for web application lifecycle management
-    - FlextWebAppHandler: CQRS command handlers for application operations
-    - FlextWebService: Flask service with route registration and API endpoints
-    - FlextWebConfig: Environment-based configuration with validation
-    - Exception hierarchy: Domain-specific exceptions extending flext-core patterns
+    - FlextWebAppHandler: CQRS command handlers for web application operations
+    - FlextWebService: Flask application service with route registration and API endpoints
+    - FlextWebConfig: Environment-based configuration with comprehensive validation
+    - FlextWebDashboard: Dashboard service with real-time data aggregation
+    - FlextWebAPI: REST API service with OpenAPI documentation
 
-Architecture:
-    The module follows Clean Architecture boundaries with clear separation between
-    domain logic, application services, and infrastructure concerns. All operations
-    use FlextResult for railway-oriented programming patterns.
-
-Integration:
+FLEXT Ecosystem Integration:
     - Built on flext-core foundation patterns (FlextResult, FlextEntity, FlextConfig)
     - Integrates with flext-observability for monitoring and health checks
-    - Designed for integration with flext-auth for authentication/authorization
-    - Connects to FlexCore (Go) runtime service and FLEXT Service data platform
+    - Leverages flext-auth for authentication, authorization, and session management
+    - Connects to FlexCore (port 8080) runtime service for pipeline management
+    - Interfaces with FLEXT Service (port 8081) for data platform operations
+    - Utilizes flext-quality for code quality metrics and reporting
 
 Example:
-    Basic service creation and startup:
+    Basic web service setup and configuration:
 
-    >>> from flext_web import create_service, get_web_settings
-    >>> config = get_web_settings()
-    >>> service = create_service(config)
-    >>> service.run(host="localhost", port=8080)
+    >>> from flext_web import FlextWebService, create_web_service, FlextWebConfig
+    >>> from flext_core import FlextResult
+    >>>
+    >>> # Configure web service with environment settings
+    >>> config = FlextWebConfig(
+    ...     host="0.0.0.0",
+    ...     port=5000,
+    ...     debug=False,
+    ...     enable_auth=True,
+    ...     enable_monitoring=True
+    ... )
+    >>>
+    >>> # Create and start web service
+    >>> service_result = create_web_service(config)
+    >>> if service_result.is_success:
+    ...     web_service = service_result.data
+    ...     web_service.run()  # Starts Flask application
 
-Author: FLEXT Development Team
+    Dashboard and API integration:
+
+    >>> # Access dashboard and API endpoints
+    >>> dashboard_result = web_service.get_dashboard_data()
+    >>> if dashboard_result.is_success:
+    ...     dashboard = dashboard_result.data
+    ...     print(f"Active Pipelines: {dashboard.active_pipelines}")
+    ...     print(f"System Health: {dashboard.system_health}")
+
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
 Version: 0.9.0
 Status: Development (targeting 1.0.0 production release)
 
@@ -53,11 +97,26 @@ from flext_core import (
     get_logger,
 )
 
-from .config import FlextWebConfig
+# Import from consolidated modules following PEP8 structure
+from .web_config import FlextWebConfig
+from .web_exceptions import (
+    FlextWebAuthenticationError,
+    FlextWebConfigurationError,
+    FlextWebConnectionError,
+    FlextWebMiddlewareError,
+    FlextWebProcessingError,
+    FlextWebRoutingError,
+    FlextWebSessionError,
+    FlextWebTemplateError,
+    FlextWebTimeoutError,
+    FlextWebValidationError,
+)
+from .web_models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
+from .web_service import FlextWebService
 
-# Import domain entities from new structure
-from .domain import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
-from .web import FlextWebService
+# Legacy imports have been consolidated into the new PEP8 structure.
+# Old modules (config/, domain/, web/) have been removed and consolidated
+# into web_config.py, web_models.py, web_service.py, and web_exceptions.py
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -91,7 +150,31 @@ logger = get_logger(__name__)
 # =============================================================================
 
 
-_config_instance: FlextWebConfig | None = None
+class _ConfigManager:
+    """Singleton configuration manager."""
+
+    def __init__(self) -> None:
+        self._instance: FlextWebConfig | None = None
+
+    def get_config(self) -> FlextWebConfig:
+        """Get validated configuration singleton."""
+        if self._instance is None:
+            self._instance = FlextWebConfig()
+
+            # Validate configuration
+            validation_result = self._instance.validate_config()
+            if not validation_result.success:
+                msg: str = f"Configuration validation failed: {validation_result.error}"
+                raise ValueError(msg)
+
+        return self._instance
+
+    def reset(self) -> None:
+        """Reset configuration singleton."""
+        self._instance = None
+
+
+_config_manager = _ConfigManager()
 
 
 def get_web_settings() -> FlextWebConfig:
@@ -145,18 +228,7 @@ def get_web_settings() -> FlextWebConfig:
         >>> assert config.port == 8080
 
     """
-    global _config_instance
-
-    if _config_instance is None:
-        _config_instance = FlextWebConfig()
-
-        # Validate configuration
-        validation_result = _config_instance.validate_config()
-        if not validation_result.success:
-            msg: str = f"Configuration validation failed: {validation_result.error}"
-            raise ValueError(msg)
-
-    return _config_instance
+    return _config_manager.get_config()
 
 
 def reset_web_settings() -> None:
@@ -208,8 +280,7 @@ def reset_web_settings() -> None:
         ...     reset_web_settings()  # Clean up after test
 
     """
-    global _config_instance
-    _config_instance = None
+    _config_manager.reset()
 
 
 def create_service(config: FlextWebConfig | None = None) -> FlextWebService:
@@ -351,16 +422,18 @@ def create_app(config: FlextWebConfig | None = None) -> Flask:
 
 
 # =============================================================================
-# EXCEPTIONS - Using flext-core patterns
+# EXCEPTIONS - Legacy exceptions using flext-core patterns (deprecated)
 # =============================================================================
+# NOTE: These are maintained for backward compatibility only.
+# Use web_exceptions module for full exception hierarchy.
 
 
 class FlextWebError(FlextError):
     """Web error using flext-core."""
 
 
-class FlextWebValidationError(FlextValidationError):
-    """Web validation error using flext-core."""
+# FlextWebValidationError is now imported from web_exceptions module
+# This legacy class definition is removed to avoid redefinition error
 
 
 # =============================================================================
@@ -369,16 +442,31 @@ class FlextWebValidationError(FlextValidationError):
 
 
 __all__: list[str] = [
+    "TYPE_CHECKING",
+    "FlextError",
+    "FlextValidationError",
     "FlextWebApp",
     "FlextWebAppHandler",
     "FlextWebAppStatus",
+    "FlextWebAuthenticationError",
     "FlextWebConfig",
+    "FlextWebConfigurationError",
+    "FlextWebConnectionError",
     "FlextWebError",
+    "FlextWebMiddlewareError",
+    "FlextWebProcessingError",
+    "FlextWebRoutingError",
     "FlextWebService",
+    "FlextWebSessionError",
+    "FlextWebTemplateError",
+    "FlextWebTimeoutError",
     "FlextWebValidationError",
     "__version__",
+    "annotations",
     "create_app",
     "create_service",
+    "get_logger",
     "get_web_settings",
+    "logger",
     "reset_web_settings",
 ]

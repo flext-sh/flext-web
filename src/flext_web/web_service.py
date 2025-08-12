@@ -21,8 +21,8 @@ from typing import TYPE_CHECKING
 from flask import Flask, jsonify, request
 from flext_core import get_logger
 
-from flext_web.config import FlextWebConfig
-from flext_web.domain import FlextWebApp, FlextWebAppHandler
+from .web_config import FlextWebConfig
+from .web_models import FlextWebApp, FlextWebAppHandler
 
 if TYPE_CHECKING:
     from flask.typing import ResponseReturnValue
@@ -146,7 +146,7 @@ class FlextWebService:
                 "port": app.port,
                 "host": app.host,
                 "is_running": app.is_running,
-                "status": app.status.value,
+                "status": app.status_value,
             }
             for app in self.apps.values()
         ]
@@ -162,7 +162,9 @@ class FlextWebService:
 
         if not data or not data.get("name"):
             return self._create_response(
-                success=False, message="App name is required", status=400,
+                success=False,
+                message="App name is required",
+                status=400,
             )
 
         name = data["name"]
@@ -182,7 +184,7 @@ class FlextWebService:
                     "port": app.port,
                     "host": app.host,
                     "is_running": app.is_running,
-                    "status": app.status.value,
+                    "status": app.status_value,
                 }
                 return self._create_response(
                     success=True,
@@ -201,7 +203,9 @@ class FlextWebService:
         app = self.apps.get(app_id)
         if not app:
             return self._create_response(
-                success=False, message="Application not found", status=404,
+                success=False,
+                message="Application not found",
+                status=404,
             )
 
         app_data = {
@@ -210,7 +214,7 @@ class FlextWebService:
             "port": app.port,
             "host": app.host,
             "is_running": app.is_running,
-            "status": app.status.value,
+            "status": app.status_value,
         }
         return self._create_response(
             success=True,
@@ -223,7 +227,9 @@ class FlextWebService:
         app = self.apps.get(app_id)
         if not app:
             return self._create_response(
-                success=False, message="Application not found", status=404,
+                success=False,
+                message="Application not found",
+                status=404,
             )
 
         start_result = self.handler.start(app)
@@ -237,7 +243,7 @@ class FlextWebService:
                     "id": started_app.id,
                     "name": started_app.name,
                     "is_running": started_app.is_running,
-                    "status": started_app.status.value,
+                    "status": started_app.status_value,
                 }
                 return self._create_response(
                     success=True,
@@ -256,7 +262,9 @@ class FlextWebService:
         app = self.apps.get(app_id)
         if not app:
             return self._create_response(
-                success=False, message="Application not found", status=404,
+                success=False,
+                message="Application not found",
+                status=404,
             )
 
         stop_result = self.handler.stop(app)
@@ -270,7 +278,7 @@ class FlextWebService:
                     "id": stopped_app.id,
                     "name": stopped_app.name,
                     "is_running": stopped_app.is_running,
-                    "status": stopped_app.status.value,
+                    "status": stopped_app.status_value,
                 }
                 return self._create_response(
                     success=True,
@@ -341,6 +349,9 @@ class FlextWebService:
         run_debug = debug if debug is not None else self.config.debug
 
         self.logger.info(
-            "Starting %s on %s:%d", self.config.app_name, run_host, run_port,
+            "Starting %s on %s:%d",
+            self.config.app_name,
+            run_host,
+            run_port,
         )
         self.app.run(host=run_host, port=run_port, debug=run_debug)

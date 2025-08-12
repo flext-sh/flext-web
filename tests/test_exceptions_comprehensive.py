@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_web.exceptions import (
+from flext_web.web_exceptions import (
     FlextWebAuthenticationError,
     FlextWebConfigurationError,
     FlextWebConnectionError,

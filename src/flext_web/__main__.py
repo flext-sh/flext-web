@@ -125,7 +125,11 @@ def main() -> None:
 
     try:
         logger.info(
-            "🚀 Starting %s v%s on %s:%d", config.app_name, config.version, host, port,
+            "🚀 Starting %s v%s on %s:%d",
+            config.app_name,
+            config.version,
+            host,
+            port,
         )
         logger.info("📊 Debug: %s | Production: %s", debug, config.is_production())
 

@@ -96,7 +96,7 @@ class TestMissingCoverage:
         handler = FlextWebAppHandler()
 
         # Test with invalid parameters that might cause exceptions
-        with patch("flext_web.domain.handlers.FlextWebApp") as mock_app:
+        with patch("flext_web.web_models.FlextWebApp") as mock_app:
             mock_app.side_effect = ValueError("Mock validation error")
 
             result = handler.create("test", 8080, "localhost")
@@ -241,7 +241,7 @@ class TestExceptionCoverage:
 
     def test_all_exception_constructors(self) -> None:
         """Test all exception class constructors for coverage."""
-        from flext_web.exceptions import (
+        from flext_web.web_exceptions import (
             FlextWebAuthenticationError,
             FlextWebConfigurationError,
             FlextWebConnectionError,

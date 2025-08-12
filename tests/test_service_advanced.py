@@ -19,7 +19,7 @@ from flext_web import (
     FlextWebService,
     get_web_settings,
 )
-from flext_web.exceptions import FlextWebProcessingError
+from flext_web.web_exceptions import FlextWebProcessingError
 
 
 class TestFlextWebServiceAdvanced:
