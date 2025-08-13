@@ -30,8 +30,6 @@ classifiers = [
     "Framework :: Django",
 ]
 dependencies = [
-    "flext-core @ file:///home/marlonsc/flext/flext-core",
-    "flext-observability @ file:///home/marlonsc/flext/flext-observability",
     "flask (>=3.0.0)",
     "pydantic (>=2.11.7)",
     "pydantic-settings (>=2.10.1)",
@@ -213,17 +211,13 @@ output = "reports/coverage.xml"
 python = ">=3.13,<3.14"
 djangorestframework = ">=3.14.0"
 
+# Local workspace dependencies (path-based)
+flext-core = {path = "../flext-core", develop = true}
+flext-observability = {path = "../flext-observability", develop = true}
+
 [tool.poetry.group.dev.dependencies]
 detect-secrets = ">=1.5.0"
 commitizen = ">=4.8.3"
-
-[tool.poetry.dependencies.flext-core]
-path = "../flext-core"
-develop = true
-
-[tool.poetry.dependencies.flext-observability]
-path = "../flext-observability"
-develop = true
 
 [project.optional-dependencies]
 dev = [
