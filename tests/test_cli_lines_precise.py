@@ -22,7 +22,10 @@ def test_line_114_debug_flag_direct() -> None:
             env=env,
         )
         try:
-            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+            stdout, stderr = await asyncio.wait_for(
+                process.communicate(),
+                timeout=timeout,
+            )
         except TimeoutError:
             process.kill()
             await process.communicate()

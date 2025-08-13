@@ -133,7 +133,12 @@ class TestFinal8LinesSurgical:
         """Test __main__.py line 114: --debug flag processing - SURGICAL precision."""
         # Test CLI with --debug flag (line 114)
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
-        async def _run(cmd: list[str], timeout: int = 5, env: dict[str, str] | None = None):
+
+        async def _run(
+            cmd: list[str],
+            timeout: int = 5,
+            env: dict[str, str] | None = None,
+        ):
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
@@ -141,7 +146,10 @@ class TestFinal8LinesSurgical:
                 env=env,
             )
             try:
-                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+                stdout, stderr = await asyncio.wait_for(
+                    process.communicate(),
+                    timeout=timeout,
+                )
             except TimeoutError:
                 process.kill()
                 await process.communicate()

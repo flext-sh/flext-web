@@ -205,7 +205,12 @@ class TestCriticalMissingLines:
 
         # Test --debug flag (line 114) - just test that module can handle it
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
-        async def _run(cmd: list[str], timeout: int = 5, env: dict[str, str] | None = None):
+
+        async def _run(
+            cmd: list[str],
+            timeout: int = 5,
+            env: dict[str, str] | None = None,
+        ):
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
@@ -213,7 +218,10 @@ class TestCriticalMissingLines:
                 env=env,
             )
             try:
-                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+                stdout, stderr = await asyncio.wait_for(
+                    process.communicate(),
+                    timeout=timeout,
+                )
             except TimeoutError:
                 process.kill()
                 await process.communicate()

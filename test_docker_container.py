@@ -17,9 +17,13 @@ import requests
 
 
 def run_command(
-    cmd: str | list[str], timeout: int = 30, *, capture_output: bool = True,
+    cmd: str | list[str],
+    timeout: int = 30,
+    *,
+    capture_output: bool = True,
 ) -> tuple[int, str, str]:
     """Run command with timeout and error handling using asyncio without shell."""
+
     async def _run_list(args: list[str]) -> tuple[int, str, str]:
         proc = await asyncio.create_subprocess_exec(
             *args,
@@ -27,7 +31,10 @@ def run_command(
             stderr=asyncio.subprocess.PIPE if capture_output else None,
         )
         try:
-            stdout_b, stderr_b = await asyncio.wait_for(proc.communicate(), timeout=timeout)
+            stdout_b, stderr_b = await asyncio.wait_for(
+                proc.communicate(),
+                timeout=timeout,
+            )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                 proc.kill()

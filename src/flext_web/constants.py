@@ -71,5 +71,8 @@ class FlextWebConstants(FlextConstants):
         DEFAULT_DEBUG = True
 
         # Flask settings (generated or provided via environment)
-        DEFAULT_SECRET_KEY = os.getenv("FLEXT_WEB_SECRET_KEY", secrets.token_urlsafe(32))
+        DEFAULT_SECRET_KEY = os.getenv(
+            "FLEXT_WEB_SECRET_KEY",
+            secrets.token_urlsafe(32),
+        )
         SESSION_TIMEOUT = 3600  # 1 hour

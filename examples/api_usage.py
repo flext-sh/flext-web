@@ -32,7 +32,9 @@ def check_service_health() -> bool | None:
 
 
 def create_application(
-    name: str, port: int, host: str = "localhost",
+    name: str,
+    port: int,
+    host: str = "localhost",
 ) -> dict[str, object] | None | bool:
     """Create a new application."""
     data = {"name": name, "port": port, "host": host}

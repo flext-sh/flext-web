@@ -18,13 +18,21 @@ def test_docker_memory_stress() -> bool | None:
     if DOCKER_PATH is None:
         return False
 
-    build_result_code = asyncio.get_event_loop().run_until_complete(
-        asyncio.create_subprocess_exec(
-            DOCKER_PATH, "build", "-t", "flext-web-stress", ".",
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
+    build_result_code = (
+        asyncio.get_event_loop()
+        .run_until_complete(
+            asyncio.create_subprocess_exec(
+                DOCKER_PATH,
+                "build",
+                "-t",
+                "flext-web-stress",
+                ".",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            ),
         )
-    ).returncode
+        .returncode
+    )
 
     if int(build_result_code or 0) != 0:
         return False
@@ -54,10 +62,12 @@ def test_docker_memory_stress() -> bool | None:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            )
+            ),
         )
         try:
-            asyncio.get_event_loop().run_until_complete(asyncio.wait_for(proc.wait(), timeout=10))
+            asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(proc.wait(), timeout=10),
+            )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                 asyncio.get_event_loop().run_until_complete(proc.kill())
@@ -66,7 +76,9 @@ def test_docker_memory_stress() -> bool | None:
             return False
 
         # optional: read output
-        _ = asyncio.get_event_loop().run_until_complete(proc.stdout.read() if proc.stdout else asyncio.sleep(0))
+        _ = asyncio.get_event_loop().run_until_complete(
+            proc.stdout.read() if proc.stdout else asyncio.sleep(0),
+        )
 
         # Wait for startup
         time.sleep(5)
@@ -81,7 +93,7 @@ def test_docker_memory_stress() -> bool | None:
     finally:
         # Cleanup
         asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-memory-test")
+            asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-memory-test"),
         )
 
 
@@ -113,10 +125,12 @@ def test_docker_concurrent_requests() -> bool:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            )
+            ),
         )
         try:
-            asyncio.get_event_loop().run_until_complete(asyncio.wait_for(proc.wait(), timeout=10))
+            asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(proc.wait(), timeout=10),
+            )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                 asyncio.get_event_loop().run_until_complete(proc.kill())
@@ -151,7 +165,11 @@ def test_docker_concurrent_requests() -> bool:
     finally:
         # Cleanup
         asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-concurrent-test")
+            asyncio.create_subprocess_exec(
+                DOCKER_PATH,
+                "stop",
+                "flext-concurrent-test",
+            ),
         )
 
 
@@ -183,10 +201,12 @@ def test_docker_api_workflow() -> bool:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            )
+            ),
         )
         try:
-            asyncio.get_event_loop().run_until_complete(asyncio.wait_for(proc.wait(), timeout=10))
+            asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(proc.wait(), timeout=10),
+            )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                 asyncio.get_event_loop().run_until_complete(proc.kill())
@@ -229,14 +249,16 @@ def test_docker_api_workflow() -> bool:
 
                 # Test 3: Start app
                 response = requests.post(
-                    f"{base_url}/api/v1/apps/{app_id}/start", timeout=10,
+                    f"{base_url}/api/v1/apps/{app_id}/start",
+                    timeout=10,
                 )
                 if response.status_code == 200:
                     success_count += 1
 
                     # Test 4: Get app status
                     response = requests.get(
-                        f"{base_url}/api/v1/apps/{app_id}", timeout=10,
+                        f"{base_url}/api/v1/apps/{app_id}",
+                        timeout=10,
                     )
                     if response.status_code == 200:
                         app_status = response.json()["data"]
@@ -245,7 +267,8 @@ def test_docker_api_workflow() -> bool:
 
                     # Test 5: Stop app
                     response = requests.post(
-                        f"{base_url}/api/v1/apps/{app_id}/stop", timeout=10,
+                        f"{base_url}/api/v1/apps/{app_id}/stop",
+                        timeout=10,
                     )
                     if response.status_code == 200:
                         success_count += 1
@@ -258,7 +281,7 @@ def test_docker_api_workflow() -> bool:
     finally:
         # Cleanup
         asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-api-test")
+            asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-api-test"),
         )
 
 
@@ -295,10 +318,12 @@ def test_docker_examples_stress() -> bool | None:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            )
+            ),
         )
         try:
-            asyncio.get_event_loop().run_until_complete(asyncio.wait_for(proc.wait(), timeout=5))
+            asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(proc.wait(), timeout=5),
+            )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                 asyncio.get_event_loop().run_until_complete(proc.kill())
@@ -309,18 +334,28 @@ def test_docker_examples_stress() -> bool | None:
         # Check if still running
         check_proc = asyncio.get_event_loop().run_until_complete(
             asyncio.create_subprocess_exec(
-                DOCKER_PATH, "ps", "-q", "-f", "name=flext-examples-stress",
+                DOCKER_PATH,
+                "ps",
+                "-q",
+                "-f",
+                "name=flext-examples-stress",
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            )
+            ),
         )
-        out = asyncio.get_event_loop().run_until_complete(check_proc.stdout.read() if check_proc.stdout else asyncio.sleep(0))
+        out = asyncio.get_event_loop().run_until_complete(
+            check_proc.stdout.read() if check_proc.stdout else asyncio.sleep(0),
+        )
         return bool((out or b"").decode().strip())
 
     finally:
         # Cleanup
         asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-examples-stress")
+            asyncio.create_subprocess_exec(
+                DOCKER_PATH,
+                "stop",
+                "flext-examples-stress",
+            ),
         )
 
 

@@ -171,7 +171,12 @@ class TestRemaining6PercentCritical:
 
         # Test 1: Invalid port argument (lines 122-123)
         cmd = [sys.executable, "-m", "flext_web", "--port", "abc"]
-        async def _run(cmd: list[str], timeout: int = 3, env: dict[str, str] | None = None):
+
+        async def _run(
+            cmd: list[str],
+            timeout: int = 3,
+            env: dict[str, str] | None = None,
+        ):
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
@@ -179,7 +184,10 @@ class TestRemaining6PercentCritical:
                 env=env,
             )
             try:
-                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+                stdout, stderr = await asyncio.wait_for(
+                    process.communicate(),
+                    timeout=timeout,
+                )
             except TimeoutError:
                 process.kill()
                 await process.communicate()

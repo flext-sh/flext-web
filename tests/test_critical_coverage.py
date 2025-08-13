@@ -60,10 +60,12 @@ class TestCriticalMissingCoverage:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            )
+            ),
         )
         try:
-            asyncio.get_event_loop().run_until_complete(asyncio.wait_for(proc.wait(), timeout=10))
+            asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(proc.wait(), timeout=10),
+            )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                 asyncio.get_event_loop().run_until_complete(proc.kill())
@@ -76,10 +78,12 @@ class TestCriticalMissingCoverage:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            )
+            ),
         )
         try:
-            asyncio.get_event_loop().run_until_complete(asyncio.wait_for(proc.wait(), timeout=10))
+            asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(proc.wait(), timeout=10),
+            )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                 asyncio.get_event_loop().run_until_complete(proc.kill())
@@ -103,10 +107,12 @@ class TestCriticalMissingCoverage:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            )
+            ),
         )
         try:
-            asyncio.get_event_loop().run_until_complete(asyncio.wait_for(proc.wait(), timeout=10))
+            asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(proc.wait(), timeout=10),
+            )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                 asyncio.get_event_loop().run_until_complete(proc.kill())
@@ -177,10 +183,12 @@ class TestCriticalMissingCoverage:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            )
+            ),
         )
         try:
-            asyncio.get_event_loop().run_until_complete(asyncio.wait_for(proc.wait(), timeout=10))
+            asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(proc.wait(), timeout=10),
+            )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                 asyncio.get_event_loop().run_until_complete(proc.kill())

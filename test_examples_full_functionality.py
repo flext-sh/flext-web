@@ -32,7 +32,11 @@ class ExamplesFullFunctionalityTest:
             return False
         build_cmd = [DOCKER_PATH, "build", "-t", "flext-web-full-test", "."]
 
-        async def _run_exec(cmd: list[str], timeout: int = 120, cwd: str | None = None) -> tuple[int, str, str]:
+        async def _run_exec(
+            cmd: list[str],
+            timeout: int = 120,
+            cwd: str | None = None,
+        ) -> tuple[int, str, str]:
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
@@ -40,7 +44,10 @@ class ExamplesFullFunctionalityTest:
                 cwd=cwd,
             )
             try:
-                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+                stdout, stderr = await asyncio.wait_for(
+                    process.communicate(),
+                    timeout=timeout,
+                )
             except TimeoutError:
                 process.kill()
                 await process.communicate()
@@ -75,7 +82,9 @@ class ExamplesFullFunctionalityTest:
         ]
 
         try:
-            start_rc, start_out, _start_err = asyncio.run(_run_exec(start_cmd, timeout=30))
+            start_rc, start_out, _start_err = asyncio.run(
+                _run_exec(start_cmd, timeout=30),
+            )
             if start_rc != 0:
                 return False
 
@@ -100,6 +109,7 @@ class ExamplesFullFunctionalityTest:
     def stop_docker_service(self) -> None:
         """Para o serviço Docker."""
         if self.container_id:
+
             async def _stop():
                 process = await asyncio.create_subprocess_exec(
                     DOCKER_PATH,
@@ -113,6 +123,7 @@ class ExamplesFullFunctionalityTest:
                 except TimeoutError:
                     process.kill()
                     await process.communicate()
+
             asyncio.run(_stop())
 
     def test_basic_service_full_functionality(self) -> bool | None:

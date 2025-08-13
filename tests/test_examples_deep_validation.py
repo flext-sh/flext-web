@@ -62,7 +62,9 @@ class TestExamplesDeepValidation:
             # Check if process is running or failed gracefully
             returncode = asyncio.get_event_loop().run_until_complete(process.wait())
             if returncode is not None:
-                _stdout, stderr = asyncio.get_event_loop().run_until_complete(process.communicate())
+                _stdout, stderr = asyncio.get_event_loop().run_until_complete(
+                    process.communicate(),
+                )
                 # If it failed due to port conflicts or other issues, that's acceptable
                 pytest.skip(f"Service exited early (possibly port conflict): {stderr}")
 
@@ -78,7 +80,9 @@ class TestExamplesDeepValidation:
 
         finally:
             try:
-                asyncio.get_event_loop().run_until_complete(asyncio.wait_for(process.wait(), timeout=5))
+                asyncio.get_event_loop().run_until_complete(
+                    asyncio.wait_for(process.wait(), timeout=5),
+                )
             except TimeoutError:
                 with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
                     asyncio.get_event_loop().run_until_complete(process.kill())
@@ -124,7 +128,8 @@ class TestExamplesDeepValidation:
             # Test 4: List applications returns expected type
             apps_result = api_usage.list_applications()
             assert isinstance(
-                apps_result, list,
+                apps_result,
+                list,
             )  # Should return list (empty or with apps)
 
         finally:
@@ -167,7 +172,7 @@ class TestExamplesDeepValidation:
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 env=test_env,
-            )
+            ),
         )
 
         try:
@@ -175,12 +180,16 @@ class TestExamplesDeepValidation:
             time.sleep(2)
 
             # Check if process is running (should be)
-            assert asyncio.get_event_loop().run_until_complete(process.wait()) is None, "Docker-ready example failed to start"
+            assert (
+                asyncio.get_event_loop().run_until_complete(process.wait()) is None
+            ), "Docker-ready example failed to start"
 
         finally:
             try:
                 process.terminate()
-                asyncio.get_event_loop().run_until_complete(asyncio.wait_for(process.wait(), timeout=5))
+                asyncio.get_event_loop().run_until_complete(
+                    asyncio.wait_for(process.wait(), timeout=5),
+                )
             except Exception:
                 pass
 
@@ -204,7 +213,7 @@ class TestExamplesDeepValidation:
                     env=test_env,
                 ),
                 timeout=5,
-            )
+            ),
         )
         # Should either handle gracefully or fail cleanly
         # (Implementation may vary, but shouldn't hang)
@@ -232,7 +241,7 @@ class TestExamplesDeepValidation:
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 env=test_env,
-            )
+            ),
         )
 
         try:
@@ -242,14 +251,18 @@ class TestExamplesDeepValidation:
             # Check if process is still running
             if asyncio.get_event_loop().run_until_complete(process.wait()) is not None:
                 # Process already exited, probably due to error
-                _stdout, stderr = asyncio.get_event_loop().run_until_complete(process.communicate())
+                _stdout, stderr = asyncio.get_event_loop().run_until_complete(
+                    process.communicate(),
+                )
                 pytest.skip(f"Process exited early, likely port conflict: {stderr}")
 
             # Send SIGTERM (graceful shutdown signal)
             process.send_signal(signal.SIGTERM)
 
             # Wait for graceful shutdown
-            return_code = asyncio.get_event_loop().run_until_complete(asyncio.wait_for(process.wait(), timeout=10))
+            return_code = asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(process.wait(), timeout=10),
+            )
 
             # Should exit gracefully (code 0) or with controlled shutdown
             assert return_code in {0, 1}, f"Unexpected return code {return_code}"
@@ -281,14 +294,14 @@ class TestExamplesDeepValidation:
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 env=test_env,
-            )
+            ),
         )
 
         try:
             # Should start but generate temporary key
             time.sleep(2)
             stdout, stderr = asyncio.get_event_loop().run_until_complete(
-                asyncio.wait_for(process.communicate(), timeout=5)
+                asyncio.wait_for(process.communicate(), timeout=5),
             )
 
             # Should contain warning about temporary key
