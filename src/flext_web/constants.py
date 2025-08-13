@@ -64,5 +64,5 @@ class FlextWebConstants(FlextConstants):
         DEFAULT_DEBUG = True
 
         # Flask settings
-        DEFAULT_SECRET_KEY = "dev-key-change-in-production"
+        DEFAULT_SECRET_KEY = "dev-key-change-in-production"  # noqa: S105
         SESSION_TIMEOUT = 3600  # 1 hour

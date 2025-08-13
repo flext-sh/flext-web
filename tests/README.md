@@ -46,7 +46,7 @@ tests/
 
 ### Quality Requirements
 
-- **Coverage**: Minimum 90% test coverage enforced
+- **Coverage**: 90% target
 - **Type Safety**: All test code uses comprehensive type hints
 - **Documentation**: Every test function has descriptive docstrings
 - **Isolation**: Tests are completely isolated with clean fixtures
