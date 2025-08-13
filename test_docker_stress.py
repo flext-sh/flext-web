@@ -2,18 +2,24 @@
 """Docker Stress Testing - Maximum validation of container functionality."""
 
 import concurrent.futures
+import shutil
 import subprocess
 import sys
 import time
 
 import requests
 
+DOCKER_PATH = shutil.which("docker")
+
 
 def test_docker_memory_stress() -> bool | None:
     """Test Docker container under memory pressure."""
     # Build if needed
+    if DOCKER_PATH is None:
+        return False
+
     build_result = subprocess.run(
-        ["docker", "build", "-t", "flext-web-stress", "."],
+        [DOCKER_PATH, "build", "-t", "flext-web-stress", "."],
         check=False,
         capture_output=True,
         text=True,
@@ -24,7 +30,7 @@ def test_docker_memory_stress() -> bool | None:
 
     # Run with memory limit
     cmd = [
-        "docker",
+        DOCKER_PATH,
         "run",
         "--rm",
         "-d",
@@ -42,8 +48,8 @@ def test_docker_memory_stress() -> bool | None:
     ]
 
     try:
-        result = subprocess.run(  # noqa: S603 - Docker command for testing
-            cmd, check=False, capture_output=True, text=True, timeout=10
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10,
         )
         if result.returncode != 0:
             return False
@@ -63,7 +69,7 @@ def test_docker_memory_stress() -> bool | None:
     finally:
         # Cleanup
         subprocess.run(
-            ["docker", "stop", "flext-memory-test"],
+            [DOCKER_PATH, "stop", "flext-memory-test"],
             check=False,
             capture_output=True,
             timeout=10,
@@ -73,8 +79,11 @@ def test_docker_memory_stress() -> bool | None:
 def test_docker_concurrent_requests() -> bool:
     """Test Docker container with concurrent requests."""
     # Start container for concurrency test
+    if DOCKER_PATH is None:
+        return False
+
     cmd = [
-        "docker",
+        DOCKER_PATH,
         "run",
         "--rm",
         "-d",
@@ -90,8 +99,8 @@ def test_docker_concurrent_requests() -> bool:
     ]
 
     try:
-        result = subprocess.run(  # noqa: S603 - Docker command for testing
-            cmd, check=False, capture_output=True, text=True, timeout=10
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10,
         )
         if result.returncode != 0:
             return False
@@ -123,7 +132,7 @@ def test_docker_concurrent_requests() -> bool:
     finally:
         # Cleanup
         subprocess.run(
-            ["docker", "stop", "flext-concurrent-test"],
+            [DOCKER_PATH, "stop", "flext-concurrent-test"],
             check=False,
             capture_output=True,
             timeout=10,
@@ -133,8 +142,11 @@ def test_docker_concurrent_requests() -> bool:
 def test_docker_api_workflow() -> bool:
     """Test complete API workflow in Docker container."""
     # Start container for API test
+    if DOCKER_PATH is None:
+        return False
+
     cmd = [
-        "docker",
+        DOCKER_PATH,
         "run",
         "--rm",
         "-d",
@@ -150,8 +162,8 @@ def test_docker_api_workflow() -> bool:
     ]
 
     try:
-        result = subprocess.run(  # noqa: S603 - Docker command for testing
-            cmd, check=False, capture_output=True, text=True, timeout=10
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10,
         )
         if result.returncode != 0:
             return False
@@ -191,14 +203,14 @@ def test_docker_api_workflow() -> bool:
 
                 # Test 3: Start app
                 response = requests.post(
-                    f"{base_url}/api/v1/apps/{app_id}/start", timeout=10
+                    f"{base_url}/api/v1/apps/{app_id}/start", timeout=10,
                 )
                 if response.status_code == 200:
                     success_count += 1
 
                     # Test 4: Get app status
                     response = requests.get(
-                        f"{base_url}/api/v1/apps/{app_id}", timeout=10
+                        f"{base_url}/api/v1/apps/{app_id}", timeout=10,
                     )
                     if response.status_code == 200:
                         app_status = response.json()["data"]
@@ -207,7 +219,7 @@ def test_docker_api_workflow() -> bool:
 
                     # Test 5: Stop app
                     response = requests.post(
-                        f"{base_url}/api/v1/apps/{app_id}/stop", timeout=10
+                        f"{base_url}/api/v1/apps/{app_id}/stop", timeout=10,
                     )
                     if response.status_code == 200:
                         success_count += 1
@@ -220,7 +232,7 @@ def test_docker_api_workflow() -> bool:
     finally:
         # Cleanup
         subprocess.run(
-            ["docker", "stop", "flext-api-test"],
+            [DOCKER_PATH, "stop", "flext-api-test"],
             check=False,
             capture_output=True,
             timeout=10,
@@ -230,8 +242,11 @@ def test_docker_api_workflow() -> bool:
 def test_docker_examples_stress() -> bool | None:
     """Test Docker examples under stress."""
     # Test docker_ready.py in container with stress
+    if DOCKER_PATH is None:
+        return False
+
     cmd = [
-        "docker",
+        DOCKER_PATH,
         "run",
         "--rm",
         "-d",
@@ -252,8 +267,8 @@ def test_docker_examples_stress() -> bool | None:
     ]
 
     try:
-        result = subprocess.run(  # noqa: S603 - commands are test-owned
-            cmd, check=False, capture_output=True, text=True, timeout=5
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=5,
         )
         result.stdout.strip()
 
@@ -262,7 +277,7 @@ def test_docker_examples_stress() -> bool | None:
 
         # Check if still running
         check_result = subprocess.run(
-            ["docker", "ps", "-q", "-f", "name=flext-examples-stress"],
+            [DOCKER_PATH, "ps", "-q", "-f", "name=flext-examples-stress"],
             check=False,
             capture_output=True,
             text=True,
@@ -273,7 +288,7 @@ def test_docker_examples_stress() -> bool | None:
     finally:
         # Cleanup
         subprocess.run(
-            ["docker", "stop", "flext-examples-stress"],
+            [DOCKER_PATH, "stop", "flext-examples-stress"],
             check=False,
             capture_output=True,
             timeout=10,

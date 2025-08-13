@@ -8,6 +8,7 @@ This script tests the Docker container by:
 4. Validating all API endpoints work in container environment
 """
 
+import shutil
 import subprocess
 import sys
 import time
@@ -16,12 +17,12 @@ import requests
 
 
 def run_command(
-    cmd: str | list[str], timeout: int = 30, *, capture_output: bool = True
+    cmd: str | list[str], timeout: int = 30, *, capture_output: bool = True,
 ) -> tuple[int, str, str]:
     """Run command with timeout and error handling."""
     try:
         if isinstance(cmd, list):
-            result = subprocess.run(  # noqa: S603 - commands are test-owned
+            result = subprocess.run(
                 cmd,
                 check=False,
                 timeout=timeout,
@@ -29,9 +30,12 @@ def run_command(
                 text=True,
             )
         else:
-            # Execute through bash -lc to avoid shell=True while supporting complex strings
-            result = subprocess.run(  # noqa: S603 - commands are test-owned
-                ["bash", "-lc", cmd],
+            # Execute through bash -lc using absolute path
+            bash_path = shutil.which("bash")
+            if bash_path is None:
+                return -1, "", "bash executable not found"
+            result = subprocess.run(
+                [bash_path, "-lc", cmd],
                 check=False,
                 timeout=timeout,
                 capture_output=capture_output,

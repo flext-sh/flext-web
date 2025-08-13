@@ -211,7 +211,7 @@ class TestExceptionUtilities:
                 FlextWebValidationError("Name required"),
                 FlextWebValidationError("Port invalid"),
                 FlextWebValidationError("Host invalid"),
-            )
+            ),
         )
 
         assert len(errors) == 3

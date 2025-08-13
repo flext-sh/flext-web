@@ -17,7 +17,6 @@ Integration:
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from flext_web.typings import FlextTypes
 
 from flask import Flask, jsonify, request
 from flext_core import get_logger

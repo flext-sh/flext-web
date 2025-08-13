@@ -122,7 +122,7 @@ class TestExamplesDeepValidation:
             # Test 4: List applications returns expected type
             apps_result = api_usage.list_applications()
             assert isinstance(
-                apps_result, list
+                apps_result, list,
             )  # Should return list (empty or with apps)
 
         finally:
@@ -190,7 +190,7 @@ class TestExamplesDeepValidation:
 
         cmd = [sys.executable, "examples/docker_ready.py"]
         subprocess.run(
-            cmd, check=False, capture_output=True, text=True, timeout=5, env=test_env
+            cmd, check=False, capture_output=True, text=True, timeout=5, env=test_env,
         )
         # Should either handle gracefully or fail cleanly
         # (Implementation may vary, but shouldn't hang)
@@ -245,7 +245,7 @@ class TestExamplesDeepValidation:
             process.wait()
             # This is acceptable - signal handling can be complex in test environments
             pytest.skip(
-                "Signal handling test timed out - acceptable in test environment"
+                "Signal handling test timed out - acceptable in test environment",
             )
 
     def test_examples_error_handling_paths(self) -> None:

@@ -9,6 +9,7 @@ import requests
 
 try:
     from flext_core.constants import FlextConstants
+
     BASE_URL = f"http://{FlextConstants.Platform.DEFAULT_HOST}:{FlextConstants.Platform.FLEXCORE_PORT}"
 except Exception:  # noqa: BLE001 - example fallback
     BASE_URL = "http://127.0.0.1:8080"
@@ -31,7 +32,7 @@ def check_service_health() -> bool | None:
 
 
 def create_application(
-    name: str, port: int, host: str = "localhost"
+    name: str, port: int, host: str = "localhost",
 ) -> dict[str, object] | None | bool:
     """Create a new application."""
     data = {"name": name, "port": port, "host": host}

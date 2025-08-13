@@ -5,11 +5,14 @@ Este teste valida 100% da funcionalidade de todos os examples usando o container
 para garantir comportamento compatível com ambientes de produção e enterprise.
 """
 
+import shutil
 import subprocess
 import sys
 import time
 
 import requests
+
+DOCKER_PATH = shutil.which("docker")
 
 
 class ExamplesFullFunctionalityTest:
@@ -24,16 +27,18 @@ class ExamplesFullFunctionalityTest:
     def start_service_in_docker(self) -> bool | None:
         """Inicia o serviço em Docker para teste completo."""
         # Build container if needed
-        build_cmd = ["docker", "build", "-t", "flext-web-full-test", "."]
-        result = subprocess.run(  # noqa: S603 - commands are test-owned
-            build_cmd, check=False, capture_output=True, text=True
+        if DOCKER_PATH is None:
+            return False
+        build_cmd = [DOCKER_PATH, "build", "-t", "flext-web-full-test", "."]
+        result = subprocess.run(
+            build_cmd, check=False, capture_output=True, text=True,
         )
         if result.returncode != 0:
             return False
 
         # Start container with examples
         start_cmd = [
-            "docker",
+            DOCKER_PATH,
             "run",
             "--rm",
             "-d",
@@ -53,7 +58,7 @@ class ExamplesFullFunctionalityTest:
         ]
 
         try:
-            result = subprocess.run(  # noqa: S603 - commands are test-owned
+            result = subprocess.run(
                 start_cmd,
                 check=False,
                 capture_output=True,
@@ -84,7 +89,7 @@ class ExamplesFullFunctionalityTest:
         """Para o serviço Docker."""
         if self.container_id:
             subprocess.run(
-                ["docker", "stop", "flext-full-test"],
+                [DOCKER_PATH, "stop", "flext-full-test"],
                 check=False,
                 capture_output=True,
                 timeout=10,
@@ -276,7 +281,7 @@ class ExamplesFullFunctionalityTest:
                     ("docker_ready", self.test_docker_ready_full_functionality()),
                     ("integration", self.test_examples_integration_functionality()),
                     ("error_handling", self.test_examples_error_handling()),
-                )
+                ),
             )
 
             # Results summary

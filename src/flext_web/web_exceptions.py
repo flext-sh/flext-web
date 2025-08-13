@@ -42,7 +42,10 @@ class FlextWebError(FlextError):
     """
 
     def __init__(
-        self, message: str, route: str | None = None, **kwargs: object,
+        self,
+        message: str,
+        route: str | None = None,
+        **kwargs: object,
     ) -> None:
         """Initialize web error with context."""
         context = dict(kwargs)

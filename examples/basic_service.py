@@ -21,7 +21,7 @@ def main() -> None:
     except KeyboardInterrupt:
         # Allow graceful shutdown in examples
         return
-    except Exception:  # noqa: BLE001
+    except Exception:
         # Log or handle as needed in real app; keep examples simple
         raise
 
