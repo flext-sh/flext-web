@@ -301,7 +301,7 @@ poetry run ruff check src tests --fix
 
 ### Quality Metrics
 
-- **Type Coverage**: 95%+ with strict MyPy
+- **Type Coverage**: 95% target with MyPy strict mode
 - **Test Coverage**: 90%+ required for all new code
 - **Complexity**: Monitored with radon (available in dev dependencies)
 - **Security**: Bandit scanning + pip-audit for vulnerabilities

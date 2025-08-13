@@ -91,7 +91,7 @@ def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:
     # In real implementation, this would generate valid JWT tokens
     return {
         "Authorization": "Bearer test_token",
-        "Content-Type": "application/json",
+        "Content-Type": FlextApiConstants.ContentTypes.JSON,
     }
 
 
@@ -100,7 +100,7 @@ def REDACTED_LDAP_BIND_PASSWORD_auth_headers(REDACTED_LDAP_BIND_PASSWORD_user_da
     """Admin authentication headers for test requests."""
     return {
         "Authorization": "Bearer REDACTED_LDAP_BIND_PASSWORD_token",
-        "Content-Type": "application/json",
+        "Content-Type": FlextApiConstants.ContentTypes.JSON,
     }
 
 

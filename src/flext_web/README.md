@@ -252,7 +252,7 @@ def process_request(data: dict) -> FlextResult[FlextWebApp]:
 
 ### Code Quality Standards
 
-- **Type Safety**: 95%+ type annotation coverage with strict MyPy
+- **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
 - **Test Coverage**: 90%+ coverage required for all code
 - **Documentation**: Comprehensive docstrings for all public APIs
 - **Error Handling**: FlextResult patterns for all operations

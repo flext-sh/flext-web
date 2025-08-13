@@ -130,7 +130,7 @@ docs/patterns/README.md         # Design patterns and best practices
 ### Current Quality Status
 
 - **Test Coverage**: 90%+ (pytest with comprehensive test suite)
-- **Type Safety**: 95%+ with strict MyPy configuration
+- **Type Safety**: MyPy strict mode target; aiming for 95%+
 - **Code Quality**: Ruff linting with comprehensive rule set
 - **Security**: Bandit scanning + pip-audit dependency checks
 - **Documentation**: English FLEXT standards compliance
