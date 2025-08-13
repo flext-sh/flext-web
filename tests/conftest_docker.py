@@ -67,7 +67,7 @@ def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:
     """Authentication headers for test requests."""
     return {
         "Authorization": "Bearer test_token",
-        "Content-Type": FlextApiConstants.ContentTypes.JSON,
+        "Content-Type": "application/json",
     }
 
 

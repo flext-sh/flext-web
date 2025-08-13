@@ -12,6 +12,17 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from fastapi.testclient import TestClient
 
+
+# Local minimal constants shim to avoid cross-package dependency during examples/tests
+class FlextApiConstants:
+    """Local minimal constants to avoid cross-package dependency."""
+
+    class ContentTypes:
+        """Supported content types."""
+
+        JSON = "application/json"
+
+
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Generator
 

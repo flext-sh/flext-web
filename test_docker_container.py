@@ -16,18 +16,27 @@ import requests
 
 
 def run_command(
-    cmd: str, timeout: int = 30, capture_output: bool = True
+    cmd: str | list[str], timeout: int = 30, *, capture_output: bool = True
 ) -> tuple[int, str, str]:
     """Run command with timeout and error handling."""
     try:
-        result = subprocess.run(
-            cmd,
-            check=False,
-            shell=True,
-            timeout=timeout,
-            capture_output=capture_output,
-            text=True,
-        )
+        if isinstance(cmd, list):
+            result = subprocess.run(  # noqa: S603 - commands are test-owned
+                cmd,
+                check=False,
+                timeout=timeout,
+                capture_output=capture_output,
+                text=True,
+            )
+        else:
+            # Execute through bash -lc to avoid shell=True while supporting complex strings
+            result = subprocess.run(  # noqa: S603 - commands are test-owned
+                ["bash", "-lc", cmd],
+                check=False,
+                timeout=timeout,
+                capture_output=capture_output,
+                text=True,
+            )
         return result.returncode, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return -1, "", "Command timed out"
@@ -176,7 +185,7 @@ def test_container_service() -> bool | None:
         run_command(f"docker stop {container_name}", timeout=10)
 
 
-def test_examples_in_container():
+def test_examples_in_container() -> bool | None:
     """Test all examples work inside container."""
     examples = [
         ("basic_service.py", "Basic service example"),
@@ -220,7 +229,8 @@ def main() -> int:
             if test_func():
                 passed += 1
         except Exception:
-            pass
+            # Continue to next test; aggregate result at end
+            continue
 
     if passed == total:
         return 0

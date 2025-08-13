@@ -102,11 +102,11 @@ def test_docker_concurrent_requests() -> bool:
         time.sleep(5)
 
         # Test concurrent requests
-        def make_request(i):
+        def make_request(_i: int) -> bool:
             try:
                 response = requests.get("http://localhost:8091/health", timeout=5)
                 return response.status_code == 200
-            except:
+            except Exception:
                 return False
 
         # 20 concurrent requests
@@ -170,7 +170,8 @@ def test_docker_api_workflow() -> bool:
             if response.status_code == 200:
                 success_count += 1
         except Exception:
-            pass
+            # Non-fatal during stress checks
+            return False
 
         # Test 2: Create app
         try:
@@ -211,7 +212,8 @@ def test_docker_api_workflow() -> bool:
                     if response.status_code == 200:
                         success_count += 1
         except Exception:
-            pass
+            # Ignore and continue; API may be slow under stress
+            return False
 
         return success_count >= 4  # 80% success rate
 
@@ -250,7 +252,7 @@ def test_docker_examples_stress() -> bool | None:
     ]
 
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603 - commands are test-owned
             cmd, check=False, capture_output=True, text=True, timeout=5
         )
         result.stdout.strip()

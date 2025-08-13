@@ -7,7 +7,11 @@ for application lifecycle management.
 
 import requests
 
-BASE_URL = "http://localhost:8080"
+try:
+    from flext_core.constants import FlextConstants
+    BASE_URL = f"http://{FlextConstants.Platform.DEFAULT_HOST}:{FlextConstants.Platform.FLEXCORE_PORT}"
+except Exception:  # noqa: BLE001 - example fallback
+    BASE_URL = "http://127.0.0.1:8080"
 
 
 # Constants for HTTP status codes
@@ -101,7 +105,7 @@ def demo_application_lifecycle() -> None:
 
     # Create applications
     app1 = create_application("web-service", 3000)
-    app2 = create_application("api-gateway", 4000, "0.0.0.0")
+    app2 = create_application("api-gateway", 4000, "127.0.0.1")
 
     if not app1 or not app2:
         return

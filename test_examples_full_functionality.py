@@ -25,7 +25,9 @@ class ExamplesFullFunctionalityTest:
         """Inicia o serviço em Docker para teste completo."""
         # Build container if needed
         build_cmd = ["docker", "build", "-t", "flext-web-full-test", "."]
-        result = subprocess.run(build_cmd, check=False, capture_output=True, text=True)
+        result = subprocess.run(  # noqa: S603 - commands are test-owned
+            build_cmd, check=False, capture_output=True, text=True
+        )
         if result.returncode != 0:
             return False
 
@@ -51,7 +53,7 @@ class ExamplesFullFunctionalityTest:
         ]
 
         try:
-            result = subprocess.run(
+            result = subprocess.run(  # noqa: S603 - commands are test-owned
                 start_cmd,
                 check=False,
                 capture_output=True,

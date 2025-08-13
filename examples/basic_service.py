@@ -19,9 +19,11 @@ def main() -> None:
     try:
         service.run(host=config.host, port=config.port, debug=config.debug)
     except KeyboardInterrupt:
-        pass
-    except Exception:
-        pass
+        # Allow graceful shutdown in examples
+        return
+    except Exception:  # noqa: BLE001
+        # Log or handle as needed in real app; keep examples simple
+        raise
 
 
 if __name__ == "__main__":

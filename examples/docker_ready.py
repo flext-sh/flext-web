@@ -19,7 +19,7 @@ logger = get_logger(__name__)
 def create_docker_config() -> FlextWebConfig:
     """Create Docker-optimized configuration from environment variables."""
     # Read configuration from environment
-    host = os.environ.get("FLEXT_WEB_HOST", "0.0.0.0")
+    host = os.environ.get("FLEXT_WEB_HOST", "127.0.0.1")
     port = int(os.environ.get("FLEXT_WEB_PORT", "8080"))
     debug = os.environ.get("FLEXT_WEB_DEBUG", "false").lower() == "true"
     secret_key = os.environ.get("FLEXT_WEB_SECRET_KEY")
@@ -45,7 +45,7 @@ def create_docker_config() -> FlextWebConfig:
 def setup_signal_handlers() -> None:
     """Setup graceful shutdown signal handlers."""
 
-    def signal_handler(signum, frame) -> None:
+    def signal_handler(signum: int, _frame: object) -> None:
         signal_name = signal.Signals(signum).name
         logger.info(f"Received {signal_name}, shutting down gracefully...")
         sys.exit(0)
@@ -98,8 +98,8 @@ def main() -> None:
 
     except KeyboardInterrupt:
         logger.info("🛑 Service interrupted by user")
-    except Exception as e:
-        logger.error(f"❌ Service error: {e}", exc_info=True)
+    except Exception:
+        logger.exception("❌ Service error")
         sys.exit(1)
     finally:
         logger.info("🔄 Service shutdown complete")
