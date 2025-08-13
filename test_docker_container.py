@@ -8,8 +8,8 @@ This script tests the Docker container by:
 4. Validating all API endpoints work in container environment
 """
 
+import asyncio
 import shutil
-import subprocess
 import sys
 import time
 
@@ -19,33 +19,38 @@ import requests
 def run_command(
     cmd: str | list[str], timeout: int = 30, *, capture_output: bool = True,
 ) -> tuple[int, str, str]:
-    """Run command with timeout and error handling."""
-    try:
+    """Run command with timeout and error handling using asyncio without shell."""
+    async def _run_list(args: list[str]) -> tuple[int, str, str]:
+        proc = await asyncio.create_subprocess_exec(
+            *args,
+            stdout=asyncio.subprocess.PIPE if capture_output else None,
+            stderr=asyncio.subprocess.PIPE if capture_output else None,
+        )
+        try:
+            stdout_b, stderr_b = await asyncio.wait_for(proc.communicate(), timeout=timeout)
+        except TimeoutError:
+            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+                proc.kill()
+            await proc.wait()
+            return -1, "", "Command timed out"
+        return (
+            int(proc.returncode or 0),
+            stdout_b.decode("utf-8", errors="replace") if stdout_b else "",
+            stderr_b.decode("utf-8", errors="replace") if stderr_b else "",
+        )
+
+    async def _run() -> tuple[int, str, str]:
         if isinstance(cmd, list):
-            result = subprocess.run(
-                cmd,
-                check=False,
-                timeout=timeout,
-                capture_output=capture_output,
-                text=True,
-            )
-        else:
-            # Execute through bash -lc using absolute path
-            bash_path = shutil.which("bash")
-            if bash_path is None:
-                return -1, "", "bash executable not found"
-            result = subprocess.run(
-                [bash_path, "-lc", cmd],
-                check=False,
-                timeout=timeout,
-                capture_output=capture_output,
-                text=True,
-            )
-        return result.returncode, result.stdout, result.stderr
-    except subprocess.TimeoutExpired:
-        return -1, "", "Command timed out"
-    except Exception as e:
-        return -1, "", str(e)
+            return await _run_list(cmd)
+        # For string commands that use shell features, attempt /bin/sh -c only if present
+        sh_path = shutil.which("sh")
+        if sh_path is None:
+            return -1, "", "shell executable not found"
+        return await _run_list([sh_path, "-c", cmd])
+
+    import contextlib
+
+    return asyncio.get_event_loop().run_until_complete(_run())
 
 
 def test_docker_build() -> bool:

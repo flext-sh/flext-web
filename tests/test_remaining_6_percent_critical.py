@@ -6,9 +6,9 @@ EVERY SINGLE ONE of the remaining 13 lines must be tested to achieve near-100% c
 
 from __future__ import annotations
 
+import asyncio
 import contextlib
 import os
-import subprocess
 import sys
 from unittest.mock import patch
 
@@ -171,33 +171,36 @@ class TestRemaining6PercentCritical:
 
         # Test 1: Invalid port argument (lines 122-123)
         cmd = [sys.executable, "-m", "flext_web", "--port", "abc"]
-        try:
-            result = subprocess.run(
-                cmd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=3,
+        async def _run(cmd: list[str], timeout: int = 3, env: dict[str, str] | None = None):
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                env=env,
             )
+            try:
+                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+            except TimeoutError:
+                process.kill()
+                await process.communicate()
+                raise
+            return process.returncode, stdout.decode(), stderr.decode()
+
+        try:
+            rc, _out, _err = asyncio.run(_run(cmd, timeout=3))
             # Should handle invalid port gracefully (lines 122-123)
-            assert result.returncode != 0, "Should fail with invalid port"
-        except subprocess.TimeoutExpired:
+            assert rc != 0, "Should fail with invalid port"
+        except TimeoutError:
             # CLI handled gracefully but took time
             pass
 
         # Test 2: Port out of range (lines 122-123)
         cmd = [sys.executable, "-m", "flext_web", "--port", "99999"]
         try:
-            result = subprocess.run(
-                cmd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=3,
-            )
+            rc, _out, _err = asyncio.run(_run(cmd, timeout=3))
             # Should handle out-of-range port (lines 122-123)
-            assert result.returncode != 0, "Should fail with port out of range"
-        except subprocess.TimeoutExpired:
+            assert rc != 0, "Should fail with port out of range"
+        except TimeoutError:
             pass
 
         # Test 3: Exception handling during startup (lines 133-135)
@@ -210,17 +213,10 @@ class TestRemaining6PercentCritical:
 
         cmd = [sys.executable, "-m", "flext_web"]
         try:
-            result = subprocess.run(
-                cmd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=3,
-                env=bad_env,
-            )
+            rc, _out, _err = asyncio.run(_run(cmd, timeout=3, env=bad_env))
             # Should handle startup exceptions gracefully (lines 133-135)
-            assert result.returncode != 0, "Should fail with bad configuration"
-        except subprocess.TimeoutExpired:
+            assert rc != 0, "Should fail with bad configuration"
+        except TimeoutError:
             pass
 
     def test_comprehensive_error_path_coverage(self) -> None:

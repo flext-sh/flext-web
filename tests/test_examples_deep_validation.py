@@ -7,7 +7,7 @@ error paths, and edge cases work correctly in production environments.
 
 from __future__ import annotations
 
-import subprocess
+import asyncio
 import sys
 import time
 from pathlib import Path
@@ -48,11 +48,10 @@ class TestExamplesDeepValidation:
         }
 
         cmd = [sys.executable, str(example_path)]
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
+        process = asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
             env=test_env,
         )
 
@@ -61,8 +60,9 @@ class TestExamplesDeepValidation:
             time.sleep(2)
 
             # Check if process is running or failed gracefully
-            if process.poll() is not None:
-                _stdout, stderr = process.communicate()
+            returncode = asyncio.get_event_loop().run_until_complete(process.wait())
+            if returncode is not None:
+                _stdout, stderr = asyncio.get_event_loop().run_until_complete(process.communicate())
                 # If it failed due to port conflicts or other issues, that's acceptable
                 pytest.skip(f"Service exited early (possibly port conflict): {stderr}")
 
@@ -77,9 +77,11 @@ class TestExamplesDeepValidation:
                 pass
 
         finally:
-            if process.poll() is None:
-                process.terminate()
-                process.wait(timeout=5)
+            try:
+                asyncio.get_event_loop().run_until_complete(asyncio.wait_for(process.wait(), timeout=5))
+            except TimeoutError:
+                with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+                    asyncio.get_event_loop().run_until_complete(process.kill())
 
     def test_api_usage_example_functionality(self) -> None:
         """Test api_usage.py example with comprehensive edge cases."""
@@ -159,12 +161,13 @@ class TestExamplesDeepValidation:
         }
 
         cmd = [sys.executable, str(example_path)]
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            env=test_env,
+        process = asyncio.get_event_loop().run_until_complete(
+            asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                env=test_env,
+            )
         )
 
         try:
@@ -172,11 +175,14 @@ class TestExamplesDeepValidation:
             time.sleep(2)
 
             # Check if process is running (should be)
-            assert process.poll() is None, "Docker-ready example failed to start"
+            assert asyncio.get_event_loop().run_until_complete(process.wait()) is None, "Docker-ready example failed to start"
 
         finally:
-            process.terminate()
-            process.wait(timeout=5)
+            try:
+                process.terminate()
+                asyncio.get_event_loop().run_until_complete(asyncio.wait_for(process.wait(), timeout=5))
+            except Exception:
+                pass
 
     def test_examples_with_invalid_parameters(self) -> None:
         """Test examples handle invalid parameters gracefully."""
@@ -189,8 +195,16 @@ class TestExamplesDeepValidation:
         }
 
         cmd = [sys.executable, "examples/docker_ready.py"]
-        subprocess.run(
-            cmd, check=False, capture_output=True, text=True, timeout=5, env=test_env,
+        asyncio.get_event_loop().run_until_complete(
+            asyncio.wait_for(
+                asyncio.create_subprocess_exec(
+                    *cmd,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                    env=test_env,
+                ),
+                timeout=5,
+            )
         )
         # Should either handle gracefully or fail cleanly
         # (Implementation may vary, but shouldn't hang)
@@ -212,12 +226,13 @@ class TestExamplesDeepValidation:
 
         cmd = [sys.executable, str(example_path)]
 
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            env=test_env,
+        process = asyncio.get_event_loop().run_until_complete(
+            asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                env=test_env,
+            )
         )
 
         try:
@@ -225,24 +240,25 @@ class TestExamplesDeepValidation:
             time.sleep(3)
 
             # Check if process is still running
-            if process.poll() is not None:
+            if asyncio.get_event_loop().run_until_complete(process.wait()) is not None:
                 # Process already exited, probably due to error
-                _stdout, stderr = process.communicate()
+                _stdout, stderr = asyncio.get_event_loop().run_until_complete(process.communicate())
                 pytest.skip(f"Process exited early, likely port conflict: {stderr}")
 
             # Send SIGTERM (graceful shutdown signal)
             process.send_signal(signal.SIGTERM)
 
             # Wait for graceful shutdown
-            return_code = process.wait(timeout=10)
+            return_code = asyncio.get_event_loop().run_until_complete(asyncio.wait_for(process.wait(), timeout=10))
 
             # Should exit gracefully (code 0) or with controlled shutdown
             assert return_code in {0, 1}, f"Unexpected return code {return_code}"
 
-        except subprocess.TimeoutExpired:
+        except TimeoutError:
             # Force kill if graceful shutdown didn't work
-            process.kill()
-            process.wait()
+            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+                asyncio.get_event_loop().run_until_complete(process.kill())
+            asyncio.get_event_loop().run_until_complete(process.wait())
             # This is acceptable - signal handling can be complex in test environments
             pytest.skip(
                 "Signal handling test timed out - acceptable in test environment",
@@ -259,18 +275,21 @@ class TestExamplesDeepValidation:
         }
 
         cmd = [sys.executable, "examples/docker_ready.py"]
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            env=test_env,
+        process = asyncio.get_event_loop().run_until_complete(
+            asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                env=test_env,
+            )
         )
 
         try:
             # Should start but generate temporary key
             time.sleep(2)
-            stdout, stderr = process.communicate(timeout=5)
+            stdout, stderr = asyncio.get_event_loop().run_until_complete(
+                asyncio.wait_for(process.communicate(), timeout=5)
+            )
 
             # Should contain warning about temporary key
             combined_output = stdout + stderr
@@ -279,9 +298,10 @@ class TestExamplesDeepValidation:
                 or "generated" in combined_output.lower()
             )
 
-        except subprocess.TimeoutExpired:
-            process.kill()
-            process.wait()
+        except TimeoutError:
+            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+                asyncio.get_event_loop().run_until_complete(process.kill())
+            asyncio.get_event_loop().run_until_complete(process.wait())
 
     def test_examples_directory_structure(self) -> None:
         """Validate examples directory has all required files."""

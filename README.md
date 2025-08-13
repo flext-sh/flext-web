@@ -264,4 +264,4 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ---
 
-_Part of the FLEXT ecosystem - Enterprise data integration platform_
+ 

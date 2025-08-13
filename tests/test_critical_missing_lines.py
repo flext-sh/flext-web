@@ -7,8 +7,8 @@ EVERY SINGLE MISSING LINE must be tested to achieve near-100% coverage.
 
 from __future__ import annotations
 
+import asyncio
 import contextlib
-import subprocess
 import sys
 from unittest.mock import patch
 
@@ -201,36 +201,39 @@ class TestCriticalMissingLines:
     def test_main_module_lines_114_116_122_123_133_135(self) -> None:
         """Test __main__.py lines 114, 116, 122-123, 133-135: CLI argument parsing."""
         # These lines are in CLI argument processing
-        # Testing with subprocess to avoid hanging the test suite
+        # Use asyncio subprocess to avoid hanging the test suite
 
         # Test --debug flag (line 114) - just test that module can handle it
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
-        try:
-            result = subprocess.run(
-                cmd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=5,
+        async def _run(cmd: list[str], timeout: int = 5, env: dict[str, str] | None = None):
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                env=env,
             )
+            try:
+                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+            except TimeoutError:
+                process.kill()
+                await process.communicate()
+                raise
+            return process.returncode, stdout.decode(), stderr.decode()
+
+        try:
+            rc, _out, _err = asyncio.run(_run(cmd, timeout=5))
             # Should handle debug flag without error
-            assert result.returncode in {0, 2}  # 0 for success, 2 for help
-        except subprocess.TimeoutExpired:
+            assert rc in {0, 2}  # 0 for success, 2 for help
+        except TimeoutError:
             # CLI processing working but taking time
             pass
 
         # Test --no-debug flag (line 116)
         cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
         try:
-            result = subprocess.run(
-                cmd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=5,
-            )
-            assert result.returncode in {0, 2}
-        except subprocess.TimeoutExpired:
+            rc, _out, _err = asyncio.run(_run(cmd, timeout=5))
+            assert rc in {0, 2}
+        except TimeoutError:
             pass
 
     def test_comprehensive_state_machine_coverage(self) -> None:

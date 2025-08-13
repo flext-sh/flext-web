@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Precise tests for CLI lines 114, 116, 133-135."""
 
+import asyncio
 import contextlib
 import os
-import subprocess
 import sys
 
 
@@ -14,26 +14,32 @@ def test_line_114_debug_flag_direct() -> None:
 
     cmd = [sys.executable, "-m", "flext_web", "--debug", "--port", "9999"]
 
-    try:
-        # Use timeout to prevent hanging
-        result = subprocess.run(
-            cmd,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=5,
-            env=test_env,
+    async def _run(cmd: list[str], timeout: int = 5, env: dict[str, str] | None = None):
+        process = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            env=env,
         )
+        try:
+            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+        except TimeoutError:
+            process.kill()
+            await process.communicate()
+            raise
+        return process.returncode, stdout.decode(), stderr.decode()
 
+    try:
+        rc, _out, _err = asyncio.run(_run(cmd, timeout=5, env=test_env))
         # Check that debug flag was processed (line 114)
         # The process should either start successfully or fail with a specific error
         # Debug flag test - capture result
-        assert result.returncode is not None
+        assert rc is not None
 
         # Line 114 should be hit regardless of success/failure
-        assert result.returncode in {0, 1, 2}, "Debug flag should be processed"
+        assert rc in {0, 1, 2}, "Debug flag should be processed"
 
-    except subprocess.TimeoutExpired:
+    except TimeoutError:
         # Process started but timed out - that's actually good, means line 114 was hit
         # Debug flag processed (timed out = started successfully)
         pass
@@ -47,23 +53,15 @@ def test_line_116_no_debug_flag_direct() -> None:
     cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--port", "9998"]
 
     try:
-        result = subprocess.run(
-            cmd,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=5,
-            env=test_env,
-        )
-
+        rc, _out, _err = asyncio.run(_run(cmd, timeout=5, env=test_env))
         # Check that no-debug flag was processed (line 116)
         # No-debug flag test - capture result
-        assert result.returncode is not None
+        assert rc is not None
 
         # Line 116 should be hit regardless of success/failure
-        assert result.returncode in {0, 1, 2}, "No-debug flag should be processed"
+        assert rc in {0, 1, 2}, "No-debug flag should be processed"
 
-    except subprocess.TimeoutExpired:
+    except TimeoutError:
         # Process started but timed out - that's actually good, means line 116 was hit
         # No-debug flag processed (timed out = started successfully)
         pass
@@ -81,21 +79,14 @@ def test_lines_133_135_exception_handling_direct() -> None:
 
     cmd = [sys.executable, "-m", "flext_web"]
 
-    result = subprocess.run(
-        cmd,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=10,
-        env=bad_env,
-    )
+    rc, out, err = asyncio.run(_run(cmd, timeout=10, env=bad_env))
 
     # Should exit with code 1 due to exception handling (lines 133-135)
 
-    assert result.returncode == 1, "Should exit with code 1 on configuration error"
+    assert rc == 1, "Should exit with code 1 on configuration error"
 
     # Check that proper error was logged (indicates exception handling was hit)
-    combined_output = result.stdout + result.stderr
+    combined_output = out + err
     error_indicators = ["error", "failed", "exception", "invalid", "validation"]
     has_error = any(
         indicator in combined_output.lower() for indicator in error_indicators
@@ -108,20 +99,14 @@ def test_port_validation_lines_122_123() -> None:
     # Test invalid port that causes sys.exit(1) on lines 122-123
     cmd = [sys.executable, "-m", "flext_web", "--port", "70000"]
 
-    result = subprocess.run(
-        cmd,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=5,
-    )
+    rc, out, err = asyncio.run(_run(cmd, timeout=5))
 
     # Should exit with code 1 due to port validation (lines 122-123)
 
-    assert result.returncode == 1, "Should exit with code 1 on invalid port"
+    assert rc == 1, "Should exit with code 1 on invalid port"
 
     # Check for port validation error message
-    combined_output = result.stdout + result.stderr
+    combined_output = out + err
     assert "port" in combined_output.lower(), "Should mention port in error"
 
 

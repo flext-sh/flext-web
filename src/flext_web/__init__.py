@@ -110,13 +110,14 @@ from flext_web.web_exceptions import (
     FlextWebTimeoutError,
     FlextWebValidationError,
 )
-from flext_web.web_models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
+from flext_web.models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
 from flext_web.web_service import FlextWebService
 
 if TYPE_CHECKING:
     from flask import Flask
 
 __version__ = "0.9.0"
+__version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 __author__ = "FLEXT Contributors"
 
 logger = get_logger(__name__)
@@ -457,6 +458,7 @@ __all__: list[str] = [
     "FlextWebTimeoutError",
     "FlextWebValidationError",
     "__version__",
+    "__version_info__",
     "annotations",
     "create_app",
     "create_service",

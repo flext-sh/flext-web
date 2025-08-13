@@ -7,9 +7,9 @@ Every single one of these 8 lines must be tested to complete the coverage goal.
 
 from __future__ import annotations
 
+import asyncio
 import contextlib
 import os
-import subprocess
 import sys
 from unittest.mock import patch
 
@@ -133,17 +133,26 @@ class TestFinal8LinesSurgical:
         """Test __main__.py line 114: --debug flag processing - SURGICAL precision."""
         # Test CLI with --debug flag (line 114)
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
-        try:
-            result = subprocess.run(
-                cmd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=5,
+        async def _run(cmd: list[str], timeout: int = 5, env: dict[str, str] | None = None):
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                env=env,
             )
+            try:
+                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+            except TimeoutError:
+                process.kill()
+                await process.communicate()
+                raise
+            return process.returncode, stdout.decode(), stderr.decode()
+
+        try:
+            rc, _out, _err = asyncio.run(_run(cmd, timeout=5))
             # Should handle debug flag without error (line 114)
-            assert result.returncode in {0, 2}, "Should handle --debug flag"
-        except subprocess.TimeoutExpired:
+            assert rc in {0, 2}, "Should handle --debug flag"
+        except TimeoutError:
             # CLI processing working but taking time - acceptable
             pass
 
@@ -152,16 +161,10 @@ class TestFinal8LinesSurgical:
         # Test CLI with --no-debug flag (line 116)
         cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
         try:
-            result = subprocess.run(
-                cmd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=5,
-            )
+            rc, _out, _err = asyncio.run(_run(cmd, timeout=5))
             # Should handle no-debug flag without error (line 116)
-            assert result.returncode in {0, 2}, "Should handle --no-debug flag"
-        except subprocess.TimeoutExpired:
+            assert rc in {0, 2}, "Should handle --no-debug flag"
+        except TimeoutError:
             # CLI processing working but taking time - acceptable
             pass
 
@@ -176,25 +179,18 @@ class TestFinal8LinesSurgical:
 
         cmd = [sys.executable, "-m", "flext_web"]
         try:
-            result = subprocess.run(
-                cmd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=5,
-                env=bad_env,
-            )
+            rc, out, err = asyncio.run(_run(cmd, timeout=5, env=bad_env))
             # Should handle startup exceptions gracefully (lines 133-135)
-            assert result.returncode != 0, "Should fail with bad configuration"
+            assert rc != 0, "Should fail with bad configuration"
 
             # Check that proper error handling occurred
-            combined_output = result.stdout + result.stderr
+            combined_output = out + err
             error_indicators = ["error", "failed", "exception", "invalid"]
             assert any(
                 indicator in combined_output.lower() for indicator in error_indicators
             )
 
-        except subprocess.TimeoutExpired:
+        except TimeoutError:
             # Exception handling might take time - acceptable
             pass
 

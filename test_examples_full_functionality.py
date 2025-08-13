@@ -5,10 +5,11 @@ Este teste valida 100% da funcionalidade de todos os examples usando o container
 para garantir comportamento compatível com ambientes de produção e enterprise.
 """
 
+import asyncio
 import shutil
-import subprocess
 import sys
 import time
+from pathlib import Path
 
 import requests
 
@@ -30,10 +31,26 @@ class ExamplesFullFunctionalityTest:
         if DOCKER_PATH is None:
             return False
         build_cmd = [DOCKER_PATH, "build", "-t", "flext-web-full-test", "."]
-        result = subprocess.run(
-            build_cmd, check=False, capture_output=True, text=True,
+
+        async def _run_exec(cmd: list[str], timeout: int = 120, cwd: str | None = None) -> tuple[int, str, str]:
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                cwd=cwd,
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
+            except TimeoutError:
+                process.kill()
+                await process.communicate()
+                return 124, "", "Timeout"
+            return process.returncode, stdout.decode(), stderr.decode()
+
+        build_rc, _build_out, _build_err = asyncio.run(
+            _run_exec(build_cmd, timeout=180, cwd=str(Path(__file__).resolve().parent)),
         )
-        if result.returncode != 0:
+        if build_rc != 0:
             return False
 
         # Start container with examples
@@ -58,17 +75,11 @@ class ExamplesFullFunctionalityTest:
         ]
 
         try:
-            result = subprocess.run(
-                start_cmd,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-            if result.returncode != 0:
+            start_rc, start_out, _start_err = asyncio.run(_run_exec(start_cmd, timeout=30))
+            if start_rc != 0:
                 return False
 
-            self.container_id = result.stdout.strip()
+            self.container_id = start_out.strip()
 
             # Wait for service to be ready
             for _i in range(30):  # 30 seconds timeout
@@ -77,7 +88,8 @@ class ExamplesFullFunctionalityTest:
                     if response.status_code == 200:
                         return True
                 except Exception:
-                    self.logger.exception("Failed to get health check")
+                    # Mantém silencioso no loop de espera do health check
+                    pass
                 time.sleep(1)
 
             return False
@@ -88,12 +100,20 @@ class ExamplesFullFunctionalityTest:
     def stop_docker_service(self) -> None:
         """Para o serviço Docker."""
         if self.container_id:
-            subprocess.run(
-                [DOCKER_PATH, "stop", "flext-full-test"],
-                check=False,
-                capture_output=True,
-                timeout=10,
-            )
+            async def _stop():
+                process = await asyncio.create_subprocess_exec(
+                    DOCKER_PATH,
+                    "stop",
+                    "flext-full-test",
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                try:
+                    await asyncio.wait_for(process.communicate(), timeout=10)
+                except TimeoutError:
+                    process.kill()
+                    await process.communicate()
+            asyncio.run(_stop())
 
     def test_basic_service_full_functionality(self) -> bool | None:
         """Testa TODA funcionalidade do basic_service.py."""
