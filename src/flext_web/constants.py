@@ -52,7 +52,7 @@ class FlextWebConstants(FlextConstants):
         INTERNAL_SERVER_ERROR = 500
 
         # Content types
-        JSON_CONTENT_TYPE = "application/json"
+        JSON_CONTENT_TYPE = FlextConstants.Observability.SERIALIZATION_FORMAT_JSON if hasattr(FlextConstants.Observability, "SERIALIZATION_FORMAT_JSON") else "application/json"
         HTML_CONTENT_TYPE = "text/html"
 
     class Configuration:
