@@ -62,7 +62,7 @@ Example:
     ...     port=5000,
     ...     debug=False,
     ...     enable_auth=True,
-    ...     enable_monitoring=True
+    ...     enable_monitoring=True,
     ... )
     >>>
     >>> # Create and start web service
@@ -97,9 +97,8 @@ from flext_core import (
     get_logger,
 )
 
-# Import from consolidated modules following PEP8 structure
-from .web_config import FlextWebConfig
-from .web_exceptions import (
+from flext_web.web_config import FlextWebConfig
+from flext_web.web_exceptions import (
     FlextWebAuthenticationError,
     FlextWebConfigurationError,
     FlextWebConnectionError,
@@ -111,12 +110,8 @@ from .web_exceptions import (
     FlextWebTimeoutError,
     FlextWebValidationError,
 )
-from .web_models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
-from .web_service import FlextWebService
-
-# Legacy imports have been consolidated into the new PEP8 structure.
-# Old modules (config/, domain/, web/) have been removed and consolidated
-# into web_config.py, web_models.py, web_service.py, and web_exceptions.py
+from flext_web.web_models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
+from flext_web.web_service import FlextWebService
 
 if TYPE_CHECKING:
     from flask import Flask

@@ -42,7 +42,7 @@ def test_docker_memory_stress() -> bool | None:
     ]
 
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603 - Docker command for testing
             cmd, check=False, capture_output=True, text=True, timeout=10
         )
         if result.returncode != 0:
@@ -90,7 +90,7 @@ def test_docker_concurrent_requests() -> bool:
     ]
 
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603 - Docker command for testing
             cmd, check=False, capture_output=True, text=True, timeout=10
         )
         if result.returncode != 0:
@@ -150,7 +150,7 @@ def test_docker_api_workflow() -> bool:
     ]
 
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603 - Docker command for testing
             cmd, check=False, capture_output=True, text=True, timeout=10
         )
         if result.returncode != 0:

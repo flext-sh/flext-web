@@ -76,7 +76,8 @@ class FlextValidators:
 
     @staticmethod
     def is_valid_port(port: int) -> bool:
-        return isinstance(port, int) and 1 <= port <= 65535
+        from flext_web.constants import FlextWebConstants
+        return isinstance(port, int) and FlextWebConstants.Network.MIN_PORT <= port <= FlextWebConstants.Network.MAX_PORT
 
     @staticmethod
     def matches_pattern(value: str, pattern: str) -> bool:
@@ -94,4 +95,5 @@ class FlextHandlers:
 
 
 def get_logger(name: str) -> logging.Logger:
+    """Get a logger instance for the given name."""
     return logging.getLogger(name)

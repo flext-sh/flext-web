@@ -46,13 +46,13 @@ import sys
 
 from flext_core import get_logger
 
-from . import create_service, get_web_settings
+from flext_web import create_service, get_web_settings
 
 logger = get_logger(__name__)
 
 
 def main() -> None:
-    """Main entry point for FLEXT Web Interface command-line execution.
+    """Provide CLI entry point for FLEXT Web Interface.
 
     Provides comprehensive command-line interface for starting the FLEXT Web
     Interface service with argument parsing, configuration validation, and

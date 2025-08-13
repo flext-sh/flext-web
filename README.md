@@ -1,6 +1,6 @@
 # flext-web
 
-**Type**: Application Service | **Status**: Development | **Dependencies**: flext-core
+**Type**: Application Service | **Status**: Active Development | **Dependencies**: flext-core
 
 Web interface and REST API for managing FLEXT ecosystem services and applications.
 
@@ -179,11 +179,11 @@ export FLEXT_WEB_SECRET_KEY="your-secret-key"
 
 ## Quality Standards
 
-### **Zero Tolerance Quality Gates**
+### **Quality Targets**
 
-- **Coverage**: 90% test coverage enforced
-- **Type Safety**: Strict MyPy configuration
-- **Linting**: Ruff with comprehensive rules
+- **Coverage**: 90% target (work in progress)
+- **Type Safety**: MyPy strict mode adoption in progress
+- **Linting**: Ruff with comprehensive rules (continuous improvement)
 - **Security**: Bandit + pip-audit scanning
 
 ## Integration with FLEXT Ecosystem

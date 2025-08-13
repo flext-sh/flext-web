@@ -21,8 +21,8 @@ from typing import TYPE_CHECKING
 from flask import Flask, jsonify, request
 from flext_core import get_logger
 
-from .web_config import FlextWebConfig
-from .web_models import FlextWebApp, FlextWebAppHandler
+from flext_web.web_config import FlextWebConfig
+from flext_web.web_models import FlextWebApp, FlextWebAppHandler
 
 if TYPE_CHECKING:
     from flask.typing import ResponseReturnValue
@@ -87,6 +87,7 @@ class FlextWebService:
     """
 
     def __init__(self, config: FlextWebConfig | None = None) -> None:
+        """Initialize the web service."""
         self.config = config or FlextWebConfig()
         self.app = Flask(__name__)
         self.app.secret_key = self.config.secret_key

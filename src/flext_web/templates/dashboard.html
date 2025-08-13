@@ -461,7 +461,7 @@
                             <option value="">Select cluster...</option>
                         </select>
                     </div>
-                    
+
                     <!-- Meltano Job Fields -->
                     <div id="meltano-fields" style="display: none;">
                         <div class="form-group">
@@ -530,7 +530,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeTabs();
             loadDashboard();
-            
+
             // Auto-refresh every 30 seconds
             setInterval(loadDashboard, 30000);
         });
@@ -560,10 +560,10 @@
             try {
                 const response = await fetch('/api/v1/flexcore/dashboard');
                 if (!response.ok) throw new Error('Failed to load dashboard');
-                
+
                 const result = await response.json();
                 console.log('Dashboard data received:', result);
-                
+
                 if (result.success && result.data) {
                     dashboardData = result.data;
                     updateDashboard(dashboardData);
@@ -576,7 +576,7 @@
                 showError('Network error loading dashboard');
             }
         }
-        
+
         function showError(message) {
             const errorDiv = document.createElement('div');
             errorDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ef4444; color: white; padding: 1rem; border-radius: 0.5rem; z-index: 1000;';
@@ -591,7 +591,7 @@
             document.getElementById('plugin-count').textContent = data.plugin_stats?.total_plugins || 0;
             document.getElementById('running-jobs').textContent = data.job_stats?.jobs_by_status?.running || 0;
             document.getElementById('total-jobs').textContent = data.job_stats?.total_jobs || 0;
-            
+
             // Update FLEXT service status display
             updateFlextServiceStatus(data.flext_service);
 
@@ -600,7 +600,7 @@
             updatePluginsTable(data.plugin_stats);
             updateJobsTable(data.job_stats);
         }
-        
+
         function updateFlextServiceStatus(flextService) {
             // Add FLEXT service status indicator
             let statusHtml = '';
@@ -616,11 +616,11 @@
                     </div>
                 `;
             }
-            
+
             // Remove existing status indicator
             const existing = document.getElementById('flext-status-indicator');
             if (existing) existing.remove();
-            
+
             // Add new status indicator
             if (statusHtml) {
                 const indicator = document.createElement('div');
@@ -632,7 +632,7 @@
 
         function updateClustersTable(clusters) {
             const container = document.getElementById('clusters-table');
-            
+
             if (clusters.length === 0) {
                 container.innerHTML = '<div class="empty-state">No FlexCore clusters registered<br><small>Click "Add Cluster" to get started</small></div>';
                 return;
@@ -674,7 +674,7 @@
         function updatePluginsTable() {
             const container = document.getElementById('plugins-table');
             const plugins = [];
-            
+
             // Extract plugins from dashboard data
             if (dashboardData.plugin_stats && dashboardData.clusters) {
                 // This would be populated from the actual API
@@ -713,11 +713,11 @@
         function showCreateJobModal(type) {
             currentJobType = type;
             document.getElementById('job-modal-title').textContent = `Create ${type.charAt(0).toUpperCase() + type.slice(1)} Job`;
-            
+
             // Show/hide appropriate fields
             document.getElementById('meltano-fields').style.display = type === 'meltano' ? 'block' : 'none';
             document.getElementById('ray-fields').style.display = type === 'ray' ? 'block' : 'none';
-            
+
             populateClusterSelect('job-cluster');
             document.getElementById('create-job-modal').style.display = 'block';
         }
@@ -729,7 +729,7 @@
         function populateClusterSelect(selectId) {
             const select = document.getElementById(selectId);
             select.innerHTML = '<option value="">Select cluster...</option>';
-            
+
             if (dashboardData.clusters) {
                 dashboardData.clusters.forEach(cluster => {
                     select.innerHTML += `<option value="${cluster.cluster_id}">${cluster.name}</option>`;
@@ -741,7 +741,7 @@
         document.getElementById('add-cluster-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            
+
             try {
                 const response = await fetch('/api/v1/flexcore/clusters', {
                     method: 'POST',
@@ -751,9 +751,9 @@
                         endpoint: formData.get('endpoint')
                     })
                 });
-                
+
                 if (!response.ok) throw new Error('Failed to add cluster');
-                
+
                 closeModal('add-cluster-modal');
                 loadDashboard();
                 e.target.reset();
@@ -765,7 +765,7 @@
         document.getElementById('add-plugin-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            
+
             try {
                 const response = await fetch('/api/v1/flexcore/plugins', {
                     method: 'POST',
@@ -777,9 +777,9 @@
                         cluster_id: formData.get('cluster_id')
                     })
                 });
-                
+
                 if (!response.ok) throw new Error('Failed to register plugin');
-                
+
                 closeModal('add-plugin-modal');
                 loadDashboard();
                 e.target.reset();
@@ -791,7 +791,7 @@
         document.getElementById('create-job-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            
+
             const jobData = {
                 cluster_id: formData.get('cluster_id')
             };
@@ -814,16 +814,16 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(jobData)
                 });
-                
+
                 if (!response.ok) throw new Error(`Failed to create ${currentJobType} job`);
-                
+
                 const result = await response.json();
-                
+
                 // Execute the job immediately
                 await fetch(`/api/v1/flexcore/jobs/${result.job_id}/execute`, {
                     method: 'POST'
                 });
-                
+
                 closeModal('create-job-modal');
                 switchTab('jobs');
                 loadDashboard();
@@ -840,7 +840,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status })
                 });
-                
+
                 if (!response.ok) throw new Error('Failed to update status');
                 loadDashboard();
             } catch (error) {
@@ -864,9 +864,9 @@
                         config: config || {}
                     })
                 });
-                
+
                 if (!response.ok) throw new Error('Failed to start local instance');
-                
+
                 const result = await response.json();
                 alert(`Local instance "${instanceName}" started successfully on port ${result.data.instance_data.port}`);
                 loadDashboard();
@@ -879,7 +879,7 @@
             try {
                 const response = await fetch('/api/v1/flexcore/local/list');
                 const result = await response.json();
-                
+
                 if (result.data.length === 0) {
                     alert('No local instances running');
                 } else {
@@ -899,13 +899,13 @@
                 localForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const formData = new FormData(e.target);
-                    
+
                     await startLocalInstance(
                         formData.get('instance_name'),
                         parseInt(formData.get('port')) || 8080,
                         {}
                     );
-                    
+
                     closeModal('local-instance-modal');
                     e.target.reset();
                 });

@@ -41,7 +41,10 @@ class FlextWebError(FlextError):
     Accepts arbitrary keyword details and stores them as context.
     """
 
-    def __init__(self, message: str, route: str | None = None, **kwargs: object) -> None:
+    def __init__(
+        self, message: str, route: str | None = None, **kwargs: object,
+    ) -> None:
+        """Initialize web error with context."""
         context = dict(kwargs)
         if route is not None:
             context["route"] = route
