@@ -21,8 +21,8 @@ from typing import TYPE_CHECKING
 from flask import Flask, jsonify, request
 from flext_core import get_logger
 
-from flext_web.models import FlextWebApp, FlextWebAppHandler
 from flext_web.web_config import FlextWebConfig
+from flext_web.web_models import FlextWebApp, FlextWebAppHandler
 
 if TYPE_CHECKING:
     from flask.typing import ResponseReturnValue

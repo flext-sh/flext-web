@@ -110,7 +110,7 @@ from flext_web.web_exceptions import (
     FlextWebTimeoutError,
     FlextWebValidationError,
 )
-from flext_web.models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
+from flext_web.web_models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
 from flext_web.web_service import FlextWebService
 
 if TYPE_CHECKING:
