@@ -126,6 +126,34 @@ class FlextWebApp(FlextEntity):
         description="Application status",
     )
 
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        """Validate application name is non-empty."""
+        if not FlextValidators.is_non_empty_string(v):
+            msg = "Application name cannot be empty"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("host")
+    @classmethod
+    def validate_host(cls, v: str) -> str:
+        """Validate host address is non-empty."""
+        if not FlextValidators.is_non_empty_string(v):
+            msg = "Host address cannot be empty"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("port")
+    @classmethod
+    def validate_port(cls, v: int) -> int:
+        """Validate port is within valid range."""
+        max_port_number = 65535
+        if not (1 <= v <= max_port_number):
+            msg = "Port must be between 1 and 65535"
+            raise ValueError(msg)
+        return v
+
     @field_validator("status", mode="before")
     @classmethod
     def _coerce_status(cls, v: object) -> FlextWebAppStatus:
@@ -137,7 +165,7 @@ class FlextWebApp(FlextEntity):
         except Exception:
             return FlextWebAppStatus.ERROR
 
-    def validate_domain_rules(self) -> FlextResult[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate application according to domain business rules.
 
         Performs comprehensive validation of the application entity using
@@ -148,31 +176,26 @@ class FlextWebApp(FlextEntity):
             FlextResult[None]: Success if all validations pass, failure with
             detailed error message if any validation rule is violated.
 
-        Validation Rules:
-            - Application name must be non-empty string
-            - Port number must be within valid range (1-65535)
-            - Host address must be non-empty string
-            - Additional custom business rules as defined
+        Note:
+            Basic field validations are now handled by @field_validator decorators.
+            This method performs additional domain business rules validation.
 
         Example:
             >>> app = FlextWebApp(name="test", host="localhost", port=3000)
-            >>> result = app.validate_domain_rules()
+            >>> result = app.validate_business_rules()
             >>> if result.success:
             ...     print("Application is valid")
             ... else:
             ...     print(f"Validation failed: {result.error}")
 
         """
-        if not FlextValidators.is_non_empty_string(self.name):
-            return FlextResult.fail("App name is required")
-        max_port_number = 65535
-        if not (1 <= self.port <= max_port_number):
-            return FlextResult.fail("Invalid port number")
+        # Basic field validations are now handled by @field_validator decorators
+        # This method is kept for additional business rule validations if needed
         return FlextResult.ok(None)
 
-    def validate_business_rules(self) -> FlextResult[None]:
+    def validate_domain_rules(self) -> FlextResult[None]:
         """Validate business rules required by FlextEntity abstract method."""
-        return self.validate_domain_rules()
+        return self.validate_business_rules()
 
     def _status_enum(self) -> FlextWebAppStatus:
         """Return status as FlextWebAppStatus regardless of storage format.
@@ -406,7 +429,7 @@ class FlextWebAppHandler:
             app = FlextWebApp(id=f"app_{name}", name=name, port=port, host=host)
 
             # Validate domain rules before returning
-            validation = app.validate_domain_rules()
+            validation = app.validate_business_rules()
             if not validation.success:
                 return FlextResult.fail(validation.error or "Domain validation failed")
 

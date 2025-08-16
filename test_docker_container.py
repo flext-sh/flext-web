@@ -9,6 +9,7 @@ This script tests the Docker container by:
 """
 
 import asyncio
+import contextlib
 import shutil
 import sys
 import time
@@ -36,7 +37,7 @@ def run_command(
                 timeout=timeout,
             )
         except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+            with contextlib.suppress(ProcessLookupError):
                 proc.kill()
             await proc.wait()
             return -1, "", "Command timed out"
@@ -54,8 +55,6 @@ def run_command(
         if sh_path is None:
             return -1, "", "shell executable not found"
         return await _run_list([sh_path, "-c", cmd])
-
-    import contextlib
 
     return asyncio.get_event_loop().run_until_complete(_run())
 

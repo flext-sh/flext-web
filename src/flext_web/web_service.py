@@ -177,7 +177,8 @@ class FlextWebService:
         if app_result.success:
             app = app_result.data
             if app is not None:
-                self.apps[app.id] = app
+                # Normalize key to string for the dict keyed by str
+                self.apps[str(app.id)] = app
 
                 app_data = {
                     "id": app.id,
@@ -201,7 +202,7 @@ class FlextWebService:
 
     def get_app(self, app_id: str) -> ResponseReturnValue:
         """Get application information."""
-        app = self.apps.get(app_id)
+        app = self.apps.get(str(app_id))
         if not app:
             return self._create_response(
                 success=False,

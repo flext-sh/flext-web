@@ -8,13 +8,20 @@ import sys
 
 
 def test_line_114_debug_flag_direct() -> None:
-    """Test line 114: debug = True path in CLI."""
-    # Test --debug flag processing (line 114: debug = True)
+    """Test line 114: debug = True path in CLI."""    # Test --debug flag processing (line 114: debug = True)
     test_env = {**os.environ, "FLEXT_WEB_PORT": "9999"}  # Avoid port conflicts
 
     cmd = [sys.executable, "-m", "flext_web", "--debug", "--port", "9999"]
 
     async def _run(cmd: list[str], timeout: int = 5, env: dict[str, str] | None = None):
+        """Run function.
+
+        Args:
+            cmd (list[str]): Description.
+            timeout (int): Description.
+            env (dict[str, str] | None): Description.
+
+        """
         process = await asyncio.create_subprocess_exec(
             *cmd,
             stdout=asyncio.subprocess.PIPE,
@@ -49,8 +56,7 @@ def test_line_114_debug_flag_direct() -> None:
 
 
 def test_line_116_no_debug_flag_direct() -> None:
-    """Test line 116: debug = False path in CLI."""
-    # Test --no-debug flag processing (line 116: debug = False)
+    """Test line 116: debug = False path in CLI."""    # Test --no-debug flag processing (line 116: debug = False)
     test_env = {**os.environ, "FLEXT_WEB_PORT": "9998"}  # Avoid port conflicts
 
     cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--port", "9998"]
@@ -71,8 +77,7 @@ def test_line_116_no_debug_flag_direct() -> None:
 
 
 def test_lines_133_135_exception_handling_direct() -> None:
-    """Test lines 133-135: Exception handling in main()."""
-    # Create environment that will cause RuntimeError/ValueError/TypeError (lines 133-135)
+    """Test lines 133-135: Exception handling in main()."""    # Create environment that will cause RuntimeError/ValueError/TypeError (lines 133-135)
     bad_env = {
         **os.environ,
         "FLEXT_WEB_SECRET_KEY": "x",  # Too short, will cause validation error
@@ -98,8 +103,7 @@ def test_lines_133_135_exception_handling_direct() -> None:
 
 
 def test_port_validation_lines_122_123() -> None:
-    """Test port validation that leads to sys.exit(1) - lines 122-123."""
-    # Test invalid port that causes sys.exit(1) on lines 122-123
+    """Test port validation that leads to sys.exit(1) - lines 122-123."""    # Test invalid port that causes sys.exit(1) on lines 122-123
     cmd = [sys.executable, "-m", "flext_web", "--port", "70000"]
 
     rc, out, err = asyncio.run(_run(cmd, timeout=5))

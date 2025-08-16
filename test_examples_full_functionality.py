@@ -110,7 +110,7 @@ class ExamplesFullFunctionalityTest:
         """Para o serviço Docker."""
         if self.container_id:
 
-            async def _stop():
+            async def _stop() -> None:
                 process = await asyncio.create_subprocess_exec(
                     DOCKER_PATH,
                     "stop",

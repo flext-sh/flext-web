@@ -46,8 +46,15 @@ class TestMainEntryPoint:
         mock_get_web_settings: MagicMock,
         mock_create_service: MagicMock,
     ) -> None:
-        """Test main function with default arguments."""
-        # Setup mock parser
+        """Test main function with default arguments.
+
+        Args:
+            mock_get_logger (MagicMock): Description.
+            mock_parser (MagicMock): Description.
+            mock_get_web_settings (MagicMock): Description.
+            mock_create_service (MagicMock): Description.
+
+        """        # Setup mock parser
         mock_args = MagicMock()
         mock_args.host = None
         mock_args.port = None
@@ -97,8 +104,15 @@ class TestMainEntryPoint:
         mock_get_web_settings: MagicMock,
         mock_create_service: MagicMock,
     ) -> None:
-        """Test main function handles KeyboardInterrupt gracefully."""
-        # Setup mock parser
+        """Test main function handles KeyboardInterrupt gracefully.
+
+        Args:
+            mock_logger (MagicMock): Description.
+            mock_parser (MagicMock): Description.
+            mock_get_web_settings (MagicMock): Description.
+            mock_create_service (MagicMock): Description.
+
+        """        # Setup mock parser
         mock_args = MagicMock()
         mock_args.host = None
         mock_args.port = None

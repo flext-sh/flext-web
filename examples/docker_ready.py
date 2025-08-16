@@ -6,6 +6,7 @@ environment variable support, and production-ready patterns.
 """
 
 import os
+import secrets
 import signal
 import sys
 
@@ -26,8 +27,6 @@ def create_docker_config() -> FlextWebConfig:
 
     # Generate secure secret key if not provided
     if not secret_key:
-        import secrets
-
         secret_key = secrets.token_urlsafe(32)
         logger.warning("No SECRET_KEY provided, generated temporary key")
 
