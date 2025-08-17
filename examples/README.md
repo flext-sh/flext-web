@@ -344,8 +344,8 @@ class TestApplicationWorkflow:
 
 def test_api_integration():
     """Example API integration testing"""
-    from flask import Flask
-    from flext_web import create_service
+from flask import Flask
+from flext_web import create_service
 
     service = create_service()
     client = service.app.test_client()

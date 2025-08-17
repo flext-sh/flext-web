@@ -8,6 +8,9 @@ error paths, and edge cases work correctly in production environments.
 from __future__ import annotations
 
 import asyncio
+import contextlib
+import os
+import signal
 import sys
 import time
 from pathlib import Path
@@ -27,11 +30,10 @@ class TestExamplesDeepValidation:
 
         # Test 2: Basic service doesn't have command line args - it's meant to be simple
         # Test that it can be imported without errors
-        import sys
 
         sys.path.insert(0, "examples")
         try:
-            import basic_service
+            import basic_service  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports] # noqa: PLC0415
 
             assert hasattr(basic_service, "main"), "main function missing"
             assert callable(basic_service.main), "main function not callable"
@@ -40,7 +42,6 @@ class TestExamplesDeepValidation:
                 sys.path.remove("examples")
 
         # Test 3: Direct execution with timeout (should start server)
-        import os
 
         test_env = {
             **os.environ,
@@ -84,18 +85,16 @@ class TestExamplesDeepValidation:
                     asyncio.wait_for(process.wait(), timeout=5),
                 )
             except TimeoutError:
-                with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+                with contextlib.suppress(ProcessLookupError):
                     asyncio.get_event_loop().run_until_complete(process.kill())
 
     def test_api_usage_example_functionality(self) -> None:
         """Test api_usage.py example with comprehensive edge cases."""
         # Import the module to test all functions
-        import sys
-
         sys.path.insert(0, "examples")
 
         try:
-            import api_usage
+            import api_usage  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports] # noqa: PLC0415
 
             # Test 1: All functions exist and are callable
             functions_to_test = [
@@ -142,11 +141,10 @@ class TestExamplesDeepValidation:
         assert example_path.exists(), "docker_ready.py example file missing"
 
         # Test 1: Import test - docker_ready doesn't handle CLI args, uses environment
-        import sys
 
         sys.path.insert(0, "examples")
         try:
-            import docker_ready
+            import docker_ready  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports] # noqa: PLC0415
 
             assert hasattr(docker_ready, "main"), "main function missing"
             assert callable(docker_ready.main), "main function not callable"
@@ -155,7 +153,6 @@ class TestExamplesDeepValidation:
                 sys.path.remove("examples")
 
         # Test 2: Environment variable handling
-        import os
 
         test_env = {
             **os.environ,
@@ -190,13 +187,12 @@ class TestExamplesDeepValidation:
                 asyncio.get_event_loop().run_until_complete(
                     asyncio.wait_for(process.wait(), timeout=5),
                 )
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Process termination timeout: %s", exc)
 
     def test_examples_with_invalid_parameters(self) -> None:
         """Test examples handle invalid parameters gracefully."""
         # Test docker_ready with invalid port via environment
-        import os
 
         test_env = {
             **os.environ,
@@ -220,9 +216,6 @@ class TestExamplesDeepValidation:
 
     def test_examples_signal_handling(self) -> None:
         """Test examples handle signals gracefully."""
-        import os
-        import signal
-
         # Test docker_ready.py signal handling with different port to avoid conflicts
         example_path = Path("examples/docker_ready.py")
 
@@ -269,7 +262,7 @@ class TestExamplesDeepValidation:
 
         except TimeoutError:
             # Force kill if graceful shutdown didn't work
-            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+            with contextlib.suppress(ProcessLookupError):
                 asyncio.get_event_loop().run_until_complete(process.kill())
             asyncio.get_event_loop().run_until_complete(process.wait())
             # This is acceptable - signal handling can be complex in test environments
@@ -280,7 +273,6 @@ class TestExamplesDeepValidation:
     def test_examples_error_handling_paths(self) -> None:
         """Test examples handle various error conditions."""
         # Test with missing secret key
-        import os
 
         # Remove secret key from environment if present
         test_env = {
@@ -312,7 +304,7 @@ class TestExamplesDeepValidation:
             )
 
         except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+            with contextlib.suppress(ProcessLookupError):
                 asyncio.get_event_loop().run_until_complete(process.kill())
             asyncio.get_event_loop().run_until_complete(process.wait())
 
@@ -368,8 +360,6 @@ class TestExamplesDeepValidation:
             "basic_service",
             "docker_ready",
         ]
-
-        import sys
 
         sys.path.insert(0, "examples")
 

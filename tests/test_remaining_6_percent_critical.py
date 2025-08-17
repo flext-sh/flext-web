@@ -10,11 +10,18 @@ import asyncio
 import contextlib
 import os
 import sys
+import threading
 from unittest.mock import patch
 
 import pytest
+from jinja2 import TemplateError
 
-from flext_web import FlextWebConfig, FlextWebService
+from flext_web import (
+    FlextWebConfig,
+    FlextWebService,
+    get_web_settings,
+    reset_web_settings,
+)
 
 
 class TestRemaining6PercentCritical:
@@ -76,8 +83,6 @@ class TestRemaining6PercentCritical:
 
         # Test template rendering with missing variables
         with patch("flask.render_template_string") as mock_render:
-            from jinja2 import TemplateError
-
             mock_render.side_effect = TemplateError("Missing template variable")
 
             with contextlib.suppress(Exception):
@@ -137,8 +142,6 @@ class TestRemaining6PercentCritical:
                 },
             )()
 
-            from flext_web import get_web_settings, reset_web_settings
-
             # Reset to test fresh configuration
             reset_web_settings()
 
@@ -151,7 +154,6 @@ class TestRemaining6PercentCritical:
         # This tests the TYPE_CHECKING import path more thoroughly
 
         # Test that all type imports work correctly
-        from flext_web import FlextWebConfig, FlextWebService
 
         # Verify that ResponseReturnValue type is properly imported when needed
         config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
@@ -174,28 +176,24 @@ class TestRemaining6PercentCritical:
 
         async def _run(
             cmd: list[str],
-            timeout: int = 3,
             env: dict[str, str] | None = None,
-        ):
-            process = await asyncio.create_subprocess_exec(
-                *cmd,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-                env=env,
-            )
+        ) -> tuple[int, str, str]:
+            """Helper to run a command asynchronously and return (rc, stdout, stderr)."""
             try:
-                stdout, stderr = await asyncio.wait_for(
-                    process.communicate(),
-                    timeout=timeout,
-                )
+                async with asyncio.timeout(3):
+                    process = await asyncio.create_subprocess_exec(
+                        *cmd,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE,
+                        env=env,
+                    )
+                    stdout, stderr = await process.communicate()
+                    return process.returncode or 0, stdout.decode(), stderr.decode()
             except TimeoutError:
-                process.kill()
-                await process.communicate()
-                raise
-            return process.returncode, stdout.decode(), stderr.decode()
+                return -1, "", "Command timed out after 3 seconds"
 
         try:
-            rc, _out, _err = asyncio.run(_run(cmd, timeout=3))
+            rc, _out, _err = asyncio.run(_run(cmd))
             # Should handle invalid port gracefully (lines 122-123)
             assert rc != 0, "Should fail with invalid port"
         except TimeoutError:
@@ -205,7 +203,7 @@ class TestRemaining6PercentCritical:
         # Test 2: Port out of range (lines 122-123)
         cmd = [sys.executable, "-m", "flext_web", "--port", "99999"]
         try:
-            rc, _out, _err = asyncio.run(_run(cmd, timeout=3))
+            rc, _out, _err = asyncio.run(_run(cmd))
             # Should handle out-of-range port (lines 122-123)
             assert rc != 0, "Should fail with port out of range"
         except TimeoutError:
@@ -221,7 +219,7 @@ class TestRemaining6PercentCritical:
 
         cmd = [sys.executable, "-m", "flext_web"]
         try:
-            rc, _out, _err = asyncio.run(_run(cmd, timeout=3, env=bad_env))
+            rc, _out, _err = asyncio.run(_run(cmd, env=bad_env))
             # Should handle startup exceptions gracefully (lines 133-135)
             assert rc != 0, "Should fail with bad configuration"
         except TimeoutError:
@@ -279,7 +277,6 @@ class TestRemaining6PercentCritical:
             assert response.status_code in {200, 400, 500}
 
         # Test 2: Concurrent request simulation
-        import threading
 
         results = []
 

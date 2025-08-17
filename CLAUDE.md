@@ -12,32 +12,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-The project follows **Clean Architecture** with **Domain-Driven Design (DDD)** patterns, using the flext-core library for standardized patterns. **Key architectural note**: This is a single-file implementation where all components are defined in `src/flext_web/__init__.py`.
+The project follows **Clean Architecture** with **Domain-Driven Design (DDD)** patterns, using the flext-core library for standardized patterns. The implementation uses a modular architecture with clear separation of concerns across multiple specialized modules.
 
-### Domain Layer
+### Domain Layer (web_models.py)
 
 - **FlextWebApp** entity with `FlextWebAppStatus` enum for lifecycle management
 - **FlextWebAppHandler** implementing CQRS command patterns
 - Business rules validation using flext-core FlextResult pattern
 
-### Application Layer
+### Application Layer (web_config.py, web_service.py)
 
 - **FlextWebConfig** with environment-based settings and validation
 - **FlextWebService** providing Flask integration with REST API
 - Configuration management with singleton pattern and factory functions
 
-### Infrastructure Layer
+### Infrastructure Layer (web_exceptions.py, templates/)
 
 - **Flask** web framework integration with route registration
-- **Exception hierarchy** in separate `exceptions.py` extending flext-core patterns
-- **Template system** (templates/ directory exists but unused - service uses inline HTML)
+- **Exception hierarchy** in `web_exceptions.py` extending flext-core patterns
+- **Template system** available for HTML rendering with Flask templates
 
 ### Key Implementation Details
 
-- **Single-file architecture**: All core logic in `__init__.py` (519 lines)
+- **Modular architecture**: Components split across multiple files for Clean Architecture
 - **FlextResult pattern**: Consistent error handling throughout
 - **In-memory storage**: Applications stored in `FlextWebService.apps` dictionary
-- **Inline HTML dashboard**: No template engine usage despite templates/ directory
+- **Template system**: Templates available but service can use inline or template-based HTML
 - **Mixed dependencies**: pyproject.toml lists Django/FastAPI but only Flask is used
 
 ## Development Commands
@@ -58,7 +58,7 @@ make check                  # Quick health check (lint + type)
 make lint                   # Run ruff linting
 make type-check             # Run mypy type checking with strict mode
 make security               # Run bandit security scanning and pip-audit
-make pep8-check             # Verify PEP8 compliance
+make pep8-check             # Verify PEP8 compliance (not available in current Makefile)
 make format                 # Auto-format code with ruff
 make fix                    # Auto-fix linting issues and format
 ```
@@ -155,16 +155,18 @@ poetry run python -m flext_web --help
 ### Programmatic Usage
 
 ```python
-from flext_web import create_service, get_web_settings
+from flext_web.web_service import FlextWebService
+from flext_web.web_config import get_web_settings
 
 # Create service with default config
-service = create_service()
+config = get_web_settings()
+service = FlextWebService(config)
 service.run()
 
 # Create with custom configuration
 config = get_web_settings()
 config.port = 9000
-service = create_service(config)
+service = FlextWebService(config)
 service.run(host="0.0.0.0", port=9000)
 ```
 
@@ -202,13 +204,20 @@ curl http://localhost:8080/health
 
 ```
 src/flext_web/
-├── __init__.py          # Main library with FlextWebService, entities, handlers
+├── __init__.py          # Main package imports and version info
 ├── __main__.py          # CLI entry point with argument parsing
-├── exceptions.py        # Domain-specific exception hierarchy
-├── py.typed            # Type checking marker
-└── templates/          # Flask templates (unused - inline HTML used instead)
-    ├── base.html       # Django-style template (not used)
-    └── dashboard.html  # Dashboard template (not used)
+├── constants.py         # Application constants and configurations
+├── legacy.py           # Legacy compatibility layer
+├── models.py           # Deprecated - use web_models.py
+├── typings.py          # Type definitions and protocols
+├── web_config.py       # Configuration management (FlextWebConfig)
+├── web_exceptions.py   # Domain-specific exception hierarchy
+├── web_models.py       # Domain entities (FlextWebApp, handlers)
+├── web_service.py      # Flask service implementation (FlextWebService)
+├── py.typed           # Type checking marker
+└── templates/         # Flask templates
+    ├── base.html      # Base template
+    └── dashboard.html # Dashboard template
 
 tests/
 ├── conftest.py                      # Pytest configuration
@@ -305,8 +314,8 @@ def new_endpoint(self) -> ResponseReturnValue:
 # Check port availability
 netstat -tulpn | grep 8080
 
-# Verify configuration
-python -c "from flext_web import get_web_settings; print(get_web_settings())"
+# Verify configuration  
+python -c "from flext_web.web_config import get_web_settings; print(get_web_settings())"
 
 # Check dependencies
 poetry show --tree
@@ -382,7 +391,7 @@ poetry run pip-audit
   - FlextWebService: Flask integration with complete API documentation
   - Factory functions: Detailed usage patterns and deployment scenarios
 - ✅ **src/flext_web/**main**.py**: Complete CLI documentation with argument parsing and examples
-- ✅ **src/flext_web/exceptions.py**: Comprehensive exception hierarchy with context information
+- ✅ **src/flext_web/web_exceptions.py**: Comprehensive exception hierarchy with context information
 - ✅ **src/flext_web/README.md**: Detailed module organization and architecture documentation
 
 #### **Test Documentation (100% Complete)**

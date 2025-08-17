@@ -7,9 +7,11 @@ external dependencies like FastAPI. Focuses on Flask-based testing.
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import pytest
+
+from flext_web import FlextWebConfig, create_service
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -38,15 +40,13 @@ def web_app() -> dict[str, str]:
 
 # Flask test client fixture
 @pytest.fixture
-def flask_test_client() -> Any:
+def flask_test_client() -> object:
     """Flask test client for web application."""
-    from flext_web import FlextWebConfig, create_service
-
     config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
     service = create_service(config)
 
     with service.app.test_client() as client:
-        yield client
+      yield client
 
 
 # Authentication fixtures
@@ -54,20 +54,20 @@ def flask_test_client() -> Any:
 def test_user_data() -> dict[str, object]:
     """Test user data for authentication."""
     return {
-        "username": "testuser",
-        "email": "test@example.com",
-        "password": "test_password",
-        "roles": ["user"],
-        "permissions": ["read", "write"],
+      "username": "testuser",
+      "email": "test@example.com",
+      "password": "test_password",
+      "roles": ["user"],
+      "permissions": ["read", "write"],
     }
 
 
 @pytest.fixture
-def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:
+def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:  # noqa: ARG001
     """Authentication headers for test requests."""
     return {
-        "Authorization": "Bearer test_token",
-        "Content-Type": "application/json",
+      "Authorization": "Bearer test_token",
+      "Content-Type": "application/json",
     }
 
 
@@ -76,9 +76,9 @@ def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:
 def api_success_response() -> dict[str, object]:
     """Standard API success response."""
     return {
-        "success": True,
-        "data": {"message": "Operation completed successfully"},
-        "timestamp": "2025-01-20T12:00:00Z",
+      "success": True,
+      "data": {"message": "Operation completed successfully"},
+      "timestamp": "2025-01-20T12:00:00Z",
     }
 
 
@@ -86,13 +86,13 @@ def api_success_response() -> dict[str, object]:
 def api_error_response() -> dict[str, object]:
     """Standard API error response."""
     return {
-        "success": False,
-        "error": {
-            "code": "VALIDATION_ERROR",
-            "message": "Invalid input data",
-            "details": {"field": "name", "error": "required"},
-        },
-        "timestamp": "2025-01-20T12:00:00Z",
+      "success": False,
+      "error": {
+          "code": "VALIDATION_ERROR",
+          "message": "Invalid input data",
+          "details": {"field": "name", "error": "required"},
+      },
+      "timestamp": "2025-01-20T12:00:00Z",
     }
 
 
@@ -112,8 +112,8 @@ def pytest_configure(config: pytest.Config) -> None:
 def web_config() -> dict[str, object]:
     """Web application configuration for testing."""
     return {
-        "host": "127.0.0.1",
-        "port": 8080,
-        "debug": True,
-        "secret_key": "test_secret_key_32_characters_long!",
+      "host": "127.0.0.1",
+      "port": 8080,
+      "debug": True,
+      "secret_key": "test_secret_key_32_characters_long!",
     }

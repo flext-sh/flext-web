@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 import secrets
 
-from flext_core.constants import FlextConstants
+from flext_core import FlextConstants
 
 
 class FlextWebConstants(FlextConstants):
@@ -20,59 +20,59 @@ class FlextWebConstants(FlextConstants):
     """
 
     class Network:
-        """Network and port constants."""
+      """Network and port constants."""
 
-        # Port validation ranges
-        MIN_PORT = 1
-        MAX_PORT = 65535
+      # Port validation ranges
+      MIN_PORT = 1
+      MAX_PORT = 65535
 
-        # Common HTTP ports
-        DEFAULT_HTTP_PORT = 80
-        DEFAULT_HTTPS_PORT = 443
-        DEFAULT_DEVELOPMENT_PORT = 8080
+      # Common HTTP ports
+      DEFAULT_HTTP_PORT = 80
+      DEFAULT_HTTPS_PORT = 443
+      DEFAULT_DEVELOPMENT_PORT = 8080
 
     class Validation:
-        """Validation limits and constraints."""
+      """Validation limits and constraints."""
 
-        # String length limits
-        MAX_APP_NAME_LENGTH = 255
-        MIN_APP_NAME_LENGTH = 1
-        MAX_HOST_LENGTH = 253  # RFC 1035 limit for FQDN
+      # String length limits
+      MAX_APP_NAME_LENGTH = 255
+      MIN_APP_NAME_LENGTH = 1
+      MAX_HOST_LENGTH = 253  # RFC 1035 limit for FQDN
 
-        # Application limits
-        MAX_CONCURRENT_APPS = 100
-        MIN_APP_TIMEOUT = 1
-        MAX_APP_TIMEOUT = 3600  # 1 hour
+      # Application limits
+      MAX_CONCURRENT_APPS = 100
+      MIN_APP_TIMEOUT = 1
+      MAX_APP_TIMEOUT = 3600  # 1 hour
 
     class HTTP:
-        """HTTP-related constants."""
+      """HTTP-related constants."""
 
-        # Status codes
-        OK = 200
-        CREATED = 201
-        BAD_REQUEST = 400
-        NOT_FOUND = 404
-        INTERNAL_SERVER_ERROR = 500
+      # Status codes
+      OK = 200
+      CREATED = 201
+      BAD_REQUEST = 400
+      NOT_FOUND = 404
+      INTERNAL_SERVER_ERROR = 500
 
-        # Content types
-        JSON_CONTENT_TYPE = (
-            FlextConstants.Observability.SERIALIZATION_FORMAT_JSON
-            if hasattr(FlextConstants.Observability, "SERIALIZATION_FORMAT_JSON")
-            else "application/json"
-        )
-        HTML_CONTENT_TYPE = "text/html"
+      # Content types
+      JSON_CONTENT_TYPE = (
+          FlextConstants.Observability.SERIALIZATION_FORMAT_JSON
+          if hasattr(FlextConstants.Observability, "SERIALIZATION_FORMAT_JSON")
+          else "application/json"
+      )
+      HTML_CONTENT_TYPE = "text/html"
 
     class Configuration:
-        """Configuration defaults."""
+      """Configuration defaults."""
 
-        # Server defaults
-        DEFAULT_HOST = FlextConstants.Platform.DEFAULT_HOST
-        DEFAULT_PORT = 8080
-        DEFAULT_DEBUG = True
+      # Server defaults
+      DEFAULT_HOST = FlextConstants.Platform.DEFAULT_HOST
+      DEFAULT_PORT = 8080
+      DEFAULT_DEBUG = True
 
-        # Flask settings (generated or provided via environment)
-        DEFAULT_SECRET_KEY = os.getenv(
-            "FLEXT_WEB_SECRET_KEY",
-            secrets.token_urlsafe(32),
-        )
-        SESSION_TIMEOUT = 3600  # 1 hour
+      # Flask settings (generated or provided via environment)
+      DEFAULT_SECRET_KEY = os.getenv(
+          "FLEXT_WEB_SECRET_KEY",
+          secrets.token_urlsafe(32),
+      )
+      SESSION_TIMEOUT = 3600  # 1 hour

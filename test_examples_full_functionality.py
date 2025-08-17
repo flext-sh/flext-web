@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-"""Teste COMPLETO de TODA funcionalidade dos examples/ usando Docker.
-
-Este teste valida 100% da funcionalidade de todos os examples usando o container Docker
-para garantir comportamento compatível com ambientes de produção e enterprise.
-"""
+"""Test examples full functionality."""
 
 import asyncio
+import importlib
+import importlib.util
+import logging
 import shutil
 import sys
 import time
 from pathlib import Path
 
 import requests
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 DOCKER_PATH = shutil.which("docker")
 
@@ -20,7 +23,7 @@ class ExamplesFullFunctionalityTest:
     """Teste completo de toda funcionalidade dos examples."""
 
     def __init__(self) -> None:
-        self.container_id = None
+        self.container_id: str | None = None
         self.service_url = (
             "http://localhost:8093"  # Port específica para evitar conflitos
         )
@@ -34,28 +37,24 @@ class ExamplesFullFunctionalityTest:
 
         async def _run_exec(
             cmd: list[str],
-            timeout: int = 120,
             cwd: str | None = None,
         ) -> tuple[int, str, str]:
-            process = await asyncio.create_subprocess_exec(
-                *cmd,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-                cwd=cwd,
-            )
+            """Helper to run a command asynchronously and return (rc, stdout, stderr)."""
             try:
-                stdout, stderr = await asyncio.wait_for(
-                    process.communicate(),
-                    timeout=timeout,
-                )
+                async with asyncio.timeout(120):
+                    process = await asyncio.create_subprocess_exec(
+                        *[str(c) for c in cmd],
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE,
+                        cwd=cwd,
+                    )
+                    stdout, stderr = await process.communicate()
+                    return process.returncode or 0, stdout.decode(), stderr.decode()
             except TimeoutError:
-                process.kill()
-                await process.communicate()
-                return 124, "", "Timeout"
-            return process.returncode, stdout.decode(), stderr.decode()
+                return -1, "", "Command timed out after 120 seconds"
 
         build_rc, _build_out, _build_err = asyncio.run(
-            _run_exec(build_cmd, timeout=180, cwd=str(Path(__file__).resolve().parent)),
+            _run_exec(build_cmd, cwd=str(Path(__file__).resolve().parent)),
         )
         if build_rc != 0:
             return False
@@ -83,7 +82,7 @@ class ExamplesFullFunctionalityTest:
 
         try:
             start_rc, start_out, _start_err = asyncio.run(
-                _run_exec(start_cmd, timeout=30),
+                _run_exec(start_cmd),
             )
             if start_rc != 0:
                 return False
@@ -96,9 +95,9 @@ class ExamplesFullFunctionalityTest:
                     response = requests.get(f"{self.service_url}/health", timeout=2)
                     if response.status_code == 200:
                         return True
-                except Exception:
-                    # Mantém silencioso no loop de espera do health check
-                    pass
+                except Exception as exc:
+                    # Log the transient failure but keep waiting
+                    logger.debug("health check attempt failed: %s", exc)
                 time.sleep(1)
 
             return False
@@ -112,7 +111,7 @@ class ExamplesFullFunctionalityTest:
 
             async def _stop() -> None:
                 process = await asyncio.create_subprocess_exec(
-                    DOCKER_PATH,
+                    str(DOCKER_PATH),
                     "stop",
                     "flext-full-test",
                     stdout=asyncio.subprocess.PIPE,
@@ -129,16 +128,25 @@ class ExamplesFullFunctionalityTest:
     def test_basic_service_full_functionality(self) -> bool | None:
         """Testa TODA funcionalidade do basic_service.py."""
         # Test 1: Import functionality
-        sys.path.insert(0, "examples")
         try:
-            import basic_service
+            example_path = Path("examples/basic_service.py")
+            spec = importlib.util.spec_from_file_location(
+                "basic_service", str(example_path)
+            )
+            assert spec is not None
+            assert hasattr(spec, "loader")
+            assert spec.loader is not None
+            basic_service = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(basic_service)
 
             # Test 2: Main function exists and is callable
             assert hasattr(basic_service, "main"), "main() function missing"
             assert callable(basic_service.main), "main() not callable"
 
             # Test 3: Can create service programmatically
-            from flext_web import create_service, get_web_settings
+            _flext_web = importlib.import_module("flext_web")
+            create_service = _flext_web.create_service
+            get_web_settings = _flext_web.get_web_settings
 
             config = get_web_settings()
             service = create_service(config)
@@ -152,14 +160,20 @@ class ExamplesFullFunctionalityTest:
         except Exception:
             return False
         finally:
-            if "examples" in sys.path:
-                sys.path.remove("examples")
+            pass
 
     def test_api_usage_full_functionality(self) -> bool | None:
         """Testa TODA funcionalidade do api_usage.py."""
-        sys.path.insert(0, "examples")
         try:
-            import api_usage
+            example_path = Path("examples/api_usage.py")
+            spec = importlib.util.spec_from_file_location(
+                "api_usage", str(example_path)
+            )
+            assert spec is not None
+            assert hasattr(spec, "loader")
+            assert spec.loader is not None
+            api_usage = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(api_usage)
 
             # Test 1: Health check function
             health_result = api_usage.check_service_health()
@@ -196,14 +210,20 @@ class ExamplesFullFunctionalityTest:
         except Exception:
             return False
         finally:
-            if "examples" in sys.path:
-                sys.path.remove("examples")
+            pass
 
     def test_docker_ready_full_functionality(self) -> bool | None:
         """Testa TODA funcionalidade do docker_ready.py."""
-        sys.path.insert(0, "examples")
         try:
-            import docker_ready
+            example_path = Path("examples/docker_ready.py")
+            spec = importlib.util.spec_from_file_location(
+                "docker_ready", str(example_path)
+            )
+            assert spec is not None
+            assert hasattr(spec, "loader")
+            assert spec.loader is not None
+            docker_ready = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(docker_ready)
 
             # Test 1: create_docker_config function
             config = docker_ready.create_docker_config()
@@ -227,14 +247,16 @@ class ExamplesFullFunctionalityTest:
         except Exception:
             return False
         finally:
-            if "examples" in sys.path:
-                sys.path.remove("examples")
+            pass
 
     def test_examples_integration_functionality(self) -> bool | None:
         """Testa integração entre examples e funcionalidade completa."""
         # Test 1: All examples can work together
         try:
-            from flext_web import FlextWebConfig, create_service, get_web_settings
+            _flext_web = importlib.import_module("flext_web")
+            _flext_web_config_cls = _flext_web.FlextWebConfig
+            create_service = _flext_web.create_service
+            get_web_settings = _flext_web.get_web_settings
 
             # Create services using different approaches from examples
 
@@ -243,7 +265,7 @@ class ExamplesFullFunctionalityTest:
             service1 = create_service(config1)
 
             # Approach 2: docker_ready style
-            config2 = FlextWebConfig(
+            config2 = _flext_web_config_cls(
                 host="127.0.0.1",
                 port=8094,
                 debug=False,
@@ -265,13 +287,23 @@ class ExamplesFullFunctionalityTest:
     def test_examples_error_handling(self) -> bool | None:
         """Testa tratamento de erros nos examples."""
         # Test error handling in api_usage when service is down
-        sys.path.insert(0, "examples")
         try:
-            import api_usage
+            example_path = Path("examples/api_usage.py")
+            spec = importlib.util.spec_from_file_location(
+                "api_usage", str(example_path)
+            )
+            assert spec is not None
+            assert hasattr(spec, "loader")
+            assert spec.loader is not None
+            api_usage = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(api_usage)
 
             # Temporarily change BASE_URL to non-existent service
-            original_url = api_usage.BASE_URL
-            api_usage.BASE_URL = "http://localhost:9999"  # Non-existent service
+            if hasattr(api_usage, "BASE_URL"):
+                original_url = api_usage.BASE_URL
+                api_usage.BASE_URL = "http://localhost:9999"
+            else:
+                original_url = None
 
             # Test functions handle errors gracefully
             health = api_usage.check_service_health()
@@ -285,15 +317,15 @@ class ExamplesFullFunctionalityTest:
             assert len(apps) == 0, "Should return empty list"
 
             # Restore original URL
-            api_usage.BASE_URL = original_url
+            if original_url is not None:
+                api_usage.BASE_URL = original_url
 
             return True
 
         except Exception:
             return False
         finally:
-            if "examples" in sys.path:
-                sys.path.remove("examples")
+            pass
 
     def run_full_functionality_test(self) -> bool:
         """Executa teste COMPLETO de toda funcionalidade dos examples."""
@@ -302,7 +334,7 @@ class ExamplesFullFunctionalityTest:
             pass
 
         try:
-            results = []
+            results: list[tuple[str, bool | None]] = []
 
             # Test each example thoroughly
             results.extend(

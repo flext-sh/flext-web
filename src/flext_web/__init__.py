@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from flext_core import (
     FlextError,
     FlextValidationError,
@@ -26,8 +24,11 @@ from flext_web.web_exceptions import (
 from flext_web.web_models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
 from flext_web.web_service import FlextWebService
 
-if TYPE_CHECKING:
-    from flask import Flask
+# Main CLI function will be imported on demand to avoid circular imports
+# from flext_web.__main__ import main
+
+# Third-party imports (moved out of TYPE_CHECKING as per project requirement)
+from flask import Flask
 
 __version__ = "0.9.0"
 __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
@@ -63,24 +64,24 @@ class _ConfigManager:
     """Singleton configuration manager."""
 
     def __init__(self) -> None:
-        self._instance: FlextWebConfig | None = None
+      self._instance: FlextWebConfig | None = None
 
     def get_config(self) -> FlextWebConfig:
-        """Get validated configuration singleton."""
-        if self._instance is None:
-            self._instance = FlextWebConfig()
+      """Get validated configuration singleton."""
+      if self._instance is None:
+          self._instance = FlextWebConfig()
 
-            # Validate configuration
-            validation_result = self._instance.validate_config()
-            if not validation_result.success:
-                msg: str = f"Configuration validation failed: {validation_result.error}"
-                raise ValueError(msg)
+          # Validate configuration
+          validation_result = self._instance.validate_config()
+          if not validation_result.success:
+              msg: str = f"Configuration validation failed: {validation_result.error}"
+              raise ValueError(msg)
 
-        return self._instance
+      return self._instance
 
     def reset(self) -> None:
-        """Reset configuration singleton."""
-        self._instance = None
+      """Reset configuration singleton."""
+      self._instance = None
 
 
 _config_manager = _ConfigManager()
@@ -99,42 +100,42 @@ def get_web_settings() -> FlextWebConfig:
     runtime errors from configuration issues.
 
     Returns:
-        FlextWebConfig: Validated configuration instance with all settings loaded
-        from environment variables and defaults. The configuration is guaranteed
-        to pass all validation rules before being returned.
+      FlextWebConfig: Validated configuration instance with all settings loaded
+      from environment variables and defaults. The configuration is guaranteed
+      to pass all validation rules before being returned.
 
     Raises:
-        ValueError: If configuration validation fails with specific error details
-        explaining which validation rule was violated and how to fix it.
+      ValueError: If configuration validation fails with specific error details
+      explaining which validation rule was violated and how to fix it.
 
     Configuration Sources (in precedence order):
-        1. Environment variables with FLEXT_WEB_ prefix
-        2. Configuration file values (if specified)
-        3. Default values defined in FlextWebConfig
+      1. Environment variables with FLEXT_WEB_ prefix
+      2. Configuration file values (if specified)
+      3. Default values defined in FlextWebConfig
 
     Validation Rules:
-        - Application name must be non-empty string
-        - Version must follow semantic versioning (x.y.z)
-        - Host must be valid network address
-        - Port must be within range (1-65535)
-        - Secret key must be changed from default in production
-        - Debug mode must be disabled in production
+      - Application name must be non-empty string
+      - Version must follow semantic versioning (x.y.z)
+      - Host must be valid network address
+      - Port must be within range (1-65535)
+      - Secret key must be changed from default in production
+      - Debug mode must be disabled in production
 
     Example:
-        Basic configuration access:
+      Basic configuration access:
 
-        >>> config = get_web_settings()
-        >>> print(f"Server URL: {config.get_server_url()}")
-        >>> print(f"Production mode: {config.is_production()}")
+      >>> config = get_web_settings()
+      >>> print(f"Server URL: {config.get_server_url()}")
+      >>> print(f"Production mode: {config.is_production()}")
 
-        Environment variable configuration:
+      Environment variable configuration:
 
-        >>> import os
-        >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
-        >>> os.environ["FLEXT_WEB_PORT"] = "8080"
-        >>> config = get_web_settings()
-        >>> assert config.host == "0.0.0.0"
-        >>> assert config.port == 8080
+      >>> import os
+      >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
+      >>> os.environ["FLEXT_WEB_PORT"] = "8080"
+      >>> config = get_web_settings()
+      >>> assert config.host == "0.0.0.0"
+      >>> assert config.port == 8080
 
     """
     return _config_manager.get_config()
@@ -153,40 +154,40 @@ def reset_web_settings() -> None:
     application components.
 
     Side Effects:
-        - Clears the global configuration singleton instance
-        - Forces recalculation of configuration on next access
-        - Reloads environment variables on next get_web_settings() call
-        - Revalidates all configuration rules on next access
+      - Clears the global configuration singleton instance
+      - Forces recalculation of configuration on next access
+      - Reloads environment variables on next get_web_settings() call
+      - Revalidates all configuration rules on next access
 
     Usage Scenarios:
-        - Unit testing with different configuration scenarios
-        - Integration testing with environment variable changes
-        - Development environment reloading
-        - Configuration error recovery scenarios
+      - Unit testing with different configuration scenarios
+      - Integration testing with environment variable changes
+      - Development environment reloading
+      - Configuration error recovery scenarios
 
     Example:
-        Testing with different configurations:
+      Testing with different configurations:
 
-        >>> import os
-        >>> # Test with development configuration
-        >>> os.environ["FLEXT_WEB_DEBUG"] = "true"
-        >>> config1 = get_web_settings()
-        >>> assert config1.debug is True
-        >>>
-        >>> # Reset and test with production configuration
-        >>> reset_web_settings()
-        >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
-        >>> config2 = get_web_settings()
-        >>> assert config2.debug is False
+      >>> import os
+      >>> # Test with development configuration
+      >>> os.environ["FLEXT_WEB_DEBUG"] = "true"
+      >>> config1 = get_web_settings()
+      >>> assert config1.debug is True
+      >>>
+      >>> # Reset and test with production configuration
+      >>> reset_web_settings()
+      >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
+      >>> config2 = get_web_settings()
+      >>> assert config2.debug is False
 
-        Test isolation pattern:
+      Test isolation pattern:
 
-        >>> def test_custom_config():
-        ...     reset_web_settings()  # Ensure clean state
-        ...     os.environ["FLEXT_WEB_PORT"] = "9000"
-        ...     config = get_web_settings()
-        ...     assert config.port == 9000
-        ...     reset_web_settings()  # Clean up after test
+      >>> def test_custom_config():
+      ...     reset_web_settings()  # Ensure clean state
+      ...     os.environ["FLEXT_WEB_PORT"] = "9000"
+      ...     config = get_web_settings()
+      ...     assert config.port == 9000
+      ...     reset_web_settings()  # Clean up after test
 
     """
     _config_manager.reset()
@@ -205,52 +206,52 @@ def create_service(config: FlextWebConfig | None = None) -> FlextWebService:
     configuration management.
 
     Args:
-        config: Optional FlextWebConfig instance. If None, uses get_web_settings()
-        to load configuration from environment variables and defaults.
+      config: Optional FlextWebConfig instance. If None, uses get_web_settings()
+      to load configuration from environment variables and defaults.
 
     Returns:
-        FlextWebService: Fully configured and initialized service instance ready
-        for startup. The service includes Flask application, route registration,
-        CQRS handlers, and all necessary components.
+      FlextWebService: Fully configured and initialized service instance ready
+      for startup. The service includes Flask application, route registration,
+      CQRS handlers, and all necessary components.
 
     Configuration Handling:
-        - Uses provided config parameter if specified
-        - Falls back to get_web_settings() singleton if config is None
-        - Validates configuration before service creation
-        - Ensures all required components are properly initialized
+      - Uses provided config parameter if specified
+      - Falls back to get_web_settings() singleton if config is None
+      - Validates configuration before service creation
+      - Ensures all required components are properly initialized
 
     Service Components:
-        - Flask application with registered routes
-        - FlextWebAppHandler for CQRS operations
-        - Configuration management and validation
-        - Structured logging integration
-        - Error handling middleware
+      - Flask application with registered routes
+      - FlextWebAppHandler for CQRS operations
+      - Configuration management and validation
+      - Structured logging integration
+      - Error handling middleware
 
     Example:
-        Basic service creation with default configuration:
+      Basic service creation with default configuration:
 
-        >>> service = create_service()
-        >>> service.run()  # Start with default settings
+      >>> service = create_service()
+      >>> service.run()  # Start with default settings
 
-        Service creation with custom configuration:
+      Service creation with custom configuration:
 
-        >>> config = FlextWebConfig(
-        ...     host="0.0.0.0",
-        ...     port=8080,
-        ...     debug=False,
-        ...     secret_key="production-secret-key",
-        ... )
-        >>> service = create_service(config)
-        >>> service.run(host="0.0.0.0", port=8080, debug=False)
+      >>> config = FlextWebConfig(
+      ...     host="0.0.0.0",
+      ...     port=8080,
+      ...     debug=False,
+      ...     secret_key="production-secret-key",
+      ... )
+      >>> service = create_service(config)
+      >>> service.run(host="0.0.0.0", port=8080, debug=False)
 
-        Production deployment pattern:
+      Production deployment pattern:
 
-        >>> import os
-        >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
-        >>> os.environ["FLEXT_WEB_PORT"] = "8080"
-        >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
-        >>> service = create_service()  # Uses environment configuration
-        >>> service.run()
+      >>> import os
+      >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
+      >>> os.environ["FLEXT_WEB_PORT"] = "8080"
+      >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
+      >>> service = create_service()  # Uses environment configuration
+      >>> service.run()
 
     """
     return FlextWebService(config or get_web_settings())
@@ -268,62 +269,62 @@ def create_app(config: FlextWebConfig | None = None) -> Flask:
     and configuration management.
 
     Args:
-        config: Optional FlextWebConfig instance. If None, uses get_web_settings()
-        to load validated configuration from environment variables and defaults.
+      config: Optional FlextWebConfig instance. If None, uses get_web_settings()
+      to load validated configuration from environment variables and defaults.
 
     Returns:
-        Flask: Configured Flask application instance with all FLEXT Web Interface
-        routes registered, middleware configured, and ready for integration or
-        deployment with WSGI servers.
+      Flask: Configured Flask application instance with all FLEXT Web Interface
+      routes registered, middleware configured, and ready for integration or
+      deployment with WSGI servers.
 
     Flask Application Features:
-        - All FLEXT Web Interface routes registered (/health, /api/v1/apps, etc.)
-        - Configured secret key and security settings
-        - Error handling middleware for structured responses
-        - JSON serialization for API responses
-        - Static file serving capabilities
+      - All FLEXT Web Interface routes registered (/health, /api/v1/apps, etc.)
+      - Configured secret key and security settings
+      - Error handling middleware for structured responses
+      - JSON serialization for API responses
+      - Static file serving capabilities
 
     Integration Scenarios:
-        - WSGI deployment with Gunicorn, uWSGI, or mod_wsgi
-        - Testing with Flask test client
-        - Integration with existing Flask applications
-        - Custom middleware and route registration
-        - Reverse proxy deployment behind nginx or Apache
+      - WSGI deployment with Gunicorn, uWSGI, or mod_wsgi
+      - Testing with Flask test client
+      - Integration with existing Flask applications
+      - Custom middleware and route registration
+      - Reverse proxy deployment behind nginx or Apache
 
     Example:
-        WSGI deployment with Gunicorn:
+      WSGI deployment with Gunicorn:
 
-        >>> app = create_app()
-        >>> # Run with: gunicorn -w 4 -b 0.0.0.0:8080 "module:create_app()"
+      >>> app = create_app()
+      >>> # Run with: gunicorn -w 4 -b 0.0.0.0:8080 "module:create_app()"
 
-        Testing integration:
+      Testing integration:
 
-        >>> app = create_app()
-        >>> client = app.test_client()
-        >>> response = client.get("/health")
-        >>> assert response.status_code == 200
+      >>> app = create_app()
+      >>> client = app.test_client()
+      >>> response = client.get("/health")
+      >>> assert response.status_code == 200
 
-        Custom Flask integration:
+      Custom Flask integration:
 
-        >>> from flask import Flask
-        >>> main_app = Flask(__name__)
-        >>> flext_app = create_app()
-        >>>
-        >>> @main_app.route('/status')
-        >>> def status():
-        ...     return "Main application status"
-        >>>
-        >>> # Mount FLEXT Web Interface under /flext
-        >>> main_app.register_blueprint(flext_app, url_prefix="/flext")
+      >>> from flask import Flask
+      >>> main_app = Flask(__name__)
+      >>> flext_app = create_app()
+      >>>
+      >>> @main_app.route('/status')
+      >>> def status():
+      ...     return "Main application status"
+      >>>
+      >>> # Mount FLEXT Web Interface under /flext
+      >>> main_app.register_blueprint(flext_app, url_prefix="/flext")
 
-        Production deployment configuration:
+      Production deployment configuration:
 
-        >>> import os
-        >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
-        >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
-        >>> os.environ["FLEXT_WEB_SECRET_KEY"] = "production-secret"
-        >>> app = create_app()
-        >>> # Deploy with production WSGI server
+      >>> import os
+      >>> os.environ["FLEXT_WEB_HOST"] = "0.0.0.0"
+      >>> os.environ["FLEXT_WEB_DEBUG"] = "false"
+      >>> os.environ["FLEXT_WEB_SECRET_KEY"] = "production-secret"
+      >>> app = create_app()
+      >>> # Deploy with production WSGI server
 
     """
     service = create_service(config)
@@ -351,7 +352,7 @@ class FlextWebError(FlextError):
 
 
 __all__: list[str] = [
-    "TYPE_CHECKING",
+    "Flask",
     "FlextError",
     "FlextValidationError",
     "FlextWebApp",
@@ -378,5 +379,6 @@ __all__: list[str] = [
     "get_logger",
     "get_web_settings",
     "logger",
+    "main",
     "reset_web_settings",
 ]

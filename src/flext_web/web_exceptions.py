@@ -42,34 +42,34 @@ class FlextWebError(FlextError):
     """
 
     def __init__(
-        self,
-        message: str,
-        route: str | None = None,
-        **kwargs: object,
+      self,
+      message: str,
+      route: str | None = None,
+      **kwargs: object,
     ) -> None:
-        """Initialize web error with context."""
-        context = dict(kwargs)
-        if route is not None:
-            context["route"] = route
-        super().__init__(message, context=context)
+      """Initialize web error with context."""
+      context = dict(kwargs)
+      if route is not None:
+          context["route"] = route
+      super().__init__(message, context=context)
 
 
 class FlextWebValidationError(FlextWebError):
     """Web service configuration and input validation errors."""
 
     def __init__(
-        self,
-        message: str = "Web validation error",
-        field: str | None = None,
-        value: str | None = None,
+      self,
+      message: str = "Web validation error",
+      field: str | None = None,
+      value: str | None = None,
     ) -> None:
-        """Initialize web validation error with context."""
-        full_message = f"Web validation: {message}"
-        if field:
-            full_message += f" (field: {field})"
-        if value:
-            full_message += f" [value: {value}]"
-        super().__init__(full_message)
+      """Initialize web validation error with context."""
+      full_message = f"Web validation: {message}"
+      if field:
+          full_message += f" (field: {field})"
+      if value:
+          full_message += f" [value: {value}]"
+      super().__init__(full_message)
 
 
 class FlextWebConfigurationError(FlextWebError):
@@ -101,72 +101,72 @@ class FlextWebTemplateError(FlextWebError):
     """Web service template processing and rendering errors."""
 
     def __init__(
-        self,
-        message: str = "Web template error",
-        template_name: str | None = None,
-        template_error: str | None = None,
+      self,
+      message: str = "Web template error",
+      template_name: str | None = None,
+      template_error: str | None = None,
     ) -> None:
-        """Initialize web template error with context."""
-        full_message = f"Web template: {message}"
-        if template_name:
-            full_message += f" (template: {template_name})"
-        if template_error:
-            full_message += f" - {template_error}"
-        super().__init__(full_message)
+      """Initialize web template error with context."""
+      full_message = f"Web template: {message}"
+      if template_name:
+          full_message += f" (template: {template_name})"
+      if template_error:
+          full_message += f" - {template_error}"
+      super().__init__(full_message)
 
 
 class FlextWebRoutingError(FlextWebError):
     """Web service URL routing and endpoint resolution errors."""
 
     def __init__(
-        self,
-        message: str = "Web routing error",
-        route: str | None = None,
-        method: str | None = None,
+      self,
+      message: str = "Web routing error",
+      route: str | None = None,
+      method: str | None = None,
     ) -> None:
-        """Initialize web routing error with context."""
-        full_message = f"Web routing: {message}"
-        if route:
-            full_message += f" (route: {route})"
-        if method:
-            full_message += f" [method: {method}]"
-        super().__init__(full_message)
+      """Initialize web routing error with context."""
+      full_message = f"Web routing: {message}"
+      if route:
+          full_message += f" (route: {route})"
+      if method:
+          full_message += f" [method: {method}]"
+      super().__init__(full_message)
 
 
 class FlextWebSessionError(FlextWebError):
     """Web service session management and state errors."""
 
     def __init__(
-        self,
-        message: str = "Web session error",
-        session_id: str | None = None,
-        session_state: str | None = None,
+      self,
+      message: str = "Web session error",
+      session_id: str | None = None,
+      session_state: str | None = None,
     ) -> None:
-        """Initialize web session error with context."""
-        full_message = f"Web session: {message}"
-        if session_id:
-            full_message += f" (session: {session_id})"
-        if session_state:
-            full_message += f" [state: {session_state}]"
-        super().__init__(full_message)
+      """Initialize web session error with context."""
+      full_message = f"Web session: {message}"
+      if session_id:
+          full_message += f" (session: {session_id})"
+      if session_state:
+          full_message += f" [state: {session_state}]"
+      super().__init__(full_message)
 
 
 class FlextWebMiddlewareError(FlextWebError):
     """Web service middleware processing and pipeline errors."""
 
     def __init__(
-        self,
-        message: str = "Web middleware error",
-        middleware_name: str | None = None,
-        stage: str | None = None,
+      self,
+      message: str = "Web middleware error",
+      middleware_name: str | None = None,
+      stage: str | None = None,
     ) -> None:
-        """Initialize web middleware error with context."""
-        full_message = f"Web middleware: {message}"
-        if middleware_name:
-            full_message += f" (middleware: {middleware_name})"
-        if stage:
-            full_message += f" [stage: {stage}]"
-        super().__init__(full_message)
+      """Initialize web middleware error with context."""
+      full_message = f"Web middleware: {message}"
+      if middleware_name:
+          full_message += f" (middleware: {middleware_name})"
+      if stage:
+          full_message += f" [stage: {stage}]"
+      super().__init__(full_message)
 
 
 __all__: list[str] = [

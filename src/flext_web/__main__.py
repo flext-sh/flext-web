@@ -46,7 +46,10 @@ import sys
 
 from flext_core import get_logger
 
-from flext_web import create_service, get_web_settings
+from flext_web.web_config import FlextWebConfig
+
+# Import directly from modules to avoid circular imports
+from flext_web.web_service import FlextWebService
 
 logger = get_logger(__name__)
 
@@ -67,32 +70,32 @@ def main() -> None:
     - Comprehensive error reporting and logging
 
     Command Line Arguments:
-        --host: Server bind address override (default from config)
-        --port: Server port number override (default from config)
-        --debug: Force enable debug mode
-        --no-debug: Force disable debug mode
+      --host: Server bind address override (default from config)
+      --port: Server port number override (default from config)
+      --debug: Force enable debug mode
+      --no-debug: Force disable debug mode
 
     Exit Codes:
-        0: Successful execution or graceful shutdown
-        1: Configuration error, startup failure, or runtime exception
+      0: Successful execution or graceful shutdown
+      1: Configuration error, startup failure, or runtime exception
 
     Raises:
-        SystemExit: On configuration validation failure or startup error
+      SystemExit: On configuration validation failure or startup error
 
     Side Effects:
-        - Initializes logging system with structured output
-        - Validates configuration against business rules
-        - Starts HTTP server with specified configuration
-        - Registers signal handlers for graceful shutdown
+      - Initializes logging system with structured output
+      - Validates configuration against business rules
+      - Starts HTTP server with specified configuration
+      - Registers signal handlers for graceful shutdown
 
     Example:
-        Development mode with custom configuration:
+      Development mode with custom configuration:
 
-        >>> main()  # Uses default configuration
+      >>> main()  # Uses default configuration
 
-        The function is typically called from the command line:
+      The function is typically called from the command line:
 
-        $ python -m flext_web --host localhost --port 8080 --debug
+      $ python -m flext_web --host localhost --port 8080 --debug
 
     """
     parser = argparse.ArgumentParser(description="FlextWeb - Enterprise Web Interface")
@@ -104,42 +107,42 @@ def main() -> None:
     args = parser.parse_args()
 
     # Get configuration
-    config = get_web_settings()
+    config = FlextWebConfig()
 
     # Override with command line arguments
     host = args.host or config.host
     port = args.port or config.port
 
     if args.debug:
-        debug = True
+      debug = True
     elif args.no_debug:
-        debug = False
+      debug = False
     else:
-        debug = config.debug
+      debug = config.debug
 
     # Validate port
     max_port_number = 65535
     if not (1 <= port <= max_port_number):
-        logger.error("Port must be between 1 and 65535")
-        sys.exit(1)
+      logger.error("Port must be between 1 and 65535")
+      sys.exit(1)
 
     try:
-        logger.info(
-            "🚀 Starting %s v%s on %s:%d",
-            config.app_name,
-            config.version,
-            host,
-            port,
-        )
-        logger.info("📊 Debug: %s | Production: %s", debug, config.is_production())
+      logger.info(
+          "🚀 Starting %s v%s on %s:%d",
+          config.app_name,
+          config.version,
+          host,
+          port,
+      )
+      logger.info("📊 Debug: %s | Production: %s", debug, config.is_production())
 
-        service = create_service(config)
-        service.run(host=host, port=port, debug=debug)
+      service = FlextWebService(config)
+      service.run(host=host, port=port, debug=debug)
     except KeyboardInterrupt:
-        logger.info("🛑 Shutting down FlextWeb service")
+      logger.info("🛑 Shutting down FlextWeb service")
     except (RuntimeError, ValueError, TypeError):
-        logger.exception("Failed to start FlextWeb service")
-        sys.exit(1)
+      logger.exception("Failed to start FlextWeb service")
+      sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -570,9 +570,8 @@ from flext_web.application.commands import CreateAppCommand
 # Import types for annotations
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from flext_web import FlextWebApp, FlextWebService
-    from flext_core import FlextResult
+from flext_web import FlextWebApp, FlextWebService
+from flext_core import FlextResult
 
 # Use in function signatures
 def process_web_request(service: 'FlextWebService') -> 'FlextResult[FlextWebApp]':
