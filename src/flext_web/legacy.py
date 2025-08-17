@@ -46,9 +46,9 @@ from flext_web.web_service import FlextWebService
 def _deprecation_warning(old_name: str, new_name: str) -> None:
     """Issue a deprecation warning for legacy imports."""
     warnings.warn(
-      f"{old_name} is deprecated, use {new_name} instead",
-      DeprecationWarning,
-      stacklevel=3,
+        f"{old_name} is deprecated, use {new_name} instead",
+        DeprecationWarning,
+        stacklevel=3,
     )
 
 
@@ -110,7 +110,8 @@ def WebValidationError(*args: object, **kwargs: object) -> FlextWebValidationErr
 
 
 def WebConfigurationError(  # noqa: N802
-    *args: object, **kwargs: object,
+    *args: object,
+    **kwargs: object,
 ) -> FlextWebConfigurationError:
     """Legacy alias for FlextWebConfigurationError."""
     _deprecation_warning("WebConfigurationError", "FlextWebConfigurationError")
@@ -124,7 +125,8 @@ def WebConnectionError(*args: object, **kwargs: object) -> FlextWebConnectionErr
 
 
 def WebAuthenticationError(  # noqa: N802
-    *args: object, **kwargs: object,
+    *args: object,
+    **kwargs: object,
 ) -> FlextWebAuthenticationError:
     """Legacy alias for FlextWebAuthenticationError."""
     _deprecation_warning("WebAuthenticationError", "FlextWebAuthenticationError")

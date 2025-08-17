@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import logging
 import os
 import signal
 import sys
@@ -49,23 +50,28 @@ class TestExamplesDeepValidation:
         }
 
         cmd = [sys.executable, str(example_path)]
-        process = asyncio.create_subprocess_exec(
-            *cmd,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            env=test_env,
+        # Create subprocess and wait for the Process object to be returned
+        process = asyncio.get_event_loop().run_until_complete(
+            asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                env=test_env,
+            )
         )
 
         try:
             # Give it time to start
             time.sleep(2)
 
-            # Check if process is running or failed gracefully
-            returncode = asyncio.get_event_loop().run_until_complete(process.wait())
-            if returncode is not None:
-                _stdout, stderr = asyncio.get_event_loop().run_until_complete(
-                    process.communicate(),
+            # If the process already exited, capture output and skip the test
+            if process.returncode is not None:
+                _stdout_bytes, stderr_bytes = (
+                    asyncio.get_event_loop().run_until_complete(
+                        process.communicate(),
+                    )
                 )
+                stderr = stderr_bytes.decode(errors="replace") if stderr_bytes else ""
                 # If it failed due to port conflicts or other issues, that's acceptable
                 pytest.skip(f"Service exited early (possibly port conflict): {stderr}")
 
@@ -169,7 +175,7 @@ class TestExamplesDeepValidation:
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 env=test_env,
-            ),
+            )
         )
 
         try:
@@ -188,7 +194,10 @@ class TestExamplesDeepValidation:
                     asyncio.wait_for(process.wait(), timeout=5),
                 )
             except Exception as exc:
-                logger.debug("Process termination timeout: %s", exc)
+                # Use module-level logger to record termination issues
+                logging.getLogger(__name__).debug(
+                    "Process termination timeout: %s", exc
+                )
 
     def test_examples_with_invalid_parameters(self) -> None:
         """Test examples handle invalid parameters gracefully."""
@@ -244,9 +253,12 @@ class TestExamplesDeepValidation:
             # Check if process is still running
             if asyncio.get_event_loop().run_until_complete(process.wait()) is not None:
                 # Process already exited, probably due to error
-                _stdout, stderr = asyncio.get_event_loop().run_until_complete(
-                    process.communicate(),
+                _stdout_bytes, stderr_bytes = (
+                    asyncio.get_event_loop().run_until_complete(
+                        process.communicate(),
+                    )
                 )
+                stderr = stderr_bytes.decode(errors="replace") if stderr_bytes else ""
                 pytest.skip(f"Process exited early, likely port conflict: {stderr}")
 
             # Send SIGTERM (graceful shutdown signal)
@@ -263,6 +275,7 @@ class TestExamplesDeepValidation:
         except TimeoutError:
             # Force kill if graceful shutdown didn't work
             with contextlib.suppress(ProcessLookupError):
+                # kill() is a coroutine; run it and ignore the return value
                 asyncio.get_event_loop().run_until_complete(process.kill())
             asyncio.get_event_loop().run_until_complete(process.wait())
             # This is acceptable - signal handling can be complex in test environments
@@ -286,15 +299,19 @@ class TestExamplesDeepValidation:
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 env=test_env,
-            ),
+            )
         )
 
         try:
             # Should start but generate temporary key
             time.sleep(2)
-            stdout, stderr = asyncio.get_event_loop().run_until_complete(
+            stdout_bytes, stderr_bytes = asyncio.get_event_loop().run_until_complete(
                 asyncio.wait_for(process.communicate(), timeout=5),
             )
+
+            # Decode outputs to strings
+            stdout = stdout_bytes.decode(errors="replace") if stdout_bytes else ""
+            stderr = stderr_bytes.decode(errors="replace") if stderr_bytes else ""
 
             # Should contain warning about temporary key
             combined_output = stdout + stderr
@@ -305,6 +322,7 @@ class TestExamplesDeepValidation:
 
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):
+                # kill() is a coroutine; run it and ignore the return value
                 asyncio.get_event_loop().run_until_complete(process.kill())
             asyncio.get_event_loop().run_until_complete(process.wait())
 

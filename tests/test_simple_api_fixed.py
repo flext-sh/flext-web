@@ -40,100 +40,100 @@ class TestFlextWebService:
     """
 
     def test_service_creation(self) -> None:
-      """Test FlextWebService creation with proper initialization.
+        """Test FlextWebService creation with proper initialization.
 
-      Validates that service instance creates successfully with Flask
-      application, route registration, and handler initialization.
-      Tests fundamental service patterns used in enterprise deployment.
-      """
-      service = create_service()
+        Validates that service instance creates successfully with Flask
+        application, route registration, and handler initialization.
+        Tests fundamental service patterns used in enterprise deployment.
+        """
+        service = create_service()
 
-      assert service.app is not None
-      if service.apps != {}:
-          msg: str = f"Expected {{}}, got {service.apps}"
-          raise AssertionError(msg)
-      assert service.handler is not None
+        assert service.app is not None
+        if service.apps != {}:
+            msg: str = f"Expected {{}}, got {service.apps}"
+            raise AssertionError(msg)
+        assert service.handler is not None
 
     def test_health_check(self) -> None:
-      """Test health check endpoint."""
-      service = create_service()
+        """Test health check endpoint."""
+        service = create_service()
 
-      with service.app.test_client() as client:
-          response = client.get("/health")
+        with service.app.test_client() as client:
+            response = client.get("/health")
 
-          if response.status_code != HTTP_OK:
-              msg: str = f"Expected {200}, got {response.status_code}"
-              raise AssertionError(msg)
-          data = response.get_json()
-          if not (data["success"]):
-              msg: str = f"Expected True, got {data['success']}"
-              raise AssertionError(msg)
-          if "healthy" not in data["message"]:
-              msg: str = f"Expected {'healthy'} in {data['message']}"
-              raise AssertionError(msg)
+            if response.status_code != HTTP_OK:
+                msg: str = f"Expected {200}, got {response.status_code}"
+                raise AssertionError(msg)
+            data = response.get_json()
+            if not (data["success"]):
+                msg: str = f"Expected True, got {data['success']}"
+                raise AssertionError(msg)
+            if "healthy" not in data["message"]:
+                msg: str = f"Expected {'healthy'} in {data['message']}"
+                raise AssertionError(msg)
 
     def test_list_apps_empty(self) -> None:
-      """Test listing empty apps."""
-      service = create_service()
+        """Test listing empty apps."""
+        service = create_service()
 
-      with service.app.test_client() as client:
-          response = client.get("/api/v1/apps")
+        with service.app.test_client() as client:
+            response = client.get("/api/v1/apps")
 
-          if response.status_code != HTTP_OK:
-              msg: str = f"Expected {200}, got {response.status_code}"
-              raise AssertionError(msg)
-          data = response.get_json()
-          if not (data["success"]):
-              msg: str = f"Expected True, got {data['success']}"
-              raise AssertionError(msg)
-          if data["data"]["apps"] != []:
-              msg: str = f"Expected {[]}, got {data['data']['apps']}"
-              raise AssertionError(msg)
+            if response.status_code != HTTP_OK:
+                msg: str = f"Expected {200}, got {response.status_code}"
+                raise AssertionError(msg)
+            data = response.get_json()
+            if not (data["success"]):
+                msg: str = f"Expected True, got {data['success']}"
+                raise AssertionError(msg)
+            if data["data"]["apps"] != []:
+                msg: str = f"Expected {[]}, got {data['data']['apps']}"
+                raise AssertionError(msg)
 
     def test_create_app(self) -> None:
-      """Test creating an app."""
-      service = create_service()
+        """Test creating an app."""
+        service = create_service()
 
-      with service.app.test_client() as client:
-          response = client.post(
-              "/api/v1/apps",
-              json={
-                  "name": "TestApp",
-                  "port": 8080,
-              },
-          )
+        with service.app.test_client() as client:
+            response = client.post(
+                "/api/v1/apps",
+                json={
+                    "name": "TestApp",
+                    "port": 8080,
+                },
+            )
 
-          if response.status_code != HTTP_OK:
-              msg: str = f"Expected {200}, got {response.status_code}"
-              raise AssertionError(msg)
-          data = response.get_json()
-          if not (data["success"]):
-              msg: str = f"Expected True, got {data['success']}"
-              raise AssertionError(msg)
-          if data["data"]["name"] != "TestApp":
-              msg: str = f"Expected {'TestApp'}, got {data['data']['name']}"
-              raise AssertionError(
-                  msg,
-              )
-          assert data["data"]["port"] == 8080
+            if response.status_code != HTTP_OK:
+                msg: str = f"Expected {200}, got {response.status_code}"
+                raise AssertionError(msg)
+            data = response.get_json()
+            if not (data["success"]):
+                msg: str = f"Expected True, got {data['success']}"
+                raise AssertionError(msg)
+            if data["data"]["name"] != "TestApp":
+                msg: str = f"Expected {'TestApp'}, got {data['data']['name']}"
+                raise AssertionError(
+                    msg,
+                )
+            assert data["data"]["port"] == 8080
 
     def test_create_app_missing_name(self) -> None:
-      """Test creating app with missing name."""
-      service = create_service()
+        """Test creating app with missing name."""
+        service = create_service()
 
-      with service.app.test_client() as client:
-          response = client.post(
-              "/api/v1/apps",
-              json={
-                  "port": 8080,
-              },
-          )
+        with service.app.test_client() as client:
+            response = client.post(
+                "/api/v1/apps",
+                json={
+                    "port": 8080,
+                },
+            )
 
-          if response.status_code != 400:
-              msg: str = f"Expected {400}, got {response.status_code}"
-              raise AssertionError(msg)
-          data = response.get_json()
-          if data["success"]:
-              msg: str = f"Expected False, got {data['success']}"
-              raise AssertionError(msg)
-          assert "App name is required" in data["message"]
+            if response.status_code != 400:
+                msg: str = f"Expected {400}, got {response.status_code}"
+                raise AssertionError(msg)
+            data = response.get_json()
+            if data["success"]:
+                msg: str = f"Expected False, got {data['success']}"
+                raise AssertionError(msg)
+            assert "App name is required" in data["message"]

@@ -114,35 +114,35 @@ def main() -> None:
     port = args.port or config.port
 
     if args.debug:
-      debug = True
+        debug = True
     elif args.no_debug:
-      debug = False
+        debug = False
     else:
-      debug = config.debug
+        debug = config.debug
 
     # Validate port
     max_port_number = 65535
     if not (1 <= port <= max_port_number):
-      logger.error("Port must be between 1 and 65535")
-      sys.exit(1)
+        logger.error("Port must be between 1 and 65535")
+        sys.exit(1)
 
     try:
-      logger.info(
-          "🚀 Starting %s v%s on %s:%d",
-          config.app_name,
-          config.version,
-          host,
-          port,
-      )
-      logger.info("📊 Debug: %s | Production: %s", debug, config.is_production())
+        logger.info(
+            "🚀 Starting %s v%s on %s:%d",
+            config.app_name,
+            config.version,
+            host,
+            port,
+        )
+        logger.info("📊 Debug: %s | Production: %s", debug, config.is_production())
 
-      service = FlextWebService(config)
-      service.run(host=host, port=port, debug=debug)
+        service = FlextWebService(config)
+        service.run(host=host, port=port, debug=debug)
     except KeyboardInterrupt:
-      logger.info("🛑 Shutting down FlextWeb service")
+        logger.info("🛑 Shutting down FlextWeb service")
     except (RuntimeError, ValueError, TypeError):
-      logger.exception("Failed to start FlextWeb service")
-      sys.exit(1)
+        logger.exception("Failed to start FlextWeb service")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

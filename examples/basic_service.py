@@ -9,20 +9,20 @@ from flext_web import create_service, get_web_settings
 
 
 def main() -> None:
-    """Start FLEXT Web Interface with default configuration."""    # Get default configuration
+    """Start FLEXT Web Interface with default configuration."""  # Get default configuration
     config = get_web_settings()
 
     # Create and start service
     service = create_service(config)
 
     try:
-      service.run(host=config.host, port=config.port, debug=config.debug)
+        service.run(host=config.host, port=config.port, debug=config.debug)
     except KeyboardInterrupt:
-      # Allow graceful shutdown in examples
-      return
+        # Allow graceful shutdown in examples
+        return
     except Exception:
-      # Log or handle as needed in real app; keep examples simple
-      raise
+        # Log or handle as needed in real app; keep examples simple
+        raise
 
 
 if __name__ == "__main__":

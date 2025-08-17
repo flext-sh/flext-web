@@ -27,16 +27,16 @@ def create_docker_config() -> FlextWebConfig:
 
     # Generate secure secret key if not provided
     if not secret_key:
-      secret_key = secrets.token_urlsafe(32)
-      logger.warning("No SECRET_KEY provided, generated temporary key")
+        secret_key = secrets.token_urlsafe(32)
+        logger.warning("No SECRET_KEY provided, generated temporary key")
 
     config = FlextWebConfig(host=host, port=port, debug=debug, secret_key=secret_key)
 
     # Validate configuration
     validation_result = config.validate_config()
     if not validation_result.success:
-      logger.error(f"Configuration validation failed: {validation_result.error}")
-      sys.exit(1)
+        logger.error(f"Configuration validation failed: {validation_result.error}")
+        sys.exit(1)
 
     return config
 
@@ -45,9 +45,9 @@ def setup_signal_handlers() -> None:
     """Setup graceful shutdown signal handlers."""
 
     def signal_handler(signum: int, _frame: object) -> None:
-      signal_name = signal.Signals(signum).name
-      logger.info(f"Received {signal_name}, shutting down gracefully...")
-      sys.exit(0)
+        signal_name = signal.Signals(signum).name
+        logger.info(f"Received {signal_name}, shutting down gracefully...")
+        sys.exit(0)
 
     # Handle common Docker signals
     signal.signal(signal.SIGTERM, signal_handler)  # Docker stop
@@ -66,42 +66,42 @@ def main() -> None:
     # Create configuration
     config = create_docker_config()
     logger.info(
-      f"📊 Configuration: {config.host}:{config.port} (debug: {config.debug})",
+        f"📊 Configuration: {config.host}:{config.port} (debug: {config.debug})",
     )
 
     # Validate production requirements
     if not config.debug:
-      logger.info("🔒 Running in production mode")
-      if "change-in-production" in config.secret_key:
-          logger.error("❌ Default secret key detected in production mode")
-          sys.exit(1)
+        logger.info("🔒 Running in production mode")
+        if "change-in-production" in config.secret_key:
+            logger.error("❌ Default secret key detected in production mode")
+            sys.exit(1)
 
     # Create service
     service = create_service(config)
     logger.info("✅ Service created successfully")
 
     try:
-      logger.info(
-          f"🌐 Service starting on all interfaces ({config.host}:{config.port})",
-      )
-      logger.info("🔍 Health check: /health")
-      logger.info("📋 API endpoints: /api/v1/*")
-      logger.info("🎛️ Dashboard: /")
+        logger.info(
+            f"🌐 Service starting on all interfaces ({config.host}:{config.port})",
+        )
+        logger.info("🔍 Health check: /health")
+        logger.info("📋 API endpoints: /api/v1/*")
+        logger.info("🎛️ Dashboard: /")
 
-      # Start service (this blocks until shutdown)
-      service.run(
-          host=config.host,
-          port=config.port,
-          debug=config.debug,
-      )
+        # Start service (this blocks until shutdown)
+        service.run(
+            host=config.host,
+            port=config.port,
+            debug=config.debug,
+        )
 
     except KeyboardInterrupt:
-      logger.info("🛑 Service interrupted by user")
+        logger.info("🛑 Service interrupted by user")
     except Exception:
-      logger.exception("❌ Service error")
-      sys.exit(1)
+        logger.exception("❌ Service error")
+        sys.exit(1)
     finally:
-      logger.info("🔄 Service shutdown complete")
+        logger.info("🔄 Service shutdown complete")
 
 
 if __name__ == "__main__":

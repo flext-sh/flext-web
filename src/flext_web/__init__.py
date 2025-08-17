@@ -64,24 +64,24 @@ class _ConfigManager:
     """Singleton configuration manager."""
 
     def __init__(self) -> None:
-      self._instance: FlextWebConfig | None = None
+        self._instance: FlextWebConfig | None = None
 
     def get_config(self) -> FlextWebConfig:
-      """Get validated configuration singleton."""
-      if self._instance is None:
-          self._instance = FlextWebConfig()
+        """Get validated configuration singleton."""
+        if self._instance is None:
+            self._instance = FlextWebConfig()
 
-          # Validate configuration
-          validation_result = self._instance.validate_config()
-          if not validation_result.success:
-              msg: str = f"Configuration validation failed: {validation_result.error}"
-              raise ValueError(msg)
+            # Validate configuration
+            validation_result = self._instance.validate_config()
+            if not validation_result.success:
+                msg: str = f"Configuration validation failed: {validation_result.error}"
+                raise ValueError(msg)
 
-      return self._instance
+        return self._instance
 
     def reset(self) -> None:
-      """Reset configuration singleton."""
-      self._instance = None
+        """Reset configuration singleton."""
+        self._instance = None
 
 
 _config_manager = _ConfigManager()

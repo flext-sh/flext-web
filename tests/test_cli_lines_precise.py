@@ -3,8 +3,11 @@
 
 import asyncio
 import contextlib
+import logging
 import os
 import sys
+
+logger = logging.getLogger(__name__)
 
 
 def test_line_114_debug_flag_direct() -> None:
@@ -18,12 +21,13 @@ def test_line_114_debug_flag_direct() -> None:
         # Check that debug flag was processed (line 114)
         # The process should either start successfully or fail with a specific error
         assert rc in {0, 2}, f"Expected return code 0 or 2, got {rc}"
-    except Exception:
-        pass
+    except Exception as e:
+        logger.exception("Exception in test_line_114_debug_flag_processing: %s", e)
 
 
 async def _run(
-    cmd: list[str], env: dict[str, str] | None = None
+    cmd: list[str],
+    env: dict[str, str] | None = None,
 ) -> tuple[int, str, str]:
     """Helper to run a command asynchronously and return (rc, stdout, stderr)."""
     try:
@@ -39,14 +43,6 @@ async def _run(
     except TimeoutError:
         return -1, "", "Command timed out after 5 seconds"
 
-    try:
-        rc, _out, _err = asyncio.run(_run(cmd, env=env))
-        # Check that debug flag was processed (line 114)
-        # The process should either start successfully or fail with a specific error
-        assert rc in {0, 2}, f"Expected return code 0 or 2, got {rc}"
-    except Exception:
-        pass
-
 
 def test_line_116_no_debug_flag_direct() -> None:
     """Test line 116: debug = False path in CLI."""  # Test --no-debug flag processing (line 116: debug = False)
@@ -56,8 +52,8 @@ def test_line_116_no_debug_flag_direct() -> None:
         rc, _out, _err = asyncio.run(_run(cmd))
         # No-debug flag test - capture result
         assert rc in {0, 2}, f"Expected return code 0 or 2, got {rc}"
-    except Exception:
-        pass
+    except Exception as e:
+        logger.exception("Exception in test_line_116_no_debug_flag_direct: %s", e)
 
 
 def test_lines_133_135_exception_handling_direct() -> None:

@@ -144,9 +144,9 @@ class ExamplesFullFunctionalityTest:
             assert callable(basic_service.main), "main() not callable"
 
             # Test 3: Can create service programmatically
-            _flext_web = importlib.import_module("flext_web")
-            create_service = _flext_web.create_service
-            get_web_settings = _flext_web.get_web_settings
+            flext_web = importlib.import_module("flext_web")
+            create_service = flext_web.create_service
+            get_web_settings = flext_web.get_web_settings
 
             config = get_web_settings()
             service = create_service(config)
@@ -253,10 +253,10 @@ class ExamplesFullFunctionalityTest:
         """Testa integração entre examples e funcionalidade completa."""
         # Test 1: All examples can work together
         try:
-            _flext_web = importlib.import_module("flext_web")
-            _flext_web_config_cls = _flext_web.FlextWebConfig
-            create_service = _flext_web.create_service
-            get_web_settings = _flext_web.get_web_settings
+            flext_web = importlib.import_module("flext_web")
+            flext_web_config_cls = flext_web.FlextWebConfig
+            create_service = flext_web.create_service
+            get_web_settings = flext_web.get_web_settings
 
             # Create services using different approaches from examples
 
@@ -265,7 +265,7 @@ class ExamplesFullFunctionalityTest:
             service1 = create_service(config1)
 
             # Approach 2: docker_ready style
-            config2 = _flext_web_config_cls(
+            config2 = flext_web_config_cls(
                 host="127.0.0.1",
                 port=8094,
                 debug=False,

@@ -39,31 +39,31 @@ class TestWebInterface:
     """
 
     def test_create_app_factory(self) -> None:
-      """Test Flask application factory function with proper initialization.
+        """Test Flask application factory function with proper initialization.
 
-      Validates that create_app factory function produces properly configured
-      Flask application instance with route registration and middleware setup.
-      Tests fundamental web application patterns for enterprise deployment.
-      """
-      app = create_app()
+        Validates that create_app factory function produces properly configured
+        Flask application instance with route registration and middleware setup.
+        Tests fundamental web application patterns for enterprise deployment.
+        """
+        app = create_app()
 
-      assert app is not None
-      # Flask app name should contain the module name
-      assert "flext_web" in app.name, (
-          f"Expected app name to contain 'flext_web', got {app.name}"
-      )
+        assert app is not None
+        # Flask app name should contain the module name
+        assert "flext_web" in app.name, (
+            f"Expected app name to contain 'flext_web', got {app.name}"
+        )
 
     def test_dashboard_route(self) -> None:
-      """Test dashboard route."""
-      app = create_app()
+        """Test dashboard route."""
+        app = create_app()
 
-      with app.test_client() as client:
-          response = client.get("/")
+        with app.test_client() as client:
+            response = client.get("/")
 
-          if response.status_code != HTTP_OK:
-              msg: str = f"Expected {200}, got {response.status_code}"
-              raise AssertionError(msg)
-          if b"FLEXT Web" not in response.data:
-              msg: str = f"Expected {b'FLEXT Web'} in {response.data}"
-              raise AssertionError(msg)
-          assert b"Enterprise patterns" in response.data
+            if response.status_code != HTTP_OK:
+                msg: str = f"Expected {200}, got {response.status_code}"
+                raise AssertionError(msg)
+            if b"FLEXT Web" not in response.data:
+                msg: str = f"Expected {b'FLEXT Web'} in {response.data}"
+                raise AssertionError(msg)
+            assert b"Enterprise patterns" in response.data

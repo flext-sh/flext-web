@@ -46,7 +46,7 @@ def flask_test_client() -> object:
     service = create_service(config)
 
     with service.app.test_client() as client:
-      yield client
+        yield client
 
 
 # Authentication fixtures
@@ -54,11 +54,11 @@ def flask_test_client() -> object:
 def test_user_data() -> dict[str, object]:
     """Test user data for authentication."""
     return {
-      "username": "testuser",
-      "email": "test@example.com",
-      "password": "test_password",
-      "roles": ["user"],
-      "permissions": ["read", "write"],
+        "username": "testuser",
+        "email": "test@example.com",
+        "password": "test_password",
+        "roles": ["user"],
+        "permissions": ["read", "write"],
     }
 
 
@@ -66,8 +66,8 @@ def test_user_data() -> dict[str, object]:
 def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:  # noqa: ARG001
     """Authentication headers for test requests."""
     return {
-      "Authorization": "Bearer test_token",
-      "Content-Type": "application/json",
+        "Authorization": "Bearer test_token",
+        "Content-Type": "application/json",
     }
 
 
@@ -76,9 +76,9 @@ def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:  # noqa: 
 def api_success_response() -> dict[str, object]:
     """Standard API success response."""
     return {
-      "success": True,
-      "data": {"message": "Operation completed successfully"},
-      "timestamp": "2025-01-20T12:00:00Z",
+        "success": True,
+        "data": {"message": "Operation completed successfully"},
+        "timestamp": "2025-01-20T12:00:00Z",
     }
 
 
@@ -86,13 +86,13 @@ def api_success_response() -> dict[str, object]:
 def api_error_response() -> dict[str, object]:
     """Standard API error response."""
     return {
-      "success": False,
-      "error": {
-          "code": "VALIDATION_ERROR",
-          "message": "Invalid input data",
-          "details": {"field": "name", "error": "required"},
-      },
-      "timestamp": "2025-01-20T12:00:00Z",
+        "success": False,
+        "error": {
+            "code": "VALIDATION_ERROR",
+            "message": "Invalid input data",
+            "details": {"field": "name", "error": "required"},
+        },
+        "timestamp": "2025-01-20T12:00:00Z",
     }
 
 
@@ -112,8 +112,8 @@ def pytest_configure(config: pytest.Config) -> None:
 def web_config() -> dict[str, object]:
     """Web application configuration for testing."""
     return {
-      "host": "127.0.0.1",
-      "port": 8080,
-      "debug": True,
-      "secret_key": "test_secret_key_32_characters_long!",
+        "host": "127.0.0.1",
+        "port": 8080,
+        "debug": True,
+        "secret_key": "test_secret_key_32_characters_long!",
     }
