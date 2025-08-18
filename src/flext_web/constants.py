@@ -12,11 +12,12 @@ import secrets
 from flext_core import FlextConstants
 
 
-class FlextWebConstants(FlextConstants):
+class FlextWebConstants:
     """Central container for web-specific constants.
 
     Follows the same pattern as FlextConstants from flext-core,
     organizing constants into logical categories with type safety.
+    Uses composition instead of inheritance to avoid override conflicts.
     """
 
     class Network:

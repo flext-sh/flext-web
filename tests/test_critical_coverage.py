@@ -77,7 +77,7 @@ class TestCriticalMissingCoverage:
                 asyncio.wait_for(proc.wait(), timeout=10),
             )
         except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+            with contextlib.suppress(ProcessLookupError):
                 asyncio.get_event_loop().run_until_complete(proc.kill())
         assert int(proc.returncode or 0) == 0
 
@@ -95,7 +95,7 @@ class TestCriticalMissingCoverage:
                 asyncio.wait_for(proc.wait(), timeout=10),
             )
         except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+            with contextlib.suppress(ProcessLookupError):
                 asyncio.get_event_loop().run_until_complete(proc.kill())
         assert int(proc.returncode or 0) == 0
 
@@ -124,7 +124,7 @@ class TestCriticalMissingCoverage:
                 asyncio.wait_for(proc.wait(), timeout=10),
             )
         except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+            with contextlib.suppress(ProcessLookupError):
                 asyncio.get_event_loop().run_until_complete(proc.kill())
         assert int(proc.returncode or 0) == 0
 
@@ -193,7 +193,7 @@ class TestCriticalMissingCoverage:
                 asyncio.wait_for(proc.wait(), timeout=10),
             )
         except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):  # type: ignore[name-defined]
+            with contextlib.suppress(ProcessLookupError):
                 asyncio.get_event_loop().run_until_complete(proc.kill())
         # Should fail with argument parsing error
         assert int(proc.returncode or 0) != 0

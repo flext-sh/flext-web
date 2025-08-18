@@ -7,13 +7,10 @@ using FastAPI, frontend components, and flext-core patterns.
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
+from collections.abc import AsyncGenerator, Generator
 
 import pytest
 from fastapi.testclient import TestClient
-
-if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Generator
 
 
 # Local minimal constants shim to avoid cross-package dependency during examples/tests

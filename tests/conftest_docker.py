@@ -7,14 +7,11 @@ external dependencies like FastAPI. Focuses on Flask-based testing.
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
+from collections.abc import Generator
 
 import pytest
 
 from flext_web import FlextWebConfig, create_service
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
 
 
 # Test environment setup

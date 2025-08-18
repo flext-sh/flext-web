@@ -24,10 +24,6 @@ from flext_web.web_exceptions import (
 from flext_web.web_models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
 from flext_web.web_service import FlextWebService
 
-# Main CLI function will be imported on demand to avoid circular imports
-# from flext_web.__main__ import main
-
-# Third-party imports (moved out of TYPE_CHECKING as per project requirement)
 from flask import Flask
 
 __version__ = "0.9.0"
@@ -379,6 +375,5 @@ __all__: list[str] = [
     "get_logger",
     "get_web_settings",
     "logger",
-    "main",
     "reset_web_settings",
 ]
