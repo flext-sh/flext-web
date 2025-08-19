@@ -158,8 +158,8 @@ class FlextWebConfig(FlextBaseConfigModel):
         # Additional business rule validation
         error = self._validate_security()
         if error:
-            return FlextResult.fail(error)
-        return FlextResult.ok(None)
+            return FlextResult[None].fail(error)
+        return FlextResult[None].ok(None)
 
     def is_production(self) -> bool:
         """Check if configuration is set for production environment.

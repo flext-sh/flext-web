@@ -383,9 +383,9 @@ class FlextWebApp(FlextEntity):
     def start(self) -> FlextResult['FlextWebApp']:
         """Business logic for starting application"""
         if self.status == FlextWebAppStatus.RUNNING:
-            return FlextResult.fail("Application already running")
+            return FlextResult[None].fail("Application already running")
         # Business validation here
-        return FlextResult.ok(self.model_copy(update={"status": FlextWebAppStatus.RUNNING}))
+        return FlextResult[None].ok(self.model_copy(update={"status": FlextWebAppStatus.RUNNING}))
 ```
 
 #### Application Layer Development
@@ -468,10 +468,10 @@ def create_application(name: str, port: int) -> FlextResult[FlextWebApp]:
     try:
         # Validation
         if not name:
-            return FlextResult.fail("Application name is required")
+            return FlextResult[None].fail("Application name is required")
 
         if not (1 <= port <= 65535):
-            return FlextResult.fail("Port must be between 1 and 65535")
+            return FlextResult[None].fail("Port must be between 1 and 65535")
 
         # Create entity
         app = FlextWebApp(id=f"app_{name}", name=name, port=port)
@@ -482,10 +482,10 @@ def create_application(name: str, port: int) -> FlextResult[FlextWebApp]:
             return validation
 
         # Success
-        return FlextResult.ok(app)
+        return FlextResult[None].ok(app)
 
     except Exception as e:
-        return FlextResult.fail(f"Unexpected error: {e}")
+        return FlextResult[None].fail(f"Unexpected error: {e}")
 ```
 
 ## 🔍 Debugging

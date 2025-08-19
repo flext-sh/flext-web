@@ -148,8 +148,8 @@ class FlextWebConfig(BaseSettings, FlextConfig):
         """Validate configuration using FlextValidators"""
         # Implementation includes business rules and security validation
         if not self.debug and "change-in-production" in self.secret_key:
-            return FlextResult.fail("Secret key must be changed in production")
-        return FlextResult.ok(None)
+            return FlextResult[None].fail("Secret key must be changed in production")
+        return FlextResult[None].ok(None)
 
     def is_production(self) -> bool:
         """Check if running in production mode"""
@@ -237,22 +237,22 @@ def validate_config(self) -> FlextResult[None]:
 
     # Production secret key validation
     if not self.debug and "change-in-production" in self.secret_key:
-        return FlextResult.fail("Secret key must be changed in production")
+        return FlextResult[None].fail("Secret key must be changed in production")
 
     # Secret key length validation
     if len(self.secret_key) < 32:
-        return FlextResult.fail("Secret key must be at least 32 characters")
+        return FlextResult[None].fail("Secret key must be at least 32 characters")
 
     # Port range validation
     if not (1 <= self.port <= 65535):
-        return FlextResult.fail("Port must be between 1 and 65535")
+        return FlextResult[None].fail("Port must be between 1 and 65535")
 
     # Host validation for production
     if not self.debug and self.host == "0.0.0.0":
         # Log warning for production binding to all interfaces
         logger.warning("Production service binding to all interfaces")
 
-    return FlextResult.ok(None)
+    return FlextResult[None].ok(None)
 ```
 
 ## 🏗️ Environment-Specific Configuration

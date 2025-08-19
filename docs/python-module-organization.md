@@ -100,26 +100,26 @@ class FlextWebApp(FlextEntity):
     def start(self) -> FlextResult['FlextWebApp']:
         """Business logic for starting application"""
         if self.status == WebAppStatus.RUNNING:
-            return FlextResult.fail("Application already running")
+            return FlextResult[None].fail("Application already running")
 
         # Business validation and state transition
         new_status = WebAppStatus.RUNNING
         self.add_domain_event(AppStartedEvent(self.id, self.name))
 
-        return FlextResult.ok(
+        return FlextResult[None].ok(
             self.model_copy(update={"status": new_status})
         )
 
     def stop(self) -> FlextResult['FlextWebApp']:
         """Business logic for stopping application"""
         if self.status == WebAppStatus.STOPPED:
-            return FlextResult.fail("Application already stopped")
+            return FlextResult[None].fail("Application already stopped")
 
         # Business rules and domain events
         new_status = WebAppStatus.STOPPED
         self.add_domain_event(AppStoppedEvent(self.id, self.name))
 
-        return FlextResult.ok(
+        return FlextResult[None].ok(
             self.model_copy(update={"status": new_status})
         )
 ```
@@ -259,9 +259,9 @@ class FlextWebConfig(BaseSettings, FlextConfig):
     def validate_config(self) -> FlextResult[None]:
         """Validate configuration with business rules"""
         if not self.debug and "change-in-production" in self.secret_key:
-            return FlextResult.fail("Secret key must be changed in production")
+            return FlextResult[None].fail("Secret key must be changed in production")
 
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 ```
 
 ### **Infrastructure Layer (External Concerns)**
@@ -309,20 +309,20 @@ class InMemoryFlextWebAppRepository(FlextWebAppRepository):
         """Save application to storage"""
         try:
             self._apps[app.id] = app
-            return FlextResult.ok(app)
+            return FlextResult[None].ok(app)
         except Exception as e:
-            return FlextResult.fail(f"Failed to save app: {e}")
+            return FlextResult[None].fail(f"Failed to save app: {e}")
 
     def find_by_id(self, app_id: str) -> FlextResult[FlextWebApp]:
         """Find application by ID"""
         app = self._apps.get(app_id)
         if app is None:
-            return FlextResult.fail(f"Application {app_id} not found")
-        return FlextResult.ok(app)
+            return FlextResult[None].fail(f"Application {app_id} not found")
+        return FlextResult[None].ok(app)
 
     def find_all(self) -> FlextResult[list[FlextWebApp]]:
         """Find all applications"""
-        return FlextResult.ok(list(self._apps.values()))
+        return FlextResult[None].ok(list(self._apps.values()))
 
 class PostgreSQLFlextWebAppRepository(FlextWebAppRepository):
     """PostgreSQL repository implementation for production"""
@@ -334,9 +334,9 @@ class PostgreSQLFlextWebAppRepository(FlextWebAppRepository):
         """Save application to PostgreSQL"""
         try:
             # Implementation with connection pool and transactions
-            return FlextResult.ok(app)
+            return FlextResult[None].ok(app)
         except Exception as e:
-            return FlextResult.fail(f"Database error: {e}")
+            return FlextResult[None].fail(f"Database error: {e}")
 ```
 
 ### **Web Interface Layer (HTTP/REST)**
@@ -413,16 +413,16 @@ class AppsAPI:
         """Create and validate command from request data"""
         try:
             if not data or not data.get("name"):
-                return FlextResult.fail("Application name is required")
+                return FlextResult[None].fail("Application name is required")
 
             command = CreateAppCommand(
                 name=data["name"],
                 host=data.get("host", "localhost"),
                 port=data.get("port", 8000)
             )
-            return FlextResult.ok(command)
+            return FlextResult[None].ok(command)
         except Exception as e:
-            return FlextResult.fail(f"Invalid request data: {e}")
+            return FlextResult[None].fail(f"Invalid request data: {e}")
 
     def _success_response(self, message: str, data: dict = None):
         """Create standardized success response"""
@@ -541,7 +541,7 @@ from flext_web import (
 
 # Use patterns directly with type safety
 def process_app_request(data: dict) -> FlextResult[FlextWebApp]:
-    return FlextResult.ok(FlextWebApp(**data))
+    return FlextResult[None].ok(FlextWebApp(**data))
 ```
 
 #### **2. Layer-Specific Pattern (For Advanced Usage)**
@@ -680,7 +680,7 @@ def validate_create_app_request(data: dict) -> FlextResult[dict]:
     if 'host' in data and not data['host'].strip():
         errors.append("Host cannot be empty")
 
-    return FlextResult.fail(errors) if errors else FlextResult.ok(data)
+    return FlextResult[None].fail(errors) if errors else FlextResult[None].ok(data)
 
 # Async web operation with resource management
 async def process_with_database_transaction(command: CreateAppCommand) -> FlextResult[FlextWebApp]:
@@ -770,13 +770,13 @@ class FlextWebApp(FlextEntity):
         """Start application with business rules validation"""
         # Business rule: Can only start stopped or error state applications
         if not self.status.can_start():
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 f"Cannot start application in {self.status} state"
             )
 
         # Business rule: Check port availability (would integrate with infrastructure)
         if self.environment == "production" and self.host_port.port < 1024:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 "Production applications cannot use privileged ports"
             )
 
@@ -789,12 +789,12 @@ class FlextWebApp(FlextEntity):
             started_by=self.created_by
         ))
 
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def stop(self, stopped_by: str = "system") -> FlextResult[None]:
         """Stop application with audit trail"""
         if not self.status.can_stop():
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 f"Cannot stop application in {self.status} state"
             )
 
@@ -807,12 +807,12 @@ class FlextWebApp(FlextEntity):
             reason="Manual stop"
         ))
 
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def update_configuration(self, new_host_port: HostPort) -> FlextResult[None]:
         """Update application configuration with validation"""
         if self.status == WebAppStatus.RUNNING:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 "Cannot update configuration of running application"
             )
 
@@ -828,7 +828,7 @@ class FlextWebApp(FlextEntity):
             new_config=new_host_port.address
         ))
 
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 ```
 
 ### **Value Object Patterns for Web Concerns**
@@ -950,11 +950,11 @@ class WebAppPortConflictService(FlextDomainService):
                 if (app.host_port.host == host_port.host or
                     app.host_port.is_wildcard() or
                     host_port.is_wildcard()):
-                    return FlextResult.fail(
+                    return FlextResult[None].fail(
                         f"Port {host_port.port} already in use by application {app.name}"
                     )
 
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def suggest_available_port(self, preferred_port: int) -> FlextResult[int]:
         """Suggest next available port starting from preferred"""
@@ -963,9 +963,9 @@ class WebAppPortConflictService(FlextDomainService):
             availability = self.check_port_availability(host_port)
 
             if availability.success:
-                return FlextResult.ok(port)
+                return FlextResult[None].ok(port)
 
-        return FlextResult.fail("No available ports found")
+        return FlextResult[None].fail("No available ports found")
 ```
 
 ---
@@ -1042,10 +1042,10 @@ class FlextWebConfig(FlextSettings):
 
         if env.value == Environment.Type.PRODUCTION:
             if self.server.debug:
-                return FlextResult.fail("Debug mode must be disabled in production")
+                return FlextResult[None].fail("Debug mode must be disabled in production")
 
             if not env.requires_ssl() and self.server.port == 80:
-                return FlextResult.fail("Production should use HTTPS")
+                return FlextResult[None].fail("Production should use HTTPS")
 
         # Port conflict validation
         integration_ports = [
@@ -1055,11 +1055,11 @@ class FlextWebConfig(FlextSettings):
         ]
 
         if self.server.port in integration_ports:
-            return FlextResult.fail(
+            return FlextResult[None].fail(
                 f"Web interface port {self.server.port} conflicts with integration services"
             )
 
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def _extract_port(self, url: str) -> int:
         """Extract port from URL"""
@@ -1109,11 +1109,11 @@ class ConfigurationFactory:
             validation = config.validate_config()
 
             if validation.is_failure:
-                return FlextResult.fail(f"Configuration validation failed: {validation.error}")
+                return FlextResult[None].fail(f"Configuration validation failed: {validation.error}")
 
-            return FlextResult.ok(config)
+            return FlextResult[None].ok(config)
         except Exception as e:
-            return FlextResult.fail(f"Configuration creation failed: {e}")
+            return FlextResult[None].fail(f"Configuration creation failed: {e}")
 
 # Register environment-specific configurations
 class DevelopmentConfig(FlextWebConfig):
@@ -1555,10 +1555,10 @@ def validate_create_app_request(data: Dict[str, Any]) -> FlextResult[CreateAppCo
     try:
         # Input validation with detailed errors
         if not data.get('name'):
-            return FlextResult.fail("Application name is required")
+            return FlextResult[None].fail("Application name is required")
 
         if 'port' in data and not isinstance(data['port'], int):
-            return FlextResult.fail("Port must be an integer")
+            return FlextResult[None].fail("Port must be an integer")
 
         # Create command with validation
         command = CreateAppCommand(
@@ -1567,12 +1567,12 @@ def validate_create_app_request(data: Dict[str, Any]) -> FlextResult[CreateAppCo
             port=data.get('port', 8000)
         )
 
-        return FlextResult.ok(command)
+        return FlextResult[None].ok(command)
 
     except ValueError as e:
-        return FlextResult.fail(f"Validation error: {e}")
+        return FlextResult[None].fail(f"Validation error: {e}")
     except Exception as e:
-        return FlextResult.fail(f"Unexpected error: {e}")
+        return FlextResult[None].fail(f"Unexpected error: {e}")
 
 # ✅ Chain web operations safely
 def complete_app_creation_workflow(request_data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
@@ -1725,9 +1725,9 @@ class PostgreSQLFlextWebAppRepository(FlextWebAppRepository):
                     "INSERT INTO web_apps (id, name, host, port, status) VALUES ($1, $2, $3, $4, $5)",
                     app.id, app.name, app.host_port.host, app.host_port.port, app.status.value
                 )
-                return FlextResult.ok(app)
+                return FlextResult[None].ok(app)
             except Exception as e:
-                return FlextResult.fail(f"Database error: {e}")
+                return FlextResult[None].fail(f"Database error: {e}")
 ```
 
 ### **Phase 4: Dependency Cleanup (Week 4)**

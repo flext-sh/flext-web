@@ -191,7 +191,7 @@ class FlextWebApp(FlextEntity):
         """
         # Basic field validations are now handled by @field_validator decorators
         # This method is kept for additional business rule validations if needed
-        return FlextResult.ok(None)
+        return FlextResult[None].ok(None)
 
     def validate_domain_rules(self) -> FlextResult[None]:
         """Validate business rules required by FlextEntity abstract method."""
@@ -281,10 +281,10 @@ class FlextWebApp(FlextEntity):
         """
         status = self._status_enum()
         if status == FlextWebAppStatus.RUNNING:
-            return FlextResult.fail("Application already running")
+            return FlextResult[None].fail("Application already running")
         if status == FlextWebAppStatus.STARTING:
-            return FlextResult.fail("Application already starting")
-        return FlextResult.ok(
+            return FlextResult[None].fail("Application already starting")
+        return FlextResult[None].ok(
             self.model_copy(update={"status": FlextWebAppStatus.RUNNING}),
         )
 
@@ -324,10 +324,10 @@ class FlextWebApp(FlextEntity):
         """
         status = self._status_enum()
         if status == FlextWebAppStatus.STOPPED:
-            return FlextResult.fail("Application already stopped")
+            return FlextResult[None].fail("Application already stopped")
         if status == FlextWebAppStatus.STOPPING:
-            return FlextResult.fail("Application already stopping")
-        return FlextResult.ok(
+            return FlextResult[None].fail("Application already stopping")
+        return FlextResult[None].ok(
             self.model_copy(update={"status": FlextWebAppStatus.STOPPED}),
         )
 
@@ -431,11 +431,11 @@ class FlextWebAppHandler:
             # Validate domain rules before returning
             validation = app.validate_business_rules()
             if not validation.success:
-                return FlextResult.fail(validation.error or "Domain validation failed")
+                return FlextResult[None].fail(validation.error or "Domain validation failed")
 
-            return FlextResult.ok(app)
+            return FlextResult[None].ok(app)
         except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult.fail(f"Application creation failed: {e}")
+            return FlextResult[None].fail(f"Application creation failed: {e}")
 
     def start(self, app: FlextWebApp) -> FlextResult[FlextWebApp]:
         """Start web application with validation and state management.
@@ -483,7 +483,7 @@ class FlextWebAppHandler:
         # Validate domain rules before attempting state change
         validation = app.validate_domain_rules()
         if not validation.success:
-            return FlextResult.fail("App name is required")
+            return FlextResult[None].fail("App name is required")
 
         # Delegate to domain entity for state transition
         return app.start()
@@ -535,7 +535,7 @@ class FlextWebAppHandler:
         # Validate domain rules before attempting state change
         validation = app.validate_domain_rules()
         if not validation.success:
-            return FlextResult.fail("App name is required")
+            return FlextResult[None].fail("App name is required")
 
         # Delegate to domain entity for state transition
         return app.stop()
