@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from flext_web import main
+from flext_web.__main__ import main
 
 
 class TestMainEntryPoint:
@@ -37,26 +37,27 @@ class TestMainEntryPoint:
     Ensures CLI follows enterprise patterns with proper deployment support.
     """
 
-    @patch("flext_web.__main__.create_service")
-    @patch("flext_web.__main__.get_web_settings")
+    @patch("flext_web.__main__.FlextWebService")
+    @patch("flext_web.__main__.FlextWebConfig")
     @patch("flext_web.__main__.argparse.ArgumentParser")
     @patch("flext_web.__main__.get_logger")
     def test_main_default_arguments(
         self,
         mock_get_logger: MagicMock,
         mock_parser: MagicMock,
-        mock_get_web_settings: MagicMock,
-        mock_create_service: MagicMock,
+        mock_config_class: MagicMock,
+        mock_service_class: MagicMock,
     ) -> None:
         """Test main function with default arguments.
 
         Args:
             mock_get_logger (MagicMock): Description.
             mock_parser (MagicMock): Description.
-            mock_get_web_settings (MagicMock): Description.
-            mock_create_service (MagicMock): Description.
+            mock_config_class (MagicMock): Description.
+            mock_service_class (MagicMock): Description.
 
-        """  # Setup mock parser
+        """
+        # Setup mock parser
         mock_args = MagicMock()
         mock_args.host = None
         mock_args.port = None
@@ -72,11 +73,11 @@ class TestMainEntryPoint:
         mock_config.app_name = "FLEXT Web"
         mock_config.version = "0.9.0"
         mock_config.is_production.return_value = False
-        mock_get_web_settings.return_value = mock_config
+        mock_config_class.return_value = mock_config
 
         # Setup mock service
         mock_service = MagicMock()
-        mock_create_service.return_value = mock_service
+        mock_service_class.return_value = mock_service
 
         # Setup mock logger
         mock_logger = MagicMock()
@@ -86,33 +87,34 @@ class TestMainEntryPoint:
         main()
 
         # Verify service creation and run
-        mock_create_service.assert_called_once_with(mock_config)
+        mock_service_class.assert_called_once_with(mock_config)
         mock_service.run.assert_called_once_with(
             host="localhost",
             port=8080,
             debug=True,
         )
 
-    @patch("flext_web.__main__.create_service")
-    @patch("flext_web.__main__.get_web_settings")
+    @patch("flext_web.__main__.FlextWebService")
+    @patch("flext_web.__main__.FlextWebConfig")
     @patch("flext_web.__main__.argparse.ArgumentParser")
     @patch("flext_web.__main__.logger")
     def test_main_keyboard_interrupt(
         self,
         mock_logger: MagicMock,
         mock_parser: MagicMock,
-        mock_get_web_settings: MagicMock,
-        mock_create_service: MagicMock,
+        mock_config_class: MagicMock,
+        mock_service_class: MagicMock,
     ) -> None:
         """Test main function handles KeyboardInterrupt gracefully.
 
         Args:
             mock_logger (MagicMock): Description.
             mock_parser (MagicMock): Description.
-            mock_get_web_settings (MagicMock): Description.
-            mock_create_service (MagicMock): Description.
+            mock_config_class (MagicMock): Description.
+            mock_service_class (MagicMock): Description.
 
-        """  # Setup mock parser
+        """
+        # Setup mock parser
         mock_args = MagicMock()
         mock_args.host = None
         mock_args.port = None
@@ -128,15 +130,14 @@ class TestMainEntryPoint:
         mock_config.app_name = "FLEXT Web"
         mock_config.version = "0.9.0"
         mock_config.is_production.return_value = False
-        mock_get_web_settings.return_value = mock_config
+        mock_config_class.return_value = mock_config
 
         # Setup mock service to raise KeyboardInterrupt
         mock_service = MagicMock()
         mock_service.run.side_effect = KeyboardInterrupt()
-        mock_create_service.return_value = mock_service
+        mock_service_class.return_value = mock_service
 
-        # Import and run main
-
+        # Run main function
         main()
 
         # Verify shutdown message

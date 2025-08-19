@@ -25,9 +25,10 @@ Status: Enterprise API testing with comprehensive HTTP validation
 from __future__ import annotations
 
 from flext_web import create_service
+from flext_web.constants import FlextWebConstants
 
-# Constants
-HTTP_OK = 200
+# Constants - Using refactored constants
+HTTP_OK = FlextWebConstants.HTTP.OK
 EXPECTED_TOTAL_PAGES = 8
 
 

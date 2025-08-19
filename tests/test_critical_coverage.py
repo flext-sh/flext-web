@@ -64,68 +64,68 @@ class TestCriticalMissingCoverage:
         These lines control debug mode in production - CRITICAL for deployment.
         """
         # Test --debug flag (line 114)
-        cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
-        proc = asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(
+        async def _test_debug() -> object:
+            cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
+            proc = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            ),
-        )
-        try:
-            asyncio.get_event_loop().run_until_complete(
-                asyncio.wait_for(proc.wait(), timeout=10),
             )
-        except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):
-                asyncio.get_event_loop().run_until_complete(proc.kill())
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=10)
+            except TimeoutError:
+                with contextlib.suppress(ProcessLookupError):
+                    await proc.kill()
+            return proc
+
+        proc = asyncio.run(_test_debug())
         assert int(proc.returncode or 0) == 0
 
         # Test --no-debug flag (line 116)
-        cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
-        proc = asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(
+        async def _test_no_debug() -> object:
+            cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
+            proc = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            ),
-        )
-        try:
-            asyncio.get_event_loop().run_until_complete(
-                asyncio.wait_for(proc.wait(), timeout=10),
             )
-        except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):
-                asyncio.get_event_loop().run_until_complete(proc.kill())
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=10)
+            except TimeoutError:
+                with contextlib.suppress(ProcessLookupError):
+                    await proc.kill()
+            return proc
+
+        proc = asyncio.run(_test_no_debug())
         assert int(proc.returncode or 0) == 0
 
     def test_cli_host_port_override_lines_110_111(self) -> None:
         """Test CLI host/port override that could be missing in coverage."""
         # Test custom host/port via CLI
-        cmd = [
-            sys.executable,
-            "-m",
-            "flext_web",
-            "--host",
-            "127.0.0.1",
-            "--port",
-            "9000",
-            "--help",
-        ]
-        proc = asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(
+        async def _test_host_port() -> object:
+            cmd = [
+                sys.executable,
+                "-m",
+                "flext_web",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "9000",
+                "--help",
+            ]
+            proc = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            ),
-        )
-        try:
-            asyncio.get_event_loop().run_until_complete(
-                asyncio.wait_for(proc.wait(), timeout=10),
             )
-        except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):
-                asyncio.get_event_loop().run_until_complete(proc.kill())
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=10)
+            except TimeoutError:
+                with contextlib.suppress(ProcessLookupError):
+                    await proc.kill()
+            return proc
+
+        proc = asyncio.run(_test_host_port())
         assert int(proc.returncode or 0) == 0
 
     def test_type_checking_import_line_68(self) -> None:
@@ -144,7 +144,7 @@ class TestCriticalMissingCoverage:
         handler = FlextWebAppHandler()
 
         # Test create with invalid data to trigger error path
-        with patch("flext_web.web_models.FlextWebApp") as mock_app:
+        with patch("flext_web.models.FlextWebApp") as mock_app:
             mock_app.side_effect = ValueError("Validation failed")
             result = handler.create("test", 8080, "localhost")
             assert result.is_failure
@@ -180,21 +180,21 @@ class TestCriticalMissingCoverage:
     def test_main_module_execution_lines_122_135(self) -> None:
         """Test main module execution paths including error handling."""
         # Test module execution with invalid arguments
-        cmd = [sys.executable, "-m", "flext_web", "--port", "invalid"]
-        proc = asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(
+        async def _test_invalid_args() -> object:
+            cmd = [sys.executable, "-m", "flext_web", "--port", "invalid"]
+            proc = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            ),
-        )
-        try:
-            asyncio.get_event_loop().run_until_complete(
-                asyncio.wait_for(proc.wait(), timeout=10),
             )
-        except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):
-                asyncio.get_event_loop().run_until_complete(proc.kill())
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=10)
+            except TimeoutError:
+                with contextlib.suppress(ProcessLookupError):
+                    await proc.kill()
+            return proc
+
+        proc = asyncio.run(_test_invalid_args())
         # Should fail with argument parsing error
         assert int(proc.returncode or 0) != 0
 

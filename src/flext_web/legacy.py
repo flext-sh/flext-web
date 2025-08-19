@@ -23,8 +23,8 @@ from flext_web import (
 )
 
 # Import modern implementations to re-export under legacy names
-from flext_web.web_config import FlextWebConfig
-from flext_web.web_exceptions import (
+from flext_web.config import FlextWebConfig
+from flext_web.exceptions import (
     FlextWebAuthenticationError,
     FlextWebConfigurationError,
     FlextWebConnectionError,
@@ -35,12 +35,12 @@ from flext_web.web_exceptions import (
     FlextWebTemplateError,
     FlextWebValidationError,
 )
-from flext_web.web_models import (
+from flext_web.models import (
     FlextWebApp,
     FlextWebAppHandler,
     FlextWebAppStatus,
 )
-from flext_web.web_service import FlextWebService
+from flext_web.services import FlextWebService
 
 
 def _deprecation_warning(old_name: str, new_name: str) -> None:
@@ -56,19 +56,19 @@ def _deprecation_warning(old_name: str, new_name: str) -> None:
 def WebConfig(*args: object, **kwargs: object) -> FlextWebConfig:  # noqa: N802
     """Legacy alias for FlextWebConfig."""
     _deprecation_warning("WebConfig", "FlextWebConfig")
-    return FlextWebConfig(*args, **kwargs)
+    return FlextWebConfig(*args, **kwargs)  # type: ignore[arg-type]
 
 
 def WebService(*args: object, **kwargs: object) -> FlextWebService:  # noqa: N802
     """Legacy alias for FlextWebService."""
     _deprecation_warning("WebService", "FlextWebService")
-    return FlextWebService(*args, **kwargs)
+    return FlextWebService(*args, **kwargs)  # type: ignore[arg-type]
 
 
 def WebApp(*args: object, **kwargs: object) -> FlextWebApp:  # noqa: N802
     """Legacy alias for FlextWebApp."""
     _deprecation_warning("WebApp", "FlextWebApp")
-    return FlextWebApp(*args, **kwargs)
+    return FlextWebApp(*args, **kwargs)  # type: ignore[arg-type]
 
 
 def WebAppHandler(*args: object, **kwargs: object) -> FlextWebAppHandler:  # noqa: N802
@@ -87,99 +87,97 @@ def AppStatus(*args: object, **kwargs: object) -> FlextWebAppStatus:  # noqa: N8
 def FlaskService(*args: object, **kwargs: object) -> FlextWebService:  # noqa: N802
     """Legacy alias for FlextWebService (Flask-specific naming)."""
     _deprecation_warning("FlaskService", "FlextWebService")
-    return FlextWebService(*args, **kwargs)
+    return FlextWebService(*args, **kwargs)  # type: ignore[arg-type]
 
 
 def FlaskApp(*args: object, **kwargs: object) -> object:  # noqa: N802
     """Legacy alias for create_app function."""
     _deprecation_warning("FlaskApp", "create_app")
-    return create_app(*args, **kwargs)
+    return create_app(*args, **kwargs)  # type: ignore[arg-type]
 
 
 # Legacy exception aliases (more concise names that were probably used)
-def WebError(*args: object, **kwargs: object) -> FlextWebError:  # noqa: N802
+def WebError(message: str | None = None) -> FlextWebError:  # noqa: N802
     """Legacy alias for FlextWebError."""
     _deprecation_warning("WebError", "FlextWebError")
-    return FlextWebError(*args, **kwargs)
+    return FlextWebError(message or "Legacy error")
 
 
-def WebValidationError(*args: object, **kwargs: object) -> FlextWebValidationError:  # noqa: N802
+def WebValidationError(message: str | None = None) -> FlextWebValidationError:  # noqa: N802
     """Legacy alias for FlextWebValidationError."""
     _deprecation_warning("WebValidationError", "FlextWebValidationError")
-    return FlextWebValidationError(*args, **kwargs)
+    return FlextWebValidationError(message or "Legacy validation error")
 
 
 def WebConfigurationError(  # noqa: N802
-    *args: object,
-    **kwargs: object,
+    message: str | None = None,
 ) -> FlextWebConfigurationError:
     """Legacy alias for FlextWebConfigurationError."""
     _deprecation_warning("WebConfigurationError", "FlextWebConfigurationError")
-    return FlextWebConfigurationError(*args, **kwargs)
+    return FlextWebConfigurationError(message or "Legacy configuration error")
 
 
-def WebConnectionError(*args: object, **kwargs: object) -> FlextWebConnectionError:  # noqa: N802
+def WebConnectionError(message: str | None = None) -> FlextWebConnectionError:  # noqa: N802
     """Legacy alias for FlextWebConnectionError."""
     _deprecation_warning("WebConnectionError", "FlextWebConnectionError")
-    return FlextWebConnectionError(*args, **kwargs)
+    return FlextWebConnectionError(message or "Legacy connection error")
 
 
 def WebAuthenticationError(  # noqa: N802
-    *args: object,
-    **kwargs: object,
+    message: str | None = None,
 ) -> FlextWebAuthenticationError:
     """Legacy alias for FlextWebAuthenticationError."""
     _deprecation_warning("WebAuthenticationError", "FlextWebAuthenticationError")
-    return FlextWebAuthenticationError(*args, **kwargs)
+    return FlextWebAuthenticationError(message or "Legacy authentication error")
 
 
-def WebTemplateError(*args: object, **kwargs: object) -> FlextWebTemplateError:  # noqa: N802
+def WebTemplateError(message: str | None = None) -> FlextWebTemplateError:  # noqa: N802
     """Legacy alias for FlextWebTemplateError."""
     _deprecation_warning("WebTemplateError", "FlextWebTemplateError")
-    return FlextWebTemplateError(*args, **kwargs)
+    return FlextWebTemplateError(message or "Legacy template error")
 
 
-def WebRoutingError(*args: object, **kwargs: object) -> FlextWebRoutingError:  # noqa: N802
+def WebRoutingError(message: str | None = None) -> FlextWebRoutingError:  # noqa: N802
     """Legacy alias for FlextWebRoutingError."""
     _deprecation_warning("WebRoutingError", "FlextWebRoutingError")
-    return FlextWebRoutingError(*args, **kwargs)
+    return FlextWebRoutingError(message or "Legacy routing error")
 
 
-def WebSessionError(*args: object, **kwargs: object) -> FlextWebSessionError:  # noqa: N802
+def WebSessionError(message: str | None = None) -> FlextWebSessionError:  # noqa: N802
     """Legacy alias for FlextWebSessionError."""
     _deprecation_warning("WebSessionError", "FlextWebSessionError")
-    return FlextWebSessionError(*args, **kwargs)
+    return FlextWebSessionError(message or "Legacy session error")
 
 
-def WebMiddlewareError(*args: object, **kwargs: object) -> FlextWebMiddlewareError:  # noqa: N802
+def WebMiddlewareError(message: str | None = None) -> FlextWebMiddlewareError:  # noqa: N802
     """Legacy alias for FlextWebMiddlewareError."""
     _deprecation_warning("WebMiddlewareError", "FlextWebMiddlewareError")
-    return FlextWebMiddlewareError(*args, **kwargs)
+    return FlextWebMiddlewareError(message or "Legacy middleware error")
 
 
 # Legacy function aliases
-def get_web_config(*args: object, **kwargs: object) -> object:
+def get_web_config() -> object:
     """Legacy alias for get_web_settings."""
     _deprecation_warning("get_web_config", "get_web_settings")
-    return get_web_settings(*args, **kwargs)
+    return get_web_settings()
 
 
-def create_web_service(*args: object, **kwargs: object) -> object:
+def create_web_service(config: object = None) -> object:
     """Legacy alias for create_service."""
     _deprecation_warning("create_web_service", "create_service")
-    return create_service(*args, **kwargs)
+    return create_service(config)  # type: ignore[arg-type]
 
 
-def create_flask_app(*args: object, **kwargs: object) -> object:
+def create_flask_app(config: object = None) -> object:
     """Legacy alias for create_app."""
     _deprecation_warning("create_flask_app", "create_app")
-    return create_app(*args, **kwargs)
+    return create_app(config)  # type: ignore[arg-type]
 
 
-def reset_config(*args: object, **kwargs: object) -> object:
+def reset_config() -> None:
     """Legacy alias for reset_web_settings."""
     _deprecation_warning("reset_config", "reset_web_settings")
-    return reset_web_settings(*args, **kwargs)
+    reset_web_settings()
 
 
 # Export legacy aliases for backward compatibility

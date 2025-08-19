@@ -16,6 +16,7 @@ import pytest
 
 from flext_web import (
     FlextWebApp,
+    FlextWebAppHandler,
     FlextWebAppStatus,
     FlextWebConfig,
     FlextWebService,
@@ -71,7 +72,7 @@ class TestCriticalMissingLines:
         """Test line 68: TYPE_CHECKING import path."""
         # This line is only executed during import-time type checking
         # We can test it by importing the module and checking the import worked
-        import flext_web
+        import flext_web  # noqa: PLC0415
 
         # Verify the type checking import path was executed
         # by checking that the service has the correct typing
@@ -117,30 +118,27 @@ class TestCriticalMissingLines:
 
     def test_lines_571_614_handler_validation_failures(self) -> None:
         """Test lines 571, 614: Handler validation failure paths."""
-        from flext_web import FlextWebApp, FlextWebAppHandler
-
+        # FlextWebApp and FlextWebAppHandler already imported at top
         handler = FlextWebAppHandler()
 
         # Test line 571: create() method validation failure
         result = handler.create("", 8080, "localhost")  # Empty name should fail
         assert result.is_failure, "Should fail with empty name"
-        assert "name is required" in result.error.lower()
+        assert "name cannot be empty" in result.error.lower()
 
         # Test line 614: start() method validation failure
-        # Create app with empty name - this will fail validation in start()
-        invalid_app = FlextWebApp.model_validate(
-            {
-                "id": "test_invalid",
-                "name": "",  # Empty name
-                "port": 8080,
-                "host": "localhost",
-                "status": "stopped",  # Can be started
-            },
+        # Create app with empty name - use model_construct to skip validation
+        invalid_app = FlextWebApp.model_construct(
+            id="test_invalid",
+            name="",  # Empty name
+            port=8080,
+            host="localhost",
+            status="stopped",  # Can be started
         )
 
         result = handler.start(invalid_app)
         assert result.is_failure, "Should fail with empty name validation"
-        assert "name is required" in result.error.lower()
+        assert "name cannot be empty" in result.error.lower()
 
         # Note: stop() method validation path is similar but harder to test
         # due to the way Pydantic validation works with empty names

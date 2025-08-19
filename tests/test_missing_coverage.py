@@ -69,7 +69,8 @@ class TestMissingCoverage:
 
     def test_app_empty_name_validation(self) -> None:
         """Test empty name validation failure path."""
-        app = FlextWebApp(
+        # Use model_construct to bypass Pydantic validation and test domain validation
+        app = FlextWebApp.model_construct(
             id="test_empty_name",
             name="",  # Empty name should fail validation
             port=8080,
@@ -77,7 +78,7 @@ class TestMissingCoverage:
         )
         result = app.validate_domain_rules()
         assert result.is_failure
-        assert "App name is required" in result.error
+        assert "Application name cannot be empty" in result.error
 
     def test_config_validation_failure_paths(self) -> None:
         """Test configuration validation failure scenarios."""
@@ -108,7 +109,7 @@ class TestMissingCoverage:
         handler = FlextWebAppHandler()
 
         # Test with invalid parameters that might cause exceptions
-        with patch("flext_web.web_models.FlextWebApp") as mock_app:
+        with patch("flext_web.models.FlextWebApp") as mock_app:
             mock_app.side_effect = ValueError("Mock validation error")
 
             result = handler.create("test", 8080, "localhost")

@@ -56,7 +56,7 @@ class TestFlextWebErrorBase:
 
         assert "message" in error_dict
         assert error_dict["message"] == "Test error"
-        assert "error_code" in error_dict
+        assert "code" in error_dict  # Updated to use 'code' instead of 'error_code'
 
 
 class TestValidationErrors:
@@ -223,9 +223,9 @@ class TestExceptionUtilities:
         error = FlextWebProcessingError("Application startup failed")
         serialized = error.to_dict()
 
-        assert "error_code" in serialized
+        assert "code" in serialized  # Updated to use 'code' instead of 'error_code'
         assert "Application startup failed" in str(serialized["message"])
-        assert "context" in serialized or "details" in serialized
+        assert "context" in serialized
 
     def test_route_context_handling(self) -> None:
         """Test route context in routing errors."""

@@ -8,11 +8,12 @@ from flext_core import (
     get_logger,
 )
 
-from flext_web.web_config import FlextWebConfig
-from flext_web.web_exceptions import (
+from flext_web.config import FlextWebConfig
+from flext_web.exceptions import (
     FlextWebAuthenticationError,
     FlextWebConfigurationError,
     FlextWebConnectionError,
+    FlextWebError,
     FlextWebMiddlewareError,
     FlextWebProcessingError,
     FlextWebRoutingError,
@@ -21,8 +22,39 @@ from flext_web.web_exceptions import (
     FlextWebTimeoutError,
     FlextWebValidationError,
 )
-from flext_web.web_models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
-from flext_web.web_service import FlextWebService
+from flext_web.fields import WebFields, HTTPStatusField
+from flext_web.handlers import WebHandlers, WebResponseHandler
+from flext_web.interfaces import (
+    WebServiceInterface,
+    AppRepositoryInterface,
+    MiddlewareInterface,
+    TemplateEngineInterface,
+    MonitoringInterface,
+)
+from flext_web.models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
+from flext_web.protocols import (
+    WebServiceProtocol,
+    AppManagerProtocol,
+    ResponseFormatterProtocol,
+    ConfigurationProtocol,
+    TemplateRendererProtocol,
+)
+from flext_web.services import FlextWebService
+from flext_web.type_aliases import (
+    FieldKwargs,
+    ValidatorFunc,
+    ValidatorGenerator,
+    RequestContext,
+    ResponseData,
+    TemplateContext,
+    ConfigValue,
+    ConfigDict,
+    ErrorDetails,
+    SchemaDict,
+    TemplateFilter,
+    TemplateGlobal,
+    HTTPStatus,
+)
 
 from flask import Flask
 
@@ -328,18 +360,10 @@ def create_app(config: FlextWebConfig | None = None) -> Flask:
 
 
 # =============================================================================
-# EXCEPTIONS - Legacy exceptions using flext-core patterns (deprecated)
+# EXCEPTIONS - Imported from exceptions module
 # =============================================================================
-# NOTE: These are maintained for backward compatibility only.
-# Use web_exceptions module for full exception hierarchy.
-
-
-class FlextWebError(FlextError):
-    """Web error using flext-core."""
-
-
-# FlextWebValidationError is now imported from web_exceptions module
-# This legacy class definition is removed to avoid redefinition error
+# NOTE: All exceptions are imported from the exceptions module to avoid duplication.
+# The legacy FlextWebError class has been removed to prevent conflicts.
 
 
 # =============================================================================
@@ -348,32 +372,72 @@ class FlextWebError(FlextError):
 
 
 __all__: list[str] = [
+    # Core Flask integration
     "Flask",
+    # Flext-core exports
     "FlextError",
     "FlextValidationError",
+    "get_logger",
+    "logger",
+    # Configuration
+    "FlextWebConfig",
+    "get_web_settings",
+    "reset_web_settings",
+    # Domain models
     "FlextWebApp",
     "FlextWebAppHandler",
     "FlextWebAppStatus",
+    # Services
+    "FlextWebService",
+    "create_app",
+    "create_service",
+    # Exceptions
     "FlextWebAuthenticationError",
-    "FlextWebConfig",
     "FlextWebConfigurationError",
     "FlextWebConnectionError",
     "FlextWebError",
     "FlextWebMiddlewareError",
     "FlextWebProcessingError",
     "FlextWebRoutingError",
-    "FlextWebService",
     "FlextWebSessionError",
     "FlextWebTemplateError",
     "FlextWebTimeoutError",
     "FlextWebValidationError",
+    # Fields and validation
+    "WebFields",
+    "HTTPStatusField",
+    # Handlers
+    "WebHandlers",
+    "WebResponseHandler",
+    # Interfaces
+    "WebServiceInterface",
+    "AppRepositoryInterface",
+    "MiddlewareInterface",
+    "TemplateEngineInterface",
+    "MonitoringInterface",
+    # Protocols
+    "WebServiceProtocol",
+    "AppManagerProtocol",
+    "ResponseFormatterProtocol",
+    "ConfigurationProtocol",
+    "TemplateRendererProtocol",
+    # Type aliases
+    "FieldKwargs",
+    "ValidatorFunc",
+    "ValidatorGenerator",
+    "RequestContext",
+    "ResponseData",
+    "TemplateContext",
+    "ConfigValue",
+    "ConfigDict",
+    "ErrorDetails",
+    "SchemaDict",
+    "TemplateFilter",
+    "TemplateGlobal",
+    "HTTPStatus",
+    # Version information
     "__version__",
     "__version_info__",
+    # Python annotations
     "annotations",
-    "create_app",
-    "create_service",
-    "get_logger",
-    "get_web_settings",
-    "logger",
-    "reset_web_settings",
 ]

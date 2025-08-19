@@ -1,7 +1,7 @@
 """Test configuration for flext-web.
 
 Provides pytest fixtures and configuration for testing web interface functionality
-using FastAPI, frontend components, and flext-core patterns.
+using Flask, web components, and flext-core patterns.
 """
 
 from __future__ import annotations
@@ -10,17 +10,10 @@ import os
 from collections.abc import AsyncGenerator, Generator
 
 import pytest
-from fastapi.testclient import TestClient
 
+from flext_web import create_app
 
-# Local minimal constants shim to avoid cross-package dependency during examples/tests
-class FlextApiConstants:
-    """Local minimal constants to avoid cross-package dependency."""
-
-    class ContentTypes:
-        """Supported content types."""
-
-        JSON = "application/json"
+# Use refactored constants from the main module
 
 
 # Test environment setup
@@ -39,32 +32,35 @@ def set_test_environment() -> Generator[None]:
 
 # Web application fixtures
 @pytest.fixture
-def web_app() -> dict[str, str]:
-    """Web application for testing."""
-    # Simple mock app for testing
-    return {"app": "test_app"}
+def web_app() -> object:
+    """Flask web application for testing."""
+    return create_app()
 
 
 @pytest.fixture
-async def test_client(web_app: dict[str, str]) -> AsyncGenerator[TestClient]:
-    """HTTP test client for web application."""
-    with TestClient(web_app) as client:
-        yield client
+def test_client(web_app: object) -> object:
+    """HTTP test client for Flask web application."""
+    return web_app.test_client()
 
 
 @pytest.fixture
-def async_test_client(web_app: dict[str, str]) -> object:  # noqa: ARG001
+def async_test_client(web_app: object) -> object:  # noqa: ARG001
     """Async HTTP test client for web application."""
 
-    # Simple mock client for testing
-    class MockClient:
+    # Simple mock client for testing (Flask doesn't have native async client)
+    class MockAsyncClient:
+        def __init__(self, app: object) -> None:
+            self.client = app.test_client()
+
         async def get(self, url: str) -> dict[str, object]:
-            return {"status": 200, "url": url}
+            response = self.client.get(url)
+            return {"status": response.status_code, "url": url, "data": response.get_json()}
 
         async def post(self, url: str, **kwargs: object) -> dict[str, object]:
-            return {"status": 200, "url": url, "data": kwargs}
+            response = self.client.post(url, json=kwargs.get("json"), data=kwargs.get("data"))
+            return {"status": response.status_code, "url": url, "data": response.get_json()}
 
-    return MockClient()
+    return MockAsyncClient(web_app)
 
 
 # Authentication fixtures
@@ -98,7 +94,7 @@ def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:  # noqa: 
     # In real implementation, this would generate valid JWT tokens
     return {
         "Authorization": "Bearer test_token",
-        "Content-Type": FlextApiConstants.ContentTypes.JSON,
+        "Content-Type": "application/json",
     }
 
 
@@ -107,7 +103,7 @@ def REDACTED_LDAP_BIND_PASSWORD_auth_headers(REDACTED_LDAP_BIND_PASSWORD_user_da
     """Admin authentication headers for test requests."""
     return {
         "Authorization": "Bearer REDACTED_LDAP_BIND_PASSWORD_token",
-        "Content-Type": FlextApiConstants.ContentTypes.JSON,
+        "Content-Type": "application/json",
     }
 
 
@@ -210,10 +206,22 @@ def plugin_form_data() -> dict[str, object]:
 
 # WebSocket fixtures
 @pytest.fixture
-async def websocket_client(web_app: dict[str, str]) -> AsyncGenerator[object]:
-    """WebSocket test client."""
-    with TestClient(web_app) as client, client.websocket_connect("/ws") as websocket:
-        yield websocket
+async def websocket_client(web_app: object) -> AsyncGenerator[object]:  # noqa: ARG001
+    """WebSocket test client (mock for Flask)."""
+
+    # Mock WebSocket client since Flask doesn't have native WebSocket support
+    class MockWebSocket:
+        async def send_text(self, message: str) -> None:
+            """Mock send text message."""
+
+        async def receive_text(self) -> str:
+            """Mock receive text message."""
+            return '{"type": "message", "data": "test"}'
+
+        async def close(self) -> None:
+            """Mock close connection."""
+
+    return MockWebSocket()
 
 
 # Static files fixtures

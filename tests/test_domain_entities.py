@@ -78,13 +78,9 @@ class TestFlextWebApp:
 
     def test_webapp_empty_name(self) -> None:
         """Test FlextWebApp domain validation with empty name."""
-        app = FlextWebApp(id="app_test-app", name="", port=8080)
-        result = app.validate_domain_rules()
-
-        assert not result.success
-        if "App name is required" not in result.error:
-            msg: str = f"Expected {'App name is required'} in {result.error}"
-            raise AssertionError(msg)
+        # Empty name should fail at construction time with Pydantic validation
+        with pytest.raises(ValidationError, match="Application name cannot be empty"):
+            FlextWebApp(id="app_test-app", name="", port=8080)
 
     def test_webapp_start(self) -> None:
         """Test FlextWebApp start operation with state transition."""

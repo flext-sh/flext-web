@@ -20,8 +20,8 @@ from flask import Flask, jsonify, request
 from flask.typing import ResponseReturnValue
 from flext_core import get_logger
 
-from flext_web.web_config import FlextWebConfig
-from flext_web.web_models import FlextWebApp, FlextWebAppHandler
+from flext_web.config import FlextWebConfig
+from flext_web.models import FlextWebApp, FlextWebAppHandler
 
 
 class FlextWebService:
@@ -138,7 +138,7 @@ class FlextWebService:
         """List all applications."""
         apps_data = [
             {
-                "id": app.id,
+                "id": str(app.id),
                 "name": app.name,
                 "port": app.port,
                 "host": app.host,
@@ -177,7 +177,7 @@ class FlextWebService:
                 self.apps[str(app.id)] = app
 
                 app_data = {
-                    "id": app.id,
+                    "id": str(app.id),
                     "name": app.name,
                     "port": app.port,
                     "host": app.host,
@@ -207,7 +207,7 @@ class FlextWebService:
             )
 
         app_data = {
-            "id": app.id,
+            "id": str(app.id),
             "name": app.name,
             "port": app.port,
             "host": app.host,
@@ -238,7 +238,7 @@ class FlextWebService:
                 self.apps[app_id] = started_app
 
                 app_data = {
-                    "id": started_app.id,
+                    "id": str(started_app.id),
                     "name": started_app.name,
                     "is_running": started_app.is_running,
                     "status": started_app.status_value,
@@ -273,7 +273,7 @@ class FlextWebService:
                 self.apps[app_id] = stopped_app
 
                 app_data = {
-                    "id": stopped_app.id,
+                    "id": str(stopped_app.id),
                     "name": stopped_app.name,
                     "is_running": stopped_app.is_running,
                     "status": stopped_app.status_value,

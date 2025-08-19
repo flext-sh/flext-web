@@ -39,6 +39,7 @@ class FlextWebConstants:
         MAX_APP_NAME_LENGTH = 255
         MIN_APP_NAME_LENGTH = 1
         MAX_HOST_LENGTH = 253  # RFC 1035 limit for FQDN
+        MIN_SECRET_KEY_LENGTH = 32
 
         # Application limits
         MAX_CONCURRENT_APPS = 100
@@ -54,6 +55,10 @@ class FlextWebConstants:
         BAD_REQUEST = 400
         NOT_FOUND = 404
         INTERNAL_SERVER_ERROR = 500
+
+        # HTTP status code range
+        MIN_STATUS_CODE = 100
+        MAX_STATUS_CODE = 599
 
         # Content types
         JSON_CONTENT_TYPE = (

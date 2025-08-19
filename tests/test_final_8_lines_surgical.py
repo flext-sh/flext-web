@@ -16,11 +16,35 @@ from unittest.mock import patch
 import pytest
 from jinja2 import TemplateError
 
-from flext_web import FlextWebConfig, FlextWebService
+from flext_web import (
+    FlextWebConfig,
+    FlextWebService,
+    get_web_settings,
+    reset_web_settings,
+)
 
 
 class TestFinal8LinesSurgical:
     """Surgical tests for the exact 8 missing lines to achieve 100% coverage."""
+
+    @staticmethod
+    async def _run(
+        cmd: list[str],
+        env: dict[str, str] | None = None,
+    ) -> tuple[int, str, str]:
+        """Helper to run a command asynchronously and return (rc, stdout, stderr)."""
+        try:
+            async with asyncio.timeout(5):
+                process = await asyncio.create_subprocess_exec(
+                    *cmd,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                    env=env,
+                )
+                stdout, stderr = await process.communicate()
+                return process.returncode or 0, stdout.decode(), stderr.decode()
+        except TimeoutError:
+            return -1, "", "Command timed out after 5 seconds"
 
     def test_line_68_type_checking_import_surgical(self) -> None:
         """Test line 68: TYPE_CHECKING import path - SURGICAL precision."""
@@ -28,7 +52,7 @@ class TestFinal8LinesSurgical:
         # This is only executed during type checking, but we can test the import works
 
         # Test that the module imports correctly and type checking imports work
-        from flext_web import FlextWebConfig, FlextWebService
+        # FlextWebConfig and FlextWebService already imported at top
 
         # Create service to validate that the typing imports work correctly
         config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
@@ -113,7 +137,7 @@ class TestFinal8LinesSurgical:
                 },
             )()
 
-            from flext_web import get_web_settings, reset_web_settings
+            # get_web_settings and reset_web_settings already imported at top
 
             # Reset to test fresh configuration
             reset_web_settings()
@@ -134,26 +158,8 @@ class TestFinal8LinesSurgical:
         # Test CLI with --debug flag (line 114)
         cmd = [sys.executable, "-m", "flext_web", "--debug", "--help"]
 
-        async def _run(
-            cmd: list[str],
-            env: dict[str, str] | None = None,
-        ) -> tuple[int, str, str]:
-            """Helper to run a command asynchronously and return (rc, stdout, stderr)."""
-            try:
-                async with asyncio.timeout(5):
-                    process = await asyncio.create_subprocess_exec(
-                        *cmd,
-                        stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE,
-                        env=env,
-                    )
-                    stdout, stderr = await process.communicate()
-                    return process.returncode or 0, stdout.decode(), stderr.decode()
-            except TimeoutError:
-                return -1, "", "Command timed out after 5 seconds"
-
         try:
-            rc, _out, _err = asyncio.run(_run(cmd))
+            rc, _out, _err = asyncio.run(self._run(cmd))
             # Should handle debug flag without error (line 114)
             assert rc in {0, 2}, "Should handle --debug flag"
         except TimeoutError:
@@ -165,7 +171,7 @@ class TestFinal8LinesSurgical:
         # Test CLI with --no-debug flag (line 116)
         cmd = [sys.executable, "-m", "flext_web", "--no-debug", "--help"]
         try:
-            rc, _out, _err = asyncio.run(_run(cmd))
+            rc, _out, _err = asyncio.run(self._run(cmd))
             # Should handle no-debug flag without error (line 116)
             assert rc in {0, 2}, "Should handle --no-debug flag"
         except TimeoutError:
@@ -183,7 +189,7 @@ class TestFinal8LinesSurgical:
 
         cmd = [sys.executable, "-m", "flext_web"]
         try:
-            rc, out, err = asyncio.run(_run(cmd, env=bad_env))
+            rc, out, err = asyncio.run(self._run(cmd, env=bad_env))
             # Should handle startup exceptions gracefully (lines 133-135)
             assert rc != 0, "Should fail with bad configuration"
 

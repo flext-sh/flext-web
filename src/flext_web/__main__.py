@@ -46,10 +46,10 @@ import sys
 
 from flext_core import get_logger
 
-from flext_web.web_config import FlextWebConfig
+from flext_web.config import FlextWebConfig
 
 # Import directly from modules to avoid circular imports
-from flext_web.web_service import FlextWebService
+from flext_web.services import FlextWebService
 
 logger = get_logger(__name__)
 

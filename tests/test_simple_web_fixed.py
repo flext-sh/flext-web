@@ -25,9 +25,10 @@ Status: Enterprise web interface testing with comprehensive UI validation
 from __future__ import annotations
 
 from flext_web import create_app
+from flext_web.constants import FlextWebConstants
 
-# Constants
-HTTP_OK = 200
+# Constants - Using refactored constants
+HTTP_OK = FlextWebConstants.HTTP.OK
 
 
 class TestWebInterface:
