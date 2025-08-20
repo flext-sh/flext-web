@@ -24,7 +24,14 @@ Status: Enterprise API testing with comprehensive HTTP validation
 
 from __future__ import annotations
 
-from flext_web import create_service
+import threading
+import time
+from collections.abc import Generator
+
+import pytest
+import requests
+
+from flext_web import FlextWebConfig, FlextWebService, create_service
 from flext_web.constants import FlextWebConstants
 
 # Constants - Using refactored constants
@@ -39,6 +46,35 @@ class TestFlextWebService:
     HTTP request/response handling, and service integration patterns.
     Ensures API follows enterprise standards with proper validation.
     """
+
+    @pytest.fixture
+    def real_api_service(self) -> Generator[FlextWebService]:
+        """Create real running service for API testing."""
+        config = FlextWebConfig(
+            host="localhost",
+            port=8094,  # Unique port for API tests
+            debug=True,
+            secret_key="api-test-secret-key-32-characters-long!",
+        )
+        service = FlextWebService(config)
+
+        def run_service() -> None:
+            service.app.run(
+                host=config.host,
+                port=config.port,
+                debug=False,
+                use_reloader=False,
+                threaded=True,
+            )
+
+        server_thread = threading.Thread(target=run_service, daemon=True)
+        server_thread.start()
+        time.sleep(1)  # Wait for service to start
+
+        yield service
+
+        # Clean up
+        service.apps.clear()
 
     def test_service_creation(self) -> None:
         """Test FlextWebService creation with proper initialization.
@@ -55,23 +91,22 @@ class TestFlextWebService:
             raise AssertionError(msg)
         assert service.handler is not None
 
-    def test_health_check(self) -> None:
-        """Test health check endpoint."""
-        service = create_service()
+    def test_health_check(self, real_api_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test health check endpoint using real HTTP."""
+        base_url = "http://localhost:8094"
+        
+        response = requests.get(f"{base_url}/health", timeout=5)
 
-        with service.app.test_client() as client:
-            response = client.get("/health")
-
-            if response.status_code != HTTP_OK:
-                msg: str = f"Expected {200}, got {response.status_code}"
-                raise AssertionError(msg)
-            data = response.get_json()
-            if not (data["success"]):
-                msg: str = f"Expected True, got {data['success']}"
-                raise AssertionError(msg)
-            if "healthy" not in data["message"]:
-                msg: str = f"Expected {'healthy'} in {data['message']}"
-                raise AssertionError(msg)
+        if response.status_code != HTTP_OK:
+            msg: str = f"Expected {200}, got {response.status_code}"
+            raise AssertionError(msg)
+        data = response.json()
+        if not (data["success"]):
+            msg: str = f"Expected True, got {data['success']}"
+            raise AssertionError(msg)
+        if "healthy" not in data["message"]:
+            msg: str = f"Expected {'healthy'} in {data['message']}"
+            raise AssertionError(msg)
 
     def test_list_apps_empty(self) -> None:
         """Test listing empty apps."""

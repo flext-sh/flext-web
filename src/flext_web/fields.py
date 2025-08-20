@@ -17,10 +17,11 @@ Key Components:
 from __future__ import annotations
 
 import re
-from typing import ClassVar, Unpack
+from typing import TYPE_CHECKING, ClassVar, Unpack, cast
 
 from flext_core import FlextFields
 from pydantic import Field
+from pydantic.fields import FieldInfo
 
 from flext_web.constants import FlextWebConstants
 from flext_web.type_aliases import (
@@ -28,6 +29,12 @@ from flext_web.type_aliases import (
     SchemaDict,
     ValidatorGenerator,
 )
+
+if TYPE_CHECKING:
+    # For type checking, we can be more specific about return types
+    FieldReturn = FieldInfo
+else:
+    FieldReturn = object
 
 
 class WebFields(FlextFields):
@@ -39,9 +46,7 @@ class WebFields(FlextFields):
 
     # Host and network field patterns
     HOST_PATTERN: ClassVar[re.Pattern[str]] = re.compile(
-        r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|"
-        + r"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$|"
-        + r"^localhost$"
+        r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$|^localhost$"
     )
 
     # URL pattern for validation
@@ -50,131 +55,99 @@ class WebFields(FlextFields):
     )
 
     @classmethod
-    def app_name_field(
-        cls,
-        description: str = "Application name",
-        min_length: int = 1,
-        max_length: int = 255,
-        **kwargs: Unpack[FieldKwargs]
-    ) -> object:  # Field factory function
+    def app_name_field(cls, **kwargs: Unpack[FieldKwargs]) -> FieldReturn:
         """Create application name field with validation.
 
         Args:
-            description: Field description
-            min_length: Minimum string length
-            max_length: Maximum string length
-            **kwargs: Additional field arguments
+            **kwargs: Field arguments including description, min_length, max_length
 
         Returns:
             Pydantic FieldInfo with app name validation.
 
         """
-        field_kwargs = {
-            "description": description,
-            "min_length": min_length,
-            "max_length": max_length,
-            **kwargs
-        }
-        return Field(**field_kwargs)
+        field_kwargs = cast(
+            "dict[str, object]",
+            {
+                "description": "Application name",
+                "min_length": 1,
+                "max_length": 255,
+                **kwargs,
+            },
+        )
+        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
 
     @classmethod
-    def host_field(
-        cls,
-        description: str = "Host address",
-        default: str = "localhost",
-        **kwargs: Unpack[FieldKwargs]
-    ) -> object:  # Field factory function
+    def host_field(cls, **kwargs: Unpack[FieldKwargs]) -> FieldReturn:
         """Create host field with validation.
 
         Args:
-            description: Field description
-            default: Default host value
-            **kwargs: Additional field arguments
+            **kwargs: Field arguments including description, default
 
         Returns:
             Pydantic FieldInfo with host validation.
 
         """
-        field_kwargs = {
-            "default": default,
-            "description": description,
-            **kwargs
-        }
-        return Field(**field_kwargs)
+        field_kwargs = cast(
+            "dict[str, object]",
+            {"default": "localhost", "description": "Host address", **kwargs},
+        )
+        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
 
     @classmethod
-    def port_field(
-        cls,
-        description: str = "Port number",
-        default: int = 8000,
-        **kwargs: Unpack[FieldKwargs]
-    ) -> object:  # Field factory function
+    def port_field(cls, **kwargs: Unpack[FieldKwargs]) -> FieldReturn:
         """Create port field with validation.
 
         Args:
-            description: Field description
-            default: Default port value
-            **kwargs: Additional field arguments
+            **kwargs: Field arguments including description, default
 
         Returns:
             Pydantic FieldInfo with port validation.
 
         """
-        field_kwargs = {
-            "default": default,
-            "ge": 1,
-            "le": 65535,
-            "description": description,
-            **kwargs
-        }
-        return Field(**field_kwargs)
+        field_kwargs = cast(
+            "dict[str, object]",
+            {
+                "default": 8000,
+                "ge": 1,
+                "le": 65535,
+                "description": "Port number",
+                **kwargs,
+            },
+        )
+        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
 
     @classmethod
-    def url_field(
-        cls,
-        description: str = "URL address",
-        **kwargs: Unpack[FieldKwargs]
-    ) -> object:  # Field factory function
+    def url_field(cls, **kwargs: Unpack[FieldKwargs]) -> FieldReturn:
         """Create URL field with validation.
 
         Args:
-            description: Field description
-            **kwargs: Additional field arguments
+            **kwargs: Field arguments including description
 
         Returns:
             Pydantic FieldInfo with URL validation.
 
         """
-        field_kwargs = {
-            "description": description,
-            **kwargs
-        }
-        return Field(**field_kwargs)
+        field_kwargs = cast(
+            "dict[str, object]", {"description": "URL address", **kwargs}
+        )
+        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
 
     @classmethod
-    def secret_key_field(
-        cls,
-        description: str = "Cryptographic secret key",
-        min_length: int = 32,
-        **kwargs: Unpack[FieldKwargs]
-    ) -> object:  # Field factory function
+    def secret_key_field(cls, **kwargs: Unpack[FieldKwargs]) -> FieldReturn:
         """Create secret key field with validation.
 
         Args:
-            description: Field description
-            min_length: Minimum key length
-            **kwargs: Additional field arguments
+            **kwargs: Field arguments including description, min_length
 
         Returns:
             Pydantic FieldInfo with secret key validation.
 
         """
-        field_kwargs = {
-            "description": description,
-            "min_length": min_length,
-            **kwargs
-        }
-        return Field(**field_kwargs)
+        field_kwargs = cast(
+            "dict[str, object]",
+            {"description": "Cryptographic secret key", "min_length": 32, **kwargs},
+        )
+        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
 
     @staticmethod
     def validate_app_name(value: str) -> str:
@@ -199,9 +172,7 @@ class WebFields(FlextFields):
                 "Application name must start and end with alphanumeric characters "
                 "and contain only letters, numbers, hyphens, and underscores"
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if len(value) > FlextWebConstants.Validation.MAX_APP_NAME_LENGTH:
             msg = f"Application name must be {FlextWebConstants.Validation.MAX_APP_NAME_LENGTH} characters or less"
@@ -229,9 +200,7 @@ class WebFields(FlextFields):
 
         if not WebFields.HOST_PATTERN.match(value):
             msg = "Host must be a valid IP address, domain name, or 'localhost'"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         return value
 
@@ -306,9 +275,7 @@ class WebFields(FlextFields):
 
         if value == "development-secret-change-in-production":
             msg = "Default development secret key must be changed in production"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         return value
 
@@ -351,8 +318,5 @@ class HTTPStatusField:
     def __modify_schema__(field_schema: SchemaDict) -> None:
         """Modify Pydantic schema for documentation."""
         field_schema.update(
-            type="integer",
-            minimum=100,
-            maximum=599,
-            description="HTTP status code"
+            type="integer", minimum=100, maximum=599, description="HTTP status code"
         )

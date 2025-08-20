@@ -13,6 +13,7 @@ import contextlib
 import shutil
 import sys
 import time
+from typing import Any
 
 import requests
 
@@ -56,7 +57,13 @@ def run_command(
             return -1, "", "shell executable not found"
         return await _run_list([sh_path, "-c", cmd])
 
-    return asyncio.get_event_loop().run_until_complete(_run())
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    return loop.run_until_complete(_run())
 
 
 def test_docker_build() -> bool:
@@ -165,7 +172,7 @@ def test_container_service() -> bool | None:
         assert apps_data["success"] is True
 
         # Create app
-        app_data = {"name": "container-test-app", "port": 3000, "host": "localhost"}
+        app_data: dict[str, str | int] = {"name": "container-test-app", "port": 3000, "host": "localhost"}
         response = requests.post(f"{base_url}/api/v1/apps", json=app_data, timeout=5)
         assert response.status_code == 200
         create_data = response.json()
@@ -229,7 +236,7 @@ def test_examples_in_container() -> bool | None:
 
 def main() -> int:
     """Run all Docker container tests."""
-    tests = [
+    tests: list[tuple[str, Any]] = [
         ("Docker Build", test_docker_build),
         ("Container Pytest", test_container_pytest),
         ("Container Service", test_container_service),

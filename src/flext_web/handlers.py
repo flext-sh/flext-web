@@ -22,7 +22,13 @@ from flask.typing import ResponseReturnValue
 from flext_core import FlextHandlers, FlextResult
 
 from flext_web.models import FlextWebApp, FlextWebAppHandler
-from flext_web.type_aliases import ErrorDetails, ResponseData
+from flext_web.type_aliases import (
+    AppDataDict,
+    ErrorDetails,
+    HealthDataDict,
+    ResponseData,
+    ResponseDataDict,
+)
 
 
 class WebHandlers(FlextHandlers):
@@ -43,11 +49,13 @@ class WebHandlers(FlextHandlers):
         return FlextResult[dict[str, ResponseData]].ok({
             "status": "healthy",
             "service": "flext-web",
-            "version": "0.9.0"
+            "version": "0.9.0",
         })
 
     @staticmethod
-    def handle_app_creation(name: str, port: int = 8000, host: str = "localhost") -> FlextResult[FlextWebApp]:
+    def handle_app_creation(
+        name: str, port: int = 8000, host: str = "localhost"
+    ) -> FlextResult[FlextWebApp]:
         """Handle application creation with validation.
 
         Args:
@@ -103,8 +111,15 @@ class WebResponseHandler:
         message: str,
         *,
         success: bool,
-        data: ResponseData = None,
-        status_code: int = 200
+        data: AppDataDict
+        | HealthDataDict
+        | dict[str, object]
+        | list[object]
+        | str
+        | float
+        | bool
+        | None = None,
+        status_code: int = 200,
     ) -> ResponseReturnValue:
         """Create standardized JSON response.
 
@@ -118,11 +133,9 @@ class WebResponseHandler:
             Flask JSON response with standardized format.
 
         """
-        response_data = {
-            "success": success,
-            "message": message,
-            "data": data
-        }
+        response_data: ResponseDataDict = ResponseDataDict(
+            success=success, message=message, data=data
+        )
 
         response = jsonify(response_data)
         response.status_code = status_code
@@ -130,9 +143,7 @@ class WebResponseHandler:
 
     @staticmethod
     def create_error_response(
-        message: str,
-        status_code: int = 500,
-        error_details: ErrorDetails = None
+        message: str, status_code: int = 500, error_details: ErrorDetails = None
     ) -> ResponseReturnValue:
         """Create standardized error response.
 
@@ -146,17 +157,22 @@ class WebResponseHandler:
 
         """
         return WebResponseHandler.create_json_response(
-            message,
-            success=False,
-            data=error_details,
-            status_code=status_code
+            message, success=False, data=error_details, status_code=status_code
         )
 
     @staticmethod
     def create_success_response(
         message: str,
-        data: ResponseData = None,
-        status_code: int = 200
+        *,
+        data: AppDataDict
+        | HealthDataDict
+        | dict[str, object]
+        | list[object]
+        | str
+        | float
+        | bool
+        | None = None,
+        status_code: int = 200,
     ) -> ResponseReturnValue:
         """Create standardized success response.
 
@@ -170,8 +186,5 @@ class WebResponseHandler:
 
         """
         return WebResponseHandler.create_json_response(
-            message,
-            success=True,
-            data=data,
-            status_code=status_code
+            message, success=True, data=data, status_code=status_code
         )

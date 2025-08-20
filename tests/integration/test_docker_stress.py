@@ -7,6 +7,7 @@ import contextlib
 import shutil
 import sys
 import time
+from typing import Any
 
 import requests
 
@@ -71,7 +72,7 @@ def test_docker_memory_stress() -> bool | None:
             )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):
-                asyncio.get_event_loop().run_until_complete(proc.kill())
+                proc.kill()
             return False
         if int(proc.returncode or 0) != 0:
             return False
@@ -134,7 +135,7 @@ def test_docker_concurrent_requests() -> bool:
             )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):
-                asyncio.get_event_loop().run_until_complete(proc.kill())
+                proc.kill()
             return False
         if int(proc.returncode or 0) != 0:
             return False
@@ -208,7 +209,7 @@ def test_docker_api_workflow() -> bool:
             )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):
-                asyncio.get_event_loop().run_until_complete(proc.kill())
+                proc.kill()
             return False
         if int(proc.returncode or 0) != 0:
             return False
@@ -323,7 +324,7 @@ def test_docker_examples_stress() -> bool | None:
             )
         except TimeoutError:
             with contextlib.suppress(ProcessLookupError):
-                asyncio.get_event_loop().run_until_complete(proc.kill())
+                proc.kill()
 
         # Wait a bit to see if it crashes
         time.sleep(3)
@@ -358,18 +359,18 @@ def test_docker_examples_stress() -> bool | None:
 
 def main() -> bool:
     """Run comprehensive Docker stress tests."""
-    tests = [
+    tests: list[tuple[str, Any]] = [
         ("Memory Stress", test_docker_memory_stress),
         ("Concurrent Requests", test_docker_concurrent_requests),
         ("API Workflow", test_docker_api_workflow),
         ("Examples Stress", test_docker_examples_stress),
     ]
 
-    results = []
+    results: list[tuple[str, bool]] = []
 
     for test_name, test_func in tests:
         try:
-            result = test_func()
+            result: bool = test_func()
             results.append((test_name, result))
             if result:
                 pass

@@ -56,12 +56,7 @@ class WebServiceInterface(ABC):
 
     @abstractmethod
     def start_service(
-        self,
-        host: str,
-        port: int,
-        *,
-        debug: bool = False,
-        **kwargs: object
+        self, host: str, port: int, *, debug: bool = False, **kwargs: object
     ) -> None:
         """Start the web service with specified configuration.
 
@@ -220,11 +215,7 @@ class TemplateEngineInterface(ABC):
         """
 
     @abstractmethod
-    def render(
-        self,
-        template_name: str,
-        **context: TemplateContext
-    ) -> str:
+    def render(self, template_name: str, **context: TemplateContext) -> str:
         """Render template with context variables.
 
         Args:
@@ -266,11 +257,7 @@ class MonitoringInterface(ABC):
 
     @abstractmethod
     def record_request(
-        self,
-        method: str,
-        path: str,
-        status_code: int,
-        duration: float
+        self, method: str, path: str, status_code: int, duration: float
     ) -> None:
         """Record HTTP request metrics.
 
@@ -287,7 +274,7 @@ class MonitoringInterface(ABC):
         self,
         error_type: str,
         error_message: str,
-        context: dict[str, ResponseData] | None = None
+        context: dict[str, ResponseData] | None = None,
     ) -> None:
         """Record error occurrence.
 

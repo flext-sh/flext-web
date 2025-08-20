@@ -22,6 +22,7 @@ from flext_core import get_logger
 
 from flext_web.config import FlextWebConfig
 from flext_web.models import FlextWebApp, FlextWebAppHandler
+from flext_web.type_aliases import AppDataDict, HealthDataDict
 
 
 class FlextWebService:
@@ -107,7 +108,7 @@ class FlextWebService:
         *,
         success: bool,
         message: str,
-        data: dict[str, object] | None = None,
+        data: AppDataDict | HealthDataDict | dict[str, object] | None = None,
         status: int = 200,
     ) -> ResponseReturnValue:
         """Create standardized response."""
@@ -123,28 +124,29 @@ class FlextWebService:
 
     def health_check(self) -> ResponseReturnValue:
         """Health check endpoint."""
+        health_data: HealthDataDict = HealthDataDict(
+            status="healthy",
+            version=self.config.version,
+            apps_count=len(self.apps),
+            config=self.config.app_name,
+        )
         return self._create_response(
             success=True,
             message="FLEXT Web Service is healthy",
-            data={
-                "status": "healthy",
-                "version": self.config.version,
-                "apps_count": len(self.apps),
-                "config": self.config.app_name,
-            },
+            data=health_data,
         )
 
     def list_apps(self) -> ResponseReturnValue:
         """List all applications."""
-        apps_data = [
-            {
-                "id": str(app.id),
-                "name": app.name,
-                "port": app.port,
-                "host": app.host,
-                "is_running": app.is_running,
-                "status": app.status_value,
-            }
+        apps_data: list[AppDataDict] = [
+            AppDataDict(
+                id=str(app.id),
+                name=app.name,
+                port=app.port,
+                host=app.host,
+                is_running=app.is_running,
+                status=app.status_value,
+            )
             for app in self.apps.values()
         ]
         return self._create_response(
@@ -172,23 +174,22 @@ class FlextWebService:
 
         if app_result.success:
             app = app_result.data
-            if app is not None:
-                # Normalize key to string for the dict keyed by str
-                self.apps[str(app.id)] = app
+            # Normalize key to string for the dict keyed by str
+            self.apps[str(app.id)] = app
 
-                app_data = {
-                    "id": str(app.id),
-                    "name": app.name,
-                    "port": app.port,
-                    "host": app.host,
-                    "is_running": app.is_running,
-                    "status": app.status_value,
-                }
-                return self._create_response(
-                    success=True,
-                    message="Application created successfully",
-                    data=app_data,
-                )
+            app_data: AppDataDict = AppDataDict(
+                id=str(app.id),
+                name=app.name,
+                port=app.port,
+                host=app.host,
+                is_running=app.is_running,
+                status=app.status_value,
+            )
+            return self._create_response(
+                success=True,
+                message="Application created successfully",
+                data=app_data,
+            )
 
         return self._create_response(
             success=False,
@@ -206,14 +207,14 @@ class FlextWebService:
                 status=404,
             )
 
-        app_data = {
-            "id": str(app.id),
-            "name": app.name,
-            "port": app.port,
-            "host": app.host,
-            "is_running": app.is_running,
-            "status": app.status_value,
-        }
+        app_data: AppDataDict = AppDataDict(
+            id=str(app.id),
+            name=app.name,
+            port=app.port,
+            host=app.host,
+            is_running=app.is_running,
+            status=app.status_value,
+        )
         return self._create_response(
             success=True,
             message="Application retrieved successfully",
@@ -234,20 +235,21 @@ class FlextWebService:
 
         if start_result.success:
             started_app = start_result.data
-            if started_app is not None:
-                self.apps[app_id] = started_app
+            self.apps[app_id] = started_app
 
-                app_data = {
-                    "id": str(started_app.id),
-                    "name": started_app.name,
-                    "is_running": started_app.is_running,
-                    "status": started_app.status_value,
-                }
-                return self._create_response(
-                    success=True,
-                    message="Application started successfully",
-                    data=app_data,
-                )
+            app_data: AppDataDict = AppDataDict(
+                id=str(started_app.id),
+                name=started_app.name,
+                port=started_app.port,
+                host=started_app.host,
+                is_running=started_app.is_running,
+                status=started_app.status_value,
+            )
+            return self._create_response(
+                success=True,
+                message="Application started successfully",
+                data=app_data,
+            )
 
         return self._create_response(
             success=False,
@@ -269,20 +271,21 @@ class FlextWebService:
 
         if stop_result.success:
             stopped_app = stop_result.data
-            if stopped_app is not None:
-                self.apps[app_id] = stopped_app
+            self.apps[app_id] = stopped_app
 
-                app_data = {
-                    "id": str(stopped_app.id),
-                    "name": stopped_app.name,
-                    "is_running": stopped_app.is_running,
-                    "status": stopped_app.status_value,
-                }
-                return self._create_response(
-                    success=True,
-                    message="Application stopped successfully",
-                    data=app_data,
-                )
+            app_data: AppDataDict = AppDataDict(
+                id=str(stopped_app.id),
+                name=stopped_app.name,
+                port=stopped_app.port,
+                host=stopped_app.host,
+                is_running=stopped_app.is_running,
+                status=stopped_app.status_value,
+            )
+            return self._create_response(
+                success=True,
+                message="Application stopped successfully",
+                data=app_data,
+            )
 
         return self._create_response(
             success=False,

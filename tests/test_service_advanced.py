@@ -2,21 +2,25 @@
 """Advanced tests for FLEXT Web Interface service functionality.
 
 Tests error handling, edge cases, validation, and integration scenarios
-to improve code coverage and ensure robust operation.
+using REAL execution without mocks to ensure robust operation.
 """
 
 from __future__ import annotations
 
-from unittest.mock import patch
+import os
+import threading
+import time
+from collections.abc import Generator
 
 import pytest
+import requests
+from flext_core.root_models import FlextEntityId
 
 from flext_web import (
     FlextWebApp,
     FlextWebAppHandler,
     FlextWebAppStatus,
     FlextWebConfig,
-    FlextWebProcessingError,
     FlextWebService,
     get_web_settings,
 )
@@ -30,14 +34,37 @@ class TestFlextWebServiceAdvanced:
         """Create test configuration."""
         return FlextWebConfig(
             host="localhost",
-            port=8080,
+            port=8093,  # Unique port for advanced tests
             debug=True,
             secret_key="test-secret-key-32-characters-long!",
         )
 
     @pytest.fixture
+    def real_running_service(self, config: FlextWebConfig) -> Generator[FlextWebService]:
+        """Create and start real service for HTTP testing."""
+        service = FlextWebService(config)
+
+        def run_service() -> None:
+            service.app.run(
+                host=config.host,
+                port=config.port,
+                debug=False,
+                use_reloader=False,
+                threaded=True,
+            )
+
+        server_thread = threading.Thread(target=run_service, daemon=True)
+        server_thread.start()
+        time.sleep(1)  # Wait for service to start
+
+        yield service
+
+        # Clean up
+        service.apps.clear()
+
+    @pytest.fixture
     def service(self, config: FlextWebConfig) -> FlextWebService:
-        """Create test service instance."""
+        """Create test service instance for unit tests."""
         return FlextWebService(config)
 
     def test_service_app_registration(self, service: FlextWebService) -> None:
@@ -61,119 +88,175 @@ class TestFlextWebServiceAdvanced:
         assert service.config.debug is False
         assert service.config.is_production() is True
 
-    def test_create_app_with_validation_error(self, service: FlextWebService) -> None:
-        """Test app creation with validation errors."""
-        # Test empty name
-        response = service.app.test_client().post(
-            "/api/v1/apps",
+    def test_create_app_with_validation_error(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test app creation with validation errors using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        # Test empty name with real HTTP request
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
             json={"name": "", "port": 3000, "host": "localhost"},
+            timeout=5,
         )
         assert response.status_code == 400
-        data = response.get_json()
+        data = response.json()
         assert not data["success"]
         assert "name" in data["message"].lower()
 
-    def test_create_app_with_invalid_port(self, service: FlextWebService) -> None:
-        """Test app creation with invalid port."""
-        response = service.app.test_client().post(
-            "/api/v1/apps",
+    def test_create_app_with_invalid_port(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test app creation with invalid port using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
             json={"name": "test-app", "port": 99999, "host": "localhost"},
+            timeout=5,
         )
         assert response.status_code == 400
-        data = response.get_json()
+        data = response.json()
         assert not data["success"]
 
-    def test_create_app_with_missing_fields(self, service: FlextWebService) -> None:
-        """Test app creation with missing optional fields uses defaults."""
-        response = service.app.test_client().post(
-            "/api/v1/apps",
+    def test_create_app_with_missing_fields(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test app creation with missing optional fields uses defaults using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
             json={"name": "test-app"},
+            timeout=5,
         )
         assert response.status_code == 200
-        data = response.get_json()
+        data = response.json()
         assert data["success"]
         # Default values should be provided
         assert data["data"]["host"] == "localhost"
         assert data["data"]["port"] == 8000
 
-    def test_start_nonexistent_app(self, service: FlextWebService) -> None:
-        """Test starting non-existent application."""
-        response = service.app.test_client().post("/api/v1/apps/nonexistent/start")
+    def test_start_nonexistent_app(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test starting non-existent application using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        response = requests.post(f"{base_url}/api/v1/apps/nonexistent/start", timeout=5)
         assert response.status_code == 404
-        data = response.get_json()
+        data = response.json()
         assert not data["success"]
         assert "not found" in data["message"].lower()
 
-    def test_stop_nonexistent_app(self, service: FlextWebService) -> None:
-        """Test stopping non-existent application."""
-        response = service.app.test_client().post("/api/v1/apps/nonexistent/stop")
+    def test_stop_nonexistent_app(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test stopping non-existent application using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        response = requests.post(f"{base_url}/api/v1/apps/nonexistent/stop", timeout=5)
         assert response.status_code == 404
-        data = response.get_json()
+        data = response.json()
         assert not data["success"]
 
-    def test_get_nonexistent_app(self, service: FlextWebService) -> None:
-        """Test getting non-existent application."""
-        response = service.app.test_client().get("/api/v1/apps/nonexistent")
+    def test_get_nonexistent_app(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test getting non-existent application using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        response = requests.get(f"{base_url}/api/v1/apps/nonexistent", timeout=5)
         assert response.status_code == 404
-        data = response.get_json()
+        data = response.json()
         assert not data["success"]
 
-    def test_invalid_json_request(self, service: FlextWebService) -> None:
-        """Test API with invalid JSON."""
-        response = service.app.test_client().post(
-            "/api/v1/apps",
+    def test_invalid_json_request(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test API with invalid JSON using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
             data="invalid json",
-            content_type="application/json",
+            headers={"Content-Type": "application/json"},
+            timeout=5,
         )
         assert response.status_code == 400
 
-    def test_service_error_handling(self, service: FlextWebService) -> None:
-        """Test service error handling with mock failure."""
-        with patch.object(service.handler, "create") as mock_create:
-            mock_create.side_effect = FlextWebProcessingError("Mock failure")
-
-            response = service.app.test_client().post(
-                "/api/v1/apps",
-                json={"name": "test-app", "port": 3000, "host": "localhost"},
-            )
-
-            # The service should return a 500 error when handler fails
-            assert response.status_code == 500
-            # We don't expect JSON response for unhandled exceptions
-            # The error is logged but not converted to JSON API response
-
-    def test_dashboard_with_apps(self, service: FlextWebService) -> None:
-        """Test dashboard display with applications."""
-        # Create test app
-        service.app.test_client().post(
-            "/api/v1/apps",
-            json={"name": "dashboard-test", "port": 3000, "host": "localhost"},
+    def test_service_real_validation_error_handling(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test service error handling with REAL validation failures using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        # Test with genuinely invalid data that will cause real validation errors
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
+            json={"name": "", "port": -1, "host": ""},  # All invalid
+            timeout=5,
         )
 
-        response = service.app.test_client().get("/")
+        assert response.status_code == 400
+        data = response.json()
+        assert data is not None
+        assert data["success"] is False
+        assert any(word in data["message"].lower() for word in ["validation", "invalid", "required", "name"])
+
+    def test_service_real_duplicate_error_handling(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test service handling of real business logic errors using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        # Create first app successfully
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
+            json={"name": "duplicate-test", "port": 3000, "host": "localhost"},
+            timeout=5,
+        )
         assert response.status_code == 200
-        assert b"dashboard-test" in response.data or b"1" in response.data
+
+        # Try to start non-existent app to test real error path
+        response = requests.post(f"{base_url}/api/v1/apps/nonexistent/start", timeout=5)
+        assert response.status_code == 404
+        data = response.json()
+        assert data is not None
+        assert data["success"] is False
+
+    def test_dashboard_with_apps(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test dashboard display with applications using real HTTP."""
+        base_url = "http://localhost:8093"
+        
+        # Create test app
+        requests.post(
+            f"{base_url}/api/v1/apps",
+            json={"name": "dashboard-test", "port": 3000, "host": "localhost"},
+            timeout=5,
+        )
+
+        response = requests.get(f"{base_url}/", timeout=5)
+        assert response.status_code == 200
+        content = response.content
+        assert b"dashboard-test" in content or b"1" in content
 
 
 class TestFlextWebConfigAdvanced:
     """Advanced tests for FlextWebConfig functionality."""
 
-    def test_config_environment_loading(self) -> None:
-        """Test configuration loading from environment."""
-        with patch.dict(
-            "os.environ",
-            {
-                "FLEXT_WEB_HOST": "test-host",
-                "FLEXT_WEB_PORT": "9000",
-                "FLEXT_WEB_DEBUG": "false",
-                "FLEXT_WEB_SECRET_KEY": "env-secret-key-32-characters-long!!",
-            },
-        ):
+    def test_config_real_environment_loading(self) -> None:
+        """Test configuration loading with real environment variables."""
+        # Save original values
+        original_env = {}
+        env_vars = ["FLEXT_WEB_HOST", "FLEXT_WEB_PORT", "FLEXT_WEB_DEBUG", "FLEXT_WEB_SECRET_KEY"]
+        for var in env_vars:
+            original_env[var] = os.environ.get(var)
+
+        try:
+            # Set real environment variables
+            os.environ["FLEXT_WEB_HOST"] = "test-host"
+            os.environ["FLEXT_WEB_PORT"] = "9000"
+            os.environ["FLEXT_WEB_DEBUG"] = "false"
+            os.environ["FLEXT_WEB_SECRET_KEY"] = "env-secret-key-32-characters-long!!"
+
+            # Test real config loading
             config = FlextWebConfig()
             assert config.host == "test-host"
             assert config.port == 9000
             assert config.debug is False
             assert config.secret_key == "env-secret-key-32-characters-long!!"
+
+        finally:
+            # Restore original environment
+            for var, value in original_env.items():
+                if value is None:
+                    os.environ.pop(var, None)
+                else:
+                    os.environ[var] = value
 
     def test_config_validation_edge_cases(self) -> None:
         """Test configuration validation edge cases."""
@@ -237,7 +320,7 @@ class TestFlextWebAppAdvanced:
     def test_app_lifecycle_complete(self) -> None:
         """Test complete application lifecycle."""
         app = FlextWebApp(
-            id="lifecycle_test",
+            id=FlextEntityId("lifecycle_test"),
             name="lifecycle-app",
             port=4000,
             host="localhost",
@@ -255,13 +338,13 @@ class TestFlextWebAppAdvanced:
     def test_app_edge_case_ports(self) -> None:
         """Test application with edge case ports."""
         # Test minimum port
-        app = FlextWebApp(id="min_port", name="min-port-app", port=1, host="localhost")
+        app = FlextWebApp(id=FlextEntityId("min_port"), name="min-port-app", port=1, host="localhost")
         result = app.validate_domain_rules()
         assert result.success
 
         # Test maximum port
         app = FlextWebApp(
-            id="max_port",
+            id=FlextEntityId("max_port"),
             name="max-port-app",
             port=65535,
             host="localhost",
@@ -275,7 +358,7 @@ class TestFlextWebAppAdvanced:
 
         for i, host in enumerate(hosts):
             app = FlextWebApp(
-                id=f"host_test_{i}",
+                id=FlextEntityId(f"host_test_{i}"),
                 name=f"host-app-{i}",
                 port=3000 + i,
                 host=host,

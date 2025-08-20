@@ -54,6 +54,21 @@ from flext_web.services import FlextWebService
 logger = get_logger(__name__)
 
 
+def create_parser() -> argparse.ArgumentParser:
+    """Create argument parser for FLEXT Web Interface CLI.
+
+    Returns:
+        ArgumentParser: Configured parser for command-line arguments.
+
+    """
+    parser = argparse.ArgumentParser(description="FlextWeb - Enterprise Web Interface")
+    parser.add_argument("--host", help="Host to bind to (overrides config)")
+    parser.add_argument("--port", type=int, help="Port to bind to (overrides config)")
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parser.add_argument("--no-debug", action="store_true", help="Disable debug mode")
+    return parser
+
+
 def main() -> None:
     """Provide CLI entry point for FLEXT Web Interface.
 
@@ -98,12 +113,7 @@ def main() -> None:
       $ python -m flext_web --host localhost --port 8080 --debug
 
     """
-    parser = argparse.ArgumentParser(description="FlextWeb - Enterprise Web Interface")
-    parser.add_argument("--host", help="Host to bind to (overrides config)")
-    parser.add_argument("--port", type=int, help="Port to bind to (overrides config)")
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
-    parser.add_argument("--no-debug", action="store_true", help="Disable debug mode")
-
+    parser = create_parser()
     args = parser.parse_args()
 
     # Get configuration

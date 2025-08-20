@@ -11,9 +11,16 @@ This example shows:
 - Usage of new type aliases for better type safety
 """
 
+from typing import cast
+
 import requests
 
-from flext_web.type_aliases import ResponseData
+from flext_web.type_aliases import (
+    ApiResponseDict,
+    AppDataDict,
+    AppListResponseDict,
+    HealthResponseDict,
+)
 
 # Constants for HTTP status codes
 HTTP_OK = 200
@@ -34,9 +41,12 @@ def check_service_health() -> bool:
     try:
         response = requests.get(f"{BASE_URL}/health", timeout=5)
         if response.status_code == HTTP_OK:
-            health_data = response.json()
+            health_data = cast("HealthResponseDict", response.json())
             # Check the standardized response format
-            return health_data.get("success", False) and health_data.get("data", {}).get("status") == "healthy"
+            return (
+                health_data.get("success", False)
+                and health_data.get("data", {}).get("status") == "healthy"
+            )
         return False
     except requests.RequestException:
         return False
@@ -46,7 +56,7 @@ def create_application(
     name: str,
     port: int,
     host: str = "localhost",
-) -> ResponseData | None:
+) -> AppDataDict | None:
     """Create a new application using WebHandlers.
 
     Args:
@@ -58,20 +68,24 @@ def create_application(
         Application data from FlextWebApp model or None if failed.
 
     """
-    data = {"name": name, "port": port, "host": host}
+    request_data: dict[str, str | int] = {"name": name, "port": port, "host": host}
 
     try:
-        response = requests.post(f"{BASE_URL}/api/v1/apps", json=data, timeout=5)
+        response = requests.post(f"{BASE_URL}/api/v1/apps", json=request_data, timeout=5)
         if response.status_code == HTTP_OK:
-            result = response.json()
+            result = cast("ApiResponseDict", response.json())
             if result.get("success"):
-                return result.get("data")
+                data = result.get("data")
+                # Type guard: ensure we return AppDataDict
+                if isinstance(data, dict) and "id" in data and "name" in data:
+                    return data  # type: ignore[return-value]  # Known to be AppDataDict
+                return None
         return None
     except requests.RequestException:
         return None
 
 
-def start_application(app_id: str) -> ResponseData | None:
+def start_application(app_id: str) -> AppDataDict | None:
     """Start an application using FlextWebAppHandler.start().
 
     Args:
@@ -84,15 +98,19 @@ def start_application(app_id: str) -> ResponseData | None:
     try:
         response = requests.post(f"{BASE_URL}/api/v1/apps/{app_id}/start", timeout=5)
         if response.status_code == HTTP_OK:
-            result = response.json()
+            result = cast("ApiResponseDict", response.json())
             if result.get("success"):
-                return result.get("data")
+                data = result.get("data")
+                # Type guard: ensure we return AppDataDict
+                if isinstance(data, dict) and "id" in data and "name" in data:
+                    return data  # type: ignore[return-value]  # Known to be AppDataDict
+                return None
         return None
     except requests.RequestException:
         return None
 
 
-def get_application_status(app_id: str) -> ResponseData | None:
+def get_application_status(app_id: str) -> AppDataDict | None:
     """Get application status using FlextWebApp entity.
 
     Args:
@@ -105,15 +123,19 @@ def get_application_status(app_id: str) -> ResponseData | None:
     try:
         response = requests.get(f"{BASE_URL}/api/v1/apps/{app_id}", timeout=5)
         if response.status_code == HTTP_OK:
-            result = response.json()
+            result = cast("ApiResponseDict", response.json())
             if result.get("success"):
-                return result.get("data")
+                data = result.get("data")
+                # Type guard: ensure we return AppDataDict
+                if isinstance(data, dict) and "id" in data and "name" in data:
+                    return data  # type: ignore[return-value]  # Known to be AppDataDict
+                return None
         return None
     except requests.RequestException:
         return None
 
 
-def stop_application(app_id: str) -> ResponseData | None:
+def stop_application(app_id: str) -> AppDataDict | None:
     """Stop an application using FlextWebAppHandler.stop().
 
     Args:
@@ -126,15 +148,19 @@ def stop_application(app_id: str) -> ResponseData | None:
     try:
         response = requests.post(f"{BASE_URL}/api/v1/apps/{app_id}/stop", timeout=5)
         if response.status_code == HTTP_OK:
-            result = response.json()
+            result = cast("ApiResponseDict", response.json())
             if result.get("success"):
-                return result.get("data")
+                data = result.get("data")
+                # Type guard: ensure we return AppDataDict
+                if isinstance(data, dict) and "id" in data and "name" in data:
+                    return data  # type: ignore[return-value]  # Known to be AppDataDict
+                return None
         return None
     except requests.RequestException:
         return None
 
 
-def list_applications() -> list[ResponseData]:
+def list_applications() -> list[AppDataDict]:
     """List all applications using FlextWebService.apps storage.
 
     Returns:
@@ -144,15 +170,21 @@ def list_applications() -> list[ResponseData]:
     try:
         response = requests.get(f"{BASE_URL}/api/v1/apps", timeout=5)
         if response.status_code == HTTP_OK:
-            result = response.json()
+            result = cast("AppListResponseDict", response.json())
             if result.get("success"):
-                data = result.get("data", {})
-                apps = data.get("apps", [])
-                # Display status with proper emoji indicators
-                for app in apps:
-                    status_emoji = "🟢" if app.get("is_running") else "🔴"
-                    print(f"{status_emoji} {app.get('name')} ({app.get('status')})")
-                return apps
+                data = result.get("data")
+                if data:
+                    apps = data.get("apps", [])
+                    # Type guard and display status with proper emoji indicators
+                    validated_apps: list[AppDataDict] = []
+                    for app in apps:
+                        if isinstance(app, dict) and "id" in app and "name" in app:
+                            status_emoji = "🟢" if app.get("is_running") else "🔴"
+                            print(
+                                f"{status_emoji} {app.get('name')} ({app.get('status')})"
+                            )
+                            validated_apps.append(app)
+                    return validated_apps
         return []
     except requests.RequestException:
         return []
@@ -203,11 +235,13 @@ def demo_application_lifecycle() -> None:
     print("\n📊 Checking application status...")
     # Check individual status with proper error handling
     for app_data in [app1, app2]:
-        app_id = app_data["id"]
-        status = get_application_status(app_id)
+        app_id: str = app_data["id"]
+        status: AppDataDict | None = get_application_status(app_id)
         if status:
-            status_emoji = "🟢" if status.get("is_running") else "🔴"
-            print(f"{status_emoji} {status['name']}: {status.get('status', 'UNKNOWN')}")
+            status_emoji: str = "🟢" if status.get("is_running") else "🔴"
+            print(
+                f"{status_emoji} {status['name']}: {status.get('status', 'UNKNOWN')}",
+            )
         else:
             print(f"❌ Failed to get status for {app_data['name']}")
 

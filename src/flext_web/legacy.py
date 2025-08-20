@@ -53,22 +53,29 @@ def _deprecation_warning(old_name: str, new_name: str) -> None:
 
 
 # Legacy aliases for main web service classes - commonly used names
-def WebConfig(*args: object, **kwargs: object) -> FlextWebConfig:  # noqa: N802
+def WebConfig(**kwargs: object) -> FlextWebConfig:  # noqa: N802
     """Legacy alias for FlextWebConfig."""
     _deprecation_warning("WebConfig", "FlextWebConfig")
-    return FlextWebConfig(*args, **kwargs)  # type: ignore[arg-type]
+    # Legacy function: type: ignore needed for backward compatibility with generic kwargs
+    return FlextWebConfig(**kwargs)  # type: ignore[arg-type]
 
 
-def WebService(*args: object, **kwargs: object) -> FlextWebService:  # noqa: N802
+def WebService(config: object = None) -> FlextWebService:  # noqa: N802
     """Legacy alias for FlextWebService."""
     _deprecation_warning("WebService", "FlextWebService")
-    return FlextWebService(*args, **kwargs)  # type: ignore[arg-type]
+    if config is None:
+        config = get_web_settings()
+    # Legacy function: type: ignore needed for backward compatibility with generic config
+    return FlextWebService(config)  # type: ignore[arg-type]
 
 
-def WebApp(*args: object, **kwargs: object) -> FlextWebApp:  # noqa: N802
+def WebApp(  # noqa: N802
+    name: str, port: int = 8000, host: str = "localhost", **kwargs: object
+) -> FlextWebApp:
     """Legacy alias for FlextWebApp."""
     _deprecation_warning("WebApp", "FlextWebApp")
-    return FlextWebApp(*args, **kwargs)  # type: ignore[arg-type]
+    # Legacy function: type: ignore needed for backward compatibility with generic kwargs
+    return FlextWebApp(name=name, port=port, host=host, **kwargs)  # type: ignore[arg-type]
 
 
 def WebAppHandler(*args: object, **kwargs: object) -> FlextWebAppHandler:  # noqa: N802

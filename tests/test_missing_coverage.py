@@ -8,9 +8,8 @@ functionality branches.
 
 from __future__ import annotations
 
-from unittest.mock import patch
-
 import pytest
+from flext_core.root_models import FlextEntityId
 
 from flext_web import (
     FlextWebApp,
@@ -43,7 +42,7 @@ class TestMissingCoverage:
         # Test Pydantic validation catches invalid ports during construction
         with pytest.raises(ValueError, match="port"):
             FlextWebApp(
-                id="test_invalid_port_high",
+                id=FlextEntityId("test_invalid_port_high"),
                 name="test-app",
                 port=99999,  # Too high for Pydantic
                 host="localhost",
@@ -51,7 +50,7 @@ class TestMissingCoverage:
 
         with pytest.raises(ValueError, match="port"):
             FlextWebApp(
-                id="test_invalid_port_low",
+                id=FlextEntityId("test_invalid_port_low"),
                 name="test-app",
                 port=0,  # Too low for Pydantic
                 host="localhost",
@@ -59,7 +58,7 @@ class TestMissingCoverage:
 
         # Test normal case where port is valid
         app = FlextWebApp(
-            id="test_valid_port",
+            id=FlextEntityId("test_valid_port"),
             name="test-app",
             port=8080,  # Valid port
             host="localhost",
@@ -71,13 +70,14 @@ class TestMissingCoverage:
         """Test empty name validation failure path."""
         # Use model_construct to bypass Pydantic validation and test domain validation
         app = FlextWebApp.model_construct(
-            id="test_empty_name",
+            id=FlextEntityId("test_empty_name"),
             name="",  # Empty name should fail validation
             port=8080,
             host="localhost",
         )
         result = app.validate_domain_rules()
         assert result.is_failure
+        assert result.error is not None
         assert "Application name cannot be empty" in result.error
 
     def test_config_validation_failure_paths(self) -> None:
@@ -104,22 +104,30 @@ class TestMissingCoverage:
         )
         assert response.status_code == 400
 
-    def test_handler_create_with_exception(self) -> None:
-        """Test handler create method exception handling."""
+    def test_handler_create_with_real_exceptions(self) -> None:
+        """Test handler create method with REAL validation exceptions."""
         handler = FlextWebAppHandler()
 
-        # Test with invalid parameters that might cause exceptions
-        with patch("flext_web.models.FlextWebApp") as mock_app:
-            mock_app.side_effect = ValueError("Mock validation error")
+        # Test with genuinely invalid parameters that cause real exceptions
+        # Empty name should cause real validation failure
+        result = handler.create("", 8080, "localhost")
+        assert result.is_failure
+        assert result.error is not None
 
-            result = handler.create("test", 8080, "localhost")
-            assert result.is_failure
-            assert "Mock validation error" in result.error
+        # Test with invalid port range - should cause real validation error
+        result = handler.create("test", -1, "localhost")
+        assert result.is_failure
+        assert result.error is not None
+
+        # Test with empty host - should cause real validation error
+        result = handler.create("test", 8080, "")
+        assert result.is_failure
+        assert result.error is not None
 
     def test_app_start_already_running(self) -> None:
         """Test starting an app that's already running."""
         app = FlextWebApp(
-            id="test_running",
+            id=FlextEntityId("test_running"),
             name="running-app",
             port=8080,
             host="localhost",
@@ -133,7 +141,7 @@ class TestMissingCoverage:
     def test_app_stop_already_stopped(self) -> None:
         """Test stopping an app that's already stopped."""
         app = FlextWebApp(
-            id="test_stopped",
+            id=FlextEntityId("test_stopped"),
             name="stopped-app",
             port=8080,
             host="localhost",

@@ -1,373 +1,163 @@
-"""Test configuration for flext-web.
+"""Real test configuration for flext-web - NO MOCKS, REAL EXECUTION.
 
-Provides pytest fixtures and configuration for testing web interface functionality
-using Flask, web components, and flext-core patterns.
+Provides pytest fixtures for testing web interface functionality using REAL
+Flask applications, HTTP requests, and actual service execution.
 """
 
 from __future__ import annotations
 
 import os
-from collections.abc import AsyncGenerator, Generator
+import threading
+import time
+from collections.abc import Generator
+from typing import TYPE_CHECKING
 
 import pytest
+from flask.testing import FlaskClient
 
-from flext_web import create_app
+from flext_web import (
+    FlextWebConfig,
+    FlextWebService,
+    create_app,
+    create_service,
+    reset_web_settings,
+)
 
-# Use refactored constants from the main module
+if TYPE_CHECKING:
+    from flask import Flask
 
 
-# Test environment setup
 @pytest.fixture(autouse=True)
-def set_test_environment() -> Generator[None]:
-    """Set test environment variables."""
+def setup_test_environment() -> Generator[None]:
+    """Set up test environment with real configuration."""
+    # Save original environment
+    original_env = dict(os.environ)
+
+    # Set test environment variables
     os.environ["FLEXT_ENV"] = "test"
-    os.environ["FLEXT_LOG_LEVEL"] = "debug"
+    os.environ["FLEXT_LOG_LEVEL"] = "info"  # Reduce noise
     os.environ["FLEXT_WEB_DEBUG"] = "true"
+    os.environ["FLEXT_WEB_HOST"] = "localhost"
+    os.environ["FLEXT_WEB_SECRET_KEY"] = "test-secret-key-32-characters-long!!"
+
+    # Reset web settings to force reload
+    reset_web_settings()
+
     yield
-    # Cleanup
-    os.environ.pop("FLEXT_ENV", None)
-    os.environ.pop("FLEXT_LOG_LEVEL", None)
-    os.environ.pop("FLEXT_WEB_DEBUG", None)
 
-
-# Web application fixtures
-@pytest.fixture
-def web_app() -> object:
-    """Flask web application for testing."""
-    return create_app()
+    # Restore original environment
+    os.environ.clear()
+    os.environ.update(original_env)
+    reset_web_settings()
 
 
 @pytest.fixture
-def test_client(web_app: object) -> object:
-    """HTTP test client for Flask web application."""
-    return web_app.test_client()
+def real_config() -> FlextWebConfig:
+    """Create real test configuration."""
+    return FlextWebConfig(
+        host="localhost",
+        port=8081,  # Use different port to avoid conflicts
+        debug=True,
+        secret_key="test-secret-key-32-characters-long!!",
+    )
 
 
 @pytest.fixture
-def async_test_client(web_app: object) -> object:  # noqa: ARG001
-    """Async HTTP test client for web application."""
-
-    # Simple mock client for testing (Flask doesn't have native async client)
-    class MockAsyncClient:
-        def __init__(self, app: object) -> None:
-            self.client = app.test_client()
-
-        async def get(self, url: str) -> dict[str, object]:
-            response = self.client.get(url)
-            return {"status": response.status_code, "url": url, "data": response.get_json()}
-
-        async def post(self, url: str, **kwargs: object) -> dict[str, object]:
-            response = self.client.post(url, json=kwargs.get("json"), data=kwargs.get("data"))
-            return {"status": response.status_code, "url": url, "data": response.get_json()}
-
-    return MockAsyncClient(web_app)
+def real_service(real_config: FlextWebConfig) -> Generator[FlextWebService]:
+    """Create real FlextWebService instance with clean state."""
+    service = create_service(real_config)
+    yield service
+    # Clean up service state after each test
+    service.apps.clear()
 
 
-# Authentication fixtures
 @pytest.fixture
-def test_user_data() -> dict[str, object]:
-    """Test user data for authentication."""
+def real_app(real_config: FlextWebConfig) -> Flask:
+    """Create real Flask app."""
+    return create_app(real_config)
+
+
+@pytest.fixture
+def real_client(real_app: Flask) -> FlaskClient:
+    """Create real Flask test client."""
+    return real_app.test_client()
+
+
+@pytest.fixture
+def running_service(real_config: FlextWebConfig) -> Generator[FlextWebService]:
+    """Start real service in background thread with clean state."""
+    # Use different port for each test to avoid conflicts
+    test_port = real_config.port + 10  # Use 8091 instead of 8081
+    test_config = FlextWebConfig(
+        host=real_config.host,
+        port=test_port,
+        debug=real_config.debug,
+        secret_key=real_config.secret_key,
+    )
+
+    service = FlextWebService(test_config)
+
+    # Start service in background thread
+    def run_service() -> None:
+        service.app.run(
+            host=test_config.host,
+            port=test_config.port,
+            debug=False,  # Disable debug for clean testing
+            use_reloader=False,
+            threaded=True,
+        )
+
+    server_thread = threading.Thread(target=run_service, daemon=True)
+    server_thread.start()
+
+    # Wait for service to start
+    time.sleep(2)
+
+    yield service
+
+    # Clean up service state after each test
+    service.apps.clear()
+    # Service will be killed when thread ends (daemon=True)
+
+
+# Real test data for application testing
+@pytest.fixture
+def test_app_data() -> dict[str, str | int]:
+    """Real application data for testing."""
     return {
-        "username": "testuser",
-        "email": "test@example.com",
-        "password": "test_password",
-        "roles": ["user"],
-        "permissions": ["read", "write"],
+        "name": "test-application",
+        "port": 9001,
+        "host": "localhost",
     }
 
 
 @pytest.fixture
-def REDACTED_LDAP_BIND_PASSWORD_user_data() -> dict[str, object]:
-    """Test REDACTED_LDAP_BIND_PASSWORD user data."""
+def invalid_app_data() -> dict[str, str | int]:
+    """Invalid application data for error testing."""
     return {
-        "username": "REDACTED_LDAP_BIND_PASSWORD",
-        "email": "REDACTED_LDAP_BIND_PASSWORD@example.com",
-        "password": "REDACTED_LDAP_BIND_PASSWORD_password",
-        "roles": ["REDACTED_LDAP_BIND_PASSWORD", "user"],
-        "permissions": ["read", "write", "REDACTED_LDAP_BIND_PASSWORD"],
+        "name": "",  # Invalid empty name
+        "port": 99999,  # Invalid port
+        "host": "",  # Invalid empty host
     }
 
 
+# Configuration for real environment tests
 @pytest.fixture
-def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:  # noqa: ARG001
-    """Authentication headers for test requests."""
-    # In real implementation, this would generate valid JWT tokens
+def production_config() -> dict[str, str]:
+    """Production-like configuration for testing."""
     return {
-        "Authorization": "Bearer test_token",
-        "Content-Type": "application/json",
+        "FLEXT_WEB_HOST": "0.0.0.0",
+        "FLEXT_WEB_PORT": "8080",
+        "FLEXT_WEB_DEBUG": "false",
+        "FLEXT_WEB_SECRET_KEY": "production-secret-key-32-chars-long!!",
     }
 
 
-@pytest.fixture
-def REDACTED_LDAP_BIND_PASSWORD_auth_headers(REDACTED_LDAP_BIND_PASSWORD_user_data: dict[str, object]) -> dict[str, str]:  # noqa: ARG001
-    """Admin authentication headers for test requests."""
-    return {
-        "Authorization": "Bearer REDACTED_LDAP_BIND_PASSWORD_token",
-        "Content-Type": "application/json",
-    }
-
-
-# Dashboard fixtures
-@pytest.fixture
-def dashboard_data() -> dict[str, object]:
-    """Sample dashboard data for testing."""
-    return {
-        "pipelines": {
-            "total": 25,
-            "running": 5,
-            "succeeded": 18,
-            "failed": 2,
-        },
-        "executions": {
-            "today": 100,
-            "this_week": 650,
-            "this_month": 2800,
-        },
-        "plugins": {
-            "total": 15,
-            "enabled": 12,
-            "disabled": 3,
-        },
-        "system": {
-            "cpu_usage": 45.2,
-            "memory_usage": 67.8,
-            "disk_usage": 23.5,
-            "uptime": "5 days, 3 hours",
-        },
-    }
-
-
-@pytest.fixture
-def pipeline_list_data() -> list[dict[str, object]]:
-    """Sample pipeline list for testing."""
-    return [
-        {
-            "id": "pipeline-1",
-            "name": "Data Import Pipeline",
-            "description": "Import data from external API",
-            "status": "running",
-            "last_run": "2025-01-20T10:30:00Z",
-            "next_run": "2025-01-21T10:30:00Z",
-            "success_rate": 95.5,
-        },
-        {
-            "id": "pipeline-2",
-            "name": "ETL Processing",
-            "description": "Transform and load data",
-            "status": "succeeded",
-            "last_run": "2025-01-20T09:00:00Z",
-            "next_run": "2025-01-21T09:00:00Z",
-            "success_rate": 98.2,
-        },
-        {
-            "id": "pipeline-3",
-            "name": "Data Export",
-            "description": "Export processed data",
-            "status": "failed",
-            "last_run": "2025-01-20T08:15:00Z",
-            "next_run": "2025-01-21T08:15:00Z",
-            "success_rate": 87.3,
-        },
-    ]
-
-
-# Form fixtures
-@pytest.fixture
-def pipeline_form_data() -> dict[str, object]:
-    """Pipeline form data for testing."""
-    return {
-        "name": "Test Pipeline",
-        "description": "Pipeline created for testing",
-        "extractor": "tap-postgres",
-        "loader": "target-snowflake",
-        "transform": "dbt",
-        "schedule": "0 9 * * *",  # Daily at 9 AM
-        "config": {
-            "database_url": "postgresql://localhost/test",
-            "warehouse": "test_warehouse",
-        },
-    }
-
-
-@pytest.fixture
-def plugin_form_data() -> dict[str, object]:
-    """Plugin form data for testing."""
-    return {
-        "name": "test-plugin",
-        "type": "extractor",
-        "package": "tap-test",
-        "version": "0.9.0",
-        "config": {
-            "api_key": "test_key",
-            "base_url": "https://api.test.com",
-        },
-    }
-
-
-# WebSocket fixtures
-@pytest.fixture
-async def websocket_client(web_app: object) -> AsyncGenerator[object]:  # noqa: ARG001
-    """WebSocket test client (mock for Flask)."""
-
-    # Mock WebSocket client since Flask doesn't have native WebSocket support
-    class MockWebSocket:
-        async def send_text(self, message: str) -> None:
-            """Mock send text message."""
-
-        async def receive_text(self) -> str:
-            """Mock receive text message."""
-            return '{"type": "message", "data": "test"}'
-
-        async def close(self) -> None:
-            """Mock close connection."""
-
-    return MockWebSocket()
-
-
-# Static files fixtures
-@pytest.fixture
-def static_files_config() -> dict[str, object]:
-    """Static files configuration for testing."""
-    return {
-        "static_directory": "static",
-        "templates_directory": "templates",
-        "static_url": "/static",
-        "cdn_enabled": False,
-        "compression": True,
-    }
-
-
-# Theme and UI fixtures
-@pytest.fixture
-def ui_theme_config() -> dict[str, object]:
-    """UI theme configuration for testing."""
-    return {
-        "theme": "light",
-        "primary_color": "#007bff",
-        "secondary_color": "#6c757d",
-        "success_color": "#28a745",
-        "warning_color": "#ffc107",
-        "error_color": "#dc3545",
-        "font_family": "Inter, sans-serif",
-    }
-
-
-# API response fixtures
-@pytest.fixture
-def api_success_response() -> dict[str, object]:
-    """Standard API success response."""
-    return {
-        "success": True,
-        "data": {"message": "Operation completed successfully"},
-        "timestamp": "2025-01-20T12:00:00Z",
-    }
-
-
-@pytest.fixture
-def api_error_response() -> dict[str, object]:
-    """Standard API error response."""
-    return {
-        "success": False,
-        "error": {
-            "code": "VALIDATION_ERROR",
-            "message": "Invalid input data",
-            "details": {"field": "name", "error": "required"},
-        },
-        "timestamp": "2025-01-20T12:00:00Z",
-    }
-
-
-# Pytest markers for test categorization
+# Pytest configuration
 def pytest_configure(config: pytest.Config) -> None:
-    """Configure pytest markers."""
-    config.addinivalue_line("markers", "unit: Unit tests")
-    config.addinivalue_line("markers", "integration: Integration tests")
-    config.addinivalue_line("markers", "e2e: End-to-end tests")
-    config.addinivalue_line("markers", "web: Web interface tests")
-    config.addinivalue_line("markers", "api: API endpoint tests")
-    config.addinivalue_line("markers", "auth: Authentication tests")
-    config.addinivalue_line("markers", "ui: User interface tests")
-    config.addinivalue_line("markers", "websocket: WebSocket tests")
-    config.addinivalue_line("markers", "slow: Slow tests")
-
-
-# Performance fixtures
-@pytest.fixture
-def performance_config() -> dict[str, object]:
-    """Performance testing configuration."""
-    return {
-        "max_response_time": 2000,  # milliseconds
-        "concurrent_users": 10,
-        "test_duration": 60,  # seconds
-        "ramp_up_time": 10,  # seconds
-    }
-
-
-# Configuration fixtures
-@pytest.fixture
-def web_config() -> dict[str, object]:
-    """Web application configuration for testing."""
-    return {
-        "host": "127.0.0.1",
-        "port": 8080,
-        "debug": True,
-        "reload": False,
-        "workers": 1,
-        "cors_origins": ["http://localhost:3000"],
-        "session_secret": "test_secret_key",
-        "csrf_enabled": True,
-        "rate_limiting": {
-            "enabled": True,
-            "requests_per_minute": 100,
-        },
-    }
-
-
-# Database fixtures for web sessions
-@pytest.fixture
-def web_session_data() -> dict[str, object]:
-    """Web session data for testing."""
-    return {
-        "session_id": "test_session_123",
-        "user_id": "user_123",
-        "username": "testuser",
-        "roles": ["user"],
-        "csrf_token": "csrf_token_123",
-        "created_at": "2025-01-20T10:00:00Z",
-        "expires_at": "2025-01-20T22:00:00Z",
-    }
-
-
-# Mock external services
-@pytest.fixture
-def mock_pipeline_service() -> object:
-    """Mock pipeline service for testing."""
-
-    class MockPipelineService:
-        async def list_pipelines(self) -> list[dict[str, object]]:
-            return []
-
-        async def get_pipeline(self, pipeline_id: str) -> dict[str, object]:
-            return {"id": pipeline_id, "name": "Test Pipeline"}
-
-        async def create_pipeline(self, data: dict[str, object]) -> dict[str, object]:
-            return {"id": "new_pipeline", **data}
-
-    return MockPipelineService()
-
-
-@pytest.fixture
-def mock_plugin_service() -> object:
-    """Mock plugin service for testing."""
-
-    class MockPluginService:
-        async def list_plugins(self) -> list[dict[str, object]]:
-            return []
-
-        async def get_plugin(self, plugin_name: str) -> dict[str, object]:
-            return {"name": plugin_name, "status": "enabled"}
-
-        async def install_plugin(self, data: dict[str, object]) -> dict[str, object]:
-            return {"name": data["name"], "status": "installed"}
-
-    return MockPluginService()
+    """Configure pytest markers for real testing."""
+    config.addinivalue_line("markers", "unit: Unit tests with real execution")
+    config.addinivalue_line("markers", "integration: Integration tests with real services")
+    config.addinivalue_line("markers", "api: API tests with real HTTP")
+    config.addinivalue_line("markers", "web: Web interface tests with real Flask")
+    config.addinivalue_line("markers", "slow: Slow tests (may take >5 seconds)")

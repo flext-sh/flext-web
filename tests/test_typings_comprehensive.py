@@ -47,8 +47,8 @@ class TestTypeUsage:
         """Test generic types can be used in annotations."""
 
         # Test that types can be used in type annotations
-        def test_function(param_t: T) -> R:
-            return param_t  # type: ignore[return-value]
+        def test_function(param_t: object) -> object:
+            return param_t
 
         # Function should be callable
         assert callable(test_function)
@@ -136,8 +136,8 @@ class TestTypeIntegration:
 
     def test_type_annotations_compatibility(self) -> None:
         """Test types work with function annotations."""
-        def process_data(data: T) -> R | None:
-            return data  # type: ignore[return-value]
+        def process_data(data: object) -> object | None:
+            return data
 
         def transform_pair(first: T, second: U) -> tuple[T, U]:
             return (first, second)

@@ -22,6 +22,7 @@ Integration:
 from __future__ import annotations
 
 from enum import Enum
+from typing import override
 
 from flext_core import (
     FlextEntity,
@@ -166,6 +167,7 @@ class FlextWebApp(FlextEntity):
         except Exception:
             return FlextWebAppStatus.ERROR
 
+    @override
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate application according to domain business rules.
 
@@ -218,11 +220,7 @@ class FlextWebApp(FlextEntity):
         This helper guarantees robust comparisons by coercing to Enum.
         """
         # Status is guaranteed to be FlextWebAppStatus by Pydantic validator
-        # but we keep defensive programming for edge cases
-        if isinstance(self.status, FlextWebAppStatus):
-            return self.status
-        # Fallback for any unexpected edge cases
-        return FlextWebAppStatus.ERROR
+        return self.status
 
     @property
     def status_value(self) -> str:
