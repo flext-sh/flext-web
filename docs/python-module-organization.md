@@ -127,9 +127,9 @@ class FlextWebApp(FlextEntity):
 **Value Object Pattern**:
 
 ```python
-from flext_core import FlextValueObject
+from flext_core import FlextValue
 
-class HostPort(FlextValueObject):
+class HostPort(FlextValue):
     """Network address value object with validation"""
     host: str
     port: int
@@ -144,7 +144,7 @@ class HostPort(FlextValueObject):
     def address(self) -> str:
         return f"{self.host}:{self.port}"
 
-class WebAppStatus(FlextValueObject):
+class WebAppStatus(FlextValue):
     """Application status with business rules"""
     STOPPED = "stopped"
     STARTING = "starting"
@@ -834,10 +834,10 @@ class FlextWebApp(FlextEntity):
 ### **Value Object Patterns for Web Concerns**
 
 ```python
-from flext_core import FlextValueObject
+from flext_core import FlextValue
 from enum import Enum
 
-class WebAppStatus(FlextValueObject):
+class WebAppStatus(FlextValue):
     """Application status with state transition rules"""
 
     class Status(str, Enum):
@@ -861,7 +861,7 @@ class WebAppStatus(FlextValueObject):
         """Check if application is in transitional state"""
         return self.value in [self.Status.STARTING, self.Status.STOPPING]
 
-class HostPort(FlextValueObject):
+class HostPort(FlextValue):
     """Network endpoint with validation and formatting"""
     host: str
     port: int
@@ -895,7 +895,7 @@ class HostPort(FlextValueObject):
         """Check if this binds to all interfaces"""
         return self.host in ["0.0.0.0", "::"]
 
-class Environment(FlextValueObject):
+class Environment(FlextValue):
     """Environment specification with rules"""
 
     class Type(str, Enum):
