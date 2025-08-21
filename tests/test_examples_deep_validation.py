@@ -38,7 +38,9 @@ class TestExamplesDeepValidation:
 
         # Skip the actual service execution test to avoid timeouts
         # Import and validation tests above are sufficient for CI/CD validation
-        pytest.skip("Service execution test skipped to avoid timeout in test environment")
+        pytest.skip(
+            "Service execution test skipped to avoid timeout in test environment"
+        )
 
     def test_api_usage_example_functionality(self) -> None:
         """Test api_usage.py example with comprehensive edge cases."""
@@ -106,13 +108,17 @@ class TestExamplesDeepValidation:
 
         # Skip the actual service execution test to avoid timeouts
         # Import and validation tests above are sufficient for CI/CD validation
-        pytest.skip("Service execution test skipped to avoid timeout in test environment")
+        pytest.skip(
+            "Service execution test skipped to avoid timeout in test environment"
+        )
 
     def test_examples_with_invalid_parameters(self) -> None:
         """Test examples handle invalid parameters gracefully."""
         # Skip this test to avoid subprocess timeouts
         # Parameter validation is tested in unit tests for the configuration system
-        pytest.skip("Invalid parameters test skipped to avoid timeout in test environment")
+        pytest.skip(
+            "Invalid parameters test skipped to avoid timeout in test environment"
+        )
 
     def test_examples_signal_handling(self) -> None:
         """Test examples handle signals gracefully."""

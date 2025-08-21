@@ -25,7 +25,7 @@ Status: Enterprise domain testing with comprehensive business logic coverage
 from __future__ import annotations
 
 import pytest
-from flext_core.root_models import FlextEntityId
+from flext_core import FlextEntityId
 from pydantic import ValidationError
 
 from flext_web import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus

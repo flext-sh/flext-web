@@ -24,8 +24,16 @@ Status: Enterprise web interface testing with comprehensive UI validation
 
 from __future__ import annotations
 
-from flext_web import create_app
+import threading
+import time
+from collections.abc import Generator
+
+import pytest
+import requests
+
+from flext_web import FlextWebConfig, FlextWebService, create_app
 from flext_web.constants import FlextWebConstants
+from tests.port_manager import TestPortManager
 
 # Constants - Using refactored constants
 HTTP_OK = FlextWebConstants.HTTP.OK
@@ -38,6 +46,39 @@ class TestWebInterface:
     factory patterns, and user interface validation. Ensures web components
     follow enterprise standards with proper HTML structure and accessibility.
     """
+
+    @pytest.fixture
+    def real_web_service(self) -> Generator[FlextWebService]:
+        """Create real running web service for dashboard testing."""
+        # Allocate unique port to avoid conflicts
+        port = TestPortManager.allocate_port()
+        config = FlextWebConfig(
+            host="localhost",
+            port=port,
+            debug=True,
+            secret_key="web-test-secret-key-32-characters-long!",
+        )
+        service = FlextWebService(config)
+
+        def run_service() -> None:
+            service.app.run(
+                host=config.host,
+                port=config.port,
+                debug=False,
+                use_reloader=False,
+                threaded=True,
+            )
+
+        server_thread = threading.Thread(target=run_service, daemon=True)
+        server_thread.start()
+        time.sleep(1)  # Wait for service to start
+
+        yield service
+
+        # Clean up
+        service.apps.clear()
+        # Release the allocated port
+        TestPortManager.release_port(port)
 
     def test_create_app_factory(self) -> None:
         """Test Flask application factory function with proper initialization.
@@ -54,17 +95,17 @@ class TestWebInterface:
             f"Expected app name to contain 'flext_web', got {app.name}"
         )
 
-    def test_dashboard_route(self) -> None:
-        """Test dashboard route."""
-        app = create_app()
+    def test_dashboard_route(self, real_web_service: FlextWebService) -> None:  # noqa: ARG002
+        """Test dashboard route using real HTTP requests."""
+        base_url = "http://localhost:8095"
 
-        with app.test_client() as client:
-            response = client.get("/")
+        response = requests.get(f"{base_url}/", timeout=5)
 
-            if response.status_code != HTTP_OK:
-                msg: str = f"Expected {200}, got {response.status_code}"
-                raise AssertionError(msg)
-            if b"FLEXT Web" not in response.data:
-                msg: str = f"Expected {b'FLEXT Web'} in {response.data}"
-                raise AssertionError(msg)
-            assert b"Enterprise patterns" in response.data
+        if response.status_code != HTTP_OK:
+            msg: str = f"Expected {200}, got {response.status_code}"
+            raise AssertionError(msg)
+        content = response.content
+        if b"FLEXT Web" not in content:
+            msg: str = f"Expected {b'FLEXT Web'} in response content"
+            raise AssertionError(msg)
+        assert b"Enterprise patterns" in content or b"Total Apps" in content

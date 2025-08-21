@@ -24,9 +24,7 @@ class TestWebFields:
 
         # Test with custom parameters
         custom_field = WebFields.app_name_field(
-            description="Custom app name",
-            min_length=3,
-            max_length=50
+            description="Custom app name", min_length=3, max_length=50
         )
         assert custom_field.description == "Custom app name"
 
@@ -38,8 +36,7 @@ class TestWebFields:
 
         # Test with custom parameters
         custom_field = WebFields.host_field(
-            description="Custom host",
-            default="0.0.0.0"
+            description="Custom host", default="0.0.0.0"
         )
         assert custom_field.default == "0.0.0.0"
 
@@ -52,10 +49,7 @@ class TestWebFields:
         assert type(field).__name__ == "FieldInfo"
 
         # Test with custom parameters
-        custom_field = WebFields.port_field(
-            description="Custom port",
-            default=9000
-        )
+        custom_field = WebFields.port_field(description="Custom port", default=9000)
         assert custom_field.default == 9000
 
     def test_url_field_creation(self) -> None:
@@ -76,8 +70,7 @@ class TestWebFields:
 
         # Test with custom parameters
         custom_field = WebFields.secret_key_field(
-            description="Custom secret",
-            min_length=16
+            description="Custom secret", min_length=16
         )
         assert custom_field.description == "Custom secret"
 
@@ -93,7 +86,7 @@ class TestWebFieldValidators:
             "MyApp123",
             "app1",
             "a",
-            "test-app-123_name"
+            "test-app-123_name",
         ]
 
         for name in valid_names:
@@ -126,7 +119,7 @@ class TestWebFieldValidators:
             "192.168.1.1",
             "example.com",
             "sub.example.com",
-            "internal.invalid"
+            "internal.invalid",
         ]
 
         for host in valid_hosts:
@@ -168,7 +161,7 @@ class TestWebFieldValidators:
             "https://example.com",
             "https://internal.invalid/REDACTED",
             "https://api.example.com/v1/users",
-            "https://internal.invalid/REDACTED"
+            "https://internal.invalid/REDACTED",
         ]
 
         for url in valid_urls:
@@ -266,12 +259,7 @@ class TestWebFieldsPatterns:
         pattern = WebFields.HOST_PATTERN
 
         # Valid matches
-        valid_hosts = [
-            "localhost",
-            "127.0.0.1",
-            "example.com",
-            "sub.example.com"
-        ]
+        valid_hosts = ["localhost", "127.0.0.1", "example.com", "sub.example.com"]
 
         for host in valid_hosts:
             assert pattern.match(host) is not None
@@ -293,18 +281,14 @@ class TestWebFieldsPatterns:
         valid_urls = [
             "http://localhost",
             "https://example.com",
-            "https://internal.invalid/REDACTED"
+            "https://internal.invalid/REDACTED",
         ]
 
         for url in valid_urls:
             assert pattern.match(url) is not None
 
         # Invalid matches
-        invalid_urls = [
-            "ftp://example.com",
-            "not-a-url",
-            ""
-        ]
+        invalid_urls = ["ftp://example.com", "not-a-url", ""]
 
         for url in invalid_urls:
             assert pattern.match(url) is None
@@ -345,9 +329,7 @@ class TestFieldIntegration:
         """Test fields handle additional kwargs properly."""
         # Test with extra kwargs
         field = WebFields.app_name_field(
-            description="Test field",
-            alias="app_name",
-            examples=["test-app"]
+            description="Test field", alias="app_name", examples=["test-app"]
         )
 
         assert field.description == "Test field"

@@ -1,16 +1,19 @@
-"""Real Edge Cases and Coverage Tests - NO MOCKS, REAL EXECUTION.
+"""Real Edge Cases and Coverage Tests - NO MOCKS, REAL HTTP EXECUTION.
 
 Tests edge cases, error conditions, and specific code paths using REAL
-execution to achieve comprehensive coverage without mocking.
+HTTP execution to achieve comprehensive coverage without mocking.
 """
 
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
+import threading
+import time
+from collections.abc import Generator
 
 import pytest
-from flext_core.root_models import FlextEntityId
+import requests
+from flext_core import FlextEntityId
 from pydantic import ValidationError
 
 from flext_web import (
@@ -18,12 +21,11 @@ from flext_web import (
     FlextWebAppHandler,
     FlextWebAppStatus,
     FlextWebConfig,
+    FlextWebService,
     get_web_settings,
     reset_web_settings,
 )
-
-if TYPE_CHECKING:
-    from flask.testing import FlaskClient
+from tests.port_manager import TestPortManager
 
 
 class TestRealEdgeCases:
@@ -198,76 +200,129 @@ class TestRealEdgeCases:
 
 
 class TestRealServiceEdgeCases:
-    """Test real service edge cases and error handling."""
+    """Test real service edge cases and error handling using real HTTP."""
+
+    @pytest.fixture
+    def real_edge_service(self) -> Generator[FlextWebService]:
+        """Create real running service for edge case tests."""
+        # Allocate unique port to avoid conflicts
+        port = TestPortManager.allocate_port()
+
+        config = FlextWebConfig(
+            host="localhost",
+            port=port,
+            debug=True,
+            secret_key="edge-test-secret-key-32-characters-long!",
+        )
+        service = FlextWebService(config)
+
+        def run_service() -> None:
+            service.app.run(
+                host=config.host,
+                port=config.port,
+                debug=False,
+                use_reloader=False,
+                threaded=True,
+            )
+
+        server_thread = threading.Thread(target=run_service, daemon=True)
+        server_thread.start()
+        time.sleep(1)  # Wait for service to start
+
+        yield service
+
+        # Clean up
+        service.apps.clear()
+        # Release the allocated port
+        TestPortManager.release_port(port)
 
     @pytest.mark.integration
-    def test_real_api_edge_cases(self, real_client: FlaskClient) -> None:
-        """Test real API edge cases and error handling."""
+    def test_real_api_edge_cases(self, real_edge_service: FlextWebService) -> None:
+        """Test real API edge cases and error handling using real HTTP."""
+        port = real_edge_service.config.port
+        base_url = f"http://localhost:{port}"
+
         # Test creating app with missing fields
-        response = real_client.post("/api/v1/apps", json={})
+        response = requests.post(f"{base_url}/api/v1/apps", json={}, timeout=5)
         assert response.status_code == 400
 
         # Test creating app with invalid data types
-        response = real_client.post("/api/v1/apps", json={
-            "name": 123,  # Should be string
-            "port": "invalid",  # Should be int
-            "host": None,  # Should be string
-        })
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
+            json={
+                "name": 123,  # Should be string
+                "port": "invalid",  # Should be int
+                "host": None,  # Should be string
+            },
+            timeout=5,
+        )
         assert response.status_code == 400
 
         # Test accessing non-existent app
-        response = real_client.get("/api/v1/apps/nonexistent")
+        response = requests.get(f"{base_url}/api/v1/apps/nonexistent", timeout=5)
         assert response.status_code == 404
-        data = response.get_json()
+        data = response.json()
         assert data["success"] is False
         assert "not found" in data["message"].lower()
 
         # Test starting non-existent app
-        response = real_client.post("/api/v1/apps/nonexistent/start")
+        response = requests.post(f"{base_url}/api/v1/apps/nonexistent/start", timeout=5)
         assert response.status_code == 404
 
         # Test stopping non-existent app
-        response = real_client.post("/api/v1/apps/nonexistent/stop")
+        response = requests.post(f"{base_url}/api/v1/apps/nonexistent/stop", timeout=5)
         assert response.status_code == 404
 
     @pytest.mark.integration
-    def test_real_app_lifecycle_edge_cases(self, real_client: FlaskClient) -> None:
-        """Test real application lifecycle edge cases."""
+    def test_real_app_lifecycle_edge_cases(
+        self, real_edge_service: FlextWebService
+    ) -> None:
+        """Test real application lifecycle edge cases using real HTTP."""
+        port = real_edge_service.config.port
+        base_url = f"http://localhost:{port}"
+
         # Create valid app
-        response = real_client.post("/api/v1/apps", json={
-            "name": "lifecycle-edge-test",
-            "port": 9010,
-            "host": "localhost",
-        })
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
+            json={
+                "name": "lifecycle-edge-test",
+                "port": 9010,
+                "host": "localhost",
+            },
+            timeout=5,
+        )
         assert response.status_code == 200
-        data = response.get_json()
+        data = response.json()
         app_id = data["data"]["id"]
 
         # Start app
-        response = real_client.post(f"/api/v1/apps/{app_id}/start")
+        response = requests.post(f"{base_url}/api/v1/apps/{app_id}/start", timeout=5)
         assert response.status_code == 200
 
         # Try to start already running app
-        response = real_client.post(f"/api/v1/apps/{app_id}/start")
+        response = requests.post(f"{base_url}/api/v1/apps/{app_id}/start", timeout=5)
         assert response.status_code == 400
-        data = response.get_json()
+        data = response.json()
         assert data["success"] is False
         assert "already running" in data["message"].lower()
 
         # Stop app
-        response = real_client.post(f"/api/v1/apps/{app_id}/stop")
+        response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=5)
         assert response.status_code == 200
 
         # Try to stop already stopped app
-        response = real_client.post(f"/api/v1/apps/{app_id}/stop")
+        response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=5)
         assert response.status_code == 400
-        data = response.get_json()
+        data = response.json()
         assert data["success"] is False
         assert "already stopped" in data["message"].lower()
 
     @pytest.mark.integration
-    def test_real_dashboard_with_apps(self, real_client: FlaskClient) -> None:
-        """Test real dashboard rendering with various app states."""
+    def test_real_dashboard_with_apps(self, real_edge_service: FlextWebService) -> None:
+        """Test real dashboard rendering with various app states using real HTTP."""
+        port = real_edge_service.config.port
+        base_url = f"http://localhost:{port}"
+
         # Create apps in different states
         apps_data: list[dict[str, str | int]] = [
             {"name": "dashboard-running", "port": 9011, "host": "localhost"},
@@ -276,17 +331,19 @@ class TestRealServiceEdgeCases:
 
         created_apps: list[str] = []
         for app_data in apps_data:
-            response = real_client.post("/api/v1/apps", json=app_data)
+            response = requests.post(
+                f"{base_url}/api/v1/apps", json=app_data, timeout=5
+            )
             assert response.status_code == 200
-            data = response.get_json()
+            data = response.json()
             assert isinstance(data, dict)
             created_apps.append(data["data"]["id"])
 
         # Start first app
-        real_client.post(f"/api/v1/apps/{created_apps[0]}/start")
+        requests.post(f"{base_url}/api/v1/apps/{created_apps[0]}/start", timeout=5)
 
         # Test dashboard renders correctly
-        response = real_client.get("/")
+        response = requests.get(f"{base_url}/", timeout=5)
         assert response.status_code == 200
         assert "text/html" in response.headers.get("content-type", "")
         content = response.text
@@ -296,23 +353,32 @@ class TestRealServiceEdgeCases:
         assert "Total Apps" in content
 
     @pytest.mark.integration
-    def test_real_service_error_responses(self, real_client: FlaskClient) -> None:
-        """Test real service error response formatting."""
+    def test_real_service_error_responses(
+        self, real_edge_service: FlextWebService
+    ) -> None:
+        """Test real service error response formatting using real HTTP."""
+        port = real_edge_service.config.port
+        base_url = f"http://localhost:{port}"
+
         # Test 404 error formatting
-        response = real_client.get("/api/v1/apps/nonexistent")
+        response = requests.get(f"{base_url}/api/v1/apps/nonexistent", timeout=5)
         assert response.status_code == 404
-        data = response.get_json()
+        data = response.json()
         assert "success" in data
         assert "message" in data
         assert data["success"] is False
 
         # Test validation error formatting
-        response = real_client.post("/api/v1/apps", json={
-            "name": "",
-            "port": 99999,
-        })
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
+            json={
+                "name": "",
+                "port": 99999,
+            },
+            timeout=5,
+        )
         assert response.status_code == 400
-        data = response.get_json()
+        data = response.json()
         assert data["success"] is False
         assert "message" in data
 

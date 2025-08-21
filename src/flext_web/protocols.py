@@ -37,7 +37,7 @@ class WebServiceProtocol(Protocol):
         port: int | None = None,
         *,
         debug: bool | None = None,
-        **kwargs: object
+        **kwargs: object,
     ) -> None:
         """Run the web service with specified configuration.
 
@@ -123,10 +123,7 @@ class ResponseFormatterProtocol(Protocol):
     """
 
     def format_success(
-        self,
-        data: ResponseData,
-        message: str = "Success",
-        status_code: int = 200
+        self, data: ResponseData, message: str = "Success", status_code: int = 200
     ) -> ResponseReturnValue:
         """Format success response.
 
@@ -142,10 +139,7 @@ class ResponseFormatterProtocol(Protocol):
         ...
 
     def format_error(
-        self,
-        message: str,
-        status_code: int = 500,
-        details: ErrorDetails = None
+        self, message: str, status_code: int = 500, details: ErrorDetails = None
     ) -> ResponseReturnValue:
         """Format error response.
 
@@ -221,11 +215,7 @@ class TemplateRendererProtocol(Protocol):
     providing HTML rendering capabilities.
     """
 
-    def render_template(
-        self,
-        template_name: str,
-        **context: TemplateContext
-    ) -> str:
+    def render_template(self, template_name: str, **context: TemplateContext) -> str:
         """Render template with provided context.
 
         Args:
@@ -239,9 +229,7 @@ class TemplateRendererProtocol(Protocol):
         ...
 
     def render_dashboard(
-        self,
-        apps: list[FlextWebApp],
-        **context: TemplateContext
+        self, apps: list[FlextWebApp], **context: TemplateContext
     ) -> str:
         """Render dashboard template.
 

@@ -32,7 +32,8 @@ class TestRealMainEntry:
         """Test real help command execution."""
         result: CompletedProcess[str] = subprocess.run(
             [sys.executable, "-m", "flext_web", "--help"],
-            check=False, capture_output=True,
+            check=False,
+            capture_output=True,
             text=True,
             timeout=10,
         )
@@ -49,7 +50,8 @@ class TestRealMainEntry:
         """Test real version command execution."""
         result: CompletedProcess[str] = subprocess.run(
             [sys.executable, "-c", "import flext_web; print(flext_web.__version__)"],
-            check=False, capture_output=True,
+            check=False,
+            capture_output=True,
             text=True,
             timeout=10,
         )
@@ -88,11 +90,15 @@ class TestRealMainEntry:
     def test_real_argument_parsing_custom_values(self) -> None:
         """Test real argument parsing with custom values."""
         parser = main_module.create_parser()
-        args = parser.parse_args([
-            "--host", "0.0.0.0",
-            "--port", "9000",
-            "--debug",
-        ])
+        args = parser.parse_args(
+            [
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "9000",
+                "--debug",
+            ]
+        )
 
         assert args.host == "0.0.0.0"
         assert args.port == 9000
@@ -144,13 +150,17 @@ class TestRealMainEntry:
         result: CompletedProcess[str] = subprocess.run(
             [
                 sys.executable,
-                "-m", "flext_web",
-                "--host", "localhost",
-                "--port", "8082",
+                "-m",
+                "flext_web",
+                "--host",
+                "localhost",
+                "--port",
+                "8082",
                 "--debug",
                 "--help",  # Exit immediately after showing help
             ],
-            check=False, capture_output=True,
+            check=False,
+            capture_output=True,
             text=True,
             timeout=10,
         )
@@ -202,7 +212,8 @@ class TestRealCLIErrorHandling:
         """Test real handling of invalid port values."""
         result: CompletedProcess[str] = subprocess.run(
             [sys.executable, "-m", "flext_web", "--port", "99999"],
-            check=False, capture_output=True,
+            check=False,
+            capture_output=True,
             text=True,
             timeout=10,
         )
@@ -216,14 +227,18 @@ class TestRealCLIErrorHandling:
         """Test real handling of invalid arguments."""
         result: CompletedProcess[str] = subprocess.run(
             [sys.executable, "-m", "flext_web", "--invalid-argument"],
-            check=False, capture_output=True,
+            check=False,
+            capture_output=True,
             text=True,
             timeout=10,
         )
 
         # Should fail with unrecognized argument
         assert result.returncode != 0
-        assert "unrecognized" in result.stderr.lower() or "invalid" in result.stderr.lower()
+        assert (
+            "unrecognized" in result.stderr.lower()
+            or "invalid" in result.stderr.lower()
+        )
 
     @pytest.mark.unit
     def test_real_parser_error_scenarios(self) -> None:

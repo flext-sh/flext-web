@@ -7,10 +7,13 @@ real service execution, and actual FlextWebApp lifecycle management.
 from __future__ import annotations
 
 import os
+import threading
+import time
+from collections.abc import Generator
 
 import pytest
 import requests
-from flext_core.root_models import FlextEntityId
+from flext_core import FlextEntityId
 
 from flext_web import (
     FlextWebApp,
@@ -21,16 +24,57 @@ from flext_web import (
     get_web_settings,
     reset_web_settings,
 )
+from tests.port_manager import TestPortManager
+
+
+@pytest.fixture
+def real_comprehensive_service() -> Generator[FlextWebService]:
+    """Create real running service for comprehensive tests."""
+    # Allocate unique port to avoid conflicts
+    port = TestPortManager.allocate_port()
+
+    config = FlextWebConfig(
+        host="localhost",
+        port=port,
+        debug=True,
+        secret_key="comprehensive-test-secret-key-32-chars!",
+    )
+    service = FlextWebService(config)
+
+    def run_service() -> None:
+        service.app.run(
+            host=config.host,
+            port=config.port,
+            debug=False,
+            use_reloader=False,
+            threaded=True,
+        )
+
+    server_thread = threading.Thread(target=run_service, daemon=True)
+    server_thread.start()
+    time.sleep(2)  # Wait longer for service to start and avoid conflicts
+
+    # Ensure clean state before yielding
+    service.apps.clear()
+
+    yield service
+
+    # Clean up after use
+    service.apps.clear()
+    # Release the allocated port
+    TestPortManager.release_port(port)
 
 
 class TestRealWebServiceExecution:
     """Test real FlextWebService execution with actual HTTP."""
 
     @pytest.mark.integration
-    @pytest.mark.usefixtures("running_service")
-    def test_real_service_health_check(self) -> None:
+    def test_real_service_health_check(
+        self, real_comprehensive_service: FlextWebService
+    ) -> None:
         """Test real health endpoint with actual HTTP request."""
-        response = requests.get("http://localhost:8091/health", timeout=5)
+        port = real_comprehensive_service.config.port
+        response = requests.get(f"http://localhost:{port}/health", timeout=5)
 
         assert response.status_code == 200
         data = response.json()
@@ -40,10 +84,12 @@ class TestRealWebServiceExecution:
         assert "config" in data["data"]
 
     @pytest.mark.integration
-    @pytest.mark.usefixtures("running_service")
-    def test_real_application_complete_lifecycle(self) -> None:
+    def test_real_application_complete_lifecycle(
+        self, real_comprehensive_service: FlextWebService
+    ) -> None:
         """Test complete application lifecycle with real HTTP requests."""
-        base_url = "http://localhost:8091"
+        port = real_comprehensive_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # 1. Create application
         create_data: dict[str, str | int] = {
@@ -87,10 +133,12 @@ class TestRealWebServiceExecution:
         assert data["data"]["status"].upper() == "STOPPED"
 
     @pytest.mark.integration
-    @pytest.mark.usefixtures("running_service")
-    def test_real_error_handling_validation(self) -> None:
+    def test_real_error_handling_validation(
+        self, real_comprehensive_service: FlextWebService
+    ) -> None:
         """Test real error handling with actual invalid requests."""
-        base_url = "http://localhost:8091"
+        port = real_comprehensive_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Test creating app with invalid data
         invalid_data: dict[str, str | int] = {
@@ -98,12 +146,17 @@ class TestRealWebServiceExecution:
             "port": 99999,  # Invalid port
             "host": "",  # Invalid empty host
         }
-        response = requests.post(f"{base_url}/api/v1/apps", json=invalid_data, timeout=5)
+        response = requests.post(
+            f"{base_url}/api/v1/apps", json=invalid_data, timeout=5
+        )
 
         assert response.status_code == 400
         data = response.json()
         assert data["success"] is False
-        assert any(word in data["message"].lower() for word in ["validation", "empty", "required", "invalid"])
+        assert any(
+            word in data["message"].lower()
+            for word in ["validation", "empty", "required", "invalid"]
+        )
 
         # Test accessing non-existent app
         response = requests.get(f"{base_url}/api/v1/apps/nonexistent", timeout=5)
@@ -113,10 +166,12 @@ class TestRealWebServiceExecution:
         assert "not found" in data["message"].lower()
 
     @pytest.mark.web
-    @pytest.mark.usefixtures("running_service")
-    def test_real_web_dashboard_rendering(self) -> None:
+    def test_real_web_dashboard_rendering(
+        self, real_comprehensive_service: FlextWebService
+    ) -> None:
         """Test real web dashboard rendering with applications."""
-        base_url = "http://localhost:8091"
+        port = real_comprehensive_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Create test applications first
         test_apps: list[dict[str, str | int]] = [
@@ -299,9 +354,15 @@ class TestRealServiceIntegration:
     """Test real service integration scenarios."""
 
     @pytest.mark.integration
-    def test_real_service_with_multiple_apps(self, real_service: FlextWebService) -> None:
-        """Test real service managing multiple applications."""
-        client = real_service.app.test_client()
+    def test_real_service_with_multiple_apps(
+        self, real_comprehensive_service: FlextWebService
+    ) -> None:
+        """Test real service managing multiple applications using real HTTP."""
+        # Ensure clean state for this test
+        real_comprehensive_service.apps.clear()
+
+        port = real_comprehensive_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Create multiple applications
         apps_data: list[dict[str, str | int]] = [
@@ -312,68 +373,79 @@ class TestRealServiceIntegration:
 
         created_apps = []
         for app_data in apps_data:
-            response = client.post("/api/v1/apps", json=app_data)
+            response = requests.post(
+                f"{base_url}/api/v1/apps", json=app_data, timeout=5
+            )
             assert response.status_code == 200
-            data = response.get_json()
+            data = response.json()
             created_apps.append(data["data"]["id"])
 
         # List all applications
-        response = client.get("/api/v1/apps")
+        response = requests.get(f"{base_url}/api/v1/apps", timeout=5)
         assert response.status_code == 200
-        data = response.get_json()
+        data = response.json()
         assert data["success"] is True
         assert len(data["data"]["apps"]) == 3
 
         # Test operations on each app
         for app_id in created_apps:
             # Start app
-            response = client.post(f"/api/v1/apps/{app_id}/start")
+            response = requests.post(
+                f"{base_url}/api/v1/apps/{app_id}/start", timeout=5
+            )
             assert response.status_code == 200
 
             # Verify running
-            response = client.get(f"/api/v1/apps/{app_id}")
+            response = requests.get(f"{base_url}/api/v1/apps/{app_id}", timeout=5)
             assert response.status_code == 200
-            data = response.get_json()
+            data = response.json()
             assert data["data"]["status"].upper() == "RUNNING"
 
             # Stop app
-            response = client.post(f"/api/v1/apps/{app_id}/stop")
+            response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=5)
             assert response.status_code == 200
 
     @pytest.mark.integration
-    def test_real_service_error_recovery(self, real_service: FlextWebService) -> None:
-        """Test real service error recovery scenarios."""
-        client = real_service.app.test_client()
+    def test_real_service_error_recovery(
+        self, real_comprehensive_service: FlextWebService
+    ) -> None:
+        """Test real service error recovery scenarios using real HTTP."""
+        port = real_comprehensive_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Create valid app
-        response = client.post("/api/v1/apps", json={
-            "name": "error-recovery-app",
-            "port": 9008,
-            "host": "localhost",
-        })
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
+            json={
+                "name": "error-recovery-app",
+                "port": 9008,
+                "host": "localhost",
+            },
+            timeout=5,
+        )
         assert response.status_code == 200
-        data = response.get_json()
+        data = response.json()
         app_id = data["data"]["id"]
 
         # Start app
-        response = client.post(f"/api/v1/apps/{app_id}/start")
+        response = requests.post(f"{base_url}/api/v1/apps/{app_id}/start", timeout=5)
         assert response.status_code == 200
 
         # Try to start already running app (should fail gracefully)
-        response = client.post(f"/api/v1/apps/{app_id}/start")
+        response = requests.post(f"{base_url}/api/v1/apps/{app_id}/start", timeout=5)
         assert response.status_code == 400
-        data = response.get_json()
+        data = response.json()
         assert data["success"] is False
         assert "already running" in data["message"].lower()
 
         # Stop app
-        response = client.post(f"/api/v1/apps/{app_id}/stop")
+        response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=5)
         assert response.status_code == 200
 
         # Try to stop already stopped app (should fail gracefully)
-        response = client.post(f"/api/v1/apps/{app_id}/stop")
+        response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=5)
         assert response.status_code == 400
-        data = response.get_json()
+        data = response.json()
         assert data["success"] is False
         assert "already stopped" in data["message"].lower()
 

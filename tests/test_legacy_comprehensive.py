@@ -47,11 +47,7 @@ class TestLegacyWebConfig:
     def test_web_config_with_parameters(self) -> None:
         """Test WebConfig with parameters."""
         with pytest.warns(DeprecationWarning, match="WebConfig is deprecated"):
-            config = WebConfig(
-                host="0.0.0.0",
-                port=9000,
-                debug=False
-            )
+            config = WebConfig(host="0.0.0.0", port=9000, debug=False)
         assert config.host == "0.0.0.0"
         assert config.port == 9000
         assert config.debug is False
@@ -118,7 +114,9 @@ class TestLegacyExceptions:
 
     def test_web_configuration_error_creation(self) -> None:
         """Test WebConfigurationError can be created with deprecation warning."""
-        with pytest.warns(DeprecationWarning, match="WebConfigurationError is deprecated"):
+        with pytest.warns(
+            DeprecationWarning, match="WebConfigurationError is deprecated"
+        ):
             error = WebConfigurationError("Config error")
         assert "Config error" in str(error)
 
@@ -130,7 +128,9 @@ class TestLegacyExceptions:
 
     def test_web_authentication_error_creation(self) -> None:
         """Test WebAuthenticationError can be created with deprecation warning."""
-        with pytest.warns(DeprecationWarning, match="WebAuthenticationError is deprecated"):
+        with pytest.warns(
+            DeprecationWarning, match="WebAuthenticationError is deprecated"
+        ):
             error = WebAuthenticationError("Auth failed")
         assert "Auth failed" in str(error)
 

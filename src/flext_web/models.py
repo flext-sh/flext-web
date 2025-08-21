@@ -199,7 +199,9 @@ class FlextWebApp(FlextEntity):
         # Validate port range
         max_port = 65535
         if not (1 <= self.port <= max_port):
-            return FlextResult[None].fail(f"Invalid port number: must be between 1 and {max_port}")
+            return FlextResult[None].fail(
+                f"Invalid port number: must be between 1 and {max_port}"
+            )
 
         # Validate host is not empty
         if not self.host or not self.host.strip():
@@ -441,7 +443,9 @@ class FlextWebAppHandler:
             # Validate domain rules before returning
             validation = app.validate_business_rules()
             if not validation.success:
-                return FlextResult[FlextWebApp].fail(validation.error or "Domain validation failed")
+                return FlextResult[FlextWebApp].fail(
+                    validation.error or "Domain validation failed"
+                )
 
             return FlextResult[FlextWebApp].ok(app)
         except (RuntimeError, ValueError, TypeError) as e:
@@ -493,7 +497,9 @@ class FlextWebAppHandler:
         # Validate domain rules before attempting state change
         validation = app.validate_domain_rules()
         if not validation.success:
-            return FlextResult[FlextWebApp].fail(validation.error or "Validation failed")
+            return FlextResult[FlextWebApp].fail(
+                validation.error or "Validation failed"
+            )
 
         # Delegate to domain entity for state transition
         return app.start()
@@ -545,7 +551,9 @@ class FlextWebAppHandler:
         # Validate domain rules before attempting state change
         validation = app.validate_domain_rules()
         if not validation.success:
-            return FlextResult[FlextWebApp].fail(validation.error or "Validation failed")
+            return FlextResult[FlextWebApp].fail(
+                validation.error or "Validation failed"
+            )
 
         # Delegate to domain entity for state transition
         return app.stop()

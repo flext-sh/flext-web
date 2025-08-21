@@ -8,8 +8,13 @@ functionality branches.
 
 from __future__ import annotations
 
+import threading
+import time
+from collections.abc import Generator
+
 import pytest
-from flext_core.root_models import FlextEntityId
+import requests
+from flext_core import FlextEntityId
 
 from flext_web import (
     FlextWebApp,
@@ -36,6 +41,35 @@ from flext_web import (
 
 class TestMissingCoverage:
     """Tests targeting specific missing coverage areas."""
+
+    @pytest.fixture
+    def real_missing_service(self) -> Generator[FlextWebService]:
+        """Create real running service for missing coverage tests."""
+        config = FlextWebConfig(
+            host="localhost",
+            port=8096,  # Unique port for missing coverage tests
+            debug=True,
+            secret_key="missing-test-secret-32-characters-long!",
+        )
+        service = FlextWebService(config)
+
+        def run_service() -> None:
+            service.app.run(
+                host=config.host,
+                port=config.port,
+                debug=False,
+                use_reloader=False,
+                threaded=True,
+            )
+
+        server_thread = threading.Thread(target=run_service, daemon=True)
+        server_thread.start()
+        time.sleep(1)  # Wait for service to start
+
+        yield service
+
+        # Clean up
+        service.apps.clear()
 
     def test_app_invalid_port_validation(self) -> None:
         """Test port validation failure path through Pydantic validation."""
@@ -90,17 +124,18 @@ class TestMissingCoverage:
         with pytest.raises(ValueError, match=r"secret.*key|length"):
             FlextWebConfig(secret_key="short")
 
-    def test_service_error_response_creation(self) -> None:
-        """Test error response creation paths."""
-        config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
-        service = FlextWebService(config)
+    def test_service_error_response_creation(
+        self, real_missing_service: FlextWebService
+    ) -> None:  # noqa: ARG002
+        """Test error response creation paths using real HTTP."""
+        base_url = "http://localhost:8096"
 
         # Test invalid JSON request
-        client = service.app.test_client()
-        response = client.post(
-            "/api/v1/apps",
+        response = requests.post(
+            f"{base_url}/api/v1/apps",
             data="invalid json",
-            content_type="application/json",
+            headers={"Content-Type": "application/json"},
+            timeout=5,
         )
         assert response.status_code == 400
 
@@ -175,27 +210,30 @@ class TestMissingCoverage:
 
         assert settings1 is settings2
 
-    def test_service_dashboard_with_error_handling(self) -> None:
-        """Test dashboard rendering with various app states."""
-        config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
-        service = FlextWebService(config)
-        client = service.app.test_client()
+    def test_service_dashboard_with_error_handling(
+        self, real_missing_service: FlextWebService
+    ) -> None:  # noqa: ARG002
+        """Test dashboard rendering with various app states using real HTTP."""
+        base_url = "http://localhost:8096"
 
         # Create apps in different states
-        service.app.test_client().post(
-            "/api/v1/apps",
+        requests.post(
+            f"{base_url}/api/v1/apps",
             json={"name": "running-app", "port": 3000, "host": "localhost"},
+            timeout=5,
         )
 
-        service.app.test_client().post(
-            "/api/v1/apps",
+        requests.post(
+            f"{base_url}/api/v1/apps",
             json={"name": "stopped-app", "port": 3001, "host": "localhost"},
+            timeout=5,
         )
 
         # Test dashboard renders correctly
-        response = client.get("/")
+        response = requests.get(f"{base_url}/", timeout=5)
         assert response.status_code == 200
-        assert b"Total Apps" in response.data
+        content = response.content
+        assert b"Total Apps" in content
 
     def test_service_create_factory_function(self) -> None:
         """Test service creation factory function."""
@@ -212,11 +250,11 @@ class TestMissingCoverage:
         assert isinstance(service, FlextWebService)
         assert isinstance(service.config, FlextWebConfig)
 
-    def test_comprehensive_api_workflow_with_edge_cases(self) -> None:
-        """Test complete API workflow with edge cases."""
-        config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
-        service = FlextWebService(config)
-        client = service.app.test_client()
+    def test_comprehensive_api_workflow_with_edge_cases(
+        self, real_missing_service: FlextWebService
+    ) -> None:  # noqa: ARG002
+        """Test complete API workflow with edge cases using real HTTP."""
+        base_url = "http://localhost:8096"
 
         # Test creating app with edge case names
         test_cases = [
@@ -236,23 +274,27 @@ class TestMissingCoverage:
 
         created_apps = []
         for test_case in test_cases:
-            response = client.post("/api/v1/apps", json=test_case)
+            response = requests.post(
+                f"{base_url}/api/v1/apps", json=test_case, timeout=5
+            )
             if response.status_code == 200:
-                data = response.get_json()
+                data = response.json()
                 created_apps.append(data["data"]["id"])
 
         # Test operations on created apps
         for app_id in created_apps:
             # Test get app
-            response = client.get(f"/api/v1/apps/{app_id}")
+            response = requests.get(f"{base_url}/api/v1/apps/{app_id}", timeout=5)
             assert response.status_code == 200
 
             # Test start app
-            response = client.post(f"/api/v1/apps/{app_id}/start")
+            response = requests.post(
+                f"{base_url}/api/v1/apps/{app_id}/start", timeout=5
+            )
             assert response.status_code == 200
 
             # Test stop app
-            response = client.post(f"/api/v1/apps/{app_id}/stop")
+            response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=5)
             assert response.status_code == 200
 
 
@@ -288,9 +330,10 @@ class TestExceptionCoverage:
                 assert isinstance(exc, Exception)
                 assert hasattr(exc, "message")
 
-                # Test to_dict method if available
-                if hasattr(exc, "to_dict"):
-                    result = exc.to_dict()
+                # Test to_dict method if available (with proper typing)
+                to_dict_attr = getattr(exc, "to_dict", None)
+                if to_dict_attr is not None and callable(to_dict_attr):
+                    result = to_dict_attr()
                     assert isinstance(result, dict)
                     assert "message" in result
 

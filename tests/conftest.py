@@ -13,7 +13,6 @@ from collections.abc import Generator
 from typing import TYPE_CHECKING
 
 import pytest
-from flask.testing import FlaskClient
 
 from flext_web import (
     FlextWebConfig,
@@ -22,6 +21,7 @@ from flext_web import (
     create_service,
     reset_web_settings,
 )
+from tests.port_manager import TestPortManager
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -78,16 +78,11 @@ def real_app(real_config: FlextWebConfig) -> Flask:
 
 
 @pytest.fixture
-def real_client(real_app: Flask) -> FlaskClient:
-    """Create real Flask test client."""
-    return real_app.test_client()
-
-
-@pytest.fixture
 def running_service(real_config: FlextWebConfig) -> Generator[FlextWebService]:
     """Start real service in background thread with clean state."""
-    # Use different port for each test to avoid conflicts
-    test_port = real_config.port + 10  # Use 8091 instead of 8081
+    # Allocate unique port to avoid conflicts
+    test_port = TestPortManager.allocate_port()
+
     test_config = FlextWebConfig(
         host=real_config.host,
         port=test_port,
@@ -117,6 +112,8 @@ def running_service(real_config: FlextWebConfig) -> Generator[FlextWebService]:
 
     # Clean up service state after each test
     service.apps.clear()
+    # Release the allocated port
+    TestPortManager.release_port(test_port)
     # Service will be killed when thread ends (daemon=True)
 
 
@@ -157,7 +154,9 @@ def production_config() -> dict[str, str]:
 def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers for real testing."""
     config.addinivalue_line("markers", "unit: Unit tests with real execution")
-    config.addinivalue_line("markers", "integration: Integration tests with real services")
+    config.addinivalue_line(
+        "markers", "integration: Integration tests with real services"
+    )
     config.addinivalue_line("markers", "api: API tests with real HTTP")
     config.addinivalue_line("markers", "web: Web interface tests with real Flask")
     config.addinivalue_line("markers", "slow: Slow tests (may take >5 seconds)")

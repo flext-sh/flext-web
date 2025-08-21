@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 import requests
-from flext_core.root_models import FlextEntityId
+from flext_core import FlextEntityId
 
 from flext_web import (
     FlextWebConfig,
@@ -21,6 +21,7 @@ from flext_web import (
     reset_web_settings,
 )
 from flext_web.models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
+from tests.port_manager import TestPortManager
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -32,9 +33,11 @@ class TestRealServiceExecution:
     @pytest.fixture
     def real_config(self) -> FlextWebConfig:
         """Create real test configuration."""
+        # Allocate unique port to avoid conflicts
+        port = TestPortManager.allocate_port()
         return FlextWebConfig(
             host="localhost",
-            port=8081,  # Different port to avoid conflicts
+            port=port,
             debug=True,
             secret_key="real-test-secret-key-32-characters!",
         )
@@ -44,10 +47,11 @@ class TestRealServiceExecution:
         self, real_config: FlextWebConfig
     ) -> Generator[FlextWebService]:
         """Start real service in background thread for integration tests."""
-        # Use specific port for integration tests
+        # Use different unique port for integration tests
+        integration_port = TestPortManager.allocate_port()
         integration_config = FlextWebConfig(
             host=real_config.host,
-            port=8092,  # Different port for this test class
+            port=integration_port,
             debug=real_config.debug,
             secret_key=real_config.secret_key,
         )
@@ -74,9 +78,14 @@ class TestRealServiceExecution:
 
         # Clean up service state after each test
         service.apps.clear()
+        # Release allocated ports
+        TestPortManager.release_port(real_config.port)
+        TestPortManager.release_port(integration_port)
         # Service will be killed when thread ends (daemon=True)
 
-    def test_real_service_health_endpoint(self, running_service_integration: FlextWebService) -> None:  # noqa: ARG002
+    def test_real_service_health_endpoint(
+        self, running_service_integration: FlextWebService
+    ) -> None:  # noqa: ARG002
         """Test real health endpoint with actual HTTP request."""
         response = requests.get("http://localhost:8092/health", timeout=5)
 
@@ -87,7 +96,9 @@ class TestRealServiceExecution:
         assert "version" in data["data"]
         assert "config" in data["data"]
 
-    def test_real_application_lifecycle(self, running_service_integration: FlextWebService) -> None:  # noqa: ARG002
+    def test_real_application_lifecycle(
+        self, running_service_integration: FlextWebService
+    ) -> None:  # noqa: ARG002
         """Test complete application lifecycle with real HTTP requests."""
         base_url = "http://localhost:8092"
 
@@ -141,7 +152,9 @@ class TestRealServiceExecution:
         assert data["data"]["is_running"] is False
         assert data["data"]["status"].upper() == "STOPPED"
 
-    def test_real_error_handling(self, running_service_integration: FlextWebService) -> None:  # noqa: ARG002
+    def test_real_error_handling(
+        self, running_service_integration: FlextWebService
+    ) -> None:  # noqa: ARG002
         """Test real error handling with actual invalid requests."""
         base_url = "http://localhost:8092"
 
@@ -158,9 +171,10 @@ class TestRealServiceExecution:
         assert response.status_code == 400
         data = response.json()
         assert data["success"] is False
-        assert any(word in data["message"].lower() for word in [
-            "validation", "empty", "required", "invalid", "name"
-        ])
+        assert any(
+            word in data["message"].lower()
+            for word in ["validation", "empty", "required", "invalid", "name"]
+        )
 
         # Test accessing non-existent app
         response = requests.get(f"{base_url}/api/v1/apps/nonexistent", timeout=5)
@@ -175,7 +189,9 @@ class TestRealServiceExecution:
         data = response.json()
         assert data["success"] is False
 
-    def test_real_web_dashboard(self, running_service_integration: FlextWebService) -> None:  # noqa: ARG002
+    def test_real_web_dashboard(
+        self, running_service_integration: FlextWebService
+    ) -> None:  # noqa: ARG002
         """Test real web dashboard rendering."""
         response = requests.get("http://localhost:8092/", timeout=5)
 

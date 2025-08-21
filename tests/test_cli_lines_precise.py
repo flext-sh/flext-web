@@ -64,7 +64,7 @@ def test_lines_133_135_exception_handling_direct() -> None:
         **os.environ,
         "FLEXT_WEB_HOST": "127.0.0.1",
         "FLEXT_WEB_PORT": "1",  # Port 1 requires root access, will fail
-        "FLEXT_WEB_SECRET_KEY": "test-secret-key-32-characters-long!"
+        "FLEXT_WEB_SECRET_KEY": "test-secret-key-32-characters-long!",
     }
     cmd = [sys.executable, "-m", "flext_web"]
 
@@ -72,7 +72,9 @@ def test_lines_133_135_exception_handling_direct() -> None:
 
     # Should exit with code 1 due to exception handling (lines 143-145)
     # Accept both 1 (proper exception handling) and -1 (timeout, but still shows exception path)
-    assert rc in (1, -1), f"Should exit with code 1 or timeout (-1), got {rc}. stdout: {out}, stderr: {err}"
+    assert rc in {1, -1}, (
+        f"Should exit with code 1 or timeout (-1), got {rc}. stdout: {out}, stderr: {err}"
+    )
 
     # If we got a timeout, check that the service attempted to start (logs should be present)
     if rc == -1:
@@ -81,7 +83,9 @@ def test_lines_133_135_exception_handling_direct() -> None:
         started_attempt = any(
             indicator in combined_output.lower() for indicator in start_indicators
         )
-        assert started_attempt, f"Should have startup logs indicating main() was reached. Output: {combined_output}"
+        assert started_attempt, (
+            f"Should have startup logs indicating main() was reached. Output: {combined_output}"
+        )
 
 
 def test_port_validation_lines_122_123() -> None:

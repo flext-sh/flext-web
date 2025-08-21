@@ -45,6 +45,7 @@ class FieldKwargs(TypedDict, total=False):
     max_length: int | None
     default: object
 
+
 ValidatorFunc = Callable[[object], object]
 ValidatorGenerator = Generator[ValidatorFunc]
 
@@ -52,6 +53,7 @@ ValidatorGenerator = Generator[ValidatorFunc]
 RequestContext = dict[str, object]
 ResponseData = dict[str, object] | list[object] | str | int | float | bool | None
 TemplateContext = dict[str, object]
+
 
 # Application response data types - specific TypedDict for better typing
 class AppDataDict(TypedDict):
@@ -64,12 +66,25 @@ class AppDataDict(TypedDict):
     is_running: bool
     status: str
 
+
 class ResponseDataDict(TypedDict):
     """Type-safe response data dictionary for API responses."""
 
     success: bool
     message: str
-    data: AppDataDict | HealthDataDict | list[AppDataDict] | dict[str, object] | list[object] | str | int | float | bool | None
+    data: (
+        AppDataDict
+        | HealthDataDict
+        | list[AppDataDict]
+        | dict[str, object]
+        | list[object]
+        | str
+        | int
+        | float
+        | bool
+        | None
+    )
+
 
 class ApiResponseDict(TypedDict):
     """Type-safe API response dictionary."""
@@ -78,10 +93,12 @@ class ApiResponseDict(TypedDict):
     message: str
     data: AppDataDict | dict[str, list[AppDataDict]] | None
 
+
 class AppListDataDict(TypedDict):
     """Type-safe app list data dictionary."""
 
     apps: list[AppDataDict]
+
 
 class AppListResponseDict(TypedDict):
     """Type-safe app list response dictionary."""
@@ -90,12 +107,14 @@ class AppListResponseDict(TypedDict):
     message: str
     data: AppListDataDict
 
+
 class HealthResponseDict(TypedDict):
     """Type-safe health response dictionary."""
 
     success: bool
     message: str
     data: HealthDataDict
+
 
 # Health check response type
 class HealthDataDict(TypedDict):
@@ -105,6 +124,7 @@ class HealthDataDict(TypedDict):
     version: str
     apps_count: int
     config: str
+
 
 # Configuration types
 ConfigValue = str | int | float | bool | None

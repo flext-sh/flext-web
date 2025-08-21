@@ -71,14 +71,16 @@ def create_application(
     request_data: dict[str, str | int] = {"name": name, "port": port, "host": host}
 
     try:
-        response = requests.post(f"{BASE_URL}/api/v1/apps", json=request_data, timeout=5)
+        response = requests.post(
+            f"{BASE_URL}/api/v1/apps", json=request_data, timeout=5
+        )
         if response.status_code == HTTP_OK:
             result = cast("ApiResponseDict", response.json())
             if result.get("success"):
                 data = result.get("data")
                 # Type guard: ensure we return AppDataDict
                 if isinstance(data, dict) and "id" in data and "name" in data:
-                    return data  # type: ignore[return-value]  # Known to be AppDataDict
+                    return data
                 return None
         return None
     except requests.RequestException:
@@ -103,7 +105,7 @@ def start_application(app_id: str) -> AppDataDict | None:
                 data = result.get("data")
                 # Type guard: ensure we return AppDataDict
                 if isinstance(data, dict) and "id" in data and "name" in data:
-                    return data  # type: ignore[return-value]  # Known to be AppDataDict
+                    return data
                 return None
         return None
     except requests.RequestException:
@@ -128,7 +130,7 @@ def get_application_status(app_id: str) -> AppDataDict | None:
                 data = result.get("data")
                 # Type guard: ensure we return AppDataDict
                 if isinstance(data, dict) and "id" in data and "name" in data:
-                    return data  # type: ignore[return-value]  # Known to be AppDataDict
+                    return data
                 return None
         return None
     except requests.RequestException:
@@ -153,7 +155,7 @@ def stop_application(app_id: str) -> AppDataDict | None:
                 data = result.get("data")
                 # Type guard: ensure we return AppDataDict
                 if isinstance(data, dict) and "id" in data and "name" in data:
-                    return data  # type: ignore[return-value]  # Known to be AppDataDict
+                    return data
                 return None
         return None
     except requests.RequestException:

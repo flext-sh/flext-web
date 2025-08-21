@@ -148,7 +148,7 @@ class TestExceptionHierarchy:
         assert isinstance(FlextWebTimeoutError("test"), Exception)
 
         # Web-specific errors inherit from FlextWebError
-        web_specific_errors = [
+        web_specific_errors: list[FlextWebError] = [
             FlextWebTemplateError("test"),
             FlextWebRoutingError("test"),
             FlextWebSessionError("test"),
@@ -161,7 +161,7 @@ class TestExceptionHierarchy:
 
     def test_web_specific_error_hierarchy(self) -> None:
         """Test that web-specific errors inherit directly from FlextWebError."""
-        web_specific_errors = [
+        web_specific_errors: list[FlextWebError] = [
             FlextWebTemplateError("test"),
             FlextWebRoutingError("test"),
             FlextWebSessionError("test"),

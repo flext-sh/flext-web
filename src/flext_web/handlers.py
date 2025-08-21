@@ -46,11 +46,13 @@ class WebHandlers(FlextHandlers):
             FlextResult containing health status information.
 
         """
-        return FlextResult[dict[str, ResponseData]].ok({
-            "status": "healthy",
-            "service": "flext-web",
-            "version": "0.9.0",
-        })
+        return FlextResult[dict[str, ResponseData]].ok(
+            {
+                "status": "healthy",
+                "service": "flext-web",
+                "version": "0.9.0",
+            }
+        )
 
     @staticmethod
     def handle_app_creation(

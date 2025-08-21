@@ -11,8 +11,6 @@ from collections.abc import Generator
 
 import pytest
 
-from flext_web import FlextWebConfig, create_service
-
 
 # Test environment setup
 @pytest.fixture(autouse=True)
@@ -33,17 +31,6 @@ def set_test_environment() -> Generator[None]:
 def web_app() -> dict[str, str]:
     """Web application for testing."""
     return {"app": "test_app"}
-
-
-# Flask test client fixture
-@pytest.fixture
-def flask_test_client() -> object:
-    """Flask test client for web application."""
-    config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
-    service = create_service(config)
-
-    with service.app.test_client() as client:
-        yield client
 
 
 # Authentication fixtures

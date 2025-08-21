@@ -11,7 +11,7 @@ from typing import cast
 
 import pytest
 from flask import Flask, Response
-from flext_core.root_models import FlextEntityId
+from flext_core import FlextEntityId
 
 from flext_web.handlers import (
     WebHandlers,
@@ -57,7 +57,13 @@ class TestWebHandlers:
     def test_handle_app_start(self) -> None:
         """Test app start handler."""
         # Create an app first
-        app = FlextWebApp(id=FlextEntityId("app_test-app"), name="test-app", host="localhost", port=8080, status=FlextWebAppStatus.STOPPED)
+        app = FlextWebApp(
+            id=FlextEntityId("app_test-app"),
+            name="test-app",
+            host="localhost",
+            port=8080,
+            status=FlextWebAppStatus.STOPPED,
+        )
         result = WebHandlers.handle_app_start(app)
         assert result.success is True
         assert result.data.status == FlextWebAppStatus.RUNNING
@@ -65,7 +71,13 @@ class TestWebHandlers:
     def test_handle_app_stop(self) -> None:
         """Test app stop handler."""
         # Create a running app first
-        app = FlextWebApp(id=FlextEntityId("app_test-app"), name="test-app", host="localhost", port=8080, status=FlextWebAppStatus.RUNNING)
+        app = FlextWebApp(
+            id=FlextEntityId("app_test-app"),
+            name="test-app",
+            host="localhost",
+            port=8080,
+            status=FlextWebAppStatus.RUNNING,
+        )
         result = WebHandlers.handle_app_stop(app)
         assert result.success is True
         assert result.data.status == FlextWebAppStatus.STOPPED
@@ -90,7 +102,9 @@ class TestWebResponseHandler:
 
     def test_create_success_response(self) -> None:
         """Test creating successful JSON responses."""
-        response = WebResponseHandler.create_success_response("Operation successful", data={"id": "123"})
+        response = WebResponseHandler.create_success_response(
+            "Operation successful", data={"id": "123"}
+        )
 
         # Flask response object - check status code and data
         assert isinstance(response, Response)
@@ -127,7 +141,9 @@ class TestWebResponseHandler:
     def test_create_error_response_with_details(self) -> None:
         """Test creating error response with additional details."""
         error_details: ErrorDetails = {"code": "VALIDATION_ERROR", "field": "name"}
-        response = WebResponseHandler.create_error_response("Validation failed", 422, error_details)
+        response = WebResponseHandler.create_error_response(
+            "Validation failed", 422, error_details
+        )
 
         assert isinstance(response, Response)
         assert response.status_code == 422
@@ -140,10 +156,7 @@ class TestWebResponseHandler:
     def test_create_json_response_direct(self) -> None:
         """Test creating JSON response directly."""
         response = WebResponseHandler.create_json_response(
-            "Test message",
-            success=True,
-            data={"test": "value"},
-            status_code=201
+            "Test message", success=True, data={"test": "value"}, status_code=201
         )
 
         assert isinstance(response, Response)
@@ -156,9 +169,13 @@ class TestWebResponseHandler:
 
     def test_response_structure_consistency(self) -> None:
         """Test response structure is consistent across methods."""
-        success_response = WebResponseHandler.create_success_response("Success", data={"test": True})
+        success_response = WebResponseHandler.create_success_response(
+            "Success", data={"test": True}
+        )
         error_details: ErrorDetails = {"code": "TEST"}
-        error_response = WebResponseHandler.create_error_response("Error", 400, error_details)
+        error_response = WebResponseHandler.create_error_response(
+            "Error", 400, error_details
+        )
 
         # Cast to Response to access get_json method
         success_resp = cast("Response", success_response)
@@ -265,7 +282,11 @@ class TestHandlerIntegration:
     def test_error_handling_patterns(self) -> None:
         """Test handlers handle errors properly."""
         # Try to start an already running app
-        app = FlextWebApp(id=FlextEntityId("app_error-test"), name="error-test", status=FlextWebAppStatus.RUNNING)
+        app = FlextWebApp(
+            id=FlextEntityId("app_error-test"),
+            name="error-test",
+            status=FlextWebAppStatus.RUNNING,
+        )
         result = WebHandlers.handle_app_start(app)
         assert result.success is False
         assert result.error

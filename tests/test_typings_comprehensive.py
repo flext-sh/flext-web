@@ -111,6 +111,7 @@ class TestTypeIntegration:
 
     def test_types_with_models(self) -> None:
         """Test types work with domain models."""
+
         # Test that types can be used in realistic patterns
         # Create a simple generic class using the imported types
         class WebContainer(Generic[T]):
@@ -126,9 +127,9 @@ class TestTypeIntegration:
 
     def test_flext_types_extensibility(self) -> None:
         """Test FlextTypes can be extended for web domain."""
+
         class WebFlextTypes(FlextTypes):
             """Web-specific type extensions."""
-
 
         web_types = WebFlextTypes()
         assert isinstance(web_types, FlextTypes)
@@ -136,6 +137,7 @@ class TestTypeIntegration:
 
     def test_type_annotations_compatibility(self) -> None:
         """Test types work with function annotations."""
+
         def process_data(data: object) -> object | None:
             return data
 

@@ -74,7 +74,7 @@ class WebFields(FlextFields):
                 **kwargs,
             },
         )
-        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
+        return Field(**field_kwargs)
 
     @classmethod
     def host_field(cls, **kwargs: Unpack[FieldKwargs]) -> FieldReturn:
@@ -91,7 +91,7 @@ class WebFields(FlextFields):
             "dict[str, object]",
             {"default": "localhost", "description": "Host address", **kwargs},
         )
-        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
+        return Field(**field_kwargs)
 
     @classmethod
     def port_field(cls, **kwargs: Unpack[FieldKwargs]) -> FieldReturn:
@@ -114,7 +114,7 @@ class WebFields(FlextFields):
                 **kwargs,
             },
         )
-        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
+        return Field(**field_kwargs)
 
     @classmethod
     def url_field(cls, **kwargs: Unpack[FieldKwargs]) -> FieldReturn:
@@ -130,7 +130,7 @@ class WebFields(FlextFields):
         field_kwargs = cast(
             "dict[str, object]", {"description": "URL address", **kwargs}
         )
-        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
+        return Field(**field_kwargs)
 
     @classmethod
     def secret_key_field(cls, **kwargs: Unpack[FieldKwargs]) -> FieldReturn:
@@ -147,7 +147,7 @@ class WebFields(FlextFields):
             "dict[str, object]",
             {"description": "Cryptographic secret key", "min_length": 32, **kwargs},
         )
-        return Field(**field_kwargs)  # type: ignore[call-overload,no-any-return]
+        return Field(**field_kwargs)
 
     @staticmethod
     def validate_app_name(value: str) -> str:

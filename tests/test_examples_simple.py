@@ -28,7 +28,7 @@ class TestExamplesSimple:
         assert example_path.exists(), "basic_service.py missing"
 
         # Test syntax
-        source_code = example_path.read_text()
+        source_code = example_path.read_text(encoding="utf-8")
 
         try:
             compile(source_code, str(example_path), "exec")
@@ -37,10 +37,13 @@ class TestExamplesSimple:
 
         # Test import works
         cmd = [
-            sys.executable, "-c",
-            "import sys; sys.path.insert(0, 'examples'); import basic_service; print('OK')"
+            sys.executable,
+            "-c",
+            "import sys; sys.path.insert(0, 'examples'); import basic_service; print('OK')",
         ]
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=10
+        )
         assert result.returncode == 0, f"Import failed: {result.stderr}"
         assert "OK" in result.stdout
 
@@ -50,7 +53,7 @@ class TestExamplesSimple:
         assert example_path.exists(), "api_usage.py missing"
 
         # Test syntax
-        source_code = example_path.read_text()
+        source_code = example_path.read_text(encoding="utf-8")
 
         try:
             compile(source_code, str(example_path), "exec")
@@ -63,7 +66,7 @@ class TestExamplesSimple:
         assert example_path.exists(), "docker_ready.py missing"
 
         # Test syntax
-        source_code = example_path.read_text()
+        source_code = example_path.read_text(encoding="utf-8")
 
         try:
             compile(source_code, str(example_path), "exec")
@@ -80,12 +83,19 @@ class TestExamplesSimple:
                 content = example_file.read_text()
 
                 # Check for new API usage
-                assert "flext_web" in content, f"{example_file.name} should import from flext_web"
+                assert "flext_web" in content, (
+                    f"{example_file.name} should import from flext_web"
+                )
 
                 # Should not use old import patterns
-                old_patterns = ["from flext_web.web_service", "from flext_web.web_config"]
+                old_patterns = [
+                    "from flext_web.web_service",
+                    "from flext_web.web_config",
+                ]
                 for pattern in old_patterns:
-                    assert pattern not in content, f"{example_file.name} uses old API: {pattern}"
+                    assert pattern not in content, (
+                        f"{example_file.name} uses old API: {pattern}"
+                    )
 
     def test_examples_have_main_function(self) -> None:
         """Test that executable examples have main or demo function."""
@@ -100,8 +110,12 @@ class TestExamplesSimple:
             if example_path.exists():
                 content = example_path.read_text()
 
-                assert expected_function in content, f"{example_name} should have {expected_function})"
-                assert 'if __name__ == "__main__"' in content, f"{example_name} should be executable"
+                assert expected_function in content, (
+                    f"{example_name} should have {expected_function})"
+                )
+                assert 'if __name__ == "__main__"' in content, (
+                    f"{example_name} should be executable"
+                )
 
     def test_examples_have_docstrings(self) -> None:
         """Test that examples have proper docstrings."""
@@ -131,8 +145,14 @@ class TestExamplesSimple:
     def test_basic_service_quick_execution(self) -> None:
         """Test basic_service can be executed quickly with help."""
         # Test with --help or similar quick flag to avoid long-running server
-        cmd = [sys.executable, "-c", "import examples.basic_service; print('Executable')"]
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True, timeout=5)
+        cmd = [
+            sys.executable,
+            "-c",
+            "import examples.basic_service; print('Executable')",
+        ]
+        result = subprocess.run(
+            cmd, check=False, capture_output=True, text=True, timeout=5
+        )
         # It's OK if it fails due to imports, we just want to test it's executable
         # The important thing is no syntax errors
         assert "SyntaxError" not in result.stderr

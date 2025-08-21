@@ -1,36 +1,73 @@
 #!/usr/bin/env python3
-"""Precise test for line 903 - stop_app failure path."""
+"""Precise test for line 903 - stop_app failure path using REAL HTTP execution."""
+
+import threading
+import time
+from collections.abc import Generator
+
+import pytest
+import requests
 
 from flext_web import FlextWebConfig, FlextWebService
 
 
-def test_line_903_stop_app_failure_precise() -> None:
-    """Test line 903: stop_app failure path with already stopped app."""
-    config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
+@pytest.fixture
+def real_line_903_service() -> Generator[FlextWebService]:
+    """Create real running service for line 903 test."""
+    config = FlextWebConfig(
+        host="localhost",
+        port=8099,  # Unique port for line 903 test
+        secret_key="line903-test-key-32-characters-long!",
+    )
     service = FlextWebService(config)
-    client = service.app.test_client()
+
+    def run_service() -> None:
+        service.app.run(
+            host=config.host,
+            port=config.port,
+            debug=False,
+            use_reloader=False,
+            threaded=True,
+        )
+
+    server_thread = threading.Thread(target=run_service, daemon=True)
+    server_thread.start()
+    time.sleep(1)  # Wait for service to start
+
+    yield service
+
+    # Clean up
+    service.apps.clear()
+
+
+def test_line_903_stop_app_failure_precise(
+    real_line_903_service: FlextWebService,
+) -> None:  # noqa: ARG001
+    """Test line 903: stop_app failure path with already stopped app using real HTTP."""
+    base_url = "http://localhost:8099"
 
     # Create an app (starts in STOPPED state)
-    create_response = client.post(
-        "/api/v1/apps",
+    create_response = requests.post(
+        f"{base_url}/api/v1/apps",
         json={
             "name": "test-stop-failure",
             "port": 8080,
             "host": "localhost",
         },
+        timeout=5,
     )
     assert create_response.status_code == 200
-    app_data = create_response.json["data"]
+    app_data = create_response.json()["data"]
     app_id = app_data["id"]
 
     # Try to stop an already stopped app (should fail and hit line 903)
-    stop_response = client.post(f"/api/v1/apps/{app_id}/stop")
+    stop_response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=5)
     assert stop_response.status_code == 400  # This hits line 903!
 
-    error_data = stop_response.json
+    error_data = stop_response.json()
     assert error_data["success"] is False
     assert "already stopped" in error_data["message"].lower()
 
 
 if __name__ == "__main__":
-    test_line_903_stop_app_failure_precise()
+    pytest.main([__file__, "-v"])

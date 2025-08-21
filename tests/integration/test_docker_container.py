@@ -172,7 +172,11 @@ def test_container_service() -> bool | None:
         assert apps_data["success"] is True
 
         # Create app
-        app_data: dict[str, str | int] = {"name": "container-test-app", "port": 3000, "host": "localhost"}
+        app_data: dict[str, str | int] = {
+            "name": "container-test-app",
+            "port": 3000,
+            "host": "localhost",
+        }
         response = requests.post(f"{base_url}/api/v1/apps", json=app_data, timeout=5)
         assert response.status_code == 200
         create_data = response.json()
