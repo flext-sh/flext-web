@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Documentation Status**: ✅ **COMPLETE** - 100% enterprise-grade documentation standardization across all source code, tests, and examples (Updated: 2025-08-04)
 
-**Architecture Status**: The project shows mixed Django/Flask dependencies in pyproject.toml but the actual implementation is pure Flask with inline HTML dashboard. Architectural improvements are planned for 1.0.0 release.
+**Architecture Status**: The project shows mixed Django/Flask dependencies in pyproject.toml but the actual implementation is pure Flask with inline HTML dashboard. Architectural improvements are planned for 0.9.0 release.
 
 ## Architecture
 
@@ -314,7 +314,7 @@ def new_endpoint(self) -> ResponseReturnValue:
 # Check port availability
 netstat -tulpn | grep 8080
 
-# Verify configuration  
+# Verify configuration
 python -c "from flext_web.web_config import get_web_settings; print(get_web_settings())"
 
 # Check dependencies
@@ -420,7 +420,7 @@ poetry run pip-audit
 
 ## ARCHITECTURAL IMPROVEMENT PRIORITIES
 
-Following the completion of comprehensive documentation standardization, the following architectural gaps remain as development priorities for the 1.0.0 production release:
+Following the completion of comprehensive documentation standardization, the following architectural gaps remain as development priorities for the 0.9.0 production release:
 
 ## GAPS DE ARQUITETURA IDENTIFICADOS - PRIORIDADE ALTA
 

@@ -50,7 +50,7 @@
 
 ## 🚨 REMAINING CRITICAL ARCHITECTURAL PRIORITIES
 
-**Development Focus**: Following documentation completion, these architectural improvements remain as priorities for the 1.0.0 production release.
+**Development Focus**: Following documentation completion, these architectural improvements remain as priorities for the 0.9.0 production release.
 
 ### 1. **INCONSISTÊNCIA TECNOLÓGICA FUNDAMENTAL**
 
