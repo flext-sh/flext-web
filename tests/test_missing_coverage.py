@@ -126,7 +126,7 @@ class TestMissingCoverage:
 
     def test_service_error_response_creation(
         self, real_missing_service: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test error response creation paths using real HTTP."""
         base_url = "http://localhost:8096"
 
@@ -212,7 +212,7 @@ class TestMissingCoverage:
 
     def test_service_dashboard_with_error_handling(
         self, real_missing_service: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test dashboard rendering with various app states using real HTTP."""
         base_url = "http://localhost:8096"
 
@@ -252,7 +252,7 @@ class TestMissingCoverage:
 
     def test_comprehensive_api_workflow_with_edge_cases(
         self, real_missing_service: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test complete API workflow with edge cases using real HTTP."""
         base_url = "http://localhost:8096"
 

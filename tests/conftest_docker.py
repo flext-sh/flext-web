@@ -47,7 +47,7 @@ def test_user_data() -> dict[str, object]:
 
 
 @pytest.fixture
-def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:  # noqa: ARG001
+def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:
     """Authentication headers for test requests."""
     return {
         "Authorization": "Bearer test_token",

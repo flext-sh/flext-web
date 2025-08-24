@@ -95,7 +95,7 @@ class TestWebInterface:
             f"Expected app name to contain 'flext_web', got {app.name}"
         )
 
-    def test_dashboard_route(self, real_web_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_dashboard_route(self, real_web_service: FlextWebService) -> None:
         """Test dashboard route using real HTTP requests."""
         base_url = "http://localhost:8095"
 

@@ -96,7 +96,7 @@ class TestFlextWebService:
             raise AssertionError(msg)
         assert service.handler is not None
 
-    def test_health_check(self, real_api_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_health_check(self, real_api_service: FlextWebService) -> None:
         """Test health check endpoint using real HTTP."""
         base_url = "http://localhost:8094"
 
@@ -113,7 +113,7 @@ class TestFlextWebService:
             msg: str = f"Expected {'healthy'} in {data['message']}"
             raise AssertionError(msg)
 
-    def test_list_apps_empty(self, real_api_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_list_apps_empty(self, real_api_service: FlextWebService) -> None:
         """Test listing empty apps using real HTTP."""
         base_url = "http://localhost:8094"
 
@@ -130,7 +130,7 @@ class TestFlextWebService:
             msg: str = f"Expected {[]}, got {data['data']['apps']}"
             raise AssertionError(msg)
 
-    def test_create_app(self, real_api_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_create_app(self, real_api_service: FlextWebService) -> None:
         """Test creating an app using real HTTP."""
         base_url = "http://localhost:8094"
 
@@ -157,7 +157,7 @@ class TestFlextWebService:
             )
         assert data["data"]["port"] == 8080
 
-    def test_create_app_missing_name(self, real_api_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_create_app_missing_name(self, real_api_service: FlextWebService) -> None:
         """Test creating app with missing name using real HTTP."""
         base_url = "http://localhost:8094"
 

@@ -92,7 +92,7 @@ class TestFlextWebServiceAdvanced:
 
     def test_create_app_with_validation_error(
         self, real_running_service: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test app creation with validation errors using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -109,7 +109,7 @@ class TestFlextWebServiceAdvanced:
 
     def test_create_app_with_invalid_port(
         self, real_running_service: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test app creation with invalid port using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -124,7 +124,7 @@ class TestFlextWebServiceAdvanced:
 
     def test_create_app_with_missing_fields(
         self, real_running_service: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test app creation with missing optional fields uses defaults using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -140,7 +140,7 @@ class TestFlextWebServiceAdvanced:
         assert data["data"]["host"] == "localhost"
         assert data["data"]["port"] == 8000
 
-    def test_start_nonexistent_app(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_start_nonexistent_app(self, real_running_service: FlextWebService) -> None:
         """Test starting non-existent application using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -150,7 +150,7 @@ class TestFlextWebServiceAdvanced:
         assert not data["success"]
         assert "not found" in data["message"].lower()
 
-    def test_stop_nonexistent_app(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_stop_nonexistent_app(self, real_running_service: FlextWebService) -> None:
         """Test stopping non-existent application using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -159,7 +159,7 @@ class TestFlextWebServiceAdvanced:
         data = response.json()
         assert not data["success"]
 
-    def test_get_nonexistent_app(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_get_nonexistent_app(self, real_running_service: FlextWebService) -> None:
         """Test getting non-existent application using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -168,7 +168,7 @@ class TestFlextWebServiceAdvanced:
         data = response.json()
         assert not data["success"]
 
-    def test_invalid_json_request(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_invalid_json_request(self, real_running_service: FlextWebService) -> None:
         """Test API with invalid JSON using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -182,7 +182,7 @@ class TestFlextWebServiceAdvanced:
 
     def test_service_real_validation_error_handling(
         self, real_running_service: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test service error handling with REAL validation failures using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -204,7 +204,7 @@ class TestFlextWebServiceAdvanced:
 
     def test_service_real_duplicate_error_handling(
         self, real_running_service: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test service handling of real business logic errors using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -223,7 +223,7 @@ class TestFlextWebServiceAdvanced:
         assert data is not None
         assert data["success"] is False
 
-    def test_dashboard_with_apps(self, real_running_service: FlextWebService) -> None:  # noqa: ARG002
+    def test_dashboard_with_apps(self, real_running_service: FlextWebService) -> None:
         """Test dashboard display with applications using real HTTP."""
         base_url = "http://localhost:8093"
 
@@ -494,7 +494,7 @@ class TestServiceIntegration:
 
     def test_complete_app_workflow(
         self, real_integration_service: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test complete application workflow through real HTTP API."""
         base_url = "http://localhost:8097"
 

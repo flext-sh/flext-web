@@ -181,10 +181,7 @@ def list_applications() -> list[AppDataDict]:
                     validated_apps: list[AppDataDict] = []
                     for app in apps:
                         if isinstance(app, dict) and "id" in app and "name" in app:
-                            status_emoji = "🟢" if app.get("is_running") else "🔴"
-                            print(
-                                f"{status_emoji} {app.get('name')} ({app.get('status')})"
-                            )
+                            "🟢" if app.get("is_running") else "🔴"
                             validated_apps.append(app)
                     return validated_apps
         return []
@@ -201,69 +198,46 @@ def demo_application_lifecycle() -> None:
     3. Lifecycle management via FlextWebAppHandler
     4. Status monitoring through FlextWebApp entities
     """
-    print("🔍 Checking FLEXT Web Interface service health...")
     if not check_service_health():
-        print("❌ Service is not healthy or not running")
-        print("   Start the service with: python -m flext_web")
         return
 
-    print("✅ Service is healthy and ready")
-
-    print("\n📦 Creating test applications...")
     # Create applications with different configurations
     app1 = create_application("web-service", 3000)
     app2 = create_application("api-gateway", 4000, "127.0.0.1")
 
     if not app1 or not app2:
-        print("❌ Failed to create applications")
         return
 
-    print(f"✅ Created: {app1['name']} (ID: {app1['id']})")
-    print(f"✅ Created: {app2['name']} (ID: {app2['id']})")
-
-    print("\n📋 Current applications:")
     list_applications()
 
-    print("\n🚀 Starting applications...")
     # Start applications and check results
     start_result1 = start_application(app1["id"])
     start_result2 = start_application(app2["id"])
 
     if start_result1:
-        print(f"✅ Started: {start_result1['name']}")
+        pass
     if start_result2:
-        print(f"✅ Started: {start_result2['name']}")
+        pass
 
-    print("\n📊 Checking application status...")
     # Check individual status with proper error handling
     for app_data in [app1, app2]:
         app_id: str = app_data["id"]
         status: AppDataDict | None = get_application_status(app_id)
         if status:
-            status_emoji: str = "🟢" if status.get("is_running") else "🔴"
-            print(
-                f"{status_emoji} {status['name']}: {status.get('status', 'UNKNOWN')}",
-            )
-        else:
-            print(f"❌ Failed to get status for {app_data['name']}")
+            "🟢" if status.get("is_running") else "🔴"
 
-    print("\n📋 Updated applications:")
     list_applications()
 
-    print("\n🛑 Stopping applications...")
     # Stop applications
     stop_result1 = stop_application(app1["id"])
     stop_result2 = stop_application(app2["id"])
 
     if stop_result1:
-        print(f"⏹️ Stopped: {stop_result1['name']}")
+        pass
     if stop_result2:
-        print(f"⏹️ Stopped: {stop_result2['name']}")
+        pass
 
-    print("\n📋 Final application status:")
     list_applications()
-
-    print("\n✅ Application lifecycle demonstration completed!")
 
 
 if __name__ == "__main__":

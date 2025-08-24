@@ -28,7 +28,7 @@ from flext_core import (
     FlextEntity,
     FlextEntityId,
     FlextResult,
-    FlextValidators,
+    FlextValidator,
 )
 from pydantic import ConfigDict, Field, field_validator
 
@@ -132,7 +132,7 @@ class FlextWebApp(FlextEntity):
     @classmethod
     def validate_name(cls, v: str) -> str:
         """Validate application name is non-empty."""
-        if not FlextValidators.is_non_empty_string(v):
+        if not FlextValidator.is_non_empty_string(v):
             msg = "Application name cannot be empty"
             raise ValueError(msg)
         return v
@@ -141,7 +141,7 @@ class FlextWebApp(FlextEntity):
     @classmethod
     def validate_host(cls, v: str) -> str:
         """Validate host address is non-empty."""
-        if not FlextValidators.is_non_empty_string(v):
+        if not FlextValidator.is_non_empty_string(v):
             msg = "Host address cannot be empty"
             raise ValueError(msg)
         return v

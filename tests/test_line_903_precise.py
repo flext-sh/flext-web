@@ -42,7 +42,7 @@ def real_line_903_service() -> Generator[FlextWebService]:
 
 def test_line_903_stop_app_failure_precise(
     real_line_903_service: FlextWebService,
-) -> None:  # noqa: ARG001
+) -> None:
     """Test line 903: stop_app failure path with already stopped app using real HTTP."""
     base_url = "http://localhost:8099"
 

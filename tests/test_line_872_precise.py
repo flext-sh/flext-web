@@ -42,7 +42,7 @@ def real_line_872_service() -> Generator[FlextWebService]:
 
 def test_line_872_start_app_failure_precise(
     real_line_872_service: FlextWebService,
-) -> None:  # noqa: ARG001
+) -> None:
     """Test line 872: start_app failure path with already running app using real HTTP."""
     base_url = "http://localhost:8098"
 

@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import re
 
-from flext_core import FlextBaseConfigModel, FlextResult, FlextValidators
+from flext_core import FlextBaseConfigModel, FlextResult, FlextValidator
 from pydantic import Field, field_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -99,7 +99,7 @@ class FlextWebConfig(FlextBaseConfigModel):
     @classmethod
     def validate_app_name(cls, v: str) -> str:
         """Validate application name is non-empty and properly formatted."""
-        if not FlextValidators.is_non_empty_string(v):
+        if not FlextValidator.is_non_empty_string(v):
             msg = "App name is required"
             raise ValueError(msg)
         return v
@@ -118,7 +118,7 @@ class FlextWebConfig(FlextBaseConfigModel):
     @classmethod
     def validate_host(cls, v: str) -> str:
         """Validate host address is non-empty."""
-        if not FlextValidators.is_non_empty_string(v):
+        if not FlextValidator.is_non_empty_string(v):
             msg = "Host is required"
             raise ValueError(msg)
         return v

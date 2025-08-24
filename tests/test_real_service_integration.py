@@ -85,7 +85,7 @@ class TestRealServiceExecution:
 
     def test_real_service_health_endpoint(
         self, running_service_integration: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test real health endpoint with actual HTTP request."""
         response = requests.get("http://localhost:8092/health", timeout=5)
 
@@ -98,7 +98,7 @@ class TestRealServiceExecution:
 
     def test_real_application_lifecycle(
         self, running_service_integration: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test complete application lifecycle with real HTTP requests."""
         base_url = "http://localhost:8092"
 
@@ -154,7 +154,7 @@ class TestRealServiceExecution:
 
     def test_real_error_handling(
         self, running_service_integration: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test real error handling with actual invalid requests."""
         base_url = "http://localhost:8092"
 
@@ -191,7 +191,7 @@ class TestRealServiceExecution:
 
     def test_real_web_dashboard(
         self, running_service_integration: FlextWebService
-    ) -> None:  # noqa: ARG002
+    ) -> None:
         """Test real web dashboard rendering."""
         response = requests.get("http://localhost:8092/", timeout=5)
 

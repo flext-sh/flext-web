@@ -1,25 +1,25 @@
-"""FLEXT Web Interfaces - Abstract base classes and contracts for web components.
+"""FLEXT Web Interfaces - Web-specific protocol extensions.
 
-This module defines abstract interfaces for web components, extending
-the base interfaces from flext-core with web-specific contracts.
+This module defines web-specific protocol extensions that build upon
+the hierarchical protocol architecture from flext-core, eliminating
+local abstract base classes in favor of composition patterns.
 
-Interfaces provide formal contracts through inheritance, supporting
-polymorphism and enforcing implementation requirements across the
-web domain.
+All interfaces now use flext-core protocols following the ZERO TOLERANCE
+methodology for architectural compliance.
 
 Key Components:
-    - Abstract web service interfaces
-    - Repository interfaces for data persistence
-    - Middleware interfaces for request processing
-    - Integration interfaces for external systems
+    - Protocol-based web service contracts
+    - Repository protocols extending flext-core patterns
+    - Middleware protocols for request processing
+    - Integration protocols for external systems
 """
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from typing import Protocol, runtime_checkable
 
 from flask.typing import ResponseReturnValue
-from flext_core import FlextResult
+from flext_core import FlextProtocols, FlextResult
 
 from flext_web.models import FlextWebApp
 from flext_web.type_aliases import (
@@ -31,30 +31,29 @@ from flext_web.type_aliases import (
 )
 
 
-class WebServiceInterface(ABC):
-    """Abstract interface for web service implementations.
+@runtime_checkable
+class WebServiceInterface(FlextProtocols.Domain.Service, Protocol):
+    """Web service protocol extending flext-core Service patterns.
 
-    Defines the contract that all web service implementations must follow,
-    ensuring consistent behavior across different service implementations.
+    Composing with FlextProtocols.Domain.Service provides standard
+    service lifecycle management (start/stop/health_check) while
+    adding web-specific contract requirements.
     """
 
-    @abstractmethod
     def initialize_routes(self) -> None:
         """Initialize web service routes and endpoints.
 
-        Must be implemented by concrete web service classes to define
-        all HTTP routes and their corresponding handlers.
+        Web-specific method for route registration beyond base service contract.
         """
+        ...
 
-    @abstractmethod
     def configure_middleware(self) -> None:
         """Configure request/response middleware.
 
-        Must be implemented to set up middleware for security,
-        logging, error handling, and other cross-cutting concerns.
+        Web-specific method for middleware setup beyond base service contract.
         """
+        ...
 
-    @abstractmethod
     def start_service(
         self, host: str, port: int, *, debug: bool = False, **kwargs: object
     ) -> None:
@@ -66,25 +65,28 @@ class WebServiceInterface(ABC):
             debug: Debug mode flag
             **kwargs: Additional service configuration
 
-        """
+        Note: This extends the base Service.start() method with web-specific parameters.
 
-    @abstractmethod
+        """
+        ...
+
     def stop_service(self) -> None:
         """Stop the web service gracefully.
 
-        Must handle cleanup of resources, connection closure,
-        and graceful shutdown procedures.
+        Extends the base Service.stop() method with web-specific shutdown logic.
         """
+        ...
 
 
-class AppRepositoryInterface(ABC):
-    """Abstract interface for application data persistence.
+@runtime_checkable
+class AppRepositoryInterface(FlextProtocols.Domain.Repository[FlextWebApp], Protocol):
+    """Application repository protocol extending flext-core Repository patterns.
 
-    Defines the contract for application repository implementations
-    supporting different storage backends (memory, database, etc.).
+    Inherits standard repository operations (get_by_id, save, delete, find_all)
+    from FlextProtocols.Domain.Repository[FlextWebApp] while adding web-specific
+    query methods for application management.
     """
 
-    @abstractmethod
     def create(self, app: FlextWebApp) -> FlextResult[FlextWebApp]:
         """Create and store a new application.
 
@@ -94,9 +96,11 @@ class AppRepositoryInterface(ABC):
         Returns:
             FlextResult containing created application or error.
 
-        """
+        Note: This extends the base Repository.save() method with creation semantics.
 
-    @abstractmethod
+        """
+        ...
+
     def get(self, app_id: str) -> FlextResult[FlextWebApp]:
         """Retrieve application by ID.
 
@@ -106,9 +110,11 @@ class AppRepositoryInterface(ABC):
         Returns:
             FlextResult containing application or error if not found.
 
-        """
+        Note: This aliases the base Repository.get_by_id() method for consistency.
 
-    @abstractmethod
+        """
+        ...
+
     def update(self, app: FlextWebApp) -> FlextResult[FlextWebApp]:
         """Update existing application.
 
@@ -118,30 +124,11 @@ class AppRepositoryInterface(ABC):
         Returns:
             FlextResult containing updated application or error.
 
-        """
-
-    @abstractmethod
-    def delete(self, app_id: str) -> FlextResult[None]:
-        """Delete application by ID.
-
-        Args:
-            app_id: Unique application identifier
-
-        Returns:
-            FlextResult indicating success or error.
+        Note: This extends the base Repository.save() method with update semantics.
 
         """
+        ...
 
-    @abstractmethod
-    def list_all(self) -> FlextResult[list[FlextWebApp]]:
-        """List all applications.
-
-        Returns:
-            FlextResult containing list of applications or error.
-
-        """
-
-    @abstractmethod
     def find_by_name(self, name: str) -> FlextResult[FlextWebApp]:
         """Find application by name.
 
@@ -151,17 +138,20 @@ class AppRepositoryInterface(ABC):
         Returns:
             FlextResult containing application or error if not found.
 
+        Web-specific query method beyond base repository contract.
+
         """
+        ...
 
 
-class MiddlewareInterface(ABC):
-    """Abstract interface for request/response middleware.
+@runtime_checkable
+class MiddlewareInterface(FlextProtocols.Extensions.Middleware, Protocol):
+    """Web middleware protocol extending flext-core Middleware patterns.
 
-    Defines the contract for middleware components that process
-    HTTP requests and responses with cross-cutting concerns.
+    Inherits the base Middleware.process() method while adding web-specific
+    request/response processing and error handling capabilities.
     """
 
-    @abstractmethod
     def before_request(self, request: RequestContext) -> FlextResult[RequestContext]:
         """Process request before routing to handlers.
 
@@ -171,9 +161,11 @@ class MiddlewareInterface(ABC):
         Returns:
             FlextResult containing processed request or error.
 
-        """
+        Web-specific method for request preprocessing beyond base middleware contract.
 
-    @abstractmethod
+        """
+        ...
+
     def after_request(self, response: ResponseData) -> FlextResult[ResponseData]:
         """Process response after handler execution.
 
@@ -183,9 +175,11 @@ class MiddlewareInterface(ABC):
         Returns:
             FlextResult containing processed response or error.
 
-        """
+        Web-specific method for response postprocessing beyond base middleware contract.
 
-    @abstractmethod
+        """
+        ...
+
     def handle_error(self, error: Exception) -> ResponseReturnValue:
         """Handle exceptions during request processing.
 
@@ -195,26 +189,20 @@ class MiddlewareInterface(ABC):
         Returns:
             HTTP error response.
 
+        Web-specific error handling method for HTTP error responses.
+
         """
+        ...
 
 
-class TemplateEngineInterface(ABC):
-    """Abstract interface for template rendering engines.
+@runtime_checkable
+class TemplateEngineInterface(FlextProtocols.Infrastructure.Configurable, Protocol):
+    """Template engine protocol extending flext-core Configurable patterns.
 
-    Defines the contract for template engines supporting
-    HTML rendering with context variables and layouts.
+    Inherits configuration management (configure, get_config) from base
+    Configurable protocol while adding template-specific rendering capabilities.
     """
 
-    @abstractmethod
-    def configure(self, template_folder: str) -> None:
-        """Configure template engine with template directory.
-
-        Args:
-            template_folder: Path to template directory
-
-        """
-
-    @abstractmethod
     def render(self, template_name: str, **context: TemplateContext) -> str:
         """Render template with context variables.
 
@@ -226,8 +214,8 @@ class TemplateEngineInterface(ABC):
             Rendered HTML string.
 
         """
+        ...
 
-    @abstractmethod
     def add_filter(self, name: str, filter_func: TemplateFilter) -> None:
         """Add custom template filter.
 
@@ -236,8 +224,8 @@ class TemplateEngineInterface(ABC):
             filter_func: Filter function implementation
 
         """
+        ...
 
-    @abstractmethod
     def add_global(self, name: str, value: TemplateGlobal) -> None:
         """Add global template variable.
 
@@ -246,16 +234,17 @@ class TemplateEngineInterface(ABC):
             value: Variable value
 
         """
+        ...
 
 
-class MonitoringInterface(ABC):
-    """Abstract interface for monitoring and observability.
+@runtime_checkable
+class MonitoringInterface(FlextProtocols.Extensions.Observability, Protocol):
+    """Web monitoring protocol extending flext-core Observability patterns.
 
-    Defines the contract for monitoring systems providing
-    metrics collection, health checks, and observability features.
+    Inherits metrics recording and health checks from base Observability
+    protocol while adding web-specific monitoring capabilities.
     """
 
-    @abstractmethod
     def record_request(
         self, method: str, path: str, status_code: int, duration: float
     ) -> None:
@@ -267,9 +256,11 @@ class MonitoringInterface(ABC):
             status_code: Response status code
             duration: Request processing duration
 
-        """
+        Web-specific method beyond base observability contract.
 
-    @abstractmethod
+        """
+        ...
+
     def record_error(
         self,
         error_type: str,
@@ -283,22 +274,29 @@ class MonitoringInterface(ABC):
             error_message: Error description
             context: Optional error context
 
-        """
+        Web-specific error recording beyond base observability contract.
 
-    @abstractmethod
+        """
+        ...
+
     def get_health_status(self) -> dict[str, ResponseData]:
         """Get current service health status.
 
         Returns:
             Dictionary containing health metrics and status.
 
-        """
+        Web-specific health status format extending base health_check.
 
-    @abstractmethod
+        """
+        ...
+
     def get_metrics(self) -> dict[str, ResponseData]:
         """Get collected metrics data.
 
         Returns:
             Dictionary containing service metrics.
 
+        Web-specific metrics format beyond base observability contract.
+
         """
+        ...
