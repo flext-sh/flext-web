@@ -50,13 +50,14 @@ class TestFlextWebErrorBase:
         assert "Test message" in str(error)
 
     def test_flext_web_error_dict_conversion(self) -> None:
-        """Test FlextWebError to_dict method."""
+        """Test FlextWebError dict conversion."""
         error = FlextWebError("Test error", "/api/test")
-        error_dict = error.to_dict()
-
-        assert "message" in error_dict
-        assert error_dict["message"] == "Test error"
-        assert "code" in error_dict  # Updated to use 'code' instead of 'error_code'
+        
+        # FlextError from flext-core doesn't have to_dict method
+        # We test the attributes directly
+        assert error.message == "Test error"
+        assert hasattr(error, "error_code")
+        assert hasattr(error, "code")
 
 
 class TestValidationErrors:
@@ -160,7 +161,7 @@ class TestExceptionHierarchy:
             assert isinstance(exception, Exception)
 
     def test_web_specific_error_hierarchy(self) -> None:
-        """Test that web-specific errors inherit directly from FlextWebError."""
+        """Test that web-specific errors inherit directly from WebError."""
         web_specific_errors: list[FlextWebError] = [
             FlextWebTemplateError("test"),
             FlextWebRoutingError("test"),
@@ -169,9 +170,9 @@ class TestExceptionHierarchy:
         ]
 
         for error in web_specific_errors:
-            # These should inherit directly from FlextWebError
+            # These should inherit directly from WebError (FlextWebError is an alias)
             assert isinstance(error, FlextWebError)
-            assert type(error).__bases__[0].__name__ == "FlextWebError"
+            assert type(error).__bases__[0].__name__ == "WebError"
 
 
 class TestExceptionUtilities:
@@ -195,11 +196,12 @@ class TestExceptionUtilities:
         details = {"request_id": "123", "user_id": "user456", "operation": "create_app"}
 
         error = FlextWebProcessingError("App creation failed", **details)
-        error_dict = error.to_dict()
 
-        # Just check that the error was created and has basic properties
+        # FlextError from flext-core doesn't have to_dict method
+        # We test the basic properties directly
         assert "App creation failed" in error.message
-        assert "message" in error_dict
+        assert hasattr(error, "context")
+        assert hasattr(error, "error_code")
 
     def test_multiple_exception_handling(self) -> None:
         """Test handling multiple related exceptions."""

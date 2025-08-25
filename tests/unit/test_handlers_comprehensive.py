@@ -47,7 +47,7 @@ class TestWebHandlers:
 
     def test_handle_app_creation(self) -> None:
         """Test app creation handler."""
-        result = WebHandlers.handle_app_creation("test-app", 8080, "localhost")
+        result = WebHandlers.handle_create_app("test-app", 8080, "localhost")
         assert result.success is True
         assert result.data is not None
         assert result.data.name == "test-app"
@@ -64,7 +64,7 @@ class TestWebHandlers:
             port=8080,
             status=FlextWebAppStatus.STOPPED,
         )
-        result = WebHandlers.handle_app_start(app)
+        result = WebHandlers.handle_start_app(app)
         assert result.success is True
         assert result.data.status == FlextWebAppStatus.RUNNING
 
@@ -78,7 +78,7 @@ class TestWebHandlers:
             port=8080,
             status=FlextWebAppStatus.RUNNING,
         )
-        result = WebHandlers.handle_app_stop(app)
+        result = WebHandlers.handle_stop_app(app)
         assert result.success is True
         assert result.data.status == FlextWebAppStatus.STOPPED
 
@@ -255,7 +255,7 @@ class TestHandlerIntegration:
         health_result = WebHandlers.handle_health_check()
         assert health_result.success is True
 
-        app_result = WebHandlers.handle_app_creation("integration-test")
+        app_result = WebHandlers.handle_create_app("integration-test")
         assert app_result.success is True
 
     def test_response_handler_static_methods(self) -> None:
@@ -271,14 +271,14 @@ class TestHandlerIntegration:
     def test_handlers_work_with_domain_models(self) -> None:
         """Test handlers integrate properly with domain models."""
         # Create app via handler
-        create_result = WebHandlers.handle_app_creation("domain-test", 9000)
+        create_result = WebHandlers.handle_create_app("domain-test", 9000)
         assert create_result.success is True
 
         app = create_result.data
         assert isinstance(app, FlextWebApp)
 
         # Start app via handler
-        start_result = WebHandlers.handle_app_start(app)
+        start_result = WebHandlers.handle_start_app(app)
         assert start_result.success is True
         assert start_result.data.status == FlextWebAppStatus.RUNNING
 
@@ -290,7 +290,7 @@ class TestHandlerIntegration:
             name="error-test",
             status=FlextWebAppStatus.RUNNING,
         )
-        result = WebHandlers.handle_app_start(app)
+        result = WebHandlers.handle_start_app(app)
         assert result.success is False
         assert result.error
         assert "already running" in result.error
@@ -298,13 +298,13 @@ class TestHandlerIntegration:
     def test_handler_composition(self) -> None:
         """Test handlers can be composed together."""
         # Create, start, then stop an app
-        create_result = WebHandlers.handle_app_creation("compose-test")
+        create_result = WebHandlers.handle_create_app("compose-test")
         assert create_result.success is True
 
-        start_result = WebHandlers.handle_app_start(create_result.data)
+        start_result = WebHandlers.handle_start_app(create_result.data)
         assert start_result.success is True
 
-        stop_result = WebHandlers.handle_app_stop(start_result.data)
+        stop_result = WebHandlers.handle_stop_app(start_result.data)
         assert stop_result.success is True
         assert stop_result.data.status == FlextWebAppStatus.STOPPED
 

@@ -432,7 +432,9 @@ class FlextWebHandlers(FlextHandlers):
 
         """
         try:
-            app_data = {"name": name, "port": port, "host": host, **kwargs}
+            # Generate ID for the app
+            entity_id = FlextEntityId(f"app_{name}")
+            app_data = {"id": entity_id, "name": name, "port": port, "host": host, **kwargs}
             app = FlextWebApp(**app_data)  # type: ignore[arg-type]
             validation_result = app.validate_domain_rules()
 
