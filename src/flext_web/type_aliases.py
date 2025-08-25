@@ -1,148 +1,102 @@
-"""Type aliases and custom types for flext-web.
+"""Legacy type aliases facade - backward compatibility for flext-web.
 
-This module provides specific type aliases to reduce the use of typing.Any
-and improve type safety throughout the web module.
+This module provides backward compatibility for type aliases that have been
+consolidated into typings.py. Following the FLEXT architectural patterns for
+gradual migration without breaking existing imports.
+
+All aliases here are deprecated and redirect to typings.py.
+Modern code should import directly from typings module.
+
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from collections.abc import Callable, Generator
-from typing import TypedDict
+import warnings
+
+# Import consolidated types from typings (SINGLE SOURCE OF TRUTH)
+from flext_web.typings import FlextWebTypes
+
+# Module-level deprecated alias
+type TemplateGlobal = object
 
 
-# Field and validation types with proper Pydantic compatibility
-class FieldKwargs(TypedDict, total=False):
-    """Type-safe kwargs for Pydantic Field() function."""
-
-    alias: str | None
-    alias_priority: int | None
-    validation_alias: str | None
-    serialization_alias: str | None
-    title: str | None
-    description: str | None
-    examples: list[object] | None
-    exclude: bool | None
-    deprecated: str | None
-    json_schema_extra: dict[str, object] | None
-    frozen: bool | None
-    validate_default: bool | None
-    repr: bool | None
-    init: bool | None
-    init_var: bool | None
-    kw_only: bool | None
-    pattern: str | None
-    strict: bool | None
-    coerce_numbers_to_str: bool | None
-    gt: float | None
-    ge: float | None
-    lt: float | None
-    le: float | None
-    multiple_of: float | None
-    allow_inf_nan: bool | None
-    max_digits: int | None
-    decimal_places: int | None
-    min_length: int | None
-    max_length: int | None
-    default: object
-
-
-ValidatorFunc = Callable[[object], object]
-ValidatorGenerator = Generator[ValidatorFunc]
-
-# Request/response types
-RequestContext = dict[str, object]
-ResponseData = dict[str, object] | list[object] | str | int | float | bool | None
-TemplateContext = dict[str, object]
-
-
-# Application response data types - specific TypedDict for better typing
-class AppDataDict(TypedDict):
-    """Type-safe application data dictionary for API responses."""
-
-    id: str
-    name: str
-    port: int
-    host: str
-    is_running: bool
-    status: str
-
-
-class ResponseDataDict(TypedDict):
-    """Type-safe response data dictionary for API responses."""
-
-    success: bool
-    message: str
-    data: (
-        AppDataDict
-        | HealthDataDict
-        | list[AppDataDict]
-        | dict[str, object]
-        | list[object]
-        | str
-        | int
-        | float
-        | bool
-        | None
+def _deprecation_warning(old_import: str, new_import: str) -> None:
+    """Issue a deprecation warning for legacy type alias imports."""
+    warnings.warn(
+        f"Importing '{old_import}' from type_aliases is deprecated, use 'from flext_web.typings import {new_import}' instead",
+        DeprecationWarning,
+        stacklevel=3,
     )
 
 
-class ApiResponseDict(TypedDict):
-    """Type-safe API response dictionary."""
+# =============================================================================
+# DEPRECATED FACADE CLASS - Use FlextWebTypes from typings.py instead
+# =============================================================================
 
-    success: bool
-    message: str
-    data: AppDataDict | dict[str, list[AppDataDict]] | None
+class FlextWebTypeAliases:
+    """DEPRECATED: Legacy facade for FlextWebTypes.
+
+    Use FlextWebTypes from typings.py instead.
+    This class provides backward compatibility only.
+    """
+
+    def __init__(self) -> None:
+        _deprecation_warning("FlextWebTypeAliases", "FlextWebTypes")
+
+    # Redirect all class attributes to FlextWebTypes
+    ValidatorFunc = FlextWebTypes.ValidatorFunc
+    ValidatorGenerator = FlextWebTypes.ValidatorGenerator
+    RequestContext = FlextWebTypes.RequestContext
+    ResponseData = FlextWebTypes.ResponseData
+    TemplateContext = FlextWebTypes.TemplateContext
+    ConfigValue = FlextWebTypes.ConfigValue
+    ConfigDict = FlextWebTypes.ConfigDict
+    ErrorDetails = FlextWebTypes.ErrorDetails
+    SchemaDict = FlextWebTypes.SchemaDict
+    TemplateFilter = FlextWebTypes.TemplateFilter
+    HTTPStatus = FlextWebTypes.HTTPStatus
+
+    # TypedDict aliases - redirect to FlextWebTypes
+    FieldKwargs = FlextWebTypes.FieldKwargs
+    AppDataDict = FlextWebTypes.AppDataDict
+    ResponseDataDict = FlextWebTypes.ResponseDataDict
+    ApiResponseDict = FlextWebTypes.ApiResponseDict
+    AppListDataDict = FlextWebTypes.AppListDataDict
+    AppListResponseDict = FlextWebTypes.AppListResponseDict
+    HealthResponseDict = FlextWebTypes.HealthResponseDict
+    HealthDataDict = FlextWebTypes.HealthDataDict
+
+# =============================================================================
+# BACKWARD COMPATIBILITY ALIASES AT MODULE LEVEL
+# =============================================================================
+
+# Type aliases for backward compatibility
+ValidatorFunc = FlextWebTypes.ValidatorFunc
+ValidatorGenerator = FlextWebTypes.ValidatorGenerator
+RequestContext = FlextWebTypes.RequestContext
+ResponseData = FlextWebTypes.ResponseData
+TemplateContext = FlextWebTypes.TemplateContext
+ConfigValue = FlextWebTypes.ConfigValue
+ConfigDict = FlextWebTypes.ConfigDict
+ErrorDetails = FlextWebTypes.ErrorDetails
+SchemaDict = FlextWebTypes.SchemaDict
+TemplateFilter = FlextWebTypes.TemplateFilter
+HTTPStatus = FlextWebTypes.HTTPStatus
+
+# TypedDict aliases for backward compatibility
+FieldKwargs = FlextWebTypes.FieldKwargs
+AppDataDict = FlextWebTypes.AppDataDict
+ResponseDataDict = FlextWebTypes.ResponseDataDict
+ApiResponseDict = FlextWebTypes.ApiResponseDict
+AppListDataDict = FlextWebTypes.AppListDataDict
+AppListResponseDict = FlextWebTypes.AppListResponseDict
+HealthResponseDict = FlextWebTypes.HealthResponseDict
+HealthDataDict = FlextWebTypes.HealthDataDict
 
 
-class AppListDataDict(TypedDict):
-    """Type-safe app list data dictionary."""
-
-    apps: list[AppDataDict]
-
-
-class AppListResponseDict(TypedDict):
-    """Type-safe app list response dictionary."""
-
-    success: bool
-    message: str
-    data: AppListDataDict
-
-
-class HealthResponseDict(TypedDict):
-    """Type-safe health response dictionary."""
-
-    success: bool
-    message: str
-    data: HealthDataDict
-
-
-# Health check response type
-class HealthDataDict(TypedDict):
-    """Type-safe health check data dictionary."""
-
-    status: str
-    version: str
-    apps_count: int
-    config: str
-
-
-# Configuration types
-ConfigValue = str | int | float | bool | None
-ConfigDict = dict[str, ConfigValue]
-
-# Error handling types
-ErrorDetails = dict[str, object] | str | None
-
-# Pydantic schema types (keeping Any for Pydantic compatibility)
-SchemaDict = dict[str, object]  # Simplified for mypy compatibility
-
-# Filter and template types
-TemplateFilter = Callable[[object], str]
-TemplateGlobal = object
-
-# HTTP status codes
-HTTPStatus = int
-
+# Export all types for backward compatibility
 __all__ = [
     "ApiResponseDict",
     "AppDataDict",
@@ -152,6 +106,7 @@ __all__ = [
     "ConfigValue",
     "ErrorDetails",
     "FieldKwargs",
+    "FlextWebTypeAliases",
     "HTTPStatus",
     "HealthDataDict",
     "HealthResponseDict",

@@ -57,7 +57,7 @@ Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
 flext-web = "flext_web.__main__:main"
 
 [tool.ruff]
-extend = "../.config/tools/.ruff-shared.toml"
+extend = "../ruff-shared.toml"
 lint.isort.known-first-party = ["flext_web"]
 
 [tool.mypy]

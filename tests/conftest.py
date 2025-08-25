@@ -38,7 +38,7 @@ def setup_test_environment() -> Generator[None]:
     os.environ["FLEXT_LOG_LEVEL"] = "info"  # Reduce noise
     os.environ["FLEXT_WEB_DEBUG"] = "true"
     os.environ["FLEXT_WEB_HOST"] = "localhost"
-    os.environ["FLEXT_WEB_SECRET_KEY"] = "test-secret-key-32-characters-long!!"
+    os.environ["FLEXT_WEB_SECRET_KEY"] = "test-secret-key-32-characters-long!!"  # noqa: S105
 
     # Reset web settings to force reload
     reset_web_settings()
@@ -58,7 +58,7 @@ def real_config() -> FlextWebConfig:
         host="localhost",
         port=8081,  # Use different port to avoid conflicts
         debug=True,
-        secret_key="test-secret-key-32-characters-long!!",
+        secret_key="test-secret-key-32-characters-long!!",  # noqa: S106
     )
 
 
@@ -143,7 +143,7 @@ def invalid_app_data() -> dict[str, str | int]:
 def production_config() -> dict[str, str]:
     """Production-like configuration for testing."""
     return {
-        "FLEXT_WEB_HOST": "0.0.0.0",
+        "FLEXT_WEB_HOST": "0.0.0.0",  # noqa: S104
         "FLEXT_WEB_PORT": "8080",
         "FLEXT_WEB_DEBUG": "false",
         "FLEXT_WEB_SECRET_KEY": "production-secret-key-32-chars-long!!",

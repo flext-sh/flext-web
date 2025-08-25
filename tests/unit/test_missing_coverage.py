@@ -128,6 +128,7 @@ class TestMissingCoverage:
         self, real_missing_service: FlextWebService
     ) -> None:
         """Test error response creation paths using real HTTP."""
+        assert real_missing_service is not None
         base_url = "http://localhost:8096"
 
         # Test invalid JSON request
@@ -214,7 +215,9 @@ class TestMissingCoverage:
         self, real_missing_service: FlextWebService
     ) -> None:
         """Test dashboard rendering with various app states using real HTTP."""
-        base_url = "http://localhost:8096"
+        assert real_missing_service is not None
+        port = real_missing_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Create apps in different states
         requests.post(
@@ -254,7 +257,9 @@ class TestMissingCoverage:
         self, real_missing_service: FlextWebService
     ) -> None:
         """Test complete API workflow with edge cases using real HTTP."""
-        base_url = "http://localhost:8096"
+        assert real_missing_service is not None
+        port = real_missing_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Test creating app with edge case names
         test_cases = [

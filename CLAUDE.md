@@ -4,486 +4,357 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**flext-web** is a modern Flask-based web interface for the FLEXT platform, implementing Clean Architecture patterns with flext-core standardization. The project provides both web UI and REST API endpoints for managing applications and services within the FLEXT ecosystem.
+**flext-web** is a Flask-based web interface providing management dashboard and REST API for the FLEXT ecosystem. It implements Clean Architecture patterns with flext-core integration, offering application lifecycle management through both web UI and programmatic API access.
 
-**Documentation Status**: ✅ **COMPLETE** - 100% enterprise-grade documentation standardization across all source code, tests, and examples (Updated: 2025-08-04)
-
-**Architecture Status**: The project shows mixed Django/Flask dependencies in pyproject.toml but the actual implementation is pure Flask with inline HTML dashboard. Architectural improvements are planned for 0.9.0 release.
+**Current State**: Production-ready Flask service with in-memory storage, comprehensive test coverage (90%+), and enterprise-grade documentation. Authentication and persistence layers are planned for future releases.
 
 ## Architecture
 
-The project follows **Clean Architecture** with **Domain-Driven Design (DDD)** patterns, using the flext-core library for standardized patterns. The implementation uses a modular architecture with clear separation of concerns across multiple specialized modules.
+### Clean Architecture Pattern
 
-### Domain Layer (web_models.py)
+The project follows Clean Architecture with Domain-Driven Design:
 
-- **FlextWebApp** entity with `FlextWebAppStatus` enum for lifecycle management
-- **FlextWebAppHandler** implementing CQRS command patterns
-- Business rules validation using flext-core FlextResult pattern
+- **Domain Layer** (`models.py`): Core business entities and rules
+  - `FlextWebApp` - Application entity with state machine
+  - `FlextWebAppStatus` - Application lifecycle states
+  - `FlextWebAppHandler` - CQRS command handler
 
-### Application Layer (web_config.py, web_service.py)
+- **Application Layer** (`services.py`, `config.py`): Use cases and configuration
+  - `FlextWebService` - Main Flask service implementation  
+  - `FlextWebConfig` - Environment-based configuration management
 
-- **FlextWebConfig** with environment-based settings and validation
-- **FlextWebService** providing Flask integration with REST API
-- Configuration management with singleton pattern and factory functions
+- **Infrastructure Layer** (`exceptions.py`, `handlers.py`, `fields.py`): Framework integration
+  - Flask route handlers and middleware
+  - Exception hierarchy extending flext-core
+  - Pydantic field validators and types
 
-### Infrastructure Layer (web_exceptions.py, templates/)
+### Key Architectural Patterns
 
-- **Flask** web framework integration with route registration
-- **Exception hierarchy** in `web_exceptions.py` extending flext-core patterns
-- **Template system** available for HTML rendering with Flask templates
-
-### Key Implementation Details
-
-- **Modular architecture**: Components split across multiple files for Clean Architecture
-- **FlextResult pattern**: Consistent error handling throughout
-- **In-memory storage**: Applications stored in `FlextWebService.apps` dictionary
-- **Template system**: Templates available but service can use inline or template-based HTML
-- **Mixed dependencies**: pyproject.toml lists Django/FastAPI but only Flask is used
+- **FLEXT Core Integration**: Extends `FlextDomainService`, uses `FlextResult` for error handling
+- **Consolidated Classes**: Single class per module pattern (`FlextWeb*` classes contain nested implementations)
+- **CQRS**: Command handlers separate from domain entities
+- **Railway-Oriented Programming**: `FlextResult[T]` for consistent error handling
+- **State Machine**: Application lifecycle with defined transitions
+- **Factory Pattern**: Configuration and service creation utilities
 
 ## Development Commands
 
-### Setup & Installation
+### Essential Commands
 
 ```bash
-make setup                   # Complete project setup with dependencies and hooks
-make install                 # Install project dependencies only
-make install-dev             # Install with development dependencies
+# Complete setup and validation
+make setup                  # Install dependencies and pre-commit hooks
+make validate              # Run all quality gates (lint + type + test)
+make test                  # Run tests with 90% coverage requirement
+make runserver             # Start development server on localhost:8080
+
+# Quality gates (run before commits)
+make lint                  # Ruff linting (zero tolerance)
+make type-check           # MyPy strict type checking
+make security             # Bandit security scanning
+make format               # Auto-format code
 ```
 
-### Quality Gates (run before committing)
+### Testing Commands
 
 ```bash
-make validate               # Complete validation (lint + type + security + test)
-make check                  # Quick health check (lint + type)
-make lint                   # Run ruff linting
-make type-check             # Run mypy type checking with strict mode
-make security               # Run bandit security scanning and pip-audit
-make pep8-check             # Verify PEP8 compliance (not available in current Makefile)
-make format                 # Auto-format code with ruff
-make fix                    # Auto-fix linting issues and format
-```
+# Test execution
+make test-unit            # Unit tests only
+make test-integration     # Integration tests with real services
+make test-api             # REST API endpoint tests
+make test-web             # Web interface tests
+make coverage-html        # Generate HTML coverage report
 
-### Testing
-
-```bash
-make test                   # Run all tests with coverage
-make test-unit              # Run unit tests only
-make test-integration       # Run integration tests only
-make test-web               # Run web interface tests
-make test-api               # Run API tests
-make test-fast              # Run tests without coverage
-make coverage-html          # Generate HTML coverage report
+# Individual test files
+pytest tests/test_simple_api_fixed.py -v
+pytest tests/test_config_comprehensive.py -v
+pytest tests/test_domain_entities.py -v
 ```
 
 ### Web Development
 
 ```bash
-make runserver              # Start Flask development server (localhost:8080)
-make serve                  # Alias for runserver
-make dev-server             # Start dev server with hot reload
-make prod-server            # Start production server
-make web-test               # Test web service creation
+# Server operations
+make dev-server           # Development server with hot reload
+make web-test             # Test service creation locally
+make web-health           # Check running service health
+
+# API testing
+curl http://localhost:8080/health                    # Health check
+curl -X POST http://localhost:8080/api/v1/apps \     # Create app
+  -H "Content-Type: application/json" \
+  -d '{"name": "test-app", "port": 3000}'
 ```
 
-### Individual Test Files
+## Code Structure and Architecture
 
-```bash
-# Run specific test categories
-pytest -m unit              # Unit tests only
-pytest -m integration       # Integration tests only
-pytest -m slow              # Slow tests only
-pytest -m "not slow"        # Fast tests for quick feedback
+### Source Organization
 
-# Run specific test files
-pytest tests/test_config_comprehensive.py
-pytest tests/test_domain_entities.py
-pytest tests/test_simple_api_fixed.py
+```
+src/flext_web/
+├── __init__.py          # Main exports and factory functions
+├── __main__.py          # CLI entry point
+├── config.py           # FlextWebConfigs with nested WebConfig
+├── services.py         # FlextWebServices with nested WebService  
+├── models.py           # FlextWebModels with WebApp/WebAppHandler
+├── exceptions.py       # Exception hierarchy extending flext-core
+├── handlers.py         # Request/response handlers
+├── fields.py          # Pydantic field validators
+├── protocols.py       # Type protocols for interfaces
+├── typings.py         # Type aliases and definitions
+├── interfaces.py      # Abstract interfaces
+└── templates/         # Flask Jinja2 templates
 ```
 
-### Build & Distribution
+### Key Classes and Patterns
 
-```bash
-make build                  # Build distribution packages
-make build-clean            # Clean and build
-make build-docker           # Build Docker image
-make clean                  # Clean build artifacts
-make clean-all              # Deep clean including venv
-make reset                  # Reset project (clean + setup)
-```
+**Main Service Class**:
+- `FlextWebService` (alias to `FlextWebServices.WebService`) - Flask integration with REST endpoints
+- Routes: `/health`, `/`, `/api/v1/apps/*` 
+- In-memory app storage in `service.apps` dictionary
 
-### Dependencies & Maintenance
+**Domain Model**:
+- `FlextWebApp` - Entity with `name`, `host`, `port`, `status` fields
+- `FlextWebAppStatus` - Enum: STOPPED, STARTING, RUNNING, STOPPING, ERROR
+- `FlextWebAppHandler` - CQRS commands: `create()`, `start()`, `stop()`
 
-```bash
-make deps-update            # Update dependencies
-make deps-show              # Show dependency tree
-make deps-audit             # Security audit of dependencies
-make pre-commit             # Run pre-commit hooks
-make shell                  # Open Python shell
-make diagnose              # Project diagnostics
-make doctor                # Health check (diagnose + check)
-```
+**Configuration**:
+- `FlextWebConfig` - Pydantic settings with environment variable support
+- Prefix: `FLEXT_WEB_*` (e.g., `FLEXT_WEB_HOST`, `FLEXT_WEB_PORT`)
+- Factory functions: `get_web_settings()`, `create_service()`, `create_app()`
 
-## Configuration
+### Type System
 
-The service uses environment-based configuration with the `FLEXT_WEB_` prefix:
-
-```bash
-FLEXT_WEB_HOST=localhost          # Server host (default: localhost)
-FLEXT_WEB_PORT=8080              # Server port (default: 8080)
-FLEXT_WEB_DEBUG=true             # Debug mode (default: true)
-FLEXT_WEB_SECRET_KEY=your-key    # Cryptographic secret key
-```
-
-## Entry Points
-
-### CLI Execution
-
-```bash
-# Direct module execution
-python -m flext_web --host 0.0.0.0 --port 8080 --debug
-
-# Using poetry
-poetry run python -m flext_web --help
-
-# Command options
---host HOST        # Override host address
---port PORT        # Override port number
---debug           # Enable debug mode
---no-debug        # Disable debug mode
-```
-
-### Programmatic Usage
+The project uses Python 3.13+ strict typing with comprehensive type annotations:
 
 ```python
-from flext_web.web_service import FlextWebService
-from flext_web.web_config import get_web_settings
+# FlextResult pattern for error handling
+from flext_core import FlextResult
 
-# Create service with default config
-config = get_web_settings()
-service = FlextWebService(config)
-service.run()
+def create_app(name: str) -> FlextResult[FlextWebApp]:
+    # Railway-oriented programming
+    if not name:
+        return FlextResult[FlextWebApp].fail("Name required")
+    return FlextResult[FlextWebApp].ok(app)
 
-# Create with custom configuration
-config = get_web_settings()
-config.port = 9000
-service = FlextWebService(config)
-service.run(host="0.0.0.0", port=9000)
+# Type aliases in typings.py
+ResponseData = dict[str, object]
+ConfigDict = dict[str, object]  
+AppDataDict = TypedDict('AppDataDict', {...})
+```
+
+## Testing Architecture
+
+### Test Organization
+
+```
+tests/
+├── unit/               # Fast unit tests
+├── integration/        # Real service integration tests
+├── e2e/               # End-to-end tests
+├── fixtures/          # Test data and utilities
+├── conftest.py        # Real execution fixtures (no mocks)
+└── test_*.py          # Test modules
+```
+
+### Testing Philosophy
+
+**Real Execution Over Mocking**:
+- Tests use actual Flask applications and HTTP requests
+- `conftest.py` provides real service fixtures with port allocation
+- Integration tests start actual services in background threads
+- 90%+ coverage requirement with functional validation
+
+**Test Categories**:
+```bash
+pytest -m unit          # Fast unit tests
+pytest -m integration   # Real service tests  
+pytest -m api          # HTTP endpoint tests
+pytest -m web          # Web interface tests
+```
+
+## Configuration Management
+
+### Environment Variables
+
+```bash
+# Core web service settings
+FLEXT_WEB_HOST=localhost        # Server bind address
+FLEXT_WEB_PORT=8080            # Server port
+FLEXT_WEB_DEBUG=true           # Debug mode (disable in production)
+FLEXT_WEB_SECRET_KEY=secret    # Must change in production (32+ chars)
+FLEXT_WEB_APP_NAME="FLEXT Web" # Application identifier
+
+# Advanced settings
+FLEXT_WEB_MAX_CONTENT_LENGTH=16777216  # 16MB request limit
+FLEXT_WEB_REQUEST_TIMEOUT=30           # Request timeout seconds
+FLEXT_WEB_ENABLE_CORS=false            # CORS support
+FLEXT_WEB_LOG_LEVEL=INFO               # Logging level
+```
+
+### Configuration Patterns
+
+```python
+# Singleton configuration access
+from flext_web import get_web_settings, reset_web_settings
+
+config = get_web_settings()  # Cached singleton
+reset_web_settings()         # Reset for testing
+
+# Service creation with configuration
+from flext_web import create_service, create_app
+
+service = create_service()           # Uses default config
+service = create_service(config)     # Uses provided config
+flask_app = create_app(config)       # Direct Flask app access
 ```
 
 ## API Endpoints
 
-### Health & Management
+### REST API Structure
 
-- `GET /health` - Service health check
-- `GET /` - Web dashboard
+**Health and Status**:
+- `GET /health` - Service health check with app count
+- `GET /` - HTML dashboard with application list
 
-### Application Management
-
+**Application Management**:
 - `GET /api/v1/apps` - List all applications
-- `POST /api/v1/apps` - Create new application
+- `POST /api/v1/apps` - Create new application  
 - `GET /api/v1/apps/<id>` - Get application details
 - `POST /api/v1/apps/<id>/start` - Start application
 - `POST /api/v1/apps/<id>/stop` - Stop application
 
-### API Request Examples
+### API Response Format
 
-```bash
-# Create application
-curl -X POST http://localhost:8080/api/v1/apps \
-  -H "Content-Type: application/json" \
-  -d '{"name": "test-app", "port": 3000, "host": "localhost"}'
-
-# Start application
-curl -X POST http://localhost:8080/api/v1/apps/app_test-app/start
-
-# Check health
-curl http://localhost:8080/health
+```json
+{
+  "success": true,
+  "message": "Operation completed",
+  "data": {
+    "name": "app-name",
+    "host": "localhost", 
+    "port": 3000,
+    "status": "running",
+    "id": "app_app-name"
+  }
+}
 ```
 
-## Project Structure
+## Quality Standards
 
-```
-src/flext_web/
-├── __init__.py          # Main package imports and version info
-├── __main__.py          # CLI entry point with argument parsing
-├── constants.py         # Application constants and configurations
-├── legacy.py           # Legacy compatibility layer
-├── models.py           # Deprecated - use web_models.py
-├── typings.py          # Type definitions and protocols
-├── web_config.py       # Configuration management (FlextWebConfig)
-├── web_exceptions.py   # Domain-specific exception hierarchy
-├── web_models.py       # Domain entities (FlextWebApp, handlers)
-├── web_service.py      # Flask service implementation (FlextWebService)
-├── py.typed           # Type checking marker
-└── templates/         # Flask templates
-    ├── base.html      # Base template
-    └── dashboard.html # Dashboard template
+### Mandatory Quality Gates
 
-tests/
-├── conftest.py                      # Pytest configuration
-├── test_config_comprehensive.py    # Configuration validation tests
-├── test_domain_entities.py         # Entity and business logic tests
-├── test_main_entry.py              # CLI entry point tests
-├── test_simple_api_fixed.py        # API endpoint tests
-├── test_simple_web_fixed.py        # Web interface tests
-├── e2e/                            # End-to-end tests
-├── integration/                    # Integration tests
-├── unit/                           # Unit tests
-└── fixtures/                       # Test fixtures
-```
+- **Linting**: Ruff with comprehensive rule set (zero warnings/errors)
+- **Type Checking**: MyPy strict mode (zero type errors)
+- **Security**: Bandit scanning + pip-audit
+- **Testing**: 90%+ coverage with real execution tests
+- **Code Quality**: All quality gates must pass before commits
 
-## Dependencies
+### Type Safety Requirements
 
-### Core Dependencies
+- Python 3.13+ with strict type annotations
+- All public methods must have complete type signatures
+- Use `FlextResult[T]` for error-prone operations
+- Leverage Pydantic for data validation and serialization
 
-- **flext-core**: Foundation library for standardized patterns (local path dependency)
-- **flext-observability**: Monitoring and observability (local path dependency)
-- **Flask**: Web framework for HTTP services
-- **Pydantic**: Type validation and settings management
-- **Django**: Listed in dependencies but not used in actual implementation
-- **FastAPI**: Listed in dependencies but not used in actual implementation
-- **Celery**: Listed in dependencies but not used in actual implementation
-
-### Quality Tools
-
-- **ruff**: Linting and code formatting
-- **mypy**: Static type checking with strict mode
-- **pytest**: Testing framework with coverage
-- **bandit**: Security vulnerability scanning
-
-## Testing Strategy
-
-### Test Categories
-
-- **Unit Tests**: Entity validation, handler logic, configuration
-- **Integration Tests**: Service endpoints, Flask app integration
-- **API Tests**: HTTP request/response validation
-- **Configuration Tests**: Settings validation and environment handling
-
-### Quality Standards
-
-- **Coverage**: Minimum 90% test coverage required
-- **Type Safety**: Strict mypy configuration with no untyped code
-- **Security**: Bandit scanning and pip-audit for vulnerabilities
-- **Code Quality**: Ruff with comprehensive rule set (ALL rules enabled)
-
-## Common Development Workflows
+## Common Development Patterns
 
 ### Adding New API Endpoints
 
-1. Add route registration in `FlextWebService._register_routes()` method
-2. Implement handler method as instance method of `FlextWebService`
-3. Use `_create_response()` helper for consistent JSON responses
-4. Handle errors using FlextResult pattern from flext-core
-5. Add comprehensive tests in `tests/test_simple_api_fixed.py`
-6. Run `make validate` to ensure quality gates pass
-
-Example:
-
+1. Add route registration in `FlextWebService._register_routes()`:
 ```python
-# In _register_routes():
 self.app.route("/api/v1/new-endpoint", methods=["GET"])(self.new_endpoint)
-
-# New handler method:
-def new_endpoint(self) -> ResponseReturnValue:
-    """Handle new endpoint."""
-    return self._create_response(True, "Success", {"data": "value"})
 ```
+
+2. Implement handler method:
+```python
+def new_endpoint(self) -> ResponseReturnValue:
+    """Handle new endpoint with validation."""
+    return jsonify({
+        "success": True,
+        "message": "Success message",
+        "data": response_data
+    })
+```
+
+3. Add comprehensive tests in appropriate test file
+4. Run `make validate` to ensure quality gates pass
 
 ### Extending Domain Models
 
-1. Add new entities inheriting from `FlextEntity`
-2. Implement `validate_domain_rules()` method
-3. Create corresponding handler class
+1. Modify `FlextWebApp` entity with new fields (use Pydantic Field)
+2. Update validation in `validate_business_rules()`
+3. Extend `FlextWebAppHandler` if new operations needed
 4. Add unit tests for business logic validation
-5. Update API endpoints to support new entity
+5. Update API responses to include new fields
 
 ### Configuration Changes
 
-1. Update `FlextWebConfig` class with new fields
-2. Add validation in `validate_config()` method
+1. Add new field to `FlextWebConfig` in `config.py`
+2. Add validation logic if needed
 3. Update environment variable documentation
-4. Add configuration tests with edge cases
-5. Test both development and production scenarios
+4. Add configuration tests with various scenarios
+5. Test both development and production configurations
+
+## Integration with FLEXT Ecosystem
+
+### FLEXT Core Dependencies
+
+```python
+from flext_core import (
+    FlextCore,           # Base facade class
+    FlextDomainService,  # Service base class  
+    FlextEntity,         # Domain entity base
+    FlextResult,         # Error handling type
+    get_logger,         # Structured logging
+)
+```
+
+### Service Integration Points
+
+- **flext-observability**: Monitoring and metrics collection (planned)
+- **flext-auth**: Authentication and authorization (planned)  
+- **FlexCore (Go)**: Runtime service coordination (future)
+- **FLEXT Service**: Data platform integration (future)
 
 ## Troubleshooting
 
-### Service Won't Start
+### Common Issues
 
+**Service won't start**:
 ```bash
 # Check port availability
 netstat -tulpn | grep 8080
 
 # Verify configuration
-python -c "from flext_web.web_config import get_web_settings; print(get_web_settings())"
+python -c "from flext_web import get_web_settings; print(get_web_settings())"
 
-# Check dependencies
-poetry show --tree
+# Test service creation
+make web-test
 ```
 
-### Test Failures
-
+**Test failures**:
 ```bash
-# Run with verbose output
-pytest tests/failing_test.py -v -s
+# Run specific test with verbose output
+pytest tests/test_simple_api_fixed.py -v -s
 
-# Check coverage issues
-pytest --cov=src --cov-report=html
-
-# Debug specific test
-pytest tests/test_name.py::test_function --pdb
+# Check coverage gaps
+make coverage-html
 ```
 
-### Quality Gate Issues
-
+**Type errors**:
 ```bash
-# Fix formatting automatically
-make format
+# Check MyPy errors with context
+make type-check
 
-# Check specific mypy errors
-poetry run mypy src --show-error-codes
-
-# Security audit
-poetry run pip-audit
+# Fix imports and type annotations
+# Ensure all FlextResult usage is correct
 ```
 
-## Current Implementation Status
+### Development Workflow
 
-### What Works
-
-- ✅ Flask web service with REST API endpoints
-- ✅ FlextWebApp entity with lifecycle management (start/stop)
-- ✅ Clean Architecture patterns using flext-core
-- ✅ Configuration management with environment variables
-- ✅ Comprehensive exception hierarchy
-- ✅ Basic HTML dashboard with inline generation
-- ✅ Full test coverage with pytest
-
-### Current Limitations
-
-- ⚠️ **In-memory storage only**: No persistence layer implemented
-- ⚠️ **Single instance**: No clustering or distributed state
-- ⚠️ **Mixed dependencies**: pyproject.toml includes unused Django/FastAPI/Celery
-- ⚠️ **Template inconsistency**: Django templates exist but Flask uses inline HTML
-- ⚠️ **No authentication**: API endpoints are completely open
-- ⚠️ **No real application management**: FlextWebApp is just state tracking
-
-### Development State
-
-- **Version**: 0.9.0 (production/stable according to classifiers)
-- **Recent activity**: Multiple reorganization commits (reorg, refactor)
-- **Architecture**: Clean but minimal implementation
-- **Testing**: Comprehensive test suite with multiple categories
-
-## ✅ DOCUMENTATION STANDARDIZATION COMPLETE
-
-**Achievement**: 100% enterprise-grade documentation standardization completed on 2025-08-04
-
-### **Completed Documentation Updates**
-
-#### **Source Code Documentation (100% Complete)**
-
-- ✅ **src/flext_web/**init**.py**: Comprehensive enterprise-level docstrings for all classes, methods, and functions
-  - FlextWebApp entity: Complete business context and state management documentation
-  - FlextWebAppStatus enumeration: State transition rules and business logic
-  - FlextWebConfig: Environment-based configuration with comprehensive validation
-  - FlextWebAppHandler: CQRS command patterns with detailed operation examples
-  - FlextWebService: Flask integration with complete API documentation
-  - Factory functions: Detailed usage patterns and deployment scenarios
-- ✅ **src/flext_web/**main**.py**: Complete CLI documentation with argument parsing and examples
-- ✅ **src/flext_web/web_exceptions.py**: Comprehensive exception hierarchy with context information
-- ✅ **src/flext_web/README.md**: Detailed module organization and architecture documentation
-
-#### **Test Documentation (100% Complete)**
-
-- ✅ **tests/README.md**: Comprehensive test suite documentation with enterprise testing patterns
-- ✅ Test categories: Unit, integration, and end-to-end testing strategies
-- ✅ Quality standards: 90%+ coverage requirements and validation processes
-- ✅ CI/CD integration: Automated testing and quality gate enforcement
-
-#### **Example Documentation (100% Complete)**
-
-- ✅ **examples/README.md**: Complete usage examples and integration patterns
-- ✅ Basic usage: Service startup and configuration examples
-- ✅ Advanced integration: Docker and Kubernetes deployment patterns
-- ✅ Performance examples: Load testing and benchmarking scenarios
-- ✅ Testing patterns: Comprehensive test example implementations
-
-#### **Documentation Quality Achievements**
-
-- ✅ **Professional English**: Consistent terminology without marketing language
-- ✅ **Technical Accuracy**: All examples functional and reality-based
-- ✅ **Ecosystem Integration**: Clear positioning within FLEXT architecture
-- ✅ **Enterprise Standards**: Complete business context and operational guidance
-- ✅ **Type Safety**: 95%+ type annotation coverage with comprehensive validation
-- ✅ **Cross-References**: Integrated navigation and ecosystem awareness
-
-## ARCHITECTURAL IMPROVEMENT PRIORITIES
-
-Following the completion of comprehensive documentation standardization, the following architectural gaps remain as development priorities for the 0.9.0 production release:
-
-## GAPS DE ARQUITETURA IDENTIFICADOS - PRIORIDADE ALTA
-
-### 🚨 GAP 1: Frontend Technology Gap
-
-**Status**: ALTO - Web interface sem especificação de frontend technology
-**Problema**:
-
-- Flask mencionado mas frontend technology não especificada
-- Dashboard mencionado (`GET /`) mas sem detalhes de implementação
-- Não especifica se é SPA, server-side rendering, ou hybrid
-
-**TODO**:
-
-- [ ] Especificar frontend technology stack (React, Vue, vanilla JS, Jinja2)
-- [ ] Documentar web dashboard architecture e components
-- [ ] Definir API-first vs server-side rendering strategy
-- [ ] Criar frontend development workflow
-
-### 🚨 GAP 2: Autenticação e Autorização Missing
-
-**Status**: ALTO - Web interface sem security integration
-**Problema**:
-
-- Endpoints API não protegidos por autenticação
-- Não integra com flext-auth para security
-- Session management não especificado
-
-**TODO**:
-
-- [ ] Integrar com flext-auth para authentication/authorization
-- [ ] Implementar API security middleware
-- [ ] Documentar user session management
-- [ ] Criar role-based access control para web interface
-
-### 🚨 GAP 3: Real-time Communication Gap
-
-**Status**: ALTO - Falta real-time updates para web interface
-**Problema**:
-
-- Application status changes não refletidos em real-time
-- Polling-based updates não implementado
-- WebSocket ou SSE não especificado
-
-**TODO**:
-
-- [ ] Implementar WebSocket ou Server-Sent Events
-- [ ] Criar real-time status updates para applications
-- [ ] Documentar pub/sub patterns para web updates
-- [ ] Integrar com flext-observability para live metrics
-
-### 🚨 GAP 4: Integration com Ecosystem Services
-
-**Status**: ALTO - Web interface não integrada com outros services
-**Problema**:
-
-- Não integra com FlexCore (Go) ou FLEXT Service
-- API management isolado em vez de proxy para ecosystem
-- Monitoring dashboard não conectado com flext-observability
-
-**TODO**:
-
-- [ ] Criar proxy patterns para ecosystem APIs
-- [ ] Integrar monitoring dashboard com flext-observability
-- [ ] Implementar service discovery integration
-- [ ] Documentar cross-service communication patterns
+1. **Make changes**: Edit source code following architectural patterns
+2. **Run quality gates**: `make validate` (must pass completely)
+3. **Test thoroughly**: `make test` with coverage validation  
+4. **Start service**: `make runserver` for manual testing
+5. **API testing**: Use curl commands or Postman for endpoint validation

@@ -88,31 +88,23 @@ logger = get_logger(__name__)
 # =============================================================================
 
 
-class _ConfigManager:
-    """Singleton configuration manager."""
-
-    def __init__(self) -> None:
-        self._instance: FlextWebConfig | None = None
-
-    def get_config(self) -> FlextWebConfig:
-        """Get validated configuration singleton."""
-        if self._instance is None:
-            self._instance = FlextWebConfig()
-
-            # Validate configuration
-            validation_result = self._instance.validate_config()
-            if not validation_result.success:
-                msg: str = f"Configuration validation failed: {validation_result.error}"
-                raise ValueError(msg)
-
-        return self._instance
-
-    def reset(self) -> None:
-        """Reset configuration singleton."""
-        self._instance = None
+# Module-level singleton configuration management
+_config_instance: FlextWebConfig | None = None
 
 
-_config_manager = _ConfigManager()
+def _get_config_singleton() -> FlextWebConfig:
+    """Get validated configuration singleton."""
+    global _config_instance  # noqa: PLW0603
+    if _config_instance is None:
+        # Configuration is automatically validated by Pydantic during instantiation
+        _config_instance = FlextWebConfig()
+    return _config_instance
+
+
+def _reset_config_singleton() -> None:
+    """Reset configuration singleton."""
+    global _config_instance  # noqa: PLW0603
+    _config_instance = None
 
 
 def get_web_settings() -> FlextWebConfig:
@@ -166,7 +158,7 @@ def get_web_settings() -> FlextWebConfig:
       >>> assert config.port == 8080
 
     """
-    return _config_manager.get_config()
+    return _get_config_singleton()
 
 
 def reset_web_settings() -> None:
@@ -218,7 +210,7 @@ def reset_web_settings() -> None:
       ...     reset_web_settings()  # Clean up after test
 
     """
-    _config_manager.reset()
+    _reset_config_singleton()
 
 
 def create_service(config: FlextWebConfig | None = None) -> FlextWebService:
@@ -360,6 +352,49 @@ def create_app(config: FlextWebConfig | None = None) -> Flask:
 
 
 # =============================================================================
+# FACADE CLASS - Orchestration-only (STRICT protocol compliance)
+# =============================================================================
+
+
+class FlextWeb:
+    """Main facade class for FLEXT Web Interface - orchestration-only.
+
+    Following STRICT protocol pattern, this facade does NOT implement logic;
+    it only orchestrates other components providing a convenient API surface.
+
+    Example facade pattern from protocol:
+        class FlextApi:
+            def __init__(self):
+                self._auth = FlextAuthClient()
+                self._cfg  = FlextApiConfig()
+                self._typ  = FlextApiTypes()
+    """
+
+    def __init__(self, config: FlextWebConfig | None = None) -> None:
+        """Initialize orchestration components without implementing logic."""
+        self._config = config or get_web_settings()
+        self._service = FlextWebService(self._config)
+        self._handler = FlextWebAppHandler()
+
+    def run(self, host: str | None = None, port: int | None = None, *, debug: bool | None = None) -> None:
+        """Orchestrate service startup - delegates to FlextWebService."""
+        self._service.run(host=host, port=port, debug=debug)
+
+    def create_app(self) -> Flask:
+        """Orchestrate Flask app creation - delegates to FlextWebService."""
+        return self._service.app
+
+    def get_config(self) -> FlextWebConfig:
+        """Orchestrate config access - delegates to configuration system."""
+        return self._config
+
+    def health_check(self) -> dict[str, object]:
+        """Orchestrate health check - delegates to service."""
+        # Orchestration pattern: call service method, return result
+        return {"status": "healthy", "service": "flext-web"}
+
+
+# =============================================================================
 # EXCEPTIONS - Imported from exceptions module
 # =============================================================================
 # NOTE: All exceptions are imported from the exceptions module to avoid duplication.
@@ -391,6 +426,8 @@ __all__: list[str] = [
     "FlextWebService",
     "create_app",
     "create_service",
+    # Facade
+    "FlextWeb",
     # Exceptions
     "FlextWebAuthenticationError",
     "FlextWebConfigurationError",

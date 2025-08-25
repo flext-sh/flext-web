@@ -14,6 +14,7 @@ from collections.abc import Generator
 import pytest
 import requests
 from flext_core import FlextEntityId
+from tests.port_manager import TestPortManager
 
 from flext_web import (
     FlextWebApp,
@@ -24,7 +25,6 @@ from flext_web import (
     get_web_settings,
     reset_web_settings,
 )
-from tests.port_manager import TestPortManager
 
 
 @pytest.fixture
@@ -358,7 +358,6 @@ class TestRealServiceIntegration:
         self, real_comprehensive_service: FlextWebService
     ) -> None:
         """Test real service managing multiple applications using real HTTP."""
-        # Ensure clean state for this test
         real_comprehensive_service.apps.clear()
 
         port = real_comprehensive_service.config.port
@@ -410,6 +409,7 @@ class TestRealServiceIntegration:
         self, real_comprehensive_service: FlextWebService
     ) -> None:
         """Test real service error recovery scenarios using real HTTP."""
+        assert real_comprehensive_service is not None
         port = real_comprehensive_service.config.port
         base_url = f"http://localhost:{port}"
 

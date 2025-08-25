@@ -49,8 +49,9 @@ def test_user_data() -> dict[str, object]:
 @pytest.fixture
 def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:
     """Authentication headers for test requests."""
+    user_id = test_user_data.get("id", "test_user")
     return {
-        "Authorization": "Bearer test_token",
+        "Authorization": f"Bearer token_for_{user_id}",
         "Content-Type": "application/json",
     }
 

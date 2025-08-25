@@ -140,7 +140,7 @@ def main() -> None:
         logger.info(
             "🚀 Starting %s v%s on %s:%d",
             config.app_name,
-            config.version,
+            "0.9.0",  # Version hardcoded since config.version doesn't exist
             host,
             port,
         )

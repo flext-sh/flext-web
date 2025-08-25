@@ -30,10 +30,10 @@ from collections.abc import Generator
 
 import pytest
 import requests
+from tests.port_manager import TestPortManager
 
 from flext_web import FlextWebConfig, FlextWebService, create_app
 from flext_web.constants import FlextWebConstants
-from tests.port_manager import TestPortManager
 
 # Constants - Using refactored constants
 HTTP_OK = FlextWebConstants.HTTP.OK
@@ -97,7 +97,9 @@ class TestWebInterface:
 
     def test_dashboard_route(self, real_web_service: FlextWebService) -> None:
         """Test dashboard route using real HTTP requests."""
-        base_url = "http://localhost:8095"
+        assert real_web_service is not None
+        port = real_web_service.config.port
+        base_url = f"http://localhost:{port}"
 
         response = requests.get(f"{base_url}/", timeout=5)
 

@@ -30,10 +30,10 @@ from collections.abc import Generator
 
 import pytest
 import requests
+from tests.port_manager import TestPortManager
 
 from flext_web import FlextWebConfig, FlextWebService, create_service
 from flext_web.constants import FlextWebConstants
-from tests.port_manager import TestPortManager
 
 # Constants - Using refactored constants
 HTTP_OK = FlextWebConstants.HTTP.OK
@@ -98,6 +98,7 @@ class TestFlextWebService:
 
     def test_health_check(self, real_api_service: FlextWebService) -> None:
         """Test health check endpoint using real HTTP."""
+        assert real_api_service is not None
         base_url = "http://localhost:8094"
 
         response = requests.get(f"{base_url}/health", timeout=5)
@@ -115,6 +116,7 @@ class TestFlextWebService:
 
     def test_list_apps_empty(self, real_api_service: FlextWebService) -> None:
         """Test listing empty apps using real HTTP."""
+        assert real_api_service is not None
         base_url = "http://localhost:8094"
 
         response = requests.get(f"{base_url}/api/v1/apps", timeout=5)
@@ -132,6 +134,7 @@ class TestFlextWebService:
 
     def test_create_app(self, real_api_service: FlextWebService) -> None:
         """Test creating an app using real HTTP."""
+        assert real_api_service is not None
         base_url = "http://localhost:8094"
 
         response = requests.post(
@@ -159,6 +162,7 @@ class TestFlextWebService:
 
     def test_create_app_missing_name(self, real_api_service: FlextWebService) -> None:
         """Test creating app with missing name using real HTTP."""
+        assert real_api_service is not None
         base_url = "http://localhost:8094"
 
         response = requests.post(

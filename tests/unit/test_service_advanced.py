@@ -94,7 +94,9 @@ class TestFlextWebServiceAdvanced:
         self, real_running_service: FlextWebService
     ) -> None:
         """Test app creation with validation errors using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Test empty name with real HTTP request
         response = requests.post(
@@ -111,7 +113,9 @@ class TestFlextWebServiceAdvanced:
         self, real_running_service: FlextWebService
     ) -> None:
         """Test app creation with invalid port using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         response = requests.post(
             f"{base_url}/api/v1/apps",
@@ -126,7 +130,9 @@ class TestFlextWebServiceAdvanced:
         self, real_running_service: FlextWebService
     ) -> None:
         """Test app creation with missing optional fields uses defaults using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         response = requests.post(
             f"{base_url}/api/v1/apps",
@@ -142,7 +148,9 @@ class TestFlextWebServiceAdvanced:
 
     def test_start_nonexistent_app(self, real_running_service: FlextWebService) -> None:
         """Test starting non-existent application using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         response = requests.post(f"{base_url}/api/v1/apps/nonexistent/start", timeout=5)
         assert response.status_code == 404
@@ -152,7 +160,9 @@ class TestFlextWebServiceAdvanced:
 
     def test_stop_nonexistent_app(self, real_running_service: FlextWebService) -> None:
         """Test stopping non-existent application using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         response = requests.post(f"{base_url}/api/v1/apps/nonexistent/stop", timeout=5)
         assert response.status_code == 404
@@ -161,7 +171,9 @@ class TestFlextWebServiceAdvanced:
 
     def test_get_nonexistent_app(self, real_running_service: FlextWebService) -> None:
         """Test getting non-existent application using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         response = requests.get(f"{base_url}/api/v1/apps/nonexistent", timeout=5)
         assert response.status_code == 404
@@ -170,7 +182,9 @@ class TestFlextWebServiceAdvanced:
 
     def test_invalid_json_request(self, real_running_service: FlextWebService) -> None:
         """Test API with invalid JSON using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         response = requests.post(
             f"{base_url}/api/v1/apps",
@@ -184,7 +198,9 @@ class TestFlextWebServiceAdvanced:
         self, real_running_service: FlextWebService
     ) -> None:
         """Test service error handling with REAL validation failures using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Test with genuinely invalid data that will cause real validation errors
         response = requests.post(
@@ -206,7 +222,9 @@ class TestFlextWebServiceAdvanced:
         self, real_running_service: FlextWebService
     ) -> None:
         """Test service handling of real business logic errors using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Create first app successfully
         response = requests.post(
@@ -225,7 +243,9 @@ class TestFlextWebServiceAdvanced:
 
     def test_dashboard_with_apps(self, real_running_service: FlextWebService) -> None:
         """Test dashboard display with applications using real HTTP."""
-        base_url = "http://localhost:8093"
+        assert real_running_service is not None
+        port = real_running_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # Create test app
         requests.post(
@@ -496,7 +516,9 @@ class TestServiceIntegration:
         self, real_integration_service: FlextWebService
     ) -> None:
         """Test complete application workflow through real HTTP API."""
-        base_url = "http://localhost:8097"
+        assert real_integration_service is not None
+        port = real_integration_service.config.port
+        base_url = f"http://localhost:{port}"
 
         # 1. Create application
         response = requests.post(

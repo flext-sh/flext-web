@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 import pytest
 import requests
 from flext_core import FlextEntityId
+from tests.port_manager import TestPortManager
 
 from flext_web import (
     FlextWebConfig,
@@ -21,7 +22,6 @@ from flext_web import (
     reset_web_settings,
 )
 from flext_web.models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
-from tests.port_manager import TestPortManager
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -87,7 +87,9 @@ class TestRealServiceExecution:
         self, running_service_integration: FlextWebService
     ) -> None:
         """Test real health endpoint with actual HTTP request."""
-        response = requests.get("http://localhost:8092/health", timeout=5)
+        assert running_service_integration is not None
+        port = running_service_integration.config.port
+        response = requests.get(f"http://localhost:{port}/health", timeout=5)
 
         assert response.status_code == 200
         data = response.json()
@@ -100,7 +102,9 @@ class TestRealServiceExecution:
         self, running_service_integration: FlextWebService
     ) -> None:
         """Test complete application lifecycle with real HTTP requests."""
-        base_url = "http://localhost:8092"
+        assert running_service_integration is not None
+        port = running_service_integration.config.port
+        base_url = f"http://localhost:{port}"
 
         # 1. Create application
         create_data: dict[str, str | int] = {
@@ -156,7 +160,9 @@ class TestRealServiceExecution:
         self, running_service_integration: FlextWebService
     ) -> None:
         """Test real error handling with actual invalid requests."""
-        base_url = "http://localhost:8092"
+        assert running_service_integration is not None
+        port = running_service_integration.config.port
+        base_url = f"http://localhost:{port}"
 
         # Test creating app with invalid data
         invalid_data: dict[str, str | int] = {
@@ -193,7 +199,9 @@ class TestRealServiceExecution:
         self, running_service_integration: FlextWebService
     ) -> None:
         """Test real web dashboard rendering."""
-        response = requests.get("http://localhost:8092/", timeout=5)
+        assert running_service_integration is not None
+        port = running_service_integration.config.port
+        response = requests.get(f"http://localhost:{port}/", timeout=5)
 
         assert response.status_code == 200
         assert "text/html" in response.headers.get("content-type", "")

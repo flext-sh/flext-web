@@ -15,6 +15,7 @@ import pytest
 import requests
 from flext_core import FlextEntityId
 from pydantic import ValidationError
+from tests.port_manager import TestPortManager
 
 from flext_web import (
     FlextWebApp,
@@ -25,7 +26,6 @@ from flext_web import (
     get_web_settings,
     reset_web_settings,
 )
-from tests.port_manager import TestPortManager
 
 
 class TestRealEdgeCases:
@@ -239,6 +239,7 @@ class TestRealServiceEdgeCases:
     @pytest.mark.integration
     def test_real_api_edge_cases(self, real_edge_service: FlextWebService) -> None:
         """Test real API edge cases and error handling using real HTTP."""
+        assert real_edge_service is not None
         port = real_edge_service.config.port
         base_url = f"http://localhost:{port}"
 
@@ -278,6 +279,7 @@ class TestRealServiceEdgeCases:
         self, real_edge_service: FlextWebService
     ) -> None:
         """Test real application lifecycle edge cases using real HTTP."""
+        assert real_edge_service is not None
         port = real_edge_service.config.port
         base_url = f"http://localhost:{port}"
 
@@ -320,6 +322,7 @@ class TestRealServiceEdgeCases:
     @pytest.mark.integration
     def test_real_dashboard_with_apps(self, real_edge_service: FlextWebService) -> None:
         """Test real dashboard rendering with various app states using real HTTP."""
+        assert real_edge_service is not None
         port = real_edge_service.config.port
         base_url = f"http://localhost:{port}"
 
@@ -357,6 +360,7 @@ class TestRealServiceEdgeCases:
         self, real_edge_service: FlextWebService
     ) -> None:
         """Test real service error response formatting using real HTTP."""
+        assert real_edge_service is not None
         port = real_edge_service.config.port
         base_url = f"http://localhost:{port}"
 

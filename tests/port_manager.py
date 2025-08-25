@@ -13,9 +13,13 @@ from typing import ClassVar
 class TestPortManager:
     """Thread-safe port allocation manager for tests."""
 
+    # Port range constants
+    _PORT_START: ClassVar[int] = 9000
+    _PORT_END: ClassVar[int] = 9999
+
     _lock: ClassVar[threading.Lock] = threading.Lock()
     _allocated_ports: ClassVar[set[int]] = set()
-    _current_port: ClassVar[int] = 9000  # Start from safe range
+    _current_port: ClassVar[int] = _PORT_START
 
     @classmethod
     def allocate_port(cls) -> int:
@@ -35,8 +39,8 @@ class TestPortManager:
                 cls._current_port += 1
 
                 # Wrap around if we hit the limit
-                if cls._current_port > 9999:
-                    cls._current_port = 9000
+                if cls._current_port > cls._PORT_END:
+                    cls._current_port = cls._PORT_START
 
             port = cls._current_port
             cls._allocated_ports.add(port)
