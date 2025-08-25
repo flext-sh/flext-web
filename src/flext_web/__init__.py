@@ -31,7 +31,8 @@ from flext_web.interfaces import (
     TemplateEngineInterface,
     MonitoringInterface,
 )
-from flext_web.models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
+from flext_web.handlers import FlextWebAppHandler
+from flext_web.models import FlextWebApp, FlextWebAppStatus
 from flext_web.protocols import (
     WebServiceProtocol,
     AppManagerProtocol,
@@ -376,7 +377,13 @@ class FlextWeb:
         self._service = FlextWebService(self._config)
         self._handler = FlextWebAppHandler()
 
-    def run(self, host: str | None = None, port: int | None = None, *, debug: bool | None = None) -> None:
+    def run(
+        self,
+        host: str | None = None,
+        port: int | None = None,
+        *,
+        debug: bool | None = None,
+    ) -> None:
         """Orchestrate service startup - delegates to FlextWebService."""
         self._service.run(host=host, port=port, debug=debug)
 

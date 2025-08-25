@@ -35,9 +35,9 @@ from flext_web.exceptions import (
     FlextWebTemplateError,
     FlextWebValidationError,
 )
+from flext_web.handlers import FlextWebAppHandler
 from flext_web.models import (
     FlextWebApp,
-    FlextWebAppHandler,
     FlextWebAppStatus,
 )
 from flext_web.services import FlextWebService

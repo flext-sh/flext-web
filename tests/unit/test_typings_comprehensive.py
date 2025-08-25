@@ -165,7 +165,7 @@ class TestTypeDocumentation:
     def test_class_docstring(self) -> None:
         """Test FlextTypes has documentation."""
         assert FlextTypes.__doc__ is not None
-        assert "Web domain-specific" in FlextTypes.__doc__
+        assert "Consolidated web domain-specific" in FlextTypes.__doc__
 
     def test_type_safety(self) -> None:
         """Test type safety features."""
@@ -173,7 +173,7 @@ class TestTypeDocumentation:
         types_instance = FlextTypes()
 
         # Should maintain proper type identity
-        assert type(types_instance).__name__ == "FlextTypes"
+        assert type(types_instance).__name__ == "FlextWebTypes"
 
 
 if __name__ == "__main__":

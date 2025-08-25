@@ -122,22 +122,22 @@ def test_docker_concurrent_requests() -> bool:
     ]
 
     try:
-        proc = asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(
+        async def run_container() -> int:
+            proc = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-            ),
-        )
-        try:
-            asyncio.get_event_loop().run_until_complete(
-                asyncio.wait_for(proc.wait(), timeout=10),
             )
-        except TimeoutError:
-            with contextlib.suppress(ProcessLookupError):
-                proc.kill()
-            return False
-        if int(proc.returncode or 0) != 0:
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=10)
+                return proc.returncode
+            except TimeoutError:
+                with contextlib.suppress(ProcessLookupError):
+                    proc.kill()
+                return -1
+
+        returncode = asyncio.run(run_container())
+        if returncode != 0:
             return False
 
         # Wait for startup
@@ -164,13 +164,14 @@ def test_docker_concurrent_requests() -> bool:
 
     finally:
         # Cleanup
-        asyncio.get_event_loop().run_until_complete(
-            asyncio.create_subprocess_exec(
+        async def cleanup() -> None:
+            await asyncio.create_subprocess_exec(
                 DOCKER_PATH,
                 "stop",
                 "flext-concurrent-test",
-            ),
-        )
+            )
+
+        asyncio.run(cleanup())
 
 
 def test_docker_api_workflow() -> bool:

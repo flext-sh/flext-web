@@ -178,7 +178,7 @@ def test_container_service() -> bool | None:
             "host": "localhost",
         }
         response = requests.post(f"{base_url}/api/v1/apps", json=app_data, timeout=5)
-        assert response.status_code == 200
+        assert response.status_code == 201
         create_data = response.json()
         assert create_data["success"] is True
         app_id = create_data["data"]["id"]

@@ -236,7 +236,7 @@ class TestMissingCoverage:
         response = requests.get(f"{base_url}/", timeout=5)
         assert response.status_code == 200
         content = response.content
-        assert b"Total Apps" in content
+        assert b"Applications (" in content
 
     def test_service_create_factory_function(self) -> None:
         """Test service creation factory function."""

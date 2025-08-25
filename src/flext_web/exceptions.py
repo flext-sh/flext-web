@@ -101,7 +101,11 @@ class FlextWebExceptions(FlextExceptions):
             if template_name:
                 full_message += f" (template: {template_name})"
             route_value = kwargs.get("route")
-            super().__init__(full_message, route=route_value if isinstance(route_value, str) else None, **{k: v for k, v in kwargs.items() if k != "route"})
+            super().__init__(
+                full_message,
+                route=route_value if isinstance(route_value, str) else None,
+                **{k: v for k, v in kwargs.items() if k != "route"},
+            )
 
     class WebRoutingError(WebError):
         """Web service URL routing and endpoint resolution errors."""
@@ -120,7 +124,11 @@ class FlextWebExceptions(FlextExceptions):
             if method:
                 full_message += f" [{method}]"
             route_value = kwargs.get("route")
-            super().__init__(full_message, route=route_value if isinstance(route_value, str) else None, **{k: v for k, v in kwargs.items() if k != "route"})
+            super().__init__(
+                full_message,
+                route=route_value if isinstance(route_value, str) else None,
+                **{k: v for k, v in kwargs.items() if k != "route"},
+            )
 
     class WebSessionError(WebError):
         """Web service session management and state errors."""
@@ -136,7 +144,11 @@ class FlextWebExceptions(FlextExceptions):
             if session_id:
                 full_message += f" (session: {session_id})"
             route_value = kwargs.get("route")
-            super().__init__(full_message, route=route_value if isinstance(route_value, str) else None, **{k: v for k, v in kwargs.items() if k != "route"})
+            super().__init__(
+                full_message,
+                route=route_value if isinstance(route_value, str) else None,
+                **{k: v for k, v in kwargs.items() if k != "route"},
+            )
 
     class WebMiddlewareError(WebError):
         """Web service middleware processing and pipeline errors."""
@@ -152,7 +164,11 @@ class FlextWebExceptions(FlextExceptions):
             if middleware_name:
                 full_message += f" (middleware: {middleware_name})"
             route_value = kwargs.get("route")
-            super().__init__(full_message, route=route_value if isinstance(route_value, str) else None, **{k: v for k, v in kwargs.items() if k != "route"})
+            super().__init__(
+                full_message,
+                route=route_value if isinstance(route_value, str) else None,
+                **{k: v for k, v in kwargs.items() if k != "route"},
+            )
 
     # =========================================================================
     # FACTORY METHODS

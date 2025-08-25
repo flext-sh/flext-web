@@ -35,6 +35,7 @@ def _deprecation_warning(old_import: str, new_import: str) -> None:
 # DEPRECATED FACADE CLASS - Use FlextWebTypes from typings.py instead
 # =============================================================================
 
+
 class FlextWebTypeAliases:
     """DEPRECATED: Legacy facade for FlextWebTypes.
 
@@ -67,6 +68,7 @@ class FlextWebTypeAliases:
     AppListResponseDict = FlextWebTypes.AppListResponseDict
     HealthResponseDict = FlextWebTypes.HealthResponseDict
     HealthDataDict = FlextWebTypes.HealthDataDict
+
 
 # =============================================================================
 # BACKWARD COMPATIBILITY ALIASES AT MODULE LEVEL

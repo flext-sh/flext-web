@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
-from flext_core import FlextHandlers, FlextResult
+from flext_core import FlextEntityId, FlextHandlers, FlextResult
 
-from flext_web.models import FlextWebApp, FlextWebAppHandler
+from flext_web.models import FlextWebApp, FlextWebModels
 from flext_web.typings import FlextWebTypes
 
 # =============================================================================
@@ -33,6 +33,230 @@ class FlextWebHandlers(FlextHandlers):
     # =========================================================================
     # NESTED HANDLER CLASSES
     # =========================================================================
+
+    class WebAppHandler:
+        """CQRS command handler for web application lifecycle management.
+
+        Implements Command Query Responsibility Segregation (CQRS) patterns for
+        web application operations using flext-core handler patterns. Provides
+        validated, consistent handling of application lifecycle commands with
+        comprehensive error handling and business rule enforcement.
+
+        The handler acts as the application service layer, coordinating between
+        domain entities and infrastructure concerns while maintaining clean
+        separation of responsibilities.
+
+        Responsibilities:
+          - Command validation and processing
+          - Business rule enforcement
+          - Domain entity coordination
+          - Error handling and reporting
+          - Integration with persistence layers
+
+        Supported Operations:
+          - create: Create new web application with validation
+          - start: Start existing application with state validation
+          - stop: Stop running application with graceful shutdown
+
+        Integration:
+          - Uses FlextResult for consistent error handling
+          - Validates all operations through domain entity rules
+          - Compatible with repository patterns for persistence
+          - Supports monitoring and observability integration
+
+        Example:
+          Basic handler usage:
+
+          >>> handler = FlextWebHandlers.WebAppHandler()
+          >>> result = handler.create("web-service", 3000, "localhost")
+          >>> if result.success:
+          ...     app = result.value
+          ...     start_result = handler.start(app)
+          ...     if start_result.success:
+          ...         print(f"Started {start_result.value.name}")
+
+        """
+
+        def create(
+            self,
+            name: str,
+            port: int = 8000,
+            host: str = "localhost",
+        ) -> FlextResult[FlextWebModels.WebApp]:
+            """Create new web application with comprehensive validation.
+
+            Creates a new WebApp domain entity with the specified parameters,
+            performing full validation of input parameters and business rules.
+            The created application starts in STOPPED state and can be started
+            using the start() method.
+
+            Args:
+                name: Application name, must be non-empty string
+                port: Network port number (1-65535) for application services
+                host: Network host address for application binding
+
+            Returns:
+                FlextResult[WebApp]: Success contains newly created application
+                entity with generated ID and timestamp information, failure contains
+                detailed error message explaining validation failure.
+
+            Business Rules:
+                - Application name must be non-empty string
+                - Port must be within valid range (1-65535)
+                - Host must be non-empty string
+                - Application ID is automatically generated as "app_{name}"
+
+            Side Effects:
+                - Creates new domain entity with timestamp information
+                - Assigns unique identifier for application tracking
+                - Initializes application in STOPPED state
+
+            Example:
+                >>> handler = FlextWebHandlers.WebAppHandler()
+                >>> result = handler.create("web-api", 8080, "0.0.0.0")
+                >>> if result.success:
+                ...     app = result.value
+                ...     print(
+                ...         f"Created: {app.name} [{app.id}] at {app.host}:{app.port}"
+                ...     )
+                ... else:
+                ...     print(f"Creation failed: {result.error}")
+
+            """
+            try:
+                # Create domain entity with generated ID
+                entity_id = FlextEntityId(f"app_{name}")
+                app = FlextWebModels.WebApp(
+                    id=entity_id, name=name, port=port, host=host
+                )
+
+                # Validate domain rules before returning
+                validation = app.validate_business_rules()
+                if not validation.success:
+                    return FlextResult["FlextWebModels.WebApp"].fail(
+                        validation.error or "Domain validation failed"
+                    )
+
+                return FlextResult["FlextWebModels.WebApp"].ok(app)
+            except (RuntimeError, ValueError, TypeError) as e:
+                return FlextResult["FlextWebModels.WebApp"].fail(
+                    f"Application creation failed: {e}"
+                )
+
+        def start(
+            self, app: FlextWebModels.WebApp
+        ) -> FlextResult[FlextWebModels.WebApp]:
+            """Start web application with validation and state management.
+
+            Initiates the startup process for a web application, performing
+            validation checks and state transitions according to business rules.
+            The operation is atomic and maintains consistency of application state.
+
+            Args:
+                app: WebApp entity to start, must be in valid state for starting
+
+            Returns:
+                FlextResult[WebApp]: Success contains updated application entity
+                with RUNNING status, failure contains error message explaining why
+                the application cannot be started.
+
+            Pre-conditions:
+                - Application must be in STOPPED or ERROR state
+                - Application configuration must pass validation
+                - All domain rules must be satisfied
+
+            Post-conditions:
+                - Application status updated to RUNNING on success
+                - Domain events triggered for monitoring integration
+
+            Business Rules:
+                - Applications already RUNNING cannot be started again
+                - Applications in STARTING state cannot be started
+                - State transitions must follow defined state machine
+                - All validation rules must pass before state change
+
+            Example:
+                >>> handler = FlextWebHandlers.WebAppHandler()
+                >>> app = FlextWebModels.WebApp(
+                ...     name="service", status=FlextWebModels.WebAppStatus.STOPPED
+                ... )
+                >>> result = handler.start(app)
+                >>> if result.success:
+                ...     running_app = result.value
+                ...     print(
+                ...         f"Started: {running_app.name} is now {running_app.status.value}"
+                ...     )
+                ... else:
+                ...     print(f"Start failed: {result.error}")
+
+            """
+            # Validate domain rules before attempting state change
+            validation = app.validate_domain_rules()
+            if not validation.success:
+                return FlextResult["FlextWebModels.WebApp"].fail(
+                    validation.error or "Validation failed"
+                )
+
+            # Delegate to domain entity for state transition
+            return app.start()
+
+        def stop(
+            self, app: FlextWebModels.WebApp
+        ) -> FlextResult[FlextWebModels.WebApp]:
+            """Stop web application with graceful shutdown and validation.
+
+            Initiates the shutdown process for a running web application, performing
+            validation checks and state transitions according to business rules.
+            The operation ensures graceful shutdown with proper cleanup.
+
+            Args:
+                app: WebApp entity to stop, must be in valid state for stopping
+
+            Returns:
+                FlextResult[WebApp]: Success contains updated application entity
+                with STOPPED status, failure contains error message explaining why
+                the application cannot be stopped.
+
+            Pre-conditions:
+                - Application must be in RUNNING or ERROR state
+                - Application must exist and be valid
+                - All domain rules must be satisfied
+
+            Post-conditions:
+                - Application status updated to STOPPED on success
+                - Domain events triggered for monitoring integration
+                - Resources properly released and cleaned up
+
+            Business Rules:
+                - Applications already STOPPED cannot be stopped again
+                - Applications in STOPPING state cannot be stopped
+                - State transitions must follow defined state machine
+                - Graceful shutdown procedures must be followed
+
+            Example:
+                >>> handler = FlextWebHandlers.WebAppHandler()
+                >>> app = FlextWebModels.WebApp(
+                ...     name="service", status=FlextWebModels.WebAppStatus.RUNNING
+                ... )
+                >>> result = handler.stop(app)
+                >>> if result.success:
+                ...     stopped_app = result.value
+                ...     print(
+                ...         f"Stopped: {stopped_app.name} is now {stopped_app.status.value}"
+                ...     )
+                ... else:
+                ...     print(f"Stop failed: {result.error}")
+
+            """
+            # Validate domain rules before attempting state change
+            validation = app.validate_domain_rules()
+            if not validation.success:
+                return FlextResult["FlextWebModels.WebApp"].fail(
+                    validation.error or "Validation failed"
+                )
+
+            # Delegate to domain entity for state transition
+            return app.stop()
 
     class WebResponseHandler:
         """Specialized response handler for Flask integration and JSON formatting.
@@ -123,12 +347,14 @@ class FlextWebHandlers(FlextHandlers):
             """
             if result.success:
                 return self.create_success_response(
-                    data=result.value if isinstance(result.value, (dict, list)) else {"value": result.value},
-                    message=success_message
+                    data=result.value
+                    if isinstance(result.value, (dict, list))
+                    else {"value": result.value},
+                    message=success_message,
                 )
             return self.create_error_response(
                 message=f"{error_message}: {result.error}",
-                status_code=400  # Bad request for business logic errors
+                status_code=400,  # Bad request for business logic errors
             )
 
     # =========================================================================
@@ -286,7 +512,7 @@ class FlextWebHandlers(FlextHandlers):
             host=app.host,
             port=app.port,
             status=app.status_value,
-            id=str(app.id) if hasattr(app.id, "__str__") else app.id.value if hasattr(app.id, "value") else str(app.id),
+            id=str(app.id),
         )
 
     @classmethod
@@ -346,6 +572,20 @@ class FlextWebHandlers(FlextHandlers):
         error_message = f"{operation.title()} failed: {error}"
         return FlextResult[None].fail(error_message)
 
+    # =========================================================================
+    # HANDLER FACTORY METHODS
+    # =========================================================================
+
+    @classmethod
+    def create_app_handler(cls) -> WebAppHandler:
+        """Create web application handler instance.
+
+        Returns:
+            WebAppHandler for CQRS operations
+
+        """
+        return cls.WebAppHandler()
+
 
 # =============================================================================
 # BACKWARD COMPATIBILITY ALIASES
@@ -353,12 +593,16 @@ class FlextWebHandlers(FlextHandlers):
 
 # Legacy aliases for existing code compatibility
 WebHandlers = FlextWebHandlers
+WebAppHandler = FlextWebHandlers.WebAppHandler
 WebResponseHandler = FlextWebHandlers.WebResponseHandler
+FlextWebAppHandler = FlextWebHandlers.WebAppHandler
 
 
 __all__ = [
+    "FlextWebAppHandler",
     "FlextWebHandlers",
     # Legacy compatibility exports
+    "WebAppHandler",
     "WebHandlers",
     "WebResponseHandler",
 ]

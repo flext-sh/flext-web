@@ -123,5 +123,7 @@ class TestConfigIntegration:
     def test_config_validation_empty_name(self) -> None:
         """Test validation with empty app name."""
         # Empty app name should fail at construction time with Pydantic validation
-        with pytest.raises(ValidationError, match="App name is required"):
+        with pytest.raises(
+            ValidationError, match="String should have at least 1 character"
+        ):
             FlextWebConfig(app_name="")

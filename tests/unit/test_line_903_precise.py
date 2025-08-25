@@ -57,7 +57,7 @@ def test_line_903_stop_app_failure_precise(
         },
         timeout=5,
     )
-    assert create_response.status_code == 200
+    assert create_response.status_code == 201
     app_data = create_response.json()["data"]
     app_id = app_data["id"]
 

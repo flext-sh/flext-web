@@ -21,7 +21,8 @@ from flext_web import (
     get_web_settings,
     reset_web_settings,
 )
-from flext_web.models import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
+from flext_web.handlers import FlextWebAppHandler
+from flext_web.models import FlextWebApp, FlextWebAppStatus
 
 if TYPE_CHECKING:
     from collections.abc import Generator

@@ -13,14 +13,12 @@ from flask.typing import ResponseReturnValue
 from flext_core import FlextProtocols, FlextResult
 
 from flext_web.models import FlextWebApp
-from flext_web.type_aliases import (
+from flext_web.typings import (
+    FlextWebTypes,
     RequestContext,
     ResponseData,
-    TemplateContext,
     TemplateFilter,
-    TemplateGlobal,
 )
-from flext_web.typings import FlextWebTypes
 
 # =============================================================================
 # CONSOLIDATED PROTOCOLS CLASS
@@ -84,7 +82,9 @@ class FlextWebProtocols(FlextProtocols):
         including lifecycle operations and status tracking.
         """
 
-        def create_app(self, name: str, port: int, host: str) -> FlextResult[FlextWebApp]:
+        def create_app(
+            self, name: str, port: int, host: str
+        ) -> FlextResult[FlextWebApp]:
             """Create a new application.
 
             Args:
@@ -143,7 +143,10 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def format_success(
-            self, data: FlextWebTypes.ResponseData, message: str = "Success", status_code: int = 200
+            self,
+            data: FlextWebTypes.ResponseData,
+            message: str = "Success",
+            status_code: int = 200,
         ) -> ResponseReturnValue:
             """Format success response.
 
@@ -159,7 +162,10 @@ class FlextWebProtocols(FlextProtocols):
             ...
 
         def format_error(
-            self, message: str, status_code: int = 500, details: FlextWebTypes.ErrorDetails = None
+            self,
+            message: str,
+            status_code: int = 500,
+            details: FlextWebTypes.ErrorDetails = None,
         ) -> ResponseReturnValue:
             """Format error response.
 
@@ -246,9 +252,7 @@ class FlextWebProtocols(FlextProtocols):
             """
             ...
 
-        def render_dashboard(
-            self, apps: list[FlextWebApp], **context: object
-        ) -> str:
+        def render_dashboard(self, apps: list[FlextWebApp], **context: object) -> str:
             """Render dashboard template.
 
             Args:
@@ -273,9 +277,17 @@ class FlextWebProtocols(FlextProtocols):
             WebServiceProtocol for interface checking
 
         """
+
         # This is primarily for type checking and interface validation
         class _WebServiceProtocolImpl:
-            def run(self, host: str | None = None, port: int | None = None, *, debug: bool | None = None, **kwargs: object) -> None:
+            def run(
+                self,
+                host: str | None = None,
+                port: int | None = None,
+                *,
+                debug: bool | None = None,
+                **kwargs: object,
+            ) -> None:
                 pass
 
             def health(self) -> None:
@@ -291,6 +303,7 @@ class FlextWebProtocols(FlextProtocols):
             AppManagerProtocol for interface checking
 
         """
+
         class _AppManagerProtocolImpl:
             def create_app(self, name: str, port: int, host: str) -> None:
                 pass
@@ -366,7 +379,9 @@ class FlextWebProtocols(FlextProtocols):
             ...
 
     @runtime_checkable
-    class AppRepositoryInterface(FlextProtocols.Domain.Repository[FlextWebApp], Protocol):
+    class AppRepositoryInterface(
+        FlextProtocols.Domain.Repository[FlextWebApp], Protocol
+    ):
         """Application repository protocol extending flext-core Repository patterns."""
 
         def create(self, app: FlextWebApp) -> FlextResult[FlextWebApp]:
@@ -389,7 +404,9 @@ class FlextWebProtocols(FlextProtocols):
     class MiddlewareInterface(FlextProtocols.Extensions.Middleware, Protocol):
         """Web middleware protocol extending flext-core Middleware patterns."""
 
-        def before_request(self, request: RequestContext) -> FlextResult[RequestContext]:
+        def before_request(
+            self, request: RequestContext
+        ) -> FlextResult[RequestContext]:
             """Process request before routing to handlers."""
             ...
 
@@ -405,7 +422,7 @@ class FlextWebProtocols(FlextProtocols):
     class TemplateEngineInterface(FlextProtocols.Infrastructure.Configurable, Protocol):
         """Template engine protocol extending flext-core Configurable patterns."""
 
-        def render(self, template_name: str, **context: TemplateContext) -> str:
+        def render(self, template_name: str, **context: object) -> str:
             """Render template with context variables."""
             ...
 
@@ -413,7 +430,7 @@ class FlextWebProtocols(FlextProtocols):
             """Add custom template filter."""
             ...
 
-        def add_global(self, name: str, value: TemplateGlobal) -> None:
+        def add_global(self, name: str, value: object) -> None:
             """Add global template variable."""
             ...
 

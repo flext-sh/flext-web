@@ -233,12 +233,14 @@ class TestWebResponseHandler:
 
     def test_success_response_defaults(self) -> None:
         """Test success response default values."""
-        response = WebResponseHandler.create_success_response("Success message")
+        handler = WebResponseHandler()
+        response = handler.create_success_response(message="Success message")
 
         # Should default to status code 200
-        flask_response = cast("Response", response)
-        assert flask_response.status_code == 200
-        data = flask_response.get_json()
+        # Response is a tuple (response, status_code)
+        response_obj, status_code = response
+        assert status_code == 200
+        data = response_obj.get_json()
         assert data["success"] is True
         assert data["message"] == "Success message"
         assert data["data"] is None
@@ -260,10 +262,11 @@ class TestHandlerIntegration:
         """Test WebResponseHandler static methods work independently."""
         app = Flask(__name__)
         with app.app_context():
-            # Should be able to call without instantiation
-            response = WebResponseHandler.create_success_response("Test")
-            flask_response = cast("Response", response)
-            assert flask_response.status_code == 200
+            # Create handler instance
+            handler = WebResponseHandler()
+            response = handler.create_success_response("Test")
+            response_obj, status_code = response
+            assert status_code == 200
 
     def test_handlers_work_with_domain_models(self) -> None:
         """Test handlers integrate properly with domain models."""

@@ -110,4 +110,6 @@ class TestWebInterface:
         if b"FLEXT Web" not in content:
             msg: str = f"Expected {b'FLEXT Web'} in response content"
             raise AssertionError(msg)
-        assert b"Enterprise patterns" in content or b"Total Apps" in content
+        assert (
+            b"Applications (0)" in content or b"No applications registered" in content
+        )
