@@ -10,7 +10,7 @@ and containing all web-specific exceptions as nested classes with aliases.
 
 from __future__ import annotations
 
-from flext_core import FlextExceptions, FlextExceptions
+from flext_core import FlextExceptions
 
 # =============================================================================
 # CONSOLIDATED EXCEPTION CLASS
@@ -33,7 +33,7 @@ class FlextWebExceptions(FlextExceptions):
     # BASE EXCEPTION CLASSES
     # =========================================================================
 
-    class WebError(FlextExceptions.Error):
+    class WebError(FlextExceptions):
         """Base exception for all FLEXT Web Interface operations.
 
         Accepts arbitrary keyword details and stores them as context.

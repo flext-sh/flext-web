@@ -22,7 +22,7 @@ from flext_web.protocols import (
 )
 
 
-def _deprecation_warning(old_name: str, new_name: str) -> None:
+def deprecation_warning(old_name: str, new_name: str) -> None:
     """Issue a deprecation warning for legacy interface imports."""
     warnings.warn(
         f"Importing {old_name} from interfaces is deprecated, use 'from flext_web.protocols import {new_name}' instead",
@@ -43,7 +43,7 @@ def __getattr__(name: str) -> object:
     }
 
     if name in interface_map:
-        _deprecation_warning(name, name)
+        deprecation_warning(name, name)
         return interface_map[name]
 
     msg = f"module '{__name__}' has no attribute '{name}'"

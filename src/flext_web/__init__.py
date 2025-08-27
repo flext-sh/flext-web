@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 from flext_core import (
-    FlextExceptions.Error,
-    FlextExceptions.ValidationError,
+    FlextExceptions,
     get_logger,
 )
 
@@ -418,8 +417,8 @@ __all__: list[str] = [
     # Core Flask integration
     "Flask",
     # Flext-core exports
-    "FlextExceptions.Error",
-    "FlextExceptions.ValidationError",
+    "FlextExceptions",
+    "FlextExceptions",
     "get_logger",
     "logger",
     # Configuration

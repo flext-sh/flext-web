@@ -14,13 +14,14 @@ This example shows:
 from typing import cast
 
 import requests
+from flext_core import FlextConstants
 
 from flext_web.typings import FlextWebTypes
 
 # Constants for HTTP status codes
-HTTP_OK = 200
-DEFAULT_HOST = "localhost"  # Using localhost as default
-DEFAULT_PORT = 8080  # Using web interface port
+HTTP_OK = FlextConstants.Web.HTTP_OK
+DEFAULT_HOST = FlextConstants.Infrastructure.DEFAULT_HOST
+DEFAULT_PORT = FlextConstants.Web.DEFAULT_DEVELOPMENT_PORT  
 BASE_URL = f"http://{DEFAULT_HOST}:{DEFAULT_PORT}"
 
 
@@ -67,7 +68,7 @@ def create_application(
 
     try:
         response = requests.post(
-            f"{BASE_URL}/api/v1/apps", json=request_data, timeout=5
+            f"{BASE_URL}{FlextConstants.Endpoints.APPS_BASE}", json=request_data, timeout=5
         )
         if response.status_code == HTTP_OK:
             result = cast("FlextWebTypes.ApiResponseDict", response.json())
@@ -93,7 +94,7 @@ def start_application(app_id: str) -> FlextWebTypes.AppDataDict | None:
 
     """
     try:
-        response = requests.post(f"{BASE_URL}/api/v1/apps/{app_id}/start", timeout=5)
+        response = requests.post(f"{BASE_URL}{FlextConstants.Endpoints.APP_START.format(app_id=app_id)}", timeout=5)
         if response.status_code == HTTP_OK:
             result = cast("FlextWebTypes.ApiResponseDict", response.json())
             if result.get("success"):
@@ -118,7 +119,7 @@ def get_application_status(app_id: str) -> FlextWebTypes.AppDataDict | None:
 
     """
     try:
-        response = requests.get(f"{BASE_URL}/api/v1/apps/{app_id}", timeout=5)
+        response = requests.get(f"{BASE_URL}{FlextConstants.Endpoints.APP_DETAIL.format(app_id=app_id)}", timeout=5)
         if response.status_code == HTTP_OK:
             result = cast("FlextWebTypes.ApiResponseDict", response.json())
             if result.get("success"):
@@ -143,7 +144,7 @@ def stop_application(app_id: str) -> FlextWebTypes.AppDataDict | None:
 
     """
     try:
-        response = requests.post(f"{BASE_URL}/api/v1/apps/{app_id}/stop", timeout=5)
+        response = requests.post(f"{BASE_URL}{FlextConstants.Endpoints.APP_STOP.format(app_id=app_id)}", timeout=5)
         if response.status_code == HTTP_OK:
             result = cast("FlextWebTypes.ApiResponseDict", response.json())
             if result.get("success"):
@@ -165,7 +166,7 @@ def list_applications() -> list[FlextWebTypes.AppDataDict]:
 
     """
     try:
-        response = requests.get(f"{BASE_URL}/api/v1/apps", timeout=5)
+        response = requests.get(f"{BASE_URL}{FlextConstants.Endpoints.APPS_BASE}", timeout=5)
         if response.status_code == HTTP_OK:
             result = cast("FlextWebTypes.AppListResponseDict", response.json())
             if result.get("success"):

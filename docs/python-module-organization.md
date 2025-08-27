@@ -975,10 +975,10 @@ class WebAppPortConflictService(FlextDomainService):
 ### **Hierarchical Web Configuration**
 
 ```python
-from flext_core import FlextSettings
+from flext_core import FlextConfig
 from pydantic import Field, validator
 
-class ServerSettings(FlextSettings):
+class ServerSettings(FlextConfig):
     """Web server configuration"""
     host: str = "localhost"
     port: int = 8080
@@ -995,7 +995,7 @@ class ServerSettings(FlextSettings):
             raise ValueError('Port must be between 1 and 65535')
         return v
 
-class SecuritySettings(FlextSettings):
+class SecuritySettings(FlextConfig):
     """Web security configuration"""
     secret_key: str = Field(min_length=32, repr=False)
     jwt_expiry: int = 3600
@@ -1011,7 +1011,7 @@ class SecuritySettings(FlextSettings):
             raise ValueError('Secret key must be changed from default')
         return v
 
-class IntegrationSettings(FlextSettings):
+class IntegrationSettings(FlextConfig):
     """FLEXT ecosystem integration configuration"""
     flexcore_url: str = "http://localhost:8080"
     flext_service_url: str = "http://localhost:8081"
@@ -1021,7 +1021,7 @@ class IntegrationSettings(FlextSettings):
     class Config:
         env_prefix = "FLEXT_WEB_INTEGRATION_"
 
-class FlextWebConfig(FlextSettings):
+class FlextWebConfig(FlextConfig):
     """Complete web interface configuration"""
     app_name: str = "FLEXT Web Interface"
     version: str = "0.9.0"

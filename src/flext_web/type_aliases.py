@@ -22,7 +22,7 @@ from flext_web.typings import FlextWebTypes
 type TemplateGlobal = object
 
 
-def _deprecation_warning(old_import: str, new_import: str) -> None:
+def deprecation_warning(old_import: str, new_import: str) -> None:
     """Issue a deprecation warning for legacy type alias imports."""
     warnings.warn(
         f"Importing '{old_import}' from type_aliases is deprecated, use 'from flext_web.typings import {new_import}' instead",
@@ -44,7 +44,7 @@ class FlextWebTypeAliases:
     """
 
     def __init__(self) -> None:
-        _deprecation_warning("FlextWebTypeAliases", "FlextWebTypes")
+        deprecation_warning("FlextWebTypeAliases", "FlextWebTypes")
 
     # Redirect all class attributes to FlextWebTypes
     ValidatorFunc = FlextWebTypes.ValidatorFunc

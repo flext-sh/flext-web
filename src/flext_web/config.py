@@ -13,11 +13,12 @@ from flext_core import FlextConfig, FlextResult
 from pydantic import Field, field_validator
 from pydantic_settings import SettingsConfigDict
 
+from flext_web.constants import FlextWebConstants
+
 # =============================================================================
 # CONSTANTS
 # =============================================================================
 
-MIN_SECRET_KEY_LENGTH = 32
 DEFAULT_DEV_SECRET_KEY = "dev-secret-key-change-in-production"  # noqa: S105  # nosec B105
 TEST_SECRET_KEY = "test-secret-key-for-testing-only"  # noqa: S105  # nosec B105
 ALL_INTERFACES_HOST = "0.0.0.0"  # noqa: S104  # nosec B104
@@ -183,7 +184,7 @@ class FlextWebConfigs(FlextConfig):
         @classmethod
         def validate_secret_key(cls, v: str) -> str:
             """Validate secret key strength."""
-            if len(v) < MIN_SECRET_KEY_LENGTH:
+            if len(v) < FlextWebConstants.Validation.MIN_SECRET_KEY_LENGTH:
                 msg = "Secret key must be at least 32 characters long"
                 raise ValueError(msg)
 
@@ -244,7 +245,10 @@ class FlextWebConfigs(FlextConfig):
                 FlextResult indicating security validation success or failure.
 
             """
-            if len(self.secret_key) < MIN_SECRET_KEY_LENGTH:
+            if (
+                len(self.secret_key)
+                < FlextWebConstants.Validation.MIN_SECRET_KEY_LENGTH
+            ):
                 return FlextResult[None].fail(
                     "Secret key must be at least 32 characters for security"
                 )
