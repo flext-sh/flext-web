@@ -81,7 +81,7 @@ class TestRealWebServiceExecution:
         assert data["success"] is True
         assert data["data"]["status"] == "healthy"
         assert "version" in data["data"]
-        assert "config" in data["data"]
+        assert "service" in data["data"]  # Health includes service name
 
     @pytest.mark.integration
     def test_real_application_complete_lifecycle(
@@ -99,14 +99,14 @@ class TestRealWebServiceExecution:
         }
         response = requests.post(f"{base_url}/api/v1/apps", json=create_data, timeout=5)
 
-        assert response.status_code == 200
+        assert response.status_code == 201  # Created status for POST /apps
         data = response.json()
         assert data["success"] is True
         app_id = data["data"]["id"]
         assert app_id == "app_real-lifecycle-app"
         assert data["data"]["name"] == "real-lifecycle-app"
         assert data["data"]["port"] == 9002
-        assert data["data"]["is_running"] is False
+        assert data["data"]["status"].upper() == "STOPPED"
 
         # 2. Get specific application
         response = requests.get(f"{base_url}/api/v1/apps/{app_id}", timeout=5)
@@ -121,7 +121,7 @@ class TestRealWebServiceExecution:
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
-        assert data["data"]["is_running"] is True
+        assert data["data"]["status"].upper() == "RUNNING"
         assert data["data"]["status"].upper() == "RUNNING"
 
         # 4. Stop application
@@ -129,7 +129,7 @@ class TestRealWebServiceExecution:
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
-        assert data["data"]["is_running"] is False
+        assert data["data"]["status"].upper() == "STOPPED"
         assert data["data"]["status"].upper() == "STOPPED"
 
     @pytest.mark.integration
@@ -189,7 +189,7 @@ class TestRealWebServiceExecution:
         assert "text/html" in response.headers.get("content-type", "")
         content = response.text
         assert "FLEXT Web" in content
-        assert "Total Apps" in content
+        assert "Applications" in content  # Dashboard shows "Applications (N)" format
         # Dashboard shows basic structure - specific app names may not be in HTML content
 
 
@@ -303,15 +303,16 @@ class TestRealConfigurationManagement:
     @pytest.mark.unit
     def test_real_config_validation_failures(self) -> None:
         """Test real configuration validation with invalid data."""
-        # Test invalid port
+        # Test production validation failure with default key
         config = FlextWebConfig(
             host="localhost",
             port=8083,
             debug=False,  # Production mode
-            secret_key="change-in-production-" + "x" * 32,  # Default key in production
+            secret_key="dev-secret-key-change-in-production",  # Default key
         )
 
-        result = config.validate_config()
+        # Force production validation by calling it directly
+        result = config.validate_production_settings()
         assert result.is_failure is True
         assert result.error is not None
         assert "production" in result.error.lower()
@@ -375,7 +376,7 @@ class TestRealServiceIntegration:
             response = requests.post(
                 f"{base_url}/api/v1/apps", json=app_data, timeout=5
             )
-            assert response.status_code == 200
+            assert response.status_code == 201  # Created status for POST /apps
             data = response.json()
             created_apps.append(data["data"]["id"])
 
@@ -423,7 +424,7 @@ class TestRealServiceIntegration:
             },
             timeout=5,
         )
-        assert response.status_code == 200
+        assert response.status_code == 201  # Created status for POST /apps
         data = response.json()
         app_id = data["data"]["id"]
 

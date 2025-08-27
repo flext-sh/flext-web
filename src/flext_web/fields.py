@@ -8,14 +8,13 @@ and containing all web-specific field functionality as nested classes and method
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, ClassVar, Unpack, cast
+from typing import TYPE_CHECKING, ClassVar, cast
 
 from flext_core import FlextFields
 from pydantic import Field
 from pydantic.fields import FieldInfo
 
 from flext_web.constants import FlextWebConstants
-from flext_web.typings import FlextWebTypes
 
 if TYPE_CHECKING:
     # For type checking, we can be more specific about return types
@@ -172,7 +171,7 @@ class FlextWebFields(FlextFields):
         return cast("FieldReturn", Field(**field_kwargs))  # type: ignore[call-overload]
 
     @classmethod
-    def url_field(cls, **kwargs: Unpack[FlextWebTypes.FieldKwargs]) -> FieldReturn:
+    def url_field(cls, **kwargs: object) -> FieldReturn:
         """Create URL field with validation.
 
         Args:
@@ -189,7 +188,7 @@ class FlextWebFields(FlextFields):
         return cast("FieldReturn", Field(**field_kwargs))  # type: ignore[call-overload]
 
     @classmethod
-    def app_name_field(cls, **kwargs: Unpack[FlextWebTypes.FieldKwargs]) -> FieldReturn:
+    def app_name_field(cls, **kwargs: object) -> FieldReturn:
         """Create application name field with validation.
 
         Args:
@@ -212,7 +211,7 @@ class FlextWebFields(FlextFields):
 
     @classmethod
     def secret_key_field(
-        cls, **kwargs: Unpack[FlextWebTypes.FieldKwargs]
+        cls, **kwargs: object
     ) -> FieldReturn:
         """Create secret key field with validation.
 
@@ -235,7 +234,6 @@ class FlextWebFields(FlextFields):
         field_kwargs.setdefault("repr", False)
 
         return cast("FieldReturn", Field(**field_kwargs))  # type: ignore[call-overload]
-
     # =========================================================================
     # HTTP STATUS FIELD FACTORIES
     # =========================================================================
@@ -260,35 +258,35 @@ class FlextWebFields(FlextFields):
 
     @classmethod
     def ok_status_field(
-        cls, **kwargs: Unpack[FlextWebTypes.FieldKwargs]
+        cls, **kwargs: object
     ) -> FieldReturn:
         """Create HTTP 200 OK status field."""
         return cls.HTTPStatusField.ok(**kwargs).create_field()
 
     @classmethod
     def created_status_field(
-        cls, **kwargs: Unpack[FlextWebTypes.FieldKwargs]
+        cls, **kwargs: object
     ) -> FieldReturn:
         """Create HTTP 201 Created status field."""
         return cls.HTTPStatusField.created(**kwargs).create_field()
 
     @classmethod
     def bad_request_status_field(
-        cls, **kwargs: Unpack[FlextWebTypes.FieldKwargs]
+        cls, **kwargs: object
     ) -> FieldReturn:
         """Create HTTP 400 Bad Request status field."""
         return cls.HTTPStatusField.bad_request(**kwargs).create_field()
 
     @classmethod
     def not_found_status_field(
-        cls, **kwargs: Unpack[FlextWebTypes.FieldKwargs]
+        cls, **kwargs: object
     ) -> FieldReturn:
         """Create HTTP 404 Not Found status field."""
         return cls.HTTPStatusField.not_found(**kwargs).create_field()
 
     @classmethod
     def server_error_status_field(
-        cls, **kwargs: Unpack[FlextWebTypes.FieldKwargs]
+        cls, **kwargs: object
     ) -> FieldReturn:
         """Create HTTP 500 Internal Server Error status field."""
         return cls.HTTPStatusField.server_error(**kwargs).create_field()

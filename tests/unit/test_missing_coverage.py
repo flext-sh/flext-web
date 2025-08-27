@@ -172,7 +172,7 @@ class TestMissingCoverage:
 
         result = app.start()
         assert result.is_failure
-        assert "already running" in result.error.lower()
+        assert "already running" in (result.error or "").lower()
 
     def test_app_stop_already_stopped(self) -> None:
         """Test stopping an app that's already stopped."""
@@ -186,7 +186,7 @@ class TestMissingCoverage:
 
         result = app.stop()
         assert result.is_failure
-        assert "already stopped" in result.error.lower()
+        assert "already stopped" in (result.error or "").lower()
 
     def test_service_run_method_error_paths(self) -> None:
         """Test service run method error handling."""

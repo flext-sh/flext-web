@@ -13,6 +13,7 @@ from flext_core import FlextEntityId, FlextHandlers, FlextResult
 
 from flext_web.models import FlextWebApp, FlextWebModels
 from flext_web.typings import FlextWebTypes
+from flext_web.utilities import FlextWebUtilities
 
 # =============================================================================
 # CONSOLIDATED HANDLERS CLASS
@@ -124,8 +125,27 @@ class FlextWebHandlers(FlextHandlers):
 
             """
             try:
-                # Create domain entity with generated ID
-                entity_id = FlextEntityId(f"app_{name}")
+                # Validate inputs using FlextWebUtilities
+                if not FlextWebUtilities.WebValidators.validate_app_name(name):
+                    return FlextResult["FlextWebModels.WebApp"].fail(
+                        f"Invalid application name: '{name}'"
+                    )
+
+                if not FlextWebUtilities.WebValidators.validate_port_range(port):
+                    return FlextResult["FlextWebModels.WebApp"].fail(
+                        f"Invalid port: {port}. Must be between 1-65535"
+                    )
+
+                if not FlextWebUtilities.WebValidators.validate_host_format(host):
+                    return FlextResult["FlextWebModels.WebApp"].fail(
+                        f"Invalid host format: '{host}'"
+                    )
+
+                # Generate app ID using FlextWebUtilities
+                app_id = FlextWebUtilities.WebFormatters.format_app_id(name)
+                entity_id = FlextEntityId(app_id)
+
+                # Create domain entity
                 app = FlextWebModels.WebApp(
                     id=entity_id, name=name, port=port, host=host
                 )

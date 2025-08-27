@@ -37,6 +37,7 @@ from flext_web.constants import FlextWebConstants
 
 # Constants - Using refactored constants
 HTTP_OK = FlextWebConstants.HTTP.OK
+HTTP_CREATED = FlextWebConstants.HTTP.CREATED
 EXPECTED_TOTAL_PAGES = 8
 
 
@@ -99,7 +100,7 @@ class TestFlextWebService:
     def test_health_check(self, real_api_service: FlextWebService) -> None:
         """Test health check endpoint using real HTTP."""
         assert real_api_service is not None
-        base_url = "http://localhost:8094"
+        base_url = f"http://localhost:{real_api_service.config.port}"
 
         response = requests.get(f"{base_url}/health", timeout=5)
 
@@ -108,16 +109,16 @@ class TestFlextWebService:
             raise AssertionError(msg)
         data = response.json()
         if not (data["success"]):
-            msg: str = f"Expected True, got {data['success']}"
-            raise AssertionError(msg)
+            success_msg: str = f"Expected True, got {data['success']}"
+            raise AssertionError(success_msg)
         if "healthy" not in data["message"]:
-            msg: str = f"Expected {'healthy'} in {data['message']}"
-            raise AssertionError(msg)
+            health_msg: str = f"Expected {'healthy'} in {data['message']}"
+            raise AssertionError(health_msg)
 
     def test_list_apps_empty(self, real_api_service: FlextWebService) -> None:
         """Test listing empty apps using real HTTP."""
         assert real_api_service is not None
-        base_url = "http://localhost:8094"
+        base_url = f"http://localhost:{real_api_service.config.port}"
 
         response = requests.get(f"{base_url}/api/v1/apps", timeout=5)
 
@@ -126,16 +127,16 @@ class TestFlextWebService:
             raise AssertionError(msg)
         data = response.json()
         if not (data["success"]):
-            msg: str = f"Expected True, got {data['success']}"
-            raise AssertionError(msg)
+            success_msg: str = f"Expected True, got {data['success']}"
+            raise AssertionError(success_msg)
         if data["data"]["apps"] != []:
-            msg: str = f"Expected {[]}, got {data['data']['apps']}"
-            raise AssertionError(msg)
+            apps_msg: str = f"Expected {[]}, got {data['data']['apps']}"
+            raise AssertionError(apps_msg)
 
     def test_create_app(self, real_api_service: FlextWebService) -> None:
         """Test creating an app using real HTTP."""
         assert real_api_service is not None
-        base_url = "http://localhost:8094"
+        base_url = f"http://localhost:{real_api_service.config.port}"
 
         response = requests.post(
             f"{base_url}/api/v1/apps",
@@ -146,24 +147,24 @@ class TestFlextWebService:
             timeout=5,
         )
 
-        if response.status_code != HTTP_OK:
-            msg: str = f"Expected {200}, got {response.status_code}"
+        if response.status_code != HTTP_CREATED:
+            msg: str = f"Expected {HTTP_CREATED}, got {response.status_code}"
             raise AssertionError(msg)
         data = response.json()
         if not (data["success"]):
-            msg: str = f"Expected True, got {data['success']}"
-            raise AssertionError(msg)
+            success_msg: str = f"Expected True, got {data['success']}"
+            raise AssertionError(success_msg)
         if data["data"]["name"] != "TestApp":
-            msg: str = f"Expected {'TestApp'}, got {data['data']['name']}"
+            name_msg: str = f"Expected {'TestApp'}, got {data['data']['name']}"
             raise AssertionError(
-                msg,
+                name_msg,
             )
         assert data["data"]["port"] == 8080
 
     def test_create_app_missing_name(self, real_api_service: FlextWebService) -> None:
         """Test creating app with missing name using real HTTP."""
         assert real_api_service is not None
-        base_url = "http://localhost:8094"
+        base_url = f"http://localhost:{real_api_service.config.port}"
 
         response = requests.post(
             f"{base_url}/api/v1/apps",
@@ -178,6 +179,6 @@ class TestFlextWebService:
             raise AssertionError(msg)
         data = response.json()
         if data["success"]:
-            msg: str = f"Expected False, got {data['success']}"
-            raise AssertionError(msg)
-        assert "App name is required" in data["message"]
+            failure_msg: str = f"Expected False, got {data['success']}"
+            raise AssertionError(failure_msg)
+        assert "Application name is required" in data["message"]

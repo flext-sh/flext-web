@@ -7,14 +7,14 @@ import contextlib
 import shutil
 import sys
 import time
-from typing import Any
+from collections.abc import Callable
 
 import requests
 
 DOCKER_PATH = shutil.which("docker")
 
 
-def test_docker_memory_stress() -> bool | None:
+def test_docker_memory_stress() -> bool:
     """Test Docker container under memory pressure."""
     # Build if needed
     if DOCKER_PATH is None:
@@ -59,7 +59,7 @@ def test_docker_memory_stress() -> bool | None:
     ]
 
     try:
-        async def run_memory_stress():
+        async def run_memory_stress() -> asyncio.subprocess.Process | None:
             proc = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
@@ -78,11 +78,11 @@ def test_docker_memory_stress() -> bool | None:
             return False
 
         # optional: read output
-        async def read_output():
+        async def read_output() -> bytes:
             if proc and proc.stdout:
                 return await proc.stdout.read()
             return b""
-        
+
         _ = asyncio.run(read_output())
 
         # Wait for startup
@@ -97,9 +97,10 @@ def test_docker_memory_stress() -> bool | None:
 
     finally:
         # Cleanup
-        async def cleanup():
-            await asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-memory-test")
-        
+        async def cleanup() -> None:
+            if DOCKER_PATH is not None:
+                await asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-memory-test")
+
         asyncio.run(cleanup())
 
 
@@ -134,7 +135,7 @@ def test_docker_concurrent_requests() -> bool:
             )
             try:
                 await asyncio.wait_for(proc.wait(), timeout=10)
-                return proc.returncode
+                return proc.returncode or 0
             except TimeoutError:
                 with contextlib.suppress(ProcessLookupError):
                     proc.kill()
@@ -169,11 +170,12 @@ def test_docker_concurrent_requests() -> bool:
     finally:
         # Cleanup
         async def cleanup() -> None:
-            await asyncio.create_subprocess_exec(
-                DOCKER_PATH,
-                "stop",
-                "flext-concurrent-test",
-            )
+            if DOCKER_PATH is not None:
+                await asyncio.create_subprocess_exec(
+                    DOCKER_PATH,
+                    "stop",
+                    "flext-concurrent-test",
+                )
 
         asyncio.run(cleanup())
 
@@ -201,7 +203,7 @@ def test_docker_api_workflow() -> bool:
     ]
 
     try:
-        async def run_api_workflow():
+        async def run_api_workflow() -> int:
             proc = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
@@ -209,7 +211,7 @@ def test_docker_api_workflow() -> bool:
             )
             try:
                 await asyncio.wait_for(proc.wait(), timeout=10)
-                return proc.returncode
+                return proc.returncode or 0
             except TimeoutError:
                 with contextlib.suppress(ProcessLookupError):
                     proc.kill()
@@ -283,13 +285,14 @@ def test_docker_api_workflow() -> bool:
 
     finally:
         # Cleanup
-        async def cleanup():
-            await asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-api-test")
-        
+        async def cleanup() -> None:
+            if DOCKER_PATH is not None:
+                await asyncio.create_subprocess_exec(DOCKER_PATH, "stop", "flext-api-test")
+
         asyncio.run(cleanup())
 
 
-def test_docker_examples_stress() -> bool | None:
+def test_docker_examples_stress() -> bool:
     """Test Docker examples under stress."""
     # Test docker_ready.py in container with stress
     if DOCKER_PATH is None:
@@ -317,7 +320,7 @@ def test_docker_examples_stress() -> bool | None:
     ]
 
     try:
-        async def run_examples_stress():
+        async def run_examples_stress() -> bool:
             proc = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
@@ -333,6 +336,8 @@ def test_docker_examples_stress() -> bool | None:
             await asyncio.sleep(3)
 
             # Check if still running
+            if DOCKER_PATH is None:
+                return False
             check_proc = await asyncio.create_subprocess_exec(
                 DOCKER_PATH,
                 "ps",
@@ -345,24 +350,24 @@ def test_docker_examples_stress() -> bool | None:
             out = await (check_proc.stdout.read() if check_proc.stdout else asyncio.sleep(0))
             return bool((out or b"").decode().strip())
 
-        result = asyncio.run(run_examples_stress())
-        return result
+        return asyncio.run(run_examples_stress())
 
     finally:
         # Cleanup
-        async def cleanup():
-            await asyncio.create_subprocess_exec(
-                DOCKER_PATH,
-                "stop",
-                "flext-examples-stress",
-            )
-        
+        async def cleanup() -> None:
+            if DOCKER_PATH is not None:
+                await asyncio.create_subprocess_exec(
+                    DOCKER_PATH,
+                    "stop",
+                    "flext-examples-stress",
+                )
+
         asyncio.run(cleanup())
 
 
 def main() -> bool:
     """Run comprehensive Docker stress tests."""
-    tests: list[tuple[str, Any]] = [
+    tests: list[tuple[str, Callable[[], bool]]] = [
         ("Memory Stress", test_docker_memory_stress),
         ("Concurrent Requests", test_docker_concurrent_requests),
         ("API Workflow", test_docker_api_workflow),

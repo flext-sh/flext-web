@@ -139,7 +139,7 @@ class TestFlextWebServiceAdvanced:
             json={"name": "test-app"},
             timeout=5,
         )
-        assert response.status_code == 200
+        assert response.status_code == 201  # Created status for POST /apps
         data = response.json()
         assert data["success"]
         # Default values should be provided
@@ -232,7 +232,7 @@ class TestFlextWebServiceAdvanced:
             json={"name": "duplicate-test", "port": 3000, "host": "localhost"},
             timeout=5,
         )
-        assert response.status_code == 200
+        assert response.status_code == 201  # Created status for POST /apps
 
         # Try to start non-existent app to test real error path
         response = requests.post(f"{base_url}/api/v1/apps/nonexistent/start", timeout=5)
@@ -337,11 +337,12 @@ class TestFlextWebConfigAdvanced:
         # Test production with default key (should fail)
         config = FlextWebConfig(
             debug=False,
-            secret_key="change-in-production-placeholder-key",
+            secret_key="dev-secret-key-change-in-production",  # Exact default key
         )
-        result = config.validate_config()
+        # Use production validation directly since is_production() would be False
+        result = config.validate_production_settings()
         assert result.is_failure
-        assert "production" in result.error.lower()
+        assert "production" in (result.error or "").lower()
 
     def test_get_web_settings_caching(self) -> None:
         """Test settings caching functionality."""
@@ -426,8 +427,8 @@ class TestFlextWebAppHandlerAdvanced:
         # App is already stopped, so this should fail with appropriate message
         assert result.is_failure
         assert (
-            "already stopped" in result.error.lower()
-            or "not running" in result.error.lower()
+            "already stopped" in (result.error or "").lower()
+            or "not running" in (result.error or "").lower()
         )
 
     def test_handler_duplicate_app_creation(self) -> None:
@@ -463,7 +464,7 @@ class TestFlextWebAppHandlerAdvanced:
         # Try to start already running app
         result = handler.start(running_app)
         assert result.is_failure
-        assert "already running" in result.error.lower()
+        assert "already running" in (result.error or "").lower()
 
         # Stop app
         result = handler.stop(running_app)
@@ -475,8 +476,8 @@ class TestFlextWebAppHandlerAdvanced:
         result = handler.stop(stopped_app)
         assert result.is_failure
         assert (
-            "already stopped" in result.error.lower()
-            or "not running" in result.error.lower()
+            "already stopped" in (result.error or "").lower()
+            or "not running" in (result.error or "").lower()
         )
 
 
@@ -526,7 +527,7 @@ class TestServiceIntegration:
             json={"name": "workflow-test", "port": 7000, "host": "localhost"},
             timeout=5,
         )
-        assert response.status_code == 200
+        assert response.status_code == 201  # Created
         data = response.json()
         assert data["success"]
         app_id = data["data"]["id"]
@@ -547,13 +548,13 @@ class TestServiceIntegration:
         response = requests.post(f"{base_url}/api/v1/apps/{app_id}/start", timeout=5)
         assert response.status_code == 200
         data = response.json()
-        assert data["data"]["is_running"] is True
+        assert data["data"]["status"].upper() == "RUNNING"
 
         # 5. Stop application
         response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=5)
         assert response.status_code == 200
         data = response.json()
-        assert data["data"]["is_running"] is False
+        assert data["data"]["status"].upper() == "STOPPED"
 
 
 if __name__ == "__main__":

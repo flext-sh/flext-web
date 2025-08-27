@@ -108,8 +108,8 @@ class TestWebInterface:
             raise AssertionError(msg)
         content = response.content
         if b"FLEXT Web" not in content:
-            msg: str = f"Expected {b'FLEXT Web'} in response content"
-            raise AssertionError(msg)
+            msg2: str = f"Expected {b'FLEXT Web'!r} in response content"
+            raise AssertionError(msg2)
         assert (
             b"Applications (0)" in content or b"No applications registered" in content
         )

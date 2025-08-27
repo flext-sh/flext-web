@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from flext_core import (
-    FlextError,
-    FlextValidationError,
+    FlextExceptions.Error,
+    FlextExceptions.ValidationError,
     get_logger,
 )
 
@@ -57,6 +57,7 @@ from flext_web.type_aliases import (
     HTTPStatus,
 )
 
+from flext_web.utilities import FlextWebUtilities
 from flask import Flask
 
 __version__ = "0.9.0"
@@ -417,8 +418,8 @@ __all__: list[str] = [
     # Core Flask integration
     "Flask",
     # Flext-core exports
-    "FlextError",
-    "FlextValidationError",
+    "FlextExceptions.Error",
+    "FlextExceptions.ValidationError",
     "get_logger",
     "logger",
     # Configuration
@@ -479,6 +480,8 @@ __all__: list[str] = [
     "TemplateFilter",
     "TemplateGlobal",
     "HTTPStatus",
+    # Utilities
+    "FlextWebUtilities",
     # Version information
     "__version__",
     "__version_info__",

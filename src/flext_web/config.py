@@ -115,7 +115,7 @@ class FlextWebConfigs(FlextConfig):
         )
 
         app_name: str = Field(
-            default="FLEXT Web Interface",
+            default="FLEXT Web",
             description="Application name for identification and logging",
             min_length=1,
             max_length=100,
@@ -147,6 +147,11 @@ class FlextWebConfigs(FlextConfig):
             default="INFO",
             description="Logging level",
             pattern=r"^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$",
+        )
+
+        version: str = Field(
+            default="0.9.0",
+            description="Application version for API compatibility",
         )
 
         # =========================================================================
@@ -273,6 +278,30 @@ class FlextWebConfigs(FlextConfig):
 
             """
             return not self.debug and self.secret_key != DEFAULT_DEV_SECRET_KEY
+
+        def validate_config(self) -> FlextResult[None]:
+            """Validate configuration settings - compatibility method.
+
+            Performs validation appropriate to the current mode (development/production).
+            For development mode (debug=True), only validates security settings.
+            For production mode, validates both production and security settings.
+
+            Returns:
+                FlextResult indicating validation success or failure with details.
+
+            """
+            # Always validate security settings
+            security_result = self.validate_security_settings()
+            if not security_result.is_success:
+                return security_result
+
+            # Only validate production settings in production mode
+            if self.is_production():
+                production_result = self.validate_production_settings()
+                if not production_result.is_success:
+                    return production_result
+
+            return FlextResult.ok(None)
 
     # =========================================================================
     # CONFIGURATION FACTORY METHODS

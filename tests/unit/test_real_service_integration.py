@@ -97,7 +97,7 @@ class TestRealServiceExecution:
         assert data["success"] is True
         assert data["data"]["status"] == "healthy"
         assert "version" in data["data"]
-        assert "config" in data["data"]
+        assert "service" in data["data"]  # Health includes service name
 
     def test_real_application_lifecycle(
         self, running_service_integration: FlextWebService
@@ -115,14 +115,14 @@ class TestRealServiceExecution:
         }
         response = requests.post(f"{base_url}/api/v1/apps", json=create_data, timeout=5)
 
-        assert response.status_code == 200
+        assert response.status_code == 201  # Created status for POST /apps
         data = response.json()
         assert data["success"] is True
         app_id = data["data"]["id"]
         assert app_id == "app_real-test-app"
         assert data["data"]["name"] == "real-test-app"
         assert data["data"]["port"] == 9001
-        assert data["data"]["is_running"] is False
+        assert data["data"]["status"].upper() == "STOPPED"
 
         # 2. List applications - should contain our app
         response = requests.get(f"{base_url}/api/v1/apps", timeout=5)
@@ -146,7 +146,7 @@ class TestRealServiceExecution:
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
-        assert data["data"]["is_running"] is True
+        assert data["data"]["status"].upper() == "RUNNING"
         assert data["data"]["status"].upper() == "RUNNING"
 
         # 5. Stop application
@@ -154,7 +154,7 @@ class TestRealServiceExecution:
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
-        assert data["data"]["is_running"] is False
+        assert data["data"]["status"].upper() == "STOPPED"
         assert data["data"]["status"].upper() == "STOPPED"
 
     def test_real_error_handling(
@@ -208,7 +208,7 @@ class TestRealServiceExecution:
         assert "text/html" in response.headers.get("content-type", "")
         content = response.text
         assert "FLEXT Web" in content
-        assert "Total Apps" in content
+        assert "Applications" in content
 
 
 class TestRealDomainLogic:

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -28,7 +27,7 @@ class TestExamplesDeepValidation:
 
         sys.path.insert(0, "examples")
         try:
-            import basic_service  # noqa: PLC0415
+            import basic_service  # type: ignore[import-not-found] # noqa: PLC0415
 
             assert hasattr(basic_service, "main"), "main function missing"
             assert callable(basic_service.main), "main function not callable"
@@ -48,7 +47,7 @@ class TestExamplesDeepValidation:
         sys.path.insert(0, "examples")
 
         try:
-            import api_usage  # noqa: PLC0415
+            import api_usage  # type: ignore[import-not-found] # noqa: PLC0415
 
             # Test 1: All functions exist and are callable
             functions_to_test = [
@@ -68,18 +67,18 @@ class TestExamplesDeepValidation:
                 )
 
             # Test 2: Health check returns boolean result
-            health_result: Any = api_usage.check_service_health()
+            health_result: bool | None = api_usage.check_service_health()
             assert isinstance(health_result, (bool, type(None))), (
                 "Health check should return bool or None"
             )
 
             # Test 3: Create application returns expected type
-            create_result: Any = api_usage.create_application("test-app", 3000)
+            create_result: dict[str, object] | None = api_usage.create_application("test-app", 3000)
             # Could be None (no service) or dict (service running)
             assert create_result is None or isinstance(create_result, dict)
 
             # Test 4: List applications returns expected type
-            apps_result: Any = api_usage.list_applications()
+            apps_result: list[dict[str, object]] | None = api_usage.list_applications()
             assert isinstance(
                 apps_result,
                 list,
@@ -98,7 +97,7 @@ class TestExamplesDeepValidation:
 
         sys.path.insert(0, "examples")
         try:
-            import docker_ready  # noqa: PLC0415
+            import docker_ready  # type: ignore[import-not-found] # noqa: PLC0415
 
             assert hasattr(docker_ready, "main"), "main function missing"
             assert callable(docker_ready.main), "main function not callable"

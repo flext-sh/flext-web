@@ -7,10 +7,9 @@ WebResponseHandler, and integration patterns to achieve complete coverage.
 from __future__ import annotations
 
 from collections.abc import Generator
-from typing import cast
 
 import pytest
-from flask import Flask, Response
+from flask import Flask
 from flext_core import FlextEntityId
 
 from flext_web.handlers import (
@@ -102,14 +101,15 @@ class TestWebResponseHandler:
 
     def test_create_success_response(self) -> None:
         """Test creating successful JSON responses."""
-        response = WebResponseHandler.create_success_response(
-            "Operation successful", data={"id": "123"}
+        handler = WebResponseHandler()
+        response = handler.create_success_response(
+            data={"id": "123"}, message="Operation successful"
         )
 
         # Flask response object - check status code and data
-        assert isinstance(response, Response)
-        assert response.status_code == 200
-        data = response.get_json()
+        flask_response, status_code = response  # type: ignore[misc]
+        assert status_code == 200
+        data = flask_response.get_json()
         assert isinstance(data, dict)
         assert data["success"] is True
         assert data["message"] == "Operation successful"
@@ -117,11 +117,12 @@ class TestWebResponseHandler:
 
     def test_create_success_response_without_data(self) -> None:
         """Test creating successful response without data."""
-        response = WebResponseHandler.create_success_response("Success")
+        handler = WebResponseHandler()
+        response = handler.create_success_response(message="Success")
 
-        assert isinstance(response, Response)
-        assert response.status_code == 200
-        data = response.get_json()
+        flask_response, status_code = response  # type: ignore[misc]
+        assert status_code == 200
+        data = flask_response.get_json()
         assert isinstance(data, dict)
         assert data["success"] is True
         assert data["message"] == "Success"
@@ -129,11 +130,12 @@ class TestWebResponseHandler:
 
     def test_create_error_response(self) -> None:
         """Test creating error JSON responses."""
-        response = WebResponseHandler.create_error_response("Something went wrong", 400)
+        handler = WebResponseHandler()
+        response = handler.create_error_response(message="Something went wrong", status_code=400)
 
-        assert isinstance(response, Response)
-        assert response.status_code == 400
-        data = response.get_json()
+        flask_response, status_code = response  # type: ignore[misc]
+        assert status_code == 400
+        data = flask_response.get_json()
         assert isinstance(data, dict)
         assert data["success"] is False
         assert data["message"] == "Something went wrong"
@@ -141,27 +143,31 @@ class TestWebResponseHandler:
     def test_create_error_response_with_details(self) -> None:
         """Test creating error response with additional details."""
         error_details: ErrorDetails = {"code": "VALIDATION_ERROR", "field": "name"}
-        response = WebResponseHandler.create_error_response(
-            "Validation failed", 422, error_details
+        handler = WebResponseHandler()
+        response = handler.create_error_response(
+            message="Validation failed", status_code=422, errors=error_details
         )
 
-        assert isinstance(response, Response)
-        assert response.status_code == 422
-        data = response.get_json()
+        flask_response, status_code = response  # type: ignore[misc]
+        assert status_code == 422
+        data = flask_response.get_json()
         assert isinstance(data, dict)
         assert data["success"] is False
         assert data["message"] == "Validation failed"
-        assert data["data"] == error_details
+        assert data["errors"] == error_details
 
     def test_create_json_response_direct(self) -> None:
         """Test creating JSON response directly."""
-        response = WebResponseHandler.create_json_response(
-            "Test message", success=True, data={"test": "value"}, status_code=201
+        # Note: create_json_response doesn't exist in current implementation
+        # This test should be updated or removed
+        handler = WebResponseHandler()
+        response = handler.create_success_response(
+            data={"test": "value"}, message="Test message", status_code=201
         )
 
-        assert isinstance(response, Response)
-        assert response.status_code == 201
-        data = response.get_json()
+        flask_response, status_code = response  # type: ignore[misc]
+        assert status_code == 201
+        data = flask_response.get_json()
         assert isinstance(data, dict)
         assert data["success"] is True
         assert data["message"] == "Test message"
@@ -169,17 +175,18 @@ class TestWebResponseHandler:
 
     def test_response_structure_consistency(self) -> None:
         """Test response structure is consistent across methods."""
-        success_response = WebResponseHandler.create_success_response(
-            "Success", data={"test": True}
+        handler = WebResponseHandler()
+        success_response = handler.create_success_response(
+            data={"test": True}, message="Success"
         )
         error_details: ErrorDetails = {"code": "TEST"}
-        error_response = WebResponseHandler.create_error_response(
-            "Error", 400, error_details
+        error_response = handler.create_error_response(
+            message="Error", status_code=400, errors=error_details
         )
 
-        # Cast to Response to access get_json method
-        success_resp = cast("Response", success_response)
-        error_resp = cast("Response", error_response)
+        # Extract response and status code from tuple
+        success_resp, _success_status = success_response  # type: ignore[misc]
+        error_resp, _error_status = error_response  # type: ignore[misc]
 
         success_data = success_resp.get_json()
         error_data = error_resp.get_json()
@@ -214,19 +221,21 @@ class TestWebResponseHandler:
         ]
 
         for data in data_types:
-            response = WebResponseHandler.create_success_response("Test", data=data)
-            flask_response = cast("Response", response)
+            handler = WebResponseHandler()
+            response = handler.create_success_response(data=data, message="Test")
+            flask_response, _status = response  # type: ignore[misc]
             response_data = flask_response.get_json()
             assert response_data["data"] == data
             assert response_data["success"] is True
 
     def test_error_response_defaults(self) -> None:
         """Test error response default values."""
-        response = WebResponseHandler.create_error_response("Error message")
+        handler = WebResponseHandler()
+        response = handler.create_error_response(message="Error message")
 
         # Should default to status code 500
-        flask_response = cast("Response", response)
-        assert flask_response.status_code == 500
+        flask_response, status_code = response  # type: ignore[misc]
+        assert status_code == 500
         data = flask_response.get_json()
         assert data["success"] is False
         assert data["message"] == "Error message"
@@ -238,7 +247,7 @@ class TestWebResponseHandler:
 
         # Should default to status code 200
         # Response is a tuple (response, status_code)
-        response_obj, status_code = response
+        response_obj, status_code = response  # type: ignore[misc]
         assert status_code == 200
         data = response_obj.get_json()
         assert data["success"] is True
@@ -265,7 +274,7 @@ class TestHandlerIntegration:
             # Create handler instance
             handler = WebResponseHandler()
             response = handler.create_success_response("Test")
-            response_obj, status_code = response
+            _response_obj, status_code = response  # type: ignore[misc]
             assert status_code == 200
 
     def test_handlers_work_with_domain_models(self) -> None:

@@ -13,7 +13,7 @@ import contextlib
 import shutil
 import sys
 import time
-from typing import Any
+from collections.abc import Callable
 
 import requests
 
@@ -132,7 +132,7 @@ print('🎉 All manual tests passed in container!')
     return returncode4 == 0
 
 
-def test_container_service() -> bool | None:
+def test_container_service() -> bool:
     """Test container service startup and API endpoints."""
     container_name = "flext-web-test-service"
 
@@ -211,7 +211,7 @@ def test_container_service() -> bool | None:
         run_command(f"docker stop {container_name}", timeout=10)
 
 
-def test_examples_in_container() -> bool | None:
+def test_examples_in_container() -> bool:
     """Test all examples work inside container."""
     examples = [
         ("basic_service.py", "Basic service example"),
@@ -240,7 +240,7 @@ def test_examples_in_container() -> bool | None:
 
 def main() -> int:
     """Run all Docker container tests."""
-    tests: list[tuple[str, Any]] = [
+    tests: list[tuple[str, Callable[[], bool]]] = [
         ("Docker Build", test_docker_build),
         ("Container Pytest", test_container_pytest),
         ("Container Service", test_container_service),

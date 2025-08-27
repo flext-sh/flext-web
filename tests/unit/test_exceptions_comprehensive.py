@@ -52,8 +52,8 @@ class TestFlextWebErrorBase:
     def test_flext_web_error_dict_conversion(self) -> None:
         """Test FlextWebError dict conversion."""
         error = FlextWebError("Test error", "/api/test")
-        
-        # FlextError from flext-core doesn't have to_dict method
+
+        # FlextExceptions.Error from flext-core doesn't have to_dict method
         # We test the attributes directly
         assert error.message == "Test error"
         assert hasattr(error, "error_code")
@@ -137,7 +137,7 @@ class TestExceptionHierarchy:
 
     def test_base_exception_inheritance(self) -> None:
         """Test that all exceptions inherit from Exception and proper base classes."""
-        # FlextWebError inherits from FlextError
+        # FlextWebError inherits from FlextExceptions.Error
         assert isinstance(FlextWebError("test"), Exception)
 
         # Check specific inheritance patterns
@@ -197,7 +197,7 @@ class TestExceptionUtilities:
 
         error = FlextWebProcessingError("App creation failed", **details)
 
-        # FlextError from flext-core doesn't have to_dict method
+        # FlextExceptions.Error from flext-core doesn't have to_dict method
         # We test the basic properties directly
         assert "App creation failed" in error.message
         assert hasattr(error, "context")
