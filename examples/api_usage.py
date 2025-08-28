@@ -21,7 +21,7 @@ from flext_web.typings import FlextWebTypes
 # Constants for HTTP status codes
 HTTP_OK = FlextConstants.Web.HTTP_OK
 DEFAULT_HOST = FlextConstants.Infrastructure.DEFAULT_HOST
-DEFAULT_PORT = FlextConstants.Web.DEFAULT_DEVELOPMENT_PORT  
+DEFAULT_PORT = FlextConstants.Web.DEFAULT_DEVELOPMENT_PORT
 BASE_URL = f"http://{DEFAULT_HOST}:{DEFAULT_PORT}"
 
 

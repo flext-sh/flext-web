@@ -33,7 +33,7 @@ class FlextWebExceptions(FlextExceptions):
     # BASE EXCEPTION CLASSES
     # =========================================================================
 
-    class WebError(FlextExceptions):
+    class WebError(FlextExceptions.BaseError):
         """Base exception for all FLEXT Web Interface operations.
 
         Accepts arbitrary keyword details and stores them as context.

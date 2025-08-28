@@ -44,14 +44,14 @@ from __future__ import annotations
 import argparse
 import sys
 
-from flext_core import get_logger
+from flext_core import FlextLogger
 
 from flext_web.config import FlextWebConfig
 
 # Import directly from modules to avoid circular imports
 from flext_web.services import FlextWebService
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 def create_parser() -> argparse.ArgumentParser:

@@ -11,7 +11,7 @@ from typing import cast
 
 from flask import Flask, jsonify, request
 from flask.typing import ResponseReturnValue
-from flext_core import FlextDomainService, FlextResult, get_logger
+from flext_core import FlextDomainService, FlextLogger, FlextResult
 from pydantic import ValidationError
 from werkzeug.exceptions import BadRequest
 
@@ -104,7 +104,7 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
 
             """
             self.config = config
-            self.logger = get_logger(__name__)
+            self.logger = FlextLogger(__name__)
             self.app = Flask(__name__)
             self.apps: dict[str, FlextWebApp] = {}
 
