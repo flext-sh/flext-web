@@ -704,7 +704,7 @@ class APIResponseHandler:
     """Handle FlextResult to HTTP response conversion"""
 
     @staticmethod
-    def to_json_response(result: FlextResult[Any], success_status: int = 200) -> tuple:
+    def to_json_response(result: FlextResult[object], success_status: int = 200) -> tuple:
         """Convert FlextResult to Flask JSON response"""
         if result.success:
             return jsonify({
@@ -1506,10 +1506,10 @@ from flask import Response
 from flext_core import FlextResult
 
 def process_web_request(
-    request_data: Dict[str, Any],
+    request_data: Dict[str, object],
     handler: FlextWebAppHandler,
     validator: RequestValidator
-) -> FlextResult[Dict[str, Any]]:
+) -> FlextResult[Dict[str, object]]:
     """Process web request with complete type safety"""
     return (
         validator.validate(request_data)
@@ -1550,7 +1550,7 @@ def process_request(data):  # Missing types
 
 ```python
 # ✅ Always use FlextResult for web error handling
-def validate_create_app_request(data: Dict[str, Any]) -> FlextResult[CreateAppCommand]:
+def validate_create_app_request(data: Dict[str, object]) -> FlextResult[CreateAppCommand]:
     """Validate web request with comprehensive error handling"""
     try:
         # Input validation with detailed errors
@@ -1575,7 +1575,7 @@ def validate_create_app_request(data: Dict[str, Any]) -> FlextResult[CreateAppCo
         return FlextResult[None].fail(f"Unexpected error: {e}")
 
 # ✅ Chain web operations safely
-def complete_app_creation_workflow(request_data: Dict[str, Any]) -> FlextResult[Dict[str, Any]]:
+def complete_app_creation_workflow(request_data: Dict[str, object]) -> FlextResult[Dict[str, object]]:
     """Complete workflow with error propagation"""
     return (
         validate_create_app_request(request_data)
@@ -1586,7 +1586,7 @@ def complete_app_creation_workflow(request_data: Dict[str, Any]) -> FlextResult[
     )
 
 # ❌ Never raise exceptions in web business logic
-def create_app_bad(data: Dict[str, Any]) -> FlextWebApp:
+def create_app_bad(data: Dict[str, object]) -> FlextWebApp:
     if not data.get('name'):
         raise ValueError("Name required")  # Breaks railway pattern
     return FlextWebApp(**data)
@@ -1596,7 +1596,7 @@ def create_app_bad(data: Dict[str, Any]) -> FlextWebApp:
 
 ```python
 def create_web_application(
-    app_data: Dict[str, Any],
+    app_data: Dict[str, object],
     handler: FlextWebAppHandler,
     port_service: WebAppPortConflictService
 ) -> FlextResult[FlextWebApp]:

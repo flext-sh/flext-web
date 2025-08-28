@@ -152,9 +152,11 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
                 "apps_count": len(self.apps),
             }
 
-            return jsonify(
-                {"success": True, "message": "Service is healthy", "data": health_data}
-            )
+            return jsonify({
+                "success": True,
+                "message": "Service is healthy",
+                "data": health_data,
+            })
 
         def dashboard(self) -> ResponseReturnValue:
             """Web dashboard endpoint."""
@@ -201,39 +203,45 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
                 for app in self.apps.values()
             ]
 
-            return jsonify(
-                {
-                    "success": True,
-                    "message": f"Found {len(apps_data)} applications",
-                    "data": {"apps": apps_data},
-                }
-            )
+            return jsonify({
+                "success": True,
+                "message": f"Found {len(apps_data)} applications",
+                "data": {"apps": apps_data},
+            })
 
-        def create_app(self) -> ResponseReturnValue:  # noqa: PLR0911
+        def create_app(self) -> ResponseReturnValue:
             """Create application endpoint using FlextWebUtilities for processing."""
             try:
                 data = request.get_json()
                 if not data:
                     # Use WebResultUtils for standardized error response
-                    error_response = FlextWebUtilities.WebFactories.create_error_response(
-                        "Request body is required", 400
+                    error_response = (
+                        FlextWebUtilities.WebFactories.create_error_response(
+                            "Request body is required", 400
+                        )
                     )
                     return jsonify(error_response), 400
 
                 # Extract and sanitize request data using WebProcessors
-                app_info = FlextWebUtilities.WebProcessors.extract_app_info_from_request(data)
+                app_info = (
+                    FlextWebUtilities.WebProcessors.extract_app_info_from_request(data)
+                )
 
                 name = app_info.get("name")
                 if not name:
-                    error_response = FlextWebUtilities.WebFactories.create_error_response(
-                        "Application name is required", 400
+                    error_response = (
+                        FlextWebUtilities.WebFactories.create_error_response(
+                            "Application name is required", 400
+                        )
                     )
                     return jsonify(error_response), 400
 
                 # Validate using WebValidators
                 if not FlextWebUtilities.WebValidators.validate_app_name(str(name)):
-                    error_response = FlextWebUtilities.WebFactories.create_error_response(
-                        f"Invalid application name: {name}", 400
+                    error_response = (
+                        FlextWebUtilities.WebFactories.create_error_response(
+                            f"Invalid application name: {name}", 400
+                        )
                     )
                     return jsonify(error_response), 400
 
@@ -242,11 +250,16 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
 
                 # Check for duplicates
                 if app_id in self.apps:
-                    message = FlextWebUtilities.WebFormatters.format_response_message(
-                        "creation", str(name), success=False
-                    ) + " - already exists"
-                    error_response = FlextWebUtilities.WebFactories.create_error_response(
-                        message, 400
+                    message = (
+                        FlextWebUtilities.WebFormatters.format_response_message(
+                            "creation", str(name), success=False
+                        )
+                        + " - already exists"
+                    )
+                    error_response = (
+                        FlextWebUtilities.WebFactories.create_error_response(
+                            message, 400
+                        )
                     )
                     return jsonify(error_response), 400
 
@@ -255,16 +268,22 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
                 host = app_info.get("host", "localhost")
 
                 # Validate port using WebValidators
-                if not isinstance(port, int) or not FlextWebUtilities.WebValidators.validate_port_range(port):
-                    error_response = FlextWebUtilities.WebFactories.create_error_response(
-                        f"Invalid port: {port}. Must be between 1-65535", 400
+                if not isinstance(
+                    port, int
+                ) or not FlextWebUtilities.WebValidators.validate_port_range(port):
+                    error_response = (
+                        FlextWebUtilities.WebFactories.create_error_response(
+                            f"Invalid port: {port}. Must be between 1-65535", 400
+                        )
                     )
                     return jsonify(error_response), 400
 
                 # Validate host using WebValidators
                 if not FlextWebUtilities.WebValidators.validate_host_format(str(host)):
-                    error_response = FlextWebUtilities.WebFactories.create_error_response(
-                        f"Invalid host format: {host}", 400
+                    error_response = (
+                        FlextWebUtilities.WebFactories.create_error_response(
+                            f"Invalid host format: {host}", 400
+                        )
                     )
                     return jsonify(error_response), 400
 
@@ -279,8 +298,10 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
                 # Domain validation
                 validation_result = app.validate_domain_rules()
                 if not validation_result.success:
-                    error_response = FlextWebUtilities.WebFactories.create_error_response(
-                        f"Domain validation failed: {validation_result.error}", 400
+                    error_response = (
+                        FlextWebUtilities.WebFactories.create_error_response(
+                            f"Domain validation failed: {validation_result.error}", 400
+                        )
                     )
                     return jsonify(error_response), 400
 
@@ -297,13 +318,13 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
                 )
 
                 # Create success response using WebResultUtils
-                success_message = FlextWebUtilities.WebFormatters.format_response_message(
-                    "created", str(name), success=True
+                success_message = (
+                    FlextWebUtilities.WebFormatters.format_response_message(
+                        "created", str(name), success=True
+                    )
                 )
                 success_response = FlextWebUtilities.WebResultUtils.create_api_response(
-                    message=success_message,
-                    success=True,
-                    data=app_data
+                    message=success_message, success=True, data=app_data
                 )
 
                 return jsonify(success_response), 201
@@ -329,13 +350,11 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
         def get_app(self, app_id: str) -> ResponseReturnValue:
             """Get application endpoint."""
             if app_id not in self.apps:
-                return jsonify(
-                    {
-                        "success": False,
-                        "message": f"Application '{app_id}' not found",
-                        "data": None,
-                    }
-                ), 404
+                return jsonify({
+                    "success": False,
+                    "message": f"Application '{app_id}' not found",
+                    "data": None,
+                }), 404
 
             app = self.apps[app_id]
             app_data = FlextWebTypes.AppDataDict(
@@ -346,13 +365,11 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
                 id=str(app.id),
             )
 
-            return jsonify(
-                {
-                    "success": True,
-                    "message": f"Application '{app_id}' found",
-                    "data": app_data,
-                }
-            )
+            return jsonify({
+                "success": True,
+                "message": f"Application '{app_id}' found",
+                "data": app_data,
+            })
 
         def start_app(self, app_id: str) -> ResponseReturnValue:
             """Start application endpoint using FlextWebUtilities."""
@@ -379,13 +396,13 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
                 )
 
                 # Use WebFormatters for consistent messaging
-                success_message = FlextWebUtilities.WebFormatters.format_response_message(
-                    "started", app_id, success=True
+                success_message = (
+                    FlextWebUtilities.WebFormatters.format_response_message(
+                        "started", app_id, success=True
+                    )
                 )
                 success_response = FlextWebUtilities.WebResultUtils.create_api_response(
-                    message=success_message,
-                    success=True,
-                    data=app_data
+                    message=success_message, success=True, data=app_data
                 )
                 return jsonify(success_response)
             # Handle failure using WebResultUtils
@@ -419,13 +436,13 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
                 )
 
                 # Use WebFormatters for consistent messaging
-                success_message = FlextWebUtilities.WebFormatters.format_response_message(
-                    "stopped", app_id, success=True
+                success_message = (
+                    FlextWebUtilities.WebFormatters.format_response_message(
+                        "stopped", app_id, success=True
+                    )
                 )
                 success_response = FlextWebUtilities.WebResultUtils.create_api_response(
-                    message=success_message,
-                    success=True,
-                    data=app_data
+                    message=success_message, success=True, data=app_data
                 )
                 return jsonify(success_response)
             # Handle failure using WebResultUtils
@@ -456,7 +473,7 @@ class FlextWebServices(FlextDomainService[dict[str, object]]):
             run_debug = debug if debug is not None else self.config.debug
 
             self.logger.info(f"Starting FLEXT Web Service on {run_host}:{run_port}")
-            self.app.run(host=run_host, port=run_port, debug=run_debug, **kwargs)  # type: ignore[arg-type]
+            self.app.run(host=run_host, port=run_port, debug=run_debug, **kwargs)
 
     # =========================================================================
     # SERVICE FACTORY METHODS

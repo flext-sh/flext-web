@@ -378,7 +378,8 @@ Applications can be in one of the following states:
 
 ```python
 import requests
-from typing import Dict, Any, Optional
+from typing import Dict, Optional
+
 
 class FlextWebClient:
     def __init__(self, base_url: str = "http://localhost:8080"):
@@ -386,33 +387,33 @@ class FlextWebClient:
         self.session = requests.Session()
         self.session.headers.update({"Content-Type": "application/json"})
 
-    def health_check(self) -> Dict[str, Any]:
+    def health_check(self) -> Dict[str, object]:
         """Check service health"""
         response = self.session.get(f"{self.base_url}/health")
         return response.json()
 
-    def list_apps(self) -> Dict[str, Any]:
+    def list_apps(self) -> Dict[str, object]:
         """List all applications"""
         response = self.session.get(f"{self.base_url}/api/v1/apps")
         return response.json()
 
-    def create_app(self, name: str, port: int = 8000, host: str = "localhost") -> Dict[str, Any]:
+    def create_app(self, name: str, port: int = 8000, host: str = "localhost") -> Dict[str, object]:
         """Create new application"""
         data = {"name": name, "port": port, "host": host}
         response = self.session.post(f"{self.base_url}/api/v1/apps", json=data)
         return response.json()
 
-    def get_app(self, app_id: str) -> Dict[str, Any]:
+    def get_app(self, app_id: str) -> Dict[str, object]:
         """Get application details"""
         response = self.session.get(f"{self.base_url}/api/v1/apps/{app_id}")
         return response.json()
 
-    def start_app(self, app_id: str) -> Dict[str, Any]:
+    def start_app(self, app_id: str) -> Dict[str, object]:
         """Start application"""
         response = self.session.post(f"{self.base_url}/api/v1/apps/{app_id}/start")
         return response.json()
 
-    def stop_app(self, app_id: str) -> Dict[str, Any]:
+    def stop_app(self, app_id: str) -> Dict[str, object]:
         """Stop application"""
         response = self.session.post(f"{self.base_url}/api/v1/apps/{app_id}/stop")
         return response.json()

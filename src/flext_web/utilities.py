@@ -13,27 +13,25 @@ from __future__ import annotations
 import re
 from urllib.parse import urlparse
 
-from flext_core import FlextResult, FlextUtilities
+from flext_core import FlextResult
+from flext_core.utilities import FlextUtilities
 
 
-class FlextWebUtilities(FlextUtilities):
-    """Web-specific utilities extending FlextUtilities from flext-core.
+class FlextWebUtilities:
+    """Web-specific utilities using FlextUtilities composition.
 
-    Following FLEXT architectural patterns - extends base FlextUtilities
-    rather than duplicating functionality. Adds web-specific operations
-    while inheriting all core utility functionality.
+    Uses composition with all FlextUtilities functionalities while adding
+    web-domain-specific methods. Eliminates inheritance complexity.
 
-    Extends: FlextUtilities with 15+ utility classes from flext-core:
+    Composes with FlextUtilities from flext-core:
     - Generators: ID/timestamp generation
     - TextProcessor: Text cleaning/formatting
     - TimeUtils: Duration formatting
     - Performance: Function timing
-    - Conversions: Type conversions
+    - ProcessingUtils: Processing operations
     - TypeGuards: Type checking
     - Formatters: Data formatting
-    - ProcessingUtils: Processing operations
-    - ResultUtils: Result processing
-    - Factories: Object creation
+    - Conversions: Type conversions
     """
 
     # =========================================================================
@@ -142,11 +140,13 @@ class FlextWebUtilities(FlextUtilities):
                 return False
 
             # Check for localhost or IP patterns
-            if host in {"localhost", "0.0.0.0", "127.0.0.1"}:  # noqa: S104
+            if host in {"localhost", "0.0.0.0", "127.0.0.1"}:
                 return True
 
             # Basic hostname validation
-            return re.match(r"^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$", host) is not None
+            return (
+                re.match(r"^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$", host) is not None
+            )
 
     class WebConverters:
         """Web-specific conversion operations using flext-core Conversions."""
@@ -210,7 +210,9 @@ class FlextWebUtilities(FlextUtilities):
             return sanitized
 
         @staticmethod
-        def extract_app_info_from_request(data: dict[str, object]) -> dict[str, str | int]:
+        def extract_app_info_from_request(
+            data: dict[str, object],
+        ) -> dict[str, str | int]:
             """Extract and validate app info from request data."""
             # Use core processing and validation
             sanitized = FlextWebUtilities.WebProcessors.sanitize_request_data(data)
@@ -242,7 +244,7 @@ class FlextWebUtilities(FlextUtilities):
             *,
             success: bool,
             data: object = None,
-            errors: dict[str, str] | None = None
+            errors: dict[str, str] | None = None,
         ) -> dict[str, object]:
             """Create standardized API response format."""
             response = {
@@ -265,19 +267,21 @@ class FlextWebUtilities(FlextUtilities):
                 return FlextWebUtilities.WebResultUtils.create_api_response(
                     message="Operation completed successfully",
                     success=True,
-                    data=result.value
+                    data=result.value,
                 )
             return FlextWebUtilities.WebResultUtils.create_api_response(
                 message=result.error or "Operation failed",
                 success=False,
-                errors={"error": result.error} if result.error else None
+                errors={"error": result.error} if result.error else None,
             )
 
     class WebFactories:
         """Web-specific factories using flext-core factory patterns."""
 
         @staticmethod
-        def create_app_config(name: str, port: int = 8000, host: str = "localhost") -> dict[str, str | int]:
+        def create_app_config(
+            name: str, port: int = 8000, host: str = "localhost"
+        ) -> dict[str, str | int]:
             """Create application configuration using validation."""
             # Use core validation and web validation
             if not FlextWebUtilities.WebValidators.validate_app_name(name):
@@ -299,10 +303,12 @@ class FlextWebUtilities(FlextUtilities):
             }
 
         @staticmethod
-        def create_error_response(error_message: str, status_code: int = 500) -> dict[str, object]:
+        def create_error_response(
+            error_message: str, status_code: int = 500
+        ) -> dict[str, object]:
             """Create standardized error response."""
             return FlextWebUtilities.WebResultUtils.create_api_response(
                 message=error_message,
                 success=False,
-                errors={"status_code": str(status_code)}
+                errors={"status_code": str(status_code)},
             )

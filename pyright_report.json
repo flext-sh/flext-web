@@ -661,7 +661,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"success_data\" is partially unknown\n  Type of \"success_data\" is \"Unknown | Any\"",
+            "message": "Type of \"success_data\" is partially unknown\n  Type of \"success_data\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 161,
@@ -677,7 +677,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | Any\"",
+            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 161,
@@ -741,7 +741,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"list[Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"list[object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 161,
@@ -757,7 +757,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 161,
@@ -901,7 +901,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"error_data\" is partially unknown\n  Type of \"error_data\" is \"Unknown | Any\"",
+            "message": "Type of \"error_data\" is partially unknown\n  Type of \"error_data\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 162,
@@ -917,7 +917,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | Any\"",
+            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 162,
@@ -981,7 +981,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"list[Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"list[object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 162,
@@ -997,7 +997,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 162,
@@ -1189,7 +1189,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"response_data\" is partially unknown\n  Type of \"response_data\" is \"Unknown | Any\"",
+            "message": "Type of \"response_data\" is partially unknown\n  Type of \"response_data\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 195,
@@ -1205,7 +1205,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | Any\"",
+            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 195,
@@ -1269,7 +1269,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"list[Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"list[object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 195,
@@ -1285,7 +1285,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 195,
@@ -1429,7 +1429,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"status_code\" is partially unknown\n  Type of \"status_code\" is \"int | Unknown | Any\"",
+            "message": "Type of \"status_code\" is partially unknown\n  Type of \"status_code\" is \"int | Unknown | object\"",
             "range": {
                 "start": {
                     "line": 204,
@@ -1477,7 +1477,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"status_code\" for class \"list[Any]\"\n  Attribute \"status_code\" is unknown",
+            "message": "Cannot access attribute \"status_code\" for class \"list[object]\"\n  Attribute \"status_code\" is unknown",
             "range": {
                 "start": {
                     "line": 204,
@@ -1493,7 +1493,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"status_code\" for class \"Mapping[str, Any]\"\n  Attribute \"status_code\" is unknown",
+            "message": "Cannot access attribute \"status_code\" for class \"Mapping[str, object]\"\n  Attribute \"status_code\" is unknown",
             "range": {
                 "start": {
                     "line": 204,
@@ -1637,7 +1637,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"data\" is partially unknown\n  Type of \"data\" is \"Unknown | Any\"",
+            "message": "Type of \"data\" is partially unknown\n  Type of \"data\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 205,
@@ -1653,7 +1653,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | Any\"",
+            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 205,
@@ -1717,7 +1717,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"list[Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"list[object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 205,
@@ -1733,7 +1733,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 205,
@@ -1877,7 +1877,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"status_code\" is partially unknown\n  Type of \"status_code\" is \"int | Unknown | Any\"",
+            "message": "Type of \"status_code\" is partially unknown\n  Type of \"status_code\" is \"int | Unknown | object\"",
             "range": {
                 "start": {
                     "line": 214,
@@ -1925,7 +1925,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"status_code\" for class \"list[Any]\"\n  Attribute \"status_code\" is unknown",
+            "message": "Cannot access attribute \"status_code\" for class \"list[object]\"\n  Attribute \"status_code\" is unknown",
             "range": {
                 "start": {
                     "line": 214,
@@ -1941,7 +1941,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"status_code\" for class \"Mapping[str, Any]\"\n  Attribute \"status_code\" is unknown",
+            "message": "Cannot access attribute \"status_code\" for class \"Mapping[str, object]\"\n  Attribute \"status_code\" is unknown",
             "range": {
                 "start": {
                     "line": 214,
@@ -2085,7 +2085,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"data\" is partially unknown\n  Type of \"data\" is \"Unknown | Any\"",
+            "message": "Type of \"data\" is partially unknown\n  Type of \"data\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 215,
@@ -2101,7 +2101,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | Any\"",
+            "message": "Type of \"get_json\" is partially unknown\n  Type of \"get_json\" is \"Unknown | object\"",
             "range": {
                 "start": {
                     "line": 215,
@@ -2165,7 +2165,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"list[Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"list[object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 215,
@@ -2181,7 +2181,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, Any]\"\n  Attribute \"get_json\" is unknown",
+            "message": "Cannot access attribute \"get_json\" for class \"Mapping[str, object]\"\n  Attribute \"get_json\" is unknown",
             "range": {
                 "start": {
                     "line": 215,
@@ -2325,7 +2325,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "information",
-            "message": "Type of \"status_code\" is partially unknown\n  Type of \"status_code\" is \"int | Unknown | Any\"",
+            "message": "Type of \"status_code\" is partially unknown\n  Type of \"status_code\" is \"int | Unknown | object\"",
             "range": {
                 "start": {
                     "line": 239,
@@ -2373,7 +2373,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"status_code\" for class \"list[Any]\"\n  Attribute \"status_code\" is unknown",
+            "message": "Cannot access attribute \"status_code\" for class \"list[object]\"\n  Attribute \"status_code\" is unknown",
             "range": {
                 "start": {
                     "line": 239,
@@ -2389,7 +2389,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_handlers_comprehensive.py",
             "severity": "warning",
-            "message": "Cannot access attribute \"status_code\" for class \"Mapping[str, Any]\"\n  Attribute \"status_code\" is unknown",
+            "message": "Cannot access attribute \"status_code\" for class \"Mapping[str, object]\"\n  Attribute \"status_code\" is unknown",
             "range": {
                 "start": {
                     "line": 239,
@@ -2533,7 +2533,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_line_872_precise.py",
             "severity": "information",
-            "message": "Type of \"app_data\" is partially unknown\n  Type of \"app_data\" is \"Any | Unknown\"",
+            "message": "Type of \"app_data\" is partially unknown\n  Type of \"app_data\" is \"object | Unknown\"",
             "range": {
                 "start": {
                     "line": 22,
@@ -2549,7 +2549,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_line_872_precise.py",
             "severity": "information",
-            "message": "Type of \"app_id\" is partially unknown\n  Type of \"app_id\" is \"Any | Unknown\"",
+            "message": "Type of \"app_id\" is partially unknown\n  Type of \"app_id\" is \"object | Unknown\"",
             "range": {
                 "start": {
                     "line": 23,
@@ -2565,7 +2565,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_line_872_precise.py",
             "severity": "information",
-            "message": "Type of \"lower\" is partially unknown\n  Type of \"lower\" is \"Any | Unknown\"",
+            "message": "Type of \"lower\" is partially unknown\n  Type of \"lower\" is \"object | Unknown\"",
             "range": {
                 "start": {
                     "line": 35,
@@ -2581,7 +2581,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_line_903_precise.py",
             "severity": "information",
-            "message": "Type of \"app_data\" is partially unknown\n  Type of \"app_data\" is \"Any | Unknown\"",
+            "message": "Type of \"app_data\" is partially unknown\n  Type of \"app_data\" is \"object | Unknown\"",
             "range": {
                 "start": {
                     "line": 22,
@@ -2597,7 +2597,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_line_903_precise.py",
             "severity": "information",
-            "message": "Type of \"app_id\" is partially unknown\n  Type of \"app_id\" is \"Any | Unknown\"",
+            "message": "Type of \"app_id\" is partially unknown\n  Type of \"app_id\" is \"object | Unknown\"",
             "range": {
                 "start": {
                     "line": 23,
@@ -2613,7 +2613,7 @@
         {
             "file": "/home/marlonsc/flext/flext-web/tests/test_line_903_precise.py",
             "severity": "information",
-            "message": "Type of \"lower\" is partially unknown\n  Type of \"lower\" is \"Any | Unknown\"",
+            "message": "Type of \"lower\" is partially unknown\n  Type of \"lower\" is \"object | Unknown\"",
             "range": {
                 "start": {
                     "line": 31,

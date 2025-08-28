@@ -389,19 +389,17 @@ class FlextWebHandlers(FlextHandlers):
             FlextResult containing health status information.
 
         """
-        return FlextResult[dict[str, FlextWebTypes.ResponseData]].ok(
-            {
-                "status": "healthy",
-                "service": "flext-web",
-                "version": "0.9.0",
-                "timestamp": "2025-01-XX",
-                "components": {
-                    "web_service": "operational",
-                    "configuration": "loaded",
-                    "handlers": "registered",
-                },
-            }
-        )
+        return FlextResult[dict[str, FlextWebTypes.ResponseData]].ok({
+            "status": "healthy",
+            "service": "flext-web",
+            "version": "0.9.0",
+            "timestamp": "2025-01-XX",
+            "components": {
+                "web_service": "operational",
+                "configuration": "loaded",
+                "handlers": "registered",
+            },
+        })
 
     @classmethod
     def handle_system_info(cls) -> FlextResult[dict[str, FlextWebTypes.ResponseData]]:
@@ -411,21 +409,19 @@ class FlextWebHandlers(FlextHandlers):
             FlextResult containing detailed system information.
 
         """
-        return FlextResult[dict[str, FlextWebTypes.ResponseData]].ok(
-            {
-                "service_name": "FLEXT Web Interface",
-                "service_type": "web_api",
-                "architecture": "flask_clean_architecture",
-                "patterns": ["CQRS", "Clean Architecture", "Domain-Driven Design"],
-                "integrations": ["flext-core", "pydantic", "flask"],
-                "capabilities": [
-                    "application_management",
-                    "health_monitoring",
-                    "api_endpoints",
-                    "web_dashboard",
-                ],
-            }
-        )
+        return FlextResult[dict[str, FlextWebTypes.ResponseData]].ok({
+            "service_name": "FLEXT Web Interface",
+            "service_type": "web_api",
+            "architecture": "flask_clean_architecture",
+            "patterns": ["CQRS", "Clean Architecture", "Domain-Driven Design"],
+            "integrations": ["flext-core", "pydantic", "flask"],
+            "capabilities": [
+                "application_management",
+                "health_monitoring",
+                "api_endpoints",
+                "web_dashboard",
+            ],
+        })
 
     # =========================================================================
     # APPLICATION HANDLERS
@@ -454,8 +450,14 @@ class FlextWebHandlers(FlextHandlers):
         try:
             # Generate ID for the app
             entity_id = FlextEntityId(f"app_{name}")
-            app_data = {"id": entity_id, "name": name, "port": port, "host": host, **kwargs}
-            app = FlextWebApp(**app_data)  # type: ignore[arg-type]
+            app_data = {
+                "id": entity_id,
+                "name": name,
+                "port": port,
+                "host": host,
+                **kwargs,
+            }
+            app = FlextWebApp(**app_data)
             validation_result = app.validate_domain_rules()
 
             if not validation_result.success:

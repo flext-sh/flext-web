@@ -95,7 +95,7 @@ _config_instance: FlextWebConfig | None = None
 
 def _get_config_singleton() -> FlextWebConfig:
     """Get validated configuration singleton."""
-    global _config_instance  # noqa: PLW0603
+    global _config_instance
     if _config_instance is None:
         # Configuration is automatically validated by Pydantic during instantiation
         _config_instance = FlextWebConfig()
@@ -104,7 +104,7 @@ def _get_config_singleton() -> FlextWebConfig:
 
 def _reset_config_singleton() -> None:
     """Reset configuration singleton."""
-    global _config_instance  # noqa: PLW0603
+    global _config_instance
     _config_instance = None
 
 

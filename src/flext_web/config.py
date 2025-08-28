@@ -19,9 +19,9 @@ from flext_web.constants import FlextWebConstants
 # CONSTANTS
 # =============================================================================
 
-DEFAULT_DEV_SECRET_KEY = "dev-secret-key-change-in-production"  # noqa: S105  # nosec B105
-TEST_SECRET_KEY = "test-secret-key-for-testing-only"  # noqa: S105  # nosec B105
-ALL_INTERFACES_HOST = "0.0.0.0"  # noqa: S104  # nosec B104
+DEFAULT_DEV_SECRET_KEY = "dev-secret-key-change-in-production"
+TEST_SECRET_KEY = "test-secret-key-for-testing-only"
+ALL_INTERFACES_HOST = "0.0.0.0"
 LOCALHOST_HOST = "localhost"
 
 # =============================================================================
@@ -332,15 +332,13 @@ class FlextWebConfigs(FlextConfig):
             WebConfig configured for development use
 
         """
-        return cls.WebConfig.model_validate(
-            {
-                "debug": True,
-                "host": "localhost",
-                "port": 8080,
-                "secret_key": DEFAULT_DEV_SECRET_KEY,
-                "log_level": "DEBUG",
-            }
-        )
+        return cls.WebConfig.model_validate({
+            "debug": True,
+            "host": "localhost",
+            "port": 8080,
+            "secret_key": DEFAULT_DEV_SECRET_KEY,
+            "log_level": "DEBUG",
+        })
 
     @classmethod
     def create_production_config(
@@ -360,16 +358,14 @@ class FlextWebConfigs(FlextConfig):
             WebConfig configured for production use
 
         """
-        return cls.WebConfig.model_validate(
-            {
-                "debug": False,
-                "host": host,
-                "port": port,
-                "secret_key": secret_key,
-                "log_level": "INFO",
-                "enable_cors": True,
-            }
-        )
+        return cls.WebConfig.model_validate({
+            "debug": False,
+            "host": host,
+            "port": port,
+            "secret_key": secret_key,
+            "log_level": "INFO",
+            "enable_cors": True,
+        })
 
     @classmethod
     def create_testing_config(cls) -> WebConfig:
@@ -379,15 +375,13 @@ class FlextWebConfigs(FlextConfig):
             WebConfig configured for testing use
 
         """
-        return cls.WebConfig.model_validate(
-            {
-                "debug": True,
-                "host": "localhost",
-                "port": 0,  # Let system assign port
-                "secret_key": TEST_SECRET_KEY,
-                "log_level": "WARNING",
-            }
-        )
+        return cls.WebConfig.model_validate({
+            "debug": True,
+            "host": "localhost",
+            "port": 0,  # Let system assign port
+            "secret_key": TEST_SECRET_KEY,
+            "log_level": "WARNING",
+        })
 
 
 # =============================================================================
@@ -405,7 +399,7 @@ def get_web_settings() -> FlextWebConfigs.WebConfig:
         Current web configuration instance, creating if needed.
 
     """
-    global _config_instance  # noqa: PLW0603
+    global _config_instance
     if _config_instance is None:
         _config_instance = FlextWebConfigs.create_web_config()
     return _config_instance
@@ -413,7 +407,7 @@ def get_web_settings() -> FlextWebConfigs.WebConfig:
 
 def reset_web_settings() -> None:
     """Reset configuration singleton for testing."""
-    global _config_instance  # noqa: PLW0603
+    global _config_instance
     _config_instance = None
 
 

@@ -54,7 +54,7 @@ class FlextWebModels(FlextModel):
         State Transitions:
           STOPPED -> STARTING -> RUNNING
           RUNNING -> STOPPING -> STOPPED
-          Any state -> ERROR (on failure)
+          object state -> ERROR (on failure)
           ERROR -> STOPPED (on recovery)
 
         Business Rules:

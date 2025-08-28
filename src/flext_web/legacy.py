@@ -58,7 +58,7 @@ def WebConfig(**kwargs: object) -> FlextWebConfig:
     """Legacy alias for FlextWebConfig."""
     deprecation_warning("WebConfig", "FlextWebConfig")
     # Legacy function: type: ignore needed for backward compatibility with generic kwargs
-    return FlextWebConfig(**kwargs)  # type: ignore[arg-type]
+    return FlextWebConfig(**kwargs)
 
 
 def WebService(config: object = None) -> FlextWebService:
@@ -67,7 +67,7 @@ def WebService(config: object = None) -> FlextWebService:
     if config is None:
         config = get_web_settings()
     # Legacy function: type: ignore needed for backward compatibility with generic config
-    return FlextWebService(config)  # type: ignore[arg-type]
+    return FlextWebService(config)
 
 
 def WebApp(
@@ -76,7 +76,7 @@ def WebApp(
     """Legacy alias for FlextWebApp."""
     deprecation_warning("WebApp", "FlextWebApp")
     # Legacy function: type: ignore needed for backward compatibility with generic kwargs
-    return FlextWebApp(name=name, port=port, host=host, **kwargs)  # type: ignore[arg-type]
+    return FlextWebApp(name=name, port=port, host=host, **kwargs)
 
 
 def WebAppHandler(*args: object, **kwargs: object) -> FlextWebAppHandler:
@@ -95,13 +95,13 @@ def AppStatus(*args: object, **kwargs: object) -> FlextWebAppStatus:
 def FlaskService(*args: object, **kwargs: object) -> FlextWebService:
     """Legacy alias for FlextWebService (Flask-specific naming)."""
     deprecation_warning("FlaskService", "FlextWebService")
-    return FlextWebService(*args, **kwargs)  # type: ignore[arg-type]
+    return FlextWebService(*args, **kwargs)
 
 
 def FlaskApp(*args: object, **kwargs: object) -> object:
     """Legacy alias for create_app function."""
     deprecation_warning("FlaskApp", "create_app")
-    return create_app(*args, **kwargs)  # type: ignore[arg-type]
+    return create_app(*args, **kwargs)
 
 
 # Legacy exception aliases (more concise names that were probably used)
@@ -173,13 +173,13 @@ def get_web_config() -> object:
 def create_web_service(config: object = None) -> object:
     """Legacy alias for create_service."""
     deprecation_warning("create_web_service", "create_service")
-    return create_service(config)  # type: ignore[arg-type]
+    return create_service(config)
 
 
 def create_flask_app(config: object = None) -> object:
     """Legacy alias for create_app."""
     deprecation_warning("create_flask_app", "create_app")
-    return create_app(config)  # type: ignore[arg-type]
+    return create_app(config)
 
 
 def reset_config() -> None:
