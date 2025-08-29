@@ -135,10 +135,10 @@ if __name__ == '__main__':
 ```python
 # examples/enterprise_config.py
 from flext_web import FlextWebConfig, create_service
-from flext_core import get_logger
+from flext_core import FlextLogger
 import os
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 class EnterpriseWebConfig(FlextWebConfig):
     """Enterprise configuration with additional validation"""
@@ -189,9 +189,9 @@ import os
 import signal
 import sys
 from flext_web import create_service, FlextWebConfig
-from flext_core import get_logger
+from flext_core import FlextLogger
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 def create_docker_config() -> FlextWebConfig:
     """Create Docker-optimized configuration"""
@@ -231,12 +231,12 @@ if __name__ == "__main__":
 # examples/kubernetes_deployment.py
 """Kubernetes-ready service with health checks and metrics"""
 from flext_web import create_service, FlextWebConfig
-from flext_core import get_logger
+from flext_core import FlextLogger
 import os
 import threading
 import time
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 class KubernetesWebConfig(FlextWebConfig):
     """Kubernetes-optimized configuration"""

@@ -11,8 +11,8 @@ from enum import Enum
 from typing import override
 
 from flext_core import (
-    FlextEntity,
-    FlextEntityId,
+    FlextModels.Entity,
+    FlextModels.EntityId,
     FlextModel,
     FlextResult,
 )
@@ -69,7 +69,7 @@ class FlextWebModels(FlextModel):
         STOPPING = "stopping"
         ERROR = "error"
 
-    class WebApp(FlextEntity):
+    class WebApp(FlextModels.Entity):
         """Web application domain entity with lifecycle management capabilities.
 
         Rich domain entity representing a web application within the FLEXT ecosystem.
@@ -86,7 +86,7 @@ class FlextWebModels(FlextModel):
           status: Current application state following defined state machine
 
         Inherited Attributes:
-          id: Unique entity identifier (from FlextEntity)
+          id: Unique entity identifier (from FlextModels.Entity)
 
         Business Rules:
           - Application names must be non-empty strings
@@ -220,7 +220,7 @@ class FlextWebModels(FlextModel):
             return FlextResult[None].ok(None)
 
         def validate_domain_rules(self) -> FlextResult[None]:
-            """Validate business rules required by FlextEntity abstract method."""
+            """Validate business rules required by FlextModels.Entity abstract method."""
             return self.validate_business_rules()
 
         def _status_enum(self) -> FlextWebModels.WebAppStatus:
@@ -292,7 +292,7 @@ class FlextWebModels(FlextModel):
             Side Effects:
                 - Updates application status to RUNNING on success
                 - Triggers domain events for monitoring and integration
-                - May update timestamp fields through FlextTimestampMixin
+                - May update timestamp fields through FlextModels.TimestampMixin
 
             Example:
                 >>> app = FlextWebModels.WebApp(
@@ -340,7 +340,7 @@ class FlextWebModels(FlextModel):
             Side Effects:
                 - Updates application status to STOPPED on success
                 - Triggers domain events for monitoring and integration
-                - May update timestamp fields through FlextTimestampMixin
+                - May update timestamp fields through FlextModels.TimestampMixin
                 - Allows cleanup and resource release operations
 
             Example:
@@ -394,7 +394,7 @@ class FlextWebModels(FlextModel):
         """
         try:
             # Create domain entity with generated ID
-            entity_id = FlextEntityId(f"app_{name}")
+            entity_id = FlextModels.EntityId(f"app_{name}")
             app = cls.WebApp(id=entity_id, name=name, port=port, host=host)
 
             # Validate domain rules before returning

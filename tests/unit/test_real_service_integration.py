@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 import requests
-from flext_core import FlextEntityId
+from flext_core import FlextModels
 from tests.port_manager import TestPortManager
 
 from flext_web import (
@@ -218,7 +218,7 @@ class TestRealDomainLogic:
         """Test real FlextWebApp creation and domain validation."""
         # Test valid app creation
         app = FlextWebApp(
-            id=FlextEntityId("real_test_app"),
+            id=FlextModels.EntityId("real_test_app"),
             name="real-test-app",
             port=8000,
             host="localhost",
@@ -238,7 +238,7 @@ class TestRealDomainLogic:
         # Test real business rules with invalid data by creating invalid app
         with pytest.raises((ValueError, RuntimeError)):
             FlextWebApp(
-                id=FlextEntityId("invalid_test"),
+                id=FlextModels.EntityId("invalid_test"),
                 name="",  # Empty name should fail - Pydantic validation will catch this
                 port=8000,
                 host="localhost",

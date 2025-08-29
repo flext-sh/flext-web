@@ -13,7 +13,7 @@ from collections.abc import Generator
 
 import pytest
 import requests
-from flext_core import FlextEntityId
+from flext_core import FlextModels
 from tests.port_manager import TestPortManager
 
 from flext_web import (
@@ -201,7 +201,7 @@ class TestRealDomainLogicExecution:
         """Test real FlextWebApp creation and domain validation."""
         # Test valid app creation
         app = FlextWebApp(
-            id=FlextEntityId("test_real_app"),
+            id=FlextModels.EntityId("test_real_app"),
             name="real-test-app",
             port=8000,
             host="localhost",
@@ -223,7 +223,7 @@ class TestRealDomainLogicExecution:
         """Test real domain validation with invalid data."""
         # Test invalid app with empty name
         app = FlextWebApp.model_construct(
-            id=FlextEntityId("invalid_test"),
+            id=FlextModels.EntityId("invalid_test"),
             name="",  # Empty name should fail
             port=8000,
             host="localhost",

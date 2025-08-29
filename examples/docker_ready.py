@@ -10,11 +10,11 @@ import secrets
 import signal
 import sys
 
-from flext_core import get_logger
+from flext_core import FlextLogger
 
 from flext_web import FlextWebConfig, create_service
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 def create_docker_config() -> FlextWebConfig:

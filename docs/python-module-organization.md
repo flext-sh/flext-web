@@ -10,7 +10,7 @@ FLEXT Web Interface implements a **Clean Architecture module structure** integra
 
 ### **Core Design Principles**
 
-1. **FLEXT Core Integration**: Built on flext-core foundation patterns (FlextResult, FlextEntity, FlextConfig)
+1. **FLEXT Core Integration**: Built on flext-core foundation patterns (FlextResult, FlextModels.Entity, FlextConfig)
 2. **Clean Architecture Layers**: Domain → Application → Infrastructure → Web Interface
 3. **Single Responsibility**: Each module has one primary architectural concern
 4. **Type-Safe Web Operations**: Complete type hints with strict MyPy compliance for web APIs
@@ -88,10 +88,10 @@ src/flext_web/domain/
 **Domain Entity Pattern**:
 
 ```python
-from flext_core import FlextEntity, FlextResult
+from flext_core import FlextModels.Entity, FlextResult
 from flext_web.domain.value_objects import WebAppStatus, HostPort
 
-class FlextWebApp(FlextEntity):
+class FlextWebApp(FlextModels.Entity):
     """Rich domain entity for web application management"""
     name: str
     host_port: HostPort
@@ -127,9 +127,9 @@ class FlextWebApp(FlextEntity):
 **Value Object Pattern**:
 
 ```python
-from flext_core import FlextValue
+from flext_core import FlextModels.Value
 
-class HostPort(FlextValue):
+class HostPort(FlextModels.Value):
     """Network address value object with validation"""
     host: str
     port: int
@@ -144,7 +144,7 @@ class HostPort(FlextValue):
     def address(self) -> str:
         return f"{self.host}:{self.port}"
 
-class WebAppStatus(FlextValue):
+class WebAppStatus(FlextModels.Value):
     """Application status with business rules"""
     STOPPED = "stopped"
     STARTING = "starting"
@@ -619,7 +619,7 @@ from flext_web import FlextWebService  # Will break during refactoring
 │  (Persistence, External APIs, Messaging)                │  # infrastructure/persistence/, infrastructure/external/
 ├─────────────────────────────────────────────────────────┤
 │              Foundation Layer                           │  # FLEXT Core integration
-│     (FlextResult, FlextEntity, FlextConfig)             │  # from flext_core import ...
+│     (FlextResult, FlextModels.Entity, FlextConfig)             │  # from flext_core import ...
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -753,11 +753,11 @@ def create_app():
 ### **Web Application Entity Pattern**
 
 ```python
-from flext_core import FlextEntity, FlextResult
+from flext_core import FlextModels.Entity, FlextResult
 from flext_web.domain.value_objects import WebAppStatus, HostPort
 from flext_web.domain.events import AppStartedEvent, AppStoppedEvent
 
-class FlextWebApp(FlextEntity):
+class FlextWebApp(FlextModels.Entity):
     """Rich domain entity for web application lifecycle management"""
     name: str
     host_port: HostPort
@@ -834,10 +834,10 @@ class FlextWebApp(FlextEntity):
 ### **Value Object Patterns for Web Concerns**
 
 ```python
-from flext_core import FlextValue
+from flext_core import FlextModels.Value
 from enum import Enum
 
-class WebAppStatus(FlextValue):
+class WebAppStatus(FlextModels.Value):
     """Application status with state transition rules"""
 
     class Status(str, Enum):
@@ -861,7 +861,7 @@ class WebAppStatus(FlextValue):
         """Check if application is in transitional state"""
         return self.value in [self.Status.STARTING, self.Status.STOPPING]
 
-class HostPort(FlextValue):
+class HostPort(FlextModels.Value):
     """Network endpoint with validation and formatting"""
     host: str
     port: int
@@ -895,7 +895,7 @@ class HostPort(FlextValue):
         """Check if this binds to all interfaces"""
         return self.host in ["0.0.0.0", "::"]
 
-class Environment(FlextValue):
+class Environment(FlextModels.Value):
     """Environment specification with rules"""
 
     class Type(str, Enum):
@@ -1654,7 +1654,7 @@ def create_web_application(
 ```python
 # Step 1: Extract Domain Layer
 # Move from __init__.py lines 42-97 to domain/entities.py
-class FlextWebApp(FlextEntity):
+class FlextWebApp(FlextModels.Entity):
     # Current implementation
 
 # Move to domain/value_objects.py

@@ -58,7 +58,7 @@ class FlextWebAppStatus(Enum):
     STOPPING = "stopping"
     ERROR = "error"
 
-class FlextWebApp(FlextEntity, FlextTimestampMixin, FlextValidatableMixin):
+class FlextWebApp(FlextModels.Entity, FlextModels.TimestampMixin, FlextValidatableMixin):
     """Core domain entity with business rules"""
     name: str
     host: str
@@ -170,8 +170,8 @@ def create_app(self) -> ResponseReturnValue:
         return self._create_response(True, "Success", app_data)
     return self._create_response(False, f"Failed: {app_result.error}")
 
-# FlextEntity Pattern
-class FlextWebApp(FlextEntity, FlextTimestampMixin, FlextValidatableMixin):
+# FlextModels.Entity Pattern
+class FlextWebApp(FlextModels.Entity, FlextModels.TimestampMixin, FlextValidatableMixin):
     """Domain entity with standardized patterns"""
 
 # FlextConfig Pattern
@@ -185,7 +185,7 @@ class FlextWebConfig(BaseSettings, FlextConfig):
 1. **flext-core Foundation**:
 
    - `FlextResult` for error handling
-   - `FlextEntity` for domain modeling
+   - `FlextModels.Entity` for domain modeling
    - `FlextConfig` for configuration management
    - `FlextHandlers` for CQRS pattern implementation
 

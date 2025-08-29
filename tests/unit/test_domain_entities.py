@@ -25,7 +25,7 @@ Status: Enterprise domain testing with comprehensive business logic coverage
 from __future__ import annotations
 
 import pytest
-from flext_core import FlextEntityId
+from flext_core import FlextModels
 from pydantic import ValidationError
 
 from flext_web import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
@@ -49,7 +49,9 @@ class TestFlextWebApp:
         proper default values, business rule enforcement, and state initialization.
         Tests fundamental domain patterns used throughout the system.
         """
-        app = FlextWebApp(id=FlextEntityId("app_test-app"), name="TestApp", port=8080)
+        app = FlextWebApp(
+            id=FlextModels.EntityId("app_test-app"), name="TestApp", port=8080
+        )
 
         if app.id != "app_test-app":
             msg: str = f"Expected {'app_test-app'}, got {app.id}"
@@ -67,7 +69,9 @@ class TestFlextWebApp:
         Validates that FlextWebApp correctly enforces domain validation rules
         and returns proper FlextResult success/failure patterns.
         """
-        app = FlextWebApp(id=FlextEntityId("app_test-app"), name="TestApp", port=8080)
+        app = FlextWebApp(
+            id=FlextModels.EntityId("app_test-app"), name="TestApp", port=8080
+        )
         result = app.validate_domain_rules()
 
         assert result.success
@@ -75,17 +79,21 @@ class TestFlextWebApp:
     def test_webapp_invalid_port(self) -> None:
         """Test FlextWebApp with invalid port validation."""
         with pytest.raises(ValidationError):
-            FlextWebApp(id=FlextEntityId("app_test-app"), name="TestApp", port=99999)
+            FlextWebApp(
+                id=FlextModels.EntityId("app_test-app"), name="TestApp", port=99999
+            )
 
     def test_webapp_empty_name(self) -> None:
         """Test FlextWebApp domain validation with empty name."""
         # Empty name should fail at construction time with Pydantic validation
         with pytest.raises(ValidationError, match="Application name cannot be empty"):
-            FlextWebApp(id=FlextEntityId("app_test-app"), name="", port=8080)
+            FlextWebApp(id=FlextModels.EntityId("app_test-app"), name="", port=8080)
 
     def test_webapp_start(self) -> None:
         """Test FlextWebApp start operation with state transition."""
-        app = FlextWebApp(id=FlextEntityId("app_test-app"), name="TestApp", port=8080)
+        app = FlextWebApp(
+            id=FlextModels.EntityId("app_test-app"), name="TestApp", port=8080
+        )
         result = app.start()
 
         assert result.success
@@ -96,7 +104,7 @@ class TestFlextWebApp:
     def test_webapp_stop(self) -> None:
         """Test FlextWebApp stop."""
         app = FlextWebApp(
-            id=FlextEntityId("app_test-app"),
+            id=FlextModels.EntityId("app_test-app"),
             name="TestApp",
             port=8080,
             status=FlextWebAppStatus.RUNNING,
@@ -128,7 +136,9 @@ class TestFlextWebAppHandler:
     def test_handler_start(self) -> None:
         """Test handler start."""
         handler = FlextWebAppHandler()
-        app = FlextWebApp(id=FlextEntityId("app_test-app"), name="TestApp", port=8080)
+        app = FlextWebApp(
+            id=FlextModels.EntityId("app_test-app"), name="TestApp", port=8080
+        )
 
         result = handler.start(app)
 
@@ -141,7 +151,7 @@ class TestFlextWebAppHandler:
         """Test handler stop."""
         handler = FlextWebAppHandler()
         app = FlextWebApp(
-            id=FlextEntityId("app_test-app"),
+            id=FlextModels.EntityId("app_test-app"),
             name="TestApp",
             port=8080,
             status=FlextWebAppStatus.RUNNING,

@@ -201,7 +201,7 @@ python -m flext_web --no-debug --host 0.0.0.0 --port 8080
 The module extensively uses flext-core foundation patterns for consistency across the FLEXT ecosystem:
 
 - **FlextResult**: Railway-oriented programming for error handling
-- **FlextEntity**: Domain entity base class with validation
+- **FlextModels.Entity**: Domain entity base class with validation
 - **FlextConfig**: Configuration management with validation
 - **FlextHandlers**: CQRS command handler patterns
 - **FlextValidators**: Consistent validation rules

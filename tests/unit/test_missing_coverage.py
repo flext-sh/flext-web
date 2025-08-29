@@ -14,7 +14,7 @@ from collections.abc import Generator
 
 import pytest
 import requests
-from flext_core import FlextEntityId
+from flext_core import FlextModels
 
 from flext_web import (
     FlextWebApp,
@@ -76,7 +76,7 @@ class TestMissingCoverage:
         # Test Pydantic validation catches invalid ports during construction
         with pytest.raises(ValueError, match="port"):
             FlextWebApp(
-                id=FlextEntityId("test_invalid_port_high"),
+                id=FlextModels.EntityId("test_invalid_port_high"),
                 name="test-app",
                 port=99999,  # Too high for Pydantic
                 host="localhost",
@@ -84,7 +84,7 @@ class TestMissingCoverage:
 
         with pytest.raises(ValueError, match="port"):
             FlextWebApp(
-                id=FlextEntityId("test_invalid_port_low"),
+                id=FlextModels.EntityId("test_invalid_port_low"),
                 name="test-app",
                 port=0,  # Too low for Pydantic
                 host="localhost",
@@ -92,7 +92,7 @@ class TestMissingCoverage:
 
         # Test normal case where port is valid
         app = FlextWebApp(
-            id=FlextEntityId("test_valid_port"),
+            id=FlextModels.EntityId("test_valid_port"),
             name="test-app",
             port=8080,  # Valid port
             host="localhost",
@@ -104,7 +104,7 @@ class TestMissingCoverage:
         """Test empty name validation failure path."""
         # Use model_construct to bypass Pydantic validation and test domain validation
         app = FlextWebApp.model_construct(
-            id=FlextEntityId("test_empty_name"),
+            id=FlextModels.EntityId("test_empty_name"),
             name="",  # Empty name should fail validation
             port=8080,
             host="localhost",
@@ -163,7 +163,7 @@ class TestMissingCoverage:
     def test_app_start_already_running(self) -> None:
         """Test starting an app that's already running."""
         app = FlextWebApp(
-            id=FlextEntityId("test_running"),
+            id=FlextModels.EntityId("test_running"),
             name="running-app",
             port=8080,
             host="localhost",
@@ -177,7 +177,7 @@ class TestMissingCoverage:
     def test_app_stop_already_stopped(self) -> None:
         """Test stopping an app that's already stopped."""
         app = FlextWebApp(
-            id=FlextEntityId("test_stopped"),
+            id=FlextModels.EntityId("test_stopped"),
             name="stopped-app",
             port=8080,
             host="localhost",

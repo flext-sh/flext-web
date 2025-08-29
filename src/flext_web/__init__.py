@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from flext_core import (
     FlextExceptions,
-    get_logger,
+    FlextLogger,
 )
 
 from flext_web.config import FlextWebConfig
@@ -63,7 +63,7 @@ __version__ = "0.9.0"
 __version_info__ = tuple(int(x) for x in __version__.split(".") if x.isdigit())
 __author__ = "FLEXT Contributors"
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 
 # =============================================================================
@@ -419,7 +419,7 @@ __all__: list[str] = [
     # Flext-core exports
     "FlextExceptions",
     "FlextExceptions",
-    "get_logger",
+    "FlextLogger",
     "logger",
     # Configuration
     "FlextWebConfig",

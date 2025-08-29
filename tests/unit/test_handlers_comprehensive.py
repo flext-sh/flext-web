@@ -10,7 +10,7 @@ from collections.abc import Generator
 
 import pytest
 from flask import Flask
-from flext_core import FlextEntityId
+from flext_core import FlextModels
 
 from flext_web.handlers import (
     WebHandlers,
@@ -57,7 +57,7 @@ class TestWebHandlers:
         """Test app start handler."""
         # Create an app first
         app = FlextWebApp(
-            id=FlextEntityId("app_test-app"),
+            id=FlextModels.EntityId("app_test-app"),
             name="test-app",
             host="localhost",
             port=8080,
@@ -71,7 +71,7 @@ class TestWebHandlers:
         """Test app stop handler."""
         # Create a running app first
         app = FlextWebApp(
-            id=FlextEntityId("app_test-app"),
+            id=FlextModels.EntityId("app_test-app"),
             name="test-app",
             host="localhost",
             port=8080,
@@ -131,7 +131,9 @@ class TestWebResponseHandler:
     def test_create_error_response(self) -> None:
         """Test creating error JSON responses."""
         handler = WebResponseHandler()
-        response = handler.create_error_response(message="Something went wrong", status_code=400)
+        response = handler.create_error_response(
+            message="Something went wrong", status_code=400
+        )
 
         flask_response, status_code = response  # type: ignore[misc]
         assert status_code == 400
@@ -295,7 +297,7 @@ class TestHandlerIntegration:
         """Test handlers handle errors properly."""
         # Try to start an already running app
         app = FlextWebApp(
-            id=FlextEntityId("app_error-test"),
+            id=FlextModels.EntityId("app_error-test"),
             name="error-test",
             status=FlextWebAppStatus.RUNNING,
         )

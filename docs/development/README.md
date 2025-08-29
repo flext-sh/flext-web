@@ -375,9 +375,9 @@ repos:
 
 ```python
 # src/flext_web/domain/entities.py (target)
-from flext_core import FlextEntity, FlextResult
+from flext_core import FlextModels.Entity, FlextResult
 
-class FlextWebApp(FlextEntity):
+class FlextWebApp(FlextModels.Entity):
     """Domain entity with business rules"""
 
     def start(self) -> FlextResult['FlextWebApp']:
@@ -456,10 +456,10 @@ def create_app():
 # Using flext-core patterns
 from flext_core import (
     FlextResult,      # Railway-oriented programming
-    FlextEntity,      # Domain entity base class
+    FlextModels.Entity,      # Domain entity base class
     FlextConfig,      # Configuration management
     FlextHandlers,    # CQRS handlers
-    get_logger        # Structured logging
+    FlextLogger        # Structured logging
 )
 
 # Example: Error handling with FlextResult
@@ -520,9 +520,9 @@ pytest tests/test_name.py --cov=src --pdb
 
 ```python
 # Current logging (via flext-core)
-from flext_core import get_logger
+from flext_core import FlextLogger
 
-logger = get_logger(__name__)
+logger = FlextLogger(__name__)
 
 # Usage in code
 logger.info("Application created", extra={"app_id": app.id})

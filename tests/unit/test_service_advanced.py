@@ -14,7 +14,7 @@ from collections.abc import Generator
 
 import pytest
 import requests
-from flext_core import FlextEntityId
+from flext_core import FlextModels
 
 from flext_web import (
     FlextWebApp,
@@ -361,7 +361,7 @@ class TestFlextWebAppAdvanced:
     def test_app_lifecycle_complete(self) -> None:
         """Test complete application lifecycle."""
         app = FlextWebApp(
-            id=FlextEntityId("lifecycle_test"),
+            id=FlextModels.EntityId("lifecycle_test"),
             name="lifecycle-app",
             port=4000,
             host="localhost",
@@ -380,14 +380,17 @@ class TestFlextWebAppAdvanced:
         """Test application with edge case ports."""
         # Test minimum port
         app = FlextWebApp(
-            id=FlextEntityId("min_port"), name="min-port-app", port=1, host="localhost"
+            id=FlextModels.EntityId("min_port"),
+            name="min-port-app",
+            port=1,
+            host="localhost",
         )
         result = app.validate_domain_rules()
         assert result.success
 
         # Test maximum port
         app = FlextWebApp(
-            id=FlextEntityId("max_port"),
+            id=FlextModels.EntityId("max_port"),
             name="max-port-app",
             port=65535,
             host="localhost",
@@ -401,7 +404,7 @@ class TestFlextWebAppAdvanced:
 
         for i, host in enumerate(hosts):
             app = FlextWebApp(
-                id=FlextEntityId(f"host_test_{i}"),
+                id=FlextModels.EntityId(f"host_test_{i}"),
                 name=f"host-app-{i}",
                 port=3000 + i,
                 host=host,

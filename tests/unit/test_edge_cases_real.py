@@ -13,7 +13,7 @@ from collections.abc import Generator
 
 import pytest
 import requests
-from flext_core import FlextEntityId
+from flext_core import FlextModels
 from pydantic import ValidationError
 from tests.port_manager import TestPortManager
 
@@ -35,7 +35,7 @@ class TestRealEdgeCases:
     def test_real_app_state_transitions(self) -> None:
         """Test real application state transitions."""
         app = FlextWebApp(
-            id=FlextEntityId("state_test"),
+            id=FlextModels.EntityId("state_test"),
             name="state-test-app",
             port=8000,
             host="localhost",
@@ -76,7 +76,7 @@ class TestRealEdgeCases:
         """Test real domain validation with edge cases."""
         # Test empty name
         app = FlextWebApp.model_construct(
-            id=FlextEntityId("empty_name_test"),
+            id=FlextModels.EntityId("empty_name_test"),
             name="",
             port=8000,
             host="localhost",
@@ -88,7 +88,7 @@ class TestRealEdgeCases:
 
         # Test empty host
         app = FlextWebApp.model_construct(
-            id=FlextEntityId("empty_host_test"),
+            id=FlextModels.EntityId("empty_host_test"),
             name="test-app",
             port=8000,
             host="",
@@ -103,7 +103,7 @@ class TestRealEdgeCases:
         """Test real status enum coercion and validation."""
         # Test string to enum coercion
         app = FlextWebApp(
-            id=FlextEntityId("status_test"),
+            id=FlextModels.EntityId("status_test"),
             name="status-test",
             port=8000,
             host="localhost",
@@ -114,7 +114,7 @@ class TestRealEdgeCases:
 
         # Test enum remains enum
         app2 = FlextWebApp(
-            id=FlextEntityId("status_test2"),
+            id=FlextModels.EntityId("status_test2"),
             name="status-test2",
             port=8001,
             host="localhost",

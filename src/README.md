@@ -99,7 +99,7 @@ src/flext_web/
 #### **Class Documentation**
 
 ```python
-class FlextWebApp(FlextEntity):
+class FlextWebApp(FlextModels.Entity):
     """Web application domain entity with lifecycle management capabilities.
 
     Rich domain entity representing a web application within the FLEXT ecosystem.
@@ -172,7 +172,7 @@ make security                  # Security scanning
 ### **FLEXT Core Integration**
 
 - **FlextResult**: Railway-oriented programming for all operations
-- **FlextEntity**: Domain entity base classes with validation
+- **FlextModels.Entity**: Domain entity base classes with validation
 - **FlextConfig**: Configuration management with environment integration
 - **FlextHandlers**: CQRS command handler patterns
 

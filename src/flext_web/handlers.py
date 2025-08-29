@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
-from flext_core import FlextEntityId, FlextHandlers, FlextResult
+from flext_core import FlextHandlers, FlextModels, FlextResult
 
 from flext_web.models import FlextWebApp, FlextWebModels
 from flext_web.typings import FlextWebTypes
@@ -143,7 +143,7 @@ class FlextWebHandlers(FlextHandlers):
 
                 # Generate app ID using FlextWebUtilities
                 app_id = FlextWebUtilities.WebFormatters.format_app_id(name)
-                entity_id = FlextEntityId(app_id)
+                entity_id = FlextModels.EntityId(app_id)
 
                 # Create domain entity
                 app = FlextWebModels.WebApp(
@@ -449,7 +449,7 @@ class FlextWebHandlers(FlextHandlers):
         """
         try:
             # Generate ID for the app
-            entity_id = FlextEntityId(f"app_{name}")
+            entity_id = FlextModels.EntityId(f"app_{name}")
             app_data = {
                 "id": entity_id,
                 "name": name,
