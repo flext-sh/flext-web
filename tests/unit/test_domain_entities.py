@@ -5,9 +5,9 @@ and state management patterns. Ensures domain models follow Domain-Driven Design
 principles with proper business rule enforcement and state machine validation.
 
 Test Coverage:
-    - FlextWebApp entity lifecycle management and state transitions
-    - FlextWebAppStatus enumeration and business rules
-    - FlextWebAppHandler CQRS command processing
+    - FlextWebModels.WebApp entity lifecycle management and state transitions
+    - FlextWebModels.WebAppStatus enumeration and business rules
+    - FlextWebModels.WebAppHandler CQRS command processing
     - Domain validation and error handling patterns
     - Business logic consistency and rule enforcement
 
@@ -25,32 +25,34 @@ Status: Enterprise domain testing with comprehensive business logic coverage
 from __future__ import annotations
 
 import pytest
-from flext_core import FlextModels
 from pydantic import ValidationError
 
-from flext_web import FlextWebApp, FlextWebAppHandler, FlextWebAppStatus
+from flext_web import (
+    FlextWebHandlers,
+    FlextWebModels,
+)
 
 # Constants
 EXPECTED_TOTAL_PAGES = 8
 
 
-class TestFlextWebApp:
-    """Enterprise domain entity testing for FlextWebApp lifecycle management.
+class TestWebApp:
+    """Enterprise domain entity testing for FlextWebModels.WebApp lifecycle management.
 
-    Comprehensive test suite covering FlextWebApp domain entity creation,
+    Comprehensive test suite covering FlextWebModels.WebApp domain entity creation,
     validation, state transitions, and business rule enforcement. Ensures
     domain-driven design principles and Clean Architecture boundaries.
     """
 
     def test_flext_web_app_creation(self) -> None:
-        """Test FlextWebApp entity creation with comprehensive validation.
+        """Test FlextWebModels.WebApp entity creation with comprehensive validation.
 
-        Validates that FlextWebApp domain entity creates successfully with
+        Validates that FlextWebModels.WebApp domain entity creates successfully with
         proper default values, business rule enforcement, and state initialization.
         Tests fundamental domain patterns used throughout the system.
         """
-        app = FlextWebApp(
-            id=FlextModels.EntityId("app_test-app"), name="TestApp", port=8080
+        app = FlextWebModels.WebApp(
+            id="app_test-app", name="TestApp", port=8080
         )
 
         if app.id != "app_test-app":
@@ -64,69 +66,71 @@ class TestFlextWebApp:
         assert not app.is_running
 
     def test_webapp_validation(self) -> None:
-        """Test FlextWebApp domain validation with business rules.
+        """Test FlextWebModels.WebApp domain validation with business rules.
 
-        Validates that FlextWebApp correctly enforces domain validation rules
+        Validates that FlextWebModels.WebApp correctly enforces domain validation rules
         and returns proper FlextResult success/failure patterns.
         """
-        app = FlextWebApp(
-            id=FlextModels.EntityId("app_test-app"), name="TestApp", port=8080
+        app = FlextWebModels.WebApp(
+            id="app_test-app", name="TestApp", port=8080
         )
         result = app.validate_domain_rules()
 
         assert result.success
 
     def test_webapp_invalid_port(self) -> None:
-        """Test FlextWebApp with invalid port validation."""
+        """Test FlextWebModels.WebApp with invalid port validation."""
         with pytest.raises(ValidationError):
-            FlextWebApp(
-                id=FlextModels.EntityId("app_test-app"), name="TestApp", port=99999
+            FlextWebModels.WebApp(
+                id="app_test-app", name="TestApp", port=99999
             )
 
     def test_webapp_empty_name(self) -> None:
-        """Test FlextWebApp domain validation with empty name."""
+        """Test FlextWebModels.WebApp domain validation with empty name."""
         # Empty name should fail at construction time with Pydantic validation
-        with pytest.raises(ValidationError, match="Application name cannot be empty"):
-            FlextWebApp(id=FlextModels.EntityId("app_test-app"), name="", port=8080)
+        with pytest.raises(ValidationError, match="String should have at least 1 character"):
+            FlextWebModels.WebApp(
+                id="app_test-app", name="", port=8080
+            )
 
     def test_webapp_start(self) -> None:
-        """Test FlextWebApp start operation with state transition."""
-        app = FlextWebApp(
-            id=FlextModels.EntityId("app_test-app"), name="TestApp", port=8080
+        """Test FlextWebModels.WebApp start operation with state transition."""
+        app = FlextWebModels.WebApp(
+            id="app_test-app", name="TestApp", port=8080
         )
         result = app.start()
 
         assert result.success
-        started_app = result.data
+        started_app = result.value
         assert started_app is not None
         assert started_app.is_running
 
     def test_webapp_stop(self) -> None:
-        """Test FlextWebApp stop."""
-        app = FlextWebApp(
-            id=FlextModels.EntityId("app_test-app"),
+        """Test FlextWebModels.WebApp stop."""
+        app = FlextWebModels.WebApp(
+            id="app_test-app",
             name="TestApp",
             port=8080,
-            status=FlextWebAppStatus.RUNNING,
+            status=FlextWebModels.WebAppStatus.RUNNING,
         )
         result = app.stop()
 
         assert result.success
-        stopped_app = result.data
+        stopped_app = result.value
         assert stopped_app is not None
         assert not stopped_app.is_running
 
 
-class TestFlextWebAppHandler:
-    """Test FlextWebAppHandler."""
+class TestWebAppHandler:
+    """Test FlextWebModels.WebAppHandler."""
 
     def test_handler_create(self) -> None:
         """Test handler create."""
-        handler = FlextWebAppHandler()
+        handler = FlextWebHandlers.WebAppHandler()
         result = handler.create("TestApp", port=8080)
 
         assert result.success
-        app = result.data
+        app = result.value
         assert app is not None
         if app.name != "TestApp":
             msg: str = f"Expected {'TestApp'}, got {app.name}"
@@ -135,31 +139,31 @@ class TestFlextWebAppHandler:
 
     def test_handler_start(self) -> None:
         """Test handler start."""
-        handler = FlextWebAppHandler()
-        app = FlextWebApp(
-            id=FlextModels.EntityId("app_test-app"), name="TestApp", port=8080
+        handler = FlextWebHandlers.WebAppHandler()
+        app = FlextWebModels.WebApp(
+            id="app_test-app", name="TestApp", port=8080
         )
 
         result = handler.start(app)
 
         assert result.success
-        started_app = result.data
+        started_app = result.value
         assert started_app is not None
         assert started_app.is_running
 
     def test_handler_stop(self) -> None:
         """Test handler stop."""
-        handler = FlextWebAppHandler()
-        app = FlextWebApp(
-            id=FlextModels.EntityId("app_test-app"),
+        handler = FlextWebHandlers.WebAppHandler()
+        app = FlextWebModels.WebApp(
+            id="app_test-app",
             name="TestApp",
             port=8080,
-            status=FlextWebAppStatus.RUNNING,
+            status=FlextWebModels.WebAppStatus.RUNNING,
         )
 
         result = handler.stop(app)
 
         assert result.success
-        stopped_app = result.data
+        stopped_app = result.value
         assert stopped_app is not None
         assert not stopped_app.is_running

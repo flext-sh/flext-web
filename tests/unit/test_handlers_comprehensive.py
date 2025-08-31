@@ -10,14 +10,17 @@ from collections.abc import Generator
 
 import pytest
 from flask import Flask
-from flext_core import FlextModels
 
-from flext_web.handlers import (
-    WebHandlers,
-    WebResponseHandler,
-)
-from flext_web.models import FlextWebApp, FlextWebAppStatus
-from flext_web.type_aliases import ErrorDetails
+from flext_web.handlers import FlextWebHandlers
+from flext_web.models import FlextWebModels
+from flext_web.typings import FlextWebTypes
+
+# Extract nested classes for convenience
+WebHandlers = FlextWebHandlers  # Alias for backward compatibility
+WebResponseHandler = FlextWebHandlers.WebResponseHandler
+FlextWebModels.WebApp = FlextWebModels.WebApp
+FlextWebModels.WebAppStatus = FlextWebModels.WebAppStatus
+ErrorDetails = FlextWebTypes.ErrorDetails
 
 
 class TestWebHandlers:
@@ -40,46 +43,46 @@ class TestWebHandlers:
         """Test health check handler."""
         result = WebHandlers.handle_health_check()
         assert result.success is True
-        assert result.data is not None
-        assert result.data["status"] == "healthy"
-        assert result.data["service"] == "flext-web"
+        assert result.value is not None
+        assert result.value["status"] == "healthy"
+        assert result.value["service"] == "flext-web"
 
     def test_handle_app_creation(self) -> None:
         """Test app creation handler."""
         result = WebHandlers.handle_create_app("test-app", 8080, "localhost")
         assert result.success is True
-        assert result.data is not None
-        assert result.data.name == "test-app"
-        assert result.data.port == 8080
-        assert result.data.host == "localhost"
+        assert result.value is not None
+        assert result.value.name == "test-app"
+        assert result.value.port == 8080
+        assert result.value.host == "localhost"
 
     def test_handle_app_start(self) -> None:
         """Test app start handler."""
         # Create an app first
-        app = FlextWebApp(
-            id=FlextModels.EntityId("app_test-app"),
+        app = FlextWebModels.WebApp(
+            id="app_test-app",
             name="test-app",
             host="localhost",
             port=8080,
-            status=FlextWebAppStatus.STOPPED,
+            status=FlextWebModels.WebAppStatus.STOPPED,
         )
         result = WebHandlers.handle_start_app(app)
         assert result.success is True
-        assert result.data.status == FlextWebAppStatus.RUNNING
+        assert result.value.status == FlextWebModels.WebAppStatus.RUNNING
 
     def test_handle_app_stop(self) -> None:
         """Test app stop handler."""
         # Create a running app first
-        app = FlextWebApp(
-            id=FlextModels.EntityId("app_test-app"),
+        app = FlextWebModels.WebApp(
+            id="app_test-app",
             name="test-app",
             host="localhost",
             port=8080,
-            status=FlextWebAppStatus.RUNNING,
+            status=FlextWebModels.WebAppStatus.RUNNING,
         )
         result = WebHandlers.handle_stop_app(app)
         assert result.success is True
-        assert result.data.status == FlextWebAppStatus.STOPPED
+        assert result.value.status == FlextWebModels.WebAppStatus.STOPPED
 
 
 class TestWebResponseHandler:
@@ -285,21 +288,21 @@ class TestHandlerIntegration:
         create_result = WebHandlers.handle_create_app("domain-test", 9000)
         assert create_result.success is True
 
-        app = create_result.data
-        assert isinstance(app, FlextWebApp)
+        app = create_result.value
+        assert isinstance(app, FlextWebModels.WebApp)
 
         # Start app via handler
         start_result = WebHandlers.handle_start_app(app)
         assert start_result.success is True
-        assert start_result.data.status == FlextWebAppStatus.RUNNING
+        assert start_result.value.status == FlextWebModels.WebAppStatus.RUNNING
 
     def test_error_handling_patterns(self) -> None:
         """Test handlers handle errors properly."""
         # Try to start an already running app
-        app = FlextWebApp(
-            id=FlextModels.EntityId("app_error-test"),
+        app = FlextWebModels.WebApp(
+            id="app_error-test",
             name="error-test",
-            status=FlextWebAppStatus.RUNNING,
+            status=FlextWebModels.WebAppStatus.RUNNING,
         )
         result = WebHandlers.handle_start_app(app)
         assert result.success is False
@@ -312,12 +315,12 @@ class TestHandlerIntegration:
         create_result = WebHandlers.handle_create_app("compose-test")
         assert create_result.success is True
 
-        start_result = WebHandlers.handle_start_app(create_result.data)
+        start_result = WebHandlers.handle_start_app(create_result.value)
         assert start_result.success is True
 
-        stop_result = WebHandlers.handle_stop_app(start_result.data)
+        stop_result = WebHandlers.handle_stop_app(start_result.value)
         assert stop_result.success is True
-        assert stop_result.data.status == FlextWebAppStatus.STOPPED
+        assert stop_result.value.status == FlextWebModels.WebAppStatus.STOPPED
 
 
 if __name__ == "__main__":

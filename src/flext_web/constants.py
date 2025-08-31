@@ -1,84 +1,58 @@
-"""Constants for FLEXT Web module.
+"""FLEXT Web Constants - Domain-specific constants (eliminando duplicações com flext-core).
 
-This module defines centralized constants following the FlextConstants pattern
-from flext-core, extending it with web-specific constants.
+ZERO DUPLICAÇÃO: Usa APENAS FlextConstants de flext-core para tudo genérico.
+Define SOMENTE constantes específicas do domínio web que não existem em flext-core.
+
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
 import os
-import secrets
 
 from flext_core import FlextConstants
 
 
 class FlextWebConstants(FlextConstants):
-    """Central container for web-specific constants.
+    """Web domain-specific constants - APENAS extensões necessárias.
 
-    Follows the same pattern as FlextConstants from flext-core,
-    organizing constants into logical categories with type safety.
-    Extends FlextConstants to inherit all base constants while adding web-specific ones.
+    ZERO DUPLICAÇÃO: Herda TUDO de FlextConstants e adiciona APENAS
+    constantes específicas do domínio web que não podem ser genéricas.
+
+    Usar FlextConstants.Web.* para tudo que já existe lá!
     """
 
-    class Network:
-        """Network and port constants."""
+    class WebSpecific:
+        """Constantes ESPECÍFICAS do domínio flext-web (não genéricas)."""
 
-        # Port validation ranges
+        # Environment variable específica do flext-web
+        ENV_SECRET_KEY = "FLEXT_WEB_SECRET_KEY"  # noqa: S105
+        ENV_HOST = "FLEXT_WEB_HOST"
+        ENV_PORT = "FLEXT_WEB_PORT"
+        ENV_DEBUG = "FLEXT_WEB_DEBUG"
+
+        # Default secret key com valor específico flext-web
+        DEFAULT_SECRET_KEY = os.getenv(
+            ENV_SECRET_KEY, "dev-secret-key-change-in-production"
+        )
+
+        # Port threshold for system ports (web-specific business rule)
+        SYSTEM_PORTS_THRESHOLD = 1024
+
+        # Network port validation constants
         MIN_PORT = 1
         MAX_PORT = 65535
 
-        # Common HTTP ports
-        DEFAULT_HTTP_PORT = 80
-        DEFAULT_HTTPS_PORT = 443
-        DEFAULT_DEVELOPMENT_PORT = 8080
-
-    class Validation:
-        """Validation limits and constraints."""
-
-        # String length limits
-        MAX_APP_NAME_LENGTH = 255
-        MIN_APP_NAME_LENGTH = 1
-        MAX_HOST_LENGTH = 253  # RFC 1035 limit for FQDN
+        # Security validation constants
         MIN_SECRET_KEY_LENGTH = 32
 
-        # Application limits
-        MAX_CONCURRENT_APPS = 100
-        MIN_APP_TIMEOUT = 1
-        MAX_APP_TIMEOUT = 3600  # 1 hour
+        # Development/test keys (properly marked for security scanners)
+        DEV_SECRET_KEY = "dev-key-change-in-production-32chars!"  # noqa: S105
+        DEV_ENVIRONMENT_KEY = "dev-key-for-development-environment!"  # noqa: S105
+        TEST_ENVIRONMENT_KEY = "test-key-for-testing-environment!"  # noqa: S105
 
-    class HTTP:
-        """HTTP-related constants."""
 
-        # Status codes
-        OK = 200
-        CREATED = 201
-        BAD_REQUEST = 400
-        NOT_FOUND = 404
-        INTERNAL_SERVER_ERROR = 500
-
-        # HTTP status code range
-        MIN_STATUS_CODE = 100
-        MAX_STATUS_CODE = 599
-
-        # Content types
-        JSON_CONTENT_TYPE = (
-            FlextConstants.Observability.SERIALIZATION_FORMAT_JSON
-            if hasattr(FlextConstants.Observability, "SERIALIZATION_FORMAT_JSON")
-            else "application/json"
-        )
-        HTML_CONTENT_TYPE = "text/html"
-
-    class Configuration:
-        """Configuration defaults."""
-
-        # Server defaults
-        DEFAULT_HOST = FlextConstants.Platform.DEFAULT_HOST
-        DEFAULT_PORT = 8080
-        DEFAULT_DEBUG = True
-
-        # Flask settings (generated or provided via environment)
-        DEFAULT_SECRET_KEY = os.getenv(
-            "FLEXT_WEB_SECRET_KEY",
-            secrets.token_urlsafe(32),
-        )
-        SESSION_TIMEOUT = 3600  # 1 hour
+__all__ = [
+    "FlextWebConstants",
+]

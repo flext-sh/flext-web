@@ -46,10 +46,8 @@ import sys
 
 from flext_core import FlextLogger
 
-from flext_web.config import FlextWebConfig
-
-# Import directly from modules to avoid circular imports
-from flext_web.services import FlextWebService
+from flext_web.config import FlextWebConfigs
+from flext_web.services import FlextWebServices
 
 logger = FlextLogger(__name__)
 
@@ -117,7 +115,7 @@ def main() -> None:
     args = parser.parse_args()
 
     # Get configuration
-    config = FlextWebConfig()
+    config = FlextWebConfigs.WebConfig()
 
     # Override with command line arguments
     host = args.host or config.host
@@ -144,10 +142,10 @@ def main() -> None:
             host,
             port,
         )
-        logger.info("📊 Debug: %s | Production: %s", debug, config.is_production())
+        logger.info("📊 Debug: %s | Production: %s", debug, not config.debug)
 
-        service = FlextWebService(config)
-        service.run(host=host, port=port, debug=debug)
+        service = FlextWebServices.WebService(config)
+        service.run()
     except KeyboardInterrupt:
         logger.info("🛑 Shutting down FlextWeb service")
     except (RuntimeError, ValueError, TypeError):

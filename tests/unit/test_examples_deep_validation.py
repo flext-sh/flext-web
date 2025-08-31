@@ -73,7 +73,9 @@ class TestExamplesDeepValidation:
             )
 
             # Test 3: Create application returns expected type
-            create_result: dict[str, object] | None = api_usage.create_application("test-app", 3000)
+            create_result: dict[str, object] | None = api_usage.create_application(
+                "test-app", 3000
+            )
             # Could be None (no service) or dict (service running)
             assert create_result is None or isinstance(create_result, dict)
 

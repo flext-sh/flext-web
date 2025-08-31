@@ -77,8 +77,7 @@ def test_docker_build() -> bool:
 def test_container_pytest() -> bool:
     """Test running pytest inside the container."""
     # Test 1: Basic import functionality
-    cmd_import = '''docker run --rm flext-web-test \
-    python -c "import flext_web; print('✅ Import successful'); from flext_web import create_service; print('✅ Service creation successful')"'''
+    cmd_import = 'docker run --rm flext-web-test python -c "import flext_web; print(\\"✅ Import successful\\"); from flext_web import FlextWebModels, FlextWebHandlers, FlextWebConfigs, FlextWebServices, FlextWebTypes, FlextWebUtilities"'
 
     returncode, _stdout, _stderr = run_command(cmd_import, timeout=10)
 
@@ -106,26 +105,7 @@ def test_container_pytest() -> bool:
         return True
 
     # Fallback: Test core functionality manually
-    cmd_manual = '''docker run --rm flext-web-test \
-      python -c "
-import sys
-sys.path.insert(0, '/app/src')
-from flext_web import FlextWebApp, FlextWebAppStatus, FlextWebConfig, create_service
-
-# Test entity creation
-app = FlextWebApp(id='test', name='test-app', port=8080, host='localhost')
-print(f'✅ App created: {app.name}')
-
-# Test configuration
-config = FlextWebConfig(secret_key='test-key-32-characters-long-valid!')
-print(f'✅ Config created: {config.host}:{config.port}')
-
-# Test service creation
-service = create_service(config)
-print('✅ Service created successfully')
-
-print('🎉 All manual tests passed in container!')
-"'''
+    cmd_manual = 'docker run --rm flext-web-test python -c "import sys; sys.path.insert(0, \\"/app/src\\"); from flext_web import FlextWebModels, FlextWebHandlers, FlextWebConfigs, FlextWebServices, create_service; app = FlextWebModels.WebApp(id=\\"test\\", name=\\"test-app\\", port=8080, host=\\"localhost\\"); print(f\\"App created: {app.name}\\"); config = FlextWebConfigs.WebConfig(secret_key=\\"test-key-32-characters-long-valid!\\"); print(f\\"Config created: {config.host}:{config.port}\\"); service = create_service(config); print(\\"Service created successfully\\"); print(\\"All manual tests passed in container!\\");"'
 
     returncode4, _stdout4, _stderr4 = run_command(cmd_manual, timeout=15)
 

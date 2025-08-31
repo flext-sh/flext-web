@@ -1,20 +1,15 @@
-"""FLEXT Web Interface - Consolidated Exception System.
+"""FLEXT Web Exception - Consolidated exception system.
+
+Single consolidated FlextWebException class containing all web-specific exception types
+following flext-core architectural patterns with short module names.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
-
-This module implements the consolidated exception architecture following the
-"one class per module" pattern, with FlextWebExceptions extending FlextExceptions
-and containing all web-specific exceptions as nested classes with aliases.
 """
 
 from __future__ import annotations
 
 from flext_core import FlextExceptions
-
-# =============================================================================
-# CONSOLIDATED EXCEPTION CLASS
-# =============================================================================
 
 
 class FlextWebExceptions(FlextExceptions):
@@ -216,36 +211,7 @@ class FlextWebExceptions(FlextExceptions):
         return cls.WebRoutingError(message, endpoint=endpoint, method=method, **kwargs)
 
 
-# =============================================================================
-# BACKWARD COMPATIBILITY ALIASES
-# =============================================================================
-
-# Legacy aliases for existing code compatibility
-FlextWebError = FlextWebExceptions.WebError
-FlextWebValidationError = FlextWebExceptions.WebValidationError
-FlextWebConfigurationError = FlextWebExceptions.WebConfigurationError
-FlextWebConnectionError = FlextWebExceptions.WebConnectionError
-FlextWebProcessingError = FlextWebExceptions.WebProcessingError
-FlextWebAuthenticationError = FlextWebExceptions.WebAuthenticationError
-FlextWebTimeoutError = FlextWebExceptions.WebTimeoutError
-FlextWebTemplateError = FlextWebExceptions.WebTemplateError
-FlextWebRoutingError = FlextWebExceptions.WebRoutingError
-FlextWebSessionError = FlextWebExceptions.WebSessionError
-FlextWebMiddlewareError = FlextWebExceptions.WebMiddlewareError
-
-
 __all__ = [
-    "FlextWebAuthenticationError",
-    "FlextWebConfigurationError",
-    "FlextWebConnectionError",
-    # Legacy compatibility exports
-    "FlextWebError",
+    # Main consolidated class
     "FlextWebExceptions",
-    "FlextWebMiddlewareError",
-    "FlextWebProcessingError",
-    "FlextWebRoutingError",
-    "FlextWebSessionError",
-    "FlextWebTemplateError",
-    "FlextWebTimeoutError",
-    "FlextWebValidationError",
 ]

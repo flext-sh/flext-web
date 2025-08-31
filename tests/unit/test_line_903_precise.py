@@ -8,18 +8,21 @@ from collections.abc import Generator
 import pytest
 import requests
 
-from flext_web import FlextWebConfig, FlextWebService
+from flext_web import (
+    FlextWebConfigs,
+    FlextWebServices,
+)
 
 
 @pytest.fixture
-def real_line_903_service() -> Generator[FlextWebService]:
+def real_line_903_service() -> Generator[FlextWebServices.WebService]:
     """Create real running service for line 903 test."""
-    config = FlextWebConfig(
+    config = FlextWebConfigs.WebConfig(
         host="localhost",
         port=8099,  # Unique port for line 903 test
         secret_key="line903-test-key-32-characters-long!",
     )
-    service = FlextWebService(config)
+    service = FlextWebServices.WebService(config)
 
     def run_service() -> None:
         service.app.run(
@@ -41,7 +44,7 @@ def real_line_903_service() -> Generator[FlextWebService]:
 
 
 def test_line_903_stop_app_failure_precise(
-    real_line_903_service: FlextWebService,
+    real_line_903_service: FlextWebServices.WebService,
 ) -> None:
     """Test line 903: stop_app failure path with already stopped app using real HTTP."""
     assert real_line_903_service is not None

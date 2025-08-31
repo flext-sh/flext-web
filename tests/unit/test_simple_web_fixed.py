@@ -13,7 +13,7 @@ Test Coverage:
 
 Integration:
     - Tests Flask template rendering or inline HTML generation
-    - Validates web dashboard integration with FlextWebService
+    - Validates web dashboard integration with FlextWebServices.WebService
     - Ensures proper static asset handling and CSS styling
     - Verifies enterprise UI/UX patterns and accessibility
 
@@ -32,11 +32,14 @@ import pytest
 import requests
 from tests.port_manager import TestPortManager
 
-from flext_web import FlextWebConfig, FlextWebService, create_app
+from flext_web import (
+    FlextWebConfigs,
+    FlextWebServices,
+)
 from flext_web.constants import FlextWebConstants
 
 # Constants - Using refactored constants
-HTTP_OK = FlextWebConstants.HTTP.OK
+HTTP_OK = FlextWebConstants.Web.HTTP_OK  # From flext-core Web constants
 
 
 class TestWebInterface:
@@ -48,17 +51,17 @@ class TestWebInterface:
     """
 
     @pytest.fixture
-    def real_web_service(self) -> Generator[FlextWebService]:
+    def real_web_service(self) -> Generator[FlextWebServices.WebService]:
         """Create real running web service for dashboard testing."""
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
-        config = FlextWebConfig(
+        config = FlextWebConfigs.WebConfig(
             host="localhost",
             port=port,
             debug=True,
             secret_key="web-test-secret-key-32-characters-long!",
         )
-        service = FlextWebService(config)
+        service = FlextWebServices.WebService(config)
 
         def run_service() -> None:
             service.app.run(
@@ -87,7 +90,9 @@ class TestWebInterface:
         Flask application instance with route registration and middleware setup.
         Tests fundamental web application patterns for enterprise deployment.
         """
-        app = create_app()
+        app = FlextWebServices.create_flask_app(
+            FlextWebConfigs.create_development_config()
+        )
 
         assert app is not None
         # Flask app name should contain the module name
@@ -95,7 +100,9 @@ class TestWebInterface:
             f"Expected app name to contain 'flext_web', got {app.name}"
         )
 
-    def test_dashboard_route(self, real_web_service: FlextWebService) -> None:
+    def test_dashboard_route(
+        self, real_web_service: FlextWebServices.WebService
+    ) -> None:
         """Test dashboard route using real HTTP requests."""
         assert real_web_service is not None
         port = real_web_service.config.port

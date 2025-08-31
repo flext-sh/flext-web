@@ -14,10 +14,8 @@ from typing import TYPE_CHECKING
 import pytest
 
 from flext_web import (
-    FlextWebConfig,
+    FlextWebConfigs,
     __main__ as main_module,
-    get_web_settings,
-    reset_web_settings,
 )
 
 if TYPE_CHECKING:
@@ -115,18 +113,30 @@ class TestRealMainEntry:
     @pytest.mark.integration
     def test_real_config_creation_from_args(self) -> None:
         """Test real configuration creation from parsed arguments."""
-        # Test with custom arguments
-        config = FlextWebConfig(
-            host="test-host",
-            port=9001,
-            debug=False,
-            secret_key="test-secret-key-32-characters-long!",
-        )
+        import os
+        # Set production environment for this test
+        original_env = os.getenv("FLEXT_WEB_ENVIRONMENT")
+        os.environ["FLEXT_WEB_ENVIRONMENT"] = "production"
 
-        assert config.host == "test-host"
-        assert config.port == 9001
-        assert config.debug is False
-        assert config.is_production() is True
+        try:
+            # Test with custom arguments
+            config = FlextWebConfigs.WebConfig(
+                host="test-host",
+                port=9001,
+                debug=False,
+                secret_key="test-secret-key-32-characters-long!",
+            )
+
+            assert config.host == "test-host"
+            assert config.port == 9001
+            assert config.debug is False
+            assert config.is_production() is True
+        finally:
+            # Restore original environment
+            if original_env is None:
+                os.environ.pop("FLEXT_WEB_ENVIRONMENT", None)
+            else:
+                os.environ["FLEXT_WEB_ENVIRONMENT"] = original_env
 
     @pytest.mark.integration
     def test_real_main_function_execution(self) -> None:
@@ -182,10 +192,12 @@ class TestRealMainEntry:
             os.environ["FLEXT_WEB_PORT"] = "8090"
 
             # Reset to reload config
-            reset_web_settings()
+            # reset_web_settings()
 
             # Get configuration (should load from environment)
-            config = get_web_settings()
+            config_result = FlextWebConfigs.create_web_config()
+            assert config_result.is_success
+            config = config_result.value
             assert config.host == "env-host"
             assert config.port == 8090
 
@@ -201,7 +213,7 @@ class TestRealMainEntry:
             else:
                 os.environ.pop("FLEXT_WEB_PORT", None)
 
-            reset_web_settings()
+            # reset_web_settings()
 
 
 class TestRealCLIErrorHandling:

@@ -18,13 +18,9 @@ from pydantic import ValidationError
 from tests.port_manager import TestPortManager
 
 from flext_web import (
-    FlextWebApp,
-    FlextWebAppHandler,
-    FlextWebAppStatus,
-    FlextWebConfig,
-    FlextWebService,
-    get_web_settings,
-    reset_web_settings,
+    FlextWebConfigs,
+    FlextWebModels,
+    FlextWebServices,
 )
 
 
@@ -34,7 +30,7 @@ class TestRealEdgeCases:
     @pytest.mark.unit
     def test_real_app_state_transitions(self) -> None:
         """Test real application state transitions."""
-        app = FlextWebApp(
+        app = FlextWebModels.WebApp(
             id=FlextModels.EntityId("state_test"),
             name="state-test-app",
             port=8000,
@@ -42,14 +38,14 @@ class TestRealEdgeCases:
         )
 
         # Initial state
-        assert app.status == FlextWebAppStatus.STOPPED
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED
         assert app.is_running is False
 
         # Start app
         result = app.start()
         assert result.success is True
-        started_app = result.data
-        assert started_app.status == FlextWebAppStatus.RUNNING
+        started_app = result.value
+        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
         assert started_app.is_running is True
 
         # Try to start already running app
@@ -61,8 +57,8 @@ class TestRealEdgeCases:
         # Stop app
         result = started_app.stop()
         assert result.success is True
-        stopped_app = result.data
-        assert stopped_app.status == FlextWebAppStatus.STOPPED
+        stopped_app = result.value
+        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED
         assert stopped_app.is_running is False
 
         # Try to stop already stopped app
@@ -75,7 +71,7 @@ class TestRealEdgeCases:
     def test_real_domain_validation_edge_cases(self) -> None:
         """Test real domain validation with edge cases."""
         # Test empty name
-        app = FlextWebApp.model_construct(
+        app = FlextWebModels.WebApp.model_construct(
             id=FlextModels.EntityId("empty_name_test"),
             name="",
             port=8000,
@@ -87,7 +83,7 @@ class TestRealEdgeCases:
         assert "Application name cannot be empty" in result.error
 
         # Test empty host
-        app = FlextWebApp.model_construct(
+        app = FlextWebModels.WebApp.model_construct(
             id=FlextModels.EntityId("empty_host_test"),
             name="test-app",
             port=8000,
@@ -102,31 +98,31 @@ class TestRealEdgeCases:
     def test_real_status_enum_coercion(self) -> None:
         """Test real status enum coercion and validation."""
         # Test string to enum coercion
-        app = FlextWebApp(
+        app = FlextWebModels.WebApp(
             id=FlextModels.EntityId("status_test"),
             name="status-test",
             port=8000,
             host="localhost",
-            status=FlextWebAppStatus.RUNNING,  # Use enum directly
+            status=FlextWebModels.WebAppStatus.RUNNING,  # Use enum directly
         )
-        assert app.status == FlextWebAppStatus.RUNNING
-        assert isinstance(app.status, FlextWebAppStatus)
+        assert app.status == FlextWebModels.WebAppStatus.RUNNING
+        assert isinstance(app.status, FlextWebModels.WebAppStatus)
 
         # Test enum remains enum
-        app2 = FlextWebApp(
+        app2 = FlextWebModels.WebApp(
             id=FlextModels.EntityId("status_test2"),
             name="status-test2",
             port=8001,
             host="localhost",
-            status=FlextWebAppStatus.STOPPED,
+            status=FlextWebModels.WebAppStatus.STOPPED,
         )
-        assert app2.status == FlextWebAppStatus.STOPPED
-        assert isinstance(app2.status, FlextWebAppStatus)
+        assert app2.status == FlextWebModels.WebAppStatus.STOPPED
+        assert isinstance(app2.status, FlextWebModels.WebAppStatus)
 
     @pytest.mark.unit
     def test_real_handler_validation_edge_cases(self) -> None:
         """Test real handler validation with edge cases."""
-        handler = FlextWebAppHandler()
+        handler = FlextWebModels.WebAppHandler()
 
         # Test empty name
         result = handler.create("", 8000, "localhost")
@@ -152,7 +148,7 @@ class TestRealEdgeCases:
     def test_real_config_validation_edge_cases(self) -> None:
         """Test real configuration validation edge cases."""
         # Test production mode with default secret key
-        config = FlextWebConfig(
+        config = FlextWebConfigs.WebConfig(
             debug=False,  # Production mode
             secret_key="change-in-production-xxxxxxxxxxxx",  # Default key
         )
@@ -162,7 +158,7 @@ class TestRealEdgeCases:
         assert config.secret_key == "change-in-production-xxxxxxxxxxxx"
 
         # Test valid production config
-        config = FlextWebConfig(
+        config = FlextWebConfigs.WebConfig(
             debug=False,
             secret_key="real-production-secret-key-32-chars!",
         )
@@ -180,17 +176,17 @@ class TestRealEdgeCases:
         try:
             # Test with invalid port in environment
             os.environ["FLEXT_WEB_PORT"] = "invalid"
-            reset_web_settings()
+            # reset_web_settings()
 
             with pytest.raises(ValueError):
-                get_web_settings()
+                FlextWebConfigs.create_web_config()
 
             # Test with valid environment
             os.environ["FLEXT_WEB_PORT"] = "8085"
             os.environ["FLEXT_WEB_HOST"] = "test-host"
-            reset_web_settings()
+            # reset_web_settings()
 
-            config = get_web_settings()
+            config = FlextWebConfigs.create_web_config()
             assert config.port == 8085
             assert config.host == "test-host"
 
@@ -198,25 +194,25 @@ class TestRealEdgeCases:
             # Restore original environment
             os.environ.clear()
             os.environ.update(original_env)
-            reset_web_settings()
+            # reset_web_settings()
 
 
 class TestRealServiceEdgeCases:
     """Test real service edge cases and error handling using real HTTP."""
 
     @pytest.fixture
-    def real_edge_service(self) -> Generator[FlextWebService]:
+    def real_edge_service(self) -> Generator[FlextWebServices.WebService]:
         """Create real running service for edge case tests."""
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
 
-        config = FlextWebConfig(
+        config = FlextWebConfigs.WebConfig(
             host="localhost",
             port=port,
             debug=True,
             secret_key="edge-test-secret-key-32-characters-long!",
         )
-        service = FlextWebService(config)
+        service = FlextWebServices.WebService(config)
 
         def run_service() -> None:
             service.app.run(
@@ -239,7 +235,9 @@ class TestRealServiceEdgeCases:
         TestPortManager.release_port(port)
 
     @pytest.mark.integration
-    def test_real_api_edge_cases(self, real_edge_service: FlextWebService) -> None:
+    def test_real_api_edge_cases(
+        self, real_edge_service: FlextWebServices.WebService
+    ) -> None:
         """Test real API edge cases and error handling using real HTTP."""
         assert real_edge_service is not None
         port = real_edge_service.config.port
@@ -278,7 +276,7 @@ class TestRealServiceEdgeCases:
 
     @pytest.mark.integration
     def test_real_app_lifecycle_edge_cases(
-        self, real_edge_service: FlextWebService
+        self, real_edge_service: FlextWebServices.WebService
     ) -> None:
         """Test real application lifecycle edge cases using real HTTP."""
         assert real_edge_service is not None
@@ -322,7 +320,9 @@ class TestRealServiceEdgeCases:
         assert "already stopped" in data["message"].lower()
 
     @pytest.mark.integration
-    def test_real_dashboard_with_apps(self, real_edge_service: FlextWebService) -> None:
+    def test_real_dashboard_with_apps(
+        self, real_edge_service: FlextWebServices.WebService
+    ) -> None:
         """Test real dashboard rendering with various app states using real HTTP."""
         assert real_edge_service is not None
         port = real_edge_service.config.port
@@ -359,7 +359,7 @@ class TestRealServiceEdgeCases:
 
     @pytest.mark.integration
     def test_real_service_error_responses(
-        self, real_edge_service: FlextWebService
+        self, real_edge_service: FlextWebServices.WebService
     ) -> None:
         """Test real service error response formatting using real HTTP."""
         assert real_edge_service is not None
@@ -397,46 +397,46 @@ class TestRealConfigurationEdgeCases:
         """Test real configuration field validation."""
         # Test invalid app name
         with pytest.raises(ValidationError):
-            FlextWebConfig(app_name="")
+            FlextWebConfigs.WebConfig(app_name="")
 
         # Version field accepts any string (no specific validation)
         # This should work fine
-        config = FlextWebConfig(version="invalid-version")
+        config = FlextWebConfigs.WebConfig(version="invalid-version")
         assert config.version == "invalid-version"
 
         # Test invalid host
         with pytest.raises(ValidationError):
-            FlextWebConfig(host="")
+            FlextWebConfigs.WebConfig(host="")
 
         # Test invalid port range
         with pytest.raises(ValidationError):
-            FlextWebConfig(port=0)
+            FlextWebConfigs.WebConfig(port=0)
 
         with pytest.raises(ValidationError):
-            FlextWebConfig(port=99999)
+            FlextWebConfigs.WebConfig(port=99999)
 
         # Test invalid secret key length
         with pytest.raises(ValidationError):
-            FlextWebConfig(secret_key="short")
+            FlextWebConfigs.WebConfig(secret_key="short")
 
     @pytest.mark.unit
     def test_real_config_server_url_generation(self) -> None:
         """Test real server URL generation."""
-        config = FlextWebConfig(host="test-host", port=9000)
+        config = FlextWebConfigs.WebConfig(host="test-host", port=9000)
         assert config.get_server_url() == "http://test-host:9000"
 
-        config = FlextWebConfig(host="0.0.0.0", port=8080)
+        config = FlextWebConfigs.WebConfig(host="0.0.0.0", port=8080)
         assert config.get_server_url() == "http://0.0.0.0:8080"
 
     @pytest.mark.unit
     def test_real_config_production_detection(self) -> None:
         """Test real production mode detection."""
         # Development mode
-        config = FlextWebConfig(debug=True)
+        config = FlextWebConfigs.WebConfig(debug=True)
         assert config.is_production() is False
 
         # Production mode
-        config = FlextWebConfig(debug=False)
+        config = FlextWebConfigs.WebConfig(debug=False)
         assert config.is_production() is True
 
 

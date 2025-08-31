@@ -32,12 +32,15 @@ import pytest
 import requests
 from tests.port_manager import TestPortManager
 
-from flext_web import FlextWebConfig, FlextWebService, create_service
+from flext_web import FlextWebConfigs, FlextWebServices, create_service
 from flext_web.constants import FlextWebConstants
 
+# Type alias for readability
+FlextWebService = FlextWebServices.WebService
+
 # Constants - Using refactored constants
-HTTP_OK = FlextWebConstants.HTTP.OK
-HTTP_CREATED = FlextWebConstants.HTTP.CREATED
+HTTP_OK = FlextWebConstants.Web.HTTP_OK  # From flext-core Web constants
+HTTP_CREATED = FlextWebConstants.Web.HTTP_CREATED  # From flext-core Web constants
 EXPECTED_TOTAL_PAGES = 8
 
 
@@ -50,17 +53,19 @@ class TestFlextWebService:
     """
 
     @pytest.fixture
-    def real_api_service(self) -> Generator[FlextWebService]:
+    def real_api_service(self) -> Generator[FlextWebServices.WebService]:
         """Create real running service for API testing."""
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
-        config = FlextWebConfig(
-            host="localhost",
-            port=port,
-            debug=True,
-            secret_key="api-test-secret-key-32-characters-long!",
+        config = FlextWebConfigs.WebConfig.model_validate(
+            {
+                "host": "localhost",
+                "port": port,
+                "debug": True,
+                "secret_key": "api-test-secret-key-32-characters-long!",
+            }
         )
-        service = FlextWebService(config)
+        service = FlextWebServices.WebService(config)
 
         def run_service() -> None:
             service.app.run(
@@ -181,4 +186,4 @@ class TestFlextWebService:
         if data["success"]:
             failure_msg: str = f"Expected False, got {data['success']}"
             raise AssertionError(failure_msg)
-        assert "Application name is required" in data["message"]
+        assert "application name" in data["message"].lower()

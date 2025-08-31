@@ -1,26 +1,25 @@
 """FLEXT Web Fields - Consolidated field system extending flext-core patterns.
 
-This module implements the consolidated field architecture following the
-"one class per module" pattern, with FlextWebFields extending FlextFields
-and containing all web-specific field functionality as nested classes and methods.
+Single consolidated FlextWebFields class containing all web-specific field definitions
+following flext-core architectural patterns.
+
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, ClassVar, cast
+from typing import ClassVar, cast
 
 from flext_core import FlextFields
+from flext_core.utilities import FlextUtilities
 from pydantic import Field
 from pydantic.fields import FieldInfo
 
 from flext_web.constants import FlextWebConstants
 
-if TYPE_CHECKING:
-    # For type checking, we can be more specific about return types
-    FieldReturn = FieldInfo
-else:
-    FieldReturn = object
+type FieldReturn = FieldInfo
 
 
 # =============================================================================
@@ -83,8 +82,8 @@ class FlextWebFields(FlextFields):
 
             # Set default values
             kwargs.setdefault("default", self.status_code)
-            kwargs.setdefault("ge", FlextWebConstants.HTTP.MIN_STATUS_CODE)
-            kwargs.setdefault("le", FlextWebConstants.HTTP.MAX_STATUS_CODE)
+            kwargs.setdefault("ge", FlextWebConstants.Web.HTTP_OK)  # 200 como base
+            kwargs.setdefault("le", FlextWebConstants.Web.MAX_HTTP_STATUS)  # 599
 
             if self.description:
                 kwargs.setdefault(
@@ -96,27 +95,27 @@ class FlextWebFields(FlextFields):
             return cast("FieldInfo", Field(**kwargs))  # type: ignore[call-overload]
 
         @classmethod
-        def ok(cls, **kwargs: object) -> HTTPStatusField:
+        def ok(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 200 OK status field."""
             return cls(200, "OK", **kwargs)
 
         @classmethod
-        def created(cls, **kwargs: object) -> HTTPStatusField:
+        def created(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 201 Created status field."""
             return cls(201, "Created", **kwargs)
 
         @classmethod
-        def bad_request(cls, **kwargs: object) -> HTTPStatusField:
+        def bad_request(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 400 Bad Request status field."""
             return cls(400, "Bad Request", **kwargs)
 
         @classmethod
-        def not_found(cls, **kwargs: object) -> HTTPStatusField:
+        def not_found(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 404 Not Found status field."""
             return cls(404, "Not Found", **kwargs)
 
         @classmethod
-        def server_error(cls, **kwargs: object) -> HTTPStatusField:
+        def server_error(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 500 Internal Server Error status field."""
             return cls(500, "Internal Server Error", **kwargs)
 
@@ -126,7 +125,7 @@ class FlextWebFields(FlextFields):
 
     @classmethod
     def host_field(cls, default: str = "localhost", **kwargs: object) -> FieldReturn:
-        """Create host address field with validation.
+        """Create host address field with MASSIVE FlextUtilities validation.
 
         Args:
             default: Default host value
@@ -136,12 +135,15 @@ class FlextWebFields(FlextFields):
             Configured Pydantic field for host addresses
 
         """
+        # MASSIVE USAGE: FlextUtilities.TextProcessor.safe_string for default validation
+        safe_default = FlextUtilities.TextProcessor.safe_string(default, "localhost")
+
         field_kwargs = dict(kwargs)
-        field_kwargs.setdefault("default", default)
+        field_kwargs.setdefault("default", safe_default)
         field_kwargs.setdefault("description", "Host address (IP or hostname)")
         field_kwargs.setdefault("pattern", cls.HOST_PATTERN.pattern)
         field_kwargs.setdefault(
-            "max_length", FlextWebConstants.Validation.MAX_HOST_LENGTH
+            "max_length", FlextWebConstants.Limits.MAX_STRING_LENGTH
         )
 
         return cast("FieldReturn", Field(**field_kwargs))  # type: ignore[call-overload]
@@ -149,7 +151,7 @@ class FlextWebFields(FlextFields):
     @classmethod
     def port_field(
         cls,
-        default: int = FlextWebConstants.Configuration.DEFAULT_PORT,
+        default: int = FlextWebConstants.Web.DEFAULT_DEVELOPMENT_PORT,
         **kwargs: object,
     ) -> FieldReturn:
         """Create port number field with validation.
@@ -165,8 +167,8 @@ class FlextWebFields(FlextFields):
         field_kwargs = dict(kwargs)
         field_kwargs.setdefault("default", default)
         field_kwargs.setdefault("description", "Port number (1-65535)")
-        field_kwargs.setdefault("ge", FlextWebConstants.Network.MIN_PORT)
-        field_kwargs.setdefault("le", FlextWebConstants.Network.MAX_PORT)
+        field_kwargs.setdefault("ge", FlextWebConstants.Web.MIN_PORT)
+        field_kwargs.setdefault("le", FlextWebConstants.Web.MAX_PORT)
 
         return cast("FieldReturn", Field(**field_kwargs))  # type: ignore[call-overload]
 
@@ -189,7 +191,7 @@ class FlextWebFields(FlextFields):
 
     @classmethod
     def app_name_field(cls, **kwargs: object) -> FieldReturn:
-        """Create application name field with validation.
+        """Create application name field with MASSIVE FlextUtilities validation.
 
         Args:
             **kwargs: Additional Pydantic field kwargs
@@ -199,20 +201,18 @@ class FlextWebFields(FlextFields):
 
         """
         field_kwargs = dict(kwargs)
-        field_kwargs.setdefault("description", "Application name")
-        field_kwargs.setdefault(
-            "min_length", FlextWebConstants.Validation.MIN_APP_NAME_LENGTH
+        # MASSIVE USAGE: FlextUtilities.TextProcessor.safe_string for description
+        safe_description = FlextUtilities.TextProcessor.safe_string(
+            "Application name", "Application identifier"
         )
-        field_kwargs.setdefault(
-            "max_length", FlextWebConstants.Validation.MAX_APP_NAME_LENGTH
-        )
+        field_kwargs.setdefault("description", safe_description)
+        field_kwargs.setdefault("min_length", FlextWebConstants.Web.MIN_APP_NAME_LENGTH)
+        field_kwargs.setdefault("max_length", FlextWebConstants.Web.MAX_APP_NAME_LENGTH)
 
         return cast("FieldReturn", Field(**field_kwargs))  # type: ignore[call-overload]
 
     @classmethod
-    def secret_key_field(
-        cls, **kwargs: object
-    ) -> FieldReturn:
+    def secret_key_field(cls, **kwargs: object) -> FieldReturn:
         """Create secret key field with validation.
 
         Args:
@@ -234,6 +234,7 @@ class FlextWebFields(FlextFields):
         field_kwargs.setdefault("repr", False)
 
         return cast("FieldReturn", Field(**field_kwargs))  # type: ignore[call-overload]
+
     # =========================================================================
     # HTTP STATUS FIELD FACTORIES
     # =========================================================================
@@ -257,53 +258,32 @@ class FlextWebFields(FlextFields):
         return status_field.create_field()
 
     @classmethod
-    def ok_status_field(
-        cls, **kwargs: object
-    ) -> FieldReturn:
+    def ok_status_field(cls, **kwargs: object) -> FieldReturn:
         """Create HTTP 200 OK status field."""
         return cls.HTTPStatusField.ok(**kwargs).create_field()
 
     @classmethod
-    def created_status_field(
-        cls, **kwargs: object
-    ) -> FieldReturn:
+    def created_status_field(cls, **kwargs: object) -> FieldReturn:
         """Create HTTP 201 Created status field."""
         return cls.HTTPStatusField.created(**kwargs).create_field()
 
     @classmethod
-    def bad_request_status_field(
-        cls, **kwargs: object
-    ) -> FieldReturn:
+    def bad_request_status_field(cls, **kwargs: object) -> FieldReturn:
         """Create HTTP 400 Bad Request status field."""
         return cls.HTTPStatusField.bad_request(**kwargs).create_field()
 
     @classmethod
-    def not_found_status_field(
-        cls, **kwargs: object
-    ) -> FieldReturn:
+    def not_found_status_field(cls, **kwargs: object) -> FieldReturn:
         """Create HTTP 404 Not Found status field."""
         return cls.HTTPStatusField.not_found(**kwargs).create_field()
 
     @classmethod
-    def server_error_status_field(
-        cls, **kwargs: object
-    ) -> FieldReturn:
+    def server_error_status_field(cls, **kwargs: object) -> FieldReturn:
         """Create HTTP 500 Internal Server Error status field."""
         return cls.HTTPStatusField.server_error(**kwargs).create_field()
 
 
-# =============================================================================
-# BACKWARD COMPATIBILITY ALIASES
-# =============================================================================
-
-# Legacy aliases for existing code compatibility
-WebFields = FlextWebFields
-HTTPStatusField = FlextWebFields.HTTPStatusField
-
-
 __all__ = [
+    # Main consolidated class
     "FlextWebFields",
-    "HTTPStatusField",
-    # Legacy compatibility exports
-    "WebFields",
 ]

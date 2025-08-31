@@ -9,19 +9,20 @@ from __future__ import annotations
 
 import pytest
 
-from flext_web import (
-    FlextWebAuthenticationError,
-    FlextWebConfigurationError,
-    FlextWebConnectionError,
-    FlextWebError,
-    FlextWebMiddlewareError,
-    FlextWebProcessingError,
-    FlextWebRoutingError,
-    FlextWebSessionError,
-    FlextWebTemplateError,
-    FlextWebTimeoutError,
-    FlextWebValidationError,
-)
+from flext_web.exceptions import FlextWebExceptions
+
+# Use nested classes from FlextWebExceptions
+FlextWebError = FlextWebExceptions.WebError
+FlextWebValidationError = FlextWebExceptions.WebValidationError
+FlextWebConfigurationError = FlextWebExceptions.WebConfigurationError
+FlextWebConnectionError = FlextWebExceptions.WebConnectionError
+FlextWebProcessingError = FlextWebExceptions.WebProcessingError
+FlextWebAuthenticationError = FlextWebExceptions.WebAuthenticationError
+FlextWebTimeoutError = FlextWebExceptions.WebTimeoutError
+FlextWebTemplateError = FlextWebExceptions.WebTemplateError
+FlextWebRoutingError = FlextWebExceptions.WebRoutingError
+FlextWebSessionError = FlextWebExceptions.WebSessionError
+FlextWebMiddlewareError = FlextWebExceptions.WebMiddlewareError
 
 
 class TestFlextWebErrorBase:

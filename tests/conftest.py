@@ -14,13 +14,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from flext_web import (
-    FlextWebConfig,
-    FlextWebService,
-    create_app,
-    create_service,
-    reset_web_settings,
-)
+from flext_web import FlextWebConfigs, FlextWebServices
 from tests.port_manager import TestPortManager
 
 if TYPE_CHECKING:
@@ -40,57 +34,54 @@ def setup_test_environment() -> Generator[None]:
     os.environ["FLEXT_WEB_HOST"] = "localhost"
     os.environ["FLEXT_WEB_SECRET_KEY"] = "test-secret-key-32-characters-long!!"
 
-    # Reset web settings to force reload
-    reset_web_settings()
-
     yield
 
     # Restore original environment
     os.environ.clear()
     os.environ.update(original_env)
-    reset_web_settings()
 
 
 @pytest.fixture
-def real_config() -> FlextWebConfig:
+def real_config() -> FlextWebConfigs.WebConfig:
     """Create real test configuration."""
-    return FlextWebConfig(
-        host="localhost",
-        port=8081,  # Use different port to avoid conflicts
-        debug=True,
-        secret_key="test-secret-key-32-characters-long!!",
-    )
+    return FlextWebConfigs.create_testing_config()
 
 
 @pytest.fixture
-def real_service(real_config: FlextWebConfig) -> Generator[FlextWebService]:
-    """Create real FlextWebService instance with clean state."""
-    service = create_service(real_config)
+def real_service(
+    real_config: FlextWebConfigs.WebConfig,
+) -> Generator[FlextWebServices.WebService]:
+    """Create real FlextWebServices.WebService instance with clean state."""
+    service = FlextWebServices.create_web_service(real_config)
     yield service
     # Clean up service state after each test
     service.apps.clear()
 
 
 @pytest.fixture
-def real_app(real_config: FlextWebConfig) -> Flask:
+def real_app(real_config: FlextWebConfigs.WebConfig) -> Flask:
     """Create real Flask app."""
-    return create_app(real_config)
+    return FlextWebServices.create_flask_app(real_config)
 
 
 @pytest.fixture
-def running_service(real_config: FlextWebConfig) -> Generator[FlextWebService]:
+def running_service(
+    real_config: FlextWebConfigs.WebConfig,
+) -> Generator[FlextWebServices.WebService]:
     """Start real service in background thread with clean state."""
     # Allocate unique port to avoid conflicts
     test_port = TestPortManager.allocate_port()
 
-    test_config = FlextWebConfig(
-        host=real_config.host,
-        port=test_port,
-        debug=real_config.debug,
-        secret_key=real_config.secret_key,
+    test_config = FlextWebConfigs.WebConfig.model_validate(
+        {
+            "host": real_config.host,
+            "port": test_port,
+            "debug": real_config.debug,
+            "secret_key": real_config.secret_key,
+        }
     )
 
-    service = FlextWebService(test_config)
+    service = FlextWebServices.WebService(test_config)
 
     # Start service in background thread
     def run_service() -> None:

@@ -17,41 +17,39 @@ import requests
 from flext_core import FlextModels
 
 from flext_web import (
-    FlextWebApp,
-    FlextWebAppHandler,
-    FlextWebAppStatus,
-    FlextWebAuthenticationError,
-    FlextWebConfig,
-    FlextWebConfigurationError,
-    FlextWebConnectionError,
-    FlextWebError,
-    FlextWebMiddlewareError,
-    FlextWebProcessingError,
-    FlextWebRoutingError,
-    FlextWebService,
-    FlextWebSessionError,
-    FlextWebTemplateError,
-    FlextWebTimeoutError,
-    FlextWebValidationError,
+    FlextWebConfigs,
+    FlextWebModels,
+    FlextWebServices,
     create_service,
-    get_web_settings,
-    reset_web_settings,
 )
+from flext_web.exceptions import FlextWebExceptions
+
+# Use nested classes from FlextWebExceptions
+FlextWebError = FlextWebExceptions.WebError
+FlextWebValidationError = FlextWebExceptions.WebValidationError
+FlextWebConnectionError = FlextWebExceptions.WebConnectionError
+FlextWebAuthenticationError = FlextWebExceptions.WebAuthenticationError
+FlextWebMiddlewareError = FlextWebExceptions.WebMiddlewareError
+FlextWebProcessingError = FlextWebExceptions.WebProcessingError
+FlextWebRoutingError = FlextWebExceptions.WebRoutingError
+FlextWebSessionError = FlextWebExceptions.WebSessionError
+FlextWebTemplateError = FlextWebExceptions.WebTemplateError
+FlextWebTimeoutError = FlextWebExceptions.WebTimeoutError
 
 
 class TestMissingCoverage:
     """Tests targeting specific missing coverage areas."""
 
     @pytest.fixture
-    def real_missing_service(self) -> Generator[FlextWebService]:
+    def real_missing_service(self) -> Generator[FlextWebServices.WebService]:
         """Create real running service for missing coverage tests."""
-        config = FlextWebConfig(
+        config = FlextWebConfigs.WebConfig(
             host="localhost",
             port=8096,  # Unique port for missing coverage tests
             debug=True,
             secret_key="missing-test-secret-32-characters-long!",
         )
-        service = FlextWebService(config)
+        service = FlextWebServices.WebService(config)
 
         def run_service() -> None:
             service.app.run(
@@ -75,7 +73,7 @@ class TestMissingCoverage:
         """Test port validation failure path through Pydantic validation."""
         # Test Pydantic validation catches invalid ports during construction
         with pytest.raises(ValueError, match="port"):
-            FlextWebApp(
+            FlextWebModels.WebApp(
                 id=FlextModels.EntityId("test_invalid_port_high"),
                 name="test-app",
                 port=99999,  # Too high for Pydantic
@@ -83,7 +81,7 @@ class TestMissingCoverage:
             )
 
         with pytest.raises(ValueError, match="port"):
-            FlextWebApp(
+            FlextWebModels.WebApp(
                 id=FlextModels.EntityId("test_invalid_port_low"),
                 name="test-app",
                 port=0,  # Too low for Pydantic
@@ -91,7 +89,7 @@ class TestMissingCoverage:
             )
 
         # Test normal case where port is valid
-        app = FlextWebApp(
+        app = FlextWebModels.WebApp(
             id=FlextModels.EntityId("test_valid_port"),
             name="test-app",
             port=8080,  # Valid port
@@ -103,7 +101,7 @@ class TestMissingCoverage:
     def test_app_empty_name_validation(self) -> None:
         """Test empty name validation failure path."""
         # Use model_construct to bypass Pydantic validation and test domain validation
-        app = FlextWebApp.model_construct(
+        app = FlextWebModels.WebApp.model_construct(
             id=FlextModels.EntityId("test_empty_name"),
             name="",  # Empty name should fail validation
             port=8080,
@@ -112,20 +110,22 @@ class TestMissingCoverage:
         result = app.validate_domain_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "Application name cannot be empty" in result.error
+        assert "application name" in result.error.lower()
 
     def test_config_validation_failure_paths(self) -> None:
         """Test configuration validation failure scenarios."""
         # Test invalid port in config
         with pytest.raises(ValueError, match=r"port|range"):
-            FlextWebConfig(port=70000, secret_key="valid-32-char-key-for-testing-ok!")
+            FlextWebConfigs.WebConfig(
+                port=70000, secret_key="valid-32-char-key-for-testing-ok!"
+            )
 
         # Test invalid secret key length
         with pytest.raises(ValueError, match=r"secret.*key|length"):
-            FlextWebConfig(secret_key="short")
+            FlextWebConfigs.WebConfig(secret_key="short")
 
     def test_service_error_response_creation(
-        self, real_missing_service: FlextWebService
+        self, real_missing_service: FlextWebServices.WebService
     ) -> None:
         """Test error response creation paths using real HTTP."""
         assert real_missing_service is not None
@@ -142,7 +142,7 @@ class TestMissingCoverage:
 
     def test_handler_create_with_real_exceptions(self) -> None:
         """Test handler create method with REAL validation exceptions."""
-        handler = FlextWebAppHandler()
+        handler = FlextWebModels.WebAppHandler()
 
         # Test with genuinely invalid parameters that cause real exceptions
         # Empty name should cause real validation failure
@@ -162,12 +162,12 @@ class TestMissingCoverage:
 
     def test_app_start_already_running(self) -> None:
         """Test starting an app that's already running."""
-        app = FlextWebApp(
+        app = FlextWebModels.WebApp(
             id=FlextModels.EntityId("test_running"),
             name="running-app",
             port=8080,
             host="localhost",
-            status=FlextWebAppStatus.RUNNING,
+            status=FlextWebModels.WebAppStatus.RUNNING,
         )
 
         result = app.start()
@@ -176,12 +176,12 @@ class TestMissingCoverage:
 
     def test_app_stop_already_stopped(self) -> None:
         """Test stopping an app that's already stopped."""
-        app = FlextWebApp(
+        app = FlextWebModels.WebApp(
             id=FlextModels.EntityId("test_stopped"),
             name="stopped-app",
             port=8080,
             host="localhost",
-            status=FlextWebAppStatus.STOPPED,
+            status=FlextWebModels.WebAppStatus.STOPPED,
         )
 
         result = app.stop()
@@ -190,29 +190,34 @@ class TestMissingCoverage:
 
     def test_service_run_method_error_paths(self) -> None:
         """Test service run method error handling."""
-        config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
-        service = FlextWebService(config)
+        config = FlextWebConfigs.WebConfig(
+            secret_key="test-key-32-characters-long-valid!"
+        )
+        service = FlextWebServices.WebService(config)
 
         # Test that service has run method
         assert hasattr(service, "run")
         assert callable(service.run)
 
-    def test_get_web_settings_singleton_behavior(self) -> None:
+    def test_web_config_singleton_behavior(self) -> None:
         """Test settings singleton and caching behavior."""
         # Clear any cached instance first using the reset function
 
-        reset_web_settings()
+        # reset_web_settings()
 
         # Test first call creates instance
-        settings1 = get_web_settings()
+        settings1 = FlextWebConfigs.create_web_config()
 
-        # Test second call returns cached instance
-        settings2 = get_web_settings()
+        # Test second call creates equivalent configuration
+        settings2 = FlextWebConfigs.create_web_config()
 
-        assert settings1 is settings2
+        # Test configuration consistency
+        assert settings1.host == settings2.host
+        assert settings1.port == settings2.port
+        assert settings1.secret_key == settings2.secret_key
 
     def test_service_dashboard_with_error_handling(
-        self, real_missing_service: FlextWebService
+        self, real_missing_service: FlextWebServices.WebService
     ) -> None:
         """Test dashboard rendering with various app states using real HTTP."""
         assert real_missing_service is not None
@@ -240,21 +245,23 @@ class TestMissingCoverage:
 
     def test_service_create_factory_function(self) -> None:
         """Test service creation factory function."""
-        config = FlextWebConfig(secret_key="test-key-32-characters-long-valid!")
+        config = FlextWebConfigs.WebConfig(
+            secret_key="test-key-32-characters-long-valid!"
+        )
         service = create_service(config)
 
-        assert isinstance(service, FlextWebService)
+        assert isinstance(service, FlextWebServices.WebService)
         assert service.config is config
 
     def test_service_create_with_none_config(self) -> None:
         """Test service creation with None config."""
         service = create_service(None)
 
-        assert isinstance(service, FlextWebService)
-        assert isinstance(service.config, FlextWebConfig)
+        assert isinstance(service, FlextWebServices.WebService)
+        assert isinstance(service.config, FlextWebConfigs.WebConfig)
 
     def test_comprehensive_api_workflow_with_edge_cases(
-        self, real_missing_service: FlextWebService
+        self, real_missing_service: FlextWebServices.WebService
     ) -> None:
         """Test complete API workflow with edge cases using real HTTP."""
         assert real_missing_service is not None
@@ -313,7 +320,7 @@ class TestExceptionCoverage:
             (FlextWebError, ("Test error", "/api/test")),
             (FlextWebValidationError, ("Validation failed", "field", "value", "form")),
             (FlextWebAuthenticationError, ("Auth failed", "basic", "/login")),
-            (FlextWebConfigurationError, ("Config error", "secret_key")),
+            (FlextWebExceptions.WebConfigurationError, ("Config error", "secret_key")),
             (FlextWebConnectionError, ("Connection failed", "localhost", 8080)),
             (FlextWebProcessingError, ("Processing failed", "handler", "/api/process")),
             (FlextWebTimeoutError, ("Timeout", "/api/slow", 30.0)),

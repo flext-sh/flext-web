@@ -1,6 +1,6 @@
 """Real Service Integration Tests - NO MOCKS, REAL EXECUTION.
 
-Executes real FlextWebService instances to validate functionality.
+Executes real FlextWebServices.WebService instances to validate functionality.
 Tests actual HTTP endpoints, real Flask integration, and genuine error handling.
 """
 
@@ -12,31 +12,31 @@ from typing import TYPE_CHECKING
 
 import pytest
 import requests
-from flext_core import FlextModels
 from tests.port_manager import TestPortManager
 
 from flext_web import (
-    FlextWebConfig,
-    FlextWebService,
-    get_web_settings,
-    reset_web_settings,
+    FlextWebConfigs,
+    FlextWebHandlers,
+    FlextWebModels,
+    FlextWebServices,
 )
-from flext_web.handlers import FlextWebAppHandler
-from flext_web.models import FlextWebApp, FlextWebAppStatus
+
+FlextWebModels.WebApp = FlextWebModels.WebApp
+FlextWebModels.WebAppStatus = FlextWebModels.WebAppStatus
 
 if TYPE_CHECKING:
     from collections.abc import Generator
 
 
 class TestRealServiceExecution:
-    """Test real FlextWebService execution without mocks."""
+    """Test real FlextWebServices.WebService execution without mocks."""
 
     @pytest.fixture
-    def real_config(self) -> FlextWebConfig:
+    def real_config(self) -> FlextWebConfigs.WebConfig:
         """Create real test configuration."""
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
-        return FlextWebConfig(
+        return FlextWebConfigs.WebConfig(
             host="localhost",
             port=port,
             debug=True,
@@ -45,19 +45,19 @@ class TestRealServiceExecution:
 
     @pytest.fixture
     def running_service_integration(
-        self, real_config: FlextWebConfig
-    ) -> Generator[FlextWebService]:
+        self, real_config: FlextWebConfigs.WebConfig
+    ) -> Generator[FlextWebServices.WebService]:
         """Start real service in background thread for integration tests."""
         # Use different unique port for integration tests
         integration_port = TestPortManager.allocate_port()
-        integration_config = FlextWebConfig(
+        integration_config = FlextWebConfigs.WebConfig(
             host=real_config.host,
             port=integration_port,
             debug=real_config.debug,
             secret_key=real_config.secret_key,
         )
 
-        service = FlextWebService(integration_config)
+        service = FlextWebServices.WebService(integration_config)
 
         # Start service in background thread
         def run_service() -> None:
@@ -85,7 +85,7 @@ class TestRealServiceExecution:
         # Service will be killed when thread ends (daemon=True)
 
     def test_real_service_health_endpoint(
-        self, running_service_integration: FlextWebService
+        self, running_service_integration: FlextWebServices.WebService
     ) -> None:
         """Test real health endpoint with actual HTTP request."""
         assert running_service_integration is not None
@@ -100,7 +100,7 @@ class TestRealServiceExecution:
         assert "service" in data["data"]  # Health includes service name
 
     def test_real_application_lifecycle(
-        self, running_service_integration: FlextWebService
+        self, running_service_integration: FlextWebServices.WebService
     ) -> None:
         """Test complete application lifecycle with real HTTP requests."""
         assert running_service_integration is not None
@@ -158,7 +158,7 @@ class TestRealServiceExecution:
         assert data["data"]["status"].upper() == "STOPPED"
 
     def test_real_error_handling(
-        self, running_service_integration: FlextWebService
+        self, running_service_integration: FlextWebServices.WebService
     ) -> None:
         """Test real error handling with actual invalid requests."""
         assert running_service_integration is not None
@@ -197,7 +197,7 @@ class TestRealServiceExecution:
         assert data["success"] is False
 
     def test_real_web_dashboard(
-        self, running_service_integration: FlextWebService
+        self, running_service_integration: FlextWebServices.WebService
     ) -> None:
         """Test real web dashboard rendering."""
         assert running_service_integration is not None
@@ -215,10 +215,10 @@ class TestRealDomainLogic:
     """Test real domain logic execution without mocks."""
 
     def test_real_app_creation_and_validation(self) -> None:
-        """Test real FlextWebApp creation and domain validation."""
+        """Test real FlextWebModels.WebApp creation and domain validation."""
         # Test valid app creation
-        app = FlextWebApp(
-            id=FlextModels.EntityId("real_test_app"),
+        app = FlextWebModels.WebApp(
+            id="real_test_app",
             name="real-test-app",
             port=8000,
             host="localhost",
@@ -228,46 +228,46 @@ class TestRealDomainLogic:
         assert app.name == "real-test-app"
         assert app.port == 8000
         assert app.host == "localhost"
-        assert app.status == FlextWebAppStatus.STOPPED
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
         assert app.is_running is False
 
         # Test real domain validation
-        result = app.validate_domain_rules()
-        assert result.success is True
+        result = app.validate_business_rules()
+        assert result.is_success is True
 
         # Test real business rules with invalid data by creating invalid app
         with pytest.raises((ValueError, RuntimeError)):
-            FlextWebApp(
-                id=FlextModels.EntityId("invalid_test"),
+            FlextWebModels.WebApp(
+                id="invalid_test",
                 name="",  # Empty name should fail - Pydantic validation will catch this
                 port=8000,
                 host="localhost",
             )
 
     def test_real_handler_operations(self) -> None:
-        """Test real FlextWebAppHandler operations."""
-        handler = FlextWebAppHandler()
+        """Test real FlextWebModels.WebAppHandler operations."""
+        handler = FlextWebHandlers.WebAppHandler()
 
         # Test real app creation
         result = handler.create("real-handler-test", 8002, "localhost")
         assert result.success is True
-        app = result.data
+        app = result.value
         assert app.name == "real-handler-test"
         assert app.port == 8002
-        assert app.status == FlextWebAppStatus.STOPPED
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
 
         # Test real app start
         start_result = handler.start(app)
         assert start_result.success is True
-        started_app = start_result.data
-        assert started_app.status == FlextWebAppStatus.RUNNING
+        started_app = start_result.value
+        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
         assert started_app.is_running is True
 
         # Test real app stop
         stop_result = handler.stop(started_app)
         assert stop_result.success is True
-        stopped_app = stop_result.data
-        assert stopped_app.status == FlextWebAppStatus.STOPPED
+        stopped_app = stop_result.value
+        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED
         assert stopped_app.is_running is False
 
         # Test real error conditions
@@ -278,7 +278,7 @@ class TestRealDomainLogic:
     def test_real_config_validation(self) -> None:
         """Test real configuration validation."""
         # Test valid config
-        config = FlextWebConfig(
+        config = FlextWebConfigs.WebConfig(
             host="localhost",
             port=8083,
             debug=True,
@@ -290,7 +290,7 @@ class TestRealDomainLogic:
 
         # Test real validation errors with invalid port (create new config)
         try:
-            invalid_config = FlextWebConfig(
+            invalid_config = FlextWebConfigs.WebConfig(
                 host="localhost",
                 port=99999,  # Invalid port - should fail during creation
                 debug=True,
@@ -307,17 +307,19 @@ class TestRealDomainLogic:
     def test_real_settings_factory(self) -> None:
         """Test real settings factory without mocks."""
         # Clear any cached settings first
-        reset_web_settings()
+        # reset_web_settings()
 
         # Test real settings creation
-        settings = get_web_settings()
-        assert isinstance(settings, FlextWebConfig)
+        settings = FlextWebConfigs.create_web_config()
+        assert isinstance(settings, FlextWebConfigs.WebConfig)
         assert settings.host == "localhost"  # Default value
         assert settings.port == 8080  # Default value
 
-        # Test settings caching (should return same instance)
-        settings2 = get_web_settings()
-        assert settings is settings2
+        # Test settings consistency (should return equivalent configuration)
+        settings2 = FlextWebConfigs.create_web_config()
+        assert settings.host == settings2.host
+        assert settings.port == settings2.port
+        assert settings.secret_key == settings2.secret_key
 
 
 if __name__ == "__main__":

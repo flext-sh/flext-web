@@ -1,66 +1,153 @@
-"""FLEXT Web Models - Consolidated domain model system extending flext-core patterns.
+"""FLEXT Web Models - Consolidated web model system with enterprise patterns.
 
-This module implements the consolidated model architecture following the
-"one class per module" pattern, with FlextWebModels extending FlextHandlers
-and containing all web-specific model functionality as nested classes.
+CONSOLIDAÇÃO COMPLETA seguindo flext-core architectural patterns:
+- Apenas UMA classe FlextWebModels com toda funcionalidade
+- Todas as outras classes antigas removidas completamente
+- Arquitetura hierárquica seguindo padrão FLEXT estrito
+- Python 3.13+ com Pydantic avançado sem compatibilidade legada
+
+Architecture Overview:
+    FlextWebModels - Single consolidated class containing:
+        - Nested classes for web-specific models (WebApp, WebAppStatus, etc.)
+        - Factory methods for creating instances with validation
+        - Configuration methods for web system setup
+        - Utility methods for web operations and management
+
+Examples:
+    Using consolidated FlextWebModels:
+        app = FlextWebModels.WebApp(id="web_123", name="MyApp", port=8080)
+        handler = FlextWebModels.WebAppHandler()
+        config = FlextWebModels.create_web_app_config({"host": "0.0.0.0"})
+
+Copyright (c) 2025 FLEXT Contributors
+SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
 
+import uuid
 from enum import Enum
 from typing import override
 
 from flext_core import (
-    FlextModels.Entity,
-    FlextModels.EntityId,
-    FlextModel,
+    FlextConstants,
+    FlextModels,
     FlextResult,
+    FlextTypes,
 )
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Field, computed_field, field_validator
 
-# =============================================================================
-# CONSOLIDATED MODELS CLASS
-# =============================================================================
+# Import local constants and types for DIRECT usage - NO ALIASES - PRIORITIZING LOCAL LIBRARY
+from flext_web.constants import FlextWebConstants
+from flext_web.typings import FlextWebTypes
 
 
-class FlextWebModels(FlextModel):
-    """Consolidated web model system extending flext-core patterns.
+class FlextWebModels:
+    """Consolidated FLEXT web model system providing all domain modeling functionality.
 
-    This class serves as the single point of access for all web-specific
-    model functionality while extending FlextModel from flext-core
-    for proper architectural inheritance.
+    This is the complete web model system for the FLEXT Web ecosystem, providing a unified
+    approach to domain modeling using FlextModels as foundation and extending with
+    web-specific patterns. All web model types are organized as nested classes within
+    this single container for consistent configuration and easy access.
 
-    All model functionality is accessible through this single class following the
-    "one class per module" architectural requirement.
+    Architecture Overview:
+        The system is organized following Domain-Driven Design and flext-core patterns:
+
+        - **Base Configuration**: Common configuration extending FlextModels.BaseConfig
+        - **Domain Models**: Web application entities with state management
+        - **Status Management**: Application lifecycle status with state transitions
+        - **Validation Models**: Input/output validation for web operations
+        - **Factory Methods**: Safe creation methods returning FlextResult
+        - **Configuration Methods**: Web system configuration with environment support
+
+    Design Patterns:
+        - **Single Point of Truth**: All web models defined in one location
+        - **Type Safety**: Comprehensive generic type annotations and validation
+        - **Railway Programming**: Factory methods return FlextResult for error handling
+        - **Domain-Driven Design**: Clear separation of web domain concerns
+        - **State Machine**: Application lifecycle with defined transitions
+        - **CQRS**: Command handlers separate from domain entities
+        - **flext-core Integration**: Built on FlextModels foundation
+
+    Usage Examples:
+        Web application management::
+
+            # Create application with factory method
+            app_result = FlextWebModels.create_web_app({
+                "id": "app_123",
+                "name": "MyWebApp",
+                "host": "localhost",
+                "port": 8080,
+            })
+
+            # Use CQRS handler
+            handler = FlextWebModels.WebAppHandler()
+            start_result = handler.start_app("app_123")
+
+        Configuration management::
+
+            # Create web system configuration
+            config_result = FlextWebModels.create_web_system_config({
+                "environment": "production",
+                "max_apps": 50,
+                "default_host": "0.0.0.0",
+            })
+
+    Note:
+        This consolidated approach follows flext-core architectural patterns,
+        ensuring consistency across the FLEXT ecosystem while providing
+        web-specific domain functionality.
+
     """
 
-    # =========================================================================
-    # NESTED MODEL CLASSES
-    # =========================================================================
+    # =============================================================================
+    # BASE MODEL CONFIGURATION EXTENDING FLEXTMODELS
+    # =============================================================================
+
+    class BaseWebConfig(FlextModels.BaseConfig):
+        """Base configuration class for all FLEXT Web models extending flext-core patterns.
+
+        Extends FlextModels.BaseConfig with web-specific validation and serialization
+        optimizations while maintaining full compatibility with flext-core ecosystem.
+        """
+
+        # Base configuration for web models
+        model_config = ConfigDict(
+            str_strip_whitespace=True,
+            validate_assignment=True,
+            use_enum_values=False,  # Keep enums as objects for web operations
+            extra="forbid",
+            frozen=False,
+        )
+
+    # =============================================================================
+    # DOMAIN MODEL CLASSES
+    # =============================================================================
 
     class WebAppStatus(Enum):
-        """Web application status enumeration with state transition rules.
+        """Web application status enumeration with state machine patterns.
 
-        Defines the possible states for web applications within the FLEXT ecosystem,
-        following state machine patterns for reliable application lifecycle management.
+        Defines the complete application lifecycle states within the FLEXT Web ecosystem,
+        following state machine patterns for reliable application management and monitoring.
 
         States:
-          STOPPED: Application is not running and can be started
-          STARTING: Application is in the process of starting (transitional)
-          RUNNING: Application is actively running and operational
-          STOPPING: Application is in the process of stopping (transitional)
-          ERROR: Application encountered an error and requires intervention
+            - STOPPED: Application is not running and ready to start
+            - STARTING: Transitional state during application startup
+            - RUNNING: Application is actively running and operational
+            - STOPPING: Transitional state during application shutdown
+            - ERROR: Application encountered an error requiring intervention
 
         State Transitions:
-          STOPPED -> STARTING -> RUNNING
-          RUNNING -> STOPPING -> STOPPED
-          object state -> ERROR (on failure)
-          ERROR -> STOPPED (on recovery)
+            - STOPPED -> STARTING -> RUNNING (normal startup)
+            - RUNNING -> STOPPING -> STOPPED (normal shutdown)
+            - Any state -> ERROR (on failure)
+            - ERROR -> STOPPED (on recovery)
 
         Business Rules:
-          - Applications can only be started from STOPPED or ERROR states
-          - Applications can only be stopped from RUNNING or ERROR states
-          - Transitional states (STARTING, STOPPING) prevent new operations
+            - Applications can only start from STOPPED or ERROR states
+            - Applications can only stop from RUNNING or ERROR states
+            - Transitional states prevent new operations until completion
         """
 
         STOPPED = "stopped"
@@ -70,372 +157,443 @@ class FlextWebModels(FlextModel):
         ERROR = "error"
 
     class WebApp(FlextModels.Entity):
-        """Web application domain entity with lifecycle management capabilities.
+        """Web application domain entity with lifecycle management and state machine.
 
-        Rich domain entity representing a web application within the FLEXT ecosystem.
-        Implements business rules for application lifecycle management, state transitions,
-        and validation using flext-core foundation patterns.
+        Rich domain entity representing a web application within the FLEXT Web ecosystem.
+        Implements complete business rules for application lifecycle, state transitions,
+        and validation using flext-core foundation patterns with railway-oriented programming.
 
         The entity follows Domain-Driven Design principles with encapsulated business
-        logic, consistent state management, and comprehensive validation rules.
+        logic, consistent state management, comprehensive validation, and state machine patterns.
 
         Attributes:
-          name: Unique application identifier within the system
-          host: Network host address for application binding
-          port: Network port number (1-65535) for application services
-          status: Current application state following defined state machine
+            name: Unique application identifier within the system
+            host: Network host address for application binding
+            port: Network port number (1-65535) for application services
+            status: Current application state following state machine rules
 
-        Inherited Attributes:
-          id: Unique entity identifier (from FlextModels.Entity)
+        Inherited Attributes (from FlextModels.Entity):
+            id: Unique entity identifier
+            version: Entity version for optimistic locking
+            created_at: Creation timestamp
+            updated_at: Last modification timestamp
+            domain_events: Collection of domain events
 
         Business Rules:
-          - Application names must be non-empty strings
-          - Port numbers must be within valid range (1-65535)
-          - State transitions must follow defined state machine
-          - Only one application per host:port combination
+            - Application names must be non-empty and unique
+            - Port numbers must be within valid range (1-65535)
+            - Host addresses must be valid network addresses
+            - State transitions must follow defined state machine
+            - Applications must validate before state changes
 
         Integration:
-          - Uses FlextValidators for consistent validation patterns
-          - Returns FlextResult for railway-oriented programming
-          - Integrates with WebAppHandler for CQRS operations
-          - Compatible with repository patterns for persistence
-
-        Example:
-          Creating and managing an application:
-
-          >>> app = FlextWebModels.WebApp(
-          ...     id="app_web-service", name="web-service", host="localhost", port=3000
-          ... )
-          >>> result = app.start()
-          >>> if result.success:
-          ...     updated_app = result.value
-          ...     print(
-          ...         f"Started: {updated_app.name} on {updated_app.host}:{updated_app.port}"
-          ...     )
+            - Built on FlextModels.Entity foundation
+            - Uses FlextResult for railway-oriented programming
+            - Integrates with WebAppHandler for CQRS operations
+            - Compatible with FlextServices patterns for processing
 
         """
 
-        # Ensure enums are kept as Enum instances for attribute access/tests
-        model_config = ConfigDict(
-            use_enum_values=False,
-        )
-
-        name: str = Field(description="Application name")
+        # Web application fields
+        name: str = Field(..., min_length=1, description="Application name")
         host: str = Field(default="localhost", description="Host address")
-        port: int = Field(default=8000, ge=1, le=65535, description="Port number")
-        status: FlextWebModels.WebAppStatus | None = Field(
-            default=None,
+        port: int = Field(
+            default=8080,
+            ge=FlextWebConstants.WebSpecific.MIN_PORT,
+            le=FlextWebConstants.WebSpecific.MAX_PORT,
+            description="Port number"
+        )
+        status: FlextWebModels.WebAppStatus = Field(
+            default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED,
             description="Application status",
         )
 
         @field_validator("name")
         @classmethod
         def validate_name(cls, v: str) -> str:
-            """Validate application name is non-empty."""
+            """Validate application name with comprehensive rules."""
             if not v or not v.strip():
                 msg = "Application name cannot be empty"
                 raise ValueError(msg)
-            return v
+
+            # Check reserved names
+            reserved_names = {"REDACTED_LDAP_BIND_PASSWORD", "root", "api", "system"}
+            if v.lower() in reserved_names:
+                msg = f"Application name '{v}' is reserved"
+                raise ValueError(msg)
+
+            return v.strip()
 
         @field_validator("host")
         @classmethod
         def validate_host(cls, v: str) -> str:
-            """Validate host address is non-empty."""
+            """Validate host address format."""
             if not v or not v.strip():
                 msg = "Host address cannot be empty"
                 raise ValueError(msg)
-            return v
-
-        @field_validator("port")
-        @classmethod
-        def validate_port(cls, v: int) -> int:
-            """Validate port is within valid range."""
-            max_port_number = 65535
-            if not (1 <= v <= max_port_number):
-                msg = "Port must be between 1 and 65535"
-                raise ValueError(msg)
-            return v
-
-        @field_validator("status", mode="before")
-        @classmethod
-        def _coerce_status(cls, v: object) -> FlextWebModels.WebAppStatus:
-            """Coerce incoming status to enum for consistent attribute access."""
-            # If it's already an enum, return it
-            if hasattr(v, "value") and hasattr(v, "name"):
-                return v  # type: ignore[return-value]
-
-            # If None or not provided, set default to STOPPED
-            if v is None:
-                v = "stopped"
-
-            # Use the proper WebAppStatus enum instead of local enum
-            try:
-                return FlextWebModels.WebAppStatus(str(v))
-            except Exception:
-                return FlextWebModels.WebAppStatus.ERROR
+            return v.strip()
 
         @override
         def validate_business_rules(self) -> FlextResult[None]:
-            """Validate application according to domain business rules.
+            """Validate web application business rules with comprehensive checks."""
+            try:
+                # Name validation
+                if not self.name or not self.name.strip():
+                    return FlextResult[None].fail("Application name is required")
 
-            Performs comprehensive validation of the application entity using
-            flext-core validation patterns. Ensures all business rules are
-            satisfied before allowing operations on the entity.
+                # Port validation
+                min_port = FlextWebConstants.WebSpecific.MIN_PORT
+                max_port = FlextWebConstants.WebSpecific.MAX_PORT
+                if not (min_port <= self.port <= max_port):
+                    return FlextResult[None].fail(f"Port must be between {min_port} and {max_port}")
 
-            Returns:
-                FlextResult[None]: Success if all validations pass, failure with
-                detailed error message if any validation rule is violated.
+                # Host validation
+                if not self.host or not self.host.strip():
+                    return FlextResult[None].fail("Host address is required")
 
-            Note:
-                Basic field validations are now handled by @field_validator decorators.
-                This method performs additional domain business rules validation.
+                # Status is validated by Pydantic field definition
 
-            Example:
-                >>> app = FlextWebModels.WebApp(
-                ...     name="test", host="localhost", port=3000
-                ... )
-                >>> result = app.validate_business_rules()
-                >>> if result.success:
-                ...     print("Application is valid")
-                ... else:
-                ...     print(f"Validation failed: {result.error}")
+                return FlextResult[None].ok(None)
 
-            """
-            # Validate name is not empty (critical for application operations)
-            if not self.name or not self.name.strip():
-                return FlextResult[None].fail("Application name cannot be empty")
+            except Exception as e:
+                return FlextResult[None].fail(f"Business rule validation failed: {e}")
 
-            # Validate port range
-            max_port = 65535
-            if not (1 <= self.port <= max_port):
-                return FlextResult[None].fail(
-                    f"Invalid port number: must be between 1 and {max_port}"
-                )
-
-            # Validate host is not empty
-            if not self.host or not self.host.strip():
-                return FlextResult[None].fail("Host cannot be empty")
-
-            # Additional business rule validations can be added here as needed
-            return FlextResult[None].ok(None)
-
-        def validate_domain_rules(self) -> FlextResult[None]:
-            """Validate business rules required by FlextModels.Entity abstract method."""
-            return self.validate_business_rules()
-
-        def _status_enum(self) -> FlextWebModels.WebAppStatus:
-            """Return status as WebAppStatus regardless of storage format.
-
-            flext-core base models enable `use_enum_values=True`, which means fields
-            typed as Enum may be stored internally as their raw value (e.g. str).
-            This helper guarantees robust comparisons by coercing to Enum.
-            """
-            # Status is guaranteed to be WebAppStatus by Pydantic validator
-            # If somehow None, return STOPPED as default
-            if self.status is None:
-                return FlextWebModels.WebAppStatus.STOPPED
-            return self.status
-
-        @property
-        def status_value(self) -> str:
-            """Return status value as string, robust to enum/str storage."""
-            return self._status_enum().value
-
-        @property
-        def status_name(self) -> str:
-            """Return status name as string, robust to enum/str storage."""
-            return self._status_enum().name
-
-        @property
+        @computed_field
         def is_running(self) -> bool:
-            """Check if application is currently in running state.
+            """Check if application is currently running."""
+            return self.status == FlextWebModels.WebAppStatus.RUNNING
 
-            Convenience property for determining if the application is actively
-            running and operational. Used by monitoring systems and status checks.
+        @computed_field
+        def can_start(self) -> bool:
+            """Check if application can be started."""
+            return self.status in {
+                FlextWebModels.WebAppStatus.STOPPED,
+                FlextWebModels.WebAppStatus.ERROR,
+            }
 
-            Returns:
-                bool: True if application status is RUNNING, False otherwise.
-
-            Note:
-                This property only checks the current status. It does not verify
-                actual process state or network connectivity. For comprehensive
-                health checks, use monitoring integration patterns.
-
-            Example:
-                >>> app = FlextWebModels.WebApp(
-                ...     name="service", status=FlextWebModels.WebAppStatus.RUNNING
-                ... )
-                >>> if app.is_running:
-                ...     print("Application is operational")
-
-            """
-            return self._status_enum() == FlextWebModels.WebAppStatus.RUNNING
+        @computed_field
+        def can_stop(self) -> bool:
+            """Check if application can be stopped."""
+            return self.status in {
+                FlextWebModels.WebAppStatus.RUNNING,
+                FlextWebModels.WebAppStatus.ERROR,
+            }
 
         def start(self) -> FlextResult[FlextWebModels.WebApp]:
-            """Start application with state transition validation.
-
-            Initiates application startup following defined business rules and
-            state machine constraints. Validates current state allows starting
-            and returns updated entity with new state.
-
-            Returns:
-                FlextResult[WebApp]: Success contains updated application entity
-                with RUNNING status, failure contains error message explaining why
-                the application cannot be started.
-
-            Business Rules:
-                - Application must be in STOPPED or ERROR state to start
-                - Applications in STARTING state cannot be started again
-                - Applications already RUNNING cannot be started
-                - State transition is atomic and consistent
-
-            Side Effects:
-                - Updates application status to RUNNING on success
-                - Triggers domain events for monitoring and integration
-                - May update timestamp fields through FlextModels.TimestampMixin
-
-            Example:
-                >>> app = FlextWebModels.WebApp(
-                ...     name="service", status=FlextWebModels.WebAppStatus.STOPPED
-                ... )
-                >>> result = app.start()
-                >>> if result.success:
-                ...     running_app = result.value
-                ...     print(f"Started {running_app.name}: {running_app.is_running}")
-                ... else:
-                ...     print(f"Cannot start: {result.error}")
-
-            """
-            status = self._status_enum()
-            if status == FlextWebModels.WebAppStatus.RUNNING:
-                return FlextResult["FlextWebModels.WebApp"].fail(
-                    "Application already running"
+            """Start application with state machine validation."""
+            if not self.can_start:
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    f"Application cannot start from {self.status} state"
                 )
-            if status == FlextWebModels.WebAppStatus.STARTING:
-                return FlextResult["FlextWebModels.WebApp"].fail(
-                    "Application already starting"
+
+            try:
+                updated_app = self.model_copy(
+                    update={
+                        "status": FlextWebModels.WebAppStatus.RUNNING,
+                        "version": self.version + 1,
+                    }
                 )
-            return FlextResult["FlextWebModels.WebApp"].ok(
-                self.model_copy(update={"status": FlextWebModels.WebAppStatus.RUNNING}),
-            )
+                return FlextResult[FlextWebModels.WebApp].ok(updated_app)
+            except Exception as e:
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    f"Application start failed: {e}"
+                )
 
         def stop(self) -> FlextResult[FlextWebModels.WebApp]:
-            """Stop application with graceful state transition.
-
-            Initiates application shutdown following defined business rules and
-            state machine constraints. Validates current state allows stopping
-            and returns updated entity with new state.
-
-            Returns:
-                FlextResult[WebApp]: Success contains updated application entity
-                with STOPPED status, failure contains error message explaining why
-                the application cannot be stopped.
-
-            Business Rules:
-                - Application must be in RUNNING or ERROR state to stop
-                - Applications already STOPPED cannot be stopped again
-                - Applications in STOPPING state cannot be stopped again
-                - State transition is atomic and consistent
-
-            Side Effects:
-                - Updates application status to STOPPED on success
-                - Triggers domain events for monitoring and integration
-                - May update timestamp fields through FlextModels.TimestampMixin
-                - Allows cleanup and resource release operations
-
-            Example:
-                >>> app = FlextWebModels.WebApp(
-                ...     name="service", status=FlextWebModels.WebAppStatus.RUNNING
-                ... )
-                >>> result = app.stop()
-                >>> if result.success:
-                ...     stopped_app = result.value
-                ...     print(
-                ...         f"Stopped {stopped_app.name}: {not stopped_app.is_running}"
-                ...     )
-                ... else:
-                ...     print(f"Cannot stop: {result.error}")
-
-            """
-            status = self._status_enum()
-            if status == FlextWebModels.WebAppStatus.STOPPED:
-                return FlextResult["FlextWebModels.WebApp"].fail(
-                    "Application already stopped"
+            """Stop application with state machine validation."""
+            if not self.can_stop:
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    f"Application cannot stop from {self.status} state"
                 )
-            if status == FlextWebModels.WebAppStatus.STOPPING:
-                return FlextResult["FlextWebModels.WebApp"].fail(
-                    "Application already stopping"
-                )
-            return FlextResult["FlextWebModels.WebApp"].ok(
-                self.model_copy(update={"status": FlextWebModels.WebAppStatus.STOPPED}),
-            )
 
-    # =========================================================================
-    # MODEL FACTORY METHODS
-    # =========================================================================
+            try:
+                updated_app = self.model_copy(
+                    update={
+                        "status": FlextWebModels.WebAppStatus.STOPPED,
+                        "version": self.version + 1,
+                    }
+                )
+                return FlextResult[FlextWebModels.WebApp].ok(updated_app)
+            except Exception as e:
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    f"Application stop failed: {e}"
+                )
+
+    # =============================================================================
+    # DIRECT TYPE USAGE - NO ALIASES - PRIORITIZING LOCAL LIBRARY
+    # =============================================================================
+    # All types will be used directly as FlextWebTypes.SpecificType throughout the code
+
+    class WebAppHandler:
+        """CQRS command handler for web application operations.
+
+        Implements Command-Query Responsibility Segregation patterns for web application
+        management, providing stateless command processing with comprehensive validation
+        and error handling through FlextResult patterns.
+
+        Command Operations:
+            - create: Create new web application
+            - start: Start existing application
+            - stop: Stop running application
+            - update: Update application configuration
+            - delete: Remove application
+
+        Integration:
+            - Uses FlextResult for railway-oriented programming
+            - Integrates with FlextWebModels.WebApp domain entity
+            - Compatible with FlextServices for orchestration
+            - Supports event sourcing through domain events
+        """
+
+        def create(self, name: str, port: int, host: str) -> FlextResult[FlextWebModels.WebApp]:
+            """Create new web application with validation."""
+            try:
+                app_id = f"app_{name.lower().replace(' ', '_')}"
+
+                # Create application instance directly with proper types
+                app = FlextWebModels.WebApp(
+                    id=app_id,
+                    name=name,
+                    host=host,
+                    port=port,
+                    status=FlextWebModels.WebAppStatus.STOPPED
+                )
+
+                # Validate business rules
+                validation_result = app.validate_business_rules()
+                if validation_result.is_failure:
+                    return FlextResult[FlextWebModels.WebApp].fail(
+                        validation_result.error or "Validation failed"
+                    )
+
+                return FlextResult[FlextWebModels.WebApp].ok(app)
+
+            except Exception as e:
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    f"Application creation failed: {e}"
+                )
+
+        def start_app(self, app: FlextWebModels.WebApp) -> FlextResult[FlextWebModels.WebApp]:
+            """Start web application with state validation."""
+            return app.start()
+
+        def stop_app(self, app: FlextWebModels.WebApp) -> FlextResult[FlextWebModels.WebApp]:
+            """Stop web application with state validation."""
+            return app.stop()
+
+    # =============================================================================
+    # FACTORY METHODS AND UTILITIES
+    # =============================================================================
 
     @classmethod
     def create_web_app(
         cls,
-        name: str,
-        port: int = 8000,
-        host: str = "localhost",
+        data: FlextWebTypes.AppData,
     ) -> FlextResult[FlextWebModels.WebApp]:
-        """Create web application with validation.
-
-        Args:
-            name: Application name
-            port: Application port
-            host: Application host
-
-        Returns:
-            FlextResult containing created WebApp or error
-
-        """
+        """Create web application instance with comprehensive validation."""
         try:
-            # Create domain entity with generated ID
-            entity_id = FlextModels.EntityId(f"app_{name}")
-            app = cls.WebApp(id=entity_id, name=name, port=port, host=host)
+            # Ensure required fields with defaults
+            app_data = dict(data)
 
-            # Validate domain rules before returning
-            validation = app.validate_business_rules()
-            if not validation.success:
+            if "id" not in app_data:
+                app_data.get("name", "unknown")
+                app_data["id"] = f"app_{uuid.uuid4().hex[:8]}"
+
+            if "status" not in app_data:
+                app_data["status"] = FlextWebModels.WebAppStatus.STOPPED
+
+            # Create application instance with type-safe parameters
+            port_value = app_data["port"]
+            if not isinstance(port_value, (int, str)):
+                msg = f"Port must be int or str, got {type(port_value)}"
+                raise TypeError(msg)  # noqa: TRY301
+
+            status_value = app_data["status"]
+            if not isinstance(status_value, FlextWebModels.WebAppStatus):
+                msg = f"Status must be WebAppStatus enum, got {type(status_value)}"
+                raise TypeError(msg)  # noqa: TRY301
+
+            app = FlextWebModels.WebApp(
+                id=str(app_data["id"]),
+                name=str(app_data["name"]),
+                host=str(app_data["host"]),
+                port=int(port_value),
+                status=status_value
+            )
+
+            # Validate business rules
+            validation_result = app.validate_business_rules()
+            if validation_result.is_failure:
                 return FlextResult[FlextWebModels.WebApp].fail(
-                    validation.error or "Domain validation failed"
+                    f"Application validation failed: {validation_result.error}"
                 )
 
             return FlextResult[FlextWebModels.WebApp].ok(app)
-        except (RuntimeError, ValueError, TypeError) as e:
-            return FlextResult[FlextWebModels.WebApp].fail(
-                f"Application creation failed: {e}"
+
+        except Exception as e:
+            return FlextResult[FlextWebModels.WebApp].fail(f"Application creation failed: {e}")
+
+    @classmethod
+    def create_web_app_handler(cls) -> FlextResult[FlextWebModels.WebAppHandler]:
+        """Create web application handler instance."""
+        try:
+            handler = FlextWebModels.WebAppHandler()
+            return FlextResult[FlextWebModels.WebAppHandler].ok(handler)
+        except Exception as e:
+            return FlextResult[FlextWebModels.WebAppHandler].fail(f"Handler creation failed: {e}")
+
+    @classmethod
+    def create_web_system_config(
+        cls, config: FlextWebTypes.ConfigData
+    ) -> FlextResult[FlextWebTypes.ConfigData]:
+        """Create web system configuration with environment validation."""
+        try:
+            # Default configuration
+            web_config = {
+                "environment": config.get("environment", "development"),
+                "max_applications": config.get("max_applications", 10),
+                "default_host": config.get("default_host", "localhost"),
+                "port_range_start": config.get("port_range_start", 8000),
+                "port_range_end": config.get("port_range_end", 9000),
+                "enable_auto_start": config.get("enable_auto_start", False),
+                "enable_health_checks": config.get("enable_health_checks", True),
+            }
+
+            # Validate environment
+            valid_environments = ["development", "staging", "production", "test"]
+            if web_config["environment"] not in valid_environments:
+                return FlextResult[FlextWebTypes.ConfigData].fail(
+                    f"Invalid environment. Must be one of: {valid_environments}"
+                )
+
+            # Convert dict to typed ConfigData with safe casting
+            default_port = web_config.get("default_port", 8080)
+            port_value = int(default_port) if isinstance(default_port, (int, str)) else 8080
+
+            config_data = FlextWebTypes.ConfigData(
+                host=str(web_config["default_host"]),
+                port=port_value,
+                debug=bool(web_config.get("debug", True)),
+                secret_key=str(web_config.get("secret_key", "dev-key-change-in-production-32chars!")),
+                app_name=str(web_config.get("app_name", "FLEXT Web"))
+            )
+            return FlextResult[FlextWebTypes.ConfigData].ok(config_data)
+
+        except Exception as e:
+            return FlextResult[FlextWebTypes.ConfigData].fail(f"Config creation failed: {e}")
+
+    @classmethod
+    def validate_app_data(cls, data: dict[str, object]) -> FlextResult[dict[str, object]]:
+        """Validate application data before creation."""
+        try:
+            # Required fields validation
+            required_fields = {"name", "host", "port"}
+            missing_fields = required_fields - set(data.keys())
+
+            if missing_fields:
+                return FlextResult[dict[str, object]].fail(
+                    f"Missing required fields: {', '.join(missing_fields)}"
+                )
+
+            # Type validation
+            if not isinstance(data.get("name"), str):
+                return FlextResult[dict[str, object]].fail("Name must be a string")
+
+            port = data.get("port")
+            min_port = FlextWebConstants.WebSpecific.MIN_PORT
+            max_port = FlextWebConstants.WebSpecific.MAX_PORT
+            if not isinstance(port, int) or not (min_port <= port <= max_port):
+                return FlextResult[dict[str, object]].fail(
+                    f"Port must be an integer between {min_port} and {max_port}"
+                )
+
+            return FlextResult[dict[str, object]].ok(data)
+
+        except Exception as e:
+            return FlextResult[dict[str, object]].fail(f"Data validation failed: {e}")
+
+    # =============================================================================
+    # FLEXT WEB MODELS CONFIGURATION METHODS
+    # =============================================================================
+
+    @classmethod
+    def configure_web_models_system(
+        cls, config: FlextTypes.Config.ConfigDict
+    ) -> FlextResult[FlextTypes.Config.ConfigDict]:
+        """Configure web models system using FlextTypes.Config with validation."""
+        try:
+            validated_config = dict(config)
+
+            # Validate environment using FlextConstants
+            if "environment" in config:
+                env_value = config["environment"]
+                valid_environments = [
+                    e.value for e in FlextConstants.Config.ConfigEnvironment
+                ]
+                if env_value not in valid_environments:
+                    return FlextResult[FlextTypes.Config.ConfigDict].fail(
+                        f"Invalid environment '{env_value}'. Valid options: {valid_environments}"
+                    )
+            else:
+                validated_config["environment"] = (
+                    FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value
+                )
+
+            # Web models specific settings
+            validated_config.setdefault("enable_strict_validation", True)
+            validated_config.setdefault("enable_state_machine", True)
+            validated_config.setdefault("max_applications", 50)
+            validated_config.setdefault("enable_domain_events", True)
+
+            return FlextResult[FlextTypes.Config.ConfigDict].ok(validated_config)
+
+        except Exception as e:
+            return FlextResult[FlextTypes.Config.ConfigDict].fail(
+                f"Failed to configure web models system: {e}"
             )
 
     @classmethod
-    def create_app_status(cls, value: str) -> WebAppStatus:
-        """Create WebAppStatus from string value.
+    def get_web_models_system_config(cls) -> FlextResult[FlextTypes.Config.ConfigDict]:
+        """Get current web models system configuration with runtime information."""
+        try:
+            config: FlextTypes.Config.ConfigDict = {
+                # Environment configuration
+                "environment": FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value,
+                "log_level": FlextConstants.Config.LogLevel.INFO.value,
+                # Web models specific settings
+                "enable_strict_validation": True,
+                "enable_state_machine": True,
+                "max_applications": 50,
+                "enable_domain_events": True,
+                # Available model types
+                "available_models": [
+                    "WebApp",
+                    "WebAppStatus",
+                    "WebAppHandler",
+                ],
+                "available_factories": [
+                    "create_web_app",
+                    "create_web_app_handler",
+                    "create_web_system_config",
+                ],
+                # Runtime metrics
+                "active_applications": 0,
+                "total_state_transitions": 0,
+                "validation_success_rate": 100.0,
+            }
 
-        Args:
-            value: Status value string
+            return FlextResult[FlextTypes.Config.ConfigDict].ok(config)
 
-        Returns:
-            WebAppStatus enum instance
-
-        """
-        return cls.WebAppStatus(value)
+        except Exception as e:
+            return FlextResult[FlextTypes.Config.ConfigDict].fail(
+                f"Failed to get web models system config: {e}"
+            )
 
 
 # =============================================================================
-# BACKWARD COMPATIBILITY ALIASES
+# MODULE EXPORTS
 # =============================================================================
-
-# Legacy aliases for existing code compatibility
-FlextWebAppStatus = FlextWebModels.WebAppStatus
-FlextWebApp = FlextWebModels.WebApp
-
 
 __all__ = [
-    "FlextWebApp",
-    # Legacy compatibility exports
-    "FlextWebAppStatus",
     "FlextWebModels",
 ]

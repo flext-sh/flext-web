@@ -12,13 +12,8 @@ from typing import Protocol, runtime_checkable
 from flask.typing import ResponseReturnValue
 from flext_core import FlextProtocols, FlextResult
 
-from flext_web.models import FlextWebApp
-from flext_web.typings import (
-    FlextWebTypes,
-    RequestContext,
-    ResponseData,
-    TemplateFilter,
-)
+from flext_web.models import FlextWebModels
+from flext_web.typings import FlextWebTypes
 
 # =============================================================================
 # CONSOLIDATED PROTOCOLS CLASS
@@ -84,7 +79,7 @@ class FlextWebProtocols(FlextProtocols):
 
         def create_app(
             self, name: str, port: int, host: str
-        ) -> FlextResult[FlextWebApp]:
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Create a new application.
 
             Args:
@@ -98,7 +93,7 @@ class FlextWebProtocols(FlextProtocols):
             """
             ...
 
-        def start_app(self, app_id: str) -> FlextResult[FlextWebApp]:
+        def start_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Start an application.
 
             Args:
@@ -110,7 +105,7 @@ class FlextWebProtocols(FlextProtocols):
             """
             ...
 
-        def stop_app(self, app_id: str) -> FlextResult[FlextWebApp]:
+        def stop_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Stop an application.
 
             Args:
@@ -122,7 +117,7 @@ class FlextWebProtocols(FlextProtocols):
             """
             ...
 
-        def list_apps(self) -> FlextResult[list[FlextWebApp]]:
+        def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
             """List all applications.
 
             Returns:
@@ -144,7 +139,7 @@ class FlextWebProtocols(FlextProtocols):
 
         def format_success(
             self,
-            data: FlextWebTypes.ResponseData,
+            data: dict[str, object],
             message: str = "Success",
             status_code: int = 200,
         ) -> ResponseReturnValue:
@@ -165,7 +160,7 @@ class FlextWebProtocols(FlextProtocols):
             self,
             message: str,
             status_code: int = 500,
-            details: FlextWebTypes.ErrorDetails = None,
+            details: str | None = None,
         ) -> ResponseReturnValue:
             """Format error response.
 
@@ -252,7 +247,9 @@ class FlextWebProtocols(FlextProtocols):
             """
             ...
 
-        def render_dashboard(self, apps: list[FlextWebApp], **context: object) -> str:
+        def render_dashboard(
+            self, apps: list[FlextWebModels.WebApp], **context: object
+        ) -> str:
             """Render dashboard template.
 
             Args:
@@ -380,23 +377,27 @@ class FlextWebProtocols(FlextProtocols):
 
     @runtime_checkable
     class AppRepositoryInterface(
-        FlextProtocols.Domain.Repository[FlextWebApp], Protocol
+        FlextProtocols.Domain.Repository[FlextWebModels.WebApp], Protocol
     ):
         """Application repository protocol extending flext-core Repository patterns."""
 
-        def create(self, app: FlextWebApp) -> FlextResult[FlextWebApp]:
+        def create(
+            self, app: FlextWebModels.WebApp
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Create and store a new application."""
             ...
 
-        def get(self, app_id: str) -> FlextResult[FlextWebApp]:
+        def get(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Retrieve application by ID."""
             ...
 
-        def update(self, app: FlextWebApp) -> FlextResult[FlextWebApp]:
+        def update(
+            self, app: FlextWebModels.WebApp
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Update existing application."""
             ...
 
-        def find_by_name(self, name: str) -> FlextResult[FlextWebApp]:
+        def find_by_name(self, name: str) -> FlextResult[FlextWebModels.WebApp]:
             """Find application by name."""
             ...
 
@@ -405,12 +406,14 @@ class FlextWebProtocols(FlextProtocols):
         """Web middleware protocol extending flext-core Middleware patterns."""
 
         def before_request(
-            self, request: RequestContext
-        ) -> FlextResult[RequestContext]:
+            self, request: FlextWebTypes.RequestContext
+        ) -> FlextResult[FlextWebTypes.RequestContext]:
             """Process request before routing to handlers."""
             ...
 
-        def after_request(self, response: ResponseData) -> FlextResult[ResponseData]:
+        def after_request(
+            self, response: dict[str, object]
+        ) -> FlextResult[dict[str, object]]:
             """Process response after handler execution."""
             ...
 
@@ -426,7 +429,9 @@ class FlextWebProtocols(FlextProtocols):
             """Render template with context variables."""
             ...
 
-        def add_filter(self, name: str, filter_func: TemplateFilter) -> None:
+        def add_filter(
+            self, name: str, filter_func: FlextWebTypes.TemplateFilter
+        ) -> None:
             """Add custom template filter."""
             ...
 
@@ -448,49 +453,22 @@ class FlextWebProtocols(FlextProtocols):
             self,
             error_type: str,
             error_message: str,
-            context: dict[str, ResponseData] | None = None,
+            context: dict[str, dict[str, object]] | None = None,
         ) -> None:
             """Record error occurrence."""
             ...
 
-        def get_health_status(self) -> dict[str, ResponseData]:
+        def get_health_status(self) -> dict[str, dict[str, object]]:
             """Get current service health status."""
             ...
 
-        def get_metrics(self) -> dict[str, ResponseData]:
+        def get_metrics(self) -> dict[str, dict[str, object]]:
             """Get collected metrics data."""
             ...
 
 
 # =============================================================================
 # BACKWARD COMPATIBILITY ALIASES
-# =============================================================================
-
-# Legacy aliases for existing code compatibility
-WebServiceProtocol = FlextWebProtocols.WebServiceProtocol
-AppManagerProtocol = FlextWebProtocols.AppManagerProtocol
-ResponseFormatterProtocol = FlextWebProtocols.ResponseFormatterProtocol
-ConfigurationProtocol = FlextWebProtocols.ConfigurationProtocol
-TemplateRendererProtocol = FlextWebProtocols.TemplateRendererProtocol
-
-# Consolidated interface aliases
-WebServiceInterface = FlextWebProtocols.WebServiceInterface
-AppRepositoryInterface = FlextWebProtocols.AppRepositoryInterface
-MiddlewareInterface = FlextWebProtocols.MiddlewareInterface
-TemplateEngineInterface = FlextWebProtocols.TemplateEngineInterface
-MonitoringInterface = FlextWebProtocols.MonitoringInterface
-
-
 __all__ = [
-    "AppManagerProtocol",
-    "AppRepositoryInterface",
-    "ConfigurationProtocol",
     "FlextWebProtocols",
-    "MiddlewareInterface",
-    "MonitoringInterface",
-    "ResponseFormatterProtocol",
-    "TemplateEngineInterface",
-    "TemplateRendererProtocol",
-    "WebServiceInterface",
-    "WebServiceProtocol",
 ]

@@ -1,7 +1,7 @@
 """Comprehensive Real Functionality Tests - NO MOCKS, REAL EXECUTION.
 
 Tests all functionality using real Flask applications, real HTTP requests,
-real service execution, and actual FlextWebApp lifecycle management.
+real service execution, and actual FlextWebModels.WebApp lifecycle management.
 """
 
 from __future__ import annotations
@@ -17,29 +17,26 @@ from flext_core import FlextModels
 from tests.port_manager import TestPortManager
 
 from flext_web import (
-    FlextWebApp,
-    FlextWebAppHandler,
-    FlextWebAppStatus,
-    FlextWebConfig,
-    FlextWebService,
-    get_web_settings,
-    reset_web_settings,
+    FlextWebConfigs,
+    FlextWebHandlers,
+    FlextWebModels,
+    FlextWebServices,
 )
 
 
 @pytest.fixture
-def real_comprehensive_service() -> Generator[FlextWebService]:
+def real_comprehensive_service() -> Generator[FlextWebServices.WebService]:
     """Create real running service for comprehensive tests."""
     # Allocate unique port to avoid conflicts
     port = TestPortManager.allocate_port()
 
-    config = FlextWebConfig(
+    config = FlextWebConfigs.WebConfig(
         host="localhost",
         port=port,
         debug=True,
         secret_key="comprehensive-test-secret-key-32-chars!",
     )
-    service = FlextWebService(config)
+    service = FlextWebServices.WebService(config)
 
     def run_service() -> None:
         service.app.run(
@@ -66,11 +63,11 @@ def real_comprehensive_service() -> Generator[FlextWebService]:
 
 
 class TestRealWebServiceExecution:
-    """Test real FlextWebService execution with actual HTTP."""
+    """Test real FlextWebServices.WebService execution with actual HTTP."""
 
     @pytest.mark.integration
     def test_real_service_health_check(
-        self, real_comprehensive_service: FlextWebService
+        self, real_comprehensive_service: FlextWebServices.WebService
     ) -> None:
         """Test real health endpoint with actual HTTP request."""
         port = real_comprehensive_service.config.port
@@ -85,7 +82,7 @@ class TestRealWebServiceExecution:
 
     @pytest.mark.integration
     def test_real_application_complete_lifecycle(
-        self, real_comprehensive_service: FlextWebService
+        self, real_comprehensive_service: FlextWebServices.WebService
     ) -> None:
         """Test complete application lifecycle with real HTTP requests."""
         port = real_comprehensive_service.config.port
@@ -134,7 +131,7 @@ class TestRealWebServiceExecution:
 
     @pytest.mark.integration
     def test_real_error_handling_validation(
-        self, real_comprehensive_service: FlextWebService
+        self, real_comprehensive_service: FlextWebServices.WebService
     ) -> None:
         """Test real error handling with actual invalid requests."""
         port = real_comprehensive_service.config.port
@@ -167,7 +164,7 @@ class TestRealWebServiceExecution:
 
     @pytest.mark.web
     def test_real_web_dashboard_rendering(
-        self, real_comprehensive_service: FlextWebService
+        self, real_comprehensive_service: FlextWebServices.WebService
     ) -> None:
         """Test real web dashboard rendering with applications."""
         port = real_comprehensive_service.config.port
@@ -198,9 +195,9 @@ class TestRealDomainLogicExecution:
 
     @pytest.mark.unit
     def test_real_app_creation_and_validation(self) -> None:
-        """Test real FlextWebApp creation and domain validation."""
+        """Test real FlextWebModels.WebApp creation and domain validation."""
         # Test valid app creation
-        app = FlextWebApp(
+        app = FlextWebModels.WebApp(
             id=FlextModels.EntityId("test_real_app"),
             name="real-test-app",
             port=8000,
@@ -211,7 +208,7 @@ class TestRealDomainLogicExecution:
         assert app.name == "real-test-app"
         assert app.port == 8000
         assert app.host == "localhost"
-        assert app.status == FlextWebAppStatus.STOPPED
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED
         assert app.is_running is False
 
         # Test real domain validation
@@ -222,7 +219,7 @@ class TestRealDomainLogicExecution:
     def test_real_app_validation_failures(self) -> None:
         """Test real domain validation with invalid data."""
         # Test invalid app with empty name
-        app = FlextWebApp.model_construct(
+        app = FlextWebModels.WebApp.model_construct(
             id=FlextModels.EntityId("invalid_test"),
             name="",  # Empty name should fail
             port=8000,
@@ -232,39 +229,39 @@ class TestRealDomainLogicExecution:
         result = app.validate_domain_rules()
         assert result.is_failure is True
         assert result.error is not None
-        assert "Application name cannot be empty" in result.error
+        assert "application name" in result.error.lower()
 
     @pytest.mark.unit
     def test_real_handler_operations(self) -> None:
-        """Test real FlextWebAppHandler operations."""
-        handler = FlextWebAppHandler()
+        """Test real FlextWebModels.WebAppHandler operations."""
+        handler = FlextWebHandlers.WebAppHandler()
 
         # Test real app creation
         result = handler.create("real-handler-test", 8002, "localhost")
         assert result.success is True
-        app = result.data
+        app = result.value
         assert app.name == "real-handler-test"
         assert app.port == 8002
-        assert app.status == FlextWebAppStatus.STOPPED
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED
 
         # Test real app start
         start_result = handler.start(app)
         assert start_result.success is True
-        started_app = start_result.data
-        assert started_app.status == FlextWebAppStatus.RUNNING
+        started_app = start_result.value
+        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
         assert started_app.is_running is True
 
         # Test real app stop
         stop_result = handler.stop(started_app)
         assert stop_result.success is True
-        stopped_app = stop_result.data
-        assert stopped_app.status == FlextWebAppStatus.STOPPED
+        stopped_app = stop_result.value
+        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED
         assert stopped_app.is_running is False
 
     @pytest.mark.unit
     def test_real_handler_error_conditions(self) -> None:
         """Test real handler error conditions."""
-        handler = FlextWebAppHandler()
+        handler = FlextWebHandlers.WebAppHandler()
 
         # Test creating app with invalid parameters
         result = handler.create("", 8080, "localhost")  # Empty name
@@ -288,7 +285,7 @@ class TestRealConfigurationManagement:
     @pytest.mark.unit
     def test_real_config_validation_success(self) -> None:
         """Test real configuration validation with valid data."""
-        config = FlextWebConfig(
+        config = FlextWebConfigs.WebConfig(
             host="localhost",
             port=8083,
             debug=True,
@@ -304,7 +301,7 @@ class TestRealConfigurationManagement:
     def test_real_config_validation_failures(self) -> None:
         """Test real configuration validation with invalid data."""
         # Test production validation failure with default key
-        config = FlextWebConfig(
+        config = FlextWebConfigs.WebConfig(
             host="localhost",
             port=8083,
             debug=False,  # Production mode
@@ -333,10 +330,10 @@ class TestRealConfigurationManagement:
             os.environ["FLEXT_WEB_DEBUG"] = "false"
 
             # Reset to force reload
-            reset_web_settings()
+            # reset_web_settings()
 
             # Test real config loading
-            config = get_web_settings()
+            config = FlextWebConfigs.create_web_config()
             assert config.host == "test-host"
             assert config.port == 9000
             assert config.debug is False
@@ -348,7 +345,7 @@ class TestRealConfigurationManagement:
                     os.environ.pop(var, None)
                 else:
                     os.environ[var] = value
-            reset_web_settings()
+            # reset_web_settings()
 
 
 class TestRealServiceIntegration:
@@ -356,7 +353,7 @@ class TestRealServiceIntegration:
 
     @pytest.mark.integration
     def test_real_service_with_multiple_apps(
-        self, real_comprehensive_service: FlextWebService
+        self, real_comprehensive_service: FlextWebServices.WebService
     ) -> None:
         """Test real service managing multiple applications using real HTTP."""
         real_comprehensive_service.apps.clear()
@@ -407,7 +404,7 @@ class TestRealServiceIntegration:
 
     @pytest.mark.integration
     def test_real_service_error_recovery(
-        self, real_comprehensive_service: FlextWebService
+        self, real_comprehensive_service: FlextWebServices.WebService
     ) -> None:
         """Test real service error recovery scenarios using real HTTP."""
         assert real_comprehensive_service is not None

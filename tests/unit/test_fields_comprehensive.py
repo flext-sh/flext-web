@@ -8,10 +8,11 @@ from __future__ import annotations
 
 import pytest
 
-from flext_web.fields import (
-    HTTPStatusField,
-    WebFields,
-)
+from flext_web.fields import FlextWebFields
+
+# Extract nested classes for convenience
+HTTPStatusField = FlextWebFields.HTTPStatusField
+WebFields = FlextWebFields  # Alias for backward compatibility
 
 
 class TestWebFields:
@@ -44,7 +45,9 @@ class TestWebFields:
         """Test port_field factory method."""
         field = WebFields.port_field()
         assert hasattr(field, "description")
-        assert field.default == 8080  # Corrected to match FlextWebConstants.Configuration.DEFAULT_PORT
+        assert (
+            field.default == 8080
+        )  # Corrected to match FlextWebConstants.Configuration.DEFAULT_PORT
         # FieldInfo stores constraints in metadata, just verify it exists
         assert type(field).__name__ == "FieldInfo"
 
@@ -130,13 +133,23 @@ class TestWebFieldValidators:
 
     def test_all_field_factory_methods_exist(self) -> None:
         """Test all field factory methods are available and work."""
-        methods = ["host_field", "port_field", "url_field", "app_name_field", "secret_key_field"]
+        methods = [
+            "host_field",
+            "port_field",
+            "url_field",
+            "app_name_field",
+            "secret_key_field",
+        ]
 
         for method_name in methods:
-            assert hasattr(WebFields, method_name), f"WebFields should have {method_name}"
+            assert hasattr(WebFields, method_name), (
+                f"WebFields should have {method_name}"
+            )
             method = getattr(WebFields, method_name)
             field = method()
-            assert type(field).__name__ == "FieldInfo", f"{method_name} should return FieldInfo"
+            assert type(field).__name__ == "FieldInfo", (
+                f"{method_name} should return FieldInfo"
+            )
 
     def test_validate_port_invalid(self) -> None:
         """Test validate_port with invalid ports."""
@@ -223,9 +236,11 @@ class TestHTTPStatusField:
         found_ge = False
         found_le = False
         for constraint in field.metadata:
-            if hasattr(constraint, "ge") and constraint.ge == 100:
+            if hasattr(constraint, "ge") and constraint.ge == 200:  # HTTP_OK = 200
                 found_ge = True
-            if hasattr(constraint, "le") and constraint.le == 599:
+            if (
+                hasattr(constraint, "le") and constraint.le == 599
+            ):  # MAX_HTTP_STATUS = 599
                 found_le = True
         assert found_ge
         assert found_le
@@ -237,7 +252,7 @@ class TestHTTPStatusField:
             (HTTPStatusField.created, 201, "Created"),
             (HTTPStatusField.bad_request, 400, "Bad Request"),
             (HTTPStatusField.not_found, 404, "Not Found"),
-            (HTTPStatusField.server_error, 500, "Internal Server Error")
+            (HTTPStatusField.server_error, 500, "Internal Server Error"),
         ]
 
         for factory_method, expected_code, expected_desc in factories:
