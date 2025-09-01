@@ -259,7 +259,7 @@ class FlextWebServices:
                         "name": app.name,
                         "host": app.host,
                         "port": app.port,
-                        "status": app.status,
+                        "status": str(app.status),
                         "is_running": app.is_running(),
                     }
                     apps_data.append(app_data)
@@ -333,7 +333,7 @@ class FlextWebServices:
                         "name": app.name,
                         "host": app.host,
                         "port": app.port,
-                        "status": app.status,
+                        "status": str(app.status),
                     },
                 }), 201
 
@@ -362,7 +362,7 @@ class FlextWebServices:
                         "name": app.name,
                         "host": app.host,
                         "port": app.port,
-                        "status": app.status,
+                        "status": str(app.status),
                         "is_running": app.is_running(),
                     },
                 })

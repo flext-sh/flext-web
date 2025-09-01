@@ -206,10 +206,14 @@ class TestMissingCoverage:
         # reset_web_settings()
 
         # Test first call creates instance
-        settings1 = FlextWebConfigs.create_web_config()
+        settings1_result = FlextWebConfigs.create_web_config()
+        assert settings1_result.is_success
+        settings1 = settings1_result.value
 
         # Test second call creates equivalent configuration
-        settings2 = FlextWebConfigs.create_web_config()
+        settings2_result = FlextWebConfigs.create_web_config()
+        assert settings2_result.is_success
+        settings2 = settings2_result.value
 
         # Test configuration consistency
         assert settings1.host == settings2.host

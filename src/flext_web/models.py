@@ -261,22 +261,24 @@ class FlextWebModels:
         @computed_field
         def is_running(self) -> bool:
             """Check if application is currently running."""
-            return self.status == FlextWebModels.WebAppStatus.RUNNING
+            return self.status == FlextWebModels.WebAppStatus.RUNNING.value
 
-        @computed_field
+        @computed_field  # type: ignore[prop-decorator]
+        @property
         def can_start(self) -> bool:
             """Check if application can be started."""
             return self.status in {
-                FlextWebModels.WebAppStatus.STOPPED,
-                FlextWebModels.WebAppStatus.ERROR,
+                FlextWebModels.WebAppStatus.STOPPED.value,
+                FlextWebModels.WebAppStatus.ERROR.value,
             }
 
-        @computed_field
+        @computed_field  # type: ignore[prop-decorator]
+        @property
         def can_stop(self) -> bool:
             """Check if application can be stopped."""
             return self.status in {
-                FlextWebModels.WebAppStatus.RUNNING,
-                FlextWebModels.WebAppStatus.ERROR,
+                FlextWebModels.WebAppStatus.RUNNING.value,
+                FlextWebModels.WebAppStatus.ERROR.value,
             }
 
         def start(self) -> FlextResult[FlextWebModels.WebApp]:
@@ -289,7 +291,7 @@ class FlextWebModels:
             try:
                 updated_app = self.model_copy(
                     update={
-                        "status": FlextWebModels.WebAppStatus.RUNNING,
+                        "status": FlextWebModels.WebAppStatus.RUNNING.value,
                         "version": self.version + 1,
                     }
                 )
@@ -309,7 +311,7 @@ class FlextWebModels:
             try:
                 updated_app = self.model_copy(
                     update={
-                        "status": FlextWebModels.WebAppStatus.STOPPED,
+                        "status": FlextWebModels.WebAppStatus.STOPPED.value,
                         "version": self.version + 1,
                     }
                 )

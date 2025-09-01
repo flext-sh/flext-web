@@ -1,4 +1,5 @@
-"""FLEXT Web Configurations - Consolidated configuration system with enterprise patterns.
+"""FLEXT Web Configurations - Consolidated configuration system with
+enterprise patterns.
 
 CONSOLIDAÇÃO COMPLETA seguindo flext-core architectural patterns:
 - Apenas UMA classe FlextWebConfigs com toda funcionalidade
@@ -36,7 +37,8 @@ from flext_core import (
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Import local constants and types for DIRECT usage - NO ALIASES - PRIORITIZING LOCAL LIBRARY
+# Import local constants and types for DIRECT usage - NO ALIASES
+# PRIORITIZING LOCAL LIBRARY
 from flext_web.constants import FlextWebConstants
 from flext_web.typings import FlextWebTypes
 

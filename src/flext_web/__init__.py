@@ -100,7 +100,9 @@ for item in _temp_exports:
         _seen.add(item)
         _final_exports.append(item)
 # Add compatibility aliases and factory functions to exports
-_final_exports.extend(["FlextWebService", "create_service", "create_web_config", "__version__"])
+_final_exports.extend([
+    "FlextWebService", "create_service", "create_web_config", "__version__"
+])
 _final_exports.sort()
 
 # Define __all__ as literal list for linter compatibility

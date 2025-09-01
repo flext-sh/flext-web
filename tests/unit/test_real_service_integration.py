@@ -256,22 +256,23 @@ class TestRealDomainLogic:
         assert app.port == 8002
         assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
 
-        # Test real app start
-        start_result = handler.start(app)
-        assert start_result.success is True
+        # Test real app start using app method directly
+        start_result = app.start()
+        assert start_result.is_success is True
         started_app = start_result.value
-        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
+        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING.value
         assert started_app.is_running is True
 
         # Test real app stop
-        stop_result = handler.stop(started_app)
-        assert stop_result.success is True
+        stop_result = started_app.stop()
+        assert stop_result.is_success is True
         stopped_app = stop_result.value
-        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED
+        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED.value
         assert stopped_app.is_running is False
 
-        # Test real error conditions
-        error_result = handler.start(started_app)  # Try to start already running
+        # Test real error conditions - try to start already running app
+        running_app = start_result.value
+        error_result = running_app.start()  # Try to start already running
         assert error_result.is_failure is True
         assert error_result.error is not None
 
