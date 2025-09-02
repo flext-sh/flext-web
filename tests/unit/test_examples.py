@@ -40,7 +40,8 @@ class TestExamplesSimple:
         spec = importlib.util.spec_from_file_location(
             "_example_basic_service", Path("examples") / "01_basic_service.py"
         )
-        assert spec and spec.loader
+        assert spec
+        assert spec.loader
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         assert hasattr(mod, "main"), "basic service module should define main()"

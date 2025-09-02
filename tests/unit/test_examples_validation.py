@@ -7,7 +7,6 @@ error paths, and edge cases work correctly in production environments.
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
@@ -26,10 +25,12 @@ class TestExamplesDeepValidation:
         # Test that it can be imported without errors
 
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_example_basic_service", Path("examples") / "01_basic_service.py"
         )
-        assert spec and spec.loader
+        assert spec
+        assert spec.loader
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         assert hasattr(mod, "main"), "main function missing"
@@ -45,12 +46,14 @@ class TestExamplesDeepValidation:
         """Test api_usage.py example with comprehensive edge cases."""
         # Import the module to test all functions
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_example_api_usage", Path("examples") / "02_api_usage.py"
         )
-        assert spec and spec.loader
+        assert spec
+        assert spec.loader
         api_usage = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(api_usage)  # type: ignore[arg-type]
+        spec.loader.exec_module(api_usage)
 
         # Test 1: All functions exist and are callable
         functions_to_test = [
@@ -97,12 +100,14 @@ class TestExamplesDeepValidation:
         # Test 1: Import test - docker_ready doesn't handle CLI args, uses environment
 
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_example_docker_ready", Path("examples") / "03_docker_ready.py"
         )
-        assert spec and spec.loader
+        assert spec
+        assert spec.loader
         docker_ready = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(docker_ready)  # type: ignore[arg-type]
+        spec.loader.exec_module(docker_ready)
         assert hasattr(docker_ready, "main"), "main function missing"
         assert callable(docker_ready.main), "main function not callable"
 
@@ -181,6 +186,7 @@ class TestExamplesDeepValidation:
         # This test ensures examples don't interfere with each other
 
         import importlib.util
+
         example_files = [
             Path("examples/01_basic_service.py"),
             Path("examples/03_docker_ready.py"),
@@ -190,9 +196,10 @@ class TestExamplesDeepValidation:
             spec = importlib.util.spec_from_file_location(
                 f"_example_{example_path.stem}", example_path
             )
-            assert spec and spec.loader
+            assert spec
+            assert spec.loader
             module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)  # type: ignore[arg-type]
+            spec.loader.exec_module(module)
             assert hasattr(module, "main"), f"{example_path.name} missing main"
             assert callable(module.main), f"{example_path.name} main not callable"
 
