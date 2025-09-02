@@ -129,7 +129,7 @@ class ExamplesFullFunctionalityTest:
         """Testa TODA funcionalidade do basic_service.py."""
         # Test 1: Import functionality
         try:
-            example_path = Path("examples/basic_service.py")
+            example_path = Path("examples/01_basic_service.py")
             spec = importlib.util.spec_from_file_location(
                 "basic_service", str(example_path)
             )
@@ -165,7 +165,7 @@ class ExamplesFullFunctionalityTest:
     def test_api_usage_full_functionality(self) -> bool | None:
         """Testa TODA funcionalidade do api_usage.py."""
         try:
-            example_path = Path("examples/api_usage.py")
+            example_path = Path("examples/02_api_usage.py")
             spec = importlib.util.spec_from_file_location(
                 "api_usage", str(example_path)
             )
@@ -215,7 +215,7 @@ class ExamplesFullFunctionalityTest:
     def test_docker_ready_full_functionality(self) -> bool | None:
         """Testa TODA funcionalidade do docker_ready.py."""
         try:
-            example_path = Path("examples/docker_ready.py")
+            example_path = Path("examples/03_docker_ready.py")
             spec = importlib.util.spec_from_file_location(
                 "docker_ready", str(example_path)
             )
@@ -288,7 +288,7 @@ class ExamplesFullFunctionalityTest:
         """Testa tratamento de erros nos examples."""
         # Test error handling in api_usage when service is down
         try:
-            example_path = Path("examples/api_usage.py")
+            example_path = Path("examples/02_api_usage.py")
             spec = importlib.util.spec_from_file_location(
                 "api_usage", str(example_path)
             )

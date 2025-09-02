@@ -19,21 +19,21 @@ class TestExamplesDeepValidation:
     def test_basic_service_example_functionality(self) -> None:
         """Test basic_service.py example with comprehensive validation."""
         # Test 1: Module can be imported without errors
-        example_path = Path("examples/basic_service.py")
+        example_path = Path("examples/01_basic_service.py")
         assert example_path.exists(), "basic_service.py example file missing"
 
         # Test 2: Basic service doesn't have command line args - it's meant to be simple
         # Test that it can be imported without errors
 
-        sys.path.insert(0, "examples")
-        try:
-            import basic_service  # type: ignore[import-not-found] # noqa: PLC0415
-
-            assert hasattr(basic_service, "main"), "main function missing"
-            assert callable(basic_service.main), "main function not callable"
-        finally:
-            if "examples" in sys.path:
-                sys.path.remove("examples")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_example_basic_service", Path("examples") / "01_basic_service.py"
+        )
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        assert hasattr(mod, "main"), "main function missing"
+        assert callable(mod.main), "main function not callable"
 
         # Skip the actual service execution test to avoid timeouts
         # Import and validation tests above are sufficient for CI/CD validation
@@ -44,68 +44,67 @@ class TestExamplesDeepValidation:
     def test_api_usage_example_functionality(self) -> None:
         """Test api_usage.py example with comprehensive edge cases."""
         # Import the module to test all functions
-        sys.path.insert(0, "examples")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_example_api_usage", Path("examples") / "02_api_usage.py"
+        )
+        assert spec and spec.loader
+        api_usage = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(api_usage)  # type: ignore[arg-type]
 
-        try:
-            import api_usage  # type: ignore[import-not-found] # noqa: PLC0415
+        # Test 1: All functions exist and are callable
+        functions_to_test = [
+            "check_service_health",
+            "create_application",
+            "start_application",
+            "get_application_status",
+            "stop_application",
+            "list_applications",
+            "demo_application_lifecycle",
+        ]
 
-            # Test 1: All functions exist and are callable
-            functions_to_test = [
-                "check_service_health",
-                "create_application",
-                "start_application",
-                "get_application_status",
-                "stop_application",
-                "list_applications",
-                "demo_application_lifecycle",
-            ]
-
-            for func_name in functions_to_test:
-                assert hasattr(api_usage, func_name), f"Function {func_name} missing"
-                assert callable(getattr(api_usage, func_name)), (
-                    f"Function {func_name} not callable"
-                )
-
-            # Test 2: Health check returns boolean result
-            health_result: bool | None = api_usage.check_service_health()
-            assert isinstance(health_result, (bool, type(None))), (
-                "Health check should return bool or None"
+        for func_name in functions_to_test:
+            assert hasattr(api_usage, func_name), f"Function {func_name} missing"
+            assert callable(getattr(api_usage, func_name)), (
+                f"Function {func_name} not callable"
             )
 
-            # Test 3: Create application returns expected type
-            create_result: dict[str, object] | None = api_usage.create_application(
-                "test-app", 3000
-            )
-            # Could be None (no service) or dict (service running)
-            assert create_result is None or isinstance(create_result, dict)
+        # Test 2: Health check returns boolean result
+        health_result: bool | None = api_usage.check_service_health()
+        assert isinstance(health_result, (bool, type(None))), (
+            "Health check should return bool or None"
+        )
 
-            # Test 4: List applications returns expected type
-            apps_result: list[dict[str, object]] | None = api_usage.list_applications()
-            assert isinstance(
-                apps_result,
-                list,
-            )  # Should return list (empty or with apps)
+        # Test 3: Create application returns expected type
+        create_result: dict[str, object] | None = api_usage.create_application(
+            "test-app", 3000
+        )
+        # Could be None (no service) or dict (service running)
+        assert create_result is None or isinstance(create_result, dict)
 
-        finally:
-            if "examples" in sys.path:
-                sys.path.remove("examples")
+        # Test 4: List applications returns expected type
+        apps_result: list[dict[str, object]] | None = api_usage.list_applications()
+        assert isinstance(
+            apps_result,
+            list,
+        )  # Should return list (empty or with apps)
 
     def test_docker_ready_example_functionality(self) -> None:
         """Test docker_ready.py example with production patterns."""
-        example_path = Path("examples/docker_ready.py")
+        example_path = Path("examples/03_docker_ready.py")
         assert example_path.exists(), "docker_ready.py example file missing"
 
         # Test 1: Import test - docker_ready doesn't handle CLI args, uses environment
 
-        sys.path.insert(0, "examples")
-        try:
-            import docker_ready  # type: ignore[import-not-found] # noqa: PLC0415
-
-            assert hasattr(docker_ready, "main"), "main function missing"
-            assert callable(docker_ready.main), "main function not callable"
-        finally:
-            if "examples" in sys.path:
-                sys.path.remove("examples")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_example_docker_ready", Path("examples") / "03_docker_ready.py"
+        )
+        assert spec and spec.loader
+        docker_ready = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(docker_ready)  # type: ignore[arg-type]
+        assert hasattr(docker_ready, "main"), "main function missing"
+        assert callable(docker_ready.main), "main function not callable"
 
         # Skip the actual service execution test to avoid timeouts
         # Import and validation tests above are sufficient for CI/CD validation
@@ -140,9 +139,9 @@ class TestExamplesDeepValidation:
         assert examples_dir.is_dir(), "examples/ is not a directory"
 
         required_files = [
-            "basic_service.py",
-            "api_usage.py",
-            "docker_ready.py",
+            "01_basic_service.py",
+            "02_api_usage.py",
+            "03_docker_ready.py",
         ]
 
         for file_name in required_files:
@@ -181,29 +180,21 @@ class TestExamplesDeepValidation:
         """Test all examples can be imported without side effects."""
         # This test ensures examples don't interfere with each other
 
-        examples = [
-            "basic_service",
-            "docker_ready",
+        import importlib.util
+        example_files = [
+            Path("examples/01_basic_service.py"),
+            Path("examples/03_docker_ready.py"),
         ]
 
-        sys.path.insert(0, "examples")
-
-        try:
-            # Test each example can be imported without starting servers
-            for example_name in examples:
-                try:
-                    # Import but don't execute main
-                    module = __import__(example_name)
-                    assert hasattr(module, "main"), (
-                        f"{example_name} missing main function"
-                    )
-                    assert callable(module.main), f"{example_name} main not callable"
-                except ImportError as e:
-                    pytest.fail(f"Failed to import {example_name}: {e}")
-
-        finally:
-            if "examples" in sys.path:
-                sys.path.remove("examples")
+        for example_path in example_files:
+            spec = importlib.util.spec_from_file_location(
+                f"_example_{example_path.stem}", example_path
+            )
+            assert spec and spec.loader
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)  # type: ignore[arg-type]
+            assert hasattr(module, "main"), f"{example_path.name} missing main"
+            assert callable(module.main), f"{example_path.name} main not callable"
 
 
 if __name__ == "__main__":

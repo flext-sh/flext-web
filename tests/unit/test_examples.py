@@ -24,7 +24,7 @@ class TestExamplesSimple:
 
     def test_basic_service_example(self) -> None:
         """Test basic_service.py example."""
-        example_path = Path("examples/basic_service.py")
+        example_path = Path("examples/01_basic_service.py")
         assert example_path.exists(), "basic_service.py missing"
 
         # Test syntax
@@ -35,21 +35,19 @@ class TestExamplesSimple:
         except SyntaxError as e:
             pytest.fail(f"Syntax error in basic_service.py: {e}")
 
-        # Test import works
-        cmd = [
-            sys.executable,
-            "-c",
-            "import sys; sys.path.insert(0, 'examples'); import basic_service; print('OK')",
-        ]
-        result = subprocess.run(
-            cmd, check=False, capture_output=True, text=True, timeout=10
+        # Test import works via importlib for numerically prefixed module
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_example_basic_service", Path("examples") / "01_basic_service.py"
         )
-        assert result.returncode == 0, f"Import failed: {result.stderr}"
-        assert "OK" in result.stdout
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        assert hasattr(mod, "main"), "basic service module should define main()"
 
     def test_api_usage_example(self) -> None:
         """Test api_usage.py example."""
-        example_path = Path("examples/api_usage.py")
+        example_path = Path("examples/02_api_usage.py")
         assert example_path.exists(), "api_usage.py missing"
 
         # Test syntax
@@ -62,7 +60,7 @@ class TestExamplesSimple:
 
     def test_docker_ready_example(self) -> None:
         """Test docker_ready.py example."""
-        example_path = Path("examples/docker_ready.py")
+        example_path = Path("examples/03_docker_ready.py")
         assert example_path.exists(), "docker_ready.py missing"
 
         # Test syntax
@@ -100,9 +98,9 @@ class TestExamplesSimple:
     def test_examples_have_main_function(self) -> None:
         """Test that executable examples have main or demo function."""
         executable_examples = {
-            "basic_service.py": "def main(",
-            "api_usage.py": "def demo_application_lifecycle(",  # Has demo function instead
-            "docker_ready.py": "def main(",
+            "01_basic_service.py": "def main(",
+            "02_api_usage.py": "def demo_application_lifecycle(",  # Has demo function instead
+            "03_docker_ready.py": "def main(",
         }
 
         for example_name, expected_function in executable_examples.items():

@@ -13,7 +13,7 @@ This directory contains comprehensive examples demonstrating how to use the FLEX
 #### Simple Service Startup
 
 ```python
-# examples/basic_service.py
+# examples/01_basic_service.py
 from flext_web import create_service, get_web_settings
 
 # Start with default configuration
@@ -44,7 +44,7 @@ service.run()
 #### Application Management
 
 ```python
-# examples/api_usage.py
+# examples/02_api_usage.py
 import requests
 import json
 
