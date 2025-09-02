@@ -191,7 +191,7 @@ def list_applications() -> list[FlextWebTypes.AppDataDict]:
                     for app in apps:
                         if isinstance(app, dict) and "id" in app and "name" in app:
                             "🟢" if app.get("is_running") else "🔴"
-                            validated_apps.append(app)  # type: ignore[misc]
+                            validated_apps.append(app)
                     return validated_apps
         return []
     except requests.RequestException:

@@ -26,8 +26,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any
-
 from flask import Flask, jsonify, render_template_string, request
 from flask.typing import ResponseReturnValue
 from flext_core import (
@@ -137,10 +135,12 @@ class FlextWebServices:
             self.app_handler = FlextWebModels.WebAppHandler()
 
             # Configure Flask application
-            self.app.config.update({
-                "SECRET_KEY": config.secret_key,
-                "DEBUG": config.debug,
-            })
+            self.app.config.update(
+                {
+                    "SECRET_KEY": config.secret_key,
+                    "DEBUG": config.debug,
+                }
+            )
 
             # Register routes
             self._register_routes()
@@ -157,8 +157,12 @@ class FlextWebServices:
             self.app.route("/api/v1/apps", methods=["GET"])(self.list_apps)
             self.app.route("/api/v1/apps", methods=["POST"])(self.create_app)
             self.app.route("/api/v1/apps/<app_id>", methods=["GET"])(self.get_app)
-            self.app.route("/api/v1/apps/<app_id>/start", methods=["POST"])(self.start_app)
-            self.app.route("/api/v1/apps/<app_id>/stop", methods=["POST"])(self.stop_app)
+            self.app.route("/api/v1/apps/<app_id>/start", methods=["POST"])(
+                self.start_app
+            )
+            self.app.route("/api/v1/apps/<app_id>/stop", methods=["POST"])(
+                self.stop_app
+            )
 
         def health_check(self) -> ResponseReturnValue:
             """Health check endpoint returning service status."""
@@ -170,24 +174,28 @@ class FlextWebServices:
                     "applications": len(self.apps),
                     "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
                 }
-                
-                return jsonify({
-                    "success": True,
-                    "message": "Service is healthy",
-                    "data": health_data,
-                }), 200
+
+                return jsonify(
+                    {
+                        "success": True,
+                        "message": "Service is healthy",
+                        "data": health_data,
+                    }
+                ), 200
             except Exception:
-                return jsonify({
-                    "success": False,
-                    "message": "Service health check failed",
-                    "data": {"status": "unhealthy", "error": "Internal error"}
-                }), 500
+                return jsonify(
+                    {
+                        "success": False,
+                        "message": "Service health check failed",
+                        "data": {"status": "unhealthy", "error": "Internal error"},
+                    }
+                ), 500
 
         def dashboard(self) -> ResponseReturnValue:
             """Web dashboard interface for application management."""
             try:
                 app_count = len(self.apps)
-                running_count = sum(1 for app in self.apps.values() if app.is_running())
+                running_count = sum(1 for app in self.apps.values() if app.is_running)
 
                 html_template = """
                 <!DOCTYPE html>
@@ -243,7 +251,7 @@ class FlextWebServices:
                     html_template,
                     app_count=app_count,
                     running_count=running_count,
-                    apps=list(self.apps.values())
+                    apps=list(self.apps.values()),
                 )
 
             except Exception:
@@ -260,14 +268,14 @@ class FlextWebServices:
                         "host": app.host,
                         "port": app.port,
                         "status": str(app.status),
-                        "is_running": app.is_running(),
+                        "is_running": app.is_running,
                     }
                     apps_data.append(app_data)
 
                 response: FlextWebTypes.SuccessResponse = {
                     "success": True,
                     "message": f"Found {len(apps_data)} applications",
-                    "data": {"applications": apps_data},
+                    "data": {"apps": apps_data},
                 }
                 return jsonify(response)
 
@@ -279,21 +287,34 @@ class FlextWebServices:
                 }
                 return jsonify(error_response), 500
 
-        def create_app(self) -> ResponseReturnValue:  # noqa: PLR0911
+        def create_app(self) -> ResponseReturnValue:
             """Create new application from JSON request."""
             try:
                 if not request.is_json:
-                    return jsonify({
-                        "success": False,
-                        "message": "Request must be JSON",
-                    }), 400
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": "Request must be JSON",
+                        }
+                    ), 400
 
-                data = request.get_json()
+                try:
+                    data = request.get_json()
+                except Exception:
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": "Invalid JSON in request body",
+                        }
+                    ), 400
+
                 if not data:
-                    return jsonify({
-                        "success": False,
-                        "message": "Request body is required",
-                    }), 400
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": "Request body is required",
+                        }
+                    ), 400
 
                 # Extract required fields
                 name = data.get("name")
@@ -301,126 +322,148 @@ class FlextWebServices:
                 port = data.get("port")
 
                 if not name:
-                    return jsonify({
-                        "success": False,
-                        "message": "Application name is required",
-                    }), 400
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": "Application name is required",
+                        }
+                    ), 400
 
                 if not port:
-                    return jsonify({
-                        "success": False,
-                        "message": "Port is required",
-                    }), 400
+                    # Use default port if not provided
+                    port = 8000
 
                 # Create application using handler
                 create_result = self.app_handler.create(name, port, host)
                 if create_result.is_failure:
-                    return jsonify({
-                        "success": False,
-                        "message": "Application creation failed",
-                        "error": create_result.error,
-                    }), 400
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": "Application creation failed",
+                            "error": create_result.error,
+                        }
+                    ), 400
 
                 # Store application
                 app = create_result.value
                 self.apps[app.id] = app
 
-                return jsonify({
-                    "success": True,
-                    "message": "Application created successfully",
-                    "data": {
-                        "id": app.id,
-                        "name": app.name,
-                        "host": app.host,
-                        "port": app.port,
-                        "status": str(app.status),
-                    },
-                }), 201
+                return jsonify(
+                    {
+                        "success": True,
+                        "message": "Application created successfully",
+                        "data": {
+                            "id": app.id,
+                            "name": app.name,
+                            "host": app.host,
+                            "port": app.port,
+                            "status": str(app.status),
+                        },
+                    }
+                ), 201
 
             except Exception as e:
-                return jsonify({
-                    "success": False,
-                    "message": "Internal error during application creation",
-                    "error": str(e),
-                }), 500
+                return jsonify(
+                    {
+                        "success": False,
+                        "message": "Internal error during application creation",
+                        "error": str(e),
+                    }
+                ), 500
 
         def get_app(self, app_id: str) -> ResponseReturnValue:
             """Get specific application by ID."""
             try:
                 if app_id not in self.apps:
-                    return jsonify({
-                        "success": False,
-                        "message": f"Application {app_id} not found",
-                    }), 404
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": f"Application {app_id} not found",
+                        }
+                    ), 404
 
                 app = self.apps[app_id]
-                return jsonify({
-                    "success": True,
-                    "message": "Application found",
-                    "data": {
-                        "id": app.id,
-                        "name": app.name,
-                        "host": app.host,
-                        "port": app.port,
-                        "status": str(app.status),
-                        "is_running": app.is_running(),
-                    },
-                })
+                return jsonify(
+                    {
+                        "success": True,
+                        "message": "Application found",
+                        "data": {
+                            "id": app.id,
+                            "name": app.name,
+                            "host": app.host,
+                            "port": app.port,
+                            "status": str(app.status),
+                            "is_running": app.is_running,
+                        },
+                    }
+                )
 
             except Exception as e:
-                return jsonify({
-                    "success": False,
-                    "message": "Failed to get application",
-                    "error": str(e),
-                }), 500
+                return jsonify(
+                    {
+                        "success": False,
+                        "message": "Failed to get application",
+                        "error": str(e),
+                    }
+                ), 500
 
         def start_app(self, app_id: str) -> ResponseReturnValue:
             """Start application by ID."""
             try:
                 if app_id not in self.apps:
-                    return jsonify({
-                        "success": False,
-                        "message": f"Application {app_id} not found",
-                    }), 404
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": f"Application {app_id} not found",
+                        }
+                    ), 404
 
                 app = self.apps[app_id]
                 start_result = app.start()
 
                 if start_result.is_failure:
-                    return jsonify({
-                        "success": False,
-                        "message": "Application start failed",
-                        "error": start_result.error,
-                    }), 400
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": start_result.error or "Application start failed",
+                            "error": start_result.error,
+                        }
+                    ), 400
 
                 # Update stored application
                 self.apps[app_id] = start_result.value
 
-                return jsonify({
-                    "success": True,
-                    "message": f"Application {app.name} started successfully",
-                    "data": {
-                        "id": app_id,
-                        "name": app.name,
-                        "status": "running",
-                    },
-                })
+                return jsonify(
+                    {
+                        "success": True,
+                        "message": f"Application {app.name} started successfully",
+                        "data": {
+                            "id": app_id,
+                            "name": app.name,
+                            "status": "running",
+                        },
+                    }
+                )
 
             except Exception as e:
-                return jsonify({
-                    "success": False,
-                    "message": "Failed to start application",
-                    "error": str(e),
-                }), 500
+                return jsonify(
+                    {
+                        "success": False,
+                        "message": "Failed to start application",
+                        "error": str(e),
+                    }
+                ), 500
 
         def stop_app(self, app_id: str) -> ResponseReturnValue:
             """Stop application by ID."""
             try:
                 if app_id not in self.apps:
-                    return jsonify({
-                        "success": False,
-                        "message": f"Application {app_id} not found",
-                    }), 404
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": f"Application {app_id} not found",
+                        }
+                    ), 404
 
                 app = self.apps[app_id]
                 stop_result = app.stop()
@@ -428,34 +471,40 @@ class FlextWebServices:
                 if stop_result.is_failure:
                     # Customize message based on error type
                     message = "Application stop failed"
-                    if "stopped state" in (stop_result.error or ""):
+                    if "already stopped" in (stop_result.error or ""):
                         message = "Application is already stopped"
-                    
-                    return jsonify({
-                        "success": False,
-                        "message": message,
-                        "error": stop_result.error,
-                    }), 400
+
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": message,
+                            "error": stop_result.error,
+                        }
+                    ), 400
 
                 # Update stored application
                 self.apps[app_id] = stop_result.value
 
-                return jsonify({
-                    "success": True,
-                    "message": f"Application {app.name} stopped successfully",
-                    "data": {
-                        "id": app_id,
-                        "name": app.name,
-                        "status": "stopped",
-                    },
-                })
+                return jsonify(
+                    {
+                        "success": True,
+                        "message": f"Application {app.name} stopped successfully",
+                        "data": {
+                            "id": app_id,
+                            "name": app.name,
+                            "status": "stopped",
+                        },
+                    }
+                )
 
             except Exception as e:
-                return jsonify({
-                    "success": False,
-                    "message": "Failed to stop application",
-                    "error": str(e),
-                }), 500
+                return jsonify(
+                    {
+                        "success": False,
+                        "message": "Failed to stop application",
+                        "error": str(e),
+                    }
+                ), 500
 
         def run(self) -> None:
             """Run the Flask web service."""
@@ -464,7 +513,7 @@ class FlextWebServices:
                 port=self.config.port,
                 debug=self.config.debug,
                 use_reloader=False,  # Disable reloader for production use
-                threaded=True,       # Enable threading for concurrent requests
+                threaded=True,  # Enable threading for concurrent requests
             )
 
     class WebServiceRegistry:
@@ -545,6 +594,7 @@ class FlextWebServices:
             if config is None:
                 # Import here to avoid circular dependency
                 from flext_web.config import FlextWebConfigs
+
                 config_result = FlextWebConfigs.create_web_config()
                 if config_result.is_failure:
                     return FlextResult[FlextWebServices.WebService].fail(
@@ -557,10 +607,14 @@ class FlextWebServices:
             return FlextResult[FlextWebServices.WebService].ok(service)
 
         except Exception as e:
-            return FlextResult[FlextWebServices.WebService].fail(f"Web service creation failed: {e}")
+            return FlextResult[FlextWebServices.WebService].fail(
+                f"Web service creation failed: {e}"
+            )
 
     @classmethod
-    def create_service_registry(cls) -> FlextResult[FlextWebServices.WebServiceRegistry]:
+    def create_service_registry(
+        cls,
+    ) -> FlextResult[FlextWebServices.WebServiceRegistry]:
         """Create web service registry instance."""
         try:
             registry = FlextWebServices.WebServiceRegistry()
@@ -571,17 +625,20 @@ class FlextWebServices:
             )
 
     @classmethod
-    def create_web_system_services(  # noqa: PLR0911
-        cls, config: dict[str, object]  # noqa: ARG003
+    def create_web_system_services(
+        cls,
+        config: dict[str, object] | None = None,
     ) -> FlextResult[dict[str, object]]:
         """Create complete web system services with configuration."""
+        # Use config if needed for service creation, otherwise use defaults
+        _ = config  # Acknowledge parameter
         try:
             services: dict[str, object] = {}
 
             # Create main web service
             web_service_result = cls.create_web_service()
             if web_service_result.is_failure:
-                return FlextResult[dict[str, Any]].fail(
+                return FlextResult[dict[str, object]].fail(
                     f"Web service creation failed: {web_service_result.error}"
                 )
             services["web_service"] = web_service_result.value
@@ -589,7 +646,7 @@ class FlextWebServices:
             # Create service registry
             registry_result = cls.create_service_registry()
             if registry_result.is_failure:
-                return FlextResult[dict[str, Any]].fail(
+                return FlextResult[dict[str, object]].fail(
                     f"Registry creation failed: {registry_result.error}"
                 )
             services["registry"] = registry_result.value
@@ -603,14 +660,14 @@ class FlextWebServices:
                 return FlextResult[dict[str, object]].fail("Invalid web service type")
             register_result = registry.register_web_service("main", web_service)
             if register_result.is_failure:
-                return FlextResult[dict[str, Any]].fail(
+                return FlextResult[dict[str, object]].fail(
                     f"Service registration failed: {register_result.error}"
                 )
 
-            return FlextResult[dict[str, Any]].ok(services)
+            return FlextResult[dict[str, object]].ok(services)
 
         except Exception as e:
-            return FlextResult[dict[str, Any]].fail(
+            return FlextResult[dict[str, object]].fail(
                 f"Web system services creation failed: {e}"
             )
 
@@ -655,7 +712,9 @@ class FlextWebServices:
             )
 
     @classmethod
-    def get_web_services_system_config(cls) -> FlextResult[FlextTypes.Config.ConfigDict]:
+    def get_web_services_system_config(
+        cls,
+    ) -> FlextResult[FlextTypes.Config.ConfigDict]:
         """Get current web services system configuration with runtime information."""
         try:
             config: FlextTypes.Config.ConfigDict = {

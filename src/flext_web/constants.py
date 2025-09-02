@@ -27,7 +27,7 @@ class FlextWebConstants(FlextConstants):
         """Constantes ESPECÍFICAS do domínio flext-web (não genéricas)."""
 
         # Environment variable específica do flext-web
-        ENV_SECRET_KEY = "FLEXT_WEB_SECRET_KEY"  # noqa: S105
+        ENV_SECRET_KEY = "FLEXT_WEB_SECRET_KEY"
         ENV_HOST = "FLEXT_WEB_HOST"
         ENV_PORT = "FLEXT_WEB_PORT"
         ENV_DEBUG = "FLEXT_WEB_DEBUG"
@@ -48,9 +48,9 @@ class FlextWebConstants(FlextConstants):
         MIN_SECRET_KEY_LENGTH = 32
 
         # Development/test keys (properly marked for security scanners)
-        DEV_SECRET_KEY = "dev-key-change-in-production-32chars!"  # noqa: S105
-        DEV_ENVIRONMENT_KEY = "dev-key-for-development-environment!"  # noqa: S105
-        TEST_ENVIRONMENT_KEY = "test-key-for-testing-environment!"  # noqa: S105
+        DEV_SECRET_KEY = "dev-key-change-in-production-32chars!"
+        DEV_ENVIRONMENT_KEY = "dev-key-for-development-environment!"
+        TEST_ENVIRONMENT_KEY = "test-key-for-testing-environment!"
 
 
 __all__ = [

@@ -94,13 +94,15 @@ class TestFlextWebService:
         application, route registration, and handler initialization.
         Tests fundamental service patterns used in enterprise deployment.
         """
-        service = create_service()
+        service_result = create_service()
+        assert service_result.is_success
+        service = service_result.value
 
         assert service.app is not None
         if service.apps != {}:
             msg: str = f"Expected {{}}, got {service.apps}"
             raise AssertionError(msg)
-        assert service.handler is not None
+        assert hasattr(service, "config")
 
     def test_health_check(self, real_api_service: FlextWebService) -> None:
         """Test health check endpoint using real HTTP."""

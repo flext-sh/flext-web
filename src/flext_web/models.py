@@ -28,7 +28,6 @@ from __future__ import annotations
 
 import uuid
 from enum import Enum
-from typing import override
 
 from flext_core import (
     FlextConstants,
@@ -36,7 +35,7 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
-from pydantic import ConfigDict, Field, computed_field, field_validator
+from pydantic import ConfigDict, Field, field_validator
 
 # Import local constants and types for DIRECT usage - NO ALIASES - PRIORITIZING LOCAL LIBRARY
 from flext_web.constants import FlextWebConstants
@@ -54,7 +53,7 @@ class FlextWebModels:
     Architecture Overview:
         The system is organized following Domain-Driven Design and flext-core patterns:
 
-        - **Base Configuration**: Common configuration extending FlextModels.BaseConfig
+        - **Base Configuration**: Common configuration extending FlextModels
         - **Domain Models**: Web application entities with state management
         - **Status Management**: Application lifecycle status with state transitions
         - **Validation Models**: Input/output validation for web operations
@@ -74,12 +73,14 @@ class FlextWebModels:
         Web application management::
 
             # Create application with factory method
-            app_result = FlextWebModels.create_web_app({
-                "id": "app_123",
-                "name": "MyWebApp",
-                "host": "localhost",
-                "port": 8080,
-            })
+            app_result = FlextWebModels.create_web_app(
+                {
+                    "id": "app_123",
+                    "name": "MyWebApp",
+                    "host": "localhost",
+                    "port": 8080,
+                }
+            )
 
             # Use CQRS handler
             handler = FlextWebModels.WebAppHandler()
@@ -88,11 +89,13 @@ class FlextWebModels:
         Configuration management::
 
             # Create web system configuration
-            config_result = FlextWebModels.create_web_system_config({
-                "environment": "production",
-                "max_apps": 50,
-                "default_host": "0.0.0.0",
-            })
+            config_result = FlextWebModels.create_web_system_config(
+                {
+                    "environment": "production",
+                    "max_apps": 50,
+                    "default_host": "0.0.0.0",
+                }
+            )
 
     Note:
         This consolidated approach follows flext-core architectural patterns,
@@ -105,10 +108,10 @@ class FlextWebModels:
     # BASE MODEL CONFIGURATION EXTENDING FLEXTMODELS
     # =============================================================================
 
-    class BaseWebConfig(FlextModels.BaseConfig):
+    class BaseWebConfig(FlextModels.Value):
         """Base configuration class for all FLEXT Web models extending flext-core patterns.
 
-        Extends FlextModels.BaseConfig with web-specific validation and serialization
+        Extends FlextModels with web-specific validation and serialization
         optimizations while maintaining full compatibility with flext-core ecosystem.
         """
 
@@ -141,7 +144,7 @@ class FlextWebModels:
         State Transitions:
             - STOPPED -> STARTING -> RUNNING (normal startup)
             - RUNNING -> STOPPING -> STOPPED (normal shutdown)
-            - Any state -> ERROR (on failure)
+            - object state -> ERROR (on failure)
             - ERROR -> STOPPED (on recovery)
 
         Business Rules:
@@ -172,7 +175,7 @@ class FlextWebModels:
             port: Network port number (1-65535) for application services
             status: Current application state following state machine rules
 
-        Inherited Attributes (from FlextModels.Entity):
+        Inherited Attributes (from FlextModels):
             id: Unique entity identifier
             version: Entity version for optimistic locking
             created_at: Creation timestamp
@@ -187,7 +190,7 @@ class FlextWebModels:
             - Applications must validate before state changes
 
         Integration:
-            - Built on FlextModels.Entity foundation
+            - Built on FlextModels foundation
             - Uses FlextResult for railway-oriented programming
             - Integrates with WebAppHandler for CQRS operations
             - Compatible with FlextServices patterns for processing
@@ -201,7 +204,7 @@ class FlextWebModels:
             default=8080,
             ge=FlextWebConstants.WebSpecific.MIN_PORT,
             le=FlextWebConstants.WebSpecific.MAX_PORT,
-            description="Port number"
+            description="Port number",
         )
         status: FlextWebModels.WebAppStatus = Field(
             default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED,
@@ -233,7 +236,6 @@ class FlextWebModels:
                 raise ValueError(msg)
             return v.strip()
 
-        @override
         def validate_business_rules(self) -> FlextResult[None]:
             """Validate web application business rules with comprehensive checks."""
             try:
@@ -245,7 +247,9 @@ class FlextWebModels:
                 min_port = FlextWebConstants.WebSpecific.MIN_PORT
                 max_port = FlextWebConstants.WebSpecific.MAX_PORT
                 if not (min_port <= self.port <= max_port):
-                    return FlextResult[None].fail(f"Port must be between {min_port} and {max_port}")
+                    return FlextResult[None].fail(
+                        f"Port must be between {min_port} and {max_port}"
+                    )
 
                 # Host validation
                 if not self.host or not self.host.strip():
@@ -258,32 +262,34 @@ class FlextWebModels:
             except Exception as e:
                 return FlextResult[None].fail(f"Business rule validation failed: {e}")
 
-        @computed_field
+        @property
         def is_running(self) -> bool:
             """Check if application is currently running."""
-            return self.status == FlextWebModels.WebAppStatus.RUNNING.value
+            return self.status == FlextWebModels.WebAppStatus.RUNNING
 
-        @computed_field  # type: ignore[prop-decorator]
         @property
         def can_start(self) -> bool:
             """Check if application can be started."""
             return self.status in {
-                FlextWebModels.WebAppStatus.STOPPED.value,
-                FlextWebModels.WebAppStatus.ERROR.value,
+                FlextWebModels.WebAppStatus.STOPPED,
+                FlextWebModels.WebAppStatus.ERROR,
             }
 
-        @computed_field  # type: ignore[prop-decorator]
         @property
         def can_stop(self) -> bool:
             """Check if application can be stopped."""
             return self.status in {
-                FlextWebModels.WebAppStatus.RUNNING.value,
-                FlextWebModels.WebAppStatus.ERROR.value,
+                FlextWebModels.WebAppStatus.RUNNING,
+                FlextWebModels.WebAppStatus.ERROR,
             }
 
         def start(self) -> FlextResult[FlextWebModels.WebApp]:
             """Start application with state machine validation."""
             if not self.can_start:
+                if self.status == FlextWebModels.WebAppStatus.RUNNING:
+                    return FlextResult[FlextWebModels.WebApp].fail(
+                        "Application is already running"
+                    )
                 return FlextResult[FlextWebModels.WebApp].fail(
                     f"Application cannot start from {self.status} state"
                 )
@@ -304,6 +310,10 @@ class FlextWebModels:
         def stop(self) -> FlextResult[FlextWebModels.WebApp]:
             """Stop application with state machine validation."""
             if not self.can_stop:
+                if self.status == FlextWebModels.WebAppStatus.STOPPED:
+                    return FlextResult[FlextWebModels.WebApp].fail(
+                        "Application is already stopped"
+                    )
                 return FlextResult[FlextWebModels.WebApp].fail(
                     f"Application cannot stop from {self.status} state"
                 )
@@ -347,7 +357,9 @@ class FlextWebModels:
             - Supports event sourcing through domain events
         """
 
-        def create(self, name: str, port: int, host: str) -> FlextResult[FlextWebModels.WebApp]:
+        def create(
+            self, name: str, port: int, host: str
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Create new web application with validation."""
             try:
                 app_id = f"app_{name.lower().replace(' ', '_')}"
@@ -358,7 +370,7 @@ class FlextWebModels:
                     name=name,
                     host=host,
                     port=port,
-                    status=FlextWebModels.WebAppStatus.STOPPED
+                    status=FlextWebModels.WebAppStatus.STOPPED,
                 )
 
                 # Validate business rules
@@ -375,11 +387,15 @@ class FlextWebModels:
                     f"Application creation failed: {e}"
                 )
 
-        def start_app(self, app: FlextWebModels.WebApp) -> FlextResult[FlextWebModels.WebApp]:
+        def start_app(
+            self, app: FlextWebModels.WebApp
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Start web application with state validation."""
             return app.start()
 
-        def stop_app(self, app: FlextWebModels.WebApp) -> FlextResult[FlextWebModels.WebApp]:
+        def stop_app(
+            self, app: FlextWebModels.WebApp
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Stop web application with state validation."""
             return app.stop()
 
@@ -408,19 +424,19 @@ class FlextWebModels:
             port_value = app_data["port"]
             if not isinstance(port_value, (int, str)):
                 msg = f"Port must be int or str, got {type(port_value)}"
-                raise TypeError(msg)  # noqa: TRY301
+                raise TypeError(msg)
 
             status_value = app_data["status"]
             if not isinstance(status_value, FlextWebModels.WebAppStatus):
                 msg = f"Status must be WebAppStatus enum, got {type(status_value)}"
-                raise TypeError(msg)  # noqa: TRY301
+                raise TypeError(msg)
 
             app = FlextWebModels.WebApp(
                 id=str(app_data["id"]),
                 name=str(app_data["name"]),
                 host=str(app_data["host"]),
                 port=int(port_value),
-                status=status_value
+                status=status_value,
             )
 
             # Validate business rules
@@ -433,7 +449,9 @@ class FlextWebModels:
             return FlextResult[FlextWebModels.WebApp].ok(app)
 
         except Exception as e:
-            return FlextResult[FlextWebModels.WebApp].fail(f"Application creation failed: {e}")
+            return FlextResult[FlextWebModels.WebApp].fail(
+                f"Application creation failed: {e}"
+            )
 
     @classmethod
     def create_web_app_handler(cls) -> FlextResult[FlextWebModels.WebAppHandler]:
@@ -442,7 +460,9 @@ class FlextWebModels:
             handler = FlextWebModels.WebAppHandler()
             return FlextResult[FlextWebModels.WebAppHandler].ok(handler)
         except Exception as e:
-            return FlextResult[FlextWebModels.WebAppHandler].fail(f"Handler creation failed: {e}")
+            return FlextResult[FlextWebModels.WebAppHandler].fail(
+                f"Handler creation failed: {e}"
+            )
 
     @classmethod
     def create_web_system_config(
@@ -470,22 +490,32 @@ class FlextWebModels:
 
             # Convert dict to typed ConfigData with safe casting
             default_port = web_config.get("default_port", 8080)
-            port_value = int(default_port) if isinstance(default_port, (int, str)) else 8080
+            port_value = (
+                int(default_port) if isinstance(default_port, (int, str)) else 8080
+            )
 
             config_data = FlextWebTypes.ConfigData(
                 host=str(web_config["default_host"]),
                 port=port_value,
                 debug=bool(web_config.get("debug", True)),
-                secret_key=str(web_config.get("secret_key", "dev-key-change-in-production-32chars!")),
-                app_name=str(web_config.get("app_name", "FLEXT Web"))
+                secret_key=str(
+                    web_config.get(
+                        "secret_key", "dev-key-change-in-production-32chars!"
+                    )
+                ),
+                app_name=str(web_config.get("app_name", "FLEXT Web")),
             )
             return FlextResult[FlextWebTypes.ConfigData].ok(config_data)
 
         except Exception as e:
-            return FlextResult[FlextWebTypes.ConfigData].fail(f"Config creation failed: {e}")
+            return FlextResult[FlextWebTypes.ConfigData].fail(
+                f"Config creation failed: {e}"
+            )
 
     @classmethod
-    def validate_app_data(cls, data: dict[str, object]) -> FlextResult[dict[str, object]]:
+    def validate_app_data(
+        cls, data: dict[str, object]
+    ) -> FlextResult[dict[str, object]]:
         """Validate application data before creation."""
         try:
             # Required fields validation

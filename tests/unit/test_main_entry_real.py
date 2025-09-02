@@ -114,6 +114,7 @@ class TestRealMainEntry:
     def test_real_config_creation_from_args(self) -> None:
         """Test real configuration creation from parsed arguments."""
         import os
+
         # Set production environment for this test
         original_env = os.getenv("FLEXT_WEB_ENVIRONMENT")
         os.environ["FLEXT_WEB_ENVIRONMENT"] = "production"

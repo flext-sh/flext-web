@@ -14,7 +14,6 @@ from collections.abc import Generator
 
 import pytest
 import requests
-from flext_core import FlextModels
 
 from flext_web import (
     FlextWebConfigs,
@@ -74,7 +73,7 @@ class TestMissingCoverage:
         # Test Pydantic validation catches invalid ports during construction
         with pytest.raises(ValueError, match="port"):
             FlextWebModels.WebApp(
-                id=FlextModels.EntityId("test_invalid_port_high"),
+                id="test_invalid_port_high",
                 name="test-app",
                 port=99999,  # Too high for Pydantic
                 host="localhost",
@@ -82,7 +81,7 @@ class TestMissingCoverage:
 
         with pytest.raises(ValueError, match="port"):
             FlextWebModels.WebApp(
-                id=FlextModels.EntityId("test_invalid_port_low"),
+                id="test_invalid_port_low",
                 name="test-app",
                 port=0,  # Too low for Pydantic
                 host="localhost",
@@ -90,24 +89,24 @@ class TestMissingCoverage:
 
         # Test normal case where port is valid
         app = FlextWebModels.WebApp(
-            id=FlextModels.EntityId("test_valid_port"),
+            id="test_valid_port",
             name="test-app",
             port=8080,  # Valid port
             host="localhost",
         )
-        result = app.validate_domain_rules()
+        result = app.validate_business_rules()
         assert result.success
 
     def test_app_empty_name_validation(self) -> None:
         """Test empty name validation failure path."""
         # Use model_construct to bypass Pydantic validation and test domain validation
         app = FlextWebModels.WebApp.model_construct(
-            id=FlextModels.EntityId("test_empty_name"),
+            id="test_empty_name",
             name="",  # Empty name should fail validation
             port=8080,
             host="localhost",
         )
-        result = app.validate_domain_rules()
+        result = app.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
         assert "application name" in result.error.lower()
@@ -163,7 +162,7 @@ class TestMissingCoverage:
     def test_app_start_already_running(self) -> None:
         """Test starting an app that's already running."""
         app = FlextWebModels.WebApp(
-            id=FlextModels.EntityId("test_running"),
+            id="test_running",
             name="running-app",
             port=8080,
             host="localhost",
@@ -177,7 +176,7 @@ class TestMissingCoverage:
     def test_app_stop_already_stopped(self) -> None:
         """Test stopping an app that's already stopped."""
         app = FlextWebModels.WebApp(
-            id=FlextModels.EntityId("test_stopped"),
+            id="test_stopped",
             name="stopped-app",
             port=8080,
             host="localhost",
@@ -252,15 +251,19 @@ class TestMissingCoverage:
         config = FlextWebConfigs.WebConfig(
             secret_key="test-key-32-characters-long-valid!"
         )
-        service = create_service(config)
+        service_result = create_service(config)
 
+        assert service_result.is_success
+        service = service_result.value
         assert isinstance(service, FlextWebServices.WebService)
         assert service.config is config
 
     def test_service_create_with_none_config(self) -> None:
         """Test service creation with None config."""
-        service = create_service(None)
+        service_result = create_service(None)
 
+        assert service_result.is_success
+        service = service_result.value
         assert isinstance(service, FlextWebServices.WebService)
         assert isinstance(service.config, FlextWebConfigs.WebConfig)
 

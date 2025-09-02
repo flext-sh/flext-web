@@ -355,10 +355,14 @@ class TestWebConfigAdvanced:
     def test_web_config_caching(self) -> None:
         """Test settings caching functionality."""
         # First call creates instance
-        settings1 = FlextWebConfigs.create_web_config()
+        settings1_result = FlextWebConfigs.create_web_config()
+        assert settings1_result.is_success
+        settings1 = settings1_result.value
 
         # Second call should return equivalent configuration
-        settings2 = FlextWebConfigs.create_web_config()
+        settings2_result = FlextWebConfigs.create_web_config()
+        assert settings2_result.is_success
+        settings2 = settings2_result.value
 
         # Test configuration consistency
         assert settings1.host == settings2.host
@@ -381,10 +385,10 @@ class TestWebAppAdvanced:
 
         # Test initial state
         assert not app.is_running
-        assert app.status == FlextWebModels.WebAppStatus.STOPPED
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
 
         # Test validation
-        result = app.validate_domain_rules()
+        result = app.validate_business_rules()
         assert result.success
 
     def test_app_edge_case_ports(self) -> None:
@@ -396,7 +400,7 @@ class TestWebAppAdvanced:
             port=1,
             host="localhost",
         )
-        result = app.validate_domain_rules()
+        result = app.validate_business_rules()
         assert result.success
 
         # Test maximum port
@@ -406,7 +410,7 @@ class TestWebAppAdvanced:
             port=65535,
             host="localhost",
         )
-        result = app.validate_domain_rules()
+        result = app.validate_business_rules()
         assert result.success
 
     def test_app_host_variations(self) -> None:
@@ -420,7 +424,7 @@ class TestWebAppAdvanced:
                 port=3000 + i,
                 host=host,
             )
-            result = app.validate_domain_rules()
+            result = app.validate_business_rules()
             assert result.success
 
 
@@ -437,7 +441,7 @@ class TestWebAppHandlerAdvanced:
         app = result.value
 
         # Test stopping a stopped app
-        result = handler.stop(app)
+        result = handler.stop_app(app)
         # App is already stopped, so this should fail with appropriate message
         assert result.is_failure
         assert (
@@ -470,24 +474,24 @@ class TestWebAppHandlerAdvanced:
         app = result.value
 
         # Start app
-        result = handler.start(app)
+        result = handler.start_app(app)
         assert result.success
-        assert result.value.status == FlextWebModels.WebAppStatus.RUNNING
+        assert result.value.status == FlextWebModels.WebAppStatus.RUNNING.value
         running_app = result.value
 
         # Try to start already running app
-        result = handler.start(running_app)
+        result = handler.start_app(running_app)
         assert result.is_failure
         assert "already running" in (result.error or "").lower()
 
         # Stop app
-        result = handler.stop(running_app)
+        result = handler.stop_app(running_app)
         assert result.success
-        assert result.value.status == FlextWebModels.WebAppStatus.STOPPED
+        assert result.value.status == FlextWebModels.WebAppStatus.STOPPED.value
         stopped_app = result.value
 
         # Try to stop already stopped app
-        result = handler.stop(stopped_app)
+        result = handler.stop_app(stopped_app)
         assert result.is_failure
         assert (
             "already stopped" in (result.error or "").lower()

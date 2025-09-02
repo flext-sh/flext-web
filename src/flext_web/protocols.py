@@ -287,10 +287,12 @@ class FlextWebProtocols(FlextProtocols):
             ) -> None:
                 pass
 
-            def health(self) -> None:
-                pass
+            def health(self) -> ResponseReturnValue:
+                from flask import jsonify
 
-        return _WebServiceProtocolImpl()  # type: ignore[return-value]
+                return jsonify({"status": "ok"})
+
+        return _WebServiceProtocolImpl()
 
     @classmethod
     def create_app_manager_protocol(cls) -> AppManagerProtocol:
@@ -302,19 +304,38 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         class _AppManagerProtocolImpl:
-            def create_app(self, name: str, port: int, host: str) -> None:
-                pass
+            def create_app(
+                self, name: str, port: int, host: str
+            ) -> FlextResult[FlextWebModels.WebApp]:
+                app = FlextWebModels.WebApp(
+                    id=f"app_{name}", name=name, port=port, host=host
+                )
+                return FlextResult[FlextWebModels.WebApp].ok(app)
 
-            def start_app(self, app_id: str) -> None:
-                pass
+            def start_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+                app = FlextWebModels.WebApp(
+                    id=app_id,
+                    name="mock",
+                    port=8080,
+                    host="localhost",
+                    status=FlextWebModels.WebAppStatus.RUNNING,
+                )
+                return FlextResult[FlextWebModels.WebApp].ok(app)
 
-            def stop_app(self, app_id: str) -> None:
-                pass
+            def stop_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+                app = FlextWebModels.WebApp(
+                    id=app_id,
+                    name="mock",
+                    port=8080,
+                    host="localhost",
+                    status=FlextWebModels.WebAppStatus.STOPPED,
+                )
+                return FlextResult[FlextWebModels.WebApp].ok(app)
 
-            def list_apps(self) -> None:
-                pass
+            def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
+                return FlextResult[list[FlextWebModels.WebApp]].ok([])
 
-        return _AppManagerProtocolImpl()  # type: ignore[return-value]
+        return _AppManagerProtocolImpl()
 
     @classmethod
     def validate_web_service_protocol(cls, service: object) -> bool:

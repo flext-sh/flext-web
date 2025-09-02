@@ -399,7 +399,9 @@ class FlextWebHandlers(FlextHandlers):
                 "success": False,
                 "message": safe_message,
                 "data": None,
-                "errors": errors if isinstance(errors, dict) else ([errors] if errors else []),
+                "errors": errors
+                if isinstance(errors, dict)
+                else ([errors] if errors else []),
                 "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
             }
 
@@ -601,7 +603,7 @@ class FlextWebHandlers(FlextHandlers):
             host=app.host,
             port=app.port,
             status=app.status.value,
-            is_running=app.is_running(),
+            is_running=app.is_running,
         )
 
     @classmethod

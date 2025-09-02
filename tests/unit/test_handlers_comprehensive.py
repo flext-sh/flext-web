@@ -68,7 +68,7 @@ class TestWebHandlers:
         )
         result = WebHandlers.handle_start_app(app)
         assert result.success is True
-        assert result.value.status == FlextWebModels.WebAppStatus.RUNNING
+        assert result.value.status == FlextWebModels.WebAppStatus.RUNNING.value
 
     def test_handle_app_stop(self) -> None:
         """Test app stop handler."""
@@ -82,7 +82,7 @@ class TestWebHandlers:
         )
         result = WebHandlers.handle_stop_app(app)
         assert result.success is True
-        assert result.value.status == FlextWebModels.WebAppStatus.STOPPED
+        assert result.value.status == FlextWebModels.WebAppStatus.STOPPED.value
 
 
 class TestWebResponseHandler:
@@ -110,7 +110,7 @@ class TestWebResponseHandler:
         )
 
         # Flask response object - check status code and data
-        flask_response, status_code = response  # type: ignore[misc]
+        flask_response, status_code = response
         assert status_code == 200
         data = flask_response.get_json()
         assert isinstance(data, dict)
@@ -123,7 +123,7 @@ class TestWebResponseHandler:
         handler = WebResponseHandler()
         response = handler.create_success_response(message="Success")
 
-        flask_response, status_code = response  # type: ignore[misc]
+        flask_response, status_code = response
         assert status_code == 200
         data = flask_response.get_json()
         assert isinstance(data, dict)
@@ -138,7 +138,7 @@ class TestWebResponseHandler:
             message="Something went wrong", status_code=400
         )
 
-        flask_response, status_code = response  # type: ignore[misc]
+        flask_response, status_code = response
         assert status_code == 400
         data = flask_response.get_json()
         assert isinstance(data, dict)
@@ -153,7 +153,7 @@ class TestWebResponseHandler:
             message="Validation failed", status_code=422, errors=error_details
         )
 
-        flask_response, status_code = response  # type: ignore[misc]
+        flask_response, status_code = response
         assert status_code == 422
         data = flask_response.get_json()
         assert isinstance(data, dict)
@@ -170,7 +170,7 @@ class TestWebResponseHandler:
             data={"test": "value"}, message="Test message", status_code=201
         )
 
-        flask_response, status_code = response  # type: ignore[misc]
+        flask_response, status_code = response
         assert status_code == 201
         data = flask_response.get_json()
         assert isinstance(data, dict)
@@ -190,8 +190,8 @@ class TestWebResponseHandler:
         )
 
         # Extract response and status code from tuple
-        success_resp, _success_status = success_response  # type: ignore[misc]
-        error_resp, _error_status = error_response  # type: ignore[misc]
+        success_resp, _success_status = success_response
+        error_resp, _error_status = error_response
 
         success_data = success_resp.get_json()
         error_data = error_resp.get_json()
@@ -228,7 +228,7 @@ class TestWebResponseHandler:
         for data in data_types:
             handler = WebResponseHandler()
             response = handler.create_success_response(data=data, message="Test")
-            flask_response, _status = response  # type: ignore[misc]
+            flask_response, _status = response
             response_data = flask_response.get_json()
             assert response_data["data"] == data
             assert response_data["success"] is True
@@ -239,7 +239,7 @@ class TestWebResponseHandler:
         response = handler.create_error_response(message="Error message")
 
         # Should default to status code 500
-        flask_response, status_code = response  # type: ignore[misc]
+        flask_response, status_code = response
         assert status_code == 500
         data = flask_response.get_json()
         assert data["success"] is False
@@ -252,7 +252,7 @@ class TestWebResponseHandler:
 
         # Should default to status code 200
         # Response is a tuple (response, status_code)
-        response_obj, status_code = response  # type: ignore[misc]
+        response_obj, status_code = response
         assert status_code == 200
         data = response_obj.get_json()
         assert data["success"] is True
@@ -279,7 +279,7 @@ class TestHandlerIntegration:
             # Create handler instance
             handler = WebResponseHandler()
             response = handler.create_success_response("Test")
-            _response_obj, status_code = response  # type: ignore[misc]
+            _response_obj, status_code = response
             assert status_code == 200
 
     def test_handlers_work_with_domain_models(self) -> None:
@@ -294,7 +294,7 @@ class TestHandlerIntegration:
         # Start app via handler
         start_result = WebHandlers.handle_start_app(app)
         assert start_result.success is True
-        assert start_result.value.status == FlextWebModels.WebAppStatus.RUNNING
+        assert start_result.value.status == FlextWebModels.WebAppStatus.RUNNING.value
 
     def test_error_handling_patterns(self) -> None:
         """Test handlers handle errors properly."""
@@ -320,7 +320,7 @@ class TestHandlerIntegration:
 
         stop_result = WebHandlers.handle_stop_app(start_result.value)
         assert stop_result.success is True
-        assert stop_result.value.status == FlextWebModels.WebAppStatus.STOPPED
+        assert stop_result.value.status == FlextWebModels.WebAppStatus.STOPPED.value
 
 
 if __name__ == "__main__":

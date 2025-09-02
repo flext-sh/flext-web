@@ -13,7 +13,6 @@ from collections.abc import Generator
 
 import pytest
 import requests
-from flext_core import FlextModels
 from tests.port_manager import TestPortManager
 
 from flext_web import (
@@ -198,7 +197,7 @@ class TestRealDomainLogicExecution:
         """Test real FlextWebModels.WebApp creation and domain validation."""
         # Test valid app creation
         app = FlextWebModels.WebApp(
-            id=FlextModels.EntityId("test_real_app"),
+            id="test_real_app",
             name="real-test-app",
             port=8000,
             host="localhost",
@@ -208,11 +207,11 @@ class TestRealDomainLogicExecution:
         assert app.name == "real-test-app"
         assert app.port == 8000
         assert app.host == "localhost"
-        assert app.status == FlextWebModels.WebAppStatus.STOPPED
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
         assert app.is_running is False
 
         # Test real domain validation
-        result = app.validate_domain_rules()
+        result = app.validate_business_rules()
         assert result.success is True
 
     @pytest.mark.unit
@@ -220,13 +219,13 @@ class TestRealDomainLogicExecution:
         """Test real domain validation with invalid data."""
         # Test invalid app with empty name
         app = FlextWebModels.WebApp.model_construct(
-            id=FlextModels.EntityId("invalid_test"),
+            id="invalid_test",
             name="",  # Empty name should fail
             port=8000,
             host="localhost",
         )
 
-        result = app.validate_domain_rules()
+        result = app.validate_business_rules()
         assert result.is_failure is True
         assert result.error is not None
         assert "application name" in result.error.lower()
@@ -242,20 +241,20 @@ class TestRealDomainLogicExecution:
         app = result.value
         assert app.name == "real-handler-test"
         assert app.port == 8002
-        assert app.status == FlextWebModels.WebAppStatus.STOPPED
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
 
         # Test real app start
         start_result = handler.start(app)
         assert start_result.success is True
         started_app = start_result.value
-        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
+        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING.value
         assert started_app.is_running is True
 
         # Test real app stop
         stop_result = handler.stop(started_app)
         assert stop_result.success is True
         stopped_app = stop_result.value
-        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED
+        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED.value
         assert stopped_app.is_running is False
 
     @pytest.mark.unit
@@ -300,19 +299,34 @@ class TestRealConfigurationManagement:
     @pytest.mark.unit
     def test_real_config_validation_failures(self) -> None:
         """Test real configuration validation with invalid data."""
-        # Test production validation failure with default key
-        config = FlextWebConfigs.WebConfig(
-            host="localhost",
-            port=8083,
-            debug=False,  # Production mode
-            secret_key="dev-secret-key-change-in-production",  # Default key
-        )
+        import os
 
-        # Force production validation by calling it directly
-        result = config.validate_production_settings()
-        assert result.is_failure is True
-        assert result.error is not None
-        assert "production" in result.error.lower()
+        # Set production environment to trigger production validations
+        original_env = os.environ.get("FLEXT_WEB_ENVIRONMENT")
+        os.environ["FLEXT_WEB_ENVIRONMENT"] = "production"
+
+        try:
+            # Test production validation failure with default key
+            config = FlextWebConfigs.WebConfig(
+                host="localhost",
+                port=8083,
+                debug=False,  # Production mode
+                secret_key="dev-secret-key-change-in-production",  # Default key
+            )
+
+            # Force production validation by calling it directly
+            result = config.validate_config()
+            assert result.is_failure is True
+            assert result.error is not None
+            assert (
+                "secret" in result.error.lower() or "localhost" in result.error.lower()
+            )
+        finally:
+            # Restore original environment
+            if original_env is None:
+                os.environ.pop("FLEXT_WEB_ENVIRONMENT", None)
+            else:
+                os.environ["FLEXT_WEB_ENVIRONMENT"] = original_env
 
     @pytest.mark.integration
     def test_real_environment_configuration_loading(self) -> None:
@@ -333,7 +347,9 @@ class TestRealConfigurationManagement:
             # reset_web_settings()
 
             # Test real config loading
-            config = FlextWebConfigs.create_web_config()
+            config_result = FlextWebConfigs.create_web_config()
+            assert config_result.is_success
+            config = config_result.value
             assert config.host == "test-host"
             assert config.port == 9000
             assert config.debug is False

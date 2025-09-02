@@ -90,9 +90,11 @@ class TestWebInterface:
         Flask application instance with route registration and middleware setup.
         Tests fundamental web application patterns for enterprise deployment.
         """
-        app = FlextWebServices.create_flask_app(
-            FlextWebConfigs.create_development_config()
-        )
+        config_result = FlextWebConfigs.create_development_config()
+        assert config_result.is_success
+        service_result = FlextWebServices.create_web_service(config_result.value)
+        assert service_result.is_success
+        app = service_result.value.app
 
         assert app is not None
         # Flask app name should contain the module name

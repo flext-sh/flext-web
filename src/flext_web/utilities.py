@@ -142,7 +142,7 @@ class FlextWebUtilities:
                 return True
 
             # localhost and similar
-            return safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}  # noqa: S104
+            return safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}
 
     class WebProcessors:
         """Web-specific processing using MASSIVE FlextUtilities delegation."""

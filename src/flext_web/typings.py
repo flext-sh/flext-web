@@ -28,7 +28,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, TypedDict, TypeVar
+from typing import TypedDict, TypeVar
 
 from flask.typing import ResponseReturnValue
 from flext_core import FlextResult, FlextTypes
@@ -85,14 +85,14 @@ class FlextWebTypes:
                 "host": "localhost",
                 "port": 8080,
                 "status": "running",
-                "is_running": True
+                "is_running": True,
             }
 
             # Application creation request
             create_req: FlextWebTypes.CreateAppRequest = {
                 "name": "NewApp",
                 "host": "0.0.0.0",
-                "port": 3000
+                "port": 3000,
             }
 
         API response types::
@@ -101,14 +101,14 @@ class FlextWebTypes:
             success: FlextWebTypes.SuccessResponse = {
                 "success": True,
                 "message": "Operation completed",
-                "data": app_data
+                "data": app_data,
             }
 
             # Error response
             error: FlextWebTypes.ErrorResponse = {
                 "success": False,
                 "message": "Operation failed",
-                "error": "Validation error"
+                "error": "Validation error",
             }
 
         Configuration and service types::
@@ -119,7 +119,7 @@ class FlextWebTypes:
                 "port": 8080,
                 "debug": True,
                 "secret_key": "my-secret-key-32-chars-long!",
-                "app_name": "FLEXT Web"
+                "app_name": "FLEXT Web",
             }
 
     Note:
@@ -225,7 +225,7 @@ class FlextWebTypes:
         host: str
         port: int
         secret_key: str  # Required in production
-        debug: bool      # Must be False
+        debug: bool  # Must be False
         enable_cors: bool
 
     class DevelopmentConfigData(TypedDict, total=False):
@@ -242,68 +242,72 @@ class FlextWebTypes:
     # =============================================================================
 
     # Service implementation types
-    WebService = Any                    # FlextWebServices.WebService type
-    ServiceRegistry = Any               # FlextWebServices.WebServiceRegistry type
-    FlaskApplication = Any              # Flask application instance type
+    WebService = object  # FlextWebServices.WebService type
+    ServiceRegistry = object  # FlextWebServices.WebServiceRegistry type
+    FlaskApplication = object  # Flask application instance type
 
     # Handler types
-    RequestHandler = Callable[[object], ResponseReturnValue]    # Flask route handler
+    RequestHandler = Callable[[object], ResponseReturnValue]  # Flask route handler
     ErrorHandler = Callable[[Exception], ResponseReturnValue]  # Error handler
-    MiddlewareHandler = Callable[[object], object]                 # Middleware handler
+    MiddlewareHandler = Callable[[object], object]  # Middleware handler
 
     # Flask integration types
-    RouteHandler = Callable[[object], ResponseReturnValue]      # Flask route handler type
-    URLRule = str                       # Flask URL rule pattern
-    HTTPMethod = str                    # HTTP method: "GET", "POST", "PUT", "DELETE"
+    RouteHandler = Callable[[object], ResponseReturnValue]  # Flask route handler type
+    URLRule = str  # Flask URL rule pattern
+    HTTPMethod = str  # HTTP method: "GET", "POST", "PUT", "DELETE"
 
     # =============================================================================
     # SIMPLE TYPE ALIASES
     # =============================================================================
 
     # Application types
-    AppStatus = str     # Application status values: "stopped", "starting", "running", "stopping", "error"
-    AppId = str         # Application identifier format: "app_{name}"
-    AppName = str       # Application name validation pattern
-    AppHost = str       # Host address format validation
-    AppPort = int       # Port number range validation (1-65535)
+    AppStatus = str  # Application status values: "stopped", "starting", "running", "stopping", "error"
+    AppId = str  # Application identifier format: "app_{name}"
+    AppName = str  # Application name validation pattern
+    AppHost = str  # Host address format validation
+    AppPort = int  # Port number range validation (1-65535)
 
     # Service types
-    ServiceName = str           # Service registry name identifier
-    ServiceInstance = Any       # Service instance type (generic for flexibility)
-    ServiceHealth = bool        # Service health status indicator
-    ServiceStatus = str         # Service status: "starting", "running", "stopping", "stopped"
-    ServiceMetrics = dict[str, object]     # Service performance metrics
+    ServiceName = str  # Service registry name identifier
+    ServiceInstance = object  # Service instance type (generic for flexibility)
+    ServiceHealth = bool  # Service health status indicator
+    ServiceStatus = str  # Service status: "starting", "running", "stopping", "stopped"
+    ServiceMetrics = dict[str, object]  # Service performance metrics
 
     # API types
-    HTTPStatus = int        # HTTP status codes (200, 400, 404, 500, etc.)
-    APIMessage = str        # API response message text
-    ErrorCode = str         # Structured error code identifier
-    ErrorDetails = str      # Detailed error description
+    HTTPStatus = int  # HTTP status codes (200, 400, 404, 500, etc.)
+    APIMessage = str  # API response message text
+    ErrorCode = str  # Structured error code identifier
+    ErrorDetails = str  # Detailed error description
 
     # Configuration types
-    Environment = str       # Environment names: "development", "staging", "production", "test"
-    SecretKey = str        # Secret key format (minimum 32 characters)
-    HostAddress = str      # Valid host address format
-    PortNumber = int       # Port number range (1-65535)
-    ConfigDict = dict[str, object]                    # Generic configuration dictionary
-    ConfigErrors = list[str]                       # Configuration error messages
+    Environment = (
+        str  # Environment names: "development", "staging", "production", "test"
+    )
+    SecretKey = str  # Secret key format (minimum 32 characters)
+    HostAddress = str  # Valid host address format
+    PortNumber = int  # Port number range (1-65535)
+    ConfigDict = dict[str, object]  # Generic configuration dictionary
+    ConfigErrors = list[str]  # Configuration error messages
 
     # Result types extending FlextResult
-    WebResult = FlextResult[object]        # Generic web result type
-    AppResult = FlextResult[AppData]    # Application operation result
+    WebResult = FlextResult[object]  # Generic web result type
+    AppResult = FlextResult[AppData]  # Application operation result
     ConfigResult = FlextResult[ConfigData]  # Configuration operation result
-    ServiceResult = FlextResult[object]  # Service operation result (WebService is Any type)
+    ServiceResult = FlextResult[
+        object
+    ]  # Service operation result (WebService is object type)
 
     # Validation types
-    ValidationError = str               # Validation error message
-    ValidationErrors = list[str]        # Multiple validation errors
+    ValidationError = str  # Validation error message
+    ValidationErrors = list[str]  # Multiple validation errors
     ValidationResult = FlextResult[None]  # Validation operation result
-    ValidatorFunction = Callable[[object], bool]      # Custom validator function
+    ValidatorFunction = Callable[[object], bool]  # Custom validator function
 
     # Flask types
-    FlaskApp = Any                      # Flask application instance
-    FlaskConfig = dict[str, object]        # Flask configuration dictionary
-    FlaskRequest = Any                  # Flask request object
+    FlaskApp = object  # Flask application instance
+    FlaskConfig = dict[str, object]  # Flask configuration dictionary
+    FlaskRequest = object  # Flask request object
     FlaskResponse = ResponseReturnValue  # Flask response type
 
     # Additional TypedDict classes for compatibility
@@ -326,9 +330,9 @@ class FlextWebTypes:
         headers: dict[str, str]
 
     # Type aliases using proper types
-    ResponseData = dict[str, object]     # Generic response data type
-    AppDataDict = AppData                # App data alias for compatibility
-    HealthDataDict = HealthResponse      # Health data alias for compatibility
+    ResponseData = dict[str, object]  # Generic response data type
+    AppDataDict = AppData  # App data alias for compatibility
+    HealthDataDict = HealthResponse  # Health data alias for compatibility
     TemplateFilter = Callable[[str], str]  # Template filter function type
 
     # =============================================================================
@@ -343,7 +347,8 @@ class FlextWebTypes:
         host: str,
         port: int,
         status: str,
-        is_running: bool = False  # noqa: FBT001, FBT002
+        *,
+        is_running: bool = False,
     ) -> FlextWebTypes.AppData:
         """Create application data structure with validation."""
         return cls.AppData(
@@ -352,55 +357,42 @@ class FlextWebTypes:
             host=host,
             port=port,
             status=status,
-            is_running=is_running
+            is_running=is_running,
         )
 
     @classmethod
     def create_success_response(
-        cls,
-        message: str,
-        data: dict[str, object]
+        cls, message: str, data: dict[str, object]
     ) -> FlextWebTypes.SuccessResponse:
         """Create success API response structure."""
-        return cls.SuccessResponse(
-            success=True,
-            message=message,
-            data=data
-        )
+        return cls.SuccessResponse(success=True, message=message, data=data)
 
     @classmethod
     def create_error_response(
-        cls,
-        message: str,
-        error: str
+        cls, message: str, error: str
     ) -> FlextWebTypes.ErrorResponse:
         """Create error API response structure."""
-        return cls.ErrorResponse(
-            success=False,
-            message=message,
-            error=error
-        )
+        return cls.ErrorResponse(success=False, message=message, error=error)
 
     @classmethod
     def create_config_data(
         cls,
         host: str = "localhost",
         port: int = 8080,
-        debug: bool = True,  # noqa: FBT001, FBT002
+        *,
+        debug: bool = True,
         secret_key: str = FlextWebConstants.WebSpecific.DEV_SECRET_KEY,
-        app_name: str = "FLEXT Web"
+        app_name: str = "FLEXT Web",
     ) -> FlextWebTypes.ConfigData:
         """Create configuration data structure with defaults."""
         return cls.ConfigData(
-            host=host,
-            port=port,
-            debug=debug,
-            secret_key=secret_key,
-            app_name=app_name
+            host=host, port=port, debug=debug, secret_key=secret_key, app_name=app_name
         )
 
     @classmethod
-    def validate_app_data(cls, data: dict[str, object]) -> FlextResult[FlextWebTypes.AppData]:
+    def validate_app_data(
+        cls, data: dict[str, object]
+    ) -> FlextResult[FlextWebTypes.AppData]:
         """Validate and convert dictionary to AppData structure."""
         try:
             required_fields = {"id", "name", "host", "port", "status", "is_running"}
@@ -415,7 +407,7 @@ class FlextWebTypes:
             port_value = data["port"]
             if not isinstance(port_value, (int, str)):
                 msg = f"Port must be int or str, got {type(port_value)}"
-                raise TypeError(msg)  # noqa: TRY301
+                raise TypeError(msg)
 
             app_data = FlextWebTypes.AppData(
                 id=str(data["id"]),
@@ -423,16 +415,20 @@ class FlextWebTypes:
                 host=str(data["host"]),
                 port=int(port_value),
                 status=str(data["status"]),
-                is_running=bool(data["is_running"])
+                is_running=bool(data["is_running"]),
             )
 
             return FlextResult[FlextWebTypes.AppData].ok(app_data)
 
         except Exception as e:
-            return FlextResult[FlextWebTypes.AppData].fail(f"App data validation failed: {e}")
+            return FlextResult[FlextWebTypes.AppData].fail(
+                f"App data validation failed: {e}"
+            )
 
     @classmethod
-    def validate_config_data(cls, data: dict[str, object]) -> FlextResult[FlextWebTypes.ConfigData]:
+    def validate_config_data(
+        cls, data: dict[str, object]
+    ) -> FlextResult[FlextWebTypes.ConfigData]:
         """Validate and convert dictionary to ConfigData structure."""
         try:
             required_fields = {"host", "port", "debug", "secret_key", "app_name"}
@@ -447,20 +443,22 @@ class FlextWebTypes:
             port_value = data["port"]
             if not isinstance(port_value, (int, str)):
                 msg = f"Port must be int or str, got {type(port_value)}"
-                raise TypeError(msg)  # noqa: TRY301
+                raise TypeError(msg)
 
             config_data = FlextWebTypes.ConfigData(
                 host=str(data["host"]),
                 port=int(port_value),
                 debug=bool(data["debug"]),
                 secret_key=str(data["secret_key"]),
-                app_name=str(data["app_name"])
+                app_name=str(data["app_name"]),
             )
 
             return FlextResult[FlextWebTypes.ConfigData].ok(config_data)
 
         except Exception as e:
-            return FlextResult[FlextWebTypes.ConfigData].fail(f"Config data validation failed: {e}")
+            return FlextResult[FlextWebTypes.ConfigData].fail(
+                f"Config data validation failed: {e}"
+            )
 
     # =============================================================================
     # FLEXT WEB TYPES CONFIGURATION METHODS
@@ -499,7 +497,10 @@ class FlextWebTypes:
                 "enable_protocol_validation": True,
                 # Available type categories
                 "available_type_categories": [
-                    "AppData", "APIResponse", "ConfigData", "ServiceTypes"
+                    "AppData",
+                    "APIResponse",
+                    "ConfigData",
+                    "ServiceTypes",
                 ],
                 # Type system metrics
                 "total_type_definitions": 50,

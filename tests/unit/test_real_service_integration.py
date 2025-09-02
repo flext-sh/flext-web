@@ -311,13 +311,17 @@ class TestRealDomainLogic:
         # reset_web_settings()
 
         # Test real settings creation
-        settings = FlextWebConfigs.create_web_config()
+        settings_result = FlextWebConfigs.create_web_config()
+        assert settings_result.is_success
+        settings = settings_result.value
         assert isinstance(settings, FlextWebConfigs.WebConfig)
         assert settings.host == "localhost"  # Default value
         assert settings.port == 8080  # Default value
 
         # Test settings consistency (should return equivalent configuration)
-        settings2 = FlextWebConfigs.create_web_config()
+        settings2_result = FlextWebConfigs.create_web_config()
+        assert settings2_result.is_success
+        settings2 = settings2_result.value
         assert settings.host == settings2.host
         assert settings.port == settings2.port
         assert settings.secret_key == settings2.secret_key

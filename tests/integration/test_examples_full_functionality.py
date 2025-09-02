@@ -301,8 +301,8 @@ class ExamplesFullFunctionalityTest:
             # Temporarily change BASE_URL to non-existent service
             original_url: str | None = None
             if hasattr(api_usage, "BASE_URL"):
-                original_url = api_usage.BASE_URL  # type: ignore[attr-defined]
-                api_usage.BASE_URL = "http://localhost:9999"  # type: ignore[attr-defined]
+                original_url = api_usage.BASE_URL
+                api_usage.BASE_URL = "http://localhost:9999"
 
             # Test functions handle errors gracefully
             health = api_usage.check_service_health()
@@ -317,7 +317,7 @@ class ExamplesFullFunctionalityTest:
 
             # Restore original URL
             if original_url is not None:
-                api_usage.BASE_URL = original_url  # type: ignore[attr-defined]
+                api_usage.BASE_URL = original_url
 
             return True
 

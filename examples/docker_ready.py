@@ -30,7 +30,9 @@ def create_docker_config() -> FlextWebConfigs.WebConfig:
         secret_key = secrets.token_urlsafe(32)
         logger.warning("No SECRET_KEY provided, generated temporary key")
 
-    config = FlextWebConfigs.WebConfig(host=host, port=port, debug=debug, secret_key=secret_key)
+    config = FlextWebConfigs.WebConfig(
+        host=host, port=port, debug=debug, secret_key=secret_key
+    )
 
     # Validate configuration
     validation_result = config.validate_config()
@@ -78,6 +80,7 @@ def main() -> None:
 
     # Create service
     from flext_web import create_service
+
     service = create_service(config)
     logger.info("✅ Service created successfully")
 

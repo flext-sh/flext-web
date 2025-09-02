@@ -51,9 +51,7 @@ class TestWebApp:
         proper default values, business rule enforcement, and state initialization.
         Tests fundamental domain patterns used throughout the system.
         """
-        app = FlextWebModels.WebApp(
-            id="app_test-app", name="TestApp", port=8080
-        )
+        app = FlextWebModels.WebApp(id="app_test-app", name="TestApp", port=8080)
 
         if app.id != "app_test-app":
             msg: str = f"Expected {'app_test-app'}, got {app.id}"
@@ -71,33 +69,27 @@ class TestWebApp:
         Validates that FlextWebModels.WebApp correctly enforces domain validation rules
         and returns proper FlextResult success/failure patterns.
         """
-        app = FlextWebModels.WebApp(
-            id="app_test-app", name="TestApp", port=8080
-        )
-        result = app.validate_domain_rules()
+        app = FlextWebModels.WebApp(id="app_test-app", name="TestApp", port=8080)
+        result = app.validate_business_rules()
 
-        assert result.success
+        assert result.is_success
 
     def test_webapp_invalid_port(self) -> None:
         """Test FlextWebModels.WebApp with invalid port validation."""
         with pytest.raises(ValidationError):
-            FlextWebModels.WebApp(
-                id="app_test-app", name="TestApp", port=99999
-            )
+            FlextWebModels.WebApp(id="app_test-app", name="TestApp", port=99999)
 
     def test_webapp_empty_name(self) -> None:
         """Test FlextWebModels.WebApp domain validation with empty name."""
         # Empty name should fail at construction time with Pydantic validation
-        with pytest.raises(ValidationError, match="String should have at least 1 character"):
-            FlextWebModels.WebApp(
-                id="app_test-app", name="", port=8080
-            )
+        with pytest.raises(
+            ValidationError, match="String should have at least 1 character"
+        ):
+            FlextWebModels.WebApp(id="app_test-app", name="", port=8080)
 
     def test_webapp_start(self) -> None:
         """Test FlextWebModels.WebApp start operation with state transition."""
-        app = FlextWebModels.WebApp(
-            id="app_test-app", name="TestApp", port=8080
-        )
+        app = FlextWebModels.WebApp(id="app_test-app", name="TestApp", port=8080)
         result = app.start()
 
         assert result.success
@@ -140,9 +132,7 @@ class TestWebAppHandler:
     def test_handler_start(self) -> None:
         """Test handler start."""
         handler = FlextWebHandlers.WebAppHandler()
-        app = FlextWebModels.WebApp(
-            id="app_test-app", name="TestApp", port=8080
-        )
+        app = FlextWebModels.WebApp(id="app_test-app", name="TestApp", port=8080)
 
         result = handler.start(app)
 
