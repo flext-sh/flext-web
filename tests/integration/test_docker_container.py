@@ -105,7 +105,7 @@ def test_container_pytest() -> bool:
         return True
 
     # Fallback: Test core functionality manually
-    cmd_manual = 'docker run --rm flext-web-test python -c "import sys; sys.path.insert(0, \\"/app/src\\"); from flext_web import FlextWebModels, FlextWebHandlers, FlextWebConfigs, FlextWebServices, create_service; app = FlextWebModels.WebApp(id=\\"test\\", name=\\"test-app\\", port=8080, host=\\"localhost\\"); print(f\\"App created: {app.name}\\"); config = FlextWebConfigs.WebConfig(secret_key=\\"test-key-32-characters-long-valid!\\"); print(f\\"Config created: {config.host}:{config.port}\\"); service = create_service(config); print(\\"Service created successfully\\"); print(\\"All manual tests passed in container!\\");"'
+    cmd_manual = 'docker run --rm flext-web-test python -c "import sys; sys.path.insert(0, \\"/app/src\\"); from flext_web import FlextWebModels, FlextWebHandlers, FlextWebConfigs, FlextWebServices; app = FlextWebModels.WebApp(id=\\"test\\", name=\\"test-app\\", port=8080, host=\\"localhost\\"); print(f\\"App created: {app.name}\\"); config = FlextWebConfigs.WebConfig(secret_key=\\"test-key-32-characters-long-valid!\\"); print(f\\"Config created: {config.host}:{config.port}\\"); service = FlextWebServices.create_web_service(config); print(\\"Service created successfully\\"); print(\\"All manual tests passed in container!\\");"'
 
     returncode4, _stdout4, _stderr4 = run_command(cmd_manual, timeout=15)
 

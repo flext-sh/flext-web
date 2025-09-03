@@ -207,7 +207,7 @@ class TestRealDomainLogicExecution:
         assert app.name == "real-test-app"
         assert app.port == 8000
         assert app.host == "localhost"
-        assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED
         assert app.is_running is False
 
         # Test real domain validation
@@ -241,20 +241,20 @@ class TestRealDomainLogicExecution:
         app = result.value
         assert app.name == "real-handler-test"
         assert app.port == 8002
-        assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED
 
         # Test real app start
         start_result = handler.start(app)
         assert start_result.success is True
         started_app = start_result.value
-        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING.value
+        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
         assert started_app.is_running is True
 
         # Test real app stop
         stop_result = handler.stop(started_app)
         assert stop_result.success is True
         stopped_app = stop_result.value
-        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED.value
+        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED
         assert stopped_app.is_running is False
 
     @pytest.mark.unit

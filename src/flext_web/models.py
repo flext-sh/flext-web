@@ -35,10 +35,10 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
+from flext_core.loggings import FlextLogger
 from pydantic import ConfigDict, Field, field_validator
 
 # Import local constants and types for DIRECT usage - NO ALIASES - PRIORITIZING LOCAL LIBRARY
-from flext_web.constants import FlextWebConstants
 from flext_web.typings import FlextWebTypes
 
 
@@ -202,14 +202,31 @@ class FlextWebModels:
         host: str = Field(default="localhost", description="Host address")
         port: int = Field(
             default=8080,
-            ge=FlextWebConstants.WebSpecific.MIN_PORT,
-            le=FlextWebConstants.WebSpecific.MAX_PORT,
+            ge=FlextConstants.Web.MIN_PORT,
+            le=FlextConstants.Web.MAX_PORT,
             description="Port number",
         )
         status: FlextWebModels.WebAppStatus = Field(
             default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED,
             description="Application status",
         )
+
+        @field_validator("status")
+        @classmethod
+        def validate_status(
+            cls, v: FlextWebModels.WebAppStatus | str
+        ) -> FlextWebModels.WebAppStatus:
+            """Validate and normalize status field to enum."""
+            if isinstance(v, str):
+                try:
+                    return FlextWebModels.WebAppStatus(v)
+                except ValueError as e:
+                    msg = f"Invalid status value: {v}. Must be one of {list(FlextWebModels.WebAppStatus)}"
+                    raise ValueError(msg) from e
+            if isinstance(v, FlextWebModels.WebAppStatus):
+                return v
+            msg = f"Status must be WebAppStatus enum or string, got {type(v)}"
+            raise TypeError(msg)
 
         @field_validator("name")
         @classmethod
@@ -244,8 +261,8 @@ class FlextWebModels:
                     return FlextResult[None].fail("Application name is required")
 
                 # Port validation
-                min_port = FlextWebConstants.WebSpecific.MIN_PORT
-                max_port = FlextWebConstants.WebSpecific.MAX_PORT
+                min_port = FlextConstants.Web.MIN_PORT
+                max_port = FlextConstants.Web.MAX_PORT
                 if not (min_port <= self.port <= max_port):
                     return FlextResult[None].fail(
                         f"Port must be between {min_port} and {max_port}"
@@ -297,7 +314,7 @@ class FlextWebModels:
             try:
                 updated_app = self.model_copy(
                     update={
-                        "status": FlextWebModels.WebAppStatus.RUNNING.value,
+                        "status": FlextWebModels.WebAppStatus.RUNNING,
                         "version": self.version + 1,
                     }
                 )
@@ -321,7 +338,7 @@ class FlextWebModels:
             try:
                 updated_app = self.model_copy(
                     update={
-                        "status": FlextWebModels.WebAppStatus.STOPPED.value,
+                        "status": FlextWebModels.WebAppStatus.STOPPED,
                         "version": self.version + 1,
                     }
                 )
@@ -361,10 +378,14 @@ class FlextWebModels:
             self, name: str, port: int, host: str
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Create new web application with validation."""
-            try:
-                app_id = f"app_{name.lower().replace(' ', '_')}"
+            app_id = f"app_{name.lower().replace(' ', '_')}"
 
-                # Create application instance directly with proper types
+            # Log the creation attempt using centralized logger
+            logger = FlextLogger(__name__)
+            logger.info(f"Creating web application: {name} on {host}:{port}")
+
+            # Create application instance with Pydantic validation error handling
+            try:
                 app = FlextWebModels.WebApp(
                     id=app_id,
                     name=name,
@@ -372,20 +393,19 @@ class FlextWebModels:
                     port=port,
                     status=FlextWebModels.WebAppStatus.STOPPED,
                 )
-
-                # Validate business rules
-                validation_result = app.validate_business_rules()
-                if validation_result.is_failure:
-                    return FlextResult[FlextWebModels.WebApp].fail(
-                        validation_result.error or "Validation failed"
-                    )
-
-                return FlextResult[FlextWebModels.WebApp].ok(app)
-
             except Exception as e:
                 return FlextResult[FlextWebModels.WebApp].fail(
-                    f"Application creation failed: {e}"
+                    f"App validation failed: {e}"
                 )
+
+            # Validate business rules using railway-oriented programming
+            validation_result = app.validate_business_rules()
+            if validation_result.is_failure:
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    f"App creation failed: {validation_result.error or 'Validation failed'}"
+                )
+
+            return FlextResult[FlextWebModels.WebApp].ok(app)
 
         def start_app(
             self, app: FlextWebModels.WebApp
@@ -422,21 +442,32 @@ class FlextWebModels:
 
             # Create application instance with type-safe parameters
             port_value = app_data["port"]
-            if not isinstance(port_value, (int, str)):
-                msg = f"Port must be int or str, got {type(port_value)}"
-                raise TypeError(msg)
+
+            def _validate_port(value: object) -> int:
+                if not isinstance(value, (int, str)):
+                    msg = f"Port must be int or str, got {type(value)}"
+                    raise TypeError(msg)  # noqa: TRY301
+                return int(value)
+
+            safe_port = _validate_port(port_value)
 
             status_value = app_data["status"]
-            if not isinstance(status_value, FlextWebModels.WebAppStatus):
-                msg = f"Status must be WebAppStatus enum, got {type(status_value)}"
-                raise TypeError(msg)
+
+            def _validate_status(value: object) -> FlextWebModels.WebAppStatus:
+                if not isinstance(value, FlextWebModels.WebAppStatus):
+                    msg = f"Status must be WebAppStatus enum, got {type(value)}"
+                    raise TypeError(msg)  # noqa: TRY301
+                return value
+
+            status_value = _validate_status(status_value)
+            safe_status: FlextWebModels.WebAppStatus = status_value
 
             app = FlextWebModels.WebApp(
                 id=str(app_data["id"]),
                 name=str(app_data["name"]),
                 host=str(app_data["host"]),
-                port=int(port_value),
-                status=status_value,
+                port=safe_port,
+                status=safe_status,
             )
 
             # Validate business rules
@@ -454,7 +485,9 @@ class FlextWebModels:
             )
 
     @classmethod
-    def create_web_app_handler(cls) -> FlextResult[FlextWebModels.WebAppHandler]:
+    def create_web_app_handler(
+        cls,
+    ) -> FlextResult[FlextWebModels.WebAppHandler]:
         """Create web application handler instance."""
         try:
             handler = FlextWebModels.WebAppHandler()
@@ -466,23 +499,35 @@ class FlextWebModels:
 
     @classmethod
     def create_web_system_config(
-        cls, config: FlextWebTypes.ConfigData
+        cls, config: FlextWebTypes.ConfigData | str
     ) -> FlextResult[FlextWebTypes.ConfigData]:
         """Create web system configuration with environment validation."""
         try:
+            # Handle both dict config and string environment
+            if isinstance(config, str):
+                environment = config
+                config_dict = {"environment": environment}
+            else:
+                config_dict = config
+
             # Default configuration
             web_config = {
-                "environment": config.get("environment", "development"),
-                "max_applications": config.get("max_applications", 10),
-                "default_host": config.get("default_host", "localhost"),
-                "port_range_start": config.get("port_range_start", 8000),
-                "port_range_end": config.get("port_range_end", 9000),
-                "enable_auto_start": config.get("enable_auto_start", False),
-                "enable_health_checks": config.get("enable_health_checks", True),
+                "environment": config_dict.get("environment", "development"),
+                "max_applications": config_dict.get("max_applications", 10),
+                "default_host": config_dict.get("default_host", "localhost"),
+                "port_range_start": config_dict.get("port_range_start", 8000),
+                "port_range_end": config_dict.get("port_range_end", 9000),
+                "enable_auto_start": config_dict.get("enable_auto_start", False),
+                "enable_health_checks": config_dict.get("enable_health_checks", True),
             }
 
             # Validate environment
-            valid_environments = ["development", "staging", "production", "test"]
+            valid_environments = [
+                "development",
+                "staging",
+                "production",
+                "test",
+            ]
             if web_config["environment"] not in valid_environments:
                 return FlextResult[FlextWebTypes.ConfigData].fail(
                     f"Invalid environment. Must be one of: {valid_environments}"
@@ -532,8 +577,8 @@ class FlextWebModels:
                 return FlextResult[dict[str, object]].fail("Name must be a string")
 
             port = data.get("port")
-            min_port = FlextWebConstants.WebSpecific.MIN_PORT
-            max_port = FlextWebConstants.WebSpecific.MAX_PORT
+            min_port = FlextConstants.Web.MIN_PORT
+            max_port = FlextConstants.Web.MAX_PORT
             if not isinstance(port, int) or not (min_port <= port <= max_port):
                 return FlextResult[dict[str, object]].fail(
                     f"Port must be an integer between {min_port} and {max_port}"
@@ -585,7 +630,9 @@ class FlextWebModels:
             )
 
     @classmethod
-    def get_web_models_system_config(cls) -> FlextResult[FlextTypes.Config.ConfigDict]:
+    def get_web_models_system_config(
+        cls,
+    ) -> FlextResult[FlextTypes.Config.ConfigDict]:
         """Get current web models system configuration with runtime information."""
         try:
             config: FlextTypes.Config.ConfigDict = {

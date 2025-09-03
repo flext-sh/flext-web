@@ -10,7 +10,7 @@ import secrets
 import signal
 import sys
 
-from flext_core import FlextLogger
+from flext_core.loggings import FlextLogger
 
 from flext_web import FlextWebConfigs
 
@@ -79,9 +79,13 @@ def main() -> None:
             sys.exit(1)
 
     # Create service
-    from flext_web import create_service
+    from flext_web import FlextWebServices
 
-    service = create_service(config)
+    service_result = FlextWebServices.create_web_service(config)
+    if service_result.is_failure:
+        logger.error(f"Failed to create service: {service_result.error}")
+        sys.exit(1)
+    service = service_result.value
     logger.info("✅ Service created successfully")
 
     try:
@@ -93,11 +97,7 @@ def main() -> None:
         logger.info("🎛️ Dashboard: /")
 
         # Start service (this blocks until shutdown)
-        service.run(
-            host=config.host,
-            port=config.port,
-            debug=config.debug,
-        )
+        service.run()
 
     except KeyboardInterrupt:
         logger.info("🛑 Service interrupted by user")

@@ -9,13 +9,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# Version information
-__version__ = "0.9.0"
-
 # =============================================================================
 # FOUNDATION LAYER - Import first, no dependencies on other modules
 # =============================================================================
 
+from flext_web.__version__ import *
 from flext_web.constants import *
 from flext_web.typings import *
 from flext_web.exceptions import *
@@ -38,8 +36,8 @@ from flext_web.fields import *
 # INFRASTRUCTURE LAYER - Depends on Application + Domain + Foundation
 # =============================================================================
 
-from flext_web.config import *
-from flext_web.services import *
+from flext_web.config import *  # type: ignore[assignment]
+from flext_web.services import *  # type: ignore[assignment]
 
 # =============================================================================
 # SUPPORT LAYER - Depends on layers as needed, imported last
@@ -47,22 +45,12 @@ from flext_web.services import *
 
 from flext_web.utilities import *
 
-# Import factory functions for convenience
-from flext_web.config import FlextWebConfigs
-from flext_web.services import FlextWebServices
-
-# Convenience factory functions
-create_service = FlextWebServices.create_web_service
-create_web_config = FlextWebConfigs.create_web_config
-
-# Import aliases for backward compatibility and test fixes
-FlextWebService = FlextWebServices.WebService
-
 # =============================================================================
 # CONSOLIDATED EXPORTS - Combine all __all__ from modules
 # =============================================================================
 
-# Combine all __all__ exports from imported modules
+# Collect all __all__ exports from imported modules (following flext-core pattern)
+import flext_web.__version__ as _version
 import flext_web.config as _config
 import flext_web.constants as _constants
 import flext_web.exceptions as _exceptions
@@ -74,10 +62,10 @@ import flext_web.services as _services
 import flext_web.typings as _typings
 import flext_web.utilities as _utilities
 
-# Collect all __all__ exports from imported modules
 _temp_exports: list[str] = []
 
 for module in [
+    _version,
     _constants,
     _typings,
     _exceptions,
@@ -99,17 +87,9 @@ for item in _temp_exports:
     if item not in _seen:
         _seen.add(item)
         _final_exports.append(item)
-# Add compatibility aliases and factory functions to exports
-_final_exports.extend(
-    [
-        "FlextWebService",
-        "create_service",
-        "create_web_config",
-        "__version__",
-    ]
-)
+# Version is now included via _version module - no manual addition needed
 _final_exports.sort()
 
 # Define __all__ as literal list for linter compatibility
 # This dynamic assignment is necessary for aggregating module exports
-__all__: list[str] = _final_exports  # pyright: ignore[reportUnsupportedDunderAll] # noqa: PLE0605
+__all__: list[str] = _final_exports  # noqa: PLE0605 # type: ignore[reportUnsupportedDunderAll]

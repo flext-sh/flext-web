@@ -68,6 +68,10 @@ def test_line_872_start_app_failure_precise(
     start_response1 = requests.post(f"{base_url}/api/v1/apps/{app_id}/start", timeout=5)
     assert start_response1.status_code == 200
 
+    # Verify app is running
+    start_data1 = start_response1.json()
+    assert start_data1["success"] is True
+
     # Try to start again (should fail and hit line 872)
     start_response2 = requests.post(f"{base_url}/api/v1/apps/{app_id}/start", timeout=5)
     assert start_response2.status_code == 400  # This hits line 872!

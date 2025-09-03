@@ -331,8 +331,6 @@ class FlextWebTypes:
 
     # Type aliases using proper types
     ResponseData = dict[str, object]  # Generic response data type
-    AppDataDict = AppData  # App data alias for compatibility
-    HealthDataDict = HealthResponse  # Health data alias for compatibility
     TemplateFilter = Callable[[str], str]  # Template filter function type
 
     # =============================================================================
@@ -386,7 +384,11 @@ class FlextWebTypes:
     ) -> FlextWebTypes.ConfigData:
         """Create configuration data structure with defaults."""
         return cls.ConfigData(
-            host=host, port=port, debug=debug, secret_key=secret_key, app_name=app_name
+            host=host,
+            port=port,
+            debug=debug,
+            secret_key=secret_key,
+            app_name=app_name,
         )
 
     @classmethod
@@ -395,7 +397,14 @@ class FlextWebTypes:
     ) -> FlextResult[FlextWebTypes.AppData]:
         """Validate and convert dictionary to AppData structure."""
         try:
-            required_fields = {"id", "name", "host", "port", "status", "is_running"}
+            required_fields = {
+                "id",
+                "name",
+                "host",
+                "port",
+                "status",
+                "is_running",
+            }
             missing_fields = required_fields - set(data.keys())
 
             if missing_fields:
@@ -405,15 +414,20 @@ class FlextWebTypes:
 
             # Type-safe casting with validation
             port_value = data["port"]
-            if not isinstance(port_value, (int, str)):
-                msg = f"Port must be int or str, got {type(port_value)}"
-                raise TypeError(msg)
+
+            def _validate_app_port(value: object) -> int:
+                if not isinstance(value, (int, str)):
+                    msg = f"Port must be int or str, got {type(value)}"
+                    raise TypeError(msg)  # noqa: TRY301
+                return int(value)
+
+            safe_port = _validate_app_port(port_value)
 
             app_data = FlextWebTypes.AppData(
                 id=str(data["id"]),
                 name=str(data["name"]),
                 host=str(data["host"]),
-                port=int(port_value),
+                port=safe_port,
                 status=str(data["status"]),
                 is_running=bool(data["is_running"]),
             )
@@ -431,7 +445,13 @@ class FlextWebTypes:
     ) -> FlextResult[FlextWebTypes.ConfigData]:
         """Validate and convert dictionary to ConfigData structure."""
         try:
-            required_fields = {"host", "port", "debug", "secret_key", "app_name"}
+            required_fields = {
+                "host",
+                "port",
+                "debug",
+                "secret_key",
+                "app_name",
+            }
             missing_fields = required_fields - set(data.keys())
 
             if missing_fields:
@@ -441,13 +461,18 @@ class FlextWebTypes:
 
             # Type-safe casting with validation
             port_value = data["port"]
-            if not isinstance(port_value, (int, str)):
-                msg = f"Port must be int or str, got {type(port_value)}"
-                raise TypeError(msg)
+
+            def _validate_config_port(value: object) -> int:
+                if not isinstance(value, (int, str)):
+                    msg = f"Port must be int or str, got {type(value)}"
+                    raise TypeError(msg)  # noqa: TRY301
+                return int(value)
+
+            safe_port = _validate_config_port(port_value)
 
             config_data = FlextWebTypes.ConfigData(
                 host=str(data["host"]),
-                port=int(port_value),
+                port=safe_port,
                 debug=bool(data["debug"]),
                 secret_key=str(data["secret_key"]),
                 app_name=str(data["app_name"]),
@@ -486,7 +511,9 @@ class FlextWebTypes:
             )
 
     @classmethod
-    def get_web_types_system_config(cls) -> FlextResult[FlextTypes.Config.ConfigDict]:
+    def get_web_types_system_config(
+        cls,
+    ) -> FlextResult[FlextTypes.Config.ConfigDict]:
         """Get current web types system configuration with runtime information."""
         try:
             config: FlextTypes.Config.ConfigDict = {
@@ -517,25 +544,8 @@ class FlextWebTypes:
 
 
 # =============================================================================
-# CONVENIENCE TYPE ALIASES FOR COMMON USAGE
+# NO ALIASES - USE DIRECT CLASS ACCESS FlextWebTypes.*
 # =============================================================================
-
-# Common web types for frequent usage
-WebAppData = FlextWebTypes.AppData
-APIResponse = FlextWebTypes.BaseResponse
-WebConfigData = FlextWebTypes.ConfigData
-WebServiceType = FlextWebTypes.WebService
-WebResultType = FlextWebTypes.WebResult
-
-# Flask integration aliases
-FlaskHandler = FlextWebTypes.RouteHandler
-FlaskAppType = FlextWebTypes.FlaskApp
-FlaskRequestType = FlextWebTypes.FlaskRequest
-
-# API aliases
-CreateRequest = FlextWebTypes.CreateAppRequest
-SuccessResponse = FlextWebTypes.SuccessResponse
-ErrorResponse = FlextWebTypes.ErrorResponse
 
 
 # =============================================================================
@@ -543,14 +553,7 @@ ErrorResponse = FlextWebTypes.ErrorResponse
 # =============================================================================
 
 __all__ = [
-    "APIResponse",
-    "CreateRequest",
-    "ErrorResponse",
-    "FlaskAppType",
-    "FlaskHandler",
-    "FlaskRequestType",
     "FlextWebTypes",
-    "SuccessResponse",
     "TFlaskApp",
     "TWebApp",
     "TWebConfig",
@@ -558,8 +561,4 @@ __all__ = [
     "TWebRequest",
     "TWebResponse",
     "TWebService",
-    "WebAppData",
-    "WebConfigData",
-    "WebResultType",
-    "WebServiceType",
 ]

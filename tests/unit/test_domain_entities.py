@@ -32,9 +32,6 @@ from flext_web import (
     FlextWebModels,
 )
 
-# Constants
-EXPECTED_TOTAL_PAGES = 8
-
 
 class TestWebApp:
     """Enterprise domain entity testing for FlextWebModels.WebApp lifecycle management.

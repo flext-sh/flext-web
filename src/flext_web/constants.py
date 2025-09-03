@@ -40,12 +40,8 @@ class FlextWebConstants(FlextConstants):
         # Port threshold for system ports (web-specific business rule)
         SYSTEM_PORTS_THRESHOLD = 1024
 
-        # Network port validation constants
-        MIN_PORT = 1
-        MAX_PORT = 65535
-
-        # Security validation constants
-        MIN_SECRET_KEY_LENGTH = 32
+        # Port validation - usa FlextConstants.Web.MIN_PORT e FlextConstants.Web.MAX_PORT
+        # Security validation - usa FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
 
         # Development/test keys (properly marked for security scanners)
         DEV_SECRET_KEY = "dev-key-change-in-production-32chars!"

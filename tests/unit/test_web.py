@@ -38,9 +38,6 @@ from flext_web import (
 )
 from flext_web.constants import FlextWebConstants
 
-# Constants - Using refactored constants
-HTTP_OK = FlextWebConstants.Web.HTTP_OK  # From flext-core Web constants
-
 
 class TestWebInterface:
     """Enterprise web interface testing for dashboard and UI functionality.
@@ -112,7 +109,7 @@ class TestWebInterface:
 
         response = requests.get(f"{base_url}/", timeout=5)
 
-        if response.status_code != HTTP_OK:
+        if response.status_code != FlextWebConstants.Web.HTTP_OK:
             msg: str = f"Expected {200}, got {response.status_code}"
             raise AssertionError(msg)
         content = response.content

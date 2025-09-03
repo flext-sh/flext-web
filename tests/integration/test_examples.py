@@ -16,8 +16,6 @@ import requests
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-DOCKER_PATH = shutil.which("docker")
-
 
 class ExamplesFullFunctionalityTest:
     """Teste completo de toda funcionalidade dos examples."""
@@ -27,13 +25,14 @@ class ExamplesFullFunctionalityTest:
         self.service_url = (
             "http://localhost:8093"  # Port específica para evitar conflitos
         )
+        self.DOCKER_PATH = shutil.which("docker")
 
     def start_service_in_docker(self) -> bool | None:
         """Inicia o serviço em Docker para teste completo."""
         # Build container if needed
-        if DOCKER_PATH is None:
+        if self.DOCKER_PATH is None:
             return False
-        build_cmd = [DOCKER_PATH, "build", "-t", "flext-web-full-test", "."]
+        build_cmd = [self.DOCKER_PATH, "build", "-t", "flext-web-full-test", "."]
 
         async def _run_exec(
             cmd: list[str],
@@ -61,7 +60,7 @@ class ExamplesFullFunctionalityTest:
 
         # Start container with examples
         start_cmd = [
-            DOCKER_PATH,
+            self.DOCKER_PATH,
             "run",
             "--rm",
             "-d",
@@ -111,7 +110,7 @@ class ExamplesFullFunctionalityTest:
 
             async def _stop() -> None:
                 process = await asyncio.create_subprocess_exec(
-                    str(DOCKER_PATH),
+                    str(self.DOCKER_PATH),
                     "stop",
                     "flext-full-test",
                     stdout=asyncio.subprocess.PIPE,
@@ -145,11 +144,11 @@ class ExamplesFullFunctionalityTest:
 
             # Test 3: Can create service programmatically
             flext_web = importlib.import_module("flext_web")
-            create_service = flext_web.create_service
+            # Using direct FlextWebServices.create_web_service instead of alias
             flext_web_configs = flext_web.FlextWebConfigs
 
             config = flext_web_configs.create_web_config()
-            service = create_service(config)
+            service = flext_web.FlextWebServices.create_web_service(config)
 
             # Test 4: Service has correct attributes
             assert hasattr(service, "app"), "Service missing Flask app"
@@ -255,14 +254,14 @@ class ExamplesFullFunctionalityTest:
         try:
             flext_web = importlib.import_module("flext_web")
             flext_web_config_cls = flext_web.FlextWebConfigs.WebConfig
-            create_service = flext_web.create_service
+            # Using direct FlextWebServices.create_web_service instead of alias
             flext_web_configs = flext_web.FlextWebConfigs
 
             # Create services using different approaches from examples
 
             # Approach 1: basic_service style
             config1 = flext_web_configs.create_web_config()
-            service1 = create_service(config1)
+            service1 = flext_web.FlextWebServices.create_web_service(config1)
 
             # Approach 2: docker_ready style
             config2 = flext_web_config_cls(
@@ -271,7 +270,7 @@ class ExamplesFullFunctionalityTest:
                 debug=False,
                 secret_key="integration-test-key-32-characters!",
             )
-            service2 = create_service(config2)
+            service2 = flext_web.FlextWebServices.create_web_service(config2)
 
             # Test both services have same interface
             assert hasattr(service1, "app")
@@ -285,8 +284,8 @@ class ExamplesFullFunctionalityTest:
             return False
 
     def test_examples_error_handling(self) -> bool | None:
-        """Testa tratamento de erros nos examples."""
-        # Test error handling in api_usage when service is down
+        """Testa tratamento de erros nos examples com abordagem REAL sem mocking."""
+        # Test error handling in api_usage when service is down using REAL approach
         try:
             example_path = Path("examples/02_api_usage.py")
             spec = importlib.util.spec_from_file_location(
@@ -298,13 +297,11 @@ class ExamplesFullFunctionalityTest:
             api_usage = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(api_usage)
 
-            # Temporarily change BASE_URL to non-existent service
-            original_url: str | None = None
-            if hasattr(api_usage, "BASE_URL"):
-                original_url = api_usage.BASE_URL
-                api_usage.BASE_URL = "http://localhost:9999"
+            # Temporarily change BASE_URL to non-existent service using REAL class structure
+            original_base_url = api_usage.ExampleConstants.BASE_URL
+            api_usage.ExampleConstants.BASE_URL = "http://localhost:9999"
 
-            # Test functions handle errors gracefully
+            # Test functions handle errors gracefully with REAL failing connections
             health = api_usage.check_service_health()
             assert health is False, "Should return False when service down"
 
@@ -316,8 +313,7 @@ class ExamplesFullFunctionalityTest:
             assert len(apps) == 0, "Should return empty list"
 
             # Restore original URL
-            if original_url is not None:
-                api_usage.BASE_URL = original_url
+            api_usage.ExampleConstants.BASE_URL = original_base_url
 
             return True
 

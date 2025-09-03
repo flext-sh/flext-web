@@ -387,7 +387,12 @@ class FlextWebProtocols(FlextProtocols):
             ...
 
         def start_service(
-            self, host: str, port: int, *, debug: bool = False, **kwargs: object
+            self,
+            host: str,
+            port: int,
+            *,
+            debug: bool = False,
+            **kwargs: object,
         ) -> None:
             """Start the web service with specified configuration."""
             ...

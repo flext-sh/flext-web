@@ -37,14 +37,14 @@ class TestRealEdgeCases:
         )
 
         # Initial state
-        assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED
         assert app.is_running is False
 
         # Start app
         result = app.start()
         assert result.success is True
         started_app = result.value
-        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING.value
+        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
         assert started_app.is_running is True
 
         # Try to start already running app
@@ -57,7 +57,7 @@ class TestRealEdgeCases:
         result = started_app.stop()
         assert result.success is True
         stopped_app = result.value
-        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED.value
+        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED
         assert stopped_app.is_running is False
 
         # Try to stop already stopped app
@@ -104,8 +104,8 @@ class TestRealEdgeCases:
             host="localhost",
             status=FlextWebModels.WebAppStatus.RUNNING,  # Use enum directly
         )
-        assert app.status == FlextWebModels.WebAppStatus.RUNNING.value
-        assert isinstance(app.status, str)
+        assert app.status == FlextWebModels.WebAppStatus.RUNNING
+        assert isinstance(app.status, FlextWebModels.WebAppStatus)
 
         # Test enum remains enum
         app2 = FlextWebModels.WebApp(
@@ -115,8 +115,8 @@ class TestRealEdgeCases:
             host="localhost",
             status=FlextWebModels.WebAppStatus.STOPPED,
         )
-        assert app2.status == FlextWebModels.WebAppStatus.STOPPED.value
-        assert isinstance(app2.status, str)
+        assert app2.status == FlextWebModels.WebAppStatus.STOPPED
+        assert isinstance(app2.status, FlextWebModels.WebAppStatus)
 
     @pytest.mark.unit
     def test_real_handler_validation_edge_cases(self) -> None:

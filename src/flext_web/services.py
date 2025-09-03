@@ -187,7 +187,10 @@ class FlextWebServices:
                     {
                         "success": False,
                         "message": "Service health check failed",
-                        "data": {"status": "unhealthy", "error": "Internal error"},
+                        "data": {
+                            "status": "unhealthy",
+                            "error": "Internal error",
+                        },
                     }
                 ), 500
 
@@ -267,7 +270,7 @@ class FlextWebServices:
                         "name": app.name,
                         "host": app.host,
                         "port": app.port,
-                        "status": str(app.status),
+                        "status": app.status.value,
                         "is_running": app.is_running,
                     }
                     apps_data.append(app_data)
@@ -316,11 +319,12 @@ class FlextWebServices:
                         }
                     ), 400
 
-                # Extract required fields
+                # Extract and validate required fields with type checking
                 name = data.get("name")
                 host = data.get("host", "localhost")
                 port = data.get("port")
 
+                # Validate name field
                 if not name:
                     return jsonify(
                         {
@@ -329,9 +333,43 @@ class FlextWebServices:
                         }
                     ), 400
 
+                if not isinstance(name, str):
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": "Application name must be a string",
+                        }
+                    ), 400
+
+                # Validate host field
+                if host is not None and not isinstance(host, str):
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": "Host must be a string",
+                        }
+                    ), 400
+
+                # Validate and convert port field
                 if not port:
-                    # Use default port if not provided
-                    port = 8000
+                    port = 8000  # Use default port if not provided
+                elif isinstance(port, str):
+                    try:
+                        port = int(port)
+                    except ValueError:
+                        return jsonify(
+                            {
+                                "success": False,
+                                "message": "Port must be a valid integer",
+                            }
+                        ), 400
+                elif not isinstance(port, int):
+                    return jsonify(
+                        {
+                            "success": False,
+                            "message": "Port must be an integer",
+                        }
+                    ), 400
 
                 # Create application using handler
                 create_result = self.app_handler.create(name, port, host)
@@ -357,7 +395,7 @@ class FlextWebServices:
                             "name": app.name,
                             "host": app.host,
                             "port": app.port,
-                            "status": str(app.status),
+                            "status": app.status.value,
                         },
                     }
                 ), 201
@@ -392,7 +430,7 @@ class FlextWebServices:
                             "name": app.name,
                             "host": app.host,
                             "port": app.port,
-                            "status": str(app.status),
+                            "status": app.status.value,
                             "is_running": app.is_running,
                         },
                     }

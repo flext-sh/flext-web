@@ -37,6 +37,7 @@ class TestExamplesSimple:
 
         # Test import works via importlib for numerically prefixed module
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_example_basic_service", Path("examples") / "01_basic_service.py"
         )

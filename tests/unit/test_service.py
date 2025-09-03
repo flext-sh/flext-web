@@ -385,7 +385,7 @@ class TestWebAppAdvanced:
 
         # Test initial state
         assert not app.is_running
-        assert app.status == FlextWebModels.WebAppStatus.STOPPED.value
+        assert app.status == FlextWebModels.WebAppStatus.STOPPED
 
         # Test validation
         result = app.validate_business_rules()
@@ -476,7 +476,7 @@ class TestWebAppHandlerAdvanced:
         # Start app
         result = handler.start_app(app)
         assert result.success
-        assert result.value.status == FlextWebModels.WebAppStatus.RUNNING.value
+        assert result.value.status == FlextWebModels.WebAppStatus.RUNNING
         running_app = result.value
 
         # Try to start already running app
@@ -487,7 +487,7 @@ class TestWebAppHandlerAdvanced:
         # Stop app
         result = handler.stop_app(running_app)
         assert result.success
-        assert result.value.status == FlextWebModels.WebAppStatus.STOPPED.value
+        assert result.value.status == FlextWebModels.WebAppStatus.STOPPED
         stopped_app = result.value
 
         # Try to stop already stopped app

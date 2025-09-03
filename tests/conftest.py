@@ -44,7 +44,11 @@ def setup_test_environment() -> Generator[None]:
 @pytest.fixture
 def real_config() -> FlextWebConfigs.WebConfig:
     """Create real test configuration."""
-    return FlextWebConfigs.create_testing_config()
+    config_result = FlextWebConfigs.create_test_config()
+    assert config_result.is_success, (
+        f"Test config creation failed: {config_result.error}"
+    )
+    return config_result.value
 
 
 @pytest.fixture
@@ -52,7 +56,9 @@ def real_service(
     real_config: FlextWebConfigs.WebConfig,
 ) -> Generator[FlextWebServices.WebService]:
     """Create real FlextWebServices.WebService instance with clean state."""
-    service = FlextWebServices.create_web_service(real_config)
+    service_result = FlextWebServices.create_web_service(real_config)
+    assert service_result.is_success, f"Service creation failed: {service_result.error}"
+    service = service_result.value
     yield service
     # Clean up service state after each test
     service.apps.clear()
@@ -61,7 +67,9 @@ def real_service(
 @pytest.fixture
 def real_app(real_config: FlextWebConfigs.WebConfig) -> Flask:
     """Create real Flask app."""
-    return FlextWebServices.create_flask_app(real_config)
+    service_result = FlextWebServices.create_web_service(real_config)
+    assert service_result.is_success, f"Service creation failed: {service_result.error}"
+    return service_result.value.app
 
 
 @pytest.fixture

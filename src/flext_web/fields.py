@@ -12,7 +12,7 @@ from __future__ import annotations
 import re
 from typing import ClassVar, cast
 
-from flext_core import FlextFields
+from flext_core import FlextConstants, FlextFields
 from flext_core.utilities import FlextUtilities
 from pydantic import Field
 from pydantic.fields import FieldInfo
@@ -87,18 +87,35 @@ class FlextWebFields(FlextFields):
 
             if self.description:
                 kwargs.setdefault(
-                    "description", f"HTTP {self.status_code}: {self.description}"
+                    "description",
+                    f"HTTP {self.status_code}: {self.description}",
                 )
             else:
                 kwargs.setdefault("description", f"HTTP status code {self.status_code}")
 
-            # Create Field with basic parameters - simplified approach
+            # Create Field with all constraints including ge/le
             field_description = kwargs.get(
-                "description", f"HTTP status code {self.status_code}"
+                "description",
+                f"HTTP {self.status_code}: {self.description or 'Status'}",
             )
+            ge_val = cast("int", kwargs.get("ge", FlextWebConstants.Web.HTTP_OK))
+            le_val = cast(
+                "int", kwargs.get("le", FlextWebConstants.Web.MAX_HTTP_STATUS)
+            )
+
             if isinstance(field_description, str):
-                return cast("FieldInfo", Field(description=field_description))
-            return cast("FieldInfo", Field())
+                return cast(
+                    "FieldInfo",
+                    Field(
+                        default=self.status_code,
+                        description=field_description,
+                        ge=ge_val,
+                        le=le_val,
+                    ),
+                )
+            return cast(
+                "FieldInfo", Field(default=self.status_code, ge=ge_val, le=le_val)
+            )
 
         @classmethod
         def ok(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
@@ -152,11 +169,15 @@ class FlextWebFields(FlextFields):
             "max_length", FlextWebConstants.Limits.MAX_STRING_LENGTH
         )
 
-        # Simplified Field creation for host field
+        # Simplified Field creation for host field with proper default
         field_description = kwargs.get("description", "Host field")
+        field_default = kwargs.get("default", safe_default)
         if isinstance(field_description, str):
-            return cast("FieldReturn", Field(description=field_description))
-        return cast("FieldReturn", Field())
+            return cast(
+                "FieldReturn",
+                Field(default=field_default, description=field_description),
+            )
+        return cast("FieldReturn", Field(default=field_default))
 
     @classmethod
     def port_field(
@@ -177,15 +198,20 @@ class FlextWebFields(FlextFields):
         field_kwargs = dict(kwargs)
         field_kwargs.setdefault("default", default)
         field_kwargs.setdefault("description", "Port number (1-65535)")
-        field_kwargs.setdefault("ge", FlextWebConstants.Web.MIN_PORT)
-        field_kwargs.setdefault("le", FlextWebConstants.Web.MAX_PORT)
+        field_kwargs.setdefault("ge", FlextConstants.Web.MIN_PORT)
+        field_kwargs.setdefault("le", FlextConstants.Web.MAX_PORT)
 
         # Simplified Field creation for port field
         field_description = kwargs.get("description", "Port field")
         if isinstance(field_description, str):
             return cast(
                 "FieldReturn",
-                Field(default=default, description=field_description, ge=1, le=65535),
+                Field(
+                    default=default,
+                    description=field_description,
+                    ge=1,
+                    le=65535,
+                ),
             )
         return cast("FieldReturn", Field(default=default, ge=1, le=65535))
 
@@ -229,11 +255,27 @@ class FlextWebFields(FlextFields):
         field_kwargs.setdefault("min_length", FlextWebConstants.Web.MIN_APP_NAME_LENGTH)
         field_kwargs.setdefault("max_length", FlextWebConstants.Web.MAX_APP_NAME_LENGTH)
 
-        # Simplified Field creation for app name field
-        field_description = kwargs.get("description", "Application name field")
+        # Field creation with constraints for app name field
+        field_description = field_kwargs.get("description", "Application name field")
+        min_len = cast(
+            "int",
+            field_kwargs.get("min_length", FlextWebConstants.Web.MIN_APP_NAME_LENGTH),
+        )
+        max_len = cast(
+            "int",
+            field_kwargs.get("max_length", FlextWebConstants.Web.MAX_APP_NAME_LENGTH),
+        )
+
         if isinstance(field_description, str):
-            return cast("FieldReturn", Field(description=field_description))
-        return cast("FieldReturn", Field())
+            return cast(
+                "FieldReturn",
+                Field(
+                    description=field_description,
+                    min_length=min_len,
+                    max_length=max_len,
+                ),
+            )
+        return cast("FieldReturn", Field(min_length=min_len, max_length=max_len))
 
     @classmethod
     def secret_key_field(cls, **kwargs: object) -> FieldReturn:
@@ -251,7 +293,7 @@ class FlextWebFields(FlextFields):
             "description", "Secret key for cryptographic operations"
         )
         field_kwargs.setdefault(
-            "min_length", FlextWebConstants.Validation.MIN_SECRET_KEY_LENGTH
+            "min_length", FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
         )
 
         # Hide secret key values in repr and str

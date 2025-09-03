@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
-from flext_core import FlextHandlers, FlextResult
+from flext_core import FlextConstants, FlextHandlers, FlextResult
 from flext_core.utilities import FlextUtilities
 
 from flext_web.models import FlextWebModels
@@ -138,7 +138,9 @@ class FlextWebHandlers(FlextHandlers):
                 # Step 3: Create domain entity
                 .flat_map(
                     lambda validated: self._create_app_entity(
-                        validated["name"], int(validated["port"]), validated["host"]
+                        validated["name"],
+                        int(validated["port"]),
+                        validated["host"],
                     )
                 )
                 # Step 4: Validate business rules
@@ -162,19 +164,19 @@ class FlextWebHandlers(FlextHandlers):
         def _validate_app_inputs(
             self, name: str, port: int, host: str
         ) -> FlextResult[dict[str, str]]:
-            """Validate all app inputs using MASSIVE FlextWebUtilities delegation."""
-            if not FlextWebUtilities.WebValidators.validate_app_name(name):
+            """Validate all app inputs using FlextWebUtilities."""
+            if not FlextWebUtilities.validate_app_name(name):
                 safe_display = FlextUtilities.TextProcessor.safe_string(name, "invalid")
                 return FlextResult[dict[str, str]].fail(
                     f"Invalid application name: '{safe_display}'"
                 )
 
-            if not FlextWebUtilities.WebValidators.validate_port_range(port):
+            if not FlextWebUtilities.validate_port_range(port):
                 return FlextResult[dict[str, str]].fail(
-                    f"Invalid port: {port}. Must be between {FlextUtilities.MIN_PORT}-{FlextUtilities.MAX_PORT}"
+                    f"Invalid port: {port}. Must be between {FlextConstants.Web.MIN_PORT}-{FlextConstants.Web.MAX_PORT}"
                 )
 
-            if not FlextWebUtilities.WebValidators.validate_host_format(host):
+            if not FlextWebUtilities.validate_host_format(host):
                 safe_display = FlextUtilities.TextProcessor.safe_string(host, "invalid")
                 return FlextResult[dict[str, str]].fail(
                     f"Invalid host format: '{safe_display}'"
@@ -187,9 +189,9 @@ class FlextWebHandlers(FlextHandlers):
         def _create_app_entity(
             self, name: str, port: int, host: str
         ) -> FlextResult[FlextWebModels.WebApp]:
-            """Create app entity using MASSIVE FlextUtilities for ID generation."""
+            """Create app entity using FlextWebUtilities for ID generation."""
             try:
-                app_id = FlextWebUtilities.WebFormatters.format_app_id(name)
+                app_id = FlextWebUtilities.format_app_id(name)
                 app = FlextWebModels.WebApp(id=app_id, name=name, port=port, host=host)
                 return FlextResult[FlextWebModels.WebApp].ok(app)
             except Exception as e:
@@ -243,7 +245,8 @@ class FlextWebHandlers(FlextHandlers):
             Example:
                 >>> handler = FlextWebHandlers.WebAppHandler()
                 >>> app = FlextWebModels.WebApp(
-                ...     name="service", status=FlextWebModels.WebAppStatus.STOPPED
+                ...     name="service",
+                ...     status=FlextWebModels.WebAppStatus.STOPPED,
                 ... )
                 >>> result = handler.start(app)
                 >>> if result.success:
@@ -301,7 +304,8 @@ class FlextWebHandlers(FlextHandlers):
             Example:
                 >>> handler = FlextWebHandlers.WebAppHandler()
                 >>> app = FlextWebModels.WebApp(
-                ...     name="service", status=FlextWebModels.WebAppStatus.RUNNING
+                ...     name="service",
+                ...     status=FlextWebModels.WebAppStatus.RUNNING,
                 ... )
                 >>> result = handler.stop(app)
                 >>> if result.success:
@@ -347,7 +351,7 @@ class FlextWebHandlers(FlextHandlers):
             message: str = "Success",
             status_code: int | None = None,
         ) -> ResponseReturnValue:
-            """Create successful JSON response using MASSIVE FlextUtilities formatting.
+            """Create successful JSON response.
 
             Args:
                 data: Response data
@@ -358,10 +362,8 @@ class FlextWebHandlers(FlextHandlers):
                 Flask JSON response with success format
 
             """
-            # MASSIVE USAGE: FlextUtilities.TextProcessor.safe_string for message validation
             safe_message = FlextUtilities.TextProcessor.safe_string(message, "Success")
 
-            # MASSIVE USAGE: FlextUtilities.Generators.generate_iso_timestamp for response timestamp
             response_data: FlextWebTypes.ResponseDataDict = {
                 "success": True,
                 "message": safe_message,
@@ -378,7 +380,7 @@ class FlextWebHandlers(FlextHandlers):
             status_code: int | None = None,
             errors: str | dict[str, object] | None = None,
         ) -> ResponseReturnValue:
-            """Create error JSON response using MASSIVE FlextUtilities formatting.
+            """Create error JSON response.
 
             Args:
                 message: Error message
@@ -389,12 +391,10 @@ class FlextWebHandlers(FlextHandlers):
                 Flask JSON response with error format
 
             """
-            # MASSIVE USAGE: FlextUtilities.TextProcessor.safe_string for error message validation
             safe_message = FlextUtilities.TextProcessor.safe_string(
                 message, "Unknown error"
             )
 
-            # MASSIVE USAGE: FlextUtilities.Generators.generate_iso_timestamp for error timestamp
             response_data: FlextWebTypes.ResponseDataDict = {
                 "success": False,
                 "message": safe_message,
@@ -442,13 +442,12 @@ class FlextWebHandlers(FlextHandlers):
 
     @staticmethod
     def handle_health_check() -> FlextResult[dict[str, object]]:
-        """Handle health check requests with system status using MASSIVE FlextUtilities.
+        """Handle health check requests with system status.
 
         Returns:
             FlextResult containing health status information.
 
         """
-        # MASSIVE USAGE: FlextUtilities.Generators.generate_iso_timestamp for health check
         return FlextResult[dict[str, object]].ok(
             {
                 "status": "healthy",
@@ -476,7 +475,11 @@ class FlextWebHandlers(FlextHandlers):
                 "service_name": "FLEXT Web Interface",
                 "service_type": "web_api",
                 "architecture": "flask_clean_architecture",
-                "patterns": ["CQRS", "Clean Architecture", "Domain-Driven Design"],
+                "patterns": [
+                    "CQRS",
+                    "Clean Architecture",
+                    "Domain-Driven Design",
+                ],
                 "integrations": ["flext-core", "pydantic", "flask"],
                 "capabilities": [
                     "application_management",
@@ -511,11 +514,9 @@ class FlextWebHandlers(FlextHandlers):
 
         """
         try:
-            # MASSIVE USAGE: Import FlextWebUtilities for ID generation
             from flext_web.utilities import FlextWebUtilities
 
-            # MASSIVE USAGE: FlextWebUtilities.WebFormatters.format_app_id()
-            app_id = FlextWebUtilities.WebFormatters.format_app_id(name)
+            app_id = FlextWebUtilities.format_app_id(name)
             # Create app directly with typed parameters
             app = FlextWebModels.WebApp(id=app_id, name=name, port=port, host=host)
             validation_result = app.validate_business_rules()

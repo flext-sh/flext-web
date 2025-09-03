@@ -32,19 +32,23 @@ import pytest
 import requests
 from tests.port_manager import TestPortManager
 
-from flext_web import FlextWebConfigs, FlextWebServices, create_service
+from flext_web import FlextWebConfigs, FlextWebServices
 from flext_web.constants import FlextWebConstants
 
 # Type alias for readability
 FlextWebService = FlextWebServices.WebService
 
-# Constants - Using refactored constants
-HTTP_OK = FlextWebConstants.Web.HTTP_OK  # From flext-core Web constants
-HTTP_CREATED = FlextWebConstants.Web.HTTP_CREATED  # From flext-core Web constants
-EXPECTED_TOTAL_PAGES = 8
-
 
 class TestFlextWebService:
+    """Enterprise REST API testing for FlextWebService functionality.
+
+    Test constants consolidated following flext-core patterns.
+    """
+
+    # Test constants within class scope
+    HTTP_OK = FlextWebConstants.Web.HTTP_OK
+    HTTP_CREATED = FlextWebConstants.Web.HTTP_CREATED
+    EXPECTED_TOTAL_PAGES = 8
     """Enterprise REST API testing for FlextWebService functionality.
 
     Comprehensive test suite covering REST API endpoint implementation,
@@ -94,7 +98,7 @@ class TestFlextWebService:
         application, route registration, and handler initialization.
         Tests fundamental service patterns used in enterprise deployment.
         """
-        service_result = create_service()
+        service_result = FlextWebServices.create_web_service()
         assert service_result.is_success
         service = service_result.value
 
@@ -111,7 +115,7 @@ class TestFlextWebService:
 
         response = requests.get(f"{base_url}/health", timeout=5)
 
-        if response.status_code != HTTP_OK:
+        if response.status_code != self.HTTP_OK:
             msg: str = f"Expected {200}, got {response.status_code}"
             raise AssertionError(msg)
         data = response.json()
@@ -129,7 +133,7 @@ class TestFlextWebService:
 
         response = requests.get(f"{base_url}/api/v1/apps", timeout=5)
 
-        if response.status_code != HTTP_OK:
+        if response.status_code != self.HTTP_OK:
             msg: str = f"Expected {200}, got {response.status_code}"
             raise AssertionError(msg)
         data = response.json()
@@ -154,8 +158,8 @@ class TestFlextWebService:
             timeout=5,
         )
 
-        if response.status_code != HTTP_CREATED:
-            msg: str = f"Expected {HTTP_CREATED}, got {response.status_code}"
+        if response.status_code != self.HTTP_CREATED:
+            msg: str = f"Expected {self.HTTP_CREATED}, got {response.status_code}"
             raise AssertionError(msg)
         data = response.json()
         if not (data["success"]):

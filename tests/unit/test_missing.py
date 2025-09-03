@@ -19,7 +19,6 @@ from flext_web import (
     FlextWebConfigs,
     FlextWebModels,
     FlextWebServices,
-    create_service,
 )
 from flext_web.exceptions import FlextWebExceptions
 
@@ -251,7 +250,7 @@ class TestMissingCoverage:
         config = FlextWebConfigs.WebConfig(
             secret_key="test-key-32-characters-long-valid!"
         )
-        service_result = create_service(config)
+        service_result = FlextWebServices.create_web_service(config)
 
         assert service_result.is_success
         service = service_result.value
@@ -260,7 +259,7 @@ class TestMissingCoverage:
 
     def test_service_create_with_none_config(self) -> None:
         """Test service creation with None config."""
-        service_result = create_service(None)
+        service_result = FlextWebServices.create_web_service(None)
 
         assert service_result.is_success
         service = service_result.value

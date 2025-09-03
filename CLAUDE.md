@@ -15,12 +15,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 The project follows Clean Architecture with Domain-Driven Design:
 
 - **Domain Layer** (`models.py`): Core business entities and rules
+
   - `FlextWebApp` - Application entity with state machine
   - `FlextWebAppStatus` - Application lifecycle states
   - `FlextWebAppHandler` - CQRS command handler
 
 - **Application Layer** (`services.py`, `config.py`): Use cases and configuration
-  - `FlextWebService` - Main Flask service implementation  
+
+  - `FlextWebService` - Main Flask service implementation
   - `FlextWebConfig` - Environment-based configuration management
 
 - **Infrastructure Layer** (`exceptions.py`, `handlers.py`, `fields.py`): Framework integration
@@ -95,7 +97,7 @@ src/flext_web/
 ├── __init__.py          # Main exports and factory functions
 ├── __main__.py          # CLI entry point
 ├── config.py           # FlextWebConfigs with nested WebConfig
-├── services.py         # FlextWebServices with nested WebService  
+├── services.py         # FlextWebServices with nested WebService
 ├── models.py           # FlextWebModels with WebApp/WebAppHandler
 ├── exceptions.py       # Exception hierarchy extending flext-core
 ├── handlers.py         # Request/response handlers
@@ -109,16 +111,19 @@ src/flext_web/
 ### Key Classes and Patterns
 
 **Main Service Class**:
+
 - `FlextWebService` (alias to `FlextWebServices.WebService`) - Flask integration with REST endpoints
-- Routes: `/health`, `/`, `/api/v1/apps/*` 
+- Routes: `/health`, `/`, `/api/v1/apps/*`
 - In-memory app storage in `service.apps` dictionary
 
 **Domain Model**:
+
 - `FlextWebApp` - Entity with `name`, `host`, `port`, `status` fields
 - `FlextWebAppStatus` - Enum: STOPPED, STARTING, RUNNING, STOPPING, ERROR
 - `FlextWebAppHandler` - CQRS commands: `create()`, `start()`, `stop()`
 
 **Configuration**:
+
 - `FlextWebConfig` - Pydantic settings with environment variable support
 - Prefix: `FLEXT_WEB_*` (e.g., `FLEXT_WEB_HOST`, `FLEXT_WEB_PORT`)
 - Factory functions: `get_web_settings()`, `create_service()`, `create_app()`
@@ -139,7 +144,7 @@ def create_app(name: str) -> FlextResult[FlextWebApp]:
 
 # Type aliases in typings.py
 ResponseData = dict[str, object]
-ConfigDict = dict[str, object]  
+ConfigDict = dict[str, object]
 AppDataDict = TypedDict('AppDataDict', {...})
 ```
 
@@ -160,15 +165,17 @@ tests/
 ### Testing Philosophy
 
 **Real Execution Over Mocking**:
+
 - Tests use actual Flask applications and HTTP requests
 - `conftest.py` provides real service fixtures with port allocation
 - Integration tests start actual services in background threads
 - 90%+ coverage requirement with functional validation
 
 **Test Categories**:
+
 ```bash
 pytest -m unit          # Fast unit tests
-pytest -m integration   # Real service tests  
+pytest -m integration   # Real service tests
 pytest -m api          # HTTP endpoint tests
 pytest -m web          # Web interface tests
 ```
@@ -214,12 +221,14 @@ flask_app = create_app(config)       # Direct Flask app access
 ### REST API Structure
 
 **Health and Status**:
+
 - `GET /health` - Service health check with app count
 - `GET /` - HTML dashboard with application list
 
 **Application Management**:
+
 - `GET /api/v1/apps` - List all applications
-- `POST /api/v1/apps` - Create new application  
+- `POST /api/v1/apps` - Create new application
 - `GET /api/v1/apps/<id>` - Get application details
 - `POST /api/v1/apps/<id>/start` - Start application
 - `POST /api/v1/apps/<id>/stop` - Stop application
@@ -232,7 +241,7 @@ flask_app = create_app(config)       # Direct Flask app access
   "message": "Operation completed",
   "data": {
     "name": "app-name",
-    "host": "localhost", 
+    "host": "localhost",
     "port": 3000,
     "status": "running",
     "id": "app_app-name"
@@ -262,11 +271,13 @@ flask_app = create_app(config)       # Direct Flask app access
 ### Adding New API Endpoints
 
 1. Add route registration in `FlextWebService._register_routes()`:
+
 ```python
 self.app.route("/api/v1/new-endpoint", methods=["GET"])(self.new_endpoint)
 ```
 
 2. Implement handler method:
+
 ```python
 def new_endpoint(self) -> ResponseReturnValue:
     """Handle new endpoint with validation."""
@@ -303,7 +314,7 @@ def new_endpoint(self) -> ResponseReturnValue:
 ```python
 from flext_core import (
     FlextCore,           # Base facade class
-    FlextDomainService,  # Service base class  
+    FlextDomainService,  # Service base class
     FlextEntity,         # Domain entity base
     FlextResult,         # Error handling type
     get_logger,         # Structured logging
@@ -313,7 +324,7 @@ from flext_core import (
 ### Service Integration Points
 
 - **flext-observability**: Monitoring and metrics collection (planned)
-- **flext-auth**: Authentication and authorization (planned)  
+- **flext-auth**: Authentication and authorization (planned)
 - **FlexCore (Go)**: Runtime service coordination (future)
 - **FLEXT Service**: Data platform integration (future)
 
@@ -322,6 +333,7 @@ from flext_core import (
 ### Common Issues
 
 **Service won't start**:
+
 ```bash
 # Check port availability
 netstat -tulpn | grep 8080
@@ -334,6 +346,7 @@ make web-test
 ```
 
 **Test failures**:
+
 ```bash
 # Run specific test with verbose output
 pytest tests/test_simple_api_fixed.py -v -s
@@ -343,6 +356,7 @@ make coverage-html
 ```
 
 **Type errors**:
+
 ```bash
 # Check MyPy errors with context
 make type-check
@@ -355,6 +369,6 @@ make type-check
 
 1. **Make changes**: Edit source code following architectural patterns
 2. **Run quality gates**: `make validate` (must pass completely)
-3. **Test thoroughly**: `make test` with coverage validation  
+3. **Test thoroughly**: `make test` with coverage validation
 4. **Start service**: `make runserver` for manual testing
 5. **API testing**: Use curl commands or Postman for endpoint validation

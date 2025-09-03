@@ -29,11 +29,11 @@ from __future__ import annotations
 import os
 
 from flext_core import (
+    FlextConfig,
     FlextConstants,
     FlextResult,
 )
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Import local constants and types for DIRECT usage - NO ALIASES
 # PRIORITIZING LOCAL LIBRARY
@@ -77,7 +77,7 @@ class FlextWebConfigs:
 
             # Create custom configuration
             config = FlextWebConfigs.WebConfig(
-                host="0.0.0.0",
+                host="0.0.0.0",  # noqa: S104 # Intentional for container deployments
                 port=8080,
                 secret_key="my-secret-key",
             )
@@ -101,7 +101,7 @@ class FlextWebConfigs:
     # WEB CONFIGURATION CLASSES
     # =============================================================================
 
-    class WebConfig(BaseSettings):
+    class WebConfig(FlextConfig.Settings):
         """Primary web service configuration with environment variable support.
 
         Enterprise-grade configuration class providing comprehensive web service
@@ -137,14 +137,9 @@ class FlextWebConfigs:
             - Compatible with FlextResult patterns for error handling
         """
 
-        model_config = SettingsConfigDict(
-            env_prefix="FLEXT_WEB_",
-            env_file=".env",
-            env_file_encoding="utf-8",
-            case_sensitive=False,
-            validate_assignment=True,
-            extra="ignore",
-        )
+        # Configuration inherited from FlextConfig.Settings with FLEXT_WEB_ prefix
+        model_config = FlextConfig.Settings.model_config.copy()
+        model_config["env_prefix"] = "FLEXT_WEB_"
 
         # Web service settings
         host: str = Field(
@@ -154,8 +149,8 @@ class FlextWebConfigs:
 
         port: int = Field(
             default=8080,
-            ge=FlextWebConstants.WebSpecific.MIN_PORT,
-            le=FlextWebConstants.WebSpecific.MAX_PORT,
+            ge=FlextConstants.Web.MIN_PORT,
+            le=FlextConstants.Web.MAX_PORT,
             description="Port number for web service",
         )
 
@@ -166,7 +161,7 @@ class FlextWebConfigs:
 
         secret_key: str = Field(
             default=FlextWebConstants.WebSpecific.DEV_SECRET_KEY,
-            min_length=FlextWebConstants.WebSpecific.MIN_SECRET_KEY_LENGTH,
+            min_length=FlextConstants.Validation.MIN_SECRET_KEY_LENGTH,
             description="Flask secret key for sessions",
         )
 
@@ -209,8 +204,9 @@ class FlextWebConfigs:
                 raise ValueError(msg)
 
             # Basic host validation - allow localhost, IP addresses, and domain names
+            # Note: 0.0.0.0 binding is intentionally allowed for development/container deployments
             host = v.strip()
-            if host in {"localhost", "127.0.0.1", "0.0.0.0"}:
+            if host in {"localhost", "127.0.0.1", "0.0.0.0"}:  # noqa: S104
                 return host
 
             # Simple domain/IP validation
@@ -224,8 +220,8 @@ class FlextWebConfigs:
         @classmethod
         def validate_secret_key(cls, v: str) -> str:
             """Validate secret key strength."""
-            if len(v) < FlextWebConstants.WebSpecific.MIN_SECRET_KEY_LENGTH:
-                msg = f"Secret key must be at least {FlextWebConstants.WebSpecific.MIN_SECRET_KEY_LENGTH} characters long"
+            if len(v) < FlextConstants.Validation.MIN_SECRET_KEY_LENGTH:
+                msg = f"Secret key must be at least {FlextConstants.Validation.MIN_SECRET_KEY_LENGTH} characters long"
                 raise ValueError(msg)
 
             # Check for default development key in production-like environments
@@ -242,8 +238,8 @@ class FlextWebConfigs:
         @classmethod
         def validate_port(cls, v: int) -> int:
             """Validate port number and check for system reserved ports."""
-            min_port = FlextWebConstants.WebSpecific.MIN_PORT
-            max_port = FlextWebConstants.WebSpecific.MAX_PORT
+            min_port = FlextConstants.Web.MIN_PORT
+            max_port = FlextConstants.Web.MAX_PORT
             if not (min_port <= v <= max_port):
                 msg = f"Port must be between {min_port} and {max_port}, got {v}"
                 raise ValueError(msg)
@@ -280,7 +276,9 @@ class FlextWebConfigs:
             """Get the complete server URL."""
             return f"http://{self.host}:{self.port}"
 
-        def validate_production_settings(self) -> FlextWebTypes.ValidationResult:
+        def validate_production_settings(
+            self,
+        ) -> FlextWebTypes.ValidationResult:
             """Validate production-specific configuration settings."""
             try:
                 errors: FlextWebTypes.ConfigErrors = []
@@ -296,7 +294,7 @@ class FlextWebConfigs:
                     errors.append("Host should not be 'localhost' in production")
 
                 # Security validations
-                min_key_len = FlextWebConstants.WebSpecific.MIN_SECRET_KEY_LENGTH
+                min_key_len = FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
                 if len(self.secret_key) < min_key_len:
                     errors.append(
                         f"Secret key must be at least {min_key_len} characters"
@@ -331,15 +329,15 @@ class FlextWebConfigs:
                         errors.append("Host should not be 'localhost' in production")
 
                 # Security validations
-                min_key_len = FlextWebConstants.WebSpecific.MIN_SECRET_KEY_LENGTH
+                min_key_len = FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
                 if len(self.secret_key) < min_key_len:
                     errors.append(
                         f"Secret key must be at least {min_key_len} characters"
                     )
 
                 # Network validations
-                min_port = FlextWebConstants.WebSpecific.MIN_PORT
-                max_port = FlextWebConstants.WebSpecific.MAX_PORT
+                min_port = FlextConstants.Web.MIN_PORT
+                max_port = FlextConstants.Web.MAX_PORT
                 if self.port < min_port or self.port > max_port:
                     errors.append(
                         f"Port must be in valid range ({min_port}-{max_port})"
@@ -424,7 +422,9 @@ class FlextWebConfigs:
             )
 
     @classmethod
-    def create_development_config(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
+    def create_development_config(
+        cls,
+    ) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Create development-optimized configuration."""
         try:
             config = FlextWebConfigs.WebConfig(
@@ -442,7 +442,9 @@ class FlextWebConfigs:
             )
 
     @classmethod
-    def create_production_config(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
+    def create_production_config(
+        cls,
+    ) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Create production-optimized configuration."""
         try:
             # Production config requires environment variables
@@ -453,7 +455,7 @@ class FlextWebConfigs:
                 )
 
             config = FlextWebConfigs.WebConfig(
-                host="0.0.0.0",
+                host="0.0.0.0",  # noqa: S104 # Intentional for container deployments
                 port=int(os.getenv("FLEXT_WEB_PORT", "8080")),
                 debug=False,
                 secret_key=secret_key,
@@ -561,7 +563,9 @@ class FlextWebConfigs:
             )
 
     @classmethod
-    def get_web_configs_system_config(cls) -> FlextResult[FlextWebTypes.ConfigDict]:
+    def get_web_configs_system_config(
+        cls,
+    ) -> FlextResult[FlextWebTypes.ConfigDict]:
         """Get current web configurations system configuration with runtime information."""
         try:
             config: FlextWebTypes.ConfigDict = {
