@@ -77,7 +77,7 @@ class FlextWebConfigs:
 
             # Create custom configuration
             config = FlextWebConfigs.WebConfig(
-                host="0.0.0.0",  # noqa: S104 # Intentional for container deployments
+                host="0.0.0.0",  # noqa: S104
                 port=8080,
                 secret_key="my-secret-key",
             )
@@ -455,7 +455,7 @@ class FlextWebConfigs:
                 )
 
             config = FlextWebConfigs.WebConfig(
-                host="0.0.0.0",  # noqa: S104 # Intentional for container deployments
+                host="0.0.0.0",  # noqa: S104
                 port=int(os.getenv("FLEXT_WEB_PORT", "8080")),
                 debug=False,
                 secret_key=secret_key,

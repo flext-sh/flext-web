@@ -1,7 +1,33 @@
-"""FLEXT Web - Enterprise Web Management Console for FLEXT ecosystem.
+"""FLEXT Web - Flask-based web interface for FLEXT ecosystem.
 
-Single consolidated web interface providing management dashboard and REST API
-following flext-core architectural patterns with wildcard imports aggregation.
+Production-ready web service providing management dashboard and REST API
+for FLEXT platform with enterprise-grade Clean Architecture implementation.
+
+Architecture:
+    - Domain Layer: Core business entities and rules
+    - Application Layer: Use cases and configuration management
+    - Infrastructure Layer: Framework integration and external services
+
+Key Features:
+    - RESTful API for application lifecycle management
+    - Web dashboard for visual management
+    - Enterprise configuration management
+    - Comprehensive validation and error handling
+    - Production-ready logging and monitoring
+    - Flask integration with Clean Architecture
+
+Usage:
+    Basic service creation:
+        from flext_web import create_service
+        service = create_service()
+
+    Configuration management:
+        from flext_web import FlextWebConfigs
+        config = FlextWebConfigs.WebConfig()
+
+    Model operations:
+        from flext_web import FlextWebModels
+        app = FlextWebModels.WebApp(...)
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -9,87 +35,41 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# =============================================================================
-# FOUNDATION LAYER - Import first, no dependencies on other modules
-# =============================================================================
+# Core aggregated imports with type safety
+from flext_web.config import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.constants import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.exceptions import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.fields import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.handlers import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.interfaces import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.models import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.protocols import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.services import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.typings import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+from flext_web.utilities import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
 
-from flext_web.__version__ import *
-from flext_web.constants import *
-from flext_web.typings import *
-from flext_web.exceptions import *
-from flext_web.protocols import *
-
-# =============================================================================
-# DOMAIN LAYER - Depends only on Foundation layer
-# =============================================================================
-
-from flext_web.models import *
-
-# =============================================================================
-# APPLICATION LAYER - Depends on Domain + Foundation layers
-# =============================================================================
-
-from flext_web.handlers import *
-from flext_web.fields import *
-
-# =============================================================================
-# INFRASTRUCTURE LAYER - Depends on Application + Domain + Foundation
-# =============================================================================
-
-from flext_web.config import *  # type: ignore[assignment]
-from flext_web.services import *  # type: ignore[assignment]
-
-# =============================================================================
-# SUPPORT LAYER - Depends on layers as needed, imported last
-# =============================================================================
-
-from flext_web.utilities import *
-
-# =============================================================================
-# CONSOLIDATED EXPORTS - Combine all __all__ from modules
-# =============================================================================
-
-# Collect all __all__ exports from imported modules (following flext-core pattern)
-import flext_web.__version__ as _version
+# Aggregate all __all__ from all modules following flext-core pattern
 import flext_web.config as _config
 import flext_web.constants as _constants
 import flext_web.exceptions as _exceptions
 import flext_web.fields as _fields
 import flext_web.handlers as _handlers
+import flext_web.interfaces as _interfaces
 import flext_web.models as _models
 import flext_web.protocols as _protocols
 import flext_web.services as _services
 import flext_web.typings as _typings
 import flext_web.utilities as _utilities
 
-_temp_exports: list[str] = []
-
-for module in [
-    _version,
-    _constants,
-    _typings,
-    _exceptions,
-    _protocols,
-    _models,
-    _fields,
-    _handlers,
-    _config,
-    _services,
-    _utilities,
+# Create consolidated __all__ following flext-core pattern
+_all_items: list[str] = []
+for _module in [
+    _config, _constants, _exceptions, _fields, _handlers, _interfaces,
+    _models, _protocols, _services, _typings, _utilities
 ]:
-    if hasattr(module, "__all__"):
-        _temp_exports.extend(module.__all__)
+    if hasattr(_module, "__all__"):
+        _all_items += _module.__all__
 
-# Remove duplicates and sort for consistent exports - build complete list first
-_seen: set[str] = set()
-_final_exports: list[str] = []
-for item in _temp_exports:
-    if item not in _seen:
-        _seen.add(item)
-        _final_exports.append(item)
-# Version is now included via _version module - no manual addition needed
-_final_exports.sort()
-
-# Define __all__ as literal list for linter compatibility
-# This dynamic assignment is necessary for aggregating module exports
-__all__: list[str] = _final_exports  # noqa: PLE0605 # type: ignore[reportUnsupportedDunderAll]
+# Remove duplicates and sort for consistency - explicit list type
+_unique_items = sorted(set(_all_items))
+__all__: list[str] = _unique_items  # noqa: PLE0605

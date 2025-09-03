@@ -417,9 +417,9 @@ class FlextWebTypes:
 
             def _validate_app_port(value: object) -> int:
                 if not isinstance(value, (int, str)):
-                    msg = f"Port must be int or str, got {type(value)}"
-                    raise TypeError(msg)  # noqa: TRY301
-                return int(value)
+                    cls._raise_invalid_port_type_error(value)
+                # Type assertion after isinstance check
+                return int(value)  # type: ignore[arg-type,no-any-return,call-overload]
 
             safe_port = _validate_app_port(port_value)
 
@@ -464,9 +464,9 @@ class FlextWebTypes:
 
             def _validate_config_port(value: object) -> int:
                 if not isinstance(value, (int, str)):
-                    msg = f"Port must be int or str, got {type(value)}"
-                    raise TypeError(msg)  # noqa: TRY301
-                return int(value)
+                    cls._raise_invalid_port_type_error(value)
+                # Type assertion after isinstance check
+                return int(value)  # type: ignore[arg-type,no-any-return,call-overload]
 
             safe_port = _validate_config_port(port_value)
 
@@ -509,6 +509,12 @@ class FlextWebTypes:
             return FlextResult[FlextTypes.Config.ConfigDict].fail(
                 f"Failed to configure web types system: {e}"
             )
+
+    @classmethod
+    def _raise_invalid_port_type_error(cls, value: object) -> None:
+        """Helper method to raise port type validation error."""
+        msg = f"Port must be int or str, got {type(value)}"
+        raise TypeError(msg)
 
     @classmethod
     def get_web_types_system_config(

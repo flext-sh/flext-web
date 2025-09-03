@@ -372,6 +372,9 @@ class FlextWebServices:
                     ), 400
 
                 # Create application using handler
+                # Ensure host has a default value if None after validation
+                if host is None:
+                    host = "localhost"
                 create_result = self.app_handler.create(name, port, host)
                 if create_result.is_failure:
                     return jsonify(

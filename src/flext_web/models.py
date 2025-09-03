@@ -73,14 +73,12 @@ class FlextWebModels:
         Web application management::
 
             # Create application with factory method
-            app_result = FlextWebModels.create_web_app(
-                {
-                    "id": "app_123",
-                    "name": "MyWebApp",
-                    "host": "localhost",
-                    "port": 8080,
-                }
-            )
+            app_result = FlextWebModels.create_web_app({
+                "id": "app_123",
+                "name": "MyWebApp",
+                "host": "localhost",
+                "port": 8080,
+            })
 
             # Use CQRS handler
             handler = FlextWebModels.WebAppHandler()
@@ -89,13 +87,11 @@ class FlextWebModels:
         Configuration management::
 
             # Create web system configuration
-            config_result = FlextWebModels.create_web_system_config(
-                {
-                    "environment": "production",
-                    "max_apps": 50,
-                    "default_host": "0.0.0.0",
-                }
-            )
+            config_result = FlextWebModels.create_web_system_config({
+                "environment": "production",
+                "max_apps": 50,
+                "default_host": "0.0.0.0",
+            })
 
     Note:
         This consolidated approach follows flext-core architectural patterns,
@@ -220,38 +216,102 @@ class FlextWebModels:
             if isinstance(v, str):
                 try:
                     return FlextWebModels.WebAppStatus(v)
-                except ValueError as e:
-                    msg = f"Invalid status value: {v}. Must be one of {list(FlextWebModels.WebAppStatus)}"
-                    raise ValueError(msg) from e
-            if isinstance(v, FlextWebModels.WebAppStatus):
-                return v
-            msg = f"Status must be WebAppStatus enum or string, got {type(v)}"
-            raise TypeError(msg)
+                except ValueError:
+                    cls._raise_invalid_status_error(v)
+            # Type assertion after isinstance check
+            return v  # type: ignore[return-value]
+
+        def __str__(self) -> str:
+            """Custom string representation focusing on key identifiers."""
+            return f"WebApp(name='{self.name}', endpoint='{self.host}:{self.port}', status={self.status.value})"
+
+        def __repr__(self) -> str:
+            """Custom repr representation with class name and key fields."""
+            return f"WebApp(id='{self.id}', name='{self.name}', host:port='{self.host}:{self.port}', status='{self.status.value}')"
+
+        @classmethod
+        def _raise_invalid_status_error(cls, value: str) -> None:
+            """Helper method to raise status validation error."""
+            msg = f"Invalid status value: {value}. Must be one of {list(FlextWebModels.WebAppStatus)}"
+            raise ValueError(msg)
 
         @field_validator("name")
         @classmethod
         def validate_name(cls, v: str) -> str:
             """Validate application name with comprehensive rules."""
             if not v or not v.strip():
-                msg = "Application name cannot be empty"
-                raise ValueError(msg)
+                cls._raise_empty_name_error()
+
+            name = v.strip()
 
             # Check reserved names
             reserved_names = {"REDACTED_LDAP_BIND_PASSWORD", "root", "api", "system"}
-            if v.lower() in reserved_names:
-                msg = f"Application name '{v}' is reserved"
-                raise ValueError(msg)
+            if name.lower() in reserved_names:
+                cls._raise_reserved_name_error(name)
 
-            return v.strip()
+            # Check for potentially dangerous characters (XSS prevention)
+            dangerous_chars = ["<", ">", "&", '"', "'", "script", "javascript"]
+            name_lower = name.lower()
+            for dangerous in dangerous_chars:
+                if dangerous in name_lower:
+                    cls._raise_dangerous_name_error(name)
+
+            return name
+
+        @classmethod
+        def _raise_empty_name_error(cls) -> None:
+            """Helper method to raise empty name error."""
+            msg = "Application name cannot be empty"
+            raise ValueError(msg)
+
+        @classmethod
+        def _raise_reserved_name_error(cls, name: str) -> None:
+            """Helper method to raise reserved name error."""
+            msg = f"Application name '{name}' is reserved"
+            raise ValueError(msg)
+
+        @classmethod
+        def _raise_dangerous_name_error(cls, name: str) -> None:
+            """Helper method to raise dangerous name error."""
+            msg = f"Application name contains potentially dangerous characters: {name}"
+            raise ValueError(msg)
 
         @field_validator("host")
         @classmethod
         def validate_host(cls, v: str) -> str:
             """Validate host address format."""
             if not v or not v.strip():
-                msg = "Host address cannot be empty"
-                raise ValueError(msg)
-            return v.strip()
+                cls._raise_empty_host_error()
+
+            host = v.strip()
+
+            # Basic IP address validation for IPv4
+            if host.replace(".", "").isdigit():  # Looks like an IP
+                parts = host.split(".")
+                if len(parts) == 4:  # noqa: PLR2004
+                    try:
+                        for part in parts:
+                            octet = int(part)
+                            if octet < 0 or octet > 255:  # noqa: PLR2004
+                                cls._raise_invalid_host_format_error(host)
+                    except ValueError:
+                        cls._raise_invalid_host_format_error(host)
+                elif "." in host:  # Has dots but not 4 parts - invalid IP
+                    cls._raise_invalid_host_format_error(host)
+
+            return host
+
+        @classmethod
+        def _raise_empty_host_error(cls) -> None:
+            """Helper method to raise empty host error."""
+            msg = "Host address cannot be empty"
+            raise ValueError(msg)
+
+        @classmethod
+        def _raise_invalid_host_format_error(cls, host: str) -> None:
+            """Helper method to raise invalid host format error."""
+            msg = f"Invalid host address format: {host}"
+            raise ValueError(msg)
 
         def validate_business_rules(self) -> FlextResult[None]:
             """Validate web application business rules with comprehensive checks."""
@@ -353,6 +413,13 @@ class FlextWebModels:
     # =============================================================================
     # All types will be used directly as FlextWebTypes.SpecificType throughout the code
 
+    @classmethod
+    def _raise_invalid_port_type_error(cls, value: object) -> None:
+        """Helper method to raise port type validation error."""
+        msg = f"Port must be int or str, got {type(value)}"
+        raise TypeError(msg)
+
+
     class WebAppHandler:
         """CQRS command handler for web application operations.
 
@@ -445,29 +512,19 @@ class FlextWebModels:
 
             def _validate_port(value: object) -> int:
                 if not isinstance(value, (int, str)):
-                    msg = f"Port must be int or str, got {type(value)}"
-                    raise TypeError(msg)  # noqa: TRY301
-                return int(value)
+                    FlextWebModels._raise_invalid_port_type_error(value)
+                # Type assertion after isinstance check
+                return int(value)  # type: ignore[arg-type,no-any-return,call-overload]
 
             safe_port = _validate_port(port_value)
 
-            status_value = app_data["status"]
-
-            def _validate_status(value: object) -> FlextWebModels.WebAppStatus:
-                if not isinstance(value, FlextWebModels.WebAppStatus):
-                    msg = f"Status must be WebAppStatus enum, got {type(value)}"
-                    raise TypeError(msg)  # noqa: TRY301
-                return value
-
-            status_value = _validate_status(status_value)
-            safe_status: FlextWebModels.WebAppStatus = status_value
-
+            # Let Pydantic model handle status conversion via field validator
             app = FlextWebModels.WebApp(
                 id=str(app_data["id"]),
                 name=str(app_data["name"]),
                 host=str(app_data["host"]),
                 port=safe_port,
-                status=safe_status,
+                status=app_data["status"],  # type: ignore[arg-type]  # Pydantic handles conversion
             )
 
             # Validate business rules
@@ -506,9 +563,19 @@ class FlextWebModels:
             # Handle both dict config and string environment
             if isinstance(config, str):
                 environment = config
-                config_dict = {"environment": environment}
+                config_dict: dict[str, object] = {"environment": environment}
             else:
-                config_dict = config
+                # config is FlextWebTypes.ConfigData, access fields directly
+                config_dict = {
+                    "host": config.get("host", "localhost"),
+                    "port": config.get("port", 8080),
+                    "debug": config.get("debug", True),
+                    "secret_key": config.get("secret_key", "dev-secret"),
+                    "app_name": config.get("app_name", "FLEXT Web"),
+                    "environment": config.get("environment", "development")
+                    if "environment" in config
+                    else "development",
+                }
 
             # Default configuration
             web_config = {
