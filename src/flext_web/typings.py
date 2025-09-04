@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import os
 from collections.abc import Callable
 from typing import TypedDict, TypeVar
 
@@ -198,16 +199,47 @@ class FlextWebTypes:
     class RequestContext(TypedDict, total=False):
         """Request context data structure."""
 
+        method: str
+        path: str
+        headers: dict[str, str]
+        data: dict[str, object]
         user_id: str
         session_id: str
         timestamp: str
-        headers: dict[str, str]
+
+    class StatusInfo(TypedDict):
+        """Status information structure."""
+
+        code: int
+        message: str
+        details: str
 
     # Type aliases
     ResponseData = dict[str, object]
     TemplateFilter = Callable[[str], str]
 
     # Factory methods
+    @classmethod
+    def create_app_data(
+        cls,
+        app_id: str,
+        name: str,
+        host: str,
+        port: int,
+        status: str,
+        *,
+        is_running: bool
+    ) -> AppData:
+        """Create app data structure."""
+        return cls.AppData(
+            id=app_id,
+            name=name,
+            host=host,
+            port=port,
+            status=status,
+            is_running=is_running
+        )
+
     @classmethod
     def create_success_response(
         cls, message: str, data: dict[str, object]
@@ -219,6 +251,80 @@ class FlextWebTypes:
     def create_error_response(cls, message: str, error: str) -> ErrorResponse:
         """Create error API response structure."""
         return cls.ErrorResponse(success=False, message=message, error=error)
+
+    @classmethod
+    def create_config_data(
+        cls,
+        host: str = "localhost",
+        port: int = 8080,
+        *,
+        debug: bool = True,
+        secret_key: str = os.getenv("FLEXT_WEB_SECRET_KEY", "dev-key-unsafe-change-in-prod"),
+        app_name: str = "FLEXT Web"
+    ) -> ConfigData:
+        """Create config data structure with defaults."""
+        return cls.ConfigData(
+            host=host,
+            port=port,
+            debug=debug,
+            secret_key=secret_key,
+            app_name=app_name
+        )
+
+    @classmethod
+    def create_request_context(
+        cls,
+        method: str = "GET",
+        path: str = "/",
+        headers: dict[str, str] | None = None,
+        data: dict[str, object] | None = None
+    ) -> RequestContext:
+        """Create request context structure."""
+        return cls.RequestContext(
+            method=method,
+            path=path,
+            headers=headers or {},
+            data=data or {}
+        )
+
+    @classmethod
+    def validate_app_data(cls, data: object) -> FlextResult[AppData]:
+        """Validate app data structure."""
+        try:
+            if not isinstance(data, dict):
+                return FlextResult[FlextWebTypes.AppData].fail("Data must be a dictionary")
+
+            required_fields = ["id", "name", "host", "port", "status", "is_running"]
+            for field in required_fields:
+                if field not in data:
+                    return FlextResult[FlextWebTypes.AppData].fail(f"Required field '{field}' is missing")
+
+            # Type validations
+            if not isinstance(data["id"], str):
+                return FlextResult[FlextWebTypes.AppData].fail("Field 'id' must be a string")
+            if not isinstance(data["name"], str):
+                return FlextResult[FlextWebTypes.AppData].fail("Field 'name' must be a string")
+            if not isinstance(data["host"], str):
+                return FlextResult[FlextWebTypes.AppData].fail("Field 'host' must be a string")
+            if not isinstance(data["port"], int):
+                return FlextResult[FlextWebTypes.AppData].fail("Field 'port' must be an integer")
+            if not isinstance(data["status"], str):
+                return FlextResult[FlextWebTypes.AppData].fail("Field 'status' must be a string")
+            if not isinstance(data["is_running"], bool):
+                return FlextResult[FlextWebTypes.AppData].fail("Field 'is_running' must be a boolean")
+
+            app_data = cls.AppData(
+                id=data["id"],
+                name=data["name"],
+                host=data["host"],
+                port=data["port"],
+                status=data["status"],
+                is_running=data["is_running"]
+            )
+            return FlextResult[FlextWebTypes.AppData].ok(app_data)
+
+        except Exception as e:
+            return FlextResult[FlextWebTypes.AppData].fail(f"Validation error: {e}")
 
     # Configuration methods
     @classmethod

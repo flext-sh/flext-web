@@ -207,7 +207,8 @@ class FlextWebProtocols(FlextProtocols):
                 debug: bool | None = None,
                 **kwargs: object,
             ) -> None:
-                pass
+                msg = "Protocol implementation for type checking only"
+                raise NotImplementedError(msg)
 
             def health(self) -> ResponseReturnValue:
                 return jsonify({"status": "ok"})

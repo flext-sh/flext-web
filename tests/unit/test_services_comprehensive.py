@@ -44,7 +44,7 @@ class TestWebServiceHealthEndpoint:
 
         # Simulate an exception by corrupting the apps dict
         original_apps = service.apps
-        service.apps = None  # This will cause an exception when counting
+        service.apps = None  # type: ignore[assignment]  # This will cause an exception when counting
 
         client = service.app.test_client()
         response = client.get("/health")
@@ -181,7 +181,7 @@ class TestWebServiceCreateApp:
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
-        assert "name is required" in data["message"]
+        assert "name is required" in data["message"].lower()
 
     def test_create_app_invalid_name_type(
         self, web_service_fixture: FlextWebServices.WebService
@@ -272,7 +272,7 @@ class TestWebServiceCreateApp:
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
-        assert "Application name is required" in data["message"]
+        assert "Name is required" in data["message"]
 
     def test_create_app_successful_creation(
         self, web_service_fixture: FlextWebServices.WebService
@@ -300,7 +300,7 @@ class TestWebServiceCreateApp:
     def test_create_app_with_host_none(
         self, web_service_fixture: FlextWebServices.WebService
     ) -> None:
-        """Test create app with explicit None host (edge case)."""
+        """Test create app with explicit None host (should be rejected)."""
         service = web_service_fixture
         client = service.app.test_client()
 
@@ -310,10 +310,10 @@ class TestWebServiceCreateApp:
             content_type="application/json",
         )
 
-        assert response.status_code == 201
+        # Validation should reject None host
+        assert response.status_code == 400
         data = response.get_json()
-        assert data["success"] is True
-        assert data["data"]["host"] == "localhost"  # Should default to localhost
+        assert data["success"] is False
 
 
 class TestWebServiceAppOperations:
@@ -437,7 +437,7 @@ class TestWebServiceFactoryMethods:
 
     def test_create_web_system_services_with_config(self) -> None:
         """Test creating web system services with config."""
-        config = {"environment": "test"}
+        config: dict[str, object] = {"environment": "test"}
 
         result = FlextWebServices.create_web_system_services(config)
 

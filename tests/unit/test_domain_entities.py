@@ -55,8 +55,8 @@ class TestWebApp:
             raise AssertionError(msg)
         assert app.name == "TestApp"
         if app.port != 8080:
-            msg: str = f"Expected {8080}, got {app.port}"
-            raise AssertionError(msg)
+            port_msg: str = f"Expected {8080}, got {app.port}"
+            raise AssertionError(port_msg)
         assert app.host == "localhost"
         assert not app.is_running
 

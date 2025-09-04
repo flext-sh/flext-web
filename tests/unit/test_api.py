@@ -192,4 +192,4 @@ class TestFlextWebService:
         if data["success"]:
             failure_msg: str = f"Expected False, got {data['success']}"
             raise AssertionError(failure_msg)
-        assert "application name" in data["message"].lower()
+        assert "name is required" in data["message"].lower()

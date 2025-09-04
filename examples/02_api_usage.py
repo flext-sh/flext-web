@@ -96,6 +96,27 @@ def create_application(
 # =============================================================================
 
 
+def _extract_apps_from_response(response_data: object, data_key: str) -> list[FlextWebTypes.AppData]:
+    """Extract apps list from response data with proper type checking."""
+    if not isinstance(response_data, dict):
+        return []
+
+    data_section = response_data.get("data")
+    if not isinstance(data_section, dict):
+        return []
+
+    apps_list = data_section.get(data_key)
+    if not isinstance(apps_list, list):
+        return []
+
+    return [
+        cast("FlextWebTypes.AppData", app)
+        for app in apps_list
+        if isinstance(app, dict)
+        and all(k in app and isinstance(app[k], str) for k in ["id", "name"])
+    ]
+
+
 def _execute_app_operation(
     method: str, endpoint: str, json_data: dict[str, object] | None = None
 ) -> FlextWebTypes.AppData | None:
@@ -104,7 +125,6 @@ def _execute_app_operation(
     Reduces from 9 returns to single monadic chain using FlextResult from flext-core.
     Leverages existing framework instead of recreating functionality.
     """
-    from flext_core import FlextResult
 
     def _make_http_request() -> FlextResult[requests.Response]:
         """Make HTTP request using FlextResult for error handling."""
@@ -165,19 +185,7 @@ def _execute_list_operation(
             if hasattr(r, "json")
             else FlextResult[dict[str, object]].fail("Invalid response object")
         )
-        .filter(
-            lambda d: isinstance(d.get("data", {}).get(data_key), list),
-            "Invalid response structure",
-        )
-        .map(lambda d: d["data"][data_key])
-        .map(
-            lambda apps: [
-                cast("FlextWebTypes.AppData", app)
-                for app in apps
-                if isinstance(app, dict)
-                and all(k in app and isinstance(app[k], str) for k in ["id", "name"])
-            ]
-        )
+        .map(lambda d: _extract_apps_from_response(d, data_key))
         .unwrap_or([])
     )
 
@@ -268,9 +276,14 @@ def demo_application_lifecycle() -> None:
     start_result2 = start_application(app2["id"])
 
     if start_result1:
-        pass
+        print(f"✅ Application {app1['name']} started successfully")
+    else:
+        print(f"❌ Failed to start application {app1['name']}")
+
     if start_result2:
-        pass
+        print(f"✅ Application {app2['name']} started successfully")
+    else:
+        print(f"❌ Failed to start application {app2['name']}")
 
     # Check individual status with proper error handling
     for app_data in [app1, app2]:
@@ -286,9 +299,14 @@ def demo_application_lifecycle() -> None:
     stop_result2 = stop_application(app2["id"])
 
     if stop_result1:
-        pass
+        print(f"✅ Application {app1['name']} stopped successfully")
+    else:
+        print(f"❌ Failed to stop application {app1['name']}")
+
     if stop_result2:
-        pass
+        print(f"✅ Application {app2['name']} stopped successfully")
+    else:
+        print(f"❌ Failed to stop application {app2['name']}")
 
     list_applications()
 

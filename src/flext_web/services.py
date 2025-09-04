@@ -454,7 +454,7 @@ class FlextWebServices:
                 if stop_result.is_failure:
                     # Customize message based on error type
                     message = "Application stop failed"
-                    if "already stopped" in (stop_result.error or ""):
+                    if "not running" in (stop_result.error or "").lower():
                         message = "Application is already stopped"
 
                     return jsonify({

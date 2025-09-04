@@ -744,18 +744,8 @@ class FlextWebHandlers(FlextHandlers):
         return FlextResult[None].fail(error_message)
 
     # =========================================================================
-    # HANDLER FACTORY METHODS
+    # HANDLER FACTORY METHODS - Removed unnecessary wrapper methods
     # =========================================================================
-
-    @classmethod
-    def create_app_handler(cls) -> WebAppHandler:
-        """Create web application handler instance.
-
-        Returns:
-            WebAppHandler for CQRS operations
-
-        """
-        return cls.WebAppHandler()
 
 
 __all__ = [

@@ -326,31 +326,6 @@ class FlextWebFields(FlextFields):
         status_field = cls.HTTPStatusField(status_code, description, **kwargs)
         return status_field.create_field()
 
-    @classmethod
-    def ok_status_field(cls, **kwargs: object) -> FieldReturn:
-        """Create HTTP 200 OK status field."""
-        return cls.HTTPStatusField.ok(**kwargs).create_field()
-
-    @classmethod
-    def created_status_field(cls, **kwargs: object) -> FieldReturn:
-        """Create HTTP 201 Created status field."""
-        return cls.HTTPStatusField.created(**kwargs).create_field()
-
-    @classmethod
-    def bad_request_status_field(cls, **kwargs: object) -> FieldReturn:
-        """Create HTTP 400 Bad Request status field."""
-        return cls.HTTPStatusField.bad_request(**kwargs).create_field()
-
-    @classmethod
-    def not_found_status_field(cls, **kwargs: object) -> FieldReturn:
-        """Create HTTP 404 Not Found status field."""
-        return cls.HTTPStatusField.not_found(**kwargs).create_field()
-
-    @classmethod
-    def server_error_status_field(cls, **kwargs: object) -> FieldReturn:
-        """Create HTTP 500 Internal Server Error status field."""
-        return cls.HTTPStatusField.server_error(**kwargs).create_field()
-
 
 __all__ = [
     # Main consolidated class

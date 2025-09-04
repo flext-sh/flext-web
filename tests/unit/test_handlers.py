@@ -208,7 +208,7 @@ class TestFlextWebHandlers:
 
     def test_create_app_handler_real(self) -> None:
         """Test REAL app handler creation functionality."""
-        handler = FlextWebHandlers.create_app_handler()
+        handler = FlextWebHandlers.WebAppHandler()
 
         # Validate real handler creation
         assert isinstance(handler, FlextWebHandlers.WebAppHandler)

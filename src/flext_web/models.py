@@ -93,12 +93,12 @@ class FlextWebModels:
                 raise ValueError(msg)
             return host
 
-        @computed_field
+        @property
         def is_running(self) -> bool:
             """Check if app is running."""
             return self.status == FlextWebModels.WebAppStatus.RUNNING
 
-        @computed_field
+        @property
         def url(self) -> str:
             """Get app URL."""
             # Standard HTTPS port is 443
@@ -127,12 +127,25 @@ class FlextWebModels:
             """Validate business rules."""
             try:
                 FlextMixins.initialize_validation(self)
+
+                # Validate name field (same as field validator)
+                name = (self.name or "").strip()
+                if not name:
+                    return FlextResult[None].fail("Application name is required")
+
+                # Validate host field (same as field validator)
+                host = (self.host or "").strip()
+                if not host:
+                    return FlextResult[None].fail("Host address is required")
+
+                # Validate port range
                 if not (
                     FlextConstants.Web.MIN_PORT
                     <= self.port
                     <= FlextConstants.Web.MAX_PORT
                 ):
                     return FlextResult[None].fail(f"Port out of range: {self.port}")
+
                 FlextMixins.log_operation(self, "validation_success")
                 return FlextResult[None].ok(None)
             except Exception as e:
@@ -140,6 +153,8 @@ class FlextWebModels:
 
         def start(self) -> FlextResult[FlextWebModels.WebApp]:
             """Start application."""
+            if self.status == FlextWebModels.WebAppStatus.RUNNING:
+                return FlextResult[FlextWebModels.WebApp].fail("App already running")
             if self.status != FlextWebModels.WebAppStatus.STOPPED:
                 return FlextResult[FlextWebModels.WebApp].fail("App not stopped")
 

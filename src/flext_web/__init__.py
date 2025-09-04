@@ -35,18 +35,21 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# Core aggregated imports with type safety
-from flext_web.config import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.constants import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.exceptions import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.fields import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.handlers import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.interfaces import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.models import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.protocols import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.services import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.typings import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
-from flext_web.utilities import *  # type: ignore[unused-ignore,reportWildcardImportFromLibrary,assignment] # noqa: F403
+# Core aggregated imports with explicit imports to avoid F405 errors
+from flext_web.config import FlextWebConfigs
+from flext_web.constants import FlextWebConstants
+from flext_web.exceptions import FlextWebExceptions
+from flext_web.fields import FlextWebFields
+from flext_web.handlers import FlextWebHandlers
+from flext_web.interfaces import FlextWebInterfaces
+from flext_web.models import FlextWebModels
+from flext_web.protocols import FlextWebProtocols
+from flext_web.services import FlextWebServices
+from flext_web.typings import FlextWebTypes
+from flext_web.utilities import FlextWebUtilities
+
+# Version information
+__version__ = "0.9.0"
 
 # Aggregate all __all__ from all modules following flext-core pattern
 import flext_web.config as _config
@@ -61,37 +64,67 @@ import flext_web.services as _services
 import flext_web.typings as _typings
 import flext_web.utilities as _utilities
 
-# Create consolidated __all__ following flext-core pattern
-_all_items: list[str] = []
-for _module in [
-    _config,
-    _constants,
-    _exceptions,
-    _fields,
-    _handlers,
-    _interfaces,
-    _models,
-    _protocols,
-    _services,
-    _typings,
-    _utilities,
-]:
-    if hasattr(_module, "__all__"):
-        _all_items += _module.__all__
-
-# Remove duplicates and sort for consistency - explicit list type
-_unique_items = sorted(set(_all_items))
-__all__: list[str] = _unique_items  # noqa: PLE0605
+# Explicit __all__ following flext-core pattern (avoids PyRight warnings)
+__all__ = [
+    # Main unified classes
+    "FlextWebConfigs",
+    "FlextWebModels",
+    "FlextWebServices",
+    "FlextWebHandlers",
+    "FlextWebProtocols",
+    "FlextWebTypes",
+    "FlextWebConstants",
+    "FlextWebExceptions",
+    "FlextWebFields",
+    "FlextWebInterfaces",
+    "FlextWebUtilities",
+    # Convenience functions
+    "create_service",
+    "get_web_settings",
+]
 
 # =============================================================================
 # CONVENIENCE ALIASES - Following flext-core pattern
 # =============================================================================
 
-# Most commonly used factory functions as direct aliases
-create_config = _config.FlextWebConfigs.create_web_config
-create_service = _services.FlextWebServices.create_web_service
-create_app = _models.FlextWebModels.create_web_app
-FlextLogger = getattr(_utilities.FlextWebUtilities, "FlextLogger", lambda _: None)
+# No aliases needed - all functionality is accessible through main classes
 
-# Add convenience aliases to __all__
-__all__ += ["create_config", "create_service", "create_app", "FlextLogger"]
+
+# =============================================================================
+# CONVENIENCE FUNCTIONS - For backward compatibility and ease of use
+# =============================================================================
+
+
+def create_service(
+    config: FlextWebConfigs.WebConfig | None = None,
+) -> FlextWebServices.WebService:
+    """Create a configured FLEXT Web Service instance.
+
+    This is a convenience function that wraps FlextWebServices.create_web_service()
+    for easier access and backward compatibility.
+
+    Args:
+        config: Optional web service configuration. If None, uses default config.
+
+    Returns:
+        Configured FlextWebServices.WebService instance.
+
+    Raises:
+        RuntimeError: If service creation fails.
+
+    """
+    result = FlextWebServices.create_web_service(config)
+    if result.is_failure:
+        msg = f"Failed to create web service: {result.error}"
+        raise RuntimeError(msg)
+    return result.value
+
+
+def get_web_settings() -> FlextWebConfigs.WebConfig:
+    """Get default web service settings.
+
+    Returns:
+        Default FlextWebConfigs.WebConfig instance.
+
+    """
+    return FlextWebConfigs.WebConfig()

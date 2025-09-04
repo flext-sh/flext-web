@@ -12,7 +12,7 @@ import sys
 
 from flext_core.loggings import FlextLogger
 
-from flext_web import FlextWebConfigs
+from flext_web import FlextWebConfigs, FlextWebServices
 
 logger = FlextLogger(__name__)
 
@@ -79,8 +79,6 @@ def main() -> None:
             sys.exit(1)
 
     # Create service
-    from flext_web import FlextWebServices
-
     service_result = FlextWebServices.create_web_service(config)
     if service_result.is_failure:
         logger.error(f"Failed to create service: {service_result.error}")

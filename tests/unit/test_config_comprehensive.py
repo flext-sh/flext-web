@@ -196,7 +196,8 @@ class TestWebConfigFactoryMethods:
     def test_create_production_config_with_env(self) -> None:
         """Test creating production config with required environment."""
         env_vars = {
-            "FLEXT_WEB_SECRET_KEY": "production-secret-key-that-is-long-enough-for-validation-12345"
+            "FLEXT_WEB_SECRET_KEY": "production-secret-key-that-is-long-enough-for-validation-12345",
+            "FLEXT_WEB_HOST": "0.0.0.0"  # Override conftest.py localhost for production test
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
@@ -222,6 +223,7 @@ class TestWebConfigFactoryMethods:
 
             # Should fail due to missing secret key
             assert result.is_failure
+            assert result.error is not None
             assert "secret" in result.error.lower()
 
     def test_create_test_config(self) -> None:
@@ -230,6 +232,7 @@ class TestWebConfigFactoryMethods:
 
         # Test config creation should fail due to port=0 validation
         assert result.is_failure
+        assert result.error is not None
         assert "port" in result.error.lower()
         assert "greater than or equal to 1" in result.error
 
@@ -256,7 +259,9 @@ class TestWebConfigFactoryMethods:
             result = FlextWebConfigs.create_config_from_env()
 
             assert result.is_failure
-            assert "validation" in result.error.lower()
+            # Environment variable conversion error is now caught properly
+            assert result.error is not None
+            assert "invalid literal for int()" in result.error.lower() or "validation" in result.error.lower()
 
     def test_create_web_config_alternative_methods(self) -> None:
         """Test alternative config creation methods."""

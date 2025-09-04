@@ -158,8 +158,6 @@ class ExamplesFullFunctionalityTest:
 
         except Exception:
             return False
-        finally:
-            pass
 
     def test_api_usage_full_functionality(self) -> bool | None:
         """Testa TODA funcionalidade do api_usage.py."""
@@ -177,7 +175,8 @@ class ExamplesFullFunctionalityTest:
             # Test 1: Health check function
             health_result = api_usage.check_service_health()
             if health_result:
-                pass
+                assert isinstance(health_result, dict)
+                assert health_result.get("status") == "healthy"
 
             # Test 2: Create application function
             create_result = api_usage.create_application("test-full-func", 3001)
@@ -191,12 +190,14 @@ class ExamplesFullFunctionalityTest:
                         # Test 4: Get status function
                         status = api_usage.get_application_status(app_id)
                         if status:
-                            pass
+                            assert isinstance(status, dict)
+                            assert "status" in status
 
                         # Test 5: Stop application function
                         stop_result = api_usage.stop_application(app_id)
                         if stop_result:
-                            pass
+                            assert isinstance(stop_result, dict)
+                            assert stop_result.get("success") is True
 
             # Test 6: List applications function
             api_usage.list_applications()
@@ -208,8 +209,6 @@ class ExamplesFullFunctionalityTest:
 
         except Exception:
             return False
-        finally:
-            pass
 
     def test_docker_ready_full_functionality(self) -> bool | None:
         """Testa TODA funcionalidade do docker_ready.py."""
@@ -232,7 +231,8 @@ class ExamplesFullFunctionalityTest:
             # Test 2: Configuration validation
             validation_result = config.validate_config()
             if validation_result.success:
-                pass
+                assert validation_result.success is True
+                assert validation_result.value is not None
 
             # Test 3: setup_signal_handlers function
             docker_ready.setup_signal_handlers()
@@ -245,8 +245,6 @@ class ExamplesFullFunctionalityTest:
 
         except Exception:
             return False
-        finally:
-            pass
 
     def test_examples_integration_functionality(self) -> bool | None:
         """Testa integração entre examples e funcionalidade completa."""
@@ -319,14 +317,13 @@ class ExamplesFullFunctionalityTest:
 
         except Exception:
             return False
-        finally:
-            pass
 
     def run_full_functionality_test(self) -> bool:
         """Executa teste COMPLETO de toda funcionalidade dos examples."""
         # Start Docker service for testing
         if not self.start_service_in_docker():
-            pass
+            logger.warning("Failed to start Docker service for testing")
+            return False
 
         try:
             results: list[tuple[str, bool | None]] = []

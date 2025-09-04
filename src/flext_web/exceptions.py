@@ -78,18 +78,19 @@ class FlextWebExceptions(FlextExceptions):
     class WebTimeoutError(WebError):
         """Web service operation timeout errors."""
 
-    class WebTemplateError(FlextExceptions._ValidationError):
-        """Web template processing errors using flext-core ValidationError."""
+    class WebTemplateError(WebError):
+        """Web template processing errors."""
 
         def __init__(
             self,
             message: str = "Web template error",
             template_name: str | None = None,
         ) -> None:
-            super().__init__(message, field=template_name)
+            super().__init__(message)
+            self.template_name = template_name
 
-    class WebRoutingError(FlextExceptions._NotFoundError):
-        """Web routing errors using flext-core NotFoundError."""
+    class WebRoutingError(WebError):
+        """Web routing errors."""
 
         def __init__(
             self,
@@ -97,20 +98,23 @@ class FlextWebExceptions(FlextExceptions):
             endpoint: str | None = None,
             method: str | None = None,
         ) -> None:
-            super().__init__(message, resource_id=endpoint, resource_type=method)
+            super().__init__(message)
+            self.endpoint = endpoint
+            self.method = method
 
-    class WebSessionError(FlextExceptions._AuthenticationError):
-        """Web session management errors using flext-core AuthenticationError."""
+    class WebSessionError(WebError):
+        """Web session management errors."""
 
         def __init__(
             self,
             message: str = "Web session error",
             session_id: str | None = None,
         ) -> None:
-            super().__init__(message, auth_method=session_id)
+            super().__init__(message)
+            self.session_id = session_id
 
-    class WebMiddlewareError(FlextExceptions._ProcessingError):
-        """Web middleware processing errors using flext-core ProcessingError."""
+    class WebMiddlewareError(WebError):
+        """Web middleware processing errors."""
 
         def __init__(
             self,

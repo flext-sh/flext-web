@@ -165,8 +165,7 @@ known_first_party = ["flext_web"]
 minversion = "8.0"
 asyncio_mode = "auto"
 addopts = [
-    "-ra",
-    "--strict-markers",
+    "-ra", 
     "--strict-config",
     "--maxfail=1",
     "--tb=short",
@@ -174,10 +173,20 @@ addopts = [
 testpaths = ["tests"]
 markers = [
     "unit: Unit tests",
-    "integration: Integration tests",
+    "integration: Integration tests", 
     "slow: Slow tests",
     "smoke: Smoke tests",
     "e2e: End-to-end tests",
+    "concurrency: Concurrency tests",
+    "performance: Performance tests",
+    "api: API tests",
+    "web: Web interface tests",
+    "race_condition: Race condition tests",
+    "stress: Stress tests",
+    "benchmark: Benchmark tests",
+    "memory: Memory tests",
+    "db: Database tests",
+    "network: Network tests",
 ]
 filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
 

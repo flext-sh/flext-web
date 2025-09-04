@@ -17,6 +17,7 @@ import requests
 
 from flext_web import (
     FlextWebConfigs,
+    FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
 )
@@ -140,7 +141,7 @@ class TestMissingCoverage:
 
     def test_handler_create_with_real_exceptions(self) -> None:
         """Test handler create method with REAL validation exceptions."""
-        handler = FlextWebModels.WebAppHandler()
+        handler = FlextWebHandlers.WebAppHandler()
 
         # Test with genuinely invalid parameters that cause real exceptions
         # Empty name should cause real validation failure
@@ -184,7 +185,7 @@ class TestMissingCoverage:
 
         result = app.stop()
         assert result.is_failure
-        assert "already stopped" in (result.error or "").lower()
+        assert "app not running" in (result.error or "").lower()
 
     def test_service_run_method_error_paths(self) -> None:
         """Test service run method error handling."""

@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
+import warnings
 from typing import ClassVar
 
 from flext_core import (
@@ -16,7 +17,12 @@ from flext_core import (
     FlextMixins,
     FlextResult,
 )
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import (
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
 
 from flext_web.constants import FlextWebConstants
 from flext_web.typings import FlextWebTypes
@@ -52,30 +58,30 @@ class FlextWebConfigs:
 
         # Web service settings
         host: str = Field(
-            default_factory=lambda: os.getenv("FLEXT_WEB_HOST", "localhost"),
+            default="localhost",
             description="Host address for web service",
         )
 
         port: int = Field(
-            default_factory=lambda: int(os.getenv("FLEXT_WEB_PORT", "8080")),
+            default=8080,
             ge=FlextConstants.Web.MIN_PORT,
             le=FlextConstants.Web.MAX_PORT,
             description="Port number for web service",
         )
 
         debug: bool = Field(
-            default_factory=lambda: os.getenv("FLEXT_WEB_DEBUG", "true").lower() == "true",
+            default=True,
             description="Enable debug mode",
         )
 
         secret_key: str = Field(
-            default_factory=lambda: os.getenv("FLEXT_WEB_SECRET_KEY", FlextWebConstants.WebSpecific.DEV_SECRET_KEY),
+            default=FlextWebConstants.WebSpecific.DEV_SECRET_KEY,
             min_length=FlextConstants.Validation.MIN_SECRET_KEY_LENGTH,
             description="Flask secret key for sessions",
         )
 
         app_name: str = Field(
-            default_factory=lambda: os.getenv("FLEXT_WEB_APP_NAME", "FLEXT Web"),
+            default="FLEXT Web",
             min_length=1,
             description="Application name",
         )
@@ -87,7 +93,7 @@ class FlextWebConfigs:
 
         # Advanced settings
         max_content_length: int = Field(
-            default=16777216,  # 16MB
+            default=16777216,
             gt=0,
             description="Maximum request content length in bytes",
         )
@@ -156,9 +162,55 @@ class FlextWebConfigs:
             # Warn about system reserved ports (1-1023) but allow them
             if v <= FlextWebConstants.WebSpecific.SYSTEM_PORTS_THRESHOLD:
                 # Note: In production, this might require special permissions
-                pass
+                warnings.warn(
+                    f"Using system reserved port {v}. May require special permissions in production.",
+                    UserWarning,
+                    stacklevel=2
+                )
 
             return v
+
+        @model_validator(mode="before")
+        @classmethod
+        def load_from_env(cls, values: dict[str, object]) -> dict[str, object]:
+            """Load configuration from environment variables with proper validation."""
+            # Only load from env if not explicitly provided
+            # Convert to set for more reliable membership testing
+            provided_fields = set(values.keys())
+
+            env_mapping = {
+                "host": ("FLEXT_WEB_HOST", str),
+                "port": ("FLEXT_WEB_PORT", int),
+                "debug": ("FLEXT_WEB_DEBUG", bool),
+                "secret_key": ("FLEXT_WEB_SECRET_KEY", str),
+                "app_name": ("FLEXT_WEB_APP_NAME", str),
+                "max_content_length": ("FLEXT_WEB_MAX_CONTENT_LENGTH", int),
+                "request_timeout": ("FLEXT_WEB_REQUEST_TIMEOUT", int),
+                "enable_cors": ("FLEXT_WEB_ENABLE_CORS", bool),
+            }
+
+            for field_name, (env_var, field_type) in env_mapping.items():
+                # Skip if field was explicitly provided
+                if field_name in provided_fields:
+                    continue
+                # Only load from env if env var exists
+                if env_var in os.environ:
+                    env_value = os.environ[env_var]
+                    try:
+                        if field_type is int:
+                            values[field_name] = int(env_value)
+                        elif field_type is bool:
+                            if env_value.lower() not in {"true", "false"}:
+                                msg = f"Boolean must be 'true' or 'false', got '{env_value}'"
+                                raise ValueError(msg)
+                            values[field_name] = env_value.lower() == "true"
+                        else:  # str
+                            values[field_name] = env_value
+                    except ValueError as e:
+                        msg = f"Invalid {field_type.__name__} value for {env_var}: {env_value}"
+                        raise ValueError(msg) from e
+
+            return values
 
         def model_post_init(self, __context: object, /) -> None:
             """Post-init hook to set up FlextMixins functionality."""
@@ -300,10 +352,10 @@ class FlextWebConfigs:
         def validate_business_rules(self) -> FlextResult[None]:
             """Validate web-specific business rules."""
             try:
-                # Validate production constraints
-                if not self.debug and self.host in {"localhost", "127.0.0.1"}:
+                # Validate production constraints - only block 'localhost', 127.0.0.1 is valid for containers
+                if not self.debug and self.host == "localhost":
                     return FlextResult[None].fail(
-                        "Production mode cannot use localhost binding"
+                        "Production mode cannot use 'localhost' binding, use specific IP address"
                     )
 
                 # Validate secret key strength in production
@@ -465,7 +517,7 @@ class FlextWebConfigs:
                 "FLEXT_WEB_SECRET_KEY required for production"
             )
         return cls.create_web_config(
-            host=os.getenv("FLEXT_WEB_HOST", "127.0.0.1"),
+            host=os.getenv("FLEXT_WEB_HOST", "0.0.0.0"),  # Use 0.0.0.0 for production binding  # noqa: S104
             port=int(os.getenv("FLEXT_WEB_PORT", "8080")),
             debug=False,
             secret_key=secret_key,

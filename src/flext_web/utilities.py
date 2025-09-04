@@ -7,9 +7,12 @@ in flext-core. Delegates all generic operations to FlextUtilities.
 from __future__ import annotations
 
 import re
+from typing import TypeVar
 from urllib.parse import urlparse
 
 from flext_core import FlextConstants, FlextResult, FlextUtilities
+
+T = TypeVar("T")
 
 
 class FlextWebUtilities:
@@ -129,7 +132,7 @@ class FlextWebUtilities:
         }
 
     @staticmethod
-    def handle_flext_result(result: FlextResult[object]) -> dict[str, object]:
+    def handle_flext_result(result: FlextResult[T]) -> dict[str, object]:
         """Convert FlextResult to API response."""
         if result.success:
             return FlextWebUtilities.create_api_response(

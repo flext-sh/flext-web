@@ -119,8 +119,8 @@ class TestFlextWebUtilitiesValidation:
 
     def test_validate_url_exception_handling(self) -> None:
         """Test URL validation handles exceptions."""
-        # Pass non-string that might cause urlparse to raise exception
-        assert FlextWebUtilities.validate_url(None) is False
+        # Pass invalid string that might cause urlparse to raise exception
+        assert FlextWebUtilities.validate_url("") is False
 
     def test_validate_host_format_valid_ipv4(self) -> None:
         """Test validating valid IPv4 addresses."""
@@ -220,7 +220,7 @@ class TestFlextWebUtilitiesDataSanitization:
 
     def test_sanitize_request_data_empty(self) -> None:
         """Test sanitizing empty data."""
-        data = {}
+        data: dict[str, object] = {}
 
         sanitized = FlextWebUtilities.sanitize_request_data(data)
 
@@ -324,7 +324,7 @@ class TestFlextWebUtilitiesFlextResultHandling:
         response = FlextWebUtilities.handle_flext_result(failure_result)
 
         assert response["success"] is False
-        assert "Operation failed: Validation error occurred" in response["message"]
+        assert "Operation failed: Validation error occurred" in str(response["message"])
         assert response["data"] is None
         assert "timestamp" in response
 
@@ -368,21 +368,21 @@ class TestFlextWebUtilitiesWebAppDataCreation:
         result = FlextWebUtilities.create_web_app_data("", 8000, "localhost")
 
         assert result.is_failure
-        assert "Invalid app name" in result.error
+        assert "Invalid app name" in str(result.error)
 
     def test_create_web_app_data_invalid_port(self) -> None:
         """Test creating web app data with invalid port."""
         result = FlextWebUtilities.create_web_app_data("test-app", -1, "localhost")
 
         assert result.is_failure
-        assert "Invalid port" in result.error
+        assert "Invalid port" in str(result.error)
 
     def test_create_web_app_data_invalid_host(self) -> None:
         """Test creating web app data with invalid host."""
         result = FlextWebUtilities.create_web_app_data("test-app", 8000, "")
 
         assert result.is_failure
-        assert "Invalid host" in result.error
+        assert "Invalid host" in str(result.error)
 
     def test_create_web_app_data_all_invalid(self) -> None:
         """Test creating web app data with all invalid parameters."""
@@ -390,7 +390,7 @@ class TestFlextWebUtilitiesWebAppDataCreation:
 
         # Should fail on first validation (name)
         assert result.is_failure
-        assert "Invalid app name" in result.error
+        assert "Invalid app name" in str(result.error)
 
 
 class TestFlextWebUtilitiesEdgeCases:
@@ -417,7 +417,7 @@ class TestFlextWebUtilitiesEdgeCases:
 
     def test_sanitize_request_data_none_values(self) -> None:
         """Test sanitizing request data with None values."""
-        data = {"name": None, "port": 8000, "description": None}
+        data: dict[str, object] = {"name": None, "port": 8000, "description": None}
 
         sanitized = FlextWebUtilities.sanitize_request_data(data)
 

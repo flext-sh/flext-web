@@ -20,6 +20,7 @@ from flext_web import (
     FlextWebModels,
     FlextWebServices,
 )
+from flext_web.handlers import FlextWebHandlers
 
 
 class TestFlextWebServiceAdvanced:
@@ -429,11 +430,11 @@ class TestWebAppAdvanced:
 
 
 class TestWebAppHandlerAdvanced:
-    """Advanced tests for FlextWebModels.WebAppHandler functionality."""
+    """Advanced tests for FlextWebHandlers.WebAppHandler functionality."""
 
     def test_handler_error_scenarios(self) -> None:
         """Test handler error scenarios with invalid app objects."""
-        handler = FlextWebModels.WebAppHandler()
+        handler = FlextWebHandlers.WebAppHandler()
 
         # Create a valid app first
         result = handler.create("test-app", 8000, "localhost")
@@ -441,7 +442,7 @@ class TestWebAppHandlerAdvanced:
         app = result.value
 
         # Test stopping a stopped app
-        result = handler.stop_app(app)
+        result = handler.stop(app)
         # App is already stopped, so this should fail with appropriate message
         assert result.is_failure
         assert (
@@ -451,7 +452,7 @@ class TestWebAppHandlerAdvanced:
 
     def test_handler_duplicate_app_creation(self) -> None:
         """Test creating applications with same name but different ports."""
-        handler = FlextWebModels.WebAppHandler()
+        handler = FlextWebHandlers.WebAppHandler()
 
         # Create first app
         result1 = handler.create("duplicate-test", 5000, "localhost")
@@ -466,7 +467,7 @@ class TestWebAppHandlerAdvanced:
 
     def test_handler_app_state_transitions(self) -> None:
         """Test application state transitions."""
-        handler = FlextWebModels.WebAppHandler()
+        handler = FlextWebHandlers.WebAppHandler()
 
         # Create app
         result = handler.create("state-test", 6000, "localhost")
@@ -474,24 +475,24 @@ class TestWebAppHandlerAdvanced:
         app = result.value
 
         # Start app
-        result = handler.start_app(app)
+        result = handler.start(app)
         assert result.success
         assert result.value.status == FlextWebModels.WebAppStatus.RUNNING
         running_app = result.value
 
         # Try to start already running app
-        result = handler.start_app(running_app)
+        result = handler.start(running_app)
         assert result.is_failure
         assert "already running" in (result.error or "").lower()
 
         # Stop app
-        result = handler.stop_app(running_app)
+        result = handler.stop(running_app)
         assert result.success
         assert result.value.status == FlextWebModels.WebAppStatus.STOPPED
         stopped_app = result.value
 
         # Try to stop already stopped app
-        result = handler.stop_app(stopped_app)
+        result = handler.stop(stopped_app)
         assert result.is_failure
         assert (
             "already stopped" in (result.error or "").lower()

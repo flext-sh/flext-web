@@ -18,6 +18,7 @@ from tests.port_manager import TestPortManager
 
 from flext_web import (
     FlextWebConfigs,
+    FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
 )
@@ -38,33 +39,33 @@ class TestRealEdgeCases:
 
         # Initial state
         assert app.status == FlextWebModels.WebAppStatus.STOPPED
-        assert app.is_running is False
+        assert not app.is_running
 
         # Start app
         result = app.start()
         assert result.success is True
         started_app = result.value
         assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
-        assert started_app.is_running is True
+        assert started_app.is_running
 
         # Try to start already running app
         result = started_app.start()
         assert result.is_failure is True
         assert result.error is not None
-        assert "already running" in result.error.lower()
+        assert "app already running" in result.error.lower()
 
         # Stop app
         result = started_app.stop()
         assert result.success is True
         stopped_app = result.value
         assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED
-        assert stopped_app.is_running is False
+        assert not stopped_app.is_running
 
         # Try to stop already stopped app
         result = stopped_app.stop()
         assert result.is_failure is True
         assert result.error is not None
-        assert "already stopped" in result.error.lower()
+        assert "app not running" in result.error.lower()
 
     @pytest.mark.unit
     def test_real_domain_validation_edge_cases(self) -> None:
@@ -121,7 +122,7 @@ class TestRealEdgeCases:
     @pytest.mark.unit
     def test_real_handler_validation_edge_cases(self) -> None:
         """Test real handler validation with edge cases."""
-        handler = FlextWebModels.WebAppHandler()
+        handler = FlextWebHandlers.WebAppHandler()
 
         # Test empty name
         result = handler.create("", 8000, "localhost")
@@ -307,7 +308,7 @@ class TestRealServiceEdgeCases:
         assert response.status_code == 400
         data = response.json()
         assert data["success"] is False
-        assert "already running" in data["message"].lower()
+        assert "app already running" in data["message"].lower()
 
         # Stop app
         response = requests.post(f"{base_url}/api/v1/apps/{app_id}/stop", timeout=5)
@@ -318,7 +319,7 @@ class TestRealServiceEdgeCases:
         assert response.status_code == 400
         data = response.json()
         assert data["success"] is False
-        assert "already stopped" in data["message"].lower()
+        assert "application is already stopped" in data["message"].lower()
 
     @pytest.mark.integration
     def test_real_dashboard_with_apps(

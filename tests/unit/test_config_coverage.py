@@ -191,7 +191,7 @@ class TestConfigSystemMethods:
 
     def test_configure_web_configs_system_invalid_environment(self) -> None:
         """Test configure_web_configs_system with invalid environment."""
-        config_data = {"environment": "invalid-environment"}
+        config_data: dict[str, object] = {"environment": "invalid-environment"}
 
         result = FlextWebConfigs.configure_web_configs_system(config_data)
 

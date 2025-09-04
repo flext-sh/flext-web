@@ -48,20 +48,29 @@ class TestWebServiceProtocolFactory:
         assert hasattr(protocol_impl, "health")
 
     def test_web_service_protocol_run_method(self) -> None:
-        """Test web service protocol run method."""
+        """Test web service protocol run method raises NotImplementedError (type checking only)."""
+        import pytest
+
         protocol_impl = FlextWebProtocols.create_web_service_protocol()
 
-        # Should not raise exception
-        result = protocol_impl.run(host="localhost", port=8000, debug=True)
-        assert result is None
+        # Should raise NotImplementedError since it's for type checking only
+        with pytest.raises(NotImplementedError, match="Protocol implementation for type checking only"):
+            protocol_impl.run(host="localhost", port=8000, debug=True)  # type: ignore[attr-defined]
 
     def test_web_service_protocol_health_method(self) -> None:
-        """Test web service protocol health method."""
+        """Test web service protocol health method requires Flask context."""
+        from flask import Flask
+
         protocol_impl = FlextWebProtocols.create_web_service_protocol()
 
-        # Should return a Flask response
-        response = protocol_impl.health()
-        assert response is not None
+        # Create a test Flask app for context
+        app = Flask(__name__)
+        with app.app_context():
+            # Should return a Flask response within app context
+            response = protocol_impl.health()  # type: ignore[attr-defined]
+            assert response is not None
+            # Test that it's a proper Flask response (has status_code)
+            assert hasattr(response, "status_code")
 
     def test_validate_web_service_protocol_valid(self) -> None:
         """Test validation of valid web service protocol implementation."""
@@ -76,7 +85,8 @@ class TestWebServiceProtocolFactory:
         # Object missing required methods
         class InvalidService:
             def run(self) -> None:
-                pass
+                msg = "Test mock implementation"
+                raise NotImplementedError(msg)
 
             # Missing health method
 
@@ -165,10 +175,12 @@ class TestAppManagerProtocolFactory:
         # Object missing required methods
         class InvalidManager:
             def create_app(self) -> None:
-                pass
+                msg = "Test mock implementation"
+                raise NotImplementedError(msg)
 
             def start_app(self) -> None:
-                pass
+                msg = "Test mock implementation"
+                raise NotImplementedError(msg)
 
             # Missing stop_app and list_apps methods
 
@@ -181,13 +193,16 @@ class TestAppManagerProtocolFactory:
 
         class PartialManager:
             def create_app(self) -> None:
-                pass
+                msg = "Test mock implementation"
+                raise NotImplementedError(msg)
 
             def start_app(self) -> None:
-                pass
+                msg = "Test mock implementation"
+                raise NotImplementedError(msg)
 
             def stop_app(self) -> None:
-                pass
+                msg = "Test mock implementation"
+                raise NotImplementedError(msg)
 
             # Missing list_apps method
 
@@ -308,7 +323,7 @@ class TestProtocolImplementationExamples:
 
         class TestAppManager:
             def __init__(self) -> None:
-                self.apps = {}
+                self.apps: dict[str, FlextWebModels.WebApp] = {}
 
             def create_app(
                 self, name: str, port: int, host: str
