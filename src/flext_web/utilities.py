@@ -9,8 +9,7 @@ from __future__ import annotations
 import re
 from urllib.parse import urlparse
 
-from flext_core import FlextConstants, FlextResult
-from flext_core.utilities import FlextUtilities
+from flext_core import FlextConstants, FlextResult, FlextUtilities
 
 
 class FlextWebUtilities:
@@ -79,7 +78,7 @@ class FlextWebUtilities:
         if re.match(hostname_pattern, safe_host):
             return True
 
-        return safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}  # noqa: S104
+        return safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}  # nosec B104  # noqa: S104
 
     @staticmethod
     def sanitize_request_data(data: dict[str, object]) -> dict[str, object]:

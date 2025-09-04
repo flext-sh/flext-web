@@ -13,8 +13,11 @@ This example shows:
 
 from typing import cast
 
+from itertools import chain
+from operator import methodcaller
 import requests
 from flext_core import FlextConstants
+from flext_core import FlextResult
 
 from flext_web.typings import FlextWebTypes
 
@@ -88,6 +91,97 @@ def create_application(
         return None
 
 
+# =============================================================================
+# ADVANCED PATTERN IMPLEMENTATIONS - STRATEGY + FUNCTIONAL + MONADIC
+# =============================================================================
+
+
+def _execute_app_operation(
+    method: str, endpoint: str, json_data: dict[str, object] | None = None
+) -> FlextWebTypes.AppData | None:
+    """Execute application operation using existing flext-core Railway-oriented programming.
+
+    Reduces from 9 returns to single monadic chain using FlextResult from flext-core.
+    Leverages existing framework instead of recreating functionality.
+    """
+    from flext_core import FlextResult
+
+    def _make_http_request() -> FlextResult[requests.Response]:
+        """Make HTTP request using FlextResult for error handling."""
+        try:
+            request_func = getattr(requests, method.lower())
+            kwargs = {"url": f"{ExampleConstants.BASE_URL}{endpoint}", "timeout": 5}
+            if json_data:
+                kwargs["json"] = json_data
+
+            response = request_func(**kwargs)
+            return (
+                FlextResult[requests.Response].ok(response)
+                if response.status_code == ExampleConstants.HTTP_OK
+                else FlextResult[requests.Response].fail(f"HTTP {response.status_code}")
+            )
+        except requests.RequestException as e:
+            return FlextResult[requests.Response].fail(f"Request failed: {e}")
+
+    # Use existing flext-core monadic chain
+    result = (
+        _make_http_request()
+        .bind(
+            lambda resp: FlextResult[dict[str, object]].ok(resp.json())
+            if resp.status_code == ExampleConstants.HTTP_OK
+            else FlextResult[dict[str, object]].fail("Invalid response")
+        )
+        .bind(
+            lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
+                cast("FlextWebTypes.AppData", json_data["data"])
+            )
+            if all([
+                json_data.get("success"),
+                isinstance(data := json_data.get("data"), dict),
+                data
+                and {"id", "name"}.issubset(cast("dict[str, object]", data).keys()),
+            ])
+            else FlextResult[FlextWebTypes.AppData].fail("Invalid app data")
+        )
+    )
+
+    return result.value if result.is_success else None
+
+
+def _execute_list_operation(
+    endpoint: str, data_key: str
+) -> list[FlextWebTypes.AppData]:
+    """Advanced Monad Composition using flext-core - eliminates 7 returns with Kleisli composition."""
+    # Pure functional Kleisli composition using flext-core patterns
+    return (
+        FlextResult.safe_call(
+            lambda: requests.get(f"{ExampleConstants.BASE_URL}{endpoint}", timeout=5)
+        )
+        .filter(
+            lambda r: r.status_code == ExampleConstants.HTTP_OK, "HTTP request failed"
+        )
+        .bind(
+            lambda r: FlextResult.safe_call(r.json)
+            if hasattr(r, "json")
+            else FlextResult[dict[str, object]].fail("Invalid response object")
+        )
+        .filter(
+            lambda d: isinstance(d.get("data", {}).get(data_key), list),
+            "Invalid response structure",
+        )
+        .map(lambda d: d["data"][data_key])
+        .map(
+            lambda apps: [
+                cast("FlextWebTypes.AppData", app)
+                for app in apps
+                if isinstance(app, dict)
+                and all(k in app and isinstance(app[k], str) for k in ["id", "name"])
+            ]
+        )
+        .unwrap_or([])
+    )
+
+
 def start_application(app_id: str) -> FlextWebTypes.AppData | None:
     """Start an application using FlextWebAppHandler.start().
 
@@ -98,22 +192,10 @@ def start_application(app_id: str) -> FlextWebTypes.AppData | None:
         Updated application data with RUNNING status or None if failed.
 
     """
-    try:
-        response = requests.post(
-            f"{ExampleConstants.BASE_URL}{FlextConstants.Endpoints.APP_START.format(app_id=app_id)}",
-            timeout=5,
-        )
-        if response.status_code == ExampleConstants.HTTP_OK:
-            result = cast("FlextWebTypes.BaseResponse", response.json())
-            if result.get("success"):
-                data = result.get("data")
-                # Type guard: ensure we return AppDataDict
-                if isinstance(data, dict) and "id" in data and "name" in data:
-                    return cast("FlextWebTypes.AppData", data)
-                return None
-        return None
-    except requests.RequestException:
-        return None
+    return _execute_app_operation(
+        method="POST",
+        endpoint=FlextConstants.Endpoints.APP_START.format(app_id=app_id),
+    )
 
 
 def get_application_status(app_id: str) -> FlextWebTypes.AppData | None:
@@ -126,22 +208,10 @@ def get_application_status(app_id: str) -> FlextWebTypes.AppData | None:
         Application data with current FlextWebAppStatus or None if failed.
 
     """
-    try:
-        response = requests.get(
-            f"{ExampleConstants.BASE_URL}{FlextConstants.Endpoints.APP_DETAIL.format(app_id=app_id)}",
-            timeout=5,
-        )
-        if response.status_code == ExampleConstants.HTTP_OK:
-            result = cast("FlextWebTypes.BaseResponse", response.json())
-            if result.get("success"):
-                data = result.get("data")
-                # Type guard: ensure we return AppDataDict
-                if isinstance(data, dict) and "id" in data and "name" in data:
-                    return cast("FlextWebTypes.AppData", data)
-                return None
-        return None
-    except requests.RequestException:
-        return None
+    return _execute_app_operation(
+        method="GET",
+        endpoint=FlextConstants.Endpoints.APP_DETAIL.format(app_id=app_id),
+    )
 
 
 def stop_application(app_id: str) -> FlextWebTypes.AppData | None:
@@ -154,22 +224,10 @@ def stop_application(app_id: str) -> FlextWebTypes.AppData | None:
         Updated application data with STOPPED status or None if failed.
 
     """
-    try:
-        response = requests.post(
-            f"{ExampleConstants.BASE_URL}{FlextConstants.Endpoints.APP_STOP.format(app_id=app_id)}",
-            timeout=5,
-        )
-        if response.status_code == ExampleConstants.HTTP_OK:
-            result = cast("FlextWebTypes.BaseResponse", response.json())
-            if result.get("success"):
-                data = result.get("data")
-                # Type guard: ensure we return AppDataDict
-                if isinstance(data, dict) and "id" in data and "name" in data:
-                    return cast("FlextWebTypes.AppData", data)
-                return None
-        return None
-    except requests.RequestException:
-        return None
+    return _execute_app_operation(
+        method="POST",
+        endpoint=FlextConstants.Endpoints.APP_STOP.format(app_id=app_id),
+    )
 
 
 def list_applications() -> list[FlextWebTypes.AppData]:
@@ -179,30 +237,9 @@ def list_applications() -> list[FlextWebTypes.AppData]:
         List of FlextWebApp entities with current status information.
 
     """
-    try:
-        response = requests.get(
-            f"{ExampleConstants.BASE_URL}{FlextConstants.Endpoints.APPS_BASE}",
-            timeout=5,
-        )
-        if response.status_code == ExampleConstants.HTTP_OK:
-            result = cast("FlextWebTypes.SuccessResponse", response.json())
-            if result.get("success"):
-                data = result.get("data")
-                if isinstance(data, dict):
-                    apps_list = data.get("apps", [])
-                    if isinstance(apps_list, list):
-                        # Type guard and display status with proper emoji indicators
-                        validated_apps: list[FlextWebTypes.AppData] = []
-                        for app in apps_list:
-                            if isinstance(app, dict) and "id" in app and "name" in app:
-                                "🟢" if app.get("is_running") else "🔴"
-                                validated_apps.append(
-                                    cast("FlextWebTypes.AppData", app)
-                                )
-                        return validated_apps
-        return []
-    except requests.RequestException:
-        return []
+    return _execute_list_operation(
+        endpoint=FlextConstants.Endpoints.APPS_BASE, data_key="apps"
+    )
 
 
 def demo_application_lifecycle() -> None:

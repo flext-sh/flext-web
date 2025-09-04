@@ -183,14 +183,12 @@ class FlextWebConfig(BaseSettings, FlextConfig):
 ### Integration Points
 
 1. **flext-core Foundation**:
-
    - `FlextResult` for error handling
    - `FlextModels.Entity` for domain modeling
    - `FlextConfig` for configuration management
    - `FlextHandlers` for CQRS pattern implementation
 
 2. **flext-observability** (planned):
-
    - Health check integration
    - Metrics collection
    - Distributed tracing support
@@ -205,13 +203,11 @@ class FlextWebConfig(BaseSettings, FlextConfig):
 ### Critical Issues
 
 1. **Monolithic Structure**:
-
    - 518 lines in single file violates SRP
    - Tight coupling between layers
    - Difficult to test and maintain
 
 2. **Mixed Technology Stack**:
-
    - pyproject.toml declares Django/FastAPI but uses Flask
    - Django templates exist but not used
    - Dependency confusion and bloat

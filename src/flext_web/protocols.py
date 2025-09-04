@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
+from flask import jsonify
 from flask.typing import ResponseReturnValue
 from flext_core import FlextProtocols, FlextResult
 
@@ -35,40 +36,9 @@ class FlextWebProtocols(FlextProtocols):
     # WEB SERVICE PROTOCOLS
     # =========================================================================
 
-    class WebServiceProtocol(Protocol):
-        """Protocol for web service implementations.
-
-        Defines the interface contract for web services providing
-        HTTP endpoints and application management capabilities.
-        """
-
-        def run(
-            self,
-            host: str | None = None,
-            port: int | None = None,
-            *,
-            debug: bool | None = None,
-            **kwargs: object,
-        ) -> None:
-            """Run the web service with specified configuration.
-
-            Args:
-                host: Optional host override
-                port: Optional port override
-                debug: Optional debug mode override
-                **kwargs: Additional configuration options
-
-            """
-            ...
-
-        def health(self) -> ResponseReturnValue:
-            """Return health check response.
-
-            Returns:
-                HTTP response indicating service health status.
-
-            """
-            ...
+    # DEPRECATED: Use WebServiceInterface instead (extends FlextProtocols.Domain.Service)
+    # Keeping for backward compatibility only
+    WebServiceProtocol = FlextProtocols.Domain.Service
 
     class AppManagerProtocol(Protocol):
         """Protocol for application management operations.
@@ -175,57 +145,9 @@ class FlextWebProtocols(FlextProtocols):
             """
             ...
 
-    class ConfigurationProtocol(Protocol):
-        """Protocol for web configuration management.
-
-        Defines the interface contract for configuration providers
-        with environment integration and validation.
-        """
-
-        def get_host(self) -> str:
-            """Get configured host address.
-
-            Returns:
-                Host address for server binding.
-
-            """
-            ...
-
-        def get_port(self) -> int:
-            """Get configured port number.
-
-            Returns:
-                Port number for server binding.
-
-            """
-            ...
-
-        def is_debug_mode(self) -> bool:
-            """Check if debug mode is enabled.
-
-            Returns:
-                True if debug mode is enabled, False otherwise.
-
-            """
-            ...
-
-        def is_production(self) -> bool:
-            """Check if running in production mode.
-
-            Returns:
-                True if in production mode, False otherwise.
-
-            """
-            ...
-
-        def validate(self) -> FlextResult[None]:
-            """Validate configuration settings.
-
-            Returns:
-                FlextResult indicating validation success or failure.
-
-            """
-            ...
+    # Use flext-core Configurable protocol instead of custom ConfigurationProtocol
+    # This reduces duplication and leverages existing abstractions
+    ConfigurationProtocol = FlextProtocols.Infrastructure.Configurable
 
     class TemplateRendererProtocol(Protocol):
         """Protocol for template rendering services.
@@ -267,7 +189,7 @@ class FlextWebProtocols(FlextProtocols):
     # =========================================================================
 
     @classmethod
-    def create_web_service_protocol(cls) -> WebServiceProtocol:
+    def create_web_service_protocol(cls) -> object:
         """Create web service protocol instance.
 
         Returns:
@@ -288,8 +210,6 @@ class FlextWebProtocols(FlextProtocols):
                 pass
 
             def health(self) -> ResponseReturnValue:
-                from flask import jsonify
-
                 return jsonify({"status": "ok"})
 
         return _WebServiceProtocolImpl()

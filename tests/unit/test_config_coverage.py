@@ -22,7 +22,9 @@ class TestConfigFactoryMethods:
         """Test create_development_config factory method."""
         result = FlextWebConfigs.create_development_config()
 
-        assert result.is_success, f"Development config should succeed, got: {result.error}"
+        assert result.is_success, (
+            f"Development config should succeed, got: {result.error}"
+        )
         config = result.value
         assert isinstance(config, FlextWebConfigs.WebConfig)
         assert config.debug is True  # Development should have debug enabled
@@ -39,7 +41,9 @@ class TestConfigFactoryMethods:
         try:
             result = FlextWebConfigs.create_production_config()
 
-            assert result.is_success, f"Production config should succeed, got: {result.error}"
+            assert result.is_success, (
+                f"Production config should succeed, got: {result.error}"
+            )
             config = result.value
             assert isinstance(config, FlextWebConfigs.WebConfig)
             assert config.debug is False  # Production should have debug disabled
@@ -70,7 +74,7 @@ class TestConfigFactoryMethods:
         assert result.is_failure, "Test config should fail due to invalid port=0"
         error = result.error or ""
         assert "port" in error.lower()
-        assert ("greater than" in error.lower() or "1" in error.lower())
+        assert "greater than" in error.lower() or "1" in error.lower()
 
     def test_create_config_from_env_success(self) -> None:
         """Test create_config_from_env factory method."""
@@ -82,7 +86,9 @@ class TestConfigFactoryMethods:
         try:
             result = FlextWebConfigs.create_config_from_env()
 
-            assert result.is_success, f"Config from env should succeed, got: {result.error}"
+            assert result.is_success, (
+                f"Config from env should succeed, got: {result.error}"
+            )
             config = result.value
             assert isinstance(config, FlextWebConfigs.WebConfig)
             assert config.host == "example.com"
@@ -96,7 +102,12 @@ class TestConfigFactoryMethods:
     def test_create_config_from_env_defaults(self) -> None:
         """Test create_config_from_env with default values when no env vars set."""
         # Ensure relevant env vars are cleared
-        env_keys = ["FLEXT_WEB_HOST", "FLEXT_WEB_PORT", "FLEXT_WEB_DEBUG", "FLEXT_WEB_SECRET_KEY"]
+        env_keys = [
+            "FLEXT_WEB_HOST",
+            "FLEXT_WEB_PORT",
+            "FLEXT_WEB_DEBUG",
+            "FLEXT_WEB_SECRET_KEY",
+        ]
         original_values = {}
         for key in env_keys:
             original_values[key] = os.environ.get(key)
@@ -105,7 +116,9 @@ class TestConfigFactoryMethods:
         try:
             result = FlextWebConfigs.create_config_from_env()
 
-            assert result.is_success, f"Config from env should succeed with defaults, got: {result.error}"
+            assert result.is_success, (
+                f"Config from env should succeed with defaults, got: {result.error}"
+            )
             config = result.value
             assert isinstance(config, FlextWebConfigs.WebConfig)
             # Should use default values when env vars not set
@@ -129,7 +142,7 @@ class TestConfigValidationMethods:
             host="localhost",
             port=8080,
             debug=True,
-            secret_key="valid-secret-key-32-characters-exactly"
+            secret_key="valid-secret-key-32-characters-exactly",
         )
 
         result = FlextWebConfigs.validate_web_config(config)
@@ -145,12 +158,14 @@ class TestConfigValidationMethods:
             host="0.0.0.0",
             port=80,
             debug=False,  # Production mode
-            secret_key="dev-secret"  # Invalid for production
+            secret_key="dev-secret",  # Invalid for production
         )
 
         result = FlextWebConfigs.validate_web_config(config)
 
-        assert result.is_failure, "Validation should fail for production config with dev secret"
+        assert result.is_failure, (
+            "Validation should fail for production config with dev secret"
+        )
 
 
 class TestConfigSystemMethods:
@@ -167,20 +182,22 @@ class TestConfigSystemMethods:
 
         result = FlextWebConfigs.configure_web_configs_system(config_data)
 
-        assert result.is_success, f"System configuration should succeed, got: {result.error}"
+        assert result.is_success, (
+            f"System configuration should succeed, got: {result.error}"
+        )
         configured = result.value
         assert isinstance(configured, dict)
         assert configured["environment"] == "development"
 
     def test_configure_web_configs_system_invalid_environment(self) -> None:
         """Test configure_web_configs_system with invalid environment."""
-        config_data = {
-            "environment": "invalid-environment"
-        }
+        config_data = {"environment": "invalid-environment"}
 
         result = FlextWebConfigs.configure_web_configs_system(config_data)
 
-        assert result.is_failure, "System configuration should fail with invalid environment"
+        assert result.is_failure, (
+            "System configuration should fail with invalid environment"
+        )
         error = result.error or ""
         assert "environment" in error.lower()
 
@@ -188,7 +205,9 @@ class TestConfigSystemMethods:
         """Test get_web_configs_system_config retrieval."""
         result = FlextWebConfigs.get_web_configs_system_config()
 
-        assert result.is_success, f"System config retrieval should succeed, got: {result.error}"
+        assert result.is_success, (
+            f"System config retrieval should succeed, got: {result.error}"
+        )
         config = result.value
         assert isinstance(config, dict)
         # Should contain system information
@@ -218,10 +237,7 @@ class TestWebConfigBusinessLogic:
 
     def test_web_config_get_server_url_custom(self) -> None:
         """Test WebConfig get_server_url method with custom values."""
-        config = FlextWebConfigs.WebConfig(
-            host="example.com",
-            port=9000
-        )
+        config = FlextWebConfigs.WebConfig(host="example.com", port=9000)
         url = config.get_server_url()
         assert url == "http://example.com:9000"
 
@@ -230,24 +246,28 @@ class TestWebConfigBusinessLogic:
         config = FlextWebConfigs.WebConfig(
             host="0.0.0.0",  # Production host (not localhost)
             debug=False,
-            secret_key="production-secret-key-32-chars-exactly"
+            secret_key="production-secret-key-32-chars-exactly",
         )
 
         result = config.validate_production_settings()
 
-        assert result.is_success, f"Production validation should succeed, got: {result.error}"
+        assert result.is_success, (
+            f"Production validation should succeed, got: {result.error}"
+        )
 
     def test_web_config_validate_production_settings_failure(self) -> None:
         """Test WebConfig validate_production_settings with invalid production config."""
         # Use model_construct to bypass initial validation
         config = FlextWebConfigs.WebConfig.model_construct(
             debug=False,  # Production mode
-            secret_key="dev"  # Too short for production
+            secret_key="dev",  # Too short for production
         )
 
         result = config.validate_production_settings()
 
-        assert result.is_failure, "Production validation should fail with short secret key"
+        assert result.is_failure, (
+            "Production validation should fail with short secret key"
+        )
         error = result.error or ""
         assert "secret" in error.lower()
 
@@ -256,12 +276,14 @@ class TestWebConfigBusinessLogic:
         config = FlextWebConfigs.WebConfig(
             host="localhost",
             port=8080,
-            secret_key="valid-secret-key-32-chars-minimum-req"
+            secret_key="valid-secret-key-32-chars-minimum-req",
         )
 
         result = config.validate_config()
 
-        assert result.is_success, f"Config validation should succeed, got: {result.error}"
+        assert result.is_success, (
+            f"Config validation should succeed, got: {result.error}"
+        )
         # validate_config returns FlextResult[None], not a validation dict
         assert result.value is None
 
@@ -271,7 +293,7 @@ class TestWebConfigBusinessLogic:
         config = FlextWebConfigs.WebConfig.model_construct(
             host="localhost",
             port=99999,  # Invalid port
-            secret_key="short"
+            secret_key="short",
         )
 
         result = config.validate_config()

@@ -13,7 +13,9 @@ from flext_web import FlextWebConfigs, FlextWebModels, FlextWebServices
 class TestWebServiceHealthEndpoint:
     """Test health endpoint exception handling and error cases."""
 
-    def test_health_endpoint_with_app_count(self, web_service_fixture):
+    def test_health_endpoint_with_app_count(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test health endpoint returns app count."""
         service = web_service_fixture
 
@@ -34,7 +36,9 @@ class TestWebServiceHealthEndpoint:
         assert data["data"]["status"] == "healthy"
         assert data["data"]["applications"] == 2
 
-    def test_health_endpoint_exception_handling(self, web_service_fixture):
+    def test_health_endpoint_exception_handling(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test health endpoint handles internal exceptions gracefully."""
         service = web_service_fixture
 
@@ -58,7 +62,9 @@ class TestWebServiceHealthEndpoint:
 class TestWebServiceDashboard:
     """Test dashboard endpoint error handling."""
 
-    def test_dashboard_exception_handling(self, web_service_fixture):
+    def test_dashboard_exception_handling(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test dashboard handles template rendering errors."""
         service = web_service_fixture
 
@@ -74,7 +80,9 @@ class TestWebServiceDashboard:
 class TestWebServiceListApps:
     """Test list_apps endpoint functionality."""
 
-    def test_list_apps_empty(self, web_service_fixture):
+    def test_list_apps_empty(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test listing apps when none exist."""
         service = web_service_fixture
         client = service.app.test_client()
@@ -86,18 +94,26 @@ class TestWebServiceListApps:
         assert data["success"] is True
         assert data["data"]["apps"] == []
 
-    def test_list_apps_with_multiple_apps(self, web_service_fixture):
+    def test_list_apps_with_multiple_apps(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test listing multiple apps."""
         service = web_service_fixture
 
         # Add apps with different statuses
         app1 = FlextWebModels.WebApp(
-            id="app1", name="test1", host="localhost", port=8001,
-            status=FlextWebModels.WebAppStatus.RUNNING
+            id="app1",
+            name="test1",
+            host="localhost",
+            port=8001,
+            status=FlextWebModels.WebAppStatus.RUNNING,
         )
         app2 = FlextWebModels.WebApp(
-            id="app2", name="test2", host="localhost", port=8002,
-            status=FlextWebModels.WebAppStatus.STOPPED
+            id="app2",
+            name="test2",
+            host="localhost",
+            port=8002,
+            status=FlextWebModels.WebAppStatus.STOPPED,
         )
 
         service.apps["app1"] = app1
@@ -121,129 +137,155 @@ class TestWebServiceListApps:
 class TestWebServiceCreateApp:
     """Test create_app endpoint comprehensive functionality."""
 
-    def test_create_app_invalid_json_request(self, web_service_fixture):
+    def test_create_app_invalid_json_request(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test create app with invalid JSON."""
         service = web_service_fixture
         client = service.app.test_client()
 
-        response = client.post("/api/v1/apps",
-                               data="invalid json",
-                               content_type="text/plain")
+        response = client.post(
+            "/api/v1/apps", data="invalid json", content_type="text/plain"
+        )
 
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
         assert "Request must be JSON" in data["message"]
 
-    def test_create_app_empty_request_body(self, web_service_fixture):
+    def test_create_app_empty_request_body(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test create app with empty request body."""
         service = web_service_fixture
         client = service.app.test_client()
 
-        response = client.post("/api/v1/apps",
-                               json={},
-                               content_type="application/json")
+        response = client.post("/api/v1/apps", json={}, content_type="application/json")
 
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
         assert "body is required" in data["message"]
 
-    def test_create_app_missing_name(self, web_service_fixture):
+    def test_create_app_missing_name(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test create app without required name field."""
         service = web_service_fixture
         client = service.app.test_client()
 
-        response = client.post("/api/v1/apps",
-                               json={"port": 8000},
-                               content_type="application/json")
+        response = client.post(
+            "/api/v1/apps", json={"port": 8000}, content_type="application/json"
+        )
 
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
         assert "name is required" in data["message"]
 
-    def test_create_app_invalid_name_type(self, web_service_fixture):
+    def test_create_app_invalid_name_type(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test create app with non-string name."""
         service = web_service_fixture
         client = service.app.test_client()
 
-        response = client.post("/api/v1/apps",
-                               json={"name": 12345, "port": 8000},
-                               content_type="application/json")
+        response = client.post(
+            "/api/v1/apps",
+            json={"name": 12345, "port": 8000},
+            content_type="application/json",
+        )
 
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
         assert "must be a string" in data["message"]
 
-    def test_create_app_invalid_host_type(self, web_service_fixture):
+    def test_create_app_invalid_host_type(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test create app with non-string host."""
         service = web_service_fixture
         client = service.app.test_client()
 
-        response = client.post("/api/v1/apps",
-                               json={"name": "test", "host": 12345, "port": 8000},
-                               content_type="application/json")
+        response = client.post(
+            "/api/v1/apps",
+            json={"name": "test", "host": 12345, "port": 8000},
+            content_type="application/json",
+        )
 
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
         assert "Host must be a string" in data["message"]
 
-    def test_create_app_invalid_port_string(self, web_service_fixture):
+    def test_create_app_invalid_port_string(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test create app with invalid port string."""
         service = web_service_fixture
         client = service.app.test_client()
 
-        response = client.post("/api/v1/apps",
-                               json={"name": "test", "port": "not_a_number"},
-                               content_type="application/json")
+        response = client.post(
+            "/api/v1/apps",
+            json={"name": "test", "port": "not_a_number"},
+            content_type="application/json",
+        )
 
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
         assert "valid integer" in data["message"]
 
-    def test_create_app_invalid_port_type(self, web_service_fixture):
+    def test_create_app_invalid_port_type(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test create app with invalid port type."""
         service = web_service_fixture
         client = service.app.test_client()
 
-        response = client.post("/api/v1/apps",
-                               json={"name": "test", "port": []},  # Empty list should be invalid
-                               content_type="application/json")
+        response = client.post(
+            "/api/v1/apps",
+            json={"name": "test", "port": []},  # Empty list should be invalid
+            content_type="application/json",
+        )
 
         # The service might handle this differently - let's check the actual behavior
-        print(f"Response status: {response.status_code}")
-        print(f"Response data: {response.get_json()}")
 
         # Either 400 for validation error OR success if it handles it gracefully
-        assert response.status_code in [400, 201]
+        assert response.status_code in {400, 201}
 
-    def test_create_app_handler_failure(self, web_service_fixture):
+    def test_create_app_handler_failure(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test create app when handler returns failure."""
         service = web_service_fixture
         client = service.app.test_client()
 
         # Use invalid name that will cause handler to fail
-        response = client.post("/api/v1/apps",
-                               json={"name": "", "port": 8000},  # Empty name should fail
-                               content_type="application/json")
+        response = client.post(
+            "/api/v1/apps",
+            json={"name": "", "port": 8000},  # Empty name should fail
+            content_type="application/json",
+        )
 
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
         assert "Application name is required" in data["message"]
 
-    def test_create_app_successful_creation(self, web_service_fixture):
+    def test_create_app_successful_creation(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test successful app creation."""
         service = web_service_fixture
         client = service.app.test_client()
 
-        response = client.post("/api/v1/apps",
-                               json={"name": "test-app", "port": 8000},
-                               content_type="application/json")
+        response = client.post(
+            "/api/v1/apps",
+            json={"name": "test-app", "port": 8000},
+            content_type="application/json",
+        )
 
         assert response.status_code == 201
         data = response.get_json()
@@ -255,14 +297,18 @@ class TestWebServiceCreateApp:
         # Verify app was actually added
         assert len(service.apps) == 1
 
-    def test_create_app_with_host_none(self, web_service_fixture):
+    def test_create_app_with_host_none(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test create app with explicit None host (edge case)."""
         service = web_service_fixture
         client = service.app.test_client()
 
-        response = client.post("/api/v1/apps",
-                               json={"name": "test-app", "host": None, "port": 8000},
-                               content_type="application/json")
+        response = client.post(
+            "/api/v1/apps",
+            json={"name": "test-app", "host": None, "port": 8000},
+            content_type="application/json",
+        )
 
         assert response.status_code == 201
         data = response.get_json()
@@ -273,11 +319,13 @@ class TestWebServiceCreateApp:
 class TestWebServiceAppOperations:
     """Test individual app operation endpoints."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Set up test app in service."""
         # This will be called before each test method
 
-    def test_get_app_not_found(self, web_service_fixture):
+    def test_get_app_not_found(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test get app that doesn't exist."""
         service = web_service_fixture
         client = service.app.test_client()
@@ -289,7 +337,9 @@ class TestWebServiceAppOperations:
         assert data["success"] is False
         assert "not found" in data["message"]
 
-    def test_get_app_existing(self, web_service_fixture):
+    def test_get_app_existing(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test get existing app."""
         service = web_service_fixture
 
@@ -307,7 +357,9 @@ class TestWebServiceAppOperations:
         assert data["success"] is True
         assert data["data"]["id"] == "test-app"
 
-    def test_start_app_not_found(self, web_service_fixture):
+    def test_start_app_not_found(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test start app that doesn't exist."""
         service = web_service_fixture
         client = service.app.test_client()
@@ -319,7 +371,9 @@ class TestWebServiceAppOperations:
         assert data["success"] is False
         assert "not found" in data["message"]
 
-    def test_stop_app_not_found(self, web_service_fixture):
+    def test_stop_app_not_found(
+        self, web_service_fixture: FlextWebServices.WebService
+    ) -> None:
         """Test stop app that doesn't exist."""
         service = web_service_fixture
         client = service.app.test_client()
@@ -335,7 +389,7 @@ class TestWebServiceAppOperations:
 class TestWebServiceFactoryMethods:
     """Test factory methods for service creation."""
 
-    def test_create_web_service_without_config(self):
+    def test_create_web_service_without_config(self) -> None:
         """Test creating web service without providing config."""
         result = FlextWebServices.create_web_service()
 
@@ -344,13 +398,9 @@ class TestWebServiceFactoryMethods:
         assert isinstance(service, FlextWebServices.WebService)
         assert isinstance(service.config, FlextWebConfigs.WebConfig)
 
-    def test_create_web_service_with_config(self):
+    def test_create_web_service_with_config(self) -> None:
         """Test creating web service with provided config."""
-        config = FlextWebConfigs.WebConfig(
-            host="0.0.0.0",
-            port=9000,
-            debug=False
-        )
+        config = FlextWebConfigs.WebConfig(host="0.0.0.0", port=9000, debug=False)
 
         result = FlextWebServices.create_web_service(config)
 
@@ -360,14 +410,14 @@ class TestWebServiceFactoryMethods:
         assert service.config.port == 9000
         assert service.config.debug is False
 
-    def test_create_web_service_exception_handling(self):
+    def test_create_web_service_exception_handling(self) -> None:
         """Test web service creation error handling."""
         # Create a valid config but test that the factory method handles it properly
         config = FlextWebConfigs.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
-            secret_key="valid-secret-key-that-is-long-enough-for-validation"
+            secret_key="valid-secret-key-that-is-long-enough-for-validation",
         )
 
         # Service creation should work properly
@@ -377,7 +427,7 @@ class TestWebServiceFactoryMethods:
         assert isinstance(result, FlextResult)
         assert result.is_success
 
-    def test_create_service_registry(self):
+    def test_create_service_registry(self) -> None:
         """Test creating service registry."""
         result = FlextWebServices.create_service_registry()
 
@@ -385,7 +435,7 @@ class TestWebServiceFactoryMethods:
         registry = result.value
         assert isinstance(registry, FlextWebServices.WebServiceRegistry)
 
-    def test_create_web_system_services_with_config(self):
+    def test_create_web_system_services_with_config(self) -> None:
         """Test creating web system services with config."""
         config = {"environment": "test"}
 
@@ -395,7 +445,7 @@ class TestWebServiceFactoryMethods:
         services = result.value
         assert isinstance(services, dict)
 
-    def test_create_web_system_services_without_config(self):
+    def test_create_web_system_services_without_config(self) -> None:
         """Test creating web system services without config."""
         result = FlextWebServices.create_web_system_services()
 
@@ -405,13 +455,13 @@ class TestWebServiceFactoryMethods:
 
 
 @pytest.fixture
-def web_service_fixture():
+def web_service_fixture() -> FlextWebServices.WebService:
     """Create a web service instance for testing."""
     config = FlextWebConfigs.WebConfig(
         host="localhost",
         port=8080,  # Use valid port
         debug=True,
-        secret_key="test-secret-key-that-is-long-enough-for-validation"
+        secret_key="test-secret-key-that-is-long-enough-for-validation",
     )
 
     result = FlextWebServices.create_web_service(config)

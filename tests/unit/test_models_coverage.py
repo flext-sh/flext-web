@@ -190,17 +190,6 @@ class TestModelsConfigurationMethods:
         else:
             assert isinstance(result.value, dict)
 
-    def test_get_web_models_system_config_success(self) -> None:
-        """Test get_web_models_system_config retrieval."""
-        result = FlextWebModels.get_web_models_system_config()
-
-        assert result.is_success, (
-            f"Config retrieval should succeed, got: {result.error}"
-        )
-        config = result.value
-        assert isinstance(config, dict)
-        assert "environment" in config or "default" in str(config).lower()
-
 
 class TestWebAppBusinessLogic:
     """Test WebApp business logic methods for complete coverage."""

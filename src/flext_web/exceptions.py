@@ -78,92 +78,46 @@ class FlextWebExceptions(FlextExceptions):
     class WebTimeoutError(WebError):
         """Web service operation timeout errors."""
 
-    # =========================================================================
-    # DOMAIN-SPECIFIC EXCEPTIONS
-    # =========================================================================
-
-    class WebTemplateError(WebError):
-        """Web service template processing and rendering errors."""
+    class WebTemplateError(FlextExceptions._ValidationError):
+        """Web template processing errors using flext-core ValidationError."""
 
         def __init__(
             self,
             message: str = "Web template error",
             template_name: str | None = None,
-            **kwargs: object,
         ) -> None:
-            """Initialize web template error with context."""
-            full_message = f"Template error: {message}"
-            if template_name:
-                full_message += f" (template: {template_name})"
-            route_value = kwargs.get("route")
-            super().__init__(
-                full_message,
-                route=route_value if isinstance(route_value, str) else None,
-                **{k: v for k, v in kwargs.items() if k != "route"},
-            )
+            super().__init__(message, field=template_name)
 
-    class WebRoutingError(WebError):
-        """Web service URL routing and endpoint resolution errors."""
+    class WebRoutingError(FlextExceptions._NotFoundError):
+        """Web routing errors using flext-core NotFoundError."""
 
         def __init__(
             self,
             message: str = "Web routing error",
             endpoint: str | None = None,
             method: str | None = None,
-            **kwargs: object,
         ) -> None:
-            """Initialize web routing error with context."""
-            full_message = f"Routing error: {message}"
-            if endpoint:
-                full_message += f" (endpoint: {endpoint})"
-            if method:
-                full_message += f" [{method}]"
-            route_value = kwargs.get("route")
-            super().__init__(
-                full_message,
-                route=route_value if isinstance(route_value, str) else None,
-                **{k: v for k, v in kwargs.items() if k != "route"},
-            )
+            super().__init__(message, resource_id=endpoint, resource_type=method)
 
-    class WebSessionError(WebError):
-        """Web service session management and state errors."""
+    class WebSessionError(FlextExceptions._AuthenticationError):
+        """Web session management errors using flext-core AuthenticationError."""
 
         def __init__(
             self,
             message: str = "Web session error",
             session_id: str | None = None,
-            **kwargs: object,
         ) -> None:
-            """Initialize web session error with context."""
-            full_message = f"Session error: {message}"
-            if session_id:
-                full_message += f" (session: {session_id})"
-            route_value = kwargs.get("route")
-            super().__init__(
-                full_message,
-                route=route_value if isinstance(route_value, str) else None,
-                **{k: v for k, v in kwargs.items() if k != "route"},
-            )
+            super().__init__(message, auth_method=session_id)
 
-    class WebMiddlewareError(WebError):
-        """Web service middleware processing and pipeline errors."""
+    class WebMiddlewareError(FlextExceptions._ProcessingError):
+        """Web middleware processing errors using flext-core ProcessingError."""
 
         def __init__(
             self,
             message: str = "Web middleware error",
             middleware_name: str | None = None,
-            **kwargs: object,
         ) -> None:
-            """Initialize web middleware error with context."""
-            full_message = f"Middleware error: {message}"
-            if middleware_name:
-                full_message += f" (middleware: {middleware_name})"
-            route_value = kwargs.get("route")
-            super().__init__(
-                full_message,
-                route=route_value if isinstance(route_value, str) else None,
-                **{k: v for k, v in kwargs.items() if k != "route"},
-            )
+            super().__init__(message, operation=middleware_name)
 
     # =========================================================================
     # FACTORY METHODS

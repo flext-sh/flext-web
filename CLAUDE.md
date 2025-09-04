@@ -15,13 +15,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 The project follows Clean Architecture with Domain-Driven Design:
 
 - **Domain Layer** (`models.py`): Core business entities and rules
-
   - `FlextWebApp` - Application entity with state machine
   - `FlextWebAppStatus` - Application lifecycle states
   - `FlextWebAppHandler` - CQRS command handler
 
 - **Application Layer** (`services.py`, `config.py`): Use cases and configuration
-
   - `FlextWebService` - Main Flask service implementation
   - `FlextWebConfig` - Environment-based configuration management
 

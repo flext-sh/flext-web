@@ -64,8 +64,17 @@ import flext_web.utilities as _utilities
 # Create consolidated __all__ following flext-core pattern
 _all_items: list[str] = []
 for _module in [
-    _config, _constants, _exceptions, _fields, _handlers, _interfaces,
-    _models, _protocols, _services, _typings, _utilities
+    _config,
+    _constants,
+    _exceptions,
+    _fields,
+    _handlers,
+    _interfaces,
+    _models,
+    _protocols,
+    _services,
+    _typings,
+    _utilities,
 ]:
     if hasattr(_module, "__all__"):
         _all_items += _module.__all__
@@ -73,3 +82,16 @@ for _module in [
 # Remove duplicates and sort for consistency - explicit list type
 _unique_items = sorted(set(_all_items))
 __all__: list[str] = _unique_items  # noqa: PLE0605
+
+# =============================================================================
+# CONVENIENCE ALIASES - Following flext-core pattern
+# =============================================================================
+
+# Most commonly used factory functions as direct aliases
+create_config = _config.FlextWebConfigs.create_web_config
+create_service = _services.FlextWebServices.create_web_service
+create_app = _models.FlextWebModels.create_web_app
+FlextLogger = getattr(_utilities.FlextWebUtilities, "FlextLogger", lambda _: None)
+
+# Add convenience aliases to __all__
+__all__ += ["create_config", "create_service", "create_app", "FlextLogger"]

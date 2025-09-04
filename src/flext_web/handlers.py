@@ -9,8 +9,14 @@ from __future__ import annotations
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
-from flext_core import FlextConstants, FlextHandlers, FlextResult
-from flext_core.utilities import FlextUtilities
+from flext_core import (
+    FlextConstants,
+    FlextHandlers,
+    FlextLogger,
+    FlextMixins,
+    FlextResult,
+    FlextUtilities,
+)
 
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
@@ -79,6 +85,20 @@ class FlextWebHandlers(FlextHandlers):
 
         """
 
+        def __init__(self) -> None:
+            """Initialize WebApp handler with FlextMixins functionality."""
+            self.logger = FlextLogger(__name__)
+
+            # Initialize FlextMixins features
+            FlextMixins.create_timestamp_fields(self)
+            FlextMixins.ensure_id(self)
+            FlextMixins.initialize_validation(self)
+            FlextMixins.initialize_state(self, "ready")
+
+            FlextMixins.log_operation(
+                self, "webapp_handler_initialized", handler_type="cqrs_command_handler"
+            )
+
         def create(
             self,
             name: str,
@@ -125,6 +145,11 @@ class FlextWebHandlers(FlextHandlers):
                 ...     print(f"Creation failed: {result.error}")
 
             """
+            # Log create operation
+            FlextMixins.log_operation(
+                self, "create_app_command", app_name=name, app_port=port, app_host=host
+            )
+
             # MASSIVE USAGE: Railway-oriented programming with FlextResult composition
             return (
                 # Step 1: Sanitize inputs using FlextUtilities
@@ -153,9 +178,10 @@ class FlextWebHandlers(FlextHandlers):
                 safe_name = FlextUtilities.TextProcessor.safe_string(name, "")
                 safe_host = FlextUtilities.TextProcessor.safe_string(host, "localhost")
 
-                return FlextResult[dict[str, str]].ok(
-                    {"name": safe_name, "host": safe_host}
-                )
+                return FlextResult[dict[str, str]].ok({
+                    "name": safe_name,
+                    "host": safe_host,
+                })
             except Exception as e:
                 return FlextResult[dict[str, str]].fail(
                     f"Input sanitization failed: {e}"
@@ -165,26 +191,27 @@ class FlextWebHandlers(FlextHandlers):
             self, name: str, port: int, host: str
         ) -> FlextResult[dict[str, str]]:
             """Validate all app inputs using FlextWebUtilities."""
+            # Direct validation without complex typing - simpler and clearer
             if not FlextWebUtilities.validate_app_name(name):
-                safe_display = FlextUtilities.TextProcessor.safe_string(name, "invalid")
                 return FlextResult[dict[str, str]].fail(
-                    f"Invalid application name: '{safe_display}'"
+                    f"Invalid application name: '{FlextUtilities.TextProcessor.safe_string(name, 'invalid')}'"
                 )
 
             if not FlextWebUtilities.validate_port_range(port):
                 return FlextResult[dict[str, str]].fail(
-                    f"Invalid port: {port}. Must be between {FlextConstants.Web.MIN_PORT}-{FlextConstants.Web.MAX_PORT}"
+                    f"Invalid port: {port}. Range: {FlextConstants.Web.MIN_PORT}-{FlextConstants.Web.MAX_PORT}"
                 )
 
             if not FlextWebUtilities.validate_host_format(host):
-                safe_display = FlextUtilities.TextProcessor.safe_string(host, "invalid")
                 return FlextResult[dict[str, str]].fail(
-                    f"Invalid host format: '{safe_display}'"
+                    f"Invalid host format: '{FlextUtilities.TextProcessor.safe_string(host, 'invalid')}'"
                 )
 
-            return FlextResult[dict[str, str]].ok(
-                {"name": name, "port": str(port), "host": host}
-            )
+            return FlextResult[dict[str, str]].ok({
+                "name": name,
+                "port": str(port),
+                "host": host,
+            })
 
         def _create_app_entity(
             self, name: str, port: int, host: str
@@ -209,6 +236,63 @@ class FlextWebHandlers(FlextHandlers):
                     f"Domain validation failed: {validation.error}"
                 )
             return FlextResult[FlextWebModels.WebApp].ok(app)
+
+        def _execute_app_lifecycle_operation(
+            self,
+            app: FlextWebModels.WebApp,
+            operation_name: str,
+            domain_method: str,
+        ) -> FlextResult[FlextWebModels.WebApp]:
+            """Template Method pattern for app lifecycle operations (start/stop).
+
+            Eliminates 77 lines of duplication by extracting common pattern:
+            1. Log operation start
+            2. Validate domain rules
+            3. Delegate to domain entity
+            4. Log success if applicable
+            5. Return result
+
+            Args:
+                app: WebApp entity to operate on
+                operation_name: Operation name for logging ("start"/"stop")
+                domain_method: Domain method name to call ("start"/"stop")
+
+            Returns:
+                FlextResult with updated app or error
+
+            """
+            # Step 1: Log operation start
+            FlextMixins.log_operation(
+                self,
+                f"{operation_name}_app_command",
+                app_name=app.name,
+                current_status=app.status.value,
+            )
+
+            # Step 2: Validate domain rules before attempting state change
+            validation = app.validate_business_rules()
+            if not validation.success:
+                FlextMixins.log_operation(
+                    self,
+                    f"{operation_name}_validation_failed",
+                    app_name=app.name,
+                    error=validation.error,
+                )
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    validation.error or "Validation failed"
+                )
+
+            # Step 3: Delegate to domain entity for state transition
+            domain_method_func = getattr(app, domain_method)
+            result: FlextResult[FlextWebModels.WebApp] = domain_method_func()
+
+            # Step 4: Log success if applicable
+            if result.is_success:
+                FlextMixins.log_operation(
+                    self, f"app_{operation_name}_success", app_name=app.name
+                )
+
+            return result
 
         def start(
             self, app: FlextWebModels.WebApp
@@ -258,15 +342,7 @@ class FlextWebHandlers(FlextHandlers):
                 ...     print(f"Start failed: {result.error}")
 
             """
-            # Validate domain rules before attempting state change
-            validation = app.validate_business_rules()
-            if not validation.success:
-                return FlextResult["FlextWebModels.WebApp"].fail(
-                    validation.error or "Validation failed"
-                )
-
-            # Delegate to domain entity for state transition
-            return app.start()
+            return self._execute_app_lifecycle_operation(app, "start", "start")
 
         def stop(
             self, app: FlextWebModels.WebApp
@@ -317,15 +393,7 @@ class FlextWebHandlers(FlextHandlers):
                 ...     print(f"Stop failed: {result.error}")
 
             """
-            # Validate domain rules before attempting state change
-            validation = app.validate_business_rules()
-            if not validation.success:
-                return FlextResult["FlextWebModels.WebApp"].fail(
-                    validation.error or "Validation failed"
-                )
-
-            # Delegate to domain entity for state transition
-            return app.stop()
+            return self._execute_app_lifecycle_operation(app, "stop", "stop")
 
     class WebResponseHandler:
         """Specialized response handler for Flask integration and JSON formatting.
@@ -344,6 +412,20 @@ class FlextWebHandlers(FlextHandlers):
             """
             self.success_status = success_status
             self.error_status = error_status
+            self.logger = FlextLogger(__name__)
+
+            # Initialize FlextMixins features
+            FlextMixins.create_timestamp_fields(self)
+            FlextMixins.ensure_id(self)
+            FlextMixins.initialize_validation(self)
+            FlextMixins.initialize_state(self, "initialized")
+
+            FlextMixins.log_operation(
+                self,
+                "response_handler_initialized",
+                success_status=success_status,
+                error_status=error_status,
+            )
 
         def create_success_response(
             self,
@@ -448,19 +530,17 @@ class FlextWebHandlers(FlextHandlers):
             FlextResult containing health status information.
 
         """
-        return FlextResult[dict[str, object]].ok(
-            {
-                "status": "healthy",
-                "service": "flext-web",
-                "version": "0.9.0",
-                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
-                "components": {
-                    "web_service": "operational",
-                    "configuration": "loaded",
-                    "handlers": "registered",
-                },
-            }
-        )
+        return FlextResult[dict[str, object]].ok({
+            "status": "healthy",
+            "service": "flext-web",
+            "version": "0.9.0",
+            "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+            "components": {
+                "web_service": "operational",
+                "configuration": "loaded",
+                "handlers": "registered",
+            },
+        })
 
     @classmethod
     def handle_system_info(cls) -> FlextResult[dict[str, object]]:
@@ -470,25 +550,23 @@ class FlextWebHandlers(FlextHandlers):
             FlextResult containing detailed system information.
 
         """
-        return FlextResult[dict[str, object]].ok(
-            {
-                "service_name": "FLEXT Web Interface",
-                "service_type": "web_api",
-                "architecture": "flask_clean_architecture",
-                "patterns": [
-                    "CQRS",
-                    "Clean Architecture",
-                    "Domain-Driven Design",
-                ],
-                "integrations": ["flext-core", "pydantic", "flask"],
-                "capabilities": [
-                    "application_management",
-                    "health_monitoring",
-                    "api_endpoints",
-                    "web_dashboard",
-                ],
-            }
-        )
+        return FlextResult[dict[str, object]].ok({
+            "service_name": "FLEXT Web Interface",
+            "service_type": "web_api",
+            "architecture": "flask_clean_architecture",
+            "patterns": [
+                "CQRS",
+                "Clean Architecture",
+                "Domain-Driven Design",
+            ],
+            "integrations": ["flext-core", "pydantic", "flask"],
+            "capabilities": [
+                "application_management",
+                "health_monitoring",
+                "api_endpoints",
+                "web_dashboard",
+            ],
+        })
 
     # =========================================================================
     # APPLICATION HANDLERS
@@ -514,8 +592,6 @@ class FlextWebHandlers(FlextHandlers):
 
         """
         try:
-            from flext_web.utilities import FlextWebUtilities
-
             app_id = FlextWebUtilities.format_app_id(name)
             # Create app directly with typed parameters
             app = FlextWebModels.WebApp(id=app_id, name=name, port=port, host=host)
@@ -604,7 +680,7 @@ class FlextWebHandlers(FlextHandlers):
             host=app.host,
             port=app.port,
             status=app.status.value,
-            is_running=app.is_running,
+            is_running=bool(app.is_running),
         )
 
     @classmethod
@@ -621,6 +697,8 @@ class FlextWebHandlers(FlextHandlers):
             version="0.9.0",
             applications=0,  # This would be populated by the service
             timestamp=FlextUtilities.Generators.generate_iso_timestamp(),
+            service_id="handler-health",
+            created_at=None,
         )
 
     # =========================================================================

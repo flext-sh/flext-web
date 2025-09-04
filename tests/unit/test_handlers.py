@@ -23,6 +23,7 @@ Status: Enterprise handler testing with REAL functionality validation
 from __future__ import annotations
 
 import pytest
+from flask import Flask
 
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels
@@ -241,8 +242,6 @@ class TestWebResponseHandler:
         test_data = {"key": "value", "count": 42}
 
         # Test using REAL Flask integration with test client
-        from flask import Flask
-
         app = Flask(__name__)
 
         with app.test_request_context():
@@ -267,8 +266,6 @@ class TestWebResponseHandler:
         error_message = "Test error occurred"
 
         # Test using REAL Flask integration with test client
-        from flask import Flask
-
         app = Flask(__name__)
 
         with app.test_request_context():

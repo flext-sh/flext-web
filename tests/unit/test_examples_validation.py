@@ -7,6 +7,7 @@ error paths, and edge cases work correctly in production environments.
 
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 
 import pytest
@@ -23,8 +24,6 @@ class TestExamplesDeepValidation:
 
         # Test 2: Basic service doesn't have command line args - it's meant to be simple
         # Test that it can be imported without errors
-
-        import importlib.util
 
         spec = importlib.util.spec_from_file_location(
             "_example_basic_service", Path("examples") / "01_basic_service.py"
@@ -45,8 +44,6 @@ class TestExamplesDeepValidation:
     def test_api_usage_example_functionality(self) -> None:
         """Test api_usage.py example with comprehensive edge cases."""
         # Import the module to test all functions
-        import importlib.util
-
         spec = importlib.util.spec_from_file_location(
             "_example_api_usage", Path("examples") / "02_api_usage.py"
         )
@@ -98,8 +95,6 @@ class TestExamplesDeepValidation:
         assert example_path.exists(), "docker_ready.py example file missing"
 
         # Test 1: Import test - docker_ready doesn't handle CLI args, uses environment
-
-        import importlib.util
 
         spec = importlib.util.spec_from_file_location(
             "_example_docker_ready", Path("examples") / "03_docker_ready.py"
@@ -184,8 +179,6 @@ class TestExamplesDeepValidation:
     def test_all_examples_integration(self) -> None:
         """Test all examples can be imported without side effects."""
         # This test ensures examples don't interfere with each other
-
-        import importlib.util
 
         example_files = [
             Path("examples/01_basic_service.py"),

@@ -27,7 +27,7 @@ class FlextWebConstants(FlextConstants):
         """Constantes ESPECÍFICAS do domínio flext-web (não genéricas)."""
 
         # Environment variable específica do flext-web
-        ENV_SECRET_KEY = "FLEXT_WEB_SECRET_KEY"
+        ENV_SECRET_KEY = "FLEXT_WEB_SECRET_KEY"  # nosec B105
         ENV_HOST = "FLEXT_WEB_HOST"
         ENV_PORT = "FLEXT_WEB_PORT"
         ENV_DEBUG = "FLEXT_WEB_DEBUG"
@@ -44,7 +44,7 @@ class FlextWebConstants(FlextConstants):
         # Security validation - usa FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
 
         # Development/test keys (properly marked for security scanners)
-        DEV_SECRET_KEY = "dev-key-change-in-production-32chars!"
+        DEV_SECRET_KEY = "dev-key-change-in-production-32chars!"  # nosec B105
         DEV_ENVIRONMENT_KEY = "dev-key-for-development-environment!"
         TEST_ENVIRONMENT_KEY = "test-key-for-testing-environment!"
 

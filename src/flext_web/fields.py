@@ -12,8 +12,7 @@ from __future__ import annotations
 import re
 from typing import ClassVar, cast
 
-from flext_core import FlextConstants, FlextFields
-from flext_core.utilities import FlextUtilities
+from flext_core import FlextConstants, FlextFields, FlextUtilities
 from pydantic import Field
 from pydantic.fields import FieldInfo
 

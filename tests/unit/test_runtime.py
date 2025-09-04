@@ -299,8 +299,6 @@ class TestRealConfigurationManagement:
     @pytest.mark.unit
     def test_real_config_validation_failures(self) -> None:
         """Test real configuration validation with invalid data."""
-        import os
-
         # Set production environment to trigger production validations
         original_env = os.environ.get("FLEXT_WEB_ENVIRONMENT")
         os.environ["FLEXT_WEB_ENVIRONMENT"] = "production"

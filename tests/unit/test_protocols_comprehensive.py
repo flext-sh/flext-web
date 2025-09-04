@@ -4,8 +4,7 @@ This test module targets specific missing coverage areas identified in the cover
 Focus on real execution tests without mocks for maximum functional coverage.
 """
 
-from flask import jsonify
-from flext_core import FlextResult
+from flext_core import FlextProtocols, FlextResult
 
 from flext_web import FlextWebModels, FlextWebProtocols
 
@@ -13,13 +12,11 @@ from flext_web import FlextWebModels, FlextWebProtocols
 class TestFlextWebProtocolsStructural:
     """Test the structural aspects of FlextWebProtocols."""
 
-    def test_protocols_inheritance(self):
+    def test_protocols_inheritance(self) -> None:
         """Test that FlextWebProtocols properly inherits from FlextProtocols."""
-        from flext_core import FlextProtocols
-
         assert issubclass(FlextWebProtocols, FlextProtocols)
 
-    def test_protocol_classes_exist(self):
+    def test_protocol_classes_exist(self) -> None:
         """Test that all protocol classes are defined."""
         protocol_classes = [
             "WebServiceProtocol",
@@ -42,7 +39,7 @@ class TestFlextWebProtocolsStructural:
 class TestWebServiceProtocolFactory:
     """Test WebServiceProtocol factory methods and implementations."""
 
-    def test_create_web_service_protocol(self):
+    def test_create_web_service_protocol(self) -> None:
         """Test creating web service protocol instance."""
         protocol_impl = FlextWebProtocols.create_web_service_protocol()
 
@@ -50,7 +47,7 @@ class TestWebServiceProtocolFactory:
         assert hasattr(protocol_impl, "run")
         assert hasattr(protocol_impl, "health")
 
-    def test_web_service_protocol_run_method(self):
+    def test_web_service_protocol_run_method(self) -> None:
         """Test web service protocol run method."""
         protocol_impl = FlextWebProtocols.create_web_service_protocol()
 
@@ -58,7 +55,7 @@ class TestWebServiceProtocolFactory:
         result = protocol_impl.run(host="localhost", port=8000, debug=True)
         assert result is None
 
-    def test_web_service_protocol_health_method(self):
+    def test_web_service_protocol_health_method(self) -> None:
         """Test web service protocol health method."""
         protocol_impl = FlextWebProtocols.create_web_service_protocol()
 
@@ -66,26 +63,28 @@ class TestWebServiceProtocolFactory:
         response = protocol_impl.health()
         assert response is not None
 
-    def test_validate_web_service_protocol_valid(self):
+    def test_validate_web_service_protocol_valid(self) -> None:
         """Test validation of valid web service protocol implementation."""
         protocol_impl = FlextWebProtocols.create_web_service_protocol()
 
         is_valid = FlextWebProtocols.validate_web_service_protocol(protocol_impl)
         assert is_valid is True
 
-    def test_validate_web_service_protocol_invalid(self):
+    def test_validate_web_service_protocol_invalid(self) -> None:
         """Test validation of invalid web service protocol implementation."""
+
         # Object missing required methods
         class InvalidService:
-            def run(self):
+            def run(self) -> None:
                 pass
+
             # Missing health method
 
         invalid_service = InvalidService()
         is_valid = FlextWebProtocols.validate_web_service_protocol(invalid_service)
         assert is_valid is False
 
-    def test_validate_web_service_protocol_empty_object(self):
+    def test_validate_web_service_protocol_empty_object(self) -> None:
         """Test validation of empty object."""
         empty_object = object()
         is_valid = FlextWebProtocols.validate_web_service_protocol(empty_object)
@@ -95,7 +94,7 @@ class TestWebServiceProtocolFactory:
 class TestAppManagerProtocolFactory:
     """Test AppManagerProtocol factory methods and implementations."""
 
-    def test_create_app_manager_protocol(self):
+    def test_create_app_manager_protocol(self) -> None:
         """Test creating app manager protocol instance."""
         protocol_impl = FlextWebProtocols.create_app_manager_protocol()
 
@@ -105,7 +104,7 @@ class TestAppManagerProtocolFactory:
         assert hasattr(protocol_impl, "stop_app")
         assert hasattr(protocol_impl, "list_apps")
 
-    def test_app_manager_protocol_create_app(self):
+    def test_app_manager_protocol_create_app(self) -> None:
         """Test app manager protocol create_app method."""
         protocol_impl = FlextWebProtocols.create_app_manager_protocol()
 
@@ -118,7 +117,7 @@ class TestAppManagerProtocolFactory:
         assert app.port == 8000
         assert app.host == "localhost"
 
-    def test_app_manager_protocol_start_app(self):
+    def test_app_manager_protocol_start_app(self) -> None:
         """Test app manager protocol start_app method."""
         protocol_impl = FlextWebProtocols.create_app_manager_protocol()
 
@@ -130,7 +129,7 @@ class TestAppManagerProtocolFactory:
         assert app.id == "test-app-id"
         assert app.status == FlextWebModels.WebAppStatus.RUNNING
 
-    def test_app_manager_protocol_stop_app(self):
+    def test_app_manager_protocol_stop_app(self) -> None:
         """Test app manager protocol stop_app method."""
         protocol_impl = FlextWebProtocols.create_app_manager_protocol()
 
@@ -142,7 +141,7 @@ class TestAppManagerProtocolFactory:
         assert app.id == "test-app-id"
         assert app.status == FlextWebModels.WebAppStatus.STOPPED
 
-    def test_app_manager_protocol_list_apps(self):
+    def test_app_manager_protocol_list_apps(self) -> None:
         """Test app manager protocol list_apps method."""
         protocol_impl = FlextWebProtocols.create_app_manager_protocol()
 
@@ -153,36 +152,43 @@ class TestAppManagerProtocolFactory:
         assert isinstance(apps, list)
         assert len(apps) == 0  # Mock implementation returns empty list
 
-    def test_validate_app_manager_protocol_valid(self):
+    def test_validate_app_manager_protocol_valid(self) -> None:
         """Test validation of valid app manager protocol implementation."""
         protocol_impl = FlextWebProtocols.create_app_manager_protocol()
 
         is_valid = FlextWebProtocols.validate_app_manager_protocol(protocol_impl)
         assert is_valid is True
 
-    def test_validate_app_manager_protocol_invalid(self):
+    def test_validate_app_manager_protocol_invalid(self) -> None:
         """Test validation of invalid app manager protocol implementation."""
+
         # Object missing required methods
         class InvalidManager:
-            def create_app(self):
+            def create_app(self) -> None:
                 pass
-            def start_app(self):
+
+            def start_app(self) -> None:
                 pass
+
             # Missing stop_app and list_apps methods
 
         invalid_manager = InvalidManager()
         is_valid = FlextWebProtocols.validate_app_manager_protocol(invalid_manager)
         assert is_valid is False
 
-    def test_validate_app_manager_protocol_partial(self):
+    def test_validate_app_manager_protocol_partial(self) -> None:
         """Test validation of partially implemented app manager."""
+
         class PartialManager:
-            def create_app(self):
+            def create_app(self) -> None:
                 pass
-            def start_app(self):
+
+            def start_app(self) -> None:
                 pass
-            def stop_app(self):
+
+            def stop_app(self) -> None:
                 pass
+
             # Missing list_apps method
 
         partial_manager = PartialManager()
@@ -193,32 +199,32 @@ class TestAppManagerProtocolFactory:
 class TestProtocolDefinitions:
     """Test protocol definitions are properly structured."""
 
-    def test_web_service_protocol_signature(self):
+    def test_web_service_protocol_signature(self) -> None:
         """Test WebServiceProtocol has correct method signatures."""
         protocol = FlextWebProtocols.WebServiceProtocol
 
         # Check that it's a proper protocol
         assert hasattr(protocol, "__annotations__")
 
-    def test_app_manager_protocol_signature(self):
+    def test_app_manager_protocol_signature(self) -> None:
         """Test AppManagerProtocol has correct method signatures."""
         protocol = FlextWebProtocols.AppManagerProtocol
 
         assert hasattr(protocol, "__annotations__")
 
-    def test_response_formatter_protocol_signature(self):
+    def test_response_formatter_protocol_signature(self) -> None:
         """Test ResponseFormatterProtocol has correct method signatures."""
         protocol = FlextWebProtocols.ResponseFormatterProtocol
 
         assert hasattr(protocol, "__annotations__")
 
-    def test_configuration_protocol_signature(self):
+    def test_configuration_protocol_signature(self) -> None:
         """Test ConfigurationProtocol has correct method signatures."""
         protocol = FlextWebProtocols.ConfigurationProtocol
 
         assert hasattr(protocol, "__annotations__")
 
-    def test_template_renderer_protocol_signature(self):
+    def test_template_renderer_protocol_signature(self) -> None:
         """Test TemplateRendererProtocol has correct method signatures."""
         protocol = FlextWebProtocols.TemplateRendererProtocol
 
@@ -228,32 +234,32 @@ class TestProtocolDefinitions:
 class TestRuntimeCheckableProtocols:
     """Test runtime checkable protocol behavior."""
 
-    def test_web_service_interface_runtime_checkable(self):
+    def test_web_service_interface_runtime_checkable(self) -> None:
         """Test WebServiceInterface is runtime checkable."""
         interface = FlextWebProtocols.WebServiceInterface
 
         # Should be runtime checkable
         assert hasattr(interface, "__instancecheck__")
 
-    def test_app_repository_interface_runtime_checkable(self):
+    def test_app_repository_interface_runtime_checkable(self) -> None:
         """Test AppRepositoryInterface is runtime checkable."""
         interface = FlextWebProtocols.AppRepositoryInterface
 
         assert hasattr(interface, "__instancecheck__")
 
-    def test_middleware_interface_runtime_checkable(self):
+    def test_middleware_interface_runtime_checkable(self) -> None:
         """Test MiddlewareInterface is runtime checkable."""
         interface = FlextWebProtocols.MiddlewareInterface
 
         assert hasattr(interface, "__instancecheck__")
 
-    def test_template_engine_interface_runtime_checkable(self):
+    def test_template_engine_interface_runtime_checkable(self) -> None:
         """Test TemplateEngineInterface is runtime checkable."""
         interface = FlextWebProtocols.TemplateEngineInterface
 
         assert hasattr(interface, "__instancecheck__")
 
-    def test_monitoring_interface_runtime_checkable(self):
+    def test_monitoring_interface_runtime_checkable(self) -> None:
         """Test MonitoringInterface is runtime checkable."""
         interface = FlextWebProtocols.MonitoringInterface
 
@@ -263,17 +269,24 @@ class TestRuntimeCheckableProtocols:
 class TestProtocolImplementationExamples:
     """Test that protocols can be properly implemented."""
 
-    def test_implement_web_service_protocol(self):
+    def test_implement_web_service_protocol(self) -> None:
         """Test implementing WebServiceProtocol."""
 
         class TestWebService:
-            def run(self, host=None, port=None, *, debug=None, **kwargs):
+            def run(
+                self,
+                host: str | None = None,
+                port: int | None = None,
+                *,
+                debug: bool | None = None,
+                **kwargs: object,
+            ) -> None:
                 self.host = host
                 self.port = port
                 self.debug = debug
 
-            def health(self):
-                return jsonify({"status": "healthy"})
+            def health(self) -> object:
+                return {"status": "healthy"}
 
         service = TestWebService()
 
@@ -290,36 +303,40 @@ class TestProtocolImplementationExamples:
         response = service.health()
         assert response is not None
 
-    def test_implement_app_manager_protocol(self):
+    def test_implement_app_manager_protocol(self) -> None:
         """Test implementing AppManagerProtocol."""
 
         class TestAppManager:
-            def __init__(self):
+            def __init__(self) -> None:
                 self.apps = {}
 
-            def create_app(self, name, port, host):
+            def create_app(
+                self, name: str, port: int, host: str
+            ) -> FlextResult[FlextWebModels.WebApp]:
                 app = FlextWebModels.WebApp(
                     id=f"app_{name}", name=name, port=port, host=host
                 )
                 self.apps[app.id] = app
                 return FlextResult[FlextWebModels.WebApp].ok(app)
 
-            def start_app(self, app_id):
+            def start_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
                 if app_id in self.apps:
                     app = self.apps[app_id]
                     app.status = FlextWebModels.WebAppStatus.RUNNING
                     return FlextResult[FlextWebModels.WebApp].ok(app)
                 return FlextResult[FlextWebModels.WebApp].fail("App not found")
 
-            def stop_app(self, app_id):
+            def stop_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
                 if app_id in self.apps:
                     app = self.apps[app_id]
                     app.status = FlextWebModels.WebAppStatus.STOPPED
                     return FlextResult[FlextWebModels.WebApp].ok(app)
                 return FlextResult[FlextWebModels.WebApp].fail("App not found")
 
-            def list_apps(self):
-                return FlextResult[list[FlextWebModels.WebApp]].ok(list(self.apps.values()))
+            def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
+                return FlextResult[list[FlextWebModels.WebApp]].ok(
+                    list(self.apps.values())
+                )
 
         manager = TestAppManager()
 
@@ -344,49 +361,47 @@ class TestProtocolImplementationExamples:
 class TestProtocolDefinitionCompliance:
     """Test protocol definitions comply with flext-core patterns."""
 
-    def test_web_service_interface_defined(self):
+    def test_web_service_interface_defined(self) -> None:
         """Test WebServiceInterface is properly defined."""
         interface = FlextWebProtocols.WebServiceInterface
 
         # Should be a protocol class
-        assert hasattr(interface, '__annotations__')
-        assert interface.__module__ == 'flext_web.protocols'
+        assert hasattr(interface, "__annotations__")
+        assert interface.__module__ == "flext_web.protocols"
 
-    def test_app_repository_interface_defined(self):
+    def test_app_repository_interface_defined(self) -> None:
         """Test AppRepositoryInterface is properly defined."""
         interface = FlextWebProtocols.AppRepositoryInterface
 
-        assert hasattr(interface, '__annotations__')
-        assert interface.__module__ == 'flext_web.protocols'
+        assert hasattr(interface, "__annotations__")
+        assert interface.__module__ == "flext_web.protocols"
 
-    def test_middleware_interface_defined(self):
+    def test_middleware_interface_defined(self) -> None:
         """Test MiddlewareInterface is properly defined."""
         interface = FlextWebProtocols.MiddlewareInterface
 
-        assert hasattr(interface, '__annotations__')
-        assert interface.__module__ == 'flext_web.protocols'
+        assert hasattr(interface, "__annotations__")
+        assert interface.__module__ == "flext_web.protocols"
 
-    def test_template_engine_interface_defined(self):
+    def test_template_engine_interface_defined(self) -> None:
         """Test TemplateEngineInterface is properly defined."""
         interface = FlextWebProtocols.TemplateEngineInterface
 
-        assert hasattr(interface, '__annotations__')
-        assert interface.__module__ == 'flext_web.protocols'
+        assert hasattr(interface, "__annotations__")
+        assert interface.__module__ == "flext_web.protocols"
 
-    def test_monitoring_interface_defined(self):
+    def test_monitoring_interface_defined(self) -> None:
         """Test MonitoringInterface is properly defined."""
         interface = FlextWebProtocols.MonitoringInterface
 
-        assert hasattr(interface, '__annotations__')
-        assert interface.__module__ == 'flext_web.protocols'
+        assert hasattr(interface, "__annotations__")
+        assert interface.__module__ == "flext_web.protocols"
 
-    def test_flext_core_protocols_available(self):
+    def test_flext_core_protocols_available(self) -> None:
         """Test that flext-core protocols are accessible for reference."""
-        from flext_core import FlextProtocols
-
         # Verify flext-core protocol structure is available
-        assert hasattr(FlextProtocols, 'Domain')
-        assert hasattr(FlextProtocols.Domain, 'Service')
-        assert hasattr(FlextProtocols.Domain, 'Repository')
-        assert hasattr(FlextProtocols, 'Extensions')
-        assert hasattr(FlextProtocols, 'Infrastructure')
+        assert hasattr(FlextProtocols, "Domain")
+        assert hasattr(FlextProtocols.Domain, "Service")
+        assert hasattr(FlextProtocols.Domain, "Repository")
+        assert hasattr(FlextProtocols, "Extensions")
+        assert hasattr(FlextProtocols, "Infrastructure")
