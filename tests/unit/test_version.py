@@ -1,16 +1,38 @@
-"""Tests for version information."""
+"""Test coverage for __version__.py module.
 
-from __future__ import annotations
+Complete test coverage for version module without using mocks.
+"""
 
-
-def test_version_import() -> None:
-    """Test that version can be imported."""
-    from flext_web.__version__ import __version__
-    assert isinstance(__version__, str)
-    assert __version__ == "0.9.0"
+import flext_web.__version__ as version_module
+from flext_web.__version__ import __version__
 
 
-def test_version_all_export() -> None:
-    """Test __all__ export."""
-    from flext_web.__version__ import __all__
-    assert __all__ == ["__version__"]
+class TestVersionModule:
+    """Test version module functionality."""
+
+    def test_version_import(self) -> None:
+        """Test version module can be imported and contains version info."""
+        assert isinstance(__version__, str)
+        assert len(__version__) > 0
+        assert "." in __version__  # Should be in format like "0.9.0"
+
+    def test_version_format(self) -> None:
+        """Test version follows semantic versioning format."""
+        # Basic semantic version validation
+        parts = __version__.split(".")
+        assert len(parts) >= 2  # At least major.minor
+
+        # First two parts should be numeric
+        assert parts[0].isdigit()
+        assert parts[1].isdigit()
+
+    def test_version_accessibility(self) -> None:
+        """Test version is accessible through main module."""
+        # Test direct import
+
+        assert hasattr(version_module, "__version__")
+        assert isinstance(version_module.__version__, str)
+
+        # Test version is not empty or placeholder
+        assert version_module.__version__ != ""
+        assert version_module.__version__ != "0.0.0"

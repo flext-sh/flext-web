@@ -18,7 +18,7 @@ from pydantic.fields import FieldInfo
 
 from flext_web.constants import FlextWebConstants
 
-type FieldReturn = FieldInfo
+FieldReturn = FieldInfo
 
 
 # =============================================================================

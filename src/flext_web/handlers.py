@@ -10,7 +10,6 @@ from __future__ import annotations
 from flask import jsonify
 from flask.typing import ResponseReturnValue
 from flext_core import (
-    FlextConstants,
     FlextHandlers,
     FlextLogger,
     FlextMixins,
@@ -178,10 +177,12 @@ class FlextWebHandlers(FlextHandlers):
                 safe_name = FlextUtilities.TextProcessor.safe_string(name, "")
                 safe_host = FlextUtilities.TextProcessor.safe_string(host, "localhost")
 
-                return FlextResult[dict[str, str]].ok({
-                    "name": safe_name,
-                    "host": safe_host,
-                })
+                return FlextResult[dict[str, str]].ok(
+                    {
+                        "name": safe_name,
+                        "host": safe_host,
+                    }
+                )
             except Exception as e:
                 return FlextResult[dict[str, str]].fail(
                     f"Input sanitization failed: {e}"
@@ -190,28 +191,16 @@ class FlextWebHandlers(FlextHandlers):
         def _validate_app_inputs(
             self, name: str, port: int, host: str
         ) -> FlextResult[dict[str, str]]:
-            """Validate all app inputs using FlextWebUtilities."""
-            # Direct validation without complex typing - simpler and clearer
-            if not FlextWebUtilities.validate_app_name(name):
-                return FlextResult[dict[str, str]].fail(
-                    f"Invalid application name: '{FlextUtilities.TextProcessor.safe_string(name, 'invalid')}'"
-                )
-
-            if not FlextWebUtilities.validate_port_range(port):
-                return FlextResult[dict[str, str]].fail(
-                    f"Invalid port: {port}. Range: {FlextConstants.Web.MIN_PORT}-{FlextConstants.Web.MAX_PORT}"
-                )
-
-            if not FlextWebUtilities.validate_host_format(host):
-                return FlextResult[dict[str, str]].fail(
-                    f"Invalid host format: '{FlextUtilities.TextProcessor.safe_string(host, 'invalid')}'"
-                )
-
-            return FlextResult[dict[str, str]].ok({
-                "name": name,
-                "port": str(port),
-                "host": host,
-            })
+            """Validate all app inputs - simplified to rely on Pydantic model validation."""
+            # Pydantic model validation will handle all validation logic
+            # This method now just packages the inputs for the next step
+            return FlextResult[dict[str, str]].ok(
+                {
+                    "name": name,
+                    "port": str(port),
+                    "host": host,
+                }
+            )
 
         def _create_app_entity(
             self, name: str, port: int, host: str
@@ -433,7 +422,7 @@ class FlextWebHandlers(FlextHandlers):
             message: str = "Success",
             status_code: int | None = None,
         ) -> ResponseReturnValue:
-            """Create successful JSON response.
+            """Create successful JSON response using FlextWebUtilities.
 
             Args:
                 data: Response data
@@ -446,13 +435,11 @@ class FlextWebHandlers(FlextHandlers):
             """
             safe_message = FlextUtilities.TextProcessor.safe_string(message, "Success")
 
-            response_data: FlextWebTypes.ResponseDataDict = {
-                "success": True,
-                "message": safe_message,
-                "data": data,
-                "errors": [],
-                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
-            }
+            # Use FlextWebUtilities as base and extend with Flask-specific fields
+            response_data = FlextWebUtilities.create_success_response(
+                safe_message, data
+            )
+            response_data["errors"] = []  # Flask-specific field
 
             return jsonify(response_data), status_code or self.success_status
 
@@ -462,7 +449,7 @@ class FlextWebHandlers(FlextHandlers):
             status_code: int | None = None,
             errors: str | dict[str, object] | None = None,
         ) -> ResponseReturnValue:
-            """Create error JSON response.
+            """Create error JSON response using FlextWebUtilities.
 
             Args:
                 message: Error message
@@ -477,15 +464,13 @@ class FlextWebHandlers(FlextHandlers):
                 message, "Unknown error"
             )
 
-            response_data: FlextWebTypes.ResponseDataDict = {
-                "success": False,
-                "message": safe_message,
-                "data": None,
-                "errors": errors
-                if isinstance(errors, dict)
-                else ([errors] if errors else []),
-                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
-            }
+            # Use FlextWebUtilities as base and extend with Flask-specific fields
+            response_data = FlextWebUtilities.create_error_response(
+                safe_message, status_code or self.error_status
+            )
+            response_data["errors"] = (
+                errors if isinstance(errors, dict) else ([errors] if errors else [])
+            )
 
             return jsonify(response_data), status_code or self.error_status
 
@@ -530,17 +515,19 @@ class FlextWebHandlers(FlextHandlers):
             FlextResult containing health status information.
 
         """
-        return FlextResult[dict[str, object]].ok({
-            "status": "healthy",
-            "service": "flext-web",
-            "version": "0.9.0",
-            "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
-            "components": {
-                "web_service": "operational",
-                "configuration": "loaded",
-                "handlers": "registered",
-            },
-        })
+        return FlextResult[dict[str, object]].ok(
+            {
+                "status": "healthy",
+                "service": "flext-web",
+                "version": "0.9.0",
+                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+                "components": {
+                    "web_service": "operational",
+                    "configuration": "loaded",
+                    "handlers": "registered",
+                },
+            }
+        )
 
     @classmethod
     def handle_system_info(cls) -> FlextResult[dict[str, object]]:
@@ -550,23 +537,25 @@ class FlextWebHandlers(FlextHandlers):
             FlextResult containing detailed system information.
 
         """
-        return FlextResult[dict[str, object]].ok({
-            "service_name": "FLEXT Web Interface",
-            "service_type": "web_api",
-            "architecture": "flask_clean_architecture",
-            "patterns": [
-                "CQRS",
-                "Clean Architecture",
-                "Domain-Driven Design",
-            ],
-            "integrations": ["flext-core", "pydantic", "flask"],
-            "capabilities": [
-                "application_management",
-                "health_monitoring",
-                "api_endpoints",
-                "web_dashboard",
-            ],
-        })
+        return FlextResult[dict[str, object]].ok(
+            {
+                "service_name": "FLEXT Web Interface",
+                "service_type": "web_api",
+                "architecture": "flask_clean_architecture",
+                "patterns": [
+                    "CQRS",
+                    "Clean Architecture",
+                    "Domain-Driven Design",
+                ],
+                "integrations": ["flext-core", "pydantic", "flask"],
+                "capabilities": [
+                    "application_management",
+                    "health_monitoring",
+                    "api_endpoints",
+                    "web_dashboard",
+                ],
+            }
+        )
 
     # =========================================================================
     # APPLICATION HANDLERS

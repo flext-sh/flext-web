@@ -4,12 +4,10 @@ This test module targets specific missing coverage areas identified in the cover
 Focus on real execution tests without mocks for maximum functional coverage.
 """
 
-from typing import get_args, get_origin
-
 import pytest
-from flext_core import FlextResult, FlextTypes
 
 from flext_web import FlextWebTypes
+from flext_web.typings import FlextTypes
 
 
 class TestFlextWebTypesStructure:
@@ -18,18 +16,17 @@ class TestFlextWebTypesStructure:
     def test_flext_web_types_class_structure(self) -> None:
         """Test FlextWebTypes class structure and access to FlextTypes."""
         # FlextWebTypes is a standalone class providing web-specific types
-        assert hasattr(FlextWebTypes, 'AppData')
-        assert hasattr(FlextWebTypes, 'ConfigData')
-        
+        assert hasattr(FlextWebTypes, "AppData")
+        assert hasattr(FlextWebTypes, "ConfigData")
+
         # Can access FlextTypes from the import (composition over inheritance)
-        from flext_web.typings import FlextTypes
-        assert hasattr(FlextTypes, 'Core')
+        assert hasattr(FlextTypes, "Core")
 
     def test_typed_dicts_exist(self) -> None:
         """Test that all TypedDict classes are defined."""
         typed_dict_classes = [
             "AppData",
-            "AppCreationData", 
+            "AppCreationData",
             "AppUpdateData",
             "CreateAppRequest",
             "UpdateAppRequest",
@@ -45,24 +42,6 @@ class TestFlextWebTypesStructure:
 
         for typed_dict in typed_dict_classes:
             assert hasattr(FlextWebTypes, typed_dict)
-
-    def test_type_aliases_exist(self) -> None:
-        """Test that type aliases are defined."""
-        type_aliases = [
-            "AppResult",
-            "ConfigResult",
-            "ServiceResult",
-            "WebResult",
-            "ValidationResult",
-            "TemplateFilter",
-            "ResponseData",
-            "RequestHandler",
-            "ErrorHandler",
-            "RouteHandler",
-        ]
-
-        for alias in type_aliases:
-            assert hasattr(FlextWebTypes, alias)
 
 
 class TestAppDataTypedDict:
@@ -130,16 +109,16 @@ class TestResponseTypedDicts:
         assert response["error"] == "Validation error"
 
     def test_response_data_creation(self) -> None:
-        """Test creating ResponseData."""
-        response_data: FlextWebTypes.ResponseData = {
-            "status": "ok",
-            "code": 200,
-            "payload": {"data": "value"},
+        """Test creating ResponseDataDict."""
+        response_data: FlextWebTypes.ResponseDataDict = {
+            "success": True,
+            "message": "Operation successful",
+            "data": {"result": "value"},
         }
 
-        assert response_data["status"] == "ok"
-        assert response_data["code"] == 200
-        assert response_data["payload"] == {"data": "value"}
+        assert response_data["success"] is True
+        assert response_data["message"] == "Operation successful"
+        assert response_data["data"] == {"result": "value"}
 
 
 class TestConfigurationTypedDicts:
@@ -256,19 +235,19 @@ class TestFactoryMethods:
             data={"key": "value"},
         )
 
-        assert context["method"] == "POST"
-        assert context["path"] == "/api/test"
-        assert context["headers"]["Content-Type"] == "application/json"
-        assert context["data"] == {"key": "value"}
+        assert context.get("method") == "POST"
+        assert context.get("path") == "/api/test"
+        assert context.get("headers", {}).get("Content-Type") == "application/json"
+        assert context.get("data") == {"key": "value"}
 
     def test_create_request_context_defaults(self) -> None:
         """Test creating request context with defaults."""
         context = FlextWebTypes.create_request_context()
 
-        assert context["method"] == "GET"
-        assert context["path"] == "/"
-        assert context["headers"] == {}
-        assert context["data"] == {}
+        assert context.get("method") == "GET"
+        assert context.get("path") == "/"
+        assert context.get("headers") == {}
+        assert context.get("data") == {}
 
 
 class TestValidationMethods:
@@ -318,60 +297,52 @@ class TestValidationMethods:
         result = FlextWebTypes.validate_app_data(app_data)
 
         assert result.is_failure
-        assert "port" in str(result.error).lower() and "integer" in str(result.error).lower()
+        error_message = str(result.error).lower()
+        assert "port" in error_message
+        assert "integer" in error_message
 
-    @pytest.mark.skip(reason="validate_config_data not implemented yet")
     def test_validate_config_data_valid(self) -> None:
         """Test validating valid config data."""
-        # result = FlextWebTypes.validate_config_data(config_data)
-        # assert result.is_success
-        # validated_config = result.value
-        # assert validated_config["host"] == "localhost"
-        pytest.skip("validate_config_data function not implemented")
+        config_data = {
+            "host": "localhost",
+            "port": 8080,
+            "debug": True,
+            "secret_key": "test-secret-key",
+            "app_name": "Test App",
+        }
+        result = FlextWebTypes.validate_config_data(config_data)
+        assert result.is_success
+        validated_config = result.value
+        assert validated_config["host"] == "localhost"
+        assert validated_config["port"] == 8080
+        assert validated_config["debug"] is True
 
-    @pytest.mark.skip(reason="validate_config_data not implemented yet")
     def test_validate_config_data_missing_fields(self) -> None:
         """Test validating config data missing required fields."""
-        # result = FlextWebTypes.validate_config_data(config_data)
-        # assert result.is_failure
-        # assert "required" in result.error.lower()
-        pytest.skip("validate_config_data function not implemented")
+        config_data = {
+            "host": "localhost",
+            "port": 8080,
+            # Missing debug, secret_key, app_name
+        }
+        result = FlextWebTypes.validate_config_data(config_data)
+        assert result.is_failure
+        assert result.error is not None
+        assert "required" in result.error.lower()
 
-    @pytest.mark.skip(reason="validate_config_data not implemented yet")
     def test_validate_config_data_invalid_port_type(self) -> None:
-        """Test validating config data with string port (gets converted)."""
-        # result = FlextWebTypes.validate_config_data(config_data)
-        # assert result.is_success
-        # assert result.value["port"] == 8080  # Converted to int
-        # assert isinstance(result.value["port"], int)
-        pytest.skip("validate_config_data function not implemented")
-
-
-class TestTypeAliases:
-    """Test type aliases are properly defined."""
-
-    def test_app_result_type_alias(self) -> None:
-        """Test AppResult type alias."""
-        # Should be FlextResult[AppData]
-        alias = FlextWebTypes.AppResult
-
-        # Check it's a generic type alias
-        origin = get_origin(alias)
-        get_args(alias)
-
-        assert origin is FlextResult
-        # The args should include the TypedDict type
-
-    def test_config_result_type_alias(self) -> None:
-        """Test ConfigResult type alias."""
-        alias = FlextWebTypes.ConfigResult
-
-        origin = get_origin(alias)
-        assert origin is FlextResult
-
-    @pytest.mark.skip(reason="ResponseResult type alias removed during cleanup")
-    def test_response_result_type_alias(self) -> None:
-        """Test ResponseResult type alias."""
+        """Test validating config data with string port."""
+        config_data = {
+            "host": "localhost",
+            "port": "8080",  # String instead of int
+            "debug": True,
+            "secret_key": "test-secret-key",
+            "app_name": "Test App",
+        }
+        result = FlextWebTypes.validate_config_data(config_data)
+        assert result.is_failure
+        assert result.error is not None
+        assert "port" in result.error.lower()
+        assert "integer" in result.error.lower()
 
 
 class TestRequestContextTypedDict:

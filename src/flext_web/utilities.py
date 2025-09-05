@@ -11,6 +11,7 @@ from typing import TypeVar
 from urllib.parse import urlparse
 
 from flext_core import FlextConstants, FlextResult, FlextUtilities
+from pydantic import ValidationError
 
 T = TypeVar("T")
 
@@ -46,7 +47,7 @@ class FlextWebUtilities:
 
     @staticmethod
     def validate_port_range(port: int) -> bool:
-        """Validate port number range."""
+        """Validate port number range - kept for test compatibility."""
         return FlextConstants.Web.MIN_PORT <= port <= FlextConstants.Web.MAX_PORT
 
     @staticmethod
@@ -60,7 +61,7 @@ class FlextWebUtilities:
 
     @staticmethod
     def validate_host_format(host: str) -> bool:
-        """Validate host address format."""
+        """Validate host address format - kept for test compatibility."""
         safe_host = FlextUtilities.TextProcessor.safe_string(host, "")
         if not safe_host:
             return False
@@ -81,7 +82,7 @@ class FlextWebUtilities:
         if re.match(hostname_pattern, safe_host):
             return True
 
-        return safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}  # nosec B104  # noqa: S104
+        return safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}  # noqa: S104
 
     @staticmethod
     def sanitize_request_data(data: dict[str, object]) -> dict[str, object]:
@@ -146,23 +147,45 @@ class FlextWebUtilities:
     def create_web_app_data(
         cls, name: str, port: int = 8000, host: str = "localhost"
     ) -> FlextResult[dict[str, object]]:
-        """Create web application data with validation."""
-        if not cls.validate_app_name(name):
-            return FlextResult[dict[str, object]].fail(f"Invalid app name: {name}")
-        if not cls.validate_port_range(port):
-            return FlextResult[dict[str, object]].fail(f"Invalid port: {port}")
-        if not cls.validate_host_format(host):
-            return FlextResult[dict[str, object]].fail(f"Invalid host: {host}")
+        """Create web application data with Pydantic validation."""
+        # Runtime import to avoid circular imports
+        from flext_web.models import FlextWebModels  # noqa: PLC0415
 
-        app_data = {
-            "id": cls.format_app_id(name),
-            "name": name,
-            "port": port,
-            "host": host,
-            "created_at": FlextUtilities.Generators.generate_iso_timestamp(),
-        }
+        try:
+            # Let Pydantic handle all validation through field validators
+            app = FlextWebModels.WebApp(
+                id=cls.format_app_id(name),
+                name=name,
+                port=port,
+                host=host,
+            )
 
-        return FlextResult[dict[str, object]].ok(app_data)
+            app_data = {
+                "id": app.id,
+                "name": app.name,
+                "port": app.port,
+                "host": app.host,
+                "created_at": FlextUtilities.Generators.generate_iso_timestamp(),
+            }
+
+            return FlextResult[dict[str, object]].ok(app_data)
+        except ValidationError as e:
+            # Extract meaningful error messages for compatibility
+            error_msg = ""
+            for error in e.errors():
+                field = str(error["loc"][0]) if error["loc"] else "unknown"
+                if "name" in field:
+                    error_msg = f"Invalid app name: {name}"
+                elif "port" in field:
+                    error_msg = f"Invalid port: {port}"
+                elif "host" in field:
+                    error_msg = f"Invalid host: {host}"
+                else:
+                    error_msg = f"Validation error: {error['msg']}"
+                break  # Use first error
+            return FlextResult[dict[str, object]].fail(error_msg)
+        except ValueError as e:
+            return FlextResult[dict[str, object]].fail(str(e))
 
 
 __all__ = [

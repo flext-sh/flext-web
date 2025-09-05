@@ -7,6 +7,7 @@ and containing all web-specific protocol functionality as nested classes.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Protocol, runtime_checkable
 
 from flask import jsonify
@@ -376,9 +377,7 @@ class FlextWebProtocols(FlextProtocols):
             """Render template with context variables."""
             ...
 
-        def add_filter(
-            self, name: str, filter_func: FlextWebTypes.TemplateFilter
-        ) -> None:
+        def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
             """Add custom template filter."""
             ...
 

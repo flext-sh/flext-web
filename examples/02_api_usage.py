@@ -96,7 +96,9 @@ def create_application(
 # =============================================================================
 
 
-def _extract_apps_from_response(response_data: object, data_key: str) -> list[FlextWebTypes.AppData]:
+def _extract_apps_from_response(
+    response_data: object, data_key: str
+) -> list[FlextWebTypes.AppData]:
     """Extract apps list from response data with proper type checking."""
     if not isinstance(response_data, dict):
         return []
@@ -155,12 +157,14 @@ def _execute_app_operation(
             lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
                 cast("FlextWebTypes.AppData", json_data["data"])
             )
-            if all([
-                json_data.get("success"),
-                isinstance(data := json_data.get("data"), dict),
-                data
-                and {"id", "name"}.issubset(cast("dict[str, object]", data).keys()),
-            ])
+            if all(
+                [
+                    json_data.get("success"),
+                    isinstance(data := json_data.get("data"), dict),
+                    data
+                    and {"id", "name"}.issubset(cast("dict[str, object]", data).keys()),
+                ]
+            )
             else FlextResult[FlextWebTypes.AppData].fail("Invalid app data")
         )
     )

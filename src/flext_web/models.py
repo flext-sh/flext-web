@@ -6,10 +6,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import re
 import uuid
 from enum import Enum
 
-from flext_core import FlextConstants, FlextMixins, FlextModels, FlextResult
+from flext_core import (
+    FlextConstants,
+    FlextMixins,
+    FlextModels,
+    FlextResult,
+    FlextUtilities,
+)
 from pydantic import ConfigDict, Field, computed_field, field_validator
 
 from flext_web.typings import FlextWebTypes
@@ -86,12 +93,39 @@ class FlextWebModels:
         @field_validator("host")
         @classmethod
         def validate_host(cls, v: str) -> str:
-            """Validate host field."""
+            """Validate host field with comprehensive format checking."""
             host = (v or "").strip()
             if not host:
                 msg = "Host cannot be empty"
                 raise ValueError(msg)
-            return host
+
+            # Use flext-core TextProcessor for safe string handling
+            safe_host = FlextUtilities.TextProcessor.safe_string(host, "")
+            if not safe_host:
+                msg = f"Invalid host characters: {host}"
+                raise ValueError(msg)
+
+            safe_host = safe_host.strip()
+            if not safe_host:
+                msg = "Host cannot be empty after sanitization"
+                raise ValueError(msg)
+
+            # IPv4 pattern
+            ipv4_pattern = r"^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$"
+            if re.match(ipv4_pattern, safe_host):
+                return safe_host
+
+            # Hostname pattern
+            hostname_pattern = r"^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$"
+            if re.match(hostname_pattern, safe_host):
+                return safe_host
+
+            # Special hostnames
+            if safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}:  # noqa: S104
+                return safe_host
+
+            msg = f"Invalid host format: {host}"
+            raise ValueError(msg)
 
         @property
         def is_running(self) -> bool:
@@ -109,19 +143,12 @@ class FlextWebModels:
         @computed_field
         def can_start(self) -> bool:
             """Check if app can be started."""
-            return self.status in {
-                FlextWebModels.WebAppStatus.STOPPED,
-                FlextWebModels.WebAppStatus.ERROR
-            }
+            return self.status == FlextWebModels.WebAppStatus.STOPPED
 
         @computed_field
         def can_stop(self) -> bool:
             """Check if app can be stopped."""
-            return self.status in {
-                FlextWebModels.WebAppStatus.RUNNING,
-                FlextWebModels.WebAppStatus.STARTING,
-                FlextWebModels.WebAppStatus.ERROR
-            }
+            return self.status == FlextWebModels.WebAppStatus.RUNNING
 
         def validate_business_rules(self) -> FlextResult[None]:
             """Validate business rules."""
@@ -178,6 +205,14 @@ class FlextWebModels:
         def to_dict(self) -> dict[str, object]:
             """Convert to dict."""
             return FlextMixins.to_dict(self)
+
+        def __str__(self) -> str:
+            """String representation of the WebApp."""
+            return f"{self.name} ({self.host}:{self.port})"
+
+        def __repr__(self) -> str:
+            """Detailed string representation."""
+            return f"WebApp(id='{self.id}', name='{self.name}', host='{self.host}', port={self.port}, status='{self.status.value}')"
 
         def model_post_init(self, __context: object, /) -> None:
             """Post-init setup."""

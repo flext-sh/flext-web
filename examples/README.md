@@ -124,7 +124,7 @@ def custom_status():
 def flext_proxy(path):
     """Proxy requests to FLEXT Web service"""
     # Implementation would proxy to flext_service
-    pass
+    return {"error": "Proxy implementation not yet implemented"}, 501
 
 if __name__ == '__main__':
     app.run(debug=True)

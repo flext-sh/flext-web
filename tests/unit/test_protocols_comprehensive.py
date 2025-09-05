@@ -4,6 +4,8 @@ This test module targets specific missing coverage areas identified in the cover
 Focus on real execution tests without mocks for maximum functional coverage.
 """
 
+import pytest
+from flask import Flask
 from flext_core import FlextProtocols, FlextResult
 
 from flext_web import FlextWebModels, FlextWebProtocols
@@ -49,25 +51,28 @@ class TestWebServiceProtocolFactory:
 
     def test_web_service_protocol_run_method(self) -> None:
         """Test web service protocol run method raises NotImplementedError (type checking only)."""
-        import pytest
-
         protocol_impl = FlextWebProtocols.create_web_service_protocol()
 
         # Should raise NotImplementedError since it's for type checking only
-        with pytest.raises(NotImplementedError, match="Protocol implementation for type checking only"):
-            protocol_impl.run(host="localhost", port=8000, debug=True)  # type: ignore[attr-defined]
+        run_method = getattr(protocol_impl, "run", None)
+        assert run_method is not None  # Verify method exists
+        with pytest.raises(
+            NotImplementedError, match="Protocol implementation for type checking only"
+        ):
+            run_method(host="localhost", port=8000, debug=True)
 
     def test_web_service_protocol_health_method(self) -> None:
         """Test web service protocol health method requires Flask context."""
-        from flask import Flask
-
         protocol_impl = FlextWebProtocols.create_web_service_protocol()
 
         # Create a test Flask app for context
         app = Flask(__name__)
         with app.app_context():
             # Should return a Flask response within app context
-            response = protocol_impl.health()  # type: ignore[attr-defined]
+            # Use getattr to safely access the method on the protocol implementation
+            health_method = getattr(protocol_impl, "health", None)
+            assert health_method is not None  # Protocol should have health method
+            response = health_method()
             assert response is not None
             # Test that it's a proper Flask response (has status_code)
             assert hasattr(response, "status_code")

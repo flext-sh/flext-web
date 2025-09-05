@@ -10,7 +10,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 # Meta-programming: Import protocols to eliminate duplication
-from flext_web.protocols import FlextWebProtocols
 
 
 class FlextWebInterfaces:
@@ -32,17 +31,13 @@ class FlextWebInterfaces:
     # PROTOCOL ALIASES - ELIMINATES DUPLICATION VIA META-PROGRAMMING
     # =========================================================================
 
-    # Direct protocol aliases (exact semantic match)
-    WebServiceInterface = FlextWebProtocols.WebServiceInterface
-    MiddlewareInterface = FlextWebProtocols.MiddlewareInterface
-    TemplateEngineInterface = FlextWebProtocols.TemplateEngineInterface
-    MonitoringInterface = FlextWebProtocols.MonitoringInterface
-
-    # Semantic protocol aliases (backward compatibility)
-    WebHandlerInterface = FlextWebProtocols.AppManagerProtocol
-    WebConfigInterface = FlextWebProtocols.ResponseFormatterProtocol
-    WebRepositoryInterface = FlextWebProtocols.AppManagerProtocol
-    WebValidatorInterface = FlextWebProtocols.AppManagerProtocol
+    # Aliases removed - use FlextWebProtocols directly
+    # Use FlextWebProtocols.WebServiceInterface instead of WebServiceInterface
+    # Use FlextWebProtocols.MiddlewareInterface instead of MiddlewareInterface
+    # Use FlextWebProtocols.TemplateEngineInterface instead of TemplateEngineInterface
+    # Use FlextWebProtocols.MonitoringInterface instead of MonitoringInterface
+    # Use FlextWebProtocols.AppManagerProtocol directly for app management
+    # Use FlextWebProtocols.ResponseFormatterProtocol directly for responses
 
 
 # Export consolidated protocols

@@ -197,7 +197,7 @@ class TestWebConfigFactoryMethods:
         """Test creating production config with required environment."""
         env_vars = {
             "FLEXT_WEB_SECRET_KEY": "production-secret-key-that-is-long-enough-for-validation-12345",
-            "FLEXT_WEB_HOST": "0.0.0.0"  # Override conftest.py localhost for production test
+            "FLEXT_WEB_HOST": "0.0.0.0",  # Override conftest.py localhost for production test
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
@@ -261,7 +261,10 @@ class TestWebConfigFactoryMethods:
             assert result.is_failure
             # Environment variable conversion error is now caught properly
             assert result.error is not None
-            assert "invalid literal for int()" in result.error.lower() or "validation" in result.error.lower()
+            assert (
+                "invalid literal for int()" in result.error.lower()
+                or "validation" in result.error.lower()
+            )
 
     def test_create_web_config_alternative_methods(self) -> None:
         """Test alternative config creation methods."""

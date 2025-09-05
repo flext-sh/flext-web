@@ -7,10 +7,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
-from collections.abc import Callable
 from typing import TypedDict, TypeVar
 
-from flask.typing import ResponseReturnValue
 from flext_core import FlextResult, FlextTypes
 
 # Web domain-specific type variables
@@ -127,64 +125,6 @@ class FlextWebTypes:
         secret_key: str
         enable_cors: bool
 
-    # Service types
-    WebService = object
-    ServiceRegistry = object
-    FlaskApplication = object
-
-    # Handler types
-    RequestHandler = Callable[[object], ResponseReturnValue]
-    ErrorHandler = Callable[[Exception], ResponseReturnValue]
-    MiddlewareHandler = Callable[[object], object]
-
-    # Flask integration types
-    RouteHandler = Callable[[object], ResponseReturnValue]
-    URLRule = str
-    HTTPMethod = str
-
-    # Simple type aliases
-    AppStatus = str
-    AppId = str
-    AppName = str
-    AppHost = str
-    AppPort = int
-
-    ServiceName = str
-    ServiceInstance = object
-    ServiceHealth = bool
-    ServiceStatus = str
-    ServiceMetrics = dict[str, object]
-
-    HTTPStatus = int
-    APIMessage = str
-    ErrorCode = str
-    ErrorDetails = str
-
-    Environment = str
-    SecretKey = str
-    HostAddress = str
-    PortNumber = int
-    ConfigDict = dict[str, object]
-    ConfigErrors = list[str]
-
-    # Result types
-    WebResult = FlextResult[object]
-    AppResult = FlextResult[AppData]
-    ConfigResult = FlextResult[ConfigData]
-    ServiceResult = FlextResult[object]
-
-    # Validation types
-    ValidationError = str
-    ValidationErrors = list[str]
-    ValidationResult = FlextResult[None]
-    ValidatorFunction = Callable[[object], bool]
-
-    # Flask types
-    FlaskApp = object
-    FlaskConfig = dict[str, object]
-    FlaskRequest = object
-    FlaskResponse = ResponseReturnValue
-
     # Additional TypedDict classes
     class ResponseDataDict(TypedDict, total=False):
         """Generic response data dictionary structure."""
@@ -214,10 +154,6 @@ class FlextWebTypes:
         message: str
         details: str
 
-    # Type aliases
-    ResponseData = dict[str, object]
-    TemplateFilter = Callable[[str], str]
-
     # Factory methods
     @classmethod
     def create_app_data(
@@ -228,7 +164,7 @@ class FlextWebTypes:
         port: int,
         status: str,
         *,
-        is_running: bool
+        is_running: bool,
     ) -> AppData:
         """Create app data structure."""
         return cls.AppData(
@@ -237,7 +173,7 @@ class FlextWebTypes:
             host=host,
             port=port,
             status=status,
-            is_running=is_running
+            is_running=is_running,
         )
 
     @classmethod
@@ -259,16 +195,14 @@ class FlextWebTypes:
         port: int = 8080,
         *,
         debug: bool = True,
-        secret_key: str = os.getenv("FLEXT_WEB_SECRET_KEY", "dev-key-unsafe-change-in-prod"),
-        app_name: str = "FLEXT Web"
+        secret_key: str = os.getenv(
+            "FLEXT_WEB_SECRET_KEY", "dev-key-unsafe-change-in-prod"
+        ),
+        app_name: str = "FLEXT Web",
     ) -> ConfigData:
         """Create config data structure with defaults."""
         return cls.ConfigData(
-            host=host,
-            port=port,
-            debug=debug,
-            secret_key=secret_key,
-            app_name=app_name
+            host=host, port=port, debug=debug, secret_key=secret_key, app_name=app_name
         )
 
     @classmethod
@@ -277,41 +211,108 @@ class FlextWebTypes:
         method: str = "GET",
         path: str = "/",
         headers: dict[str, str] | None = None,
-        data: dict[str, object] | None = None
+        data: dict[str, object] | None = None,
     ) -> RequestContext:
         """Create request context structure."""
         return cls.RequestContext(
-            method=method,
-            path=path,
-            headers=headers or {},
-            data=data or {}
+            method=method, path=path, headers=headers or {}, data=data or {}
         )
 
     @classmethod
-    def validate_app_data(cls, data: object) -> FlextResult[AppData]:
+    def validate_config_data(
+        cls, data: object
+    ) -> FlextResult[FlextWebTypes.ConfigData]:
+        """Validate configuration data structure."""
+        try:
+            if not isinstance(data, dict):
+                return FlextResult[FlextWebTypes.ConfigData].fail(
+                    "Data must be a dictionary"
+                )
+
+            required_fields = ["host", "port", "debug", "secret_key", "app_name"]
+            for field in required_fields:
+                if field not in data:
+                    return FlextResult[FlextWebTypes.ConfigData].fail(
+                        f"Required field '{field}' is missing"
+                    )
+
+            # Type validations
+            if not isinstance(data["host"], str):
+                return FlextResult[FlextWebTypes.ConfigData].fail(
+                    "Field 'host' must be a string"
+                )
+            if not isinstance(data["port"], int):
+                return FlextResult[FlextWebTypes.ConfigData].fail(
+                    "Field 'port' must be an integer"
+                )
+            if not isinstance(data["debug"], bool):
+                return FlextResult[FlextWebTypes.ConfigData].fail(
+                    "Field 'debug' must be a boolean"
+                )
+            if not isinstance(data["secret_key"], str):
+                return FlextResult[FlextWebTypes.ConfigData].fail(
+                    "Field 'secret_key' must be a string"
+                )
+            if not isinstance(data["app_name"], str):
+                return FlextResult[FlextWebTypes.ConfigData].fail(
+                    "Field 'app_name' must be a string"
+                )
+
+            config_data = cls.ConfigData(
+                host=data["host"],
+                port=data["port"],
+                debug=data["debug"],
+                secret_key=data["secret_key"],
+                app_name=data["app_name"],
+            )
+            return FlextResult[FlextWebTypes.ConfigData].ok(config_data)
+
+        except Exception as e:
+            return FlextResult[FlextWebTypes.ConfigData].fail(
+                f"Configuration validation error: {e}"
+            )
+
+    @classmethod
+    def validate_app_data(cls, data: object) -> FlextResult[FlextWebTypes.AppData]:
         """Validate app data structure."""
         try:
             if not isinstance(data, dict):
-                return FlextResult[FlextWebTypes.AppData].fail("Data must be a dictionary")
+                return FlextResult[FlextWebTypes.AppData].fail(
+                    "Data must be a dictionary"
+                )
 
             required_fields = ["id", "name", "host", "port", "status", "is_running"]
             for field in required_fields:
                 if field not in data:
-                    return FlextResult[FlextWebTypes.AppData].fail(f"Required field '{field}' is missing")
+                    return FlextResult[FlextWebTypes.AppData].fail(
+                        f"Required field '{field}' is missing"
+                    )
 
             # Type validations
             if not isinstance(data["id"], str):
-                return FlextResult[FlextWebTypes.AppData].fail("Field 'id' must be a string")
+                return FlextResult[FlextWebTypes.AppData].fail(
+                    "Field 'id' must be a string"
+                )
             if not isinstance(data["name"], str):
-                return FlextResult[FlextWebTypes.AppData].fail("Field 'name' must be a string")
+                return FlextResult[FlextWebTypes.AppData].fail(
+                    "Field 'name' must be a string"
+                )
             if not isinstance(data["host"], str):
-                return FlextResult[FlextWebTypes.AppData].fail("Field 'host' must be a string")
+                return FlextResult[FlextWebTypes.AppData].fail(
+                    "Field 'host' must be a string"
+                )
             if not isinstance(data["port"], int):
-                return FlextResult[FlextWebTypes.AppData].fail("Field 'port' must be an integer")
+                return FlextResult[FlextWebTypes.AppData].fail(
+                    "Field 'port' must be an integer"
+                )
             if not isinstance(data["status"], str):
-                return FlextResult[FlextWebTypes.AppData].fail("Field 'status' must be a string")
+                return FlextResult[FlextWebTypes.AppData].fail(
+                    "Field 'status' must be a string"
+                )
             if not isinstance(data["is_running"], bool):
-                return FlextResult[FlextWebTypes.AppData].fail("Field 'is_running' must be a boolean")
+                return FlextResult[FlextWebTypes.AppData].fail(
+                    "Field 'is_running' must be a boolean"
+                )
 
             app_data = cls.AppData(
                 id=data["id"],
@@ -319,7 +320,7 @@ class FlextWebTypes:
                 host=data["host"],
                 port=data["port"],
                 status=data["status"],
-                is_running=data["is_running"]
+                is_running=data["is_running"],
             )
             return FlextResult[FlextWebTypes.AppData].ok(app_data)
 
@@ -329,39 +330,40 @@ class FlextWebTypes:
     # Configuration methods
     @classmethod
     def configure_web_types_system(
-        cls, config: FlextTypes.Config.ConfigDict
-    ) -> FlextResult[FlextTypes.Config.ConfigDict]:
+        cls, config: dict[str, object]
+    ) -> FlextResult[dict[str, object]]:
         """Configure web types system."""
         try:
             validated_config = dict(config)
             validated_config.setdefault("enable_strict_typing", True)
             validated_config.setdefault("enable_runtime_validation", True)
-            return FlextResult[FlextTypes.Config.ConfigDict].ok(validated_config)
+            return FlextResult[dict[str, object]].ok(validated_config)
         except Exception as e:
-            return FlextResult[FlextTypes.Config.ConfigDict].fail(
+            return FlextResult[dict[str, object]].fail(
                 f"Failed to configure web types system: {e}"
             )
 
     @classmethod
     def get_web_types_system_config(
         cls,
-    ) -> FlextResult[FlextTypes.Config.ConfigDict]:
+    ) -> FlextResult[dict[str, object]]:
         """Get current web types system configuration."""
         try:
-            config: FlextTypes.Config.ConfigDict = {
+            config: dict[str, object] = {
                 "enable_strict_typing": True,
                 "enable_runtime_validation": True,
                 "total_type_definitions": 50,
                 "factory_methods": 2,
             }
-            return FlextResult[FlextTypes.Config.ConfigDict].ok(config)
+            return FlextResult[dict[str, object]].ok(config)
         except Exception as e:
-            return FlextResult[FlextTypes.Config.ConfigDict].fail(
+            return FlextResult[dict[str, object]].fail(
                 f"Failed to get web types system config: {e}"
             )
 
 
 __all__ = [
+    "FlextTypes",
     "FlextWebTypes",
     "TFlaskApp",
     "TWebApp",

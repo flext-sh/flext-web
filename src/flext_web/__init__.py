@@ -18,8 +18,9 @@ Key Features:
 
 Usage:
     Basic service creation:
-        from flext_web import create_service
-        service = create_service()
+        from flext_web import FlextWebServices
+        result = FlextWebServices.create_web_service()
+        service = result.unwrap_or_raise()
 
     Configuration management:
         from flext_web import FlextWebConfigs
@@ -35,52 +36,60 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# Core aggregated imports with explicit imports to avoid F405 errors
+# =============================================================================
+# FOUNDATION LAYER - Wildcard imports following flext-core pattern
+# =============================================================================
+
+from flext_web.config import *
 from flext_web.config import FlextWebConfigs
+from flext_web.constants import *
 from flext_web.constants import FlextWebConstants
+from flext_web.exceptions import *
 from flext_web.exceptions import FlextWebExceptions
+from flext_web.fields import *
 from flext_web.fields import FlextWebFields
+from flext_web.handlers import *
 from flext_web.handlers import FlextWebHandlers
+from flext_web.interfaces import *
 from flext_web.interfaces import FlextWebInterfaces
+from flext_web.models import *
 from flext_web.models import FlextWebModels
+from flext_web.protocols import *
 from flext_web.protocols import FlextWebProtocols
+from flext_web.services import *
 from flext_web.services import FlextWebServices
+from flext_web.typings import *
 from flext_web.typings import FlextWebTypes
+from flext_web.utilities import *
 from flext_web.utilities import FlextWebUtilities
 
 # Version information
 __version__ = "0.9.0"
 
-# Aggregate all __all__ from all modules following flext-core pattern
-import flext_web.config as _config
-import flext_web.constants as _constants
-import flext_web.exceptions as _exceptions
-import flext_web.fields as _fields
-import flext_web.handlers as _handlers
-import flext_web.interfaces as _interfaces
-import flext_web.models as _models
-import flext_web.protocols as _protocols
-import flext_web.services as _services
-import flext_web.typings as _typings
-import flext_web.utilities as _utilities
-
-# Explicit __all__ following flext-core pattern (avoids PyRight warnings)
+# Explicit __all__ definition following flext-core pattern - static for tools compatibility
 __all__ = [
-    # Main unified classes
+    # Configuration
     "FlextWebConfigs",
-    "FlextWebModels",
-    "FlextWebServices",
-    "FlextWebHandlers",
-    "FlextWebProtocols",
-    "FlextWebTypes",
+    # Constants
     "FlextWebConstants",
+    # Exceptions
     "FlextWebExceptions",
+    # Fields
     "FlextWebFields",
+    # Handlers
+    "FlextWebHandlers",
+    # Interfaces
     "FlextWebInterfaces",
+    # Models
+    "FlextWebModels",
+    # Protocols
+    "FlextWebProtocols",
+    # Services
+    "FlextWebServices",
+    # Types
+    "FlextWebTypes",
+    # Utilities
     "FlextWebUtilities",
-    # Convenience functions
-    "create_service",
-    "get_web_settings",
 ]
 
 # =============================================================================
@@ -91,40 +100,11 @@ __all__ = [
 
 
 # =============================================================================
-# CONVENIENCE FUNCTIONS - For backward compatibility and ease of use
+# NO CONVENIENCE FUNCTIONS - Direct access through main classes only
 # =============================================================================
 
-
-def create_service(
-    config: FlextWebConfigs.WebConfig | None = None,
-) -> FlextWebServices.WebService:
-    """Create a configured FLEXT Web Service instance.
-
-    This is a convenience function that wraps FlextWebServices.create_web_service()
-    for easier access and backward compatibility.
-
-    Args:
-        config: Optional web service configuration. If None, uses default config.
-
-    Returns:
-        Configured FlextWebServices.WebService instance.
-
-    Raises:
-        RuntimeError: If service creation fails.
-
-    """
-    result = FlextWebServices.create_web_service(config)
-    if result.is_failure:
-        msg = f"Failed to create web service: {result.error}"
-        raise RuntimeError(msg)
-    return result.value
-
-
-def get_web_settings() -> FlextWebConfigs.WebConfig:
-    """Get default web service settings.
-
-    Returns:
-        Default FlextWebConfigs.WebConfig instance.
-
-    """
-    return FlextWebConfigs.WebConfig()
+# All functionality is accessible directly through the main classes:
+# - FlextWebServices.create_web_service() for service creation
+# - FlextWebConfigs.WebConfig() for configuration
+# - FlextWebModels.WebApp() for models
+# This eliminates wrapper functions and unnecessary redeclarations
