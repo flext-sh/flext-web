@@ -480,7 +480,7 @@ class TestServiceExceptionHandling:
         # Create a mock property that raises an exception when accessed
         def mock_apps_property(
             self: FlextWebServices.WebService,
-        ) -> dict[str, FlextWebModels.WebApp]:  # type: ignore[misc]
+        ) -> dict[str, FlextWebModels.WebApp]:
             msg = "Simulated dashboard exception"
             raise RuntimeError(msg)
 
@@ -513,13 +513,13 @@ class TestServiceExceptionHandling:
         original_apps = service.apps
 
         # Create a proper mock for apps that will raise exception on iteration
-        class MockAppsDict(UserDict[str, FlextWebModels.WebApp]):  # type: ignore[type-arg]
-            def values(self) -> object:  # type: ignore[override]
+        class MockAppsDict(UserDict[str, FlextWebModels.WebApp]):
+            def values(self) -> object:
                 msg = "Simulated list apps exception"
                 raise RuntimeError(msg)
 
         # Replace the apps dict with our mock
-        service.apps = MockAppsDict(original_apps)  # type: ignore[assignment]
+        service.apps = MockAppsDict(original_apps)
 
         response = client.get("/api/v1/apps")
 
@@ -630,7 +630,7 @@ class TestServiceExceptionHandling:
             raise RuntimeError(msg)
 
         # Mock the _services attribute to raise exception when accessed
-        registry.__dict__["_services"] = property(failing_services_access)  # type: ignore[assignment]
+        registry.__dict__["_services"] = property(failing_services_access)
 
         result = registry.register_web_service("test", service)
 
@@ -654,7 +654,7 @@ class TestServiceExceptionHandling:
             msg = "Registry list access failure"
             raise RuntimeError(msg)
 
-        registry.__dict__["_services"] = property(failing_services_list_access)  # type: ignore[assignment]
+        registry.__dict__["_services"] = property(failing_services_list_access)
         list_result = registry.list_web_services()
         assert list_result.is_failure
         assert list_result.error is not None

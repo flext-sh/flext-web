@@ -237,7 +237,7 @@ class TestWebAppHandlerCommands:
         # Test with None using explicit exception testing
         none_app = None  # Direct assignment for error testing
         with pytest.raises(AttributeError):
-            handler.start(none_app)  # type: ignore[arg-type]
+            handler.start(none_app)
 
     def test_handler_stop_success(self) -> None:
         """Test handler stop command success."""
@@ -266,7 +266,7 @@ class TestWebAppHandlerCommands:
         # Test with None using explicit exception testing
         none_app = None  # Direct assignment for error testing
         with pytest.raises(AttributeError):
-            handler.stop(none_app)  # type: ignore[arg-type]
+            handler.stop(none_app)
 
 
 class TestFlextWebModelsFactoryMethods:

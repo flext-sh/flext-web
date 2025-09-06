@@ -6,7 +6,7 @@ Focus on real execution tests without mocks for maximum functional coverage.
 
 import pytest
 
-from flext_web import FlextWebTypes
+from flext_web import FlextWebTypes, FlextWebUtilities
 from flext_web.typings import FlextTypes
 
 
@@ -193,8 +193,8 @@ class TestFactoryMethods:
         assert app_data["is_running"] is True
 
     def test_create_success_response(self) -> None:
-        """Test creating success response via factory method."""
-        response = FlextWebTypes.create_success_response(
+        """Test creating success response via utilities (moved from typings)."""
+        response = FlextWebUtilities.create_success_response(
             "Success message", {"key": "value"}
         )
 
@@ -203,14 +203,13 @@ class TestFactoryMethods:
         assert response["data"] == {"key": "value"}
 
     def test_create_error_response(self) -> None:
-        """Test creating error response via factory method."""
-        response = FlextWebTypes.create_error_response(
-            "Error message", "Validation failed"
+        """Test creating error response via utilities (moved from typings)."""
+        response = FlextWebUtilities.create_error_response(
+            "Error message", 400
         )
 
         assert response["success"] is False
         assert response["message"] == "Error message"
-        assert response["error"] == "Validation failed"
 
     def test_create_config_data_defaults(self) -> None:
         """Test creating config data with defaults."""

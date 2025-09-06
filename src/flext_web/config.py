@@ -120,7 +120,7 @@ class FlextWebConfigs:
             # Basic host validation - allow localhost, IP addresses, and domain names
             # Note: 0.0.0.0 binding is intentionally allowed for development/container deployments
             host = v.strip()
-            if host in {"localhost", "127.0.0.1", "0.0.0.0"}:  # noqa: S104
+            if host in {"localhost", "127.0.0.1", "0.0.0.0"}:
                 return host
 
             # Simple domain/IP validation
@@ -519,7 +519,7 @@ class FlextWebConfigs:
         return cls.create_web_config(
             host=os.getenv(
                 "FLEXT_WEB_HOST",
-                "0.0.0.0",  # noqa: S104
+                "0.0.0.0",
             ),  # Use 0.0.0.0 for production binding
             port=int(os.getenv("FLEXT_WEB_PORT", "8080")),
             debug=False,

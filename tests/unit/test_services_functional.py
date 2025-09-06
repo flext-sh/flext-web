@@ -34,11 +34,12 @@ class TestWebServiceFunctionalExecution:
     ) -> Generator[FlextWebServices.WebService, None, None]:
         """Create service for functional testing using Flask test client."""
         service = FlextWebServices.WebService(functional_config)
-
-        # Configure app for testing
         service.app.config["TESTING"] = True
-
-        yield service
+        try:
+            yield service
+        finally:
+            # Add any cleanup if needed in future
+            ...
 
     def test_functional_service_creation_with_flext_tests(self) -> None:
         """Test service creation using standard configuration."""

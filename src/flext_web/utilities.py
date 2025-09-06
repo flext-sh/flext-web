@@ -82,7 +82,7 @@ class FlextWebUtilities:
         if re.match(hostname_pattern, safe_host):
             return True
 
-        return safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}  # noqa: S104
+        return safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}
 
     @staticmethod
     def sanitize_request_data(data: dict[str, object]) -> dict[str, object]:
@@ -149,7 +149,7 @@ class FlextWebUtilities:
     ) -> FlextResult[dict[str, object]]:
         """Create web application data with Pydantic validation."""
         # Runtime import to avoid circular imports
-        from flext_web.models import FlextWebModels  # noqa: PLC0415
+        from flext_web.models import FlextWebModels
 
         try:
             # Let Pydantic handle all validation through field validators

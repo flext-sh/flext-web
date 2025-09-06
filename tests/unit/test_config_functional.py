@@ -164,6 +164,7 @@ class TestWebConfigFunctionalValidation:
         try:
             # Test with missing environment variables (should use defaults)
             os.environ.clear()
+            FlextWebConfigs.reset_web_settings()
 
             config = FlextWebConfigs.get_web_settings()
             assert config.host == "localhost"  # Default

@@ -121,7 +121,7 @@ class FlextWebModels:
                 return safe_host
 
             # Special hostnames
-            if safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}:  # noqa: S104
+            if safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}:
                 return safe_host
 
             msg = f"Invalid host format: {host}"

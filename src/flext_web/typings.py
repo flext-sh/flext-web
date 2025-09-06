@@ -177,18 +177,6 @@ class FlextWebTypes:
         )
 
     @classmethod
-    def create_success_response(
-        cls, message: str, data: dict[str, object]
-    ) -> SuccessResponse:
-        """Create success API response structure."""
-        return cls.SuccessResponse(success=True, message=message, data=data)
-
-    @classmethod
-    def create_error_response(cls, message: str, error: str) -> ErrorResponse:
-        """Create error API response structure."""
-        return cls.ErrorResponse(success=False, message=message, error=error)
-
-    @classmethod
     def create_config_data(
         cls,
         host: str = "localhost",

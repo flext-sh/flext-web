@@ -5,21 +5,19 @@ flext_tests utilities and patterns for production-ready validation following
 the user's requirements for 100% quality and coverage.
 """
 
+import json
 import os
 import tempfile
 import time
 from pathlib import Path
-from typing import Any
 
 import pytest
-
-# Import flext_tests for real functional testing
 from flext_tests import (
+    BenchmarkFixture,
     ConfigFactory,
 )
 from pydantic import ValidationError
 
-# Import flext_web for real testing
 from flext_web import (
     FlextWebConfigs,
     FlextWebHandlers,
@@ -313,7 +311,6 @@ class TestRealFunctionalFlextWebValidation:
             }
 
             # Write real JSON configuration
-            import json
             config_file.write_text(json.dumps(config_data, indent=2))
 
             # Verify file creation and content
@@ -427,7 +424,7 @@ class TestRealFunctionalFlextWebValidation:
         handler = FlextWebHandlers.WebAppHandler()
 
         start_time = time.time()
-        for i, app in enumerate(apps[:10]):  # Test first 10 for performance
+        for i, _app in enumerate(apps[:10]):  # Test first 10 for performance
             create_result = handler.create(
                 name=f"perf-handler-app-{i}", host="127.0.0.1", port=8500 + i
             )
@@ -442,7 +439,7 @@ class TestRealFunctionalFlextWebValidation:
 class TestRealBenchmarkWithFlextTests:
     """Performance benchmarking using flext_tests BenchmarkUtils."""
 
-    def test_webapp_creation_benchmark(self, benchmark) -> None:  # type: ignore[no-untyped-def]
+    def test_webapp_creation_benchmark(self, benchmark: BenchmarkFixture) -> None:
         """Benchmark WebApp creation using pytest-benchmark."""
 
         def create_webapp() -> FlextWebModels.WebApp:
@@ -457,7 +454,7 @@ class TestRealBenchmarkWithFlextTests:
         assert isinstance(result, FlextWebModels.WebApp)
         assert result.name == "Benchmark Test App"
 
-    def test_handler_operations_benchmark(self, benchmark) -> None:  # type: ignore[no-untyped-def]
+    def test_handler_operations_benchmark(self, benchmark: BenchmarkFixture) -> None:
         """Benchmark handler operations using real execution."""
         handler = FlextWebHandlers.WebAppHandler()
 
@@ -470,7 +467,7 @@ class TestRealBenchmarkWithFlextTests:
         result = benchmark(handler_create_operation)
         assert result is True
 
-    def test_config_creation_benchmark(self, benchmark) -> None:  # type: ignore[no-untyped-def]
+    def test_config_creation_benchmark(self, benchmark: BenchmarkFixture) -> None:
         """Benchmark configuration creation with real data."""
 
         def create_config() -> FlextWebConfigs.WebConfig:
