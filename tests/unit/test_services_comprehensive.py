@@ -2,6 +2,10 @@
 
 This test module targets specific missing coverage areas identified in the coverage report.
 Focus on real execution tests without mocks for maximum functional coverage.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from collections import UserDict
@@ -441,7 +445,7 @@ class TestWebServiceFactoryMethods:
 
     def test_create_web_system_services_with_config(self) -> None:
         """Test creating web system services with config."""
-        config: dict[str, object] = {"environment": "test"}
+        config: FlextTypes.Core.Dict = {"environment": "test"}
 
         result = FlextWebServices.create_web_system_services(config)
 

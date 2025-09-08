@@ -1,3 +1,9 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
 """FLEXT Web Constants - Domain-specific constants (eliminando duplicações com flext-core).
 
 ZERO DUPLICAÇÃO: Usa APENAS FlextConstants de flext-core para tudo genérico.
@@ -7,7 +13,6 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
-from __future__ import annotations
 
 import os
 

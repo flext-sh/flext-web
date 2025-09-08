@@ -2,6 +2,10 @@
 
 This test module targets specific missing coverage areas identified in the coverage report.
 Focus on real execution tests without mocks for maximum functional coverage.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import pytest
@@ -204,9 +208,7 @@ class TestFactoryMethods:
 
     def test_create_error_response(self) -> None:
         """Test creating error response via utilities (moved from typings)."""
-        response = FlextWebUtilities.create_error_response(
-            "Error message", 400
-        )
+        response = FlextWebUtilities.create_error_response("Error message", 400)
 
         assert response["success"] is False
         assert response["message"] == "Error message"

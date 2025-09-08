@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """Precise tests for CLI lines 114, 116, 133-135."""
 
 import asyncio
@@ -6,6 +6,8 @@ import contextlib
 import logging
 import os
 import sys
+
+from flext_core import FlextTypes
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +28,8 @@ def test_line_114_debug_flag_direct() -> None:
 
 
 async def _run(
-    cmd: list[str],
-    env: dict[str, str] | None = None,
+    cmd: FlextTypes.Core.StringList,
+    env: FlextTypes.Core.Headers | None = None,
 ) -> tuple[int, str, str]:
     """Helper to run a command asynchronously and return (rc, stdout, stderr)."""
     try:

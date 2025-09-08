@@ -2,6 +2,10 @@
 
 Simplified test configuration that works in Docker containers without
 external dependencies like FastAPI. Focuses on Flask-based testing.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -10,6 +14,7 @@ import os
 from collections.abc import Generator
 
 import pytest
+from flext_core import FlextTypes
 
 
 # Test environment setup
@@ -28,14 +33,14 @@ def set_test_environment() -> Generator[None]:
 
 # Web application fixtures
 @pytest.fixture
-def web_app() -> dict[str, str]:
+def web_app() -> FlextTypes.Core.Headers:
     """Web application for testing."""
     return {"app": "test_app"}
 
 
 # Authentication fixtures
 @pytest.fixture
-def test_user_data() -> dict[str, object]:
+def test_user_data() -> FlextTypes.Core.Dict:
     """Test user data for authentication."""
     return {
         "username": "testuser",
@@ -47,7 +52,7 @@ def test_user_data() -> dict[str, object]:
 
 
 @pytest.fixture
-def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:
+def auth_headers(test_user_data: FlextTypes.Core.Dict) -> FlextTypes.Core.Headers:
     """Authentication headers for test requests."""
     user_id = test_user_data.get("id", "test_user")
     return {
@@ -58,7 +63,7 @@ def auth_headers(test_user_data: dict[str, object]) -> dict[str, str]:
 
 # API response fixtures
 @pytest.fixture
-def api_success_response() -> dict[str, object]:
+def api_success_response() -> FlextTypes.Core.Dict:
     """Standard API success response."""
     return {
         "success": True,
@@ -68,7 +73,7 @@ def api_success_response() -> dict[str, object]:
 
 
 @pytest.fixture
-def api_error_response() -> dict[str, object]:
+def api_error_response() -> FlextTypes.Core.Dict:
     """Standard API error response."""
     return {
         "success": False,
@@ -94,7 +99,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
 # Configuration fixtures
 @pytest.fixture
-def web_config() -> dict[str, object]:
+def web_config() -> FlextTypes.Core.Dict:
     """Web application configuration for testing."""
     return {
         "host": "127.0.0.1",

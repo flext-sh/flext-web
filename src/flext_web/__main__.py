@@ -1,3 +1,9 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
 """FLEXT Web Interface - Command Line Entry Point.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -39,7 +45,6 @@ Status: Development (targeting 1.0.0 production release)
 
 """
 
-from __future__ import annotations
 
 import argparse
 import sys
@@ -109,6 +114,9 @@ def main() -> None:
       The function is typically called from the command line:
 
       $ python -m flext_web --host localhost --port 8080 --debug
+
+    Returns:
+            object: Description of return value.
 
     """
     parser = create_parser()

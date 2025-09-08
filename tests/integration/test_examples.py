@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+# !/usr/bin/env python3
 """Test examples full functionality."""
 
 import asyncio
@@ -35,7 +39,7 @@ class ExamplesFullFunctionalityTest:
         build_cmd = [self.DOCKER_PATH, "build", "-t", "flext-web-full-test", "."]
 
         async def _run_exec(
-            cmd: list[str],
+            cmd: FlextTypes.Core.StringList,
             cwd: str | None = None,
         ) -> tuple[int, str, str]:
             """Helper to run a command asynchronously and return (rc, stdout, stderr)."""

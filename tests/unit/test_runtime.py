@@ -2,6 +2,10 @@
 
 Tests all functionality using real Flask applications, real HTTP requests,
 real service execution, and actual FlextWebModels.WebApp lifecycle management.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

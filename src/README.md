@@ -106,7 +106,7 @@ class FlextWebApp(FlextModels.Entity):
     Implements business rules for application lifecycle management, state transitions,
     and validation using flext-core foundation patterns.
 
-    [Complete business context, integration notes, and usage examples]
+    [Complete business context, integration notes, and usage examples]:
     """
 ```
 
@@ -116,7 +116,7 @@ class FlextWebApp(FlextModels.Entity):
 def start(self) -> FlextResult[FlextWebApp]:
     """Start application with state transition validation.
 
-    [Detailed business rules, pre/post conditions, examples]
+    [Detailed business rules, pre/post conditions, examples]:
     """
 ```
 
@@ -126,7 +126,7 @@ def start(self) -> FlextResult[FlextWebApp]:
 def create_service(config: FlextWebConfig | None = None) -> FlextWebService:
     """Create configured FLEXT Web Service instance with comprehensive initialization.
 
-    [Complete configuration handling, deployment patterns, examples]
+    [Complete configuration handling, deployment patterns, examples]:
     """
 ```
 

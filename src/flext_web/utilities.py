@@ -2,9 +2,21 @@
 
 Minimal implementation providing ONLY web-domain-specific utilities not available
 in flext-core. Delegates all generic operations to FlextUtilities.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+
+from flext_core import FlextTypes
+
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 import re
 from typing import TypeVar
@@ -12,6 +24,8 @@ from urllib.parse import urlparse
 
 from flext_core import FlextConstants, FlextResult, FlextUtilities
 from pydantic import ValidationError
+
+from flext_web.models import FlextWebModels
 
 T = TypeVar("T")
 
@@ -32,14 +46,24 @@ class FlextWebUtilities:
 
     @staticmethod
     def format_app_id(name: str) -> str:
-        """Format application name to valid ID."""
+        """Format application name to valid ID.
+
+        Returns:
+            str: Description of return value.
+
+        """
         clean_name = FlextUtilities.TextProcessor.safe_string(name, "app").strip()
         slugified = FlextUtilities.TextProcessor.slugify(clean_name)
         return f"app_{slugified}" if slugified else "app_default"
 
     @staticmethod
     def validate_app_name(name: str | None) -> bool:
-        """Validate application name format."""
+        """Validate application name format.
+
+        Returns:
+            bool:: Description of return value.
+
+        """
         if name is None:
             return False
         safe_name = FlextUtilities.TextProcessor.safe_string(name, "")
@@ -47,12 +71,22 @@ class FlextWebUtilities:
 
     @staticmethod
     def validate_port_range(port: int) -> bool:
-        """Validate port number range - kept for test compatibility."""
+        """Validate port number range - kept for test compatibility.
+
+        Returns:
+            bool: Description of return value.
+
+        """
         return FlextConstants.Web.MIN_PORT <= port <= FlextConstants.Web.MAX_PORT
 
     @staticmethod
     def validate_url(url: str) -> bool:
-        """Validate URL format."""
+        """Validate URL format.
+
+        Returns:
+            bool: Description of return value.
+
+        """
         try:
             result = urlparse(url)
             return all([result.scheme, result.netloc])
@@ -61,7 +95,12 @@ class FlextWebUtilities:
 
     @staticmethod
     def validate_host_format(host: str) -> bool:
-        """Validate host address format - kept for test compatibility."""
+        """Validate host address format - kept for test compatibility.
+
+        Returns:
+            bool: Description of return value.
+
+        """
         safe_host = FlextUtilities.TextProcessor.safe_string(host, "")
         if not safe_host:
             return False
@@ -82,12 +121,17 @@ class FlextWebUtilities:
         if re.match(hostname_pattern, safe_host):
             return True
 
-        return safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}
+        return safe_host.lower() in {"localhost", "127.0.0.1", "::", "::1"}
 
     @staticmethod
-    def sanitize_request_data(data: dict[str, object]) -> dict[str, object]:
-        """Sanitize web request data."""
-        sanitized: dict[str, object] = {}
+    def sanitize_request_data(data: FlextTypes.Core.Dict) -> FlextTypes.Core.Dict:
+        """Sanitize web request data.
+
+        Returns:
+            FlextTypes.Core.Dict: Description of return value.
+
+        """
+        sanitized: FlextTypes.Core.Dict = {}
         for key, value in data.items():
             safe_key = FlextUtilities.TextProcessor.safe_string(key, "unknown")
             if isinstance(value, str):
@@ -98,8 +142,15 @@ class FlextWebUtilities:
         return sanitized
 
     @staticmethod
-    def create_success_response(message: str, data: object = None) -> dict[str, object]:
-        """Create success response structure."""
+    def create_success_response(
+        message: str, data: object = None
+    ) -> FlextTypes.Core.Dict:
+        """Create success response structure.
+
+        Returns:
+            FlextTypes.Core.Dict: Description of return value.
+
+        """
         return {
             "success": True,
             "message": message,
@@ -110,8 +161,13 @@ class FlextWebUtilities:
     @staticmethod
     def create_error_response(
         message: str, status_code: int = 400
-    ) -> dict[str, object]:
-        """Create error response structure."""
+    ) -> FlextTypes.Core.Dict:
+        """Create error response structure.
+
+        Returns:
+            FlextTypes.Core.Dict: Description of return value.
+
+        """
         return {
             "success": False,
             "message": message,
@@ -123,8 +179,13 @@ class FlextWebUtilities:
     @staticmethod
     def create_api_response(
         message: str, *, success: bool = True, data: object = None
-    ) -> dict[str, object]:
-        """Create API response structure."""
+    ) -> FlextTypes.Core.Dict:
+        """Create API response structure.
+
+        Returns:
+            FlextTypes.Core.Dict:: Description of return value.
+
+        """
         return {
             "success": success,
             "message": message,
@@ -133,8 +194,13 @@ class FlextWebUtilities:
         }
 
     @staticmethod
-    def handle_flext_result(result: FlextResult[T]) -> dict[str, object]:
-        """Convert FlextResult to API response."""
+    def handle_flext_result(result: FlextResult[T]) -> FlextTypes.Core.Dict:
+        """Convert FlextResult to API response.
+
+        Returns:
+            FlextTypes.Core.Dict: Description of return value.
+
+        """
         if result.success:
             return FlextWebUtilities.create_api_response(
                 "Operation successful", success=True, data=result.value
@@ -146,10 +212,14 @@ class FlextWebUtilities:
     @classmethod
     def create_web_app_data(
         cls, name: str, port: int = 8000, host: str = "localhost"
-    ) -> FlextResult[dict[str, object]]:
-        """Create web application data with Pydantic validation."""
-        # Runtime import to avoid circular imports
-        from flext_web.models import FlextWebModels
+    ) -> FlextResult[FlextTypes.Core.Dict]:
+        """Create web application data with Pydantic validation.
+
+        Returns:
+            FlextTypes.Core.Dict: Description of return value.
+
+        """
+        # Import at runtime to avoid circular imports
 
         try:
             # Let Pydantic handle all validation through field validators
@@ -168,7 +238,7 @@ class FlextWebUtilities:
                 "created_at": FlextUtilities.Generators.generate_iso_timestamp(),
             }
 
-            return FlextResult[dict[str, object]].ok(app_data)
+            return FlextResult[FlextTypes.Core.Dict].ok(app_data)
         except ValidationError as e:
             # Extract meaningful error messages for compatibility
             error_msg = ""
@@ -183,9 +253,9 @@ class FlextWebUtilities:
                 else:
                     error_msg = f"Validation error: {error['msg']}"
                 break  # Use first error
-            return FlextResult[dict[str, object]].fail(error_msg)
+            return FlextResult[FlextTypes.Core.Dict].fail(error_msg)
         except ValueError as e:
-            return FlextResult[dict[str, object]].fail(str(e))
+            return FlextResult[FlextTypes.Core.Dict].fail(str(e))
 
 
 __all__ = [

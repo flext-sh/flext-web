@@ -2,6 +2,10 @@
 
 These tests verify that examples use the new API correctly and are syntactically valid
 without actually running the services (which can cause timeouts).
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

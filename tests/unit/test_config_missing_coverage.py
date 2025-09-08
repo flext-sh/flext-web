@@ -2,6 +2,10 @@
 
 Foca nas linhas não cobertas identificadas no relatório de cobertura:
 - Linhas 128-129, 138-139, 146-147, 158-159, 203-204, 276, 301-302, 315, 344-345, 356, 365, 371, 377-378, 401, 414, 427, 441-453, 467-481, 494-495, 576, 588-589, 627-628, 641->654, 646, 650, 685-686, 707-708
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import os
@@ -26,7 +30,9 @@ class TestConfigMissingCoverage:
 
     def test_secret_key_validation_too_short(self) -> None:
         """Testa validação de secret_key muito curta (linhas 138-139)."""
-        with pytest.raises(ValidationError, match="String should have at least 32 characters"):
+        with pytest.raises(
+            ValidationError, match="String should have at least 32 characters"
+        ):
             FlextWebConfigs.WebConfig(
                 secret_key="short",  # Muito curta (< 32 chars)
                 host="localhost",
@@ -36,7 +42,9 @@ class TestConfigMissingCoverage:
     def test_port_validation_invalid_range(self) -> None:
         """Testa validação de porta fora do range (linhas 146-147, 158-159)."""
         # Porta muito baixa
-        with pytest.raises(ValidationError, match="Input should be greater than or equal to 1"):
+        with pytest.raises(
+            ValidationError, match="Input should be greater than or equal to 1"
+        ):
             FlextWebConfigs.WebConfig(
                 secret_key="test-secret-key-32-characters-long!",
                 host="localhost",
@@ -44,7 +52,9 @@ class TestConfigMissingCoverage:
             )
 
         # Porta muito alta
-        with pytest.raises(ValidationError, match="Input should be less than or equal to 65535"):
+        with pytest.raises(
+            ValidationError, match="Input should be less than or equal to 65535"
+        ):
             FlextWebConfigs.WebConfig(
                 secret_key="test-secret-key-32-characters-long!",
                 host="localhost",
@@ -56,11 +66,13 @@ class TestConfigMissingCoverage:
         original_env = os.environ.copy()
         try:
             # Teste com valores válidos nos limites extremos
-            os.environ.update({
-                "FLEXT_WEB_HOST": "127.0.0.1",  # IPv4 localhost
-                "FLEXT_WEB_PORT": "65535",  # Porta máxima
-                "FLEXT_WEB_SECRET_KEY": "x" * 32,  # Exatamente 32 chars
-            })
+            os.environ.update(
+                {
+                    "FLEXT_WEB_HOST": "127.0.0.1",  # IPv4 localhost
+                    "FLEXT_WEB_PORT": "65535",  # Porta máxima
+                    "FLEXT_WEB_SECRET_KEY": "x" * 32,  # Exatamente 32 chars
+                }
+            )
 
             FlextWebConfigs.reset_web_settings()
 
@@ -118,7 +130,10 @@ class TestConfigMissingCoverage:
         # Dependendo da implementação, pode falhar na validação
         if result.is_failure:
             assert result.error is not None
-            assert "invalid" in result.error.lower() or "validation" in result.error.lower()
+            assert (
+                "invalid" in result.error.lower()
+                or "validation" in result.error.lower()
+            )
 
     def test_config_validation_comprehensive_edge_cases(self) -> None:
         """Testa casos extremos de validação (linhas 685-686, 707-708)."""

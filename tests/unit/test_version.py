@@ -1,6 +1,10 @@
 """Test coverage for __version__.py module.
 
 Complete test coverage for version module without using mocks.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import flext_web.__version__ as version_module

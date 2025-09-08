@@ -120,7 +120,7 @@ def _extract_apps_from_response(
 
 
 def _execute_app_operation(
-    method: str, endpoint: str, json_data: dict[str, object] | None = None
+    method: str, endpoint: str, json_data: FlextTypes.Core.Dict | None = None
 ) -> FlextWebTypes.AppData | None:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
@@ -149,9 +149,9 @@ def _execute_app_operation(
     result = (
         _make_http_request()
         .bind(
-            lambda resp: FlextResult[dict[str, object]].ok(resp.json())
+            lambda resp: FlextResult[FlextTypes.Core.Dict].ok(resp.json())
             if resp.status_code == ExampleConstants.HTTP_OK
-            else FlextResult[dict[str, object]].fail("Invalid response")
+            else FlextResult[FlextTypes.Core.Dict].fail("Invalid response")
         )
         .bind(
             lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
@@ -162,7 +162,9 @@ def _execute_app_operation(
                     json_data.get("success"),
                     isinstance(data := json_data.get("data"), dict),
                     data
-                    and {"id", "name"}.issubset(cast("dict[str, object]", data).keys()),
+                    and {"id", "name"}.issubset(
+                        cast("FlextTypes.Core.Dict", data).keys()
+                    ),
                 ]
             )
             else FlextResult[FlextWebTypes.AppData].fail("Invalid app data")
@@ -187,7 +189,7 @@ def _execute_list_operation(
         .bind(
             lambda r: FlextResult.safe_call(r.json)
             if hasattr(r, "json")
-            else FlextResult[dict[str, object]].fail("Invalid response object")
+            else FlextResult[FlextTypes.Core.Dict].fail("Invalid response object")
         )
         .map(lambda d: _extract_apps_from_response(d, data_key))
         .unwrap_or([])

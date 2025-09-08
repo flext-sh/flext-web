@@ -1,3 +1,11 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """FLEXT Web Services - Consolidated web service system with enterprise patterns.
 
 Copyright (c) 2025 FLEXT Contributors
@@ -5,7 +13,6 @@ SPDX-License-Identifier: MIT
 
 """
 
-from __future__ import annotations
 
 from flask import Flask, jsonify, render_template_string, request
 from flask.typing import ResponseReturnValue
@@ -14,7 +21,6 @@ from flext_core import (
     FlextLogger,
     FlextMixins,
     FlextResult,
-    FlextTypes,
     FlextUtilities,
 )
 
@@ -147,7 +153,12 @@ class FlextWebServices:
                 ), 500
 
         def dashboard(self) -> ResponseReturnValue:
-            """Web dashboard interface for application management."""
+            """Web dashboard interface for application management.
+
+            Returns:
+            ResponseReturnValue:: Description of return value.
+
+            """
             try:
                 app_count = len(self.apps)
                 running_count = sum(
@@ -244,25 +255,30 @@ class FlextWebServices:
                 }
                 return jsonify(error_response), 500
 
-        def _validate_json_request(self) -> FlextResult[dict[str, object]]:
-            """Railway-oriented validation of JSON request data."""
+        def _validate_json_request(self) -> FlextResult[FlextTypes.Core.Dict]:
+            """Railway-oriented validation of JSON request data.
+
+            Returns:
+            ResponseReturnValue:: Description of return value.
+
+            """
             if not request.is_json:
-                return FlextResult[dict[str, object]].fail("Request must be JSON")
+                return FlextResult[FlextTypes.Core.Dict].fail("Request must be JSON")
 
             try:
                 data = request.get_json()
                 if not data:
-                    return FlextResult[dict[str, object]].fail(
+                    return FlextResult[FlextTypes.Core.Dict].fail(
                         "Request body is required"
                     )
-                return FlextResult[dict[str, object]].ok(data)
+                return FlextResult[FlextTypes.Core.Dict].ok(data)
             except Exception:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Core.Dict].fail(
                     "Invalid JSON in request body"
                 )
 
         def _validate_app_data(
-            self, data: dict[str, object]
+            self, data: FlextTypes.Core.Dict
         ) -> FlextResult[tuple[str, str, int]]:
             """Validate application data using Railway pattern."""
             # Extract and validate required fields
@@ -361,6 +377,10 @@ class FlextWebServices:
 
             Reduces from 11 returns to single monadic chain with 85% less complexity.
             Uses Python 3.13 functional composition and existing flext-core validation.
+
+            Returns:
+            ResponseReturnValue:: Description of return value.
+
             """
             try:
                 FlextMixins.log_operation(
@@ -423,7 +443,12 @@ class FlextWebServices:
                 ), 500
 
         def start_app(self, app_id: str) -> ResponseReturnValue:
-            """Start application by ID."""
+            """Start application by ID.
+
+            Returns:
+            ResponseReturnValue:: Description of return value.
+
+            """
             try:
                 if app_id not in self.apps:
                     return jsonify(
@@ -522,7 +547,12 @@ class FlextWebServices:
                 ), 500
 
         def run(self) -> None:
-            """Run the Flask web service."""
+            """Run the Flask web service.
+
+            Returns:
+            ResponseReturnValue:: Description of return value.
+
+            """
             self.app.run(
                 host=self.config.host,
                 port=self.config.port,
@@ -556,7 +586,12 @@ class FlextWebServices:
         def register_web_service(
             self, name: str, service: FlextWebServices.WebService
         ) -> FlextResult[None]:
-            """Register web service instance."""
+            """Register web service instance.
+
+            Returns:
+                FlextResult[None]: Success or error result.
+
+            """
             try:
                 FlextMixins.log_operation(self, "register_service", service_name=name)
 
@@ -600,19 +635,31 @@ class FlextWebServices:
                     f"Service discovery failed: {e}"
                 )
 
-        def list_web_services(self) -> FlextResult[list[str]]:
-            """List all registered web service names."""
+        def list_web_services(self) -> FlextResult[FlextTypes.Core.StringList]:
+            """List all registered web service names.
+
+            Returns:
+                FlextResult[FlextTypes.Core.StringList]: Names of registered services.
+
+            """
             try:
                 service_names = list(self._services.keys())
-                return FlextResult[list[str]].ok(service_names)
+                return FlextResult[FlextTypes.Core.StringList].ok(service_names)
             except Exception as e:
-                return FlextResult[list[str]].fail(f"Service listing failed: {e}")
+                return FlextResult[FlextTypes.Core.StringList].fail(
+                    f"Service listing failed: {e}"
+                )
 
         # Alias methods for test compatibility
         def register_service(
             self, name: str, service: FlextWebServices.WebService
         ) -> FlextResult[None]:
-            """Alias for register_web_service."""
+            """Alias for register_web_service.
+
+            Returns:
+                FlextResult[None]: Success or error result.
+
+            """
             return self.register_web_service(name, service)
 
         def get_service(self, name: str) -> FlextResult[FlextWebServices.WebService]:
@@ -627,7 +674,12 @@ class FlextWebServices:
     def create_web_service(
         cls, config: FlextWebConfigs.WebConfig | None = None
     ) -> FlextResult[FlextWebServices.WebService]:
-        """Create web service instance with configuration."""
+        """Create web service instance with configuration.
+
+        Returns:
+            FlextResult[FlextWebServices.WebService]: Created service instance.
+
+        """
         try:
             if config is None:
                 config_result = FlextWebConfigs.create_web_config()
@@ -661,8 +713,8 @@ class FlextWebServices:
 
     @classmethod
     def create_web_system_services(
-        cls, config: dict[str, object] | None = None
-    ) -> FlextResult[dict[str, object]]:
+        cls, config: FlextTypes.Core.Dict | None = None
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Create web system services."""
         _ = config  # Acknowledge parameter
 
@@ -670,13 +722,13 @@ class FlextWebServices:
             # Create service and registry
             service_result = cls.create_web_service()
             if service_result.is_failure:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Core.Dict].fail(
                     service_result.error or "Service creation failed"
                 )
 
             registry_result = cls.create_service_registry()
             if registry_result.is_failure:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Core.Dict].fail(
                     registry_result.error or "Registry creation failed"
                 )
 
@@ -686,11 +738,11 @@ class FlextWebServices:
             # Register service
             register_result = registry.register_web_service("main", service)
             if register_result.is_failure:
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[FlextTypes.Core.Dict].fail(
                     register_result.error or "Registration failed"
                 )
 
-            return FlextResult[dict[str, object]].ok(
+            return FlextResult[FlextTypes.Core.Dict].ok(
                 {
                     "web_service": service,
                     "registry": registry,
@@ -698,7 +750,7 @@ class FlextWebServices:
             )
 
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"System services creation failed: {e}"
             )
 
@@ -728,6 +780,29 @@ class FlextWebServices:
                 validated_config["environment"] = (
                     FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value
                 )
+
+            # Core validation via flext-core SystemConfigs (bridge compatibility)
+            from flext_core import (
+                FlextModels,  # local import to avoid cycles
+            )
+
+            core_validation = {
+                "environment": validated_config.get(
+                    "environment",
+                    FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value,
+                ),
+                "log_level": validated_config.get(
+                    "log_level",
+                    FlextConstants.Config.LogLevel.INFO.value,
+                ),
+                "validation_level": validated_config.get(
+                    "validation_level",
+                    FlextConstants.Config.ValidationLevel.NORMAL.value,
+                ),
+            }
+            _ = FlextModels.SystemConfigs.BaseSystemConfig.model_validate(
+                core_validation
+            )
 
             # Web services specific settings
             validated_config.setdefault("enable_web_service", True)

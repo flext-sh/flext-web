@@ -2,6 +2,10 @@
 
 Tests edge cases, error conditions, and specific code paths using REAL
 HTTP execution to achieve comprehensive coverage without mocking.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -13,6 +17,7 @@ from collections.abc import Generator
 
 import pytest
 import requests
+from flext_core import FlextTypes
 from pydantic import ValidationError
 from tests.port_manager import TestPortManager
 
@@ -336,7 +341,7 @@ class TestRealServiceEdgeCases:
             {"name": "dashboard-stopped", "port": 9012, "host": "localhost"},
         ]
 
-        created_apps: list[str] = []
+        created_apps: FlextTypes.Core.StringList = []
         for app_data in apps_data:
             response = requests.post(
                 f"{base_url}/api/v1/apps", json=app_data, timeout=5

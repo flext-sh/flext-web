@@ -3,6 +3,10 @@
 This module implements complete functional tests without any mocks, using real
 flext_tests utilities and patterns for production-ready validation following
 the user's requirements for 100% quality and coverage.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import json

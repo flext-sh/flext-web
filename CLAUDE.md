@@ -141,8 +141,8 @@ def create_app(name: str) -> FlextResult[FlextWebApp]:
     return FlextResult[FlextWebApp].ok(app)
 
 # Type aliases in typings.py
-ResponseData = dict[str, object]
-ConfigDict = dict[str, object]
+ResponseData = FlextTypes.Core.Dict
+ConfigDict = FlextTypes.Core.Dict
 AppDataDict = TypedDict('AppDataDict', {...})
 ```
 

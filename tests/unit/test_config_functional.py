@@ -2,6 +2,10 @@
 
 Tests focus on real configuration validation, environment variable handling,
 and production configuration scenarios without mocks.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import os

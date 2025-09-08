@@ -3,6 +3,9 @@
 This module implements the consolidated protocol architecture following the
 "one class per module" pattern, with FlextWebProtocols extending FlextProtocols
 and containing all web-specific protocol functionality as nested classes.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -12,7 +15,7 @@ from typing import Protocol, runtime_checkable
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextProtocols, FlextResult, FlextTypes
 
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
@@ -110,7 +113,7 @@ class FlextWebProtocols(FlextProtocols):
 
         def format_success(
             self,
-            data: dict[str, object],
+            data: FlextTypes.Core.Dict,
             message: str = "Success",
             status_code: int = 200,
         ) -> ResponseReturnValue:
@@ -327,7 +330,12 @@ class FlextWebProtocols(FlextProtocols):
     class AppRepositoryInterface(
         FlextProtocols.Domain.Repository[FlextWebModels.WebApp], Protocol
     ):
-        """Application repository protocol extending flext-core Repository patterns."""
+        """Application repository protocol extending flext-core Repository patterns.
+
+        Returns:
+            object: Description of return value.
+
+        """
 
         def create(
             self, app: FlextWebModels.WebApp
@@ -351,7 +359,12 @@ class FlextWebProtocols(FlextProtocols):
 
     @runtime_checkable
     class MiddlewareInterface(FlextProtocols.Extensions.Middleware, Protocol):
-        """Web middleware protocol extending flext-core Middleware patterns."""
+        """Web middleware protocol extending flext-core Middleware patterns.
+
+        Returns:
+            FlextResult[FlextWebModels.WebApp]: Middleware processing result.
+
+        """
 
         def before_request(
             self, request: FlextWebTypes.RequestContext
@@ -360,8 +373,8 @@ class FlextWebProtocols(FlextProtocols):
             ...
 
         def after_request(
-            self, response: dict[str, object]
-        ) -> FlextResult[dict[str, object]]:
+            self, response: FlextTypes.Core.Dict
+        ) -> FlextResult[FlextTypes.Core.Dict]:
             """Process response after handler execution."""
             ...
 
@@ -371,7 +384,12 @@ class FlextWebProtocols(FlextProtocols):
 
     @runtime_checkable
     class TemplateEngineInterface(FlextProtocols.Infrastructure.Configurable, Protocol):
-        """Template engine protocol extending flext-core Configurable patterns."""
+        """Template engine protocol extending flext-core Configurable patterns.
+
+        Returns:
+            ResponseReturnValue: Template rendering result.
+
+        """
 
         def render(self, template_name: str, **context: object) -> str:
             """Render template with context variables."""
@@ -387,7 +405,12 @@ class FlextWebProtocols(FlextProtocols):
 
     @runtime_checkable
     class MonitoringInterface(FlextProtocols.Extensions.Observability, Protocol):
-        """Web monitoring protocol extending flext-core Observability patterns."""
+        """Web monitoring protocol extending flext-core Observability patterns.
+
+        Returns:
+            object: Monitoring operation result.
+
+        """
 
         def record_request(
             self, method: str, path: str, status_code: int, duration: float
@@ -399,16 +422,16 @@ class FlextWebProtocols(FlextProtocols):
             self,
             error_type: str,
             error_message: str,
-            context: dict[str, dict[str, object]] | None = None,
+            context: dict[str, FlextTypes.Core.Dict] | None = None,
         ) -> None:
             """Record error occurrence."""
             ...
 
-        def get_health_status(self) -> dict[str, dict[str, object]]:
+        def get_health_status(self) -> dict[str, FlextTypes.Core.Dict]:
             """Get current service health status."""
             ...
 
-        def get_metrics(self) -> dict[str, dict[str, object]]:
+        def get_metrics(self) -> dict[str, FlextTypes.Core.Dict]:
             """Get collected metrics data."""
             ...
 

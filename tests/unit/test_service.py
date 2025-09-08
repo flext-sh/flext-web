@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+# !/usr/bin/env python3
 """Advanced tests for FLEXT Web Interface service functionality.
 
 Tests error handling, edge cases, validation, and integration scenarios

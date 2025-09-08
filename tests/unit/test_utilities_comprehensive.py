@@ -2,6 +2,10 @@
 
 This test module targets specific missing coverage areas identified in the coverage report.
 Focus on real execution tests without mocks for maximum functional coverage.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from flext_core import FlextResult
@@ -220,7 +224,7 @@ class TestFlextWebUtilitiesDataSanitization:
 
     def test_sanitize_request_data_empty(self) -> None:
         """Test sanitizing empty data."""
-        data: dict[str, object] = {}
+        data: FlextTypes.Core.Dict = {}
 
         sanitized = FlextWebUtilities.sanitize_request_data(data)
 
@@ -308,7 +312,9 @@ class TestFlextWebUtilitiesFlextResultHandling:
 
     def test_handle_flext_result_success(self) -> None:
         """Test handling successful FlextResult."""
-        success_result = FlextResult[dict[str, str]].ok({"id": "123", "name": "test"})
+        success_result = FlextResult[FlextTypes.Core.Headers].ok(
+            {"id": "123", "name": "test"}
+        )
 
         response = FlextWebUtilities.handle_flext_result(success_result)
 
@@ -417,7 +423,7 @@ class TestFlextWebUtilitiesEdgeCases:
 
     def test_sanitize_request_data_none_values(self) -> None:
         """Test sanitizing request data with None values."""
-        data: dict[str, object] = {"name": None, "port": 8000, "description": None}
+        data: FlextTypes.Core.Dict = {"name": None, "port": 8000, "description": None}
 
         sanitized = FlextWebUtilities.sanitize_request_data(data)
 

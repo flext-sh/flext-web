@@ -20,6 +20,10 @@ Integration:
 Author: FLEXT Development Team
 Version: 0.9.0
 Status: Enterprise web interface testing with comprehensive UI validation
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

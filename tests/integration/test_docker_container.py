@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+# !/usr/bin/env python3
 """Test script to validate Docker container functionality comprehensively.
 
 This script tests the Docker container by:
@@ -19,14 +23,14 @@ import requests
 
 
 def run_command(
-    cmd: str | list[str],
+    cmd: str | FlextTypes.Core.StringList,
     timeout: int = 30,
     *,
     capture_output: bool = True,
 ) -> tuple[int, str, str]:
     """Run command with timeout and error handling using asyncio without shell."""
 
-    async def _run_list(args: list[str]) -> tuple[int, str, str]:
+    async def _run_list(args: FlextTypes.Core.StringList) -> tuple[int, str, str]:
         proc = await asyncio.create_subprocess_exec(
             *args,
             stdout=asyncio.subprocess.PIPE if capture_output else None,

@@ -1,6 +1,10 @@
 """Simple tests to increase services.py coverage.
 
 Focus on specific uncovered lines without complex integration.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import json

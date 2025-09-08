@@ -12,7 +12,7 @@ import sys
 
 from flext_core.loggings import FlextLogger
 
-from flext_web import FlextWebConfigs, FlextWebServices
+from ..flext_web import FlextWebConfigs, FlextWebServices
 
 logger = FlextLogger(__name__)
 

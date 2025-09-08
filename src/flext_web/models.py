@@ -15,6 +15,7 @@ from flext_core import (
     FlextMixins,
     FlextModels,
     FlextResult,
+    FlextTypes,
     FlextUtilities,
 )
 from pydantic import ConfigDict, Field, computed_field, field_validator
@@ -121,7 +122,7 @@ class FlextWebModels:
                 return safe_host
 
             # Special hostnames
-            if safe_host.lower() in {"localhost", "0.0.0.0", "::", "::1"}:
+            if safe_host.lower() in {"localhost", "127.0.0.1", "::", "::1"}:
                 return safe_host
 
             msg = f"Invalid host format: {host}"
@@ -202,7 +203,7 @@ class FlextWebModels:
             FlextMixins.log_operation(self, "application_stopped")
             return FlextResult[FlextWebModels.WebApp].ok(self)
 
-        def to_dict(self) -> dict[str, object]:
+        def to_dict(self) -> FlextTypes.Core.Dict:
             """Convert to dict."""
             return FlextMixins.to_dict(self)
 

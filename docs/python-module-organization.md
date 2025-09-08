@@ -999,7 +999,7 @@ class SecuritySettings(FlextConfig):
     """Web security configuration"""
     secret_key: str = Field(min_length=32, repr=False)
     jwt_expiry: int = 3600
-    cors_origins: list[str] = Field(default_factory=lambda: ["*"])
+    cors_origins: FlextTypes.Core.StringList = Field(default_factory=lambda: ["*"])
     csrf_protection: bool = True
 
     class Config:

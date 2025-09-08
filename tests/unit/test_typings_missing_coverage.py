@@ -4,6 +4,10 @@ This test targets uncovered lines in typings.py:
 - Lines 217, 230, 238, 242, 246, 259-260, 282, 286, 290, 298, 302, 316-317, 325-331, 340-349
 
 Uses flext_tests library for real functional testing without mocks.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import math
@@ -24,7 +28,10 @@ class TestTypingsMissingCoverage:
         assert "must be a dictionary" in result.error
 
         # Test missing fields (lines 224-226)
-        incomplete_data = {"host": "localhost", "port": 8080}  # Missing debug, secret_key, app_name
+        incomplete_data = {
+            "host": "localhost",
+            "port": 8080,
+        }  # Missing debug, secret_key, app_name
         result = FlextWebTypes.validate_config_data(incomplete_data)
         assert result.is_failure
         assert "required field" in result.error.lower()
@@ -163,7 +170,7 @@ class TestTypingsMissingCoverage:
         # Test create_request_context with edge values
         context = FlextWebTypes.create_request_context(
             method="",  # Empty method
-            path="",    # Empty path
+            path="",  # Empty path
             headers={},
             data={},
         )

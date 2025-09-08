@@ -4,6 +4,10 @@ This test targets uncovered lines in models.py:
 - Lines 67-70, 78-79, 83-84, 99-100, 105-106, 110-111, 178-179, 186, 235, 239, 244, 246, 254, 268
 
 Uses flext_tests library for real functional testing without mocks.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from flext_tests import FlextTestUtilities
@@ -24,7 +28,7 @@ class TestModelsMissingCoverage:
             id="test_validation_app",
             name="validation-test-app",
             host="localhost",
-            port=8080
+            port=8080,
         )
 
         # Test status validation with invalid values
@@ -46,7 +50,7 @@ class TestModelsMissingCoverage:
             id="test_business_rules",
             name="business-rules-test",
             host="localhost",
-            port=8080
+            port=8080,
         )
 
         # Test business rules validation with real execution
@@ -62,7 +66,7 @@ class TestModelsMissingCoverage:
             id="test_edge_rules",
             name="a",  # Minimum valid name
             host="localhost",
-            port=1024  # Minimum valid port
+            port=1024,  # Minimum valid port
         )
         edge_validation = edge_webapp.validate_business_rules()
         assert edge_validation.success
@@ -72,7 +76,7 @@ class TestModelsMissingCoverage:
             id="test_max_rules",
             name="max-port-test",
             host="localhost",
-            port=65535  # Maximum valid port
+            port=65535,  # Maximum valid port
         )
         max_validation = max_webapp.validate_business_rules()
         assert max_validation.success
@@ -123,10 +127,7 @@ class TestModelsMissingCoverage:
     def test_webapp_status_transitions_real(self) -> None:
         """Test status transitions with real state changes."""
         webapp = FlextWebModels.WebApp(
-            id="test_status_app",
-            name="status-test-app",
-            host="localhost",
-            port=8080
+            id="test_status_app", name="status-test-app", host="localhost", port=8080
         )
         handler = FlextWebHandlers.WebAppHandler()
 
@@ -152,7 +153,7 @@ class TestModelsMissingCoverage:
             id="test_max_name",
             name="x" * 100,  # Maximum allowed length
             host="localhost",
-            port=8080
+            port=8080,
         )
         assert len(webapp.name) == 100
 
@@ -161,17 +162,14 @@ class TestModelsMissingCoverage:
             id="test_edge_port",
             name="edge-port-test",
             host="localhost",
-            port=65535  # Maximum port
+            port=65535,  # Maximum port
         )
         assert webapp_edge_port.port == 65535
 
         # Test with long but valid host name
         long_hostname = "sub" * 20 + ".example.com"  # Valid but long hostname
         webapp_long_host = FlextWebModels.WebApp(
-            id="test_long_host",
-            name="long-host-test",
-            host=long_hostname,
-            port=8080
+            id="test_long_host", name="long-host-test", host=long_hostname, port=8080
         )
         assert len(webapp_long_host.host) > 20
 
@@ -182,12 +180,12 @@ class TestModelsMissingCoverage:
 
         # Create WebApps using test data patterns
         webapps = []
-        for i, test_data in enumerate(test_data_list):
+        for i, _test_data in enumerate(test_data_list):
             webapp = FlextWebModels.WebApp(
                 id=f"test_integration_{i}",
                 name=f"flext-test-app-{i}",
                 host="test-host",
-                port=8000 + i
+                port=8000 + i,
             )
             webapps.append(webapp)
 
@@ -223,10 +221,10 @@ class TestModelsMissingCoverage:
 
         # Test various error conditions that might trigger exception paths
         error_test_cases = [
-            ("", 8080, "localhost"),        # Empty name
-            ("test", -1, "localhost"),      # Negative port
-            ("test", 99999, "localhost"),   # Port too high
-            ("test", 8080, ""),             # Empty host
+            ("", 8080, "localhost"),  # Empty name
+            ("test", -1, "localhost"),  # Negative port
+            ("test", 99999, "localhost"),  # Port too high
+            ("test", 8080, ""),  # Empty host
         ]
 
         for name, port, host in error_test_cases:

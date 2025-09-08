@@ -1,4 +1,8 @@
-"""Quick coverage test for remaining models.py lines."""
+"""Quick coverage test for remaining models.py lines.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 import pytest
 from pydantic import ValidationError
@@ -13,10 +17,7 @@ class TestModelsQuickCoverage:
         """Test status validation error path (lines 67-70)."""
         # Use Pydantic's __set_attr__ to test validation
         app = FlextWebModels.WebApp(
-            id="test_status_error",
-            name="test-app",
-            host="localhost",
-            port=8080
+            id="test_status_error", name="test-app", host="localhost", port=8080
         )
 
         # This should trigger the ValueError path in validate_status
@@ -31,7 +32,7 @@ class TestModelsQuickCoverage:
                 id="test_reserved",
                 name="REDACTED_LDAP_BIND_PASSWORD",  # Reserved word
                 host="localhost",
-                port=8080
+                port=8080,
             )
 
         # Test dangerous characters
@@ -40,7 +41,7 @@ class TestModelsQuickCoverage:
                 id="test_dangerous",
                 name="test<script>",  # Dangerous characters
                 host="localhost",
-                port=8080
+                port=8080,
             )
 
     def test_host_validation_errors(self) -> None:
@@ -51,7 +52,7 @@ class TestModelsQuickCoverage:
                 id="test_empty_host",
                 name="test-app",
                 host="",  # Empty host
-                port=8080
+                port=8080,
             )
 
 

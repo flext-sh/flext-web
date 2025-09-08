@@ -2,6 +2,10 @@
 
 Provides unique port allocation to ensure tests don't conflict when
 running Flask servers in parallel threads.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

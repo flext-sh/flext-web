@@ -1,6 +1,10 @@
 """Comprehensive test coverage to reach 100% for models.py module.
 
 Target missing lines for complete coverage without mocks.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import pytest

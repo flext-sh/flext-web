@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+# !/usr/bin/env python3
 """Tests for missing coverage areas to achieve ~100% coverage.
 
 Comprehensive tests targeting specific uncovered code paths identified

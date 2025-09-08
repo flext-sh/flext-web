@@ -2,6 +2,10 @@
 
 This test module targets specific missing coverage areas identified in the coverage report.
 Focus on real execution tests without mocks for maximum functional coverage.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import pytest
@@ -310,7 +314,7 @@ class TestFlextWebModelsFactoryMethods:
         """Test web app creation handles exceptions."""
         # Use FlextWebTypes validation method instead of direct create_web_app
         # Pass data that might cause unexpected errors
-        malformed_data: dict[str, object] = {
+        malformed_data: FlextTypes.Core.Dict = {
             "id": "app_test",
             "name": "test-app",
             "host": "localhost",

@@ -3,6 +3,10 @@
 Foca em linhas não cobertas identificadas no relatório de cobertura:
 - Linhas 67-70, 78-79, 83-84, 99-100, 105-106, 110-111, 127-128
 - Linhas 178-179, 186, 207, 235, 239, 244, 246, 254, 268
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import pytest
@@ -66,7 +70,7 @@ class TestModelsMissingCoverage:
             name="",  # Nome vazio
             host="127.0.0.1",
             port=8402,
-            status=FlextWebModels.WebAppStatus.STOPPED
+            status=FlextWebModels.WebAppStatus.STOPPED,
         )
 
         validation_result = app_empty_name.validate_business_rules()
@@ -80,7 +84,7 @@ class TestModelsMissingCoverage:
             name="Empty Host Test",
             host="",  # Host vazio
             port=8403,
-            status=FlextWebModels.WebAppStatus.STOPPED
+            status=FlextWebModels.WebAppStatus.STOPPED,
         )
 
         validation_result = app_empty_host.validate_business_rules()

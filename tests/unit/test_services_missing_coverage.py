@@ -2,6 +2,10 @@
 
 Foca nas linhas não cobertas identificadas no relatório de cobertura:
 - Linhas 303-304, 384-385, 416-417, 463-464, 489->492, 515-516, 598-599, 607, 635, 644-645, 657-658, 673, 679, 689, 700-701, 714-741, 750-779
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from collections.abc import Generator
@@ -111,7 +115,7 @@ class TestServicesMissingCoverage:
         invalid_data = {
             "name": "",  # Nome vazio - deve falhar
             "host": "",  # Host vazio - deve falhar
-            "port": 0,   # Porta inválida - deve falhar
+            "port": 0,  # Porta inválida - deve falhar
         }
 
         response = test_client.post("/api/v1/apps", json=invalid_data)
@@ -121,25 +125,28 @@ class TestServicesMissingCoverage:
 
         # Teste com JSON malformado
         response = test_client.post(
-            "/api/v1/apps",
-            data="invalid-json-data",
-            content_type="application/json"
+            "/api/v1/apps", data="invalid-json-data", content_type="application/json"
         )
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
 
-    def test_service_internal_error_handling(self, test_service: FlextWebServices.WebService) -> None:
+    def test_service_internal_error_handling(
+        self, test_service: FlextWebServices.WebService
+    ) -> None:
         """Testa tratamento de erros internos (linhas 700-701)."""
         # Testa cenário de erro interno sem mock - usando dados que causam erro
         client = test_service.app.test_client()
 
         # Tenta criar com dados que podem causar erro interno
-        response = client.post("/api/v1/apps", json={
-            "name": "error-app" * 1000,  # Nome muito longo que pode causar problema
-            "host": "localhost",
-            "port": 9001
-        })
+        response = client.post(
+            "/api/v1/apps",
+            json={
+                "name": "error-app" * 1000,  # Nome muito longo que pode causar problema
+                "host": "localhost",
+                "port": 9001,
+            },
+        )
 
         # Se não houver erro interno, pelo menos validamos o comportamento
         if response.status_code == 500:
@@ -164,7 +171,9 @@ class TestServicesMissingCoverage:
         assert hasattr(registry, "register_service")
         assert hasattr(registry, "get_service")
 
-    def test_service_app_management_comprehensive(self, test_client: FlaskClient) -> None:
+    def test_service_app_management_comprehensive(
+        self, test_client: FlaskClient
+    ) -> None:
         """Testa gerenciamento completo de aplicações."""
         # Cria múltiplas apps para testar listagem
         apps = []

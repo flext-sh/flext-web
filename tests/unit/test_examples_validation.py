@@ -1,4 +1,12 @@
-#!/usr/bin/env python3
+"""FLEXT - Enterprise Data Integration Platform."""
+
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+
+# !/usr/bin/env python3
 """Deep validation tests for all examples/ functionality.
 
 Comprehensive testing of every example file to ensure all functions,
@@ -11,6 +19,7 @@ import importlib.util
 from pathlib import Path
 
 import pytest
+from flext_core import FlextTypes
 
 
 class TestExamplesDeepValidation:
@@ -76,14 +85,14 @@ class TestExamplesDeepValidation:
         )
 
         # Test 3: Create application returns expected type
-        create_result: dict[str, object] | None = api_usage.create_application(
+        create_result: FlextTypes.Core.Dict | None = api_usage.create_application(
             "test-app", 3000
         )
         # Could be None (no service) or dict (service running)
         assert create_result is None or isinstance(create_result, dict)
 
         # Test 4: List applications returns expected type
-        apps_result: list[dict[str, object]] | None = api_usage.list_applications()
+        apps_result: list[FlextTypes.Core.Dict] | None = api_usage.list_applications()
         assert isinstance(
             apps_result,
             list,

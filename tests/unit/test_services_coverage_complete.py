@@ -5,6 +5,10 @@ This test targets specific lines identified as missing coverage:
 - Service registry edge cases (lines 607, 635, 657-658)
 - Factory method edge cases (lines 714-741, 750-779)
 - Internal helper methods (_validate_request_data, _create_and_store_app, _build_*_response)
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import pytest
@@ -28,7 +32,9 @@ class TestServicesCompleteCoverage:
         )
 
     @pytest.fixture
-    def test_service(self, test_config: FlextWebConfigs.WebConfig) -> FlextWebServices.WebService:
+    def test_service(
+        self, test_config: FlextWebConfigs.WebConfig
+    ) -> FlextWebServices.WebService:
         """Service instance for coverage tests."""
         service = FlextWebServices.WebService(test_config)
         service.app.config["TESTING"] = True
@@ -55,7 +61,12 @@ class TestServicesCompleteCoverage:
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
-        assert "required" in data["message"].lower() or "invalid" in data["message"].lower() or "validation" in data["message"].lower() or "error" in data["message"].lower()
+        assert (
+            "required" in data["message"].lower()
+            or "invalid" in data["message"].lower()
+            or "validation" in data["message"].lower()
+            or "error" in data["message"].lower()
+        )
 
     def test_create_web_service_with_none_config(self) -> None:
         """Test create_web_service factory with None config (lines 632-638)."""
@@ -126,7 +137,10 @@ class TestServicesCompleteCoverage:
         # Test discover non-existent service (lines 657-658)
         missing_result = registry.discover_web_service("non-existent")
         assert missing_result.is_failure
-        assert "not found" in missing_result.error.lower() or "not registered" in missing_result.error.lower()
+        assert (
+            "not found" in missing_result.error.lower()
+            or "not registered" in missing_result.error.lower()
+        )
 
     def test_alias_methods_coverage(self) -> None:
         """Test alias methods register_service and get_service (lines 612-620)."""

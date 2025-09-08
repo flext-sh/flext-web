@@ -2,6 +2,10 @@
 
 Provides pytest fixtures for testing web interface functionality using REAL
 Flask applications, HTTP requests, and actual service execution.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -13,6 +17,7 @@ from collections.abc import Generator
 from typing import TYPE_CHECKING
 
 import pytest
+from flext_core import FlextTypes
 
 from flext_web import FlextWebConfigs, FlextWebServices
 from tests.port_manager import TestPortManager
@@ -139,7 +144,7 @@ def invalid_app_data() -> dict[str, str | int]:
 
 # Configuration for real environment tests
 @pytest.fixture
-def production_config() -> dict[str, str]:
+def production_config() -> FlextTypes.Core.Headers:
     """Production-like configuration for testing."""
     return {
         "FLEXT_WEB_HOST": "0.0.0.0",

@@ -1,40 +1,17 @@
-"""FLEXT Web - Flask-based web interface for FLEXT ecosystem.
-
-Production-ready web service providing management dashboard and REST API
-for FLEXT platform with enterprise-grade Clean Architecture implementation.
-
-Architecture:
-    - Domain Layer: Core business entities and rules
-    - Application Layer: Use cases and configuration management
-    - Infrastructure Layer: Framework integration and external services
-
-Key Features:
-    - RESTful API for application lifecycle management
-    - Web dashboard for visual management
-    - Enterprise configuration management
-    - Comprehensive validation and error handling
-    - Production-ready logging and monitoring
-    - Flask integration with Clean Architecture
-
-Usage:
-    Basic service creation:
-        from flext_web import FlextWebServices
-        result = FlextWebServices.create_web_service()
-        service = result.unwrap_or_raise()
-
-    Configuration management:
-        from flext_web import FlextWebConfigs
-        config = FlextWebConfigs.WebConfig()
-
-    Model operations:
-        from flext_web import FlextWebModels
-        app = FlextWebModels.WebApp(...)
-
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
 """
 
 from __future__ import annotations
+from flext_core import FlextTypes
+
+
+"""FLEXT Web - Flask-based web interface for FLEXT ecosystem."""
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 # =============================================================================
 # FOUNDATION LAYER - Wildcard imports following flext-core pattern

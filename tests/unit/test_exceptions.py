@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+# !/usr/bin/env python3
 """Comprehensive tests for FLEXT Web Interface exception hierarchy.
 
 Tests all exception classes, their inheritance relationships, message handling,

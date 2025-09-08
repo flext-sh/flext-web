@@ -9,8 +9,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-# Meta-programming: Import protocols to eliminate duplication
-
 
 class FlextWebInterfaces:
     """Meta-programmed interface consolidation - eliminates duplicate protocols.

@@ -3,9 +3,21 @@
 This module implements the consolidated handler architecture following the
 "one class per module" pattern, with FlextWebHandlers extending FlextHandlers
 and containing all web-specific handler functionality as nested classes and methods.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
+
+from flext_core import FlextTypes
+
+"""
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
@@ -121,28 +133,6 @@ class FlextWebHandlers(FlextHandlers):
                 entity with generated ID and timestamp information, failure contains
                 detailed error message explaining validation failure.
 
-            Business Rules:
-                - Application name must be non-empty string
-                - Port must be within valid range (1-65535)
-                - Host must be non-empty string
-                - Application ID is automatically generated as "app_{name}"
-
-            Side Effects:
-                - Creates new domain entity with timestamp information
-                - Assigns unique identifier for application tracking
-                - Initializes application in STOPPED state
-
-            Example:
-                >>> handler = FlextWebHandlers.WebAppHandler()
-                >>> result = handler.create("web-api", 8080, "0.0.0.0")
-                >>> if result.success:
-                ...     app = result.value
-                ...     print(
-                ...         f"Created: {app.name} [{app.id}] at {app.host}:{app.port}"
-                ...     )
-                ... else:
-                ...     print(f"Creation failed: {result.error}")
-
             """
             # Log create operation
             FlextMixins.log_operation(
@@ -171,30 +161,30 @@ class FlextWebHandlers(FlextHandlers):
                 .flat_map(self._validate_and_return_app)
             )
 
-        def _sanitize_inputs(self, name: str, host: str) -> FlextResult[dict[str, str]]:
+        def _sanitize_inputs(
+            self, name: str, host: str
+        ) -> FlextResult[FlextTypes.Core.Headers]:
             """Sanitize inputs using MASSIVE FlextUtilities delegation."""
             try:
                 safe_name = FlextUtilities.TextProcessor.safe_string(name, "")
                 safe_host = FlextUtilities.TextProcessor.safe_string(host, "localhost")
 
-                return FlextResult[dict[str, str]].ok(
+                return FlextResult[FlextTypes.Core.Headers].ok(
                     {
                         "name": safe_name,
                         "host": safe_host,
                     }
                 )
             except Exception as e:
-                return FlextResult[dict[str, str]].fail(
+                return FlextResult[FlextTypes.Core.Headers].fail(
                     f"Input sanitization failed: {e}"
                 )
 
         def _validate_app_inputs(
             self, name: str, port: int, host: str
-        ) -> FlextResult[dict[str, str]]:
+        ) -> FlextResult[FlextTypes.Core.Headers]:
             """Validate all app inputs - simplified to rely on Pydantic model validation."""
-            # Pydantic model validation will handle all validation logic
-            # This method now just packages the inputs for the next step
-            return FlextResult[dict[str, str]].ok(
+            return FlextResult[FlextTypes.Core.Headers].ok(
                 {
                     "name": name,
                     "port": str(port),
@@ -233,13 +223,6 @@ class FlextWebHandlers(FlextHandlers):
             domain_method: str,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Template Method pattern for app lifecycle operations (start/stop).
-
-            Eliminates 77 lines of duplication by extracting common pattern:
-            1. Log operation start
-            2. Validate domain rules
-            3. Delegate to domain entity
-            4. Log success if applicable
-            5. Return result
 
             Args:
                 app: WebApp entity to operate on
@@ -398,6 +381,9 @@ class FlextWebHandlers(FlextHandlers):
                 success_status: Default HTTP status for successful responses
                 error_status: Default HTTP status for error responses
 
+            Returns:
+            object: Description of return value.
+
             """
             self.success_status = success_status
             self.error_status = error_status
@@ -418,7 +404,7 @@ class FlextWebHandlers(FlextHandlers):
 
         def create_success_response(
             self,
-            data: dict[str, object] | list[object] | None = None,
+            data: FlextTypes.Core.Dict | FlextTypes.Core.List | None = None,
             message: str = "Success",
             status_code: int | None = None,
         ) -> ResponseReturnValue:
@@ -447,7 +433,7 @@ class FlextWebHandlers(FlextHandlers):
             self,
             message: str,
             status_code: int | None = None,
-            errors: str | dict[str, object] | None = None,
+            errors: str | FlextTypes.Core.Dict | None = None,
         ) -> ResponseReturnValue:
             """Create error JSON response using FlextWebUtilities.
 
@@ -508,14 +494,14 @@ class FlextWebHandlers(FlextHandlers):
     # =========================================================================
 
     @staticmethod
-    def handle_health_check() -> FlextResult[dict[str, object]]:
+    def handle_health_check() -> FlextResult[FlextTypes.Core.Dict]:
         """Handle health check requests with system status.
 
         Returns:
             FlextResult containing health status information.
 
         """
-        return FlextResult[dict[str, object]].ok(
+        return FlextResult[FlextTypes.Core.Dict].ok(
             {
                 "status": "healthy",
                 "service": "flext-web",
@@ -530,14 +516,14 @@ class FlextWebHandlers(FlextHandlers):
         )
 
     @classmethod
-    def handle_system_info(cls) -> FlextResult[dict[str, object]]:
+    def handle_system_info(cls) -> FlextResult[FlextTypes.Core.Dict]:
         """Handle system information requests.
 
         Returns:
             FlextResult containing detailed system information.
 
         """
-        return FlextResult[dict[str, object]].ok(
+        return FlextResult[FlextTypes.Core.Dict].ok(
             {
                 "service_name": "FLEXT Web Interface",
                 "service_type": "web_api",

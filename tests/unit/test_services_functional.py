@@ -2,6 +2,10 @@
 
 Tests focus on real execution patterns without mocks, using flext_tests library
 for comprehensive functional validation of service operations and error handling.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from collections.abc import Generator
@@ -31,7 +35,7 @@ class TestWebServiceFunctionalExecution:
     @pytest.fixture
     def running_service(
         self, functional_config: FlextWebConfigs.WebConfig
-    ) -> Generator[FlextWebServices.WebService, None, None]:
+    ) -> Generator[FlextWebServices.WebService]:
         """Create service for functional testing using Flask test client."""
         service = FlextWebServices.WebService(functional_config)
         service.app.config["TESTING"] = True
@@ -136,7 +140,9 @@ class TestWebServiceFunctionalExecution:
         data = response.get_json()
         assert data["success"] is False
         assert (
-            "error" in data["message"].lower() or "invalid" in data["message"].lower() or "required" in data["message"].lower()
+            "error" in data["message"].lower()
+            or "invalid" in data["message"].lower()
+            or "required" in data["message"].lower()
         )
 
         # Test accessing non-existent app

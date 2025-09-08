@@ -2,6 +2,10 @@
 
 Tests focus on real model validation, business rule enforcement,
 and domain entity lifecycle scenarios without mocks.
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 import pytest
@@ -121,14 +125,20 @@ class TestWebModelsFunctionalValidation:
         """Test status transitions independently."""
         # Test STARTING status
         app1 = FlextWebModels.WebApp(
-            id="status-test-app-1", name="Status Test App 1", host="localhost", port=8106
+            id="status-test-app-1",
+            name="Status Test App 1",
+            host="localhost",
+            port=8106,
         )
         app1.status = FlextWebModels.WebAppStatus.STARTING
         assert app1.status == FlextWebModels.WebAppStatus.STARTING
 
         # Test RUNNING status
         app2 = FlextWebModels.WebApp(
-            id="status-test-app-2", name="Status Test App 2", host="localhost", port=8107
+            id="status-test-app-2",
+            name="Status Test App 2",
+            host="localhost",
+            port=8107,
         )
         app2.status = FlextWebModels.WebAppStatus.RUNNING
         assert app2.status == FlextWebModels.WebAppStatus.RUNNING
@@ -136,14 +146,20 @@ class TestWebModelsFunctionalValidation:
 
         # Test STOPPING status
         app3 = FlextWebModels.WebApp(
-            id="status-test-app-3", name="Status Test App 3", host="localhost", port=8108
+            id="status-test-app-3",
+            name="Status Test App 3",
+            host="localhost",
+            port=8108,
         )
         app3.status = FlextWebModels.WebAppStatus.STOPPING
         assert app3.status == FlextWebModels.WebAppStatus.STOPPING
 
         # Test ERROR status
         app4 = FlextWebModels.WebApp(
-            id="status-test-app-4", name="Status Test App 4", host="localhost", port=8109
+            id="status-test-app-4",
+            name="Status Test App 4",
+            host="localhost",
+            port=8109,
         )
         app4.status = FlextWebModels.WebAppStatus.ERROR
         assert app4.status == FlextWebModels.WebAppStatus.ERROR

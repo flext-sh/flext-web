@@ -1,15 +1,22 @@
+"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
+"""
+
+from __future__ import annotations
+
+from flext_core import FlextTypes
+
 """FLEXT Web Types - Consolidated web type system.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
-from __future__ import annotations
 
 import os
 from typing import TypedDict, TypeVar
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextResult
 
 # Web domain-specific type variables
 TWebApp = TypeVar("TWebApp")
@@ -74,7 +81,7 @@ class FlextWebTypes:
     class SuccessResponse(BaseResponse):
         """Successful API response with data payload."""
 
-        data: dict[str, object]
+        data: FlextTypes.Core.Dict
 
     class ErrorResponse(BaseResponse):
         """Error API response with error details."""
@@ -84,7 +91,7 @@ class FlextWebTypes:
     class ListResponse(BaseResponse):
         """List API response for multiple items."""
 
-        data: list[dict[str, object]]
+        data: list[FlextTypes.Core.Dict]
 
     class HealthResponse(TypedDict):
         """Health check API response structure."""
@@ -131,9 +138,9 @@ class FlextWebTypes:
 
         success: bool
         message: str
-        data: dict[str, object] | list[object] | None
+        data: FlextTypes.Core.Dict | FlextTypes.Core.List | None
         error: str
-        errors: list[str] | dict[str, object]
+        errors: FlextTypes.Core.StringList | FlextTypes.Core.Dict
         timestamp: str
 
     class RequestContext(TypedDict, total=False):
@@ -141,8 +148,8 @@ class FlextWebTypes:
 
         method: str
         path: str
-        headers: dict[str, str]
-        data: dict[str, object]
+        headers: FlextTypes.Core.Headers
+        data: FlextTypes.Core.Dict
         user_id: str
         session_id: str
         timestamp: str
@@ -198,8 +205,8 @@ class FlextWebTypes:
         cls,
         method: str = "GET",
         path: str = "/",
-        headers: dict[str, str] | None = None,
-        data: dict[str, object] | None = None,
+        headers: FlextTypes.Core.Headers | None = None,
+        data: FlextTypes.Core.Dict | None = None,
     ) -> RequestContext:
         """Create request context structure."""
         return cls.RequestContext(
@@ -318,34 +325,39 @@ class FlextWebTypes:
     # Configuration methods
     @classmethod
     def configure_web_types_system(
-        cls, config: dict[str, object]
-    ) -> FlextResult[dict[str, object]]:
-        """Configure web types system."""
+        cls, config: FlextTypes.Core.Dict
+    ) -> FlextResult[FlextTypes.Core.Dict]:
+        """Configure web types system.
+
+        Returns:
+            FlextResult[FlextWebTypes.AppData]:: Description of return value.
+
+        """
         try:
             validated_config = dict(config)
             validated_config.setdefault("enable_strict_typing", True)
             validated_config.setdefault("enable_runtime_validation", True)
-            return FlextResult[dict[str, object]].ok(validated_config)
+            return FlextResult[FlextTypes.Core.Dict].ok(validated_config)
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to configure web types system: {e}"
             )
 
     @classmethod
     def get_web_types_system_config(
         cls,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[FlextTypes.Core.Dict]:
         """Get current web types system configuration."""
         try:
-            config: dict[str, object] = {
+            config: FlextTypes.Core.Dict = {
                 "enable_strict_typing": True,
                 "enable_runtime_validation": True,
                 "total_type_definitions": 50,
                 "factory_methods": 2,
             }
-            return FlextResult[dict[str, object]].ok(config)
+            return FlextResult[FlextTypes.Core.Dict].ok(config)
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to get web types system config: {e}"
             )
 

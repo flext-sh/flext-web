@@ -6,11 +6,17 @@ without mocks, focusing on actual business logic validation and factory methods.
 Author: FLEXT Development Team
 Version: 0.9.0
 Status: Production-ready coverage enhancement without mocks
+
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
 import os
+
+from flext_core import FlextTypes
 
 from flext_web import FlextWebConfigs
 
@@ -191,7 +197,7 @@ class TestConfigSystemMethods:
 
     def test_configure_web_configs_system_invalid_environment(self) -> None:
         """Test configure_web_configs_system with invalid environment."""
-        config_data: dict[str, object] = {"environment": "invalid-environment"}
+        config_data: FlextTypes.Core.Dict = {"environment": "invalid-environment"}
 
         result = FlextWebConfigs.configure_web_configs_system(config_data)
 
