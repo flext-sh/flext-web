@@ -252,7 +252,7 @@ class TestConfigCompleteCoverage:
             config_result = settings.to_config()
             assert config_result.is_success
             config = config_result.value
-            
+
             assert config.host == "env-host"
             assert config.port == 9999
 

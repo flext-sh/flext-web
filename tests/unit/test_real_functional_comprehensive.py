@@ -17,8 +17,8 @@ from pathlib import Path
 
 import pytest
 from flext_tests import (
-    FlextTestsPerformance,
     FlextTestsFactories,
+    FlextTestsPerformance,
 )
 from pydantic import ValidationError
 
@@ -36,7 +36,7 @@ class TestRealFunctionalFlextWebValidation:
     def test_real_webapp_creation_using_configfactory(self) -> None:
         """Test WebApp creation using FlextTestsFactories for real configuration generation."""
         # Use real FlextTestsFactories to create test data
-        test_config = FlextTestsFactories.create_test_hierarchy()
+        FlextTestsFactories.create_test_hierarchy()
 
         # Extract usable configuration elements for WebApp
         app = FlextWebModels.WebApp(

@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import logging
 import os
 import warnings
 from typing import ClassVar
@@ -26,6 +27,17 @@ from pydantic import (
 )
 
 from flext_web.constants import FlextWebConstants
+
+# Import at top level to avoid PLC0415 errors
+try:
+    from flext_web.settings import FlextWebSettings
+    _web_settings_available = True
+except ImportError:
+    FlextWebSettings = None  # type: ignore[misc,assignment]
+    _web_settings_available = False
+
+# Logger for this module
+_logger = logging.getLogger(__name__)
 
 
 class FlextWebConfigs:
@@ -52,10 +64,12 @@ class FlextWebConfigs:
         """
 
         model_config = FlextConfig.model_config.copy()
-        model_config.update({
-            "validate_assignment": True,
-            "extra": "allow",
-        })
+        model_config.update(
+            {
+                "validate_assignment": True,
+                "extra": "allow",
+            }
+        )
 
         # Web service settings
         host: str = Field(
@@ -128,7 +142,8 @@ class FlextWebConfigs:
 
             # For production, require explicit host configuration
             # Replace 0.0.0.0 with localhost for security
-            if host == "0.0.0.0":
+            dangerous_host = "0.0.0.0"  # noqa: S104 - intentional check for security
+            if host == dangerous_host:
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
                     return host
@@ -564,10 +579,13 @@ class FlextWebConfigs:
     @classmethod
     def create_config_from_env(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Create configuration from environment variables."""
+        if not _web_settings_available or FlextWebSettings is None:
+            return FlextResult[FlextWebConfigs.WebConfig].fail(
+                "FlextWebSettings not available - import failed"
+            )
+
         try:
             # Use FlextWebSettings to load from environment
-            from flext_web.settings import FlextWebSettings
-
             settings = FlextWebSettings()
             return settings.to_config()
         except Exception as e:
@@ -622,28 +640,29 @@ class FlextWebConfigs:
             )
 
             # WebSettings → WebConfig validation (full bridge)
-            try:
-                from flext_web.settings import FlextWebSettings  # local import
-
-                # Create settings using Pydantic model validation
+            if _web_settings_available and FlextWebSettings is not None:
                 try:
-                    settings_obj = FlextWebSettings.model_validate(validated_config)
-                    settings_res = FlextResult[FlextWebSettings].ok(settings_obj)
+                    # Create settings using Pydantic model validation
+                    try:
+                        settings_obj = FlextWebSettings.model_validate(validated_config)
+                        settings_res = FlextResult[FlextWebSettings].ok(settings_obj)
+                    except Exception as e:
+                        settings_res = FlextResult[FlextWebSettings].fail(
+                            f"Settings validation failed: {e}"
+                        )
+                    if settings_res.is_failure:
+                        return FlextResult[FlextTypes.Core.Dict].fail(
+                            settings_res.error or "Failed to build WebSettings",
+                        )
+                    cfg_res = settings_res.value.to_config()
+                    if cfg_res.is_failure:
+                        return FlextResult[FlextTypes.Core.Dict].fail(
+                            cfg_res.error or "Failed to validate WebConfig",
+                        )
+                    validated_config = cfg_res.value.model_dump()
                 except Exception as e:
-                    settings_res = FlextResult[FlextWebSettings].fail(f"Settings validation failed: {e}")
-                if settings_res.is_failure:
-                    return FlextResult[FlextTypes.Core.Dict].fail(
-                        settings_res.error or "Failed to build WebSettings",
-                    )
-                cfg_res = settings_res.value.to_config()
-                if cfg_res.is_failure:
-                    return FlextResult[FlextTypes.Core.Dict].fail(
-                        cfg_res.error or "Failed to validate WebConfig",
-                    )
-                validated_config = cfg_res.value.model_dump()
-            except Exception:
-                # Preserve backward-compat path if bridge fails for any reason
-                pass
+                    # Log the exception instead of silent pass
+                    _logger.warning("WebSettings bridge failed, using backward-compat path: %s", e)
 
             # Web configs specific settings
             validated_config.setdefault("enable_environment_validation", True)

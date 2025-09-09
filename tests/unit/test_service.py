@@ -301,8 +301,8 @@ class TestWebConfigAdvanced:
             config_result = settings.to_config()
             assert config_result.is_success
             config = config_result.value
-            
-            assert config.host == "test-host" 
+
+            assert config.host == "test-host"
             assert config.port == 9000
             assert config.debug is False
             assert config.secret_key == "env-secret-key-32-characters-long!!"

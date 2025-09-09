@@ -12,6 +12,7 @@ from flext_core import (
     FlextConstants,
     FlextLogger,
     FlextMixins,
+    FlextModels,
     FlextResult,
     FlextTypes,
     FlextUtilities,
@@ -775,10 +776,6 @@ class FlextWebServices:
                 )
 
             # Core validation via flext-core SystemConfigs (bridge compatibility)
-            from flext_core import (
-                FlextModels,  # local import to avoid cycles
-            )
-
             core_validation = {
                 "environment": validated_config.get(
                     "environment",
