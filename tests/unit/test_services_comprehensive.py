@@ -12,7 +12,7 @@ from collections import UserDict
 
 import pytest
 from flext_core import FlextResult
-from flext_tests import AsyncTestUtils
+from flext_tests import FlextTestsAsyncs
 
 from flext_web import FlextWebConfigs, FlextWebModels, FlextWebServices
 
@@ -414,7 +414,8 @@ class TestWebServiceFactoryMethods:
 
         assert result.is_success
         service = result.value
-        assert service.config.host == "0.0.0.0"
+        # Note: 0.0.0.0 gets converted to 127.0.0.1 for security unless FLEXT_DEVELOPMENT_MODE=true
+        assert service.config.host == "127.0.0.1"
         assert service.config.port == 9000
         assert service.config.debug is False
 
@@ -719,8 +720,8 @@ class TestComplexServiceScenarios:
         )
         service = FlextWebServices.WebService(config)
 
-        # Use AsyncTestUtils from flext_tests for better testing
-        AsyncTestUtils()
+        # Use FlextTestsAsyncs from flext_tests for better testing
+        FlextTestsAsyncs()
 
         # Test service readiness
         assert service.app is not None

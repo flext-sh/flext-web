@@ -53,7 +53,8 @@ class TestConfigFactoryMethods:
             config = result.value
             assert isinstance(config, FlextWebConfigs.WebConfig)
             assert config.debug is False  # Production should have debug disabled
-            assert config.host == "0.0.0.0"
+            # Note: 0.0.0.0 gets converted to 127.0.0.1 for security unless FLEXT_DEVELOPMENT_MODE=true
+            assert config.host == "127.0.0.1"
             assert config.port == 8080
             assert config.secret_key == "production-secret-key-32-chars-exactly"
         finally:
@@ -90,7 +91,10 @@ class TestConfigFactoryMethods:
         os.environ["FLEXT_WEB_DEBUG"] = "false"
 
         try:
-            result = FlextWebConfigs.create_config_from_env()
+            # Use settings to properly read environment variables
+            from flext_web.settings import FlextWebSettings
+            settings = FlextWebSettings()
+            result = settings.to_config()
 
             assert result.is_success, (
                 f"Config from env should succeed, got: {result.error}"

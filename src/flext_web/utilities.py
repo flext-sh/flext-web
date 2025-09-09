@@ -3,26 +3,17 @@
 Minimal implementation providing ONLY web-domain-specific utilities not available
 in flext-core. Delegates all generic operations to FlextUtilities.
 
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from flext_core import FlextTypes
-
-"""
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
-
-
 import re
 from typing import TypeVar
 from urllib.parse import urlparse
 
-from flext_core import FlextConstants, FlextResult, FlextUtilities
+from flext_core import FlextConstants, FlextResult, FlextTypes, FlextUtilities
 from pydantic import ValidationError
 
 from flext_web.models import FlextWebModels

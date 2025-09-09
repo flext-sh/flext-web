@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from flext_tests import AsyncTestUtils
+from flext_tests import FlextTestsAsyncs
 from pydantic import ValidationError
 
 from flext_web import FlextWebHandlers, FlextWebModels
@@ -158,8 +158,8 @@ class TestWebAppHandlerEdgeCases:
         """Test handler with realistic application scenarios using flext_tests."""
         handler = FlextWebHandlers.WebAppHandler()
 
-        # Use AsyncTestUtils from flext_tests for better validation
-        AsyncTestUtils()
+        # Use FlextTestsAsyncs from flext_tests for better validation
+        FlextTestsAsyncs()
 
         # Test full lifecycle
         apps_created = []
@@ -222,7 +222,7 @@ class TestModelsIntegration:
         assert isinstance(app, FlextWebModels.WebApp)
         assert app.name == "integration-test"
         assert app.port == 9000
-        assert app.host == "0.0.0.0"
+        assert app.host == "0.0.0.0"  # WebApp model stores the original host value
 
         # Test business rule validation
         validation_result = app.validate_business_rules()
@@ -240,7 +240,7 @@ class TestModelsIntegration:
     def test_async_integration_with_flext_tests(self) -> None:
         """Test models with async patterns using flext_tests."""
         handler = FlextWebHandlers.WebAppHandler()
-        AsyncTestUtils()
+        FlextTestsAsyncs()
 
         # Create multiple apps for async-like testing
         app_names = ["async-app-1", "async-app-2", "async-app-3"]

@@ -106,9 +106,11 @@ class TestWebConfigEnvironmentVariables:
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
-            config = FlextWebConfigs.WebConfig()
+            config_result = FlextWebConfigs.create_config_from_env()
+            assert config_result.is_success
+            config = config_result.value
 
-            assert config.host == "0.0.0.0"
+            assert config.host == "127.0.0.1"  # Security validation converts 0.0.0.0 to localhost
             assert config.port == 9000
             assert config.debug is False
             assert config.secret_key == "production-secret-key-from-env-12345"
@@ -125,13 +127,15 @@ class TestWebConfigEnvironmentVariables:
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
-            config = FlextWebConfigs.WebConfig()
+            config_result = FlextWebConfigs.create_config_from_env()
+            assert config_result.is_success
+            config = config_result.value
 
             assert config.host == "custom-host"
             assert config.port == 8888
-            # Other values should be defaults
-            assert config.debug is True  # Default
-            assert config.app_name == "FLEXT Web"  # Default
+            # Other values should be from environment/conftest/env file
+            assert config.debug is False  # From inherited FlextConfig which defaults to False
+            assert config.app_name == "flext-app"  # From FlextConfig inheritance
 
     def test_config_from_env_invalid_types(self) -> None:
         """Test config creation with invalid environment variable types."""

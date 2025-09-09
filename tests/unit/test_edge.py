@@ -179,19 +179,20 @@ class TestRealEdgeCases:
         original_env = dict(os.environ)
 
         try:
-            # Test with invalid port in environment
+            # Test with invalid port in environment using settings
             os.environ["FLEXT_WEB_PORT"] = "invalid"
-            # reset_web_settings()
 
             with pytest.raises((ValueError, Exception)):
-                FlextWebConfigs.WebConfig()
+                from flext_web.settings import FlextWebSettings
+                settings = FlextWebSettings()  # This should raise error with invalid port
 
-            # Test with valid environment
+            # Test with valid environment using settings
             os.environ["FLEXT_WEB_PORT"] = "8085"
             os.environ["FLEXT_WEB_HOST"] = "test-host"
-            # reset_web_settings()
 
-            config_result = FlextWebConfigs.create_web_config()
+            from flext_web.settings import FlextWebSettings
+            settings = FlextWebSettings()
+            config_result = settings.to_config()
             assert config_result.is_success
             config = config_result.value
             assert config.port == 8085
@@ -433,7 +434,8 @@ class TestRealConfigurationEdgeCases:
         assert config.get_server_url() == "http://test-host:9000"
 
         config = FlextWebConfigs.WebConfig(host="0.0.0.0", port=8080)
-        assert config.get_server_url() == "http://0.0.0.0:8080"
+        # Note: 0.0.0.0 gets converted to 127.0.0.1 for security unless FLEXT_DEVELOPMENT_MODE=true
+        assert config.get_server_url() == "http://127.0.0.1:8080"
 
     @pytest.mark.unit
     def test_real_config_production_detection(self) -> None:

@@ -20,7 +20,6 @@ from flext_core import (
     FlextTypes,
 )
 from pydantic import (
-    ConfigDict,
     Field,
     field_validator,
     model_validator,
@@ -52,10 +51,11 @@ class FlextWebConfigs:
         and security-focused secret management.
         """
 
-        model_config: ClassVar[ConfigDict] = ConfigDict(
-            validate_assignment=True,
-            extra="allow",
-        )
+        model_config = FlextConfig.model_config.copy()
+        model_config.update({
+            "validate_assignment": True,
+            "extra": "allow",
+        })
 
         # Web service settings
         host: str = Field(
@@ -113,14 +113,14 @@ class FlextWebConfigs:
 
         @field_validator("host")
         @classmethod
-        def validate_host(cls, v: str) -> str:
+        def validate_host(cls, value: str) -> str:
             """Validate host address format."""
-            if not v or not v.strip():
+            if not value or not value.strip():
                 msg = "Host address cannot be empty"
                 raise ValueError(msg)
 
             # Basic host validation - allow localhost, IP addresses, and domain names
-            host = v.strip()
+            host = value.strip()
 
             # Allow localhost and local IPs for development
             if host in {"localhost", "127.0.0.1"}:
@@ -144,42 +144,42 @@ class FlextWebConfigs:
 
         @field_validator("secret_key")
         @classmethod
-        def validate_secret_key(cls, v: str) -> str:
+        def validate_secret_key(cls, value: str) -> str:
             """Validate secret key strength."""
-            if len(v) < FlextConstants.Validation.MIN_SECRET_KEY_LENGTH:
+            if len(value) < FlextConstants.Validation.MIN_SECRET_KEY_LENGTH:
                 msg = f"Secret key must be at least {FlextConstants.Validation.MIN_SECRET_KEY_LENGTH} characters long"
                 raise ValueError(msg)
 
             # Check for default development key in production-like environments
             if (
-                v == FlextWebConstants.WebSpecific.DEV_SECRET_KEY
+                value == FlextWebConstants.WebSpecific.DEV_SECRET_KEY
                 and not cls._is_development_env()
             ):
                 msg = "Must change default secret key for production"
                 raise ValueError(msg)
 
-            return v
+            return value
 
         @field_validator("port")
         @classmethod
-        def validate_port(cls, v: int) -> int:
+        def validate_port(cls, value: int) -> int:
             """Validate port number and check for system reserved ports."""
             min_port = FlextConstants.Web.MIN_PORT
             max_port = FlextConstants.Web.MAX_PORT
-            if not (min_port <= v <= max_port):
-                msg = f"Port must be between {min_port} and {max_port}, got {v}"
+            if not (min_port <= value <= max_port):
+                msg = f"Port must be between {min_port} and {max_port}, got {value}"
                 raise ValueError(msg)
 
             # Warn about system reserved ports (1-1023) but allow them
-            if v <= FlextWebConstants.WebSpecific.SYSTEM_PORTS_THRESHOLD:
+            if value <= FlextWebConstants.WebSpecific.SYSTEM_PORTS_THRESHOLD:
                 # Note: In production, this might require special permissions
                 warnings.warn(
-                    f"Using system reserved port {v}. May require special permissions in production.",
+                    f"Using system reserved port {value}. May require special permissions in production.",
                     UserWarning,
                     stacklevel=2,
                 )
 
-            return v
+            return value
 
         @model_validator(mode="before")
         @classmethod
@@ -564,7 +564,16 @@ class FlextWebConfigs:
     @classmethod
     def create_config_from_env(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Create configuration from environment variables."""
-        return FlextWebConfigs.WebConfig.create_with_validation()
+        try:
+            # Use FlextWebSettings to load from environment
+            from flext_web.settings import FlextWebSettings
+
+            settings = FlextWebSettings()
+            return settings.to_config()
+        except Exception as e:
+            return FlextResult[FlextWebConfigs.WebConfig].fail(
+                f"Failed to load config from environment: {e}"
+            )
 
     # =============================================================================
     # FLEXT WEB CONFIGS CONFIGURATION METHODS
@@ -616,7 +625,12 @@ class FlextWebConfigs:
             try:
                 from flext_web.settings import FlextWebSettings  # local import
 
-                settings_res = FlextWebSettings.from_sources(constants=validated_config)
+                # Create settings using Pydantic model validation
+                try:
+                    settings_obj = FlextWebSettings.model_validate(validated_config)
+                    settings_res = FlextResult[FlextWebSettings].ok(settings_obj)
+                except Exception as e:
+                    settings_res = FlextResult[FlextWebSettings].fail(f"Settings validation failed: {e}")
                 if settings_res.is_failure:
                     return FlextResult[FlextTypes.Core.Dict].fail(
                         settings_res.error or "Failed to build WebSettings",

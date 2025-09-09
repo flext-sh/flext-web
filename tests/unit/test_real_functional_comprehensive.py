@@ -17,8 +17,8 @@ from pathlib import Path
 
 import pytest
 from flext_tests import (
-    BenchmarkFixture,
-    ConfigFactory,
+    FlextTestsPerformance,
+    FlextTestsFactories,
 )
 from pydantic import ValidationError
 
@@ -34,21 +34,21 @@ class TestRealFunctionalFlextWebValidation:
     """Real functional tests using actual flext_tests utilities without mocks."""
 
     def test_real_webapp_creation_using_configfactory(self) -> None:
-        """Test WebApp creation using ConfigFactory for real configuration generation."""
-        # Use real ConfigFactory to create configuration data
-        ConfigFactory.create()
+        """Test WebApp creation using FlextTestsFactories for real configuration generation."""
+        # Use real FlextTestsFactories to create test data
+        test_config = FlextTestsFactories.create_test_hierarchy()
 
         # Extract usable configuration elements for WebApp
         app = FlextWebModels.WebApp(
             id="configfactory-test-001",
-            name="ConfigFactory Generated App",
+            name="FlextTestsFactories Generated App",
             host="127.0.0.1",
             port=8300,  # Use real port number
         )
 
         # Real validation without mocks
         assert isinstance(app, FlextWebModels.WebApp)
-        assert app.name == "ConfigFactory Generated App"
+        assert app.name == "FlextTestsFactories Generated App"
         assert app.host == "127.0.0.1"
         assert app.port == 8300
         assert app.status == FlextWebModels.WebAppStatus.STOPPED
@@ -100,7 +100,7 @@ class TestRealFunctionalFlextWebValidation:
             config = FlextWebConfigs.get_web_settings()
 
             # Validate real configuration values
-            assert config.host == "0.0.0.0"
+            assert config.host == "127.0.0.1"  # Security validation converts 0.0.0.0 to localhost
             assert config.port == 8302
             assert config.debug is False
             assert (
@@ -299,7 +299,7 @@ class TestRealFunctionalFlextWebValidation:
             host="0.0.0.0",  # Wildcard binding
             port=8310,
         )
-        assert wildcard_app.host == "0.0.0.0"
+        assert wildcard_app.host == "0.0.0.0"  # WebApp model stores the original host value
 
     def test_real_file_operations_with_temporary_directories(self) -> None:
         """Test real file operations using temporary directories."""
@@ -443,7 +443,7 @@ class TestRealFunctionalFlextWebValidation:
 class TestRealBenchmarkWithFlextTests:
     """Performance benchmarking using flext_tests BenchmarkUtils."""
 
-    def test_webapp_creation_benchmark(self, benchmark: BenchmarkFixture) -> None:
+    def test_webapp_creation_benchmark(self, benchmark: FlextTestsPerformance) -> None:
         """Benchmark WebApp creation using pytest-benchmark."""
 
         def create_webapp() -> FlextWebModels.WebApp:
@@ -458,7 +458,7 @@ class TestRealBenchmarkWithFlextTests:
         assert isinstance(result, FlextWebModels.WebApp)
         assert result.name == "Benchmark Test App"
 
-    def test_handler_operations_benchmark(self, benchmark: BenchmarkFixture) -> None:
+    def test_handler_operations_benchmark(self, benchmark: FlextTestsPerformance) -> None:
         """Benchmark handler operations using real execution."""
         handler = FlextWebHandlers.WebAppHandler()
 
@@ -471,7 +471,7 @@ class TestRealBenchmarkWithFlextTests:
         result = benchmark(handler_create_operation)
         assert result is True
 
-    def test_config_creation_benchmark(self, benchmark: BenchmarkFixture) -> None:
+    def test_config_creation_benchmark(self, benchmark: FlextTestsPerformance) -> None:
         """Benchmark configuration creation with real data."""
 
         def create_config() -> FlextWebConfigs.WebConfig:

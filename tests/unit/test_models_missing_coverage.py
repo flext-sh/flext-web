@@ -10,7 +10,7 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-from flext_tests import FlextTestUtilities
+from flext_tests import FlextTestsUtilities
 
 from flext_web import FlextWebHandlers, FlextWebModels
 
@@ -21,7 +21,7 @@ class TestModelsMissingCoverage:
     def test_webapp_validation_edge_cases_real(self) -> None:
         """Test WebApp validation edge cases (lines 67-70, 78-79, 83-84)."""
         # Test WebApp with invalid status values that trigger validation
-        FlextTestUtilities.create_test_data(size=1, prefix="webapp")
+        FlextTestsUtilities.create_test_data(size=1, prefix="webapp")
 
         # Test invalid status transition
         webapp = FlextWebModels.WebApp(
@@ -175,8 +175,8 @@ class TestModelsMissingCoverage:
 
     def test_flext_tests_integration_with_models(self) -> None:
         """Integration test using flext_tests utilities with models."""
-        # Create test data using FlextTestUtilities
-        test_data_list = FlextTestUtilities.create_test_data(size=3, prefix="model")
+        # Create test data using FlextTestsUtilities
+        test_data_list = FlextTestsUtilities.create_test_data(size=3, prefix="model")
 
         # Create WebApps using test data patterns
         webapps = []

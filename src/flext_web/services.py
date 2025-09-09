@@ -1,18 +1,10 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
-from flext_core import FlextTypes
-
 """FLEXT Web Services - Consolidated web service system with enterprise patterns.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
-
 """
 
+from __future__ import annotations
 
 from flask import Flask, jsonify, render_template_string, request
 from flask.typing import ResponseReturnValue
@@ -21,6 +13,7 @@ from flext_core import (
     FlextLogger,
     FlextMixins,
     FlextResult,
+    FlextTypes,
     FlextUtilities,
 )
 

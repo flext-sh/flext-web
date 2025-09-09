@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 import math
 
-from flext_tests import FlextTestUtilities
+from flext_tests import FlextTestsUtilities
 
 from flext_web import FlextWebTypes
 
@@ -230,8 +230,8 @@ class TestTypingsMissingCoverage:
 
     def test_flext_tests_integration_with_typings(self) -> None:
         """Integration test using flext_tests utilities with typings."""
-        # Use FlextTestUtilities for real testing patterns
-        test_data_list = FlextTestUtilities.create_test_data(size=1, prefix="config")
+        # Use FlextTestsUtilities for real testing patterns
+        test_data_list = FlextTestsUtilities.create_test_data(size=1, prefix="config")
 
         # Create proper config data for validation
         config_data = {

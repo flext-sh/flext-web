@@ -8,7 +8,7 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes
 
 from flext_web import FlextWebUtilities
 

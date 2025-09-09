@@ -102,7 +102,7 @@ class TestRealMainEntry:
             ]
         )
 
-        assert args.host == "0.0.0.0"
+        assert args.host == "0.0.0.0"  # Argument parsing preserves original value
         assert args.port == 9000
         assert args.debug is True
 
@@ -197,8 +197,10 @@ class TestRealMainEntry:
             # Reset to reload config
             # reset_web_settings()
 
-            # Get configuration (should load from environment)
-            config_result = FlextWebConfigs.create_web_config()
+            # Get configuration using settings (properly loads from environment)
+            from flext_web.settings import FlextWebSettings
+            settings = FlextWebSettings()
+            config_result = settings.to_config()
             assert config_result.is_success
             config = config_result.value
             assert config.host == "env-host"

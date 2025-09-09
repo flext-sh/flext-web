@@ -1,22 +1,15 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
-from flext_core import FlextTypes
-
 """FLEXT Web Types - Consolidated web type system.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
+from __future__ import annotations
 
 import os
 from typing import TypedDict, TypeVar
 
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes
 
 # Web domain-specific type variables
 TWebApp = TypeVar("TWebApp")

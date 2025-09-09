@@ -12,7 +12,7 @@ from collections.abc import Generator
 
 import pytest
 from flext_tests import (
-    FlextResultFactory,
+    FlextTestsFactories,
 )
 
 from flext_web import FlextWebConfigs, FlextWebServices
@@ -187,8 +187,8 @@ class TestWebServiceFunctionalExecution:
 
     def test_functional_service_with_result_patterns(self) -> None:
         """Test service creation using FlextResult patterns from flext_tests."""
-        # Use FlextResultFactory from flext_tests
-        config_result = FlextResultFactory.create_success(
+        # Use FlextTestsFactories from flext_tests
+        config_result = FlextTestsFactories.FlextResultFactory.create_success(
             FlextWebConfigs.WebConfig(
                 host="127.0.0.1",
                 port=8087,

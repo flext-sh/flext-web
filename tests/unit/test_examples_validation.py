@@ -1,16 +1,11 @@
-"""FLEXT - Enterprise Data Integration Platform."""
+"""FLEXT - Enterprise Data Integration Platform.
 
-"""
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
-
-
-# !/usr/bin/env python3
-"""Deep validation tests for all examples/ functionality.
-
+Deep validation tests for all examples/ functionality.
 Comprehensive testing of every example file to ensure all functions,
 error paths, and edge cases work correctly in production environments.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations

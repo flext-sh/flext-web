@@ -1,12 +1,11 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """Advanced tests for FLEXT Web Interface service functionality.
 
 Tests error handling, edge cases, validation, and integration scenarios
 using REAL execution without mocks to ensure robust operation.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT.
 """
 
 from __future__ import annotations
@@ -296,9 +295,14 @@ class TestWebConfigAdvanced:
             os.environ["FLEXT_WEB_DEBUG"] = "false"
             os.environ["FLEXT_WEB_SECRET_KEY"] = "env-secret-key-32-characters-long!!"
 
-            # Test real config loading
-            config = FlextWebConfigs.WebConfig()
-            assert config.host == "test-host"
+            # Test real config loading from environment using the settings class
+            from flext_web.settings import FlextWebSettings
+            settings = FlextWebSettings()
+            config_result = settings.to_config()
+            assert config_result.is_success
+            config = config_result.value
+            
+            assert config.host == "test-host" 
             assert config.port == 9000
             assert config.debug is False
             assert config.secret_key == "env-secret-key-32-characters-long!!"

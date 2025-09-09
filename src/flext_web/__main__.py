@@ -1,50 +1,10 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
 """FLEXT Web Interface - Command Line Entry Point.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
-
-Command-line interface entry point for the FLEXT Web Interface service.
-Provides argument parsing, configuration management, and service initialization
-with comprehensive error handling and logging integration.
-
-The CLI supports configuration override through command-line arguments while
-maintaining compatibility with environment-based configuration patterns from
-flext-core. All operations follow enterprise-grade error handling and logging
-standards.
-
-Command Line Options:
-    --host: Override server bind address from configuration
-    --port: Override server port number from configuration
-    --debug: Force enable debug mode regardless of configuration
-    --no-debug: Force disable debug mode regardless of configuration
-
-Integration:
-    - Built on flext-core logging and configuration patterns
-    - Integrates with FlextWebConfig for environment variable support
-    - Uses FlextWebService for actual service implementation
-    - Follows enterprise CLI design patterns with proper error codes
-
-Example:
-    Basic service startup with default configuration:
-
-    >>> python -m flext_web
-
-    Production deployment with custom host and port:
-
-    >>> python -m flext_web --host 0.0.0.0 --port 8080 --no-debug
-
-Author: FLEXT Development Team
-Version: 0.9.0
-Status: Development (targeting 1.0.0 production release)
-
 """
 
+from __future__ import annotations
 
 import argparse
 import sys

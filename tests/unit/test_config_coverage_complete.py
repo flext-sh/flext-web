@@ -200,7 +200,7 @@ class TestConfigCompleteCoverage:
             log_level="INFO",
         )
 
-        assert full_config.host == "0.0.0.0"
+        assert full_config.host == "127.0.0.1"  # Security validation converts 0.0.0.0 to localhost
         assert full_config.port == 8080
         assert full_config.app_name == "Full Config Test"
         assert full_config.max_content_length == 16 * 1024 * 1024
@@ -229,7 +229,8 @@ class TestConfigCompleteCoverage:
         )
 
         server_url2 = config2.get_server_url()
-        assert server_url2 == "http://0.0.0.0:3000"
+        # Note: 0.0.0.0 gets converted to 127.0.0.1 for security unless FLEXT_DEVELOPMENT_MODE=true
+        assert server_url2 == "http://127.0.0.1:3000"
 
     def test_edge_case_environment_variables(self) -> None:
         """Test edge cases with environment variable loading."""
@@ -242,15 +243,16 @@ class TestConfigCompleteCoverage:
             values = FlextWebConfigs.WebConfig.load_from_env({})
             assert values.get("debug") is False
 
-        # Test environment variable precedence
+        # Test environment variable precedence using settings
         with patch.dict(
             os.environ, {"FLEXT_WEB_HOST": "env-host", "FLEXT_WEB_PORT": "9999"}
         ):
-            config = FlextWebConfigs.WebConfig(
-                secret_key="precedence-test-32-character-key!",
-                debug=True,
-                # host and port should come from env
-            )
+            from flext_web.settings import FlextWebSettings
+            settings = FlextWebSettings()
+            config_result = settings.to_config()
+            assert config_result.is_success
+            config = config_result.value
+            
             assert config.host == "env-host"
             assert config.port == 9999
 

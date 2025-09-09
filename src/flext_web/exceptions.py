@@ -1,9 +1,3 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
-"""
-
-from __future__ import annotations
-
 """FLEXT Web Exception - Consolidated exception system.
 
 Single consolidated FlextWebException class containing all web-specific exception types
@@ -13,6 +7,7 @@ Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """
 
+from __future__ import annotations
 
 from flext_core import FlextExceptions
 

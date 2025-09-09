@@ -348,8 +348,8 @@ class TestRealConfigurationManagement:
             # Reset to force reload
             # reset_web_settings()
 
-            # Test real config loading
-            config_result = FlextWebConfigs.create_web_config()
+            # Test real config loading from environment
+            config_result = FlextWebConfigs.create_config_from_env()
             assert config_result.is_success
             config = config_result.value
             assert config.host == "test-host"
