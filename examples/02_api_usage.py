@@ -82,18 +82,13 @@ def create_application(
             result = cast("FlextWebTypes.BaseResponse", response.json())
             if result.get("success"):
                 data = result.get("data")
-                # Type guard: ensure we return AppDataDict
+
                 if isinstance(data, dict) and "id" in data and "name" in data:
                     return cast("FlextWebTypes.AppData", data)
                 return None
         return None
     except requests.RequestException:
         return None
-
-
-# =============================================================================
-# ADVANCED PATTERN IMPLEMENTATIONS - STRATEGY + FUNCTIONAL + MONADIC
-# =============================================================================
 
 
 def _extract_apps_from_response(

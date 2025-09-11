@@ -55,7 +55,7 @@ flext-web/
 │   ├── __init__.py          # All components (518 lines)
 │   ├── __main__.py          # CLI entry point
 │   ├── exceptions.py        # Exception hierarchy (311 lines)
-│   ├── py.typed            # Type checking marker
+│   ├── py.typed
 │   └── templates/          # Django templates (unused)
 ├── tests/                  # Comprehensive test suite
 ├── docs/                   # Documentation
@@ -159,7 +159,7 @@ make coverage-html         # Generate HTML coverage report
 
 ```bash
 make runserver            # Start Flask development server (localhost:8080)
-make serve                # Alias for runserver
+make serve
 make dev-server           # Start dev server with hot reload
 make prod-server          # Start production server
 make web-test             # Test web service creation
@@ -193,7 +193,7 @@ make doctor              # Health check (diagnose + check)
 make t                    # test
 make l                    # lint
 make f                    # format
-make tc                   # type-check
+make tc                 
 make c                    # clean
 make i                    # install
 make v                    # validate
@@ -567,7 +567,7 @@ pytest tests/test_name.py -v --fixtures
 poetry run mypy src --show-error-codes
 
 # Ignore specific errors (temporary)
-# Add "# type: ignore[error-code]" to line
+# Add "
 
 # Update type stubs
 poetry add --group dev types-requests types-flask

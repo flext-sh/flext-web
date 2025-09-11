@@ -69,7 +69,9 @@ class TestWebModelsFunctionalValidation:
         wildcard_app = FlextWebModels.WebApp(
             id="wildcard-app", name="Wildcard App", host="0.0.0.0", port=8103
         )
-        assert wildcard_app.host == "0.0.0.0"  # WebApp model stores the original host value
+        assert (
+            wildcard_app.host == "0.0.0.0"
+        )  # WebApp model stores the original host value
 
     def test_functional_web_app_validation_error_scenarios(self) -> None:
         """Test WebApp validation with real error scenarios."""

@@ -224,7 +224,6 @@ class FlextWebTypes:
                         f"Required field '{field}' is missing"
                     )
 
-            # Type validations
             if not isinstance(data["host"], str):
                 return FlextResult[FlextWebTypes.ConfigData].fail(
                     "Field 'host' must be a string"
@@ -276,7 +275,6 @@ class FlextWebTypes:
                         f"Required field '{field}' is missing"
                     )
 
-            # Type validations
             if not isinstance(data["id"], str):
                 return FlextResult[FlextWebTypes.AppData].fail(
                     "Field 'id' must be a string"

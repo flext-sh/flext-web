@@ -176,7 +176,8 @@ class TestWebConfigFunctionalValidation:
             assert config.port == 8080  # Default
             assert config.debug is False  # Default
             assert (
-                config.secret_key == "your-django-secret-key-minimum-50-characters-long-for-testing-abcdefghijklmnopqrstuvwxyz"
+                config.secret_key
+                == "your-django-secret-key-minimum-50-characters-long-for-testing-abcdefghijklmnopqrstuvwxyz"
             )  # From .env file
 
             # Reset config cache
@@ -192,11 +193,14 @@ class TestWebConfigFunctionalValidation:
             )
 
             config = FlextWebConfigs.get_web_settings()
-            assert config.host == "127.0.0.1"  # Security validation converts 0.0.0.0 to localhost  # From env
+            assert (
+                config.host == "127.0.0.1"
+            )  # Security validation converts 0.0.0.0 to localhost  # From env
             assert config.port == 9000  # From env
             assert config.debug is False  # Default
             assert (
-                config.secret_key == "your-django-secret-key-minimum-50-characters-long-for-testing-abcdefghijklmnopqrstuvwxyz"
+                config.secret_key
+                == "your-django-secret-key-minimum-50-characters-long-for-testing-abcdefghijklmnopqrstuvwxyz"
             )  # From .env file
 
         finally:
@@ -328,7 +332,9 @@ FLEXT_WEB_APP_NAME=File Config Test
             host="0.0.0.0",  # Wildcard binding
             port=8094,
         )
-        assert wildcard_config.host == "127.0.0.1"  # Security validation converts 0.0.0.0 to localhost
+        assert (
+            wildcard_config.host == "127.0.0.1"
+        )  # Security validation converts 0.0.0.0 to localhost
 
         # Test maximum content length
         max_content_config = FlextWebConfigs.WebConfig(

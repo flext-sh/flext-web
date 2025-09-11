@@ -29,7 +29,6 @@ class FlextWebInterfaces:
     # PROTOCOL ALIASES - ELIMINATES DUPLICATION VIA META-PROGRAMMING
     # =========================================================================
 
-    # Aliases removed - use FlextWebProtocols directly
     # Use FlextWebProtocols.WebServiceInterface instead of WebServiceInterface
     # Use FlextWebProtocols.MiddlewareInterface instead of MiddlewareInterface
     # Use FlextWebProtocols.TemplateEngineInterface instead of TemplateEngineInterface

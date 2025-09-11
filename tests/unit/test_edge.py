@@ -184,13 +184,17 @@ class TestRealEdgeCases:
 
             with pytest.raises((ValueError, Exception)):
                 from flext_web.settings import FlextWebSettings
-                settings = FlextWebSettings()  # This should raise error with invalid port
+
+                settings = (
+                    FlextWebSettings()
+                )  # This should raise error with invalid port
 
             # Test with valid environment using settings
             os.environ["FLEXT_WEB_PORT"] = "8085"
             os.environ["FLEXT_WEB_HOST"] = "test-host"
 
             from flext_web.settings import FlextWebSettings
+
             settings = FlextWebSettings()
             config_result = settings.to_config()
             assert config_result.is_success

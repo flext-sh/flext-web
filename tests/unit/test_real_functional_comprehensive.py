@@ -100,7 +100,9 @@ class TestRealFunctionalFlextWebValidation:
             config = FlextWebConfigs.get_web_settings()
 
             # Validate real configuration values
-            assert config.host == "127.0.0.1"  # Security validation converts 0.0.0.0 to localhost
+            assert (
+                config.host == "127.0.0.1"
+            )  # Security validation converts 0.0.0.0 to localhost
             assert config.port == 8302
             assert config.debug is False
             assert (
@@ -299,7 +301,9 @@ class TestRealFunctionalFlextWebValidation:
             host="0.0.0.0",  # Wildcard binding
             port=8310,
         )
-        assert wildcard_app.host == "0.0.0.0"  # WebApp model stores the original host value
+        assert (
+            wildcard_app.host == "0.0.0.0"
+        )  # WebApp model stores the original host value
 
     def test_real_file_operations_with_temporary_directories(self) -> None:
         """Test real file operations using temporary directories."""
@@ -458,7 +462,9 @@ class TestRealBenchmarkWithFlextTests:
         assert isinstance(result, FlextWebModels.WebApp)
         assert result.name == "Benchmark Test App"
 
-    def test_handler_operations_benchmark(self, benchmark: FlextTestsPerformance) -> None:
+    def test_handler_operations_benchmark(
+        self, benchmark: FlextTestsPerformance
+    ) -> None:
         """Benchmark handler operations using real execution."""
         handler = FlextWebHandlers.WebAppHandler()
 

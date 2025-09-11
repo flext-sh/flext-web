@@ -199,6 +199,7 @@ class TestRealMainEntry:
 
             # Get configuration using settings (properly loads from environment)
             from flext_web.settings import FlextWebSettings
+
             settings = FlextWebSettings()
             config_result = settings.to_config()
             assert config_result.is_success

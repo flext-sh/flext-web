@@ -644,7 +644,6 @@ class FlextWebServices:
                     f"Service listing failed: {e}"
                 )
 
-        # Alias methods for test compatibility
         def register_service(
             self, name: str, service: FlextWebServices.WebService
         ) -> FlextResult[None]:

@@ -16,7 +16,7 @@ from flext_web.fields import FlextWebFields
 
 # Extract nested classes for convenience
 HTTPStatusField = FlextWebFields.HTTPStatusField
-WebFields = FlextWebFields  # Alias for backward compatibility
+WebFields = FlextWebFields
 
 
 class TestWebFields:

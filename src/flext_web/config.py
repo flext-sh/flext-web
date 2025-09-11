@@ -31,9 +31,10 @@ from flext_web.constants import FlextWebConstants
 # Import at top level to avoid PLC0415 errors
 try:
     from flext_web.settings import FlextWebSettings
+
     _web_settings_available = True
 except ImportError:
-    FlextWebSettings = None  # type: ignore[misc,assignment]
+    FlextWebSettings = None
     _web_settings_available = False
 
 # Logger for this module
@@ -142,7 +143,7 @@ class FlextWebConfigs:
 
             # For production, require explicit host configuration
             # Replace 0.0.0.0 with localhost for security
-            dangerous_host = "0.0.0.0"  # noqa: S104 - intentional check for security
+            dangerous_host = "0.0.0.0"
             if host == dangerous_host:
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
@@ -150,7 +151,6 @@ class FlextWebConfigs:
                 # In production, use localhost instead
                 return "127.0.0.1"
 
-            # Simple domain/IP validation
             if not host.replace(".", "").replace("-", "").replace("_", "").isalnum():
                 msg = f"Invalid host address format: {host}"
                 raise ValueError(msg)
@@ -662,7 +662,9 @@ class FlextWebConfigs:
                     validated_config = cfg_res.value.model_dump()
                 except Exception as e:
                     # Log the exception instead of silent pass
-                    _logger.warning("WebSettings bridge failed, using backward-compat path: %s", e)
+                    _logger.warning(
+                        "WebSettings bridge failed, using backward-compat path: %s", e
+                    )
 
             # Web configs specific settings
             validated_config.setdefault("enable_environment_validation", True)

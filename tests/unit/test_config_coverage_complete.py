@@ -200,7 +200,9 @@ class TestConfigCompleteCoverage:
             log_level="INFO",
         )
 
-        assert full_config.host == "127.0.0.1"  # Security validation converts 0.0.0.0 to localhost
+        assert (
+            full_config.host == "127.0.0.1"
+        )  # Security validation converts 0.0.0.0 to localhost
         assert full_config.port == 8080
         assert full_config.app_name == "Full Config Test"
         assert full_config.max_content_length == 16 * 1024 * 1024
@@ -248,6 +250,7 @@ class TestConfigCompleteCoverage:
             os.environ, {"FLEXT_WEB_HOST": "env-host", "FLEXT_WEB_PORT": "9999"}
         ):
             from flext_web.settings import FlextWebSettings
+
             settings = FlextWebSettings()
             config_result = settings.to_config()
             assert config_result.is_success

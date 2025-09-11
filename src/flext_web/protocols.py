@@ -20,10 +20,6 @@ from flext_core import FlextProtocols, FlextResult, FlextTypes
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
 
-# =============================================================================
-# CONSOLIDATED PROTOCOLS CLASS
-# =============================================================================
-
 
 class FlextWebProtocols(FlextProtocols):
     """Consolidated web protocol system extending flext-core patterns.

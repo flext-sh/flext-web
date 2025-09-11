@@ -93,6 +93,7 @@ class TestConfigFactoryMethods:
         try:
             # Use settings to properly read environment variables
             from flext_web.settings import FlextWebSettings
+
             settings = FlextWebSettings()
             result = settings.to_config()
 

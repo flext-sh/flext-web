@@ -297,6 +297,7 @@ class TestWebConfigAdvanced:
 
             # Test real config loading from environment using the settings class
             from flext_web.settings import FlextWebSettings
+
             settings = FlextWebSettings()
             config_result = settings.to_config()
             assert config_result.is_success

@@ -21,11 +21,6 @@ from flext_web.constants import FlextWebConstants
 FieldReturn = FieldInfo
 
 
-# =============================================================================
-# CONSOLIDATED FIELDS CLASS
-# =============================================================================
-
-
 class FlextWebFields(FlextFields):
     """Consolidated web field system extending flext-core patterns.
 

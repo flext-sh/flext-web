@@ -113,7 +113,9 @@ class TestServicesCoverage:
         config = FlextWebConfigs.WebConfig(host="0.0.0.0", port=9000, debug=False)
         service = FlextWebServices.WebService(config)
 
-        assert config.host == "127.0.0.1"  # Security validation converts 0.0.0.0 to localhost
+        assert (
+            config.host == "127.0.0.1"
+        )  # Security validation converts 0.0.0.0 to localhost
         assert service.config.port == 9000
         assert service.config.debug is False
 

@@ -220,7 +220,7 @@ All contributions must pass these quality gates:
 
 ```bash
 make validate                 # Must pass before PR
-├── make lint                # Ruff linting (ALL rules)
+├── make lint
 ├── make type-check          # MyPy strict type checking
 ├── make security            # Bandit + pip-audit
 └── make test                # 90%+ coverage required

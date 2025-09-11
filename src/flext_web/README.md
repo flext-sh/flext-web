@@ -18,7 +18,7 @@ src/flext_web/
 │                        # ⚠️ CRITICAL: Violates Clean Architecture separation
 ├── __main__.py          # CLI entry point with argument parsing
 ├── exceptions.py        # Domain-specific exception hierarchy
-├── py.typed            # Type checking marker for MyPy
+├── py.typed
 └── templates/          # Flask templates (currently unused)
     ├── base.html       # Django-style template (incompatible)
     └── dashboard.html  # Dashboard template (not used)

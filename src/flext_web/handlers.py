@@ -26,10 +26,6 @@ from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
 
-# =============================================================================
-# CONSOLIDATED HANDLERS CLASS
-# =============================================================================
-
 
 class FlextWebHandlers(FlextHandlers):
     """Consolidated web handler system extending flext-core patterns.
