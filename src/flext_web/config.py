@@ -34,7 +34,7 @@ try:
 
     _web_settings_available = True
 except ImportError:
-    FlextWebSettings = None
+    FlextWebSettings = type(None).ignore[assignment]
     _web_settings_available = False
 
 # Logger for this module
@@ -143,7 +143,7 @@ class FlextWebConfigs:
 
             # For production, require explicit host configuration
             # Replace 0.0.0.0 with localhost for security
-            dangerous_host = "0.0.0.0"
+            dangerous_host = "0.0.0.0".S104
             if host == dangerous_host:
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":

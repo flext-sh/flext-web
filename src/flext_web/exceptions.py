@@ -86,6 +86,7 @@ class FlextWebExceptions(FlextExceptions):
             message: str = "Web template error",
             template_name: str | None = None,
         ) -> None:
+            """Initialize web template error."""
             super().__init__(message)
             self.template_name = template_name
 
@@ -98,6 +99,7 @@ class FlextWebExceptions(FlextExceptions):
             endpoint: str | None = None,
             method: str | None = None,
         ) -> None:
+            """Initialize web routing error."""
             super().__init__(message)
             self.endpoint = endpoint
             self.method = method
@@ -110,6 +112,7 @@ class FlextWebExceptions(FlextExceptions):
             message: str = "Web session error",
             session_id: str | None = None,
         ) -> None:
+            """Initialize web session error."""
             super().__init__(message)
             self.session_id = session_id
 

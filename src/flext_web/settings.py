@@ -10,8 +10,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from flext_core import FlextConfig, FlextResult
 from pydantic import Field
+
+if TYPE_CHECKING:
+    from flext_web.config import FlextWebConfigs
 
 
 class FlextWebSettings(FlextConfig):

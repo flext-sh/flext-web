@@ -13,11 +13,8 @@ This example shows:
 
 from typing import cast
 
-from itertools import chain
-from operator import methodcaller
 import requests
-from flext_core import FlextConstants, FlextTypes
-from flext_core import FlextResult
+from flext_core import FlextConstants, FlextResult, FlextTypes
 
 from flext_web.typings import FlextWebTypes
 
