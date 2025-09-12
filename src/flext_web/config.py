@@ -10,7 +10,9 @@ from __future__ import annotations
 import logging
 import os
 import warnings
-from typing import ClassVar
+
+# Import at top level to avoid PLC0415 errors
+from typing import TYPE_CHECKING, ClassVar
 
 from flext_core import (
     FlextConfig,
@@ -28,14 +30,16 @@ from pydantic import (
 
 from flext_web.constants import FlextWebConstants
 
-# Import at top level to avoid PLC0415 errors
-try:
+if TYPE_CHECKING:
     from flext_web.settings import FlextWebSettings
-
     _web_settings_available = True
-except ImportError:
-    FlextWebSettings = type(None).ignore[assignment]
-    _web_settings_available = False
+else:
+    try:
+        from flext_web.settings import FlextWebSettings
+        _web_settings_available = True
+    except ImportError:
+        FlextWebSettings = None  # type: ignore[assignment]
+        _web_settings_available = False
 
 # Logger for this module
 _logger = logging.getLogger(__name__)
@@ -143,7 +147,7 @@ class FlextWebConfigs:
 
             # For production, require explicit host configuration
             # Replace 0.0.0.0 with localhost for security
-            dangerous_host = "0.0.0.0".S104
+            dangerous_host = "0.0.0.0"
             if host == dangerous_host:
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":

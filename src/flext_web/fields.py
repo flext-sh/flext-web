@@ -176,7 +176,7 @@ class FlextWebFields(FlextFields):
     @classmethod
     def port_field(
         cls,
-        default: int = FlextWebConstants.Web.DEFAULT_DEVELOPMENT_PORT,
+        default: int = FlextConstants.Web.DEFAULT_PORT,
         **kwargs: object,
     ) -> FieldReturn:
         """Create port number field with validation.
