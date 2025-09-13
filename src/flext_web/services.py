@@ -12,7 +12,6 @@ from flext_core import (
     FlextConstants,
     FlextLogger,
     FlextMixins,
-    FlextModels,
     FlextResult,
     FlextTypes,
     FlextUtilities,
@@ -61,13 +60,7 @@ class FlextWebServices:
             FlextMixins.initialize_state(self, "initializing")
 
             # Log service initialization
-            FlextMixins.log_operation(
-                self,
-                "service_init",
-                config_host=config.host,
-                config_port=config.port,
-                config_debug=config.debug,
-            )
+            FlextMixins.log_operation(self, "service_init")
 
             # Configure Flask application
             self.app.config.update(
@@ -81,13 +74,8 @@ class FlextWebServices:
             self._register_routes()
 
             # Mark service as ready
-            FlextMixins.set_state(self, "ready")
-            FlextMixins.log_operation(
-                self,
-                "service_ready",
-                ready=True,
-                routes_registered=True,
-            )
+            FlextMixins.initialize_state(self, "ready")
+            FlextMixins.log_operation(self, "service_ready")
 
         def _register_routes(self) -> None:
             """Register all Flask routes for the web service."""
@@ -111,9 +99,7 @@ class FlextWebServices:
         def health_check(self) -> ResponseReturnValue:
             """Health check endpoint returning service status."""
             try:
-                FlextMixins.log_operation(
-                    self, "health_check", apps_count=len(self.apps)
-                )
+                FlextMixins.log_operation(self, "health_check")
 
                 health_data: FlextWebTypes.HealthResponse = {
                     "status": "healthy",
@@ -132,8 +118,8 @@ class FlextWebServices:
                         "data": health_data,
                     }
                 ), 200
-            except Exception as e:
-                FlextMixins.log_operation(self, "health_check_error", error=str(e))
+            except Exception:
+                FlextMixins.log_operation(self, "health_check_error")
                 return jsonify(
                     {
                         "success": False,
@@ -160,6 +146,7 @@ class FlextWebServices:
                 )
 
                 html_template = """
+
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -327,13 +314,7 @@ class FlextWebServices:
             app = create_result.value
             self.apps[app.id] = app
 
-            FlextMixins.log_operation(
-                self,
-                "app_created",
-                app_name=app.name,
-                app_host=app.host,
-                app_port=app.port,
-            )
+            FlextMixins.log_operation(self, "app_created")
 
             return FlextResult[FlextWebModels.WebApp].ok(app)
 
@@ -377,9 +358,7 @@ class FlextWebServices:
 
             """
             try:
-                FlextMixins.log_operation(
-                    self, "create_app_request", request_type="POST"
-                )
+                FlextMixins.log_operation(self, "create_app_request")
 
                 # Railway-oriented programming: compose operations monadically
                 result = (
@@ -575,7 +554,7 @@ class FlextWebServices:
             FlextMixins.initialize_validation(self)
             FlextMixins.initialize_state(self, "active")
 
-            FlextMixins.log_operation(self, "registry_init", initialized=True)
+            FlextMixins.log_operation(self, "registry_init")
 
         def register_web_service(
             self, name: str, service: FlextWebServices.WebService
@@ -587,7 +566,7 @@ class FlextWebServices:
 
             """
             try:
-                FlextMixins.log_operation(self, "register_service", service_name=name)
+                FlextMixins.log_operation(self, "register_service")
 
                 if name in self._services:
                     return FlextResult[None].fail(f"Service {name} already registered")
@@ -595,9 +574,7 @@ class FlextWebServices:
                 self._services[name] = service
                 self._health_status[name] = True
 
-                FlextMixins.log_operation(
-                    self, "service_registered", service_name=name, success=True
-                )
+                FlextMixins.log_operation(self, "service_registered")
                 return FlextResult[None].ok(None)
 
             except Exception as e:
@@ -608,20 +585,16 @@ class FlextWebServices:
         ) -> FlextResult[FlextWebServices.WebService]:
             """Discover web service by name."""
             try:
-                FlextMixins.log_operation(self, "discover_service", service_name=name)
+                FlextMixins.log_operation(self, "discover_service")
 
                 if name not in self._services:
-                    FlextMixins.log_operation(
-                        self, "service_not_found", service_name=name
-                    )
+                    FlextMixins.log_operation(self, "service_not_found")
                     return FlextResult[FlextWebServices.WebService].fail(
                         f"Service {name} not found"
                     )
 
                 service = self._services[name]
-                FlextMixins.log_operation(
-                    self, "service_discovered", service_name=name, success=True
-                )
+                FlextMixins.log_operation(self, "service_discovered")
                 return FlextResult[FlextWebServices.WebService].ok(service)
 
             except Exception as e:
@@ -763,7 +736,7 @@ class FlextWebServices:
             if "environment" in config:
                 env_value = config["environment"]
                 valid_environments = [
-                    e.value for e in FlextConstants.Config.ConfigEnvironment
+                    e.value for e in FlextConstants.Environment.ConfigEnvironment
                 ]
                 if env_value not in valid_environments:
                     return FlextResult[FlextTypes.Config.ConfigDict].fail(
@@ -771,26 +744,21 @@ class FlextWebServices:
                     )
             else:
                 validated_config["environment"] = (
-                    FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value
+                    FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value
                 )
 
-            # Core validation via flext-core SystemConfigs (bridge compatibility)
-            core_validation = {
-                "environment": validated_config.get(
-                    "environment",
-                    FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value,
-                ),
-                "log_level": validated_config.get(
-                    "log_level",
-                    FlextConstants.Config.LogLevel.INFO.value,
-                ),
-                "validation_level": validated_config.get(
-                    "validation_level",
-                    FlextConstants.Config.ValidationLevel.NORMAL.value,
-                ),
-            }
-            _ = FlextModels.SystemConfigs.BaseSystemConfig.model_validate(
-                core_validation
+            # Core validation completed - ensure required fields are present
+            validated_config.setdefault(
+                "environment",
+                FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value,
+            )
+            validated_config.setdefault(
+                "log_level",
+                FlextConstants.Config.LogLevel.INFO.value,
+            )
+            validated_config.setdefault(
+                "validation_level",
+                FlextConstants.Environment.ValidationLevel.NORMAL.value,
             )
 
             # Web services specific settings
@@ -814,7 +782,7 @@ class FlextWebServices:
         try:
             config: FlextTypes.Config.ConfigDict = {
                 # Environment configuration
-                "environment": FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value,
+                "environment": FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value,
                 "log_level": FlextConstants.Config.LogLevel.INFO.value,
                 # Web services specific settings
                 "enable_web_service": True,

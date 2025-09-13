@@ -1,9 +1,5 @@
 """Tests específicos para cobrir gaps de cobertura em config.py.
 
-Foca nas linhas não cobertas identificadas no relatório de cobertura:
-- Linhas 128-129, 138-139, 146-147, 158-159, 203-204, 276, 301-302, 315, 344-345, 356, 365, 371, 377-378, 401, 414, 427, 441-453, 467-481, 494-495, 576, 588-589, 627-628, 641->654, 646, 650, 685-686, 707-708
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

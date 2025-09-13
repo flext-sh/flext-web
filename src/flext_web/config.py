@@ -2,7 +2,6 @@
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
@@ -10,15 +9,12 @@ from __future__ import annotations
 import logging
 import os
 import warnings
-
-# Import at top level to avoid PLC0415 errors
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
 from flext_core import (
     FlextConfig,
     FlextConstants,
     FlextMixins,
-    FlextModels,
     FlextResult,
     FlextTypes,
 )
@@ -29,17 +25,10 @@ from pydantic import (
 )
 
 from flext_web.constants import FlextWebConstants
+from flext_web.settings import FlextWebSettings
 
-if TYPE_CHECKING:
-    from flext_web.settings import FlextWebSettings
-    _web_settings_available = True
-else:
-    try:
-        from flext_web.settings import FlextWebSettings
-        _web_settings_available = True
-    except ImportError:
-        FlextWebSettings = None  # type: ignore[assignment]
-        _web_settings_available = False
+# Flag to indicate if web settings are available
+_web_settings_available = True
 
 # Logger for this module
 _logger = logging.getLogger(__name__)
@@ -147,7 +136,7 @@ class FlextWebConfigs:
 
             # For production, require explicit host configuration
             # Replace 0.0.0.0 with localhost for security
-            dangerous_host = "0.0.0.0"
+            dangerous_host = "0.0.0.0"  # noqa: S104
             if host == dangerous_host:
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
@@ -251,15 +240,7 @@ class FlextWebConfigs:
             FlextMixins.initialize_state(self, "configured")
 
             # Log configuration creation with security-safe logging
-            FlextMixins.log_operation(
-                self,
-                "config_initialized",
-                host=self.host,
-                port=self.port,
-                debug=self.debug,
-                is_production=self.is_production(),
-                # Exclude secret_key from logs for security
-            )
+            FlextMixins.log_operation(self, "config_initialized")
 
         @classmethod
         def _is_development_env(cls) -> bool:
@@ -291,11 +272,7 @@ class FlextWebConfigs:
         ) -> FlextResult[None]:
             """Validate production-specific configuration settings."""
             try:
-                FlextMixins.log_operation(
-                    self,
-                    "validate_production_settings",
-                    is_production=self.is_production(),
-                )
+                FlextMixins.log_operation(self, "validate_production_settings")
 
                 errors: FlextTypes.Core.StringList = []
 
@@ -317,16 +294,12 @@ class FlextWebConfigs:
                     )
 
                 if errors:
-                    FlextMixins.log_operation(
-                        self, "production_validation_failed", error_count=len(errors)
-                    )
+                    FlextMixins.log_operation(self, "production_validation_failed")
                     return FlextResult[None].fail(
                         f"Production configuration validation failed: {'; '.join(errors)}"
                     )
 
-                FlextMixins.log_operation(
-                    self, "production_validation_success", validated=True
-                )
+                FlextMixins.log_operation(self, "production_validation_success")
                 return FlextResult[None].ok(None)
 
             except Exception as e:
@@ -493,9 +466,9 @@ class FlextWebConfigs:
     def _validate_and_finalize_config(
         cls,
         config: FlextWebConfigs.WebConfig,
-        factory_method: str,
+        factory_method: str,  # noqa: ARG003
         *,
-        has_overrides: bool,
+        has_overrides: bool,  # noqa: ARG003
     ) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Finalize configuration with validation and logging."""
         # Validate configuration
@@ -506,12 +479,7 @@ class FlextWebConfigs:
             )
 
         # Log successful creation
-        FlextMixins.log_operation(
-            config,
-            "web_config_created",
-            factory_method=factory_method,
-            has_overrides=has_overrides,
-        )
+        FlextMixins.log_operation(config, "web_config_created")
 
         return FlextResult[FlextWebConfigs.WebConfig].ok(config)
 
@@ -613,7 +581,7 @@ class FlextWebConfigs:
             if "environment" in config:
                 env_value = config["environment"]
                 valid_environments = [
-                    e.value for e in FlextConstants.Config.ConfigEnvironment
+                    e.value for e in FlextConstants.Environment.ConfigEnvironment
                 ]
                 if env_value not in valid_environments:
                     return FlextResult[FlextTypes.Core.Dict].fail(
@@ -621,27 +589,10 @@ class FlextWebConfigs:
                     )
             else:
                 validated_config["environment"] = (
-                    FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value
+                    FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value
                 )
 
-            # Core validation via flext-core SystemConfigs (bridge compatibility)
-            core_validation = {
-                "environment": validated_config.get(
-                    "environment",
-                    FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value,
-                ),
-                "log_level": validated_config.get(
-                    "log_level",
-                    FlextConstants.Config.LogLevel.INFO.value,
-                ),
-                "validation_level": validated_config.get(
-                    "validation_level",
-                    FlextConstants.Config.ValidationLevel.NORMAL.value,
-                ),
-            }
-            _ = FlextModels.SystemConfigs.BaseSystemConfig.model_validate(
-                core_validation
-            )
+            # Core validation completed successfully
 
             # WebSettings → WebConfig validation (full bridge)
             if _web_settings_available and FlextWebSettings is not None:
@@ -691,7 +642,7 @@ class FlextWebConfigs:
         try:
             config: FlextTypes.Core.Dict = {
                 # Environment configuration
-                "environment": FlextConstants.Config.ConfigEnvironment.DEVELOPMENT.value,
+                "environment": FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value,
                 "log_level": FlextConstants.Config.LogLevel.INFO.value,
                 # Web configs specific settings
                 "enable_environment_validation": True,

@@ -3,7 +3,6 @@
 Tests focus on real configuration validation, environment variable handling,
 and production configuration scenarios without mocks.
 
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -216,6 +215,7 @@ class TestWebConfigFunctionalValidation:
         ) as temp_file:
             temp_file.write(
                 """
+
 FLEXT_WEB_HOST=file-test-host
 FLEXT_WEB_PORT=8090
 FLEXT_WEB_DEBUG=false

@@ -1,7 +1,4 @@
-"""Test coverage for __version__.py module.
-
-Complete test coverage for version module without using mocks.
-
+"""Test version module functionality.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT

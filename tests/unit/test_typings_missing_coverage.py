@@ -1,10 +1,4 @@
-"""Real functional tests for missing typings.py coverage using flext_tests.
-
-This test targets uncovered lines in typings.py:
-- Lines 217, 230, 238, 242, 246, 259-260, 282, 286, 290, 298, 302, 316-317, 325-331, 340-349
-
-Uses flext_tests library for real functional testing without mocks.
-
+"""Uses flext_tests library for real functional testing without mocks.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT

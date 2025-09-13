@@ -1,10 +1,5 @@
 """Testes funcionais específicos para cobrir lacunas de cobertura em models.py.
 
-Foca em linhas não cobertas identificadas no relatório de cobertura:
-- Linhas 67-70, 78-79, 83-84, 99-100, 105-106, 110-111, 127-128
-- Linhas 178-179, 186, 207, 235, 239, 244, 246, 254, 268
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

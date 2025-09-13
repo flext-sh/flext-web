@@ -43,7 +43,7 @@ class FlextWebUtilities:
             str: Description of return value.
 
         """
-        clean_name = FlextUtilities.TextProcessor.safe_string(name, "app").strip()
+        clean_name = FlextUtilities.TextProcessor.safe_string(name).strip()
         slugified = FlextUtilities.TextProcessor.slugify(clean_name)
         return f"app_{slugified}" if slugified else "app_default"
 
@@ -57,7 +57,7 @@ class FlextWebUtilities:
         """
         if name is None:
             return False
-        safe_name = FlextUtilities.TextProcessor.safe_string(name, "")
+        safe_name = FlextUtilities.TextProcessor.safe_string(name)
         return safe_name.strip() != "" and len(safe_name.strip()) >= 1
 
     @staticmethod
@@ -92,7 +92,7 @@ class FlextWebUtilities:
             bool: Description of return value.
 
         """
-        safe_host = FlextUtilities.TextProcessor.safe_string(host, "")
+        safe_host = FlextUtilities.TextProcessor.safe_string(host)
         if not safe_host:
             return False
 
@@ -124,9 +124,9 @@ class FlextWebUtilities:
         """
         sanitized: FlextTypes.Core.Dict = {}
         for key, value in data.items():
-            safe_key = FlextUtilities.TextProcessor.safe_string(key, "unknown")
+            safe_key = FlextUtilities.TextProcessor.safe_string(key)
             if isinstance(value, str):
-                safe_value = FlextUtilities.TextProcessor.safe_string(value, "")
+                safe_value = FlextUtilities.TextProcessor.safe_string(value)
                 sanitized[safe_key] = safe_value
             else:
                 sanitized[safe_key] = value

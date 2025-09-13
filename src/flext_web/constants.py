@@ -1,8 +1,5 @@
 """FLEXT Web Constants - Domain-specific constants (eliminando duplicações com flext-core).
 
-ZERO DUPLICAÇÃO: Usa APENAS FlextConstants de flext-core para tudo genérico.
-Define SOMENTE constantes específicas do domínio web que não existem em flext-core.
-
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
 """

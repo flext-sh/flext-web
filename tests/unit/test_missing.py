@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Tests for missing coverage areas to achieve ~100% coverage.
 
 Comprehensive tests targeting specific uncovered code paths identified

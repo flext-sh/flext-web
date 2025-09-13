@@ -1,9 +1,6 @@
-"""FLEXT Web Fields - Consolidated field system extending flext-core patterns.
+"""FLEXT Web Fields.
 
-Single consolidated FlextWebFields class containing all web-specific field definitions
-following flext-core architectural patterns.
-
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -27,6 +24,7 @@ class FlextWebFields(FlextFields):
     This class serves as the single point of access for all web-specific
     field definitions, validators, and serializers while extending FlextFields
     from flext-core for proper architectural inheritance.
+    from typing import Optional
 
     All field functionality is accessible through this single class following the
     "one class per module" architectural requirement.
@@ -153,7 +151,7 @@ class FlextWebFields(FlextFields):
 
         """
         # MASSIVE USAGE: FlextUtilities.TextProcessor.safe_string for default validation
-        safe_default = FlextUtilities.TextProcessor.safe_string(default, "localhost")
+        safe_default = FlextUtilities.TextProcessor.safe_string(default)
 
         field_kwargs = dict(kwargs)
         field_kwargs.setdefault("default", safe_default)
@@ -242,9 +240,7 @@ class FlextWebFields(FlextFields):
         """
         field_kwargs = dict(kwargs)
         # MASSIVE USAGE: FlextUtilities.TextProcessor.safe_string for description
-        safe_description = FlextUtilities.TextProcessor.safe_string(
-            "Application name", "Application identifier"
-        )
+        safe_description = FlextUtilities.TextProcessor.safe_string("Application name")
         field_kwargs.setdefault("description", safe_description)
         field_kwargs.setdefault("min_length", FlextWebConstants.Web.MIN_APP_NAME_LENGTH)
         field_kwargs.setdefault("max_length", FlextWebConstants.Web.MAX_APP_NAME_LENGTH)

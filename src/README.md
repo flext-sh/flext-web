@@ -17,7 +17,7 @@ src/
     ├── __init__.py                     # Complete implementation (1,200+ lines)
     ├── __main__.py                     # CLI entry point with argument parsing
     ├── exceptions.py                   # Domain-specific exception hierarchy
-    ├── py.typed                      
+    ├── py.typed
     └── templates/                      # Flask templates (currently unused)
         ├── base.html                   # Base template structure
         └── dashboard.html              # Dashboard template

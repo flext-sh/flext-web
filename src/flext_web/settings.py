@@ -1,8 +1,4 @@
-"""FLEXT Web Settings — Settings → Config bridge following flext-core patterns.
-
-Single settings class that loads from env/CLI/dicts and converts to
-`FlextWebConfigs.WebConfig` via Pydantic validation.
-
+"""FLEXT Web Settings.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -10,13 +6,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from flext_core import FlextConfig, FlextResult
 from pydantic import Field
 
-if TYPE_CHECKING:
-    from flext_web.config import FlextWebConfigs
+from flext_web.config import FlextWebConfigs
 
 
 class FlextWebSettings(FlextConfig):
@@ -48,7 +41,6 @@ class FlextWebSettings(FlextConfig):
         """Convert settings to validated WebConfig model - import delayed to avoid circular import."""
         try:
             # Import only when needed to avoid circular dependency
-            from flext_web.config import FlextWebConfigs
 
             data = self.model_dump(exclude_none=True)
             model = FlextWebConfigs.WebConfig.model_validate(data)

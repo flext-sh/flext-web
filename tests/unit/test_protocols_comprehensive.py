@@ -303,7 +303,7 @@ class TestProtocolImplementationExamples:
                 port: int | None = None,
                 *,
                 debug: bool | None = None,
-                **kwargs: object,
+                **kwargs: object,  # noqa: ARG002
             ) -> None:
                 self.host = host
                 self.port = port
@@ -332,6 +332,7 @@ class TestProtocolImplementationExamples:
 
         class TestAppManager:
             def __init__(self) -> None:
+                """Initialize the instance."""
                 self.apps: dict[str, FlextWebModels.WebApp] = {}
 
             def create_app(

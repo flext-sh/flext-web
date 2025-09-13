@@ -1,12 +1,5 @@
 """Complete functional coverage for all uncovered lines in services.py.
 
-This test targets specific lines identified as missing coverage:
-- Error handling paths in validation and creation (lines 303-304, 644-645)
-- Service registry edge cases (lines 607, 635, 657-658)
-- Factory method edge cases (lines 714-741, 750-779)
-- Internal helper methods (_validate_request_data, _create_and_store_app, _build_*_response)
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

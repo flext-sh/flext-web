@@ -1,11 +1,5 @@
 """Real functional tests for missing models.py coverage using flext_tests.
 
-This test targets uncovered lines in models.py:
-- Lines 67-70, 78-79, 83-84, 99-100, 105-106, 110-111, 178-179, 186, 235, 239, 244, 246, 254, 268
-
-Uses flext_tests library for real functional testing without mocks.
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

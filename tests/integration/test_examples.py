@@ -1,9 +1,8 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+"""Test examples full functionality.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT.
 """
-
-# !/usr/bin/env python3
-"""Test examples full functionality."""
 
 import asyncio
 import importlib
@@ -15,6 +14,7 @@ import time
 from pathlib import Path
 
 import requests
+from flext_core import FlextTypes
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -25,6 +25,7 @@ class ExamplesFullFunctionalityTest:
     """Teste completo de toda funcionalidade dos examples."""
 
     def __init__(self) -> None:
+        """Initialize the instance."""
         self.container_id: str | None = None
         self.service_url = (
             "http://localhost:8093"  # Port específica para evitar conflitos

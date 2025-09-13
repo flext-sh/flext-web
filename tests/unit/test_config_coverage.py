@@ -1,13 +1,5 @@
 """FLEXT Web Configuration - Coverage Enhancement Tests.
 
-Real functionality tests for untested methods in FlextWebConfigs to achieve 90%+ coverage
-without mocks, focusing on actual business logic validation and factory methods.
-
-Author: FLEXT Development Team
-Version: 0.9.0
-Status: Production-ready coverage enhancement without mocks
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -19,6 +11,7 @@ import os
 from flext_core import FlextTypes
 
 from flext_web import FlextWebConfigs
+from flext_web.settings import FlextWebSettings
 
 
 class TestConfigFactoryMethods:
@@ -92,7 +85,6 @@ class TestConfigFactoryMethods:
 
         try:
             # Use settings to properly read environment variables
-            from flext_web.settings import FlextWebSettings
 
             settings = FlextWebSettings()
             result = settings.to_config()

@@ -193,7 +193,7 @@ make doctor              # Health check (diagnose + check)
 make t                    # test
 make l                    # lint
 make f                    # format
-make tc                 
+make tc
 make c                    # clean
 make i                    # install
 make v                    # validate

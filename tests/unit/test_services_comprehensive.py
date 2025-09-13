@@ -3,7 +3,6 @@
 This test module targets specific missing coverage areas identified in the coverage report.
 Focus on real execution tests without mocks for maximum functional coverage.
 
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -11,7 +10,7 @@ SPDX-License-Identifier: MIT
 from collections import UserDict
 
 import pytest
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes
 from flext_tests import FlextTestsAsyncs
 
 from flext_web import FlextWebConfigs, FlextWebModels, FlextWebServices
@@ -329,6 +328,7 @@ class TestWebServiceAppOperations:
 
     def setup_method(self) -> None:
         """Set up test app in service."""
+
         # This will be called before each test method
 
     def test_get_app_not_found(
@@ -484,7 +484,7 @@ class TestServiceExceptionHandling:
 
         # Create a mock property that raises an exception when accessed
         def mock_apps_property(
-            self: FlextWebServices.WebService,
+            self: FlextWebServices.WebService,  # noqa: ARG001
         ) -> dict[str, FlextWebModels.WebApp]:
             msg = "Simulated dashboard exception"
             raise RuntimeError(msg)
@@ -629,7 +629,7 @@ class TestServiceExceptionHandling:
         original_services = registry._services
 
         def failing_services_access(
-            *args: object, **kwargs: object
+            *args: object, **kwargs: object  # noqa: ARG001, ARG002
         ) -> dict[str, FlextWebServices.WebService]:
             msg = "Registry corruption simulation"
             raise RuntimeError(msg)
@@ -654,7 +654,7 @@ class TestServiceExceptionHandling:
 
         # Test list services exception - line 570-571 using proper exception injection
         def failing_services_list_access(
-            *args: object, **kwargs: object
+            *args: object, **kwargs: object  # noqa: ARG001, ARG002
         ) -> dict[str, FlextWebServices.WebService]:
             msg = "Registry list access failure"
             raise RuntimeError(msg)

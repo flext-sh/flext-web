@@ -63,7 +63,7 @@ class FlextWebProtocols(FlextProtocols):
             """
             ...
 
-        def start_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+        def start_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Start an application.
 
             Args:
@@ -75,7 +75,7 @@ class FlextWebProtocols(FlextProtocols):
             """
             ...
 
-        def stop_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+        def stop_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Stop an application.
 
             Args:
@@ -156,7 +156,7 @@ class FlextWebProtocols(FlextProtocols):
         providing HTML rendering capabilities.
         """
 
-        def render_template(self, template_name: str, **context: object) -> str:
+        def render_template(self, _template_name: str, **context: object) -> str:
             """Render template with provided context.
 
             Args:
@@ -339,7 +339,7 @@ class FlextWebProtocols(FlextProtocols):
             """Create and store a new application."""
             ...
 
-        def get(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+        def get(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Retrieve application by ID."""
             ...
 
@@ -349,7 +349,7 @@ class FlextWebProtocols(FlextProtocols):
             """Update existing application."""
             ...
 
-        def find_by_name(self, name: str) -> FlextResult[FlextWebModels.WebApp]:
+        def find_by__name(self, _name: str) -> FlextResult[FlextWebModels.WebApp]:
             """Find application by name."""
             ...
 
@@ -374,7 +374,7 @@ class FlextWebProtocols(FlextProtocols):
             """Process response after handler execution."""
             ...
 
-        def handle_error(self, error: Exception) -> ResponseReturnValue:
+        def handle__error(self, _error: Exception) -> ResponseReturnValue:
             """Handle exceptions during request processing."""
             ...
 
@@ -387,15 +387,15 @@ class FlextWebProtocols(FlextProtocols):
 
         """
 
-        def render(self, template_name: str, **context: object) -> str:
+        def render(self, _template_name: str, **context: object) -> str:
             """Render template with context variables."""
             ...
 
-        def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
+        def add_filter(self, _name: str, filter_func: Callable[[str], str]) -> None:
             """Add custom template filter."""
             ...
 
-        def add_global(self, name: str, value: object) -> None:
+        def add_global(self, _name: str, value: object) -> None:
             """Add global template variable."""
             ...
 

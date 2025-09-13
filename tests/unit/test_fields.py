@@ -3,7 +3,6 @@
 Tests all Pydantic field definitions, validators, and edge cases to achieve
 complete coverage of the fields module.
 
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

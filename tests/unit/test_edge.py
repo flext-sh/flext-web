@@ -3,7 +3,6 @@
 Tests edge cases, error conditions, and specific code paths using REAL
 HTTP execution to achieve comprehensive coverage without mocking.
 
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -27,6 +26,7 @@ from flext_web import (
     FlextWebModels,
     FlextWebServices,
 )
+from flext_web.settings import FlextWebSettings
 
 
 class TestRealEdgeCases:
@@ -183,17 +183,11 @@ class TestRealEdgeCases:
             os.environ["FLEXT_WEB_PORT"] = "invalid"
 
             with pytest.raises((ValueError, Exception)):
-                from flext_web.settings import FlextWebSettings
-
-                settings = (
-                    FlextWebSettings()
-                )  # This should raise error with invalid port
+                FlextWebSettings()  # This should raise error with invalid port
 
             # Test with valid environment using settings
             os.environ["FLEXT_WEB_PORT"] = "8085"
             os.environ["FLEXT_WEB_HOST"] = "test-host"
-
-            from flext_web.settings import FlextWebSettings
 
             settings = FlextWebSettings()
             config_result = settings.to_config()

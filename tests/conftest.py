@@ -14,16 +14,13 @@ import os
 import threading
 import time
 from collections.abc import Generator
-from typing import TYPE_CHECKING
 
 import pytest
+from flask import Flask
 from flext_core import FlextTypes
 
 from flext_web import FlextWebConfigs, FlextWebServices
 from tests.port_manager import TestPortManager
-
-if TYPE_CHECKING:
-    from flask import Flask
 
 
 @pytest.fixture(autouse=True)

@@ -101,7 +101,7 @@ class FlextWebModels:
                 raise ValueError(msg)
 
             # Use flext-core TextProcessor for safe string handling
-            safe_host = FlextUtilities.TextProcessor.safe_string(host, "")
+            safe_host = FlextUtilities.TextProcessor.safe_string(host)
             if not safe_host:
                 msg = f"Invalid host characters: {host}"
                 raise ValueError(msg)

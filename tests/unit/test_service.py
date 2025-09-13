@@ -24,6 +24,7 @@ from flext_web import (
     FlextWebServices,
 )
 from flext_web.handlers import FlextWebHandlers
+from flext_web.settings import FlextWebSettings
 
 
 class TestFlextWebServiceAdvanced:
@@ -296,7 +297,6 @@ class TestWebConfigAdvanced:
             os.environ["FLEXT_WEB_SECRET_KEY"] = "env-secret-key-32-characters-long!!"
 
             # Test real config loading from environment using the settings class
-            from flext_web.settings import FlextWebSettings
 
             settings = FlextWebSettings()
             config_result = settings.to_config()

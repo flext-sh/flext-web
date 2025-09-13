@@ -249,7 +249,7 @@ class TestConfigCompleteCoverage:
         with patch.dict(
             os.environ, {"FLEXT_WEB_HOST": "env-host", "FLEXT_WEB_PORT": "9999"}
         ):
-            from flext_web.settings import FlextWebSettings
+            from flext_web.settings import FlextWebSettings  # noqa: PLC0415
 
             settings = FlextWebSettings()
             config_result = settings.to_config()

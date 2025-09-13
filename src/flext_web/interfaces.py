@@ -1,6 +1,5 @@
 """FLEXT Web Interfaces - Protocol Consolidation Pattern.
 
-This module eliminates massive duplication by delegating to FlextWebProtocols.
 Uses meta-programming to provide backward compatibility without code duplication.
 
 Copyright (c) 2025 FLEXT Contributors

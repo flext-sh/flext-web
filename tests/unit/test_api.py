@@ -1,27 +1,5 @@
 """FLEXT Web Interface - REST API Integration Testing Suite.
 
-Enterprise-grade test suite for REST API endpoints, HTTP request/response handling,
-and service integration patterns. Ensures API follows enterprise standards with
-proper error handling, validation, and response formatting.
-
-Test Coverage:
-    - REST API endpoint functionality and response validation
-    - HTTP status code handling and error responses
-    - JSON request/response serialization and validation
-    - Application lifecycle management through API
-    - Health check and monitoring endpoint validation
-
-Integration:
-    - Tests Flask integration with enterprise patterns
-    - Validates FlextWebService API endpoint implementation
-    - Ensures proper error handling and response formatting
-    - Verifies CQRS handler integration through API layer
-
-Author: FLEXT Development Team
-Version: 0.9.0
-Status: Enterprise API testing with comprehensive HTTP validation
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

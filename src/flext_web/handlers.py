@@ -1,9 +1,4 @@
-"""FLEXT Web Handlers - Consolidated handler system extending flext-core patterns.
-
-This module implements the consolidated handler architecture following the
-"one class per module" pattern, with FlextWebHandlers extending FlextHandlers
-and containing all web-specific handler functionality as nested classes and methods.
-
+"""FLEXT Web Handlers.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -95,9 +90,7 @@ class FlextWebHandlers(FlextHandlers):
             FlextMixins.initialize_validation(self)
             FlextMixins.initialize_state(self, "ready")
 
-            FlextMixins.log_operation(
-                self, "webapp_handler_initialized", handler_type="cqrs_command_handler"
-            )
+            FlextMixins.log_operation(self, "webapp_handler_initialized")
 
         def create(
             self,
@@ -124,9 +117,7 @@ class FlextWebHandlers(FlextHandlers):
 
             """
             # Log create operation
-            FlextMixins.log_operation(
-                self, "create_app_command", app_name=name, app_port=port, app_host=host
-            )
+            FlextMixins.log_operation(self, "create_app_command")
 
             # MASSIVE USAGE: Railway-oriented programming with FlextResult composition
             return (
@@ -155,8 +146,8 @@ class FlextWebHandlers(FlextHandlers):
         ) -> FlextResult[FlextTypes.Core.Headers]:
             """Sanitize inputs using MASSIVE FlextUtilities delegation."""
             try:
-                safe_name = FlextUtilities.TextProcessor.safe_string(name, "")
-                safe_host = FlextUtilities.TextProcessor.safe_string(host, "localhost")
+                safe_name = FlextUtilities.TextProcessor.safe_string(name)
+                safe_host = FlextUtilities.TextProcessor.safe_string(host)
 
                 return FlextResult[FlextTypes.Core.Headers].ok(
                     {
@@ -223,22 +214,12 @@ class FlextWebHandlers(FlextHandlers):
 
             """
             # Step 1: Log operation start
-            FlextMixins.log_operation(
-                self,
-                f"{operation_name}_app_command",
-                app_name=app.name,
-                current_status=app.status.value,
-            )
+            FlextMixins.log_operation(self, f"{operation_name}_app_command")
 
             # Step 2: Validate domain rules before attempting state change
             validation = app.validate_business_rules()
             if not validation.success:
-                FlextMixins.log_operation(
-                    self,
-                    f"{operation_name}_validation_failed",
-                    app_name=app.name,
-                    error=validation.error,
-                )
+                FlextMixins.log_operation(self, f"{operation_name}_validation_failed")
                 return FlextResult[FlextWebModels.WebApp].fail(
                     validation.error or "Validation failed"
                 )
@@ -249,9 +230,7 @@ class FlextWebHandlers(FlextHandlers):
 
             # Step 4: Log success if applicable
             if result.is_success:
-                FlextMixins.log_operation(
-                    self, f"app_{operation_name}_success", app_name=app.name
-                )
+                FlextMixins.log_operation(self, f"app_{operation_name}_success")
 
             return result
 
@@ -384,12 +363,7 @@ class FlextWebHandlers(FlextHandlers):
             FlextMixins.initialize_validation(self)
             FlextMixins.initialize_state(self, "initialized")
 
-            FlextMixins.log_operation(
-                self,
-                "response_handler_initialized",
-                success_status=success_status,
-                error_status=error_status,
-            )
+            FlextMixins.log_operation(self, "response_handler_initialized")
 
         def create_success_response(
             self,
@@ -408,7 +382,7 @@ class FlextWebHandlers(FlextHandlers):
                 Flask JSON response with success format
 
             """
-            safe_message = FlextUtilities.TextProcessor.safe_string(message, "Success")
+            safe_message = FlextUtilities.TextProcessor.safe_string(message)
 
             # Use FlextWebUtilities as base and extend with Flask-specific fields
             response_data = FlextWebUtilities.create_success_response(
@@ -436,7 +410,7 @@ class FlextWebHandlers(FlextHandlers):
 
             """
             safe_message = FlextUtilities.TextProcessor.safe_string(
-                message, "Unknown error"
+                message or "Unknown error"
             )
 
             # Use FlextWebUtilities as base and extend with Flask-specific fields

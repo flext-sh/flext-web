@@ -1,25 +1,5 @@
 """FLEXT Web Interface - Real Handler Testing Suite.
 
-ZERO TOLERANCE: Tests using REAL handlers, REAL functionality, NO MOCKS.
-Enterprise-grade test suite for handler classes with actual business logic validation.
-
-Test Coverage:
-    - FlextWebHandlers.WebResponseHandler real functionality
-    - FlextWebHandlers.WebAppHandler CQRS command processing
-    - Handler factory methods and creation patterns
-    - Error handling and validation with real FlextResult patterns
-
-Integration:
-    - Tests real flext-core handler patterns and validation
-    - Validates FlextResult railway-oriented programming
-    - Ensures Clean Architecture handler boundaries
-    - Real error handling without mocking
-
-Author: FLEXT Development Team
-Version: 0.9.0
-Status: Enterprise handler testing with REAL functionality validation
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """

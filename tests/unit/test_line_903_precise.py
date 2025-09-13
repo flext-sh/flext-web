@@ -1,9 +1,8 @@
-"""Copyright (c) 2025 FLEXT Team. All rights reserved.
+"""Precise test for line 903 - stop_app failure path using REAL HTTP execution.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT.
 """
-
-# !/usr/bin/env python3
-"""Precise test for line 903 - stop_app failure path using REAL HTTP execution."""
 
 import threading
 import time

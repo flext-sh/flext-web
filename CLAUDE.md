@@ -13,10 +13,11 @@
 **OBJECTIVE**: Achieve 100% professional quality compliance for flext-web with zero regressions, following SOLID principles, Python 3.13+ standards, Pydantic best practices, Flask security patterns, and flext-core foundation patterns for web interface operations.
 
 **CRITICAL REQUIREMENTS FOR WEB INTERFACE**:
+
 - ✅ **95%+ pytest pass rate** with **75%+ coverage** for Flask web services (flext-core proven achievable at 79%)
 - ✅ **Zero errors** in ruff, mypy (strict mode), and pyright across ALL web interface source code
 - ✅ **Unified Flask service classes** - single responsibility, no aliases, no wrappers, no helpers
-- ✅ **Direct flext-core integration** - eliminate web complexity, reduce Flask configuration overhead  
+- ✅ **Direct flext-core integration** - eliminate web complexity, reduce Flask configuration overhead
 - ✅ **MANDATORY flext-cli usage** - ALL web CLI projects use flext-cli for CLI AND output, NO direct Click/Rich
 - ✅ **ZERO fallback tolerance** - no try/except fallbacks in web handlers, no workarounds, always correct Flask solutions
 - ✅ **SOLID compliance** - proper web abstraction, dependency injection, clean Flask architecture
@@ -26,8 +27,9 @@
 - ✅ **Production-ready web code** - no workarounds, fallbacks, try-pass blocks, or incomplete Flask implementations
 
 **CURRENT FLEXT-WEB STATUS** (Evidence-based):
+
 - 🔴 **Ruff Issues**: Web-specific violations in Flask implementations and HTTP handlers
-- 🟡 **MyPy Issues**: 0 in main src/ web modules (already compliant)  
+- 🟡 **MyPy Issues**: 0 in main src/ web modules (already compliant)
 - 🟡 **Pyright Issues**: Minor Flask API mismatches in web service definitions
 - 🔴 **Pytest Status**: Flask test infrastructure needs fixing for web service testing
 - 🟢 **flext-core Foundation**: 79% coverage, fully functional API for web operations
@@ -131,7 +133,7 @@ from flext_cli import (
 
 # VERIFIED: flext-core API signatures for web operations (tested against actual code v0.9.0)
 # - FlextResult[T].ok(value) -> creates success result for web operations
-# - FlextResult[T].fail(error) -> creates failure result for web operations  
+# - FlextResult[T].fail(error) -> creates failure result for web operations
 # - result.is_success -> boolean property for web validation
 # - result.data -> access value (legacy compatibility) for web data
 # - result.value -> access value (preferred) for web data
@@ -142,17 +144,17 @@ from flext_cli import (
 # ✅ CORRECT - Unified Flask web service class per module pattern (VERIFIED WORKING)
 class UnifiedFlextWebService(FlextDomainService):
     """Single unified Flask web service class following flext-core patterns.
-    
+
     This class consolidates all Flask web-related operations,
     following the single responsibility principle while
     maintaining a unified web interface.
-    
+
     Note: FlextDomainService is Pydantic-based, inherits from BaseModel
     """
-    
+
     def __init__(self, **data) -> None:
         """Initialize Flask web service with proper dependency injection.
-        
+
         Args:
             **data: Pydantic initialization data (FlextDomainService requirement)
         """
@@ -161,37 +163,37 @@ class UnifiedFlextWebService(FlextDomainService):
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
         self._flask_app = None  # Flask app will be initialized through proper patterns
-    
+
     def create_web_application(self, web_config: dict) -> FlextResult[FlaskApp]:
         """Create Flask web application with proper error handling.
-        
+
         Args:
             web_config: Web application configuration dictionary
-            
+
         Returns:
             FlextResult with Flask app having .data/.value access and .unwrap() method
         """
         # Input validation for web config - NO fallbacks, fail fast with clear errors
         if not web_config:
             return FlextResult[FlaskApp].fail("Web configuration cannot be empty")
-            
+
         if not isinstance(web_config, dict):
             return FlextResult[FlaskApp].fail(f"Expected dict for web config, got {type(web_config)}")
-            
+
         # Transform to web domain model - NO try/except fallbacks for Flask
         validation_result = WebAppConfig.model_validate(web_config)
         if isinstance(validation_result, ValidationError):
             return FlextResult[FlaskApp].fail(f"Web config validation failed: {validation_result}")
-            
+
         # Create Flask application through unified pattern
         flask_app = self._create_flask_app(validation_result)
         return FlextResult[FlaskApp].ok(flask_app)
-    
+
     def register_web_routes(self, flask_app: FlaskApp) -> FlextResult[None]:
         """Register web routes using unified pattern."""
         if not flask_app:
             return FlextResult[None].fail("Flask app cannot be None")
-            
+
         # Register routes through unified web handler patterns
         try:
             self._register_health_routes(flask_app)
@@ -200,17 +202,17 @@ class UnifiedFlextWebService(FlextDomainService):
             return FlextResult[None].ok(None)
         except Exception as e:
             return FlextResult[None].fail(f"Route registration failed: {e}")
-    
+
     def _create_flask_app(self, config: WebAppConfig) -> FlaskApp:
         """Create Flask application instance with configuration."""
         # Implementation details for Flask app creation...
         pass
-    
+
     def _register_health_routes(self, app: FlaskApp) -> None:
         """Register health check routes."""
         # Implementation details for health routes...
         pass
-    
+
     def _register_api_routes(self, app: FlaskApp) -> None:
         """Register API routes."""
         # Implementation details for API routes...
@@ -230,22 +232,22 @@ from flext_cli import FlextCliConfig
 # ✅ CORRECT - Web domain models using flext-core verified patterns
 class FlaskWebApp(FlextModels.Entity):
     """Flask web application entity following flext-core Entity pattern.
-    
+
     This model represents a Flask web application in the domain,
     using verified flext-core Entity base class with Pydantic validation.
     """
-    
+
     # Required fields using proper Pydantic field definitions
     name: str = Field(min_length=1, max_length=100, description="Flask application name")
-    host: str = Field(default="localhost", description="Flask server host")  
+    host: str = Field(default="localhost", description="Flask server host")
     port: int = Field(ge=1, le=65535, description="Flask server port")
     status: str = Field(default="stopped", description="Flask application status")
-    
+
     # Optional fields for web configuration
     debug_mode: bool = Field(default=False, description="Flask debug mode (NEVER True in production)")
     secret_key: Optional[str] = Field(None, description="Flask secret key for sessions")
     max_content_length: int = Field(default=16777216, description="Maximum request content length")
-    
+
     @field_validator('status')
     @classmethod
     def validate_status(cls, v: str) -> str:
@@ -254,7 +256,7 @@ class FlaskWebApp(FlextModels.Entity):
         if v not in allowed_statuses:
             raise ValueError(f"Status must be one of: {allowed_statuses}")
         return v
-        
+
     @field_validator('secret_key')
     @classmethod
     def validate_secret_key(cls, v: Optional[str]) -> Optional[str]:
@@ -262,57 +264,57 @@ class FlaskWebApp(FlextModels.Entity):
         if v is not None and len(v) < 32:
             raise ValueError("Secret key must be at least 32 characters for security")
         return v
-    
+
     def start_application(self) -> FlextResult[None]:
         """Start Flask web application with proper error handling."""
         if self.status == "running":
             return FlextResult[None].fail(f"Flask application {self.name} is already running")
-            
+
         if self.status == "starting":
             return FlextResult[None].fail(f"Flask application {self.name} is already starting")
-            
+
         # Update status through domain logic
         self.status = "starting"
         return FlextResult[None].ok(None)
-    
+
     def stop_application(self) -> FlextResult[None]:
         """Stop Flask web application with proper error handling."""
         if self.status == "stopped":
             return FlextResult[None].fail(f"Flask application {self.name} is already stopped")
-            
+
         if self.status == "stopping":
             return FlextResult[None].fail(f"Flask application {self.name} is already stopping")
-            
+
         # Update status through domain logic
         self.status = "stopping"
         return FlextResult[None].ok(None)
 
 class FlaskWebAppConfig(FlextModels.Value):
     """Flask web application configuration value object.
-    
+
     This value object encapsulates Flask application configuration
     using verified flext-core Value base class.
     """
-    
+
     # Web server configuration
     host: str = Field(default="0.0.0.0", description="Flask server bind address")
     port: int = Field(default=8080, ge=1, le=65535, description="Flask server port")
     debug: bool = Field(default=False, description="Flask debug mode")
-    
+
     # Security configuration
     secret_key: str = Field(min_length=32, description="Flask secret key")
     enable_cors: bool = Field(default=True, description="Enable CORS support")
     enable_csrf: bool = Field(default=True, description="Enable CSRF protection")
-    
+
     # Request configuration
     max_content_length: int = Field(default=16777216, description="Maximum request size")
     request_timeout: int = Field(default=30, description="Request timeout in seconds")
-    
+
     # Monitoring configuration
     enable_monitoring: bool = Field(default=True, description="Enable monitoring")
     enable_security_headers: bool = Field(default=True, description="Enable security headers")
     log_level: str = Field(default="INFO", description="Logging level")
-    
+
     @field_validator('log_level')
     @classmethod
     def validate_log_level(cls, v: str) -> str:
@@ -325,16 +327,16 @@ class FlaskWebAppConfig(FlextModels.Value):
 # ✅ CORRECT - Web CLI configuration using verified flext-cli patterns
 class FlaskWebCliService:
     """Flask web CLI service using flext-cli exclusively - NO Click/Rich direct usage."""
-    
+
     def __init__(self) -> None:
         """Initialize Flask web CLI service with flext-cli integration."""
         self._cli_api = FlextCliApi()
-        self._config = FlextCliConfig() 
+        self._config = FlextCliConfig()
         self._logger = FlextLogger(__name__)
-        
+
     def setup_flask_web_configuration_schema(self) -> FlextResult[dict]:
         """Setup Flask web configuration schema with automatic .env/.env resolution.
-        
+
         This demonstrates proper configuration for Flask web services without manual .env logic.
         """
         flask_web_config_schema = {
@@ -427,7 +429,7 @@ class FlaskWebCliService:
                     "required": False
                 },
                 "enable_csrf": {
-                    "default": True,                     # Level 3: DEFAULT CONSTANTS  
+                    "default": True,                     # Level 3: DEFAULT CONSTANTS
                     "env_var": "WEB_ENABLE_CSRF",        # Levels 1&2: ENV VARS → CONFIG FILE
                     "cli_param": "--enable-csrf",        # Level 4: CLI PARAMETERS
                     "config_formats": {
@@ -441,12 +443,12 @@ class FlaskWebCliService:
                 }
             }
         }
-        
+
         # Register Flask web schema with flext-cli - handles ALL formats automatically
         schema_result = self._config.register_universal_schema(flask_web_config_schema)
         if schema_result.is_failure:
             return FlextResult[dict].fail(f"Flask web schema registration failed: {schema_result.error}")
-            
+
         return FlextResult[dict].ok(flask_web_config_schema)
 ```
 
@@ -529,17 +531,17 @@ try:
     # Test flext-core integration for web
     from flext_core import FlextResult, FlextDomainService, FlextContainer, FlextLogger
     print('✅ flext-core web integration: SUCCESS')
-    
+
     # Test flext-cli integration for web CLI
-    from flext_cli import FlextCliApi, FlextCliMain, FlextCliConfig  
+    from flext_cli import FlextCliApi, FlextCliMain, FlextCliConfig
     print('✅ flext-cli web CLI integration: SUCCESS')
-    
+
     # Test Flask web service imports
     from flext_web import FlextWebService, FlextWebConfig
     print('✅ Flask web service imports: SUCCESS')
-    
+
     print('✅ All Flask web integrations: SUCCESS')
-    
+
 except ImportError as e:
     print(f'❌ Flask web integration FAILED: Missing import - {e}')
     sys.exit(1)
@@ -568,7 +570,7 @@ COVERAGE_PERCENT=$(pytest tests/ --cov=src --cov-report=term 2>/dev/null | grep 
 
 echo "Flask Web Quality Metrics:"
 echo "- Ruff Issues: $RUFF_ISSUES"
-echo "- MyPy Errors: $MYPY_ISSUES" 
+echo "- MyPy Errors: $MYPY_ISSUES"
 echo "- PyRight Errors: $PYRIGHT_ISSUES"
 echo "- Tests Passed: $PASSED_TESTS"
 echo "- Tests Failed: $FAILED_TESTS"
@@ -601,38 +603,38 @@ echo "=== FLASK WEB ASSESSMENT COMPLETE ==="
 class WebService:
     def create_app(self): pass
 
-class APIService:  
+class APIService:
     def handle_requests(self): pass
-    
+
 class ConfigService:
     def load_config(self): pass
 
 # AFTER - Unified Flask web service class (CORRECT pattern)
 class UnifiedFlextWebService(FlextDomainService):
     """Single unified Flask web service class following flext-core patterns.
-    
+
     This class consolidates all Flask web-related operations:
     - Web application creation and management
     - REST API request handling
-    - Configuration management 
+    - Configuration management
     - Security validation
     """
-    
+
     def __init__(self, **data) -> None:
         """Initialize unified Flask web service."""
         super().__init__(**data)
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
         self._flask_app = None
-    
+
     def create_web_application(self, config: FlaskWebAppConfig) -> FlextResult[FlaskWebApp]:
         """Former WebService.create_app with proper error handling."""
         # Implementation using flext-core patterns for Flask
-        
+
     def handle_api_request(self, request_data: dict) -> FlextResult[dict]:
         """Former APIService.handle_requests with Flask integration."""
         # Implementation using unified Flask patterns
-        
+
     def load_web_configuration(self, config_path: str) -> FlextResult[FlaskWebAppConfig]:
         """Former ConfigService.load_config now as unified method."""
         # Implementation as part of unified Flask web class
@@ -650,7 +652,7 @@ def handle_web_request(request_data: FlaskRequestInput) -> FlextResult[FlaskResp
     """Handle Flask web request with full type safety and error handling."""
     if not isinstance(request_data, FlaskRequestInput):
         return FlextResult[FlaskResponseOutput].fail("Invalid Flask request type")
-    
+
     try:
         response = FlaskResponseOutput.model_validate(request_data.model_dump())
         return FlextResult[FlaskResponseOutput].ok(response)
@@ -664,7 +666,7 @@ def handle_web_request(request_data: FlaskRequestInput) -> FlextResult[FlaskResp
 # NEW - Comprehensive functional Flask web tests
 class TestUnifiedFlextWebServiceComplete:
     """Complete test coverage for unified Flask web service."""
-    
+
     @pytest.mark.parametrize("web_config,expected_result", [
         ({"host": "localhost", "port": 8080}, "success"),
         ({}, "failure"),
@@ -674,16 +676,16 @@ class TestUnifiedFlextWebServiceComplete:
         """Test all Flask web application creation scenarios comprehensively."""
         web_service = UnifiedFlextWebService()
         result = web_service.create_web_application(web_config)
-        
+
         if expected_result == "success":
             assert result.is_success
         else:
             assert result.is_failure
-    
+
     def test_flask_error_handling_comprehensive(self):
         """Test all Flask error handling paths."""
         web_service = UnifiedFlextWebService()
-        
+
         # Test all Flask failure modes
         error_cases = [
             None,           # None input
@@ -691,20 +693,20 @@ class TestUnifiedFlextWebServiceComplete:
             [],             # Empty list
             {"malformed": "flask_config"},  # Invalid Flask structure
         ]
-        
+
         for case in error_cases:
             result = web_service.create_web_application(case)
             assert result.is_failure, f"Should fail for Flask case: {case}"
             assert result.error, "Flask error message should be present"
-    
+
     def test_flask_integration_with_flext_core(self):
         """Test Flask integration with flext-core components."""
         web_service = UnifiedFlextWebService()
-        
+
         # Test container integration for Flask
         container_result = web_service._container.get("flask_service")
         # Test based on actual Flask service availability
-        
+
         # Test logging integration for Flask
         assert web_service._logger is not None
         # Verify logger works with real Flask log calls
@@ -721,7 +723,7 @@ class TestUnifiedFlextWebServiceComplete:
 ```bash
 # Identify high-priority Flask web issues first
 /home/marlonsc/flext/.venv/bin/ruff check . --select F  # Pyflakes errors (critical)
-/home/marlonsc/flext/.venv/bin/ruff check . --select E9 # Syntax errors (critical) 
+/home/marlonsc/flext/.venv/bin/ruff check . --select E9 # Syntax errors (critical)
 /home/marlonsc/flext/.venv/bin/ruff check . --select F821 # Undefined name (critical)
 
 # Address Flask import issues
@@ -742,18 +744,18 @@ class TestUnifiedFlextWebServiceComplete:
 # ✅ CORRECT - Fix Flask magic values
 # BEFORE
 if timeout > 30:  # Magic number in Flask config
-    
-# AFTER  
+
+# AFTER
 class FlaskServiceConstants:
     DEFAULT_REQUEST_TIMEOUT = 30
-    
+
 if timeout > FlaskServiceConstants.DEFAULT_REQUEST_TIMEOUT:
 
 # ✅ CORRECT - Fix complex Flask functions
 # BEFORE
 def complex_flask_handler(request):
     # 50+ lines of mixed Flask logic
-    
+
 # AFTER
 class FlaskRequestProcessor:
     def handle_request(self, request: FlaskRequest) -> FlextResult[FlaskResponse]:
@@ -763,13 +765,13 @@ class FlaskRequestProcessor:
             .flat_map(self._process_flask_data)
             .map(self._create_flask_response)
         )
-    
+
     def _validate_flask_request(self, request: FlaskRequest) -> FlextResult[FlaskRequest]:
         """Focused Flask request validation logic."""
-        
+
     def _process_flask_data(self, request: FlaskRequest) -> FlextResult[ProcessedData]:
         """Focused Flask data processing logic."""
-        
+
     def _create_flask_response(self, data: ProcessedData) -> FlaskResponse:
         """Focused Flask response creation logic."""
 ```
@@ -787,7 +789,7 @@ FlaskRequestType = TypeVar('FlaskRequestType')
 
 class FlaskDataProcessor(Generic[T]):
     """Generic Flask data processor with proper type constraints."""
-    
+
     def process_flask_data(self, data: T) -> FlextResult[T]:
         """Process Flask data maintaining type safety."""
         return FlextResult[T].ok(data)
@@ -795,7 +797,7 @@ class FlaskDataProcessor(Generic[T]):
 # ✅ CORRECT - Protocol usage instead of Any for Flask
 class FlaskProcessable(Protocol):
     """Protocol defining Flask processable interface."""
-    
+
     def get_request_data(self) -> dict: ...
     def set_response_data(self, data: dict) -> None: ...
 
@@ -831,7 +833,7 @@ from flask.testing import FlaskClient
 
 class TestFlextWebServiceComprehensive:
     """Comprehensive Flask web service testing with real Flask functionality."""
-    
+
     @pytest.fixture
     def flask_web_service(self):
         """Create real Flask web service for testing."""
@@ -844,55 +846,55 @@ class TestFlextWebServiceComprehensive:
         app_result = service.create_web_application(config)
         assert app_result.is_success
         return app_result.unwrap()
-    
+
     @pytest.fixture
     def flask_client(self, flask_web_service):
         """Create Flask test client for HTTP testing."""
         flask_web_service.config['TESTING'] = True
         return flask_web_service.test_client()
-    
+
     def test_flask_health_endpoint_real(self, flask_client: FlaskClient):
         """Test Flask health endpoint with real HTTP requests."""
         response = flask_client.get('/health')
         assert response.status_code == 200
         assert 'application/json' in response.content_type
-        
+
         data = response.get_json()
         assert data['status'] == 'healthy'
         assert 'timestamp' in data
-    
+
     def test_flask_api_endpoints_comprehensive(self, flask_client: FlaskClient):
         """Test all Flask API endpoints with real HTTP calls."""
         # Test GET /api/v1/apps
         get_response = flask_client.get('/api/v1/apps')
         assert get_response.status_code == 200
-        
+
         # Test POST /api/v1/apps with valid data
         post_data = {
             "name": "test-app",
-            "host": "localhost", 
+            "host": "localhost",
             "port": 3000
         }
-        post_response = flask_client.post('/api/v1/apps', 
+        post_response = flask_client.post('/api/v1/apps',
                                         json=post_data,
                                         content_type='application/json')
         assert post_response.status_code == 201
-        
+
         # Test POST with invalid data (error handling)
         invalid_post_response = flask_client.post('/api/v1/apps',
                                                 json={},
                                                 content_type='application/json')
         assert invalid_post_response.status_code == 400
-    
+
     def test_flask_security_headers_real(self, flask_client: FlaskClient):
         """Test Flask security headers with real HTTP responses."""
         response = flask_client.get('/health')
-        
+
         # Verify security headers are present
         assert 'X-Content-Type-Options' in response.headers
         assert 'X-Frame-Options' in response.headers
         assert 'X-XSS-Protection' in response.headers
-    
+
     @pytest.mark.parametrize("endpoint,method,expected_status", [
         ("/health", "GET", 200),
         ("/api/v1/apps", "GET", 200),
@@ -905,9 +907,9 @@ class TestFlextWebServiceComprehensive:
             response = flask_client.get(endpoint)
         elif method == "POST":
             response = flask_client.post(endpoint)
-        
+
         assert response.status_code == expected_status
-    
+
     def test_flask_error_handling_integration(self, flask_web_service):
         """Test Flask error handling with real error scenarios."""
         # Test invalid configuration
@@ -915,7 +917,7 @@ class TestFlextWebServiceComprehensive:
         error_result = flask_web_service.create_web_application(invalid_config)
         assert error_result.is_failure
         assert "validation failed" in error_result.error.lower()
-        
+
         # Test missing required fields
         incomplete_config = {"host": "localhost"}  # Missing port
         incomplete_result = flask_web_service.create_web_application(incomplete_config)
@@ -934,7 +936,7 @@ class TestFlextWebServiceComprehensive:
 - [ ] Plan incremental Flask web improvements (never wholesale rewrites)
 - [ ] Establish measurable Flask web success criteria from current baseline
 
-### During Each Flask Web Development Cycle  
+### During Each Flask Web Development Cycle
 
 - [ ] Make minimal, focused Flask web changes (single aspect per change)
 - [ ] Validate after every Flask modification using quality gates
@@ -945,7 +947,7 @@ class TestFlextWebServiceComprehensive:
 ### After Each Flask Web Development Session
 
 - [ ] Full quality gate validation (ruff + mypy + pyright + pytest for Flask)
-- [ ] Flask web coverage measurement and improvement tracking  
+- [ ] Flask web coverage measurement and improvement tracking
 - [ ] Integration testing with real Flask dependencies
 - [ ] Update Flask web documentation reflecting current reality
 - [ ] Commit with descriptive messages explaining Flask web improvements
@@ -977,11 +979,11 @@ cd /home/marlonsc/flext/flext-web || exit 1
 echo "🔧 Flask Web Quality Gates"
 echo "========================="
 /home/marlonsc/flext/.venv/bin/ruff check . --statistics
-/home/marlonsc/flext/.venv/bin/mypy src/ --strict --show-error-codes  
+/home/marlonsc/flext/.venv/bin/mypy src/ --strict --show-error-codes
 /home/marlonsc/flext/.venv/bin/pyright src/ --stats
 /home/marlonsc/flext/.venv/bin/pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=95
 
-# Flask Web Functional Validation  
+# Flask Web Functional Validation
 echo ""
 echo "🌐 Flask Web Functional Validation"
 echo "=================================="
@@ -993,15 +995,15 @@ try:
     # Test all major Flask web imports
     from flext_core import FlextResult, FlextContainer, FlextModels
     print('✅ flext-core Flask integration: SUCCESS')
-    
+
     # Test Flask web project functionality
     from flext_web import FlextWebService, FlextWebConfig
     print('✅ Flask web service imports: SUCCESS')
-    
+
     # Test Flask web CLI integration
     from flext_cli import FlextCliApi, FlextCliMain, FlextCliConfig
     print('✅ flext-cli Flask web integration: SUCCESS')
-    
+
     # Test Flask web domain models
     flask_config = FlextWebConfig(
         host='localhost',
@@ -1009,10 +1011,10 @@ try:
         secret_key='test-secret-key-32-characters-long'
     )
     print('✅ Flask web configuration: SUCCESS')
-    
+
     print('✅ All Flask web imports: SUCCESS')
     print('✅ FLASK WEB FINAL VALIDATION: PASSED')
-    
+
 except Exception as e:
     print(f'❌ FLASK WEB VALIDATION FAILED: {e}')
     sys.exit(1)
@@ -1031,6 +1033,7 @@ echo "=== FLASK WEB ECOSYSTEM READY FOR PRODUCTION ==="
 **GOLDEN RULE**: Flask web configuration follows strict priority hierarchy with ENVIRONMENT VARIABLES taking precedence over .env files. The .env file is automatically detected from CURRENT execution directory. All Flask web CLI testing and debugging MUST use FLEXT ecosystem exclusively - NO external testing tools or custom implementations allowed.
 
 **CORRECT PRIORITY ORDER FOR FLASK WEB**:
+
 ```
 1. ENVIRONMENT VARIABLES  (export FLASK_HOST=prod-server - HIGHEST PRIORITY)
 2. .env FILE             (FLASK_HOST=localhost from execution directory)
@@ -1086,11 +1089,11 @@ python -m flext_web test-api \
 
 # Test Level 1: Environment variables (HIGHEST PRIORITY)
 export FLASK_HOST="production.flext.com"
-export FLASK_PORT="8080"  
+export FLASK_PORT="8080"
 export FLASK_SECRET_KEY="production-secret-key-32-chars-long"
 python -m flext_web start-server  # Uses environment variables
 
-# Test Level 2: .env file (SECONDARY PRIORITY)  
+# Test Level 2: .env file (SECONDARY PRIORITY)
 unset FLASK_HOST FLASK_PORT FLASK_SECRET_KEY
 echo "FLASK_HOST=staging.flext.com" > .env
 echo "FLASK_PORT=8080" >> .env
@@ -1116,7 +1119,7 @@ python -m flext_web start-server \
 python -m flext_web validate-config \
   --config-file invalid_flask.env  # Should FAIL explicitly
 
-# Test Flask web service startup validation  
+# Test Flask web service startup validation
 python -m flext_web start-server \
   --port invalid_port  # Should FAIL explicitly with clear error
 

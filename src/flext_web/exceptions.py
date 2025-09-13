@@ -1,9 +1,6 @@
-"""FLEXT Web Exception - Consolidated exception system.
+"""FLEXT Web Exceptions.
 
-Single consolidated FlextWebException class containing all web-specific exception types
-following flext-core architectural patterns with short module names.
-
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -101,6 +98,7 @@ class FlextWebExceptions(FlextExceptions):
         ) -> None:
             """Initialize web routing error."""
             super().__init__(message)
+            """Initialize web routing error."""
             self.endpoint = endpoint
             self.method = method
 
@@ -124,6 +122,7 @@ class FlextWebExceptions(FlextExceptions):
             message: str = "Web middleware error",
             middleware_name: str | None = None,
         ) -> None:
+            """Initialize middleware error."""
             super().__init__(message, operation=middleware_name)
 
     # =========================================================================

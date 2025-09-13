@@ -1,8 +1,4 @@
-"""Comprehensive test coverage for flext_web.utilities module.
-
-This test module targets specific missing coverage areas identified in the coverage report.
-Focus on real execution tests without mocks for maximum functional coverage.
-
+"""Focus on real execution tests without mocks for maximum functional coverage.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT

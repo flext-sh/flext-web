@@ -3,12 +3,12 @@
 This test module targets specific missing coverage areas identified in the coverage report.
 Focus on real execution tests without mocks for maximum functional coverage.
 
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
 import pytest
+from flext_core import FlextTypes
 from pydantic import ValidationError
 
 from flext_web import FlextWebConfigs, FlextWebModels, FlextWebTypes

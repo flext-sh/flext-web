@@ -1,9 +1,5 @@
 """Tests específicos para cobrir gaps de cobertura em services.py.
 
-Foca nas linhas não cobertas identificadas no relatório de cobertura:
-- Linhas 303-304, 384-385, 416-417, 463-464, 489->492, 515-516, 598-599, 607, 635, 644-645, 657-658, 673, 679, 689, 700-701, 714-741, 750-779
-
-
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
