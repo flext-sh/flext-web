@@ -29,7 +29,7 @@ class TestFlextWebService:
 
     # Test constants within class scope
     HTTP_OK = FlextWebConstants.Web.HTTP_OK
-    HTTP_CREATED = FlextWebConstants.Web.HTTP_CREATED
+    HTTP_CREATED = 201
     EXPECTED_TOTAL_PAGES = 8
     """Enterprise REST API testing for FlextWebService functionality.
 

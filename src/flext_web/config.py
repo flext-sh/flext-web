@@ -34,6 +34,18 @@ _web_settings_available = True
 _logger = logging.getLogger(__name__)
 
 
+def _get_flext_web_settings() -> type[FlextWebSettings] | None:
+    """Get FlextWebSettings with lazy import to avoid circular dependency."""
+    try:
+        from flext_web.settings import (
+            FlextWebSettings as _FlextWebSettings,
+        )
+
+        return _FlextWebSettings
+    except ImportError:
+        return None
+
+
 class FlextWebConfigs:
     """Consolidated FLEXT web configuration system providing all configuration functionality.
 
@@ -136,7 +148,7 @@ class FlextWebConfigs:
 
             # For production, require explicit host configuration
             # Replace 0.0.0.0 with localhost for security
-            dangerous_host = "0.0.0.0"  # noqa: S104
+            dangerous_host = "0.0.0.0"  # noqa: S104 - Used for security validation
             if host == dangerous_host:
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
@@ -466,9 +478,9 @@ class FlextWebConfigs:
     def _validate_and_finalize_config(
         cls,
         config: FlextWebConfigs.WebConfig,
-        factory_method: str,  # noqa: ARG003
+        _factory_method: str,
         *,
-        has_overrides: bool,  # noqa: ARG003
+        _has_overrides: bool,
     ) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Finalize configuration with validation and logging."""
         # Validate configuration
@@ -551,14 +563,15 @@ class FlextWebConfigs:
     @classmethod
     def create_config_from_env(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Create configuration from environment variables."""
-        if not _web_settings_available or FlextWebSettings is None:
+        flext_web_settings = _get_flext_web_settings()
+        if not _web_settings_available or flext_web_settings is None:
             return FlextResult[FlextWebConfigs.WebConfig].fail(
                 "FlextWebSettings not available - import failed"
             )
 
         try:
             # Use FlextWebSettings to load from environment
-            settings = FlextWebSettings()
+            settings = flext_web_settings()
             return settings.to_config()
         except Exception as e:
             return FlextResult[FlextWebConfigs.WebConfig].fail(
@@ -595,11 +608,14 @@ class FlextWebConfigs:
             # Core validation completed successfully
 
             # WebSettings → WebConfig validation (full bridge)
-            if _web_settings_available and FlextWebSettings is not None:
+            flext_web_settings = _get_flext_web_settings()
+            if _web_settings_available and flext_web_settings is not None:
                 try:
                     # Create settings using Pydantic model validation
                     try:
-                        settings_obj = FlextWebSettings.model_validate(validated_config)
+                        settings_obj = flext_web_settings.model_validate(
+                            validated_config
+                        )
                         settings_res = FlextResult[FlextWebSettings].ok(settings_obj)
                     except Exception as e:
                         settings_res = FlextResult[FlextWebSettings].fail(

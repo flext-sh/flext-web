@@ -5,7 +5,7 @@
 **Architecture**: Clean Architecture + Domain-Driven Design
 **Integration**: FLEXT Ecosystem + flext-core patterns
 
-Welcome to the comprehensive documentation for **flext-web**, the enterprise web interface for the FLEXT distributed data integration platform.
+Welcome to the documentation for **flext-web**, the web interface for the FLEXT distributed data integration platform.
 
 ## ✅ Documentation Standardization Complete
 

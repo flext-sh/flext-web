@@ -59,6 +59,7 @@ flext-web = "flext_web.__main__:main"
 [tool.ruff]
 extend = "../ruff-shared.toml"
 lint.isort.known-first-party = ["flext_web"]
+lint.extend-per-file-ignores = { "src/flext_web/config.py" = ["PLC0415"] }
 
 [tool.mypy]
 # Strict mode - enables all recommended checks

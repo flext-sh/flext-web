@@ -136,8 +136,8 @@ class TestWebConfigEnvironmentVariables:
             assert config.port == 8888
             # Other values should be from environment/conftest/env file
             assert (
-                config.debug is False
-            )  # From inherited FlextConfig which defaults to False
+                config.debug is True
+            )  # From .env file which sets FLEXT_WEB_DEBUG=true
             assert config.app_name == "flext-app"  # From FlextConfig inheritance
 
     def test_config_from_env_invalid_types(self) -> None:

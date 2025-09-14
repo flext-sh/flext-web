@@ -484,7 +484,7 @@ class TestServiceExceptionHandling:
 
         # Create a mock property that raises an exception when accessed
         def mock_apps_property(
-            self: FlextWebServices.WebService,  # noqa: ARG001
+            self: FlextWebServices.WebService,
         ) -> dict[str, FlextWebModels.WebApp]:
             msg = "Simulated dashboard exception"
             raise RuntimeError(msg)
@@ -629,8 +629,10 @@ class TestServiceExceptionHandling:
         original_services = registry._services
 
         def failing_services_access(
-            *args: object, **kwargs: object  # noqa: ARG001, ARG002
+            *args: object,
+            **kwargs: object,
         ) -> dict[str, FlextWebServices.WebService]:
+            _ = args, kwargs  # Suppress unused argument warnings
             msg = "Registry corruption simulation"
             raise RuntimeError(msg)
 
@@ -654,8 +656,10 @@ class TestServiceExceptionHandling:
 
         # Test list services exception - line 570-571 using proper exception injection
         def failing_services_list_access(
-            *args: object, **kwargs: object  # noqa: ARG001, ARG002
+            *args: object,
+            **kwargs: object,
         ) -> dict[str, FlextWebServices.WebService]:
+            _ = args, kwargs  # Suppress unused argument warnings
             msg = "Registry list access failure"
             raise RuntimeError(msg)
 

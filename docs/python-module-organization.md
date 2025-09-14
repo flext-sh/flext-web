@@ -176,7 +176,7 @@ src/flext_web/application/
 **CQRS Handler Pattern**:
 
 ```python
-from flext_core import FlextHandlers, FlextResult, FlextCommand
+from flext_core import FlextProcessing, FlextResult, FlextCommand
 from flext_web.domain.entities import FlextWebApp
 from flext_web.domain.repositories import FlextWebAppRepository
 
@@ -186,7 +186,7 @@ class CreateAppCommand(FlextCommand):
     host: str = "localhost"
     port: int = 8000
 
-class FlextWebAppHandler(FlextHandlers.Handler[CreateAppCommand, FlextWebApp]):
+class FlextWebAppHandler(FlextProcessing.Handler[CreateAppCommand, FlextWebApp]):
     """CQRS command handler for web application operations"""
 
     def __init__(self, repository: FlextWebAppRepository):
@@ -1666,7 +1666,7 @@ class FlextWebAppStatus(Enum):
 class FlextWebConfig(BaseSettings, FlextConfig):
     # Current implementation
 
-class FlextWebAppHandler(FlextHandlers.Handler):
+class FlextWebAppHandler(FlextProcessing.Handler):
     # Current implementation
 
 # Step 3: Extract Infrastructure Layer

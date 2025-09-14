@@ -137,13 +137,13 @@ class TestConfigMissingCoverage:
         config = FlextWebConfigs.WebConfig(
             secret_key="x" * 32,  # Exatamente 32 caracteres
             host="127.0.0.1",  # IP válido
-            port=1,  # Porta mínima válida
+            port=1024,  # Porta mínima válida (>= 1024)
             debug=False,
             max_content_length=1,  # Valor mínimo
             request_timeout=1,  # Timeout mínimo
         )
         assert config.secret_key == "x" * 32
-        assert config.port == 1
+        assert config.port == 1024
         assert config.max_content_length == 1
         assert config.request_timeout == 1
 

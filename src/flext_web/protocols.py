@@ -233,9 +233,9 @@ class FlextWebProtocols(FlextProtocols):
                 )
                 return FlextResult[FlextWebModels.WebApp].ok(app)
 
-            def start_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+            def start_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
                 app = FlextWebModels.WebApp(
-                    id=app_id,
+                    id=_app_id,
                     name="mock",
                     port=8080,
                     host="localhost",
@@ -243,9 +243,9 @@ class FlextWebProtocols(FlextProtocols):
                 )
                 return FlextResult[FlextWebModels.WebApp].ok(app)
 
-            def stop_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+            def stop_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
                 app = FlextWebModels.WebApp(
-                    id=app_id,
+                    id=_app_id,
                     name="mock",
                     port=8080,
                     host="localhost",

@@ -474,10 +474,10 @@ class TestWebAppProperties:
     def test_web_app_url_property_https(self) -> None:
         """Test URL property with HTTPS port."""
         app = FlextWebModels.WebApp(
-            id="app_test", name="test-app", host="example.com", port=443
+            id="app_test", name="test-app", host="example.com", port=8443
         )
 
-        expected_url = "https://example.com:443"
+        expected_url = "https://example.com:8443"
         actual_url = app.url
         assert actual_url == expected_url
 

@@ -14,7 +14,7 @@ This example shows:
 from typing import cast
 
 import requests
-from flext_core import FlextConstants, FlextResult, FlextTypes
+from flext_core import FlextResult, FlextTypes
 
 from flext_web.typings import FlextWebTypes
 
@@ -22,10 +22,16 @@ from flext_web.typings import FlextWebTypes
 class ExampleConstants:
     """Consolidated constants for API usage example following flext-core patterns."""
 
-    HTTP_OK = FlextConstants.Web.HTTP_OK
-    DEFAULT_HOST = FlextConstants.Infrastructure.DEFAULT_HOST
-    DEFAULT_PORT = FlextConstants.Web.DEFAULT_DEVELOPMENT_PORT
+    HTTP_OK = 200
+    DEFAULT_HOST = "localhost"
+    DEFAULT_PORT = 8080
     BASE_URL = f"http://{DEFAULT_HOST}:{DEFAULT_PORT}"
+
+    # API Endpoints
+    APPS_BASE = "/api/v1/apps"
+    APP_START = "/api/v1/apps/{app_id}/start"
+    APP_DETAIL = "/api/v1/apps/{app_id}"
+    APP_STOP = "/api/v1/apps/{app_id}/stop"
 
 
 def check_service_health() -> bool:
@@ -71,7 +77,7 @@ def create_application(
 
     try:
         response = requests.post(
-            f"{ExampleConstants.BASE_URL}{FlextConstants.Endpoints.APPS_BASE}",
+            f"{ExampleConstants.BASE_URL}{ExampleConstants.APPS_BASE}",
             json=request_data,
             timeout=5,
         )
@@ -200,7 +206,7 @@ def start_application(app_id: str) -> FlextWebTypes.AppData | None:
     """
     return _execute_app_operation(
         method="POST",
-        endpoint=FlextConstants.Endpoints.APP_START.format(app_id=app_id),
+        endpoint=ExampleConstants.APP_START.format(app_id=app_id),
     )
 
 
@@ -216,7 +222,7 @@ def get_application_status(app_id: str) -> FlextWebTypes.AppData | None:
     """
     return _execute_app_operation(
         method="GET",
-        endpoint=FlextConstants.Endpoints.APP_DETAIL.format(app_id=app_id),
+        endpoint=ExampleConstants.APP_DETAIL.format(app_id=app_id),
     )
 
 
@@ -232,7 +238,7 @@ def stop_application(app_id: str) -> FlextWebTypes.AppData | None:
     """
     return _execute_app_operation(
         method="POST",
-        endpoint=FlextConstants.Endpoints.APP_STOP.format(app_id=app_id),
+        endpoint=ExampleConstants.APP_STOP.format(app_id=app_id),
     )
 
 
@@ -243,9 +249,7 @@ def list_applications() -> list[FlextWebTypes.AppData]:
         List of FlextWebApp entities with current status information.
 
     """
-    return _execute_list_operation(
-        endpoint=FlextConstants.Endpoints.APPS_BASE, data_key="apps"
-    )
+    return _execute_list_operation(endpoint=ExampleConstants.APPS_BASE, data_key="apps")
 
 
 def demo_application_lifecycle() -> None:

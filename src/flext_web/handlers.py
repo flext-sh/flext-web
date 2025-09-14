@@ -9,9 +9,9 @@ from __future__ import annotations
 from flask import jsonify
 from flask.typing import ResponseReturnValue
 from flext_core import (
-    FlextHandlers,
     FlextLogger,
     FlextMixins,
+    FlextProcessing,
     FlextResult,
     FlextTypes,
     FlextUtilities,
@@ -22,12 +22,12 @@ from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
 
 
-class FlextWebHandlers(FlextHandlers):
+class FlextWebHandlers(FlextProcessing):
     """Consolidated web handler system extending flext-core patterns.
 
     This class serves as the single point of access for all web-specific
     handlers, command processors, and response formatters while extending
-    FlextHandlers from flext-core for proper architectural inheritance.
+    FlextProcessing from flext-core for proper architectural inheritance.
 
     All handler functionality is accessible through this single class following the
     "one class per module" architectural requirement.

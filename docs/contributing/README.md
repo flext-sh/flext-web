@@ -10,7 +10,7 @@ Thank you for your interest in contributing to **flext-web**, the enterprise web
 
 ### Project Values
 
-- **Quality First**: 90%+ test coverage, strict typing, comprehensive linting
+- **Quality First**: 90%+ test coverage, strict typing, linting
 - **Clean Architecture**: Clear separation of concerns, SOLID principles
 - **FLEXT Integration**: Consistent patterns across the 33-project ecosystem
 - **Documentation**: Keep docs current with all changes
@@ -539,7 +539,7 @@ We follow the **FLEXT Code of Conduct**:
 
 **Thank you for contributing to FLEXT Web Interface!**
 
-Your contributions help build the enterprise-grade distributed data integration platform that powers modern data operations. Together, we're creating something remarkable. 🚀
+Your contributions help build the distributed data integration platform that powers modern data operations. Together, we're creating something remarkable. 🚀
 
 ---
 

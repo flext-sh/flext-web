@@ -6,7 +6,7 @@
 
 ## Overview
 
-This directory contains the source code for the FLEXT Web Interface, an enterprise-grade web management console that provides comprehensive dashboard and REST API endpoints for monitoring and managing applications within the FLEXT distributed data integration ecosystem.
+This directory contains the source code for the FLEXT Web Interface, a web management console that provides dashboard and REST API endpoints for monitoring and managing applications within the FLEXT distributed data integration ecosystem.
 
 ## Module Structure
 
@@ -61,7 +61,7 @@ Rich domain entity implementing application lifecycle management with state mach
 
 - State management (STOPPED, STARTING, RUNNING, STOPPING, ERROR)
 - Business rule validation using flext-core patterns
-- State transition validation with comprehensive error handling
+- State transition validation with error handling
 - Integration with FlextResult for railway-oriented programming
 
 **Usage**:
@@ -99,7 +99,7 @@ Application status enumeration with state transition rules and business logic.
 
 #### FlextWebAppHandler
 
-CQRS command handler implementing application service patterns with comprehensive validation.
+CQRS command handler implementing application service patterns with validation.
 
 **Operations**:
 
@@ -203,7 +203,7 @@ The module extensively uses flext-core foundation patterns for consistency acros
 - **FlextResult**: Railway-oriented programming for error handling
 - **FlextModels.Entity**: Domain entity base class with validation
 - **FlextConfig**: Configuration management with validation
-- **FlextHandlers**: CQRS command handler patterns
+- **FlextProcessing**: CQRS command handler patterns
 - **FlextValidators**: Consistent validation rules
 
 ### Error Handling

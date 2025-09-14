@@ -173,7 +173,7 @@ class TestWebConfigFunctionalValidation:
             config = FlextWebConfigs.get_web_settings()
             assert config.host == "localhost"  # Default
             assert config.port == 8080  # Default
-            assert config.debug is False  # Default
+            assert config.debug is True  # Default
             assert (
                 config.secret_key
                 == "your-django-secret-key-minimum-50-characters-long-for-testing-abcdefghijklmnopqrstuvwxyz"

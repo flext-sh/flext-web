@@ -10,15 +10,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import re
-from typing import TypeVar
 from urllib.parse import urlparse
 
-from flext_core import FlextConstants, FlextResult, FlextTypes, FlextUtilities
+from flext_core import FlextConstants, FlextResult, FlextTypes, FlextUtilities, T
 from pydantic import ValidationError
 
 from flext_web.models import FlextWebModels
-
-T = TypeVar("T")
 
 
 class FlextWebUtilities:

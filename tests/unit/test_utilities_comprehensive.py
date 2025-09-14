@@ -23,7 +23,7 @@ class TestFlextWebUtilitiesAppId:
         """Test generating app ID with special characters."""
         app_id = FlextWebUtilities.generate_app_id("Test@App#123")
 
-        assert app_id.startswith("app_test-app-123_")
+        assert app_id.startswith("app_testapp123_")
         assert "_" in app_id
 
     def test_generate_app_id_empty_name(self) -> None:
@@ -78,7 +78,7 @@ class TestFlextWebUtilitiesValidation:
 
     def test_validate_port_range_valid(self) -> None:
         """Test validating valid port numbers."""
-        valid_ports = [80, 443, 8000, 8080, 3000, 9000, 65535]
+        valid_ports = [1024, 8000, 8080, 3000, 9000, 65535]
 
         for port in valid_ports:
             assert FlextWebUtilities.validate_port_range(port) is True

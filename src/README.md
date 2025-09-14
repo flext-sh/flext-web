@@ -6,7 +6,7 @@
 
 ## Overview
 
-This directory contains the complete source code implementation for the FLEXT Web Interface, following Clean Architecture principles with comprehensive enterprise-grade documentation. All modules implement Domain-Driven Design patterns using flext-core foundation libraries.
+This directory contains the complete source code implementation for the FLEXT Web Interface, following Clean Architecture principles with documentation. All modules implement Domain-Driven Design patterns using flext-core foundation libraries.
 
 ## Directory Structure
 
@@ -34,7 +34,7 @@ src/
 - **Size**: 1,200+ lines with complete enterprise documentation
 - **Components**: All architectural layers in single file
 - **Documentation**: 100% docstring coverage with business context
-- **Type Coverage**: 95%+ with comprehensive type annotations
+- **Type Coverage**: 95%+ with type annotations
 
 **Key Components**:
 
@@ -174,7 +174,7 @@ make security                  # Security scanning
 - **FlextResult**: Railway-oriented programming for all operations
 - **FlextModels.Entity**: Domain entity base classes with validation
 - **FlextConfig**: Configuration management with environment integration
-- **FlextHandlers**: CQRS command handler patterns
+- **FlextProcessing**: CQRS command handler patterns
 
 ### **Ecosystem Integration**
 

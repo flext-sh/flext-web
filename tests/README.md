@@ -47,7 +47,7 @@ tests/
 ### Quality Requirements
 
 - **Coverage**: 90% target
-- **Type Safety**: All test code uses comprehensive type hints
+- **Type Safety**: All test code uses type hints
 - **Documentation**: Every test function has descriptive docstrings
 - **Isolation**: Tests are completely isolated with clean fixtures
 - **Performance**: Unit tests complete in < 1 second each

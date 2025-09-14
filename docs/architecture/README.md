@@ -28,7 +28,7 @@ FLEXT Web follows **Clean Architecture** principles with **Domain-Driven Design*
 
 ### Current Implementation Architecture (1,200+ lines with enterprise documentation in `__init__.py`)
 
-**Status**: ✅ **Documentation Complete** - 100% enterprise-grade docstrings with comprehensive business context
+**Status**: ✅ **Documentation Complete** - 100% docstrings with business context
 
 ```python
 src/flext_web/
@@ -91,7 +91,7 @@ class FlextWebConfig(BaseSettings, FlextConfig):
     secret_key: str = Field(min_length=32)
 
 # Command Handlers (CQRS Pattern)
-class FlextWebAppHandler(FlextHandlers.Handler[FlextWebApp, FlextWebApp]):
+class FlextWebAppHandler(FlextProcessing.Handler[FlextWebApp, FlextWebApp]):
     """CQRS command handlers for application operations"""
     def create(self, name: str, port: int, host: str) -> FlextResult[FlextWebApp]: ...
     def start(self, app: FlextWebApp) -> FlextResult[FlextWebApp]: ...
@@ -186,7 +186,7 @@ class FlextWebConfig(BaseSettings, FlextConfig):
    - `FlextResult` for error handling
    - `FlextModels.Entity` for domain modeling
    - `FlextConfig` for configuration management
-   - `FlextHandlers` for CQRS pattern implementation
+   - `FlextProcessing` for CQRS pattern implementation
 
 2. **flext-observability** (planned):
    - Health check integration
@@ -255,7 +255,7 @@ src/flext_web/
 ### Current Command Handlers
 
 ```python
-class FlextWebAppHandler(FlextHandlers.Handler[FlextWebApp, FlextWebApp]):
+class FlextWebAppHandler(FlextProcessing.Handler[FlextWebApp, FlextWebApp]):
     """CQRS command handlers"""
 
     # Commands

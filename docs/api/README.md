@@ -4,11 +4,11 @@
 **Base URL**: `http://localhost:8080`  
 **Content Type**: `application/json`  
 **Authentication**: None (open endpoints - security integration planned for v1.0.0)  
-**Documentation Status**: ✅ **Complete** - Enterprise API documentation with comprehensive examples
+**Documentation Status**: ✅ **Complete** - API documentation with examples
 
 ## 🔗 API Overview
 
-The FLEXT Web Interface provides RESTful API endpoints for managing applications within the FLEXT ecosystem. All endpoints follow consistent response patterns using flext-core standardization with comprehensive error handling and validation.
+The FLEXT Web Interface provides RESTful API endpoints for managing applications within the FLEXT ecosystem. All endpoints follow consistent response patterns using flext-core standardization with error handling and validation.
 
 **Enterprise Features**:
 

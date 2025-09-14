@@ -43,9 +43,9 @@ class TestModelsMissingCoverage:
             id="port-edge-test",
             name="Port Edge Test",
             host="localhost",
-            port=1,  # Porta mínima
+            port=1024,  # Porta mínima válida (>= 1024)
         )
-        assert app.port == 1
+        assert app.port == 1024
 
         # Teste com porta no limite superior (linha 105-106)
         app_high_port = FlextWebModels.WebApp(

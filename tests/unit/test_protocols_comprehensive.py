@@ -303,7 +303,7 @@ class TestProtocolImplementationExamples:
                 port: int | None = None,
                 *,
                 debug: bool | None = None,
-                **kwargs: object,  # noqa: ARG002
+                **kwargs: object,
             ) -> None:
                 self.host = host
                 self.port = port

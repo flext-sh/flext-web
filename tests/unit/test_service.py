@@ -320,7 +320,7 @@ class TestWebConfigAdvanced:
         """Test configuration validation edge cases."""
         # Test minimum valid port
         config = FlextWebConfigs.WebConfig(
-            port=1,
+            port=1024,
             secret_key="valid-secret-key-32-characters-long!",
         )
         result = config.validate_config()
@@ -471,6 +471,8 @@ class TestWebAppHandlerAdvanced:
         result2 = handler.create("duplicate-test", 5001, "localhost")
         assert result2.success
         # Apps have same name but different ports
+        assert result1.data is not None
+        assert result2.data is not None
         assert result1.data.name == result2.data.name
         assert result1.data.port != result2.data.port
 
