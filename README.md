@@ -1,265 +1,203 @@
 # flext-web
 
-**Type**: Application Service | **Status**: Active Development | **Dependencies**: flext-core
+**Web application patterns for FLEXT projects requiring web interfaces.**
 
-Web interface and REST API for managing FLEXT ecosystem services and applications.
+> **⚠️ STATUS**: Functional for imports and basic services - architectural improvements needed
 
-> **⚠️ Development Status**: Flask service working, in-memory storage only, authentication missing, ecosystem integration incomplete
+**Version**: 0.9.0 | **Updated**: September 17, 2025
+
+---
+
+## Purpose and Role in FLEXT Ecosystem
+
+### For the FLEXT Ecosystem
+
+flext-web provides web interface patterns and Flask integration for FLEXT ecosystem projects that require web capabilities. Built on flext-core foundation patterns, it offers web-specific domain models, HTTP handling, and application lifecycle management.
+
+### Key Responsibilities
+
+1. **Web Application Management** - Flask app creation and lifecycle
+2. **HTTP Request/Response Handling** - Structured web request processing
+3. **Web Domain Models** - Web-specific entities and value objects
+4. **Configuration Management** - Web service configuration patterns
+
+### Integration Points
+
+- **flext-core** → Foundation patterns (FlextResult, FlextContainer, FlextModels)
+- **FLEXT projects** → Import web patterns from flext-web
+- **Web frameworks** → Flask integration with Clean Architecture
+
+---
+
+## Current Status
+
+**Recently Fixed**: Circular import issue resolved - basic imports now functional
+
+**Architecture Implementation**:
+- **4,441 lines** across **15 Python files**
+- **Clean Architecture** with domain, application, and infrastructure layers
+- **CQRS Pattern** implemented in handlers (691 lines)
+- **Domain Modeling** using FlextModels.Entity patterns (279 lines)
+- **Configuration System** comprehensive but needs enhancement (774 lines)
+
+**Current Gaps**:
+- Direct Flask imports (architectural violation of FLEXT patterns)
+- Limited async/modern web framework support
+- Missing flext-cli integration for web commands
+
+---
 
 ## Quick Start
-
-```bash
-# Install dependencies
-poetry install
-
-# Test basic functionality
-python -c "from flext_web import create_service; service = create_service(); print('✅ Working')"
-
-# Development setup
-make setup
-
-# Start web server
-make runserver
-```
-
-## Current Reality
-
-**What Actually Works:**
-
-- Flask web service with REST API endpoints
-- Application lifecycle management (start/stop states)
-- HTML dashboard with real-time status
-- Clean Architecture with flext-core patterns
-
-**What Needs Work:**
-
-- In-memory storage only (no persistence)
-- No authentication or authorization
-- Limited ecosystem service integration
-- Basic HTML dashboard (needs frontend framework)
-
-## Architecture Role in FLEXT Ecosystem
-
-### **Application Service Component**
-
-FLEXT Web provides management interface for ecosystem services:
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    FLEXT ECOSYSTEM (32 Projects)                 │
-├─────────────────────────────────────────────────────────────────┤
-│ Services: FlexCore(Go) | FLEXT Service(Go/Python) | Clients     │
-├─────────────────────────────────────────────────────────────────┤
-│ Applications: API | Auth | [FLEXT-WEB] | CLI | Quality | Observ │
-├═════════════════════════════════════════════════════════════════┤
-│ Infrastructure: Oracle | LDAP | LDIF | gRPC | Plugin | WMS      │
-├─────────────────────────────────────────────────────────────────┤
-│ Singer Ecosystem: Taps(5) | Targets(5) | DBT(4) | Extensions(1) │
-├─────────────────────────────────────────────────────────────────┤
-│ Foundation: FLEXT-CORE (FlextResult | DI | Domain Patterns)     │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### **Core Responsibilities**
-
-1. **Web Dashboard**: Management interface for FLEXT services
-2. **REST API**: Programmatic access to ecosystem operations
-3. **Application Management**: Service lifecycle and monitoring
-
-## Key Features
-
-### **Current Capabilities**
-
-- **FlextWebService**: Flask-based web service with REST endpoints
-- **Application Management**: Create, start, stop applications (in-memory)
-- **Web Dashboard**: Real-time HTML interface
-- **API Endpoints**: RESTful interface for programmatic access
-
-### **API Endpoints**
-
-```bash
-# Health and status
-GET /health              # Service health check
-GET /                   # Web dashboard
-
-# Application management
-GET /api/v1/apps        # List applications
-POST /api/v1/apps       # Create application
-GET /api/v1/apps/<id>   # Get application details
-POST /api/v1/apps/<id>/start  # Start application
-POST /api/v1/apps/<id>/stop   # Stop application
-```
-
-## Installation & Usage
 
 ### Installation
 
 ```bash
-# Clone and install
-cd /path/to/flext-web
-poetry install
-
-# Development setup
+git clone https://github.com/flext-sh/flext-web.git
+cd flext-web
 make setup
+
+# Verify imports work
+python -c "from flext_web import FlextWebServices; print('Import successful')"
 ```
 
 ### Basic Usage
 
 ```python
-from flext_web import create_service, get_web_settings
+from flext_web import FlextWebServices, FlextWebModels
 
-# Start with default configuration
-service = create_service()
-service.run()
+# Create web service
+service = FlextWebServices()
 
-# Custom configuration
-config = get_web_settings()
-config.port = 9000
-service = create_service(config)
-service.run(host="0.0.0.0", port=9000)
+# Available service methods
+methods = [m for m in dir(service) if not m.startswith('_')]
+print(f"Available methods: {methods}")
+
+# Create web configuration (when methods are implemented)
+# config = FlextWebModels.WebAppConfig(host="localhost", port=8080)
+# result = service.create_web_application(config)
 ```
 
-### CLI Usage
+---
+
+## Architecture and Patterns
+
+### Foundation Integration
+
+Built on flext-core patterns:
+- **FlextResult[T]** - Railway-oriented error handling
+- **FlextModels.Entity** - Domain modeling
+- **FlextContainer** - Dependency injection
+- **Clean Architecture** - Layer separation
+
+### Web-Specific Components
+
+**Domain Layer**:
+- `models.py` - WebApp entities with business rules
+- Domain events and validation
+
+**Application Layer**:
+- `handlers.py` - CQRS command handlers
+- Web application use cases
+
+**Infrastructure Layer**:
+- `services.py` - Flask service implementations
+- `config.py` - Configuration management
+
+---
+
+## Development
+
+### Essential Commands
 
 ```bash
-# Start web server
-python -m flext_web --host 0.0.0.0 --port 8080 --debug
-
-# Using make commands
-make runserver           # Start development server
-make dev-server         # Start with hot reload
+make setup          # Complete development setup
+make validate       # All quality checks
+make lint          # Code linting
+make type-check    # Type validation
+make format        # Auto-formatting
+make test          # Run tests (when functional)
 ```
 
-## Development Commands
+### Quality Standards
 
-### Quality Gates (Zero Tolerance)
+- **Type Safety**: Complete type annotations
+- **Code Quality**: Zero Ruff violations
+- **Testing**: Target 85% coverage (following flext-core standard)
+- **Integration**: Seamless flext-core pattern usage
 
-```bash
-# Complete validation pipeline (run before commits)
-make validate              # Full validation (lint + type + security + test)
-make check                 # Quick lint + type check + test
-make test                  # Run all tests (90% coverage requirement)
-make lint                  # Code linting
-make type-check
-make format                # Code formatting
-make security              # Security scanning
-```
+---
 
-### Web Development
+## Current Implementation
 
-```bash
-# Server operations
-make runserver             # Start Flask development server (localhost:8080)
-make dev-server            # Start with hot reload
-make web-test              # Test web service creation
-```
-
-### Testing
-
-```bash
-# Test categories
-make test-unit             # Unit tests only
-make test-integration      # Integration tests only
-make test-api              # API endpoint tests
-make test-web              # Web interface tests
-make coverage-html         # Generate HTML coverage report
-```
-
-## Configuration
-
-### Environment Variables
-
-```bash
-# Web service configuration
-export FLEXT_WEB_HOST="localhost"
-export FLEXT_WEB_PORT="8080"
-export FLEXT_WEB_DEBUG="true"
-export FLEXT_WEB_SECRET_KEY="your-secret-key"
-```
-
-## Quality Standards
-
-### **Quality Targets**
-
-- **Coverage**: 90% target (work in progress)
-- **Type Safety**: MyPy strict mode adoption in progress
-- **Linting**: Ruff with comprehensive rules (continuous improvement)
-- **Security**: Bandit + pip-audit scanning
-
-## Integration with FLEXT Ecosystem
-
-### **FLEXT Core Patterns**
+### What Works
 
 ```python
-# FlextResult for all operations
-from flext_web import FlextWebService
+# Basic imports and service creation
+from flext_web import FlextWebServices, FlextWebModels, FlextWebHandlers
+service = FlextWebServices()  # Successfully creates service instance
 
-service = FlextWebService()
-result = service.create_app("test-app", 3000, "localhost")
-if result.success:
-    app = result.data
-    print(f"Created app: {app.name}")
-else:
-    print(f"Error: {result.error}")
+# Component access
+handlers = FlextWebHandlers()
+models = FlextWebModels()
 ```
 
-### **Service Integration**
+### What Needs Implementation
 
-- **flext-auth**: Authentication and authorization (planned)
-- **flext-observability**: Monitoring and metrics collection
-- **FlexCore (Go)**: Runtime service integration
-- **FLEXT Service**: Data platform coordination
+- Complete API methods (create_application, etc.)
+- Flask abstraction layer
+- flext-cli integration
+- Async web framework support research
+- Production-ready web patterns
 
-## Current Status
+---
 
-**Version**: 0.9.0 (Development)
+## Roadmap
 
-**Completed**:
+### Phase 1: Foundation (Priority 1)
+- Fix direct Flask imports through abstraction
+- Complete FlextResult integration
+- Implement single class per module pattern
+- Achieve zero type errors
 
-- ✅ Flask web service with REST API
-- ✅ Application lifecycle management
-- ✅ HTML dashboard interface
-- ✅ Clean Architecture with flext-core patterns
+### Phase 2: Web Capabilities (Priority 2)
+- HTTP request/response enhancement
+- Security and authentication integration
+- CLI command support
+- Testing infrastructure
 
-**In Progress**:
+### Phase 3: Modern Patterns (Priority 3)
+- Research FastAPI compatibility
+- WebSocket support foundation
+- Caching integration
+- Developer experience tools
 
-- 🔄 Persistent storage implementation
-- 🔄 Authentication and authorization
-- 🔄 Ecosystem service integration
+---
 
-**Planned**:
+## Documentation
 
-- 📋 Frontend framework integration
-- 📋 Real-time WebSocket updates
-- 📋 Advanced monitoring dashboard
+- **[TODO](TODO.md)** - Development roadmap and priorities
+- **[Getting Started](docs/getting-started.md)** - Installation guide
+- **[Development](docs/development.md)** - Development workflow
+- **[Troubleshooting](docs/troubleshooting.md)** - Common issues
+
+---
 
 ## Contributing
 
-### Development Standards
+### Development Areas
 
-- **FLEXT Core Integration**: Use established patterns
-- **Type Safety**: All code must pass MyPy
-- **Testing**: Maintain 90% coverage
-- **Code Quality**: Follow linting rules
+- Architectural compliance with FLEXT standards
+- Modern web framework pattern implementation
+- Testing and quality improvements
+- Documentation enhancement
 
-### Development Workflow
+### Quality Requirements
 
-```bash
-# Setup and validate
-make setup
-make validate
-make test
-make runserver
-```
-
-## License
-
-MIT License - See [LICENSE](LICENSE) file for details.
-
-## Links
-
-- **[flext-core](../flext-core)**: Foundation library
-- **[CLAUDE.md](CLAUDE.md)**: Development guidance
-- **[Documentation](docs/)**: Complete documentation
+- All changes must pass `make validate`
+- Follow FLEXT ecosystem patterns
+- Maintain Clean Architecture principles
+- Complete type annotations required
 
 ---
+
+**flext-web v0.9.0** - Web application patterns for FLEXT ecosystem projects, providing Flask integration with Clean Architecture and modern web development capabilities.

@@ -20,6 +20,7 @@ import pytest
 from pydantic import ValidationError
 
 from flext_web import FlextWebConfigs
+from flext_web.settings import FlextWebSettings
 
 
 class TestConfigCompleteCoverage:
@@ -249,8 +250,6 @@ class TestConfigCompleteCoverage:
         with patch.dict(
             os.environ, {"FLEXT_WEB_HOST": "env-host", "FLEXT_WEB_PORT": "9999"}
         ):
-            from flext_web.settings import FlextWebSettings
-
             settings = FlextWebSettings()
             config_result = settings.to_config()
             assert config_result.is_success

@@ -484,7 +484,7 @@ class TestServiceExceptionHandling:
 
         # Create a mock property that raises an exception when accessed
         def mock_apps_property(
-            self: FlextWebServices.WebService,
+            _self: FlextWebServices.WebService,
         ) -> dict[str, FlextWebModels.WebApp]:
             msg = "Simulated dashboard exception"
             raise RuntimeError(msg)

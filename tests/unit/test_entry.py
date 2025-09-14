@@ -21,6 +21,7 @@ from flext_web import (
     FlextWebConfigs,
     __main__ as main_module,
 )
+from flext_web.settings import FlextWebSettings
 
 if TYPE_CHECKING:
     from subprocess import CompletedProcess
@@ -198,8 +199,6 @@ class TestRealMainEntry:
             # reset_web_settings()
 
             # Get configuration using settings (properly loads from environment)
-            from flext_web.settings import FlextWebSettings
-
             settings = FlextWebSettings()
             config_result = settings.to_config()
             assert config_result.is_success
