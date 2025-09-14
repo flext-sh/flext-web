@@ -9,7 +9,10 @@ from __future__ import annotations
 import logging
 import os
 import warnings
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
+
+if TYPE_CHECKING:
+    from flext_web.settings import FlextWebSettings
 
 from flext_core import (
     FlextConfig,
@@ -33,7 +36,7 @@ _web_settings_available = True
 _logger = logging.getLogger(__name__)
 
 
-def _get_flext_web_settings():
+def _get_flext_web_settings() -> type[FlextWebSettings] | None:
     """Get FlextWebSettings with lazy import to avoid circular dependency."""
     try:
         from flext_web.settings import (
@@ -615,9 +618,9 @@ class FlextWebConfigs:
                         settings_obj = flext_web_settings.model_validate(
                             validated_config
                         )
-                        settings_res = FlextResult[object].ok(settings_obj)
+                        settings_res = FlextResult["FlextWebSettings"].ok(settings_obj)
                     except Exception as e:
-                        settings_res = FlextResult[object].fail(
+                        settings_res = FlextResult["FlextWebSettings"].fail(
                             f"Settings validation failed: {e}"
                         )
                     if settings_res.is_failure:
