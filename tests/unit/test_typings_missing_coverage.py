@@ -19,6 +19,7 @@ class TestTypingsMissingCoverage:
         # Test non-dict data (line 217)
         result = FlextWebTypes.validate_config_data("not_a_dict")
         assert result.is_failure
+        assert result.error is not None
         assert "must be a dictionary" in result.error
 
         # Test missing fields (lines 224-226)
@@ -28,6 +29,7 @@ class TestTypingsMissingCoverage:
         }  # Missing debug, secret_key, app_name
         result = FlextWebTypes.validate_config_data(incomplete_data)
         assert result.is_failure
+        assert result.error is not None
         assert "required field" in result.error.lower()
 
         # Test invalid host type (line 230)
@@ -40,6 +42,7 @@ class TestTypingsMissingCoverage:
         }
         result = FlextWebTypes.validate_config_data(invalid_host_data)
         assert result.is_failure
+        assert result.error is not None
         assert "host" in result.error
         assert "string" in result.error
 
@@ -53,6 +56,7 @@ class TestTypingsMissingCoverage:
         }
         result = FlextWebTypes.validate_config_data(invalid_port_data)
         assert result.is_failure
+        assert result.error is not None
         assert "port" in result.error
         assert "integer" in result.error
 
@@ -66,6 +70,7 @@ class TestTypingsMissingCoverage:
         }
         result = FlextWebTypes.validate_config_data(invalid_debug_data)
         assert result.is_failure
+        assert result.error is not None
         assert "debug" in result.error
         assert "boolean" in result.error
 
@@ -79,6 +84,7 @@ class TestTypingsMissingCoverage:
         }
         result = FlextWebTypes.validate_config_data(invalid_secret_data)
         assert result.is_failure
+        assert result.error is not None
         assert "secret_key" in result.error
         assert "string" in result.error
 
@@ -93,6 +99,7 @@ class TestTypingsMissingCoverage:
         }
         result = FlextWebTypes.validate_config_data(invalid_app_name_data)
         assert result.is_failure
+        assert result.error is not None
         assert "app_name" in result.error
         assert "string" in result.error
 
@@ -101,6 +108,7 @@ class TestTypingsMissingCoverage:
         # Test non-dict data
         result = FlextWebTypes.validate_app_data("not_a_dict")
         assert result.is_failure
+        assert result.error is not None
         assert "must be a dictionary" in result.error
 
         # Test invalid name type (line 286)
@@ -114,6 +122,7 @@ class TestTypingsMissingCoverage:
         }
         result = FlextWebTypes.validate_app_data(invalid_name_data)
         assert result.is_failure
+        assert result.error is not None
         assert "name" in result.error
         assert "string" in result.error
 
@@ -128,6 +137,7 @@ class TestTypingsMissingCoverage:
         }
         result = FlextWebTypes.validate_app_data(invalid_host_data)
         assert result.is_failure
+        assert result.error is not None
         assert "host" in result.error
         assert "string" in result.error
 
@@ -142,6 +152,7 @@ class TestTypingsMissingCoverage:
         }
         result = FlextWebTypes.validate_app_data(invalid_port_data)
         assert result.is_failure
+        assert result.error is not None
         assert "port" in result.error
         assert "integer" in result.error
 
@@ -156,6 +167,7 @@ class TestTypingsMissingCoverage:
         }
         result = FlextWebTypes.validate_app_data(invalid_is_running_data)
         assert result.is_failure
+        assert result.error is not None
         assert "is_running" in result.error
         assert "boolean" in result.error
 
@@ -212,7 +224,7 @@ class TestTypingsMissingCoverage:
 
         # Test with circular reference (if possible)
         circular_data = {"key": "value"}
-        circular_data["self"] = circular_data  # Circular reference
+        circular_data["self"] = circular_data
 
         # Should handle gracefully
         try:

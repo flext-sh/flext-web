@@ -4,7 +4,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-from collections.abc import Generator
 
 import pytest
 from flask.testing import FlaskClient
@@ -29,7 +28,7 @@ class TestServicesMissingCoverage:
     @pytest.fixture
     def test_service(
         self, test_config: FlextWebConfigs.WebConfig
-    ) -> Generator[FlextWebServices.WebService]:
+    ) -> FlextWebServices.WebService:
         """Serviço de teste configurado."""
         service = FlextWebServices.WebService(test_config)
         service.app.config["TESTING"] = True

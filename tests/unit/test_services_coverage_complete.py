@@ -130,6 +130,7 @@ class TestServicesCompleteCoverage:
         # Test discover non-existent service (lines 657-658)
         missing_result = registry.discover_web_service("non-existent")
         assert missing_result.is_failure
+        assert missing_result.error is not None
         assert (
             "not found" in missing_result.error.lower()
             or "not registered" in missing_result.error.lower()

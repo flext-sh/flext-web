@@ -77,20 +77,20 @@ class TestFlextWebServiceAdvanced:
         app = service.app
         assert app.config["SECRET_KEY"] == "test-secret-key-32-characters-long!"
         # Flask debug is independent of business logic debug setting
-        assert service.config.debug is True
+        assert service.config.debug_bool is True
 
     def test_service_with_production_config(self) -> None:
         """Test service with production configuration."""
         config = FlextWebConfigs.WebConfig(
             host="0.0.0.0",
-            port=80,
+            port=8080,
             debug=False,
             secret_key="production-secret-key-very-secure-32chars!",
         )
         service = FlextWebServices.WebService(config)
 
         # Flask debug is controlled separately from config debug
-        assert service.config.debug is False
+        assert service.config.debug_bool is False
         assert service.config.is_production() is True
 
     def test_create_app_with_validation_error(
@@ -305,7 +305,7 @@ class TestWebConfigAdvanced:
 
             assert config.host == "test-host"
             assert config.port == 9000
-            assert config.debug is False
+            assert config.debug_bool is False
             assert config.secret_key == "env-secret-key-32-characters-long!!"
 
         finally:
@@ -403,11 +403,11 @@ class TestWebAppAdvanced:
 
     def test_app_edge_case_ports(self) -> None:
         """Test application with edge case ports."""
-        # Test minimum port
+        # Test minimum port (must be >= 1024)
         app = FlextWebModels.WebApp(
             id="min_port",
             name="min-port-app",
-            port=1,
+            port=1024,  # Use actual minimum valid port
             host="localhost",
         )
         result = app.validate_business_rules()

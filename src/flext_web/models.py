@@ -136,9 +136,9 @@ class FlextWebModels:
         @property
         def url(self) -> str:
             """Get app URL."""
-            # Standard HTTPS port is 443
-            https_port = 443
-            protocol = "https" if self.port == https_port else "http"
+            # Standard HTTPS ports are 443 and 8443
+            https_ports = {443, 8443}
+            protocol = "https" if self.port in https_ports else "http"
             return f"{protocol}://{self.host}:{self.port}"
 
         @computed_field

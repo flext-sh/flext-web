@@ -53,6 +53,9 @@ class FlextWebServices:
             self.app_handler = FlextWebHandlers.WebAppHandler()
             self.logger = FlextLogger(__name__)
 
+            # Create framework adapter for abstraction
+            self._framework = self._FlaskAdapter()
+
             # Initialize FlextMixins functionality
             FlextMixins.create_timestamp_fields(self)
             FlextMixins.ensure_id(self)
@@ -66,7 +69,7 @@ class FlextWebServices:
             self.app.config.update(
                 {
                     "SECRET_KEY": config.secret_key,
-                    "DEBUG": config.debug,
+                    "DEBUG": config.debug_bool,
                 }
             )
 
@@ -76,6 +79,23 @@ class FlextWebServices:
             # Mark service as ready
             FlextMixins.initialize_state(self, "ready")
             FlextMixins.log_operation(self, "service_ready")
+
+        class _FlaskAdapter:
+            """Framework adapter for Flask - provides framework-agnostic interface."""
+
+            def create_json_response(self, data: FlextTypes.Core.JsonObject, status_code: int = 200) -> ResponseReturnValue:
+                """Create JSON response using Flask."""
+                return jsonify(data), status_code
+
+            def get_request_data(self) -> FlextTypes.Core.JsonObject:
+                """Get request JSON data."""
+                if request.is_json:
+                    return request.get_json() or {}
+                return {}
+
+            def is_json_request(self) -> bool:
+                """Check if request is JSON."""
+                return request.is_json
 
         def _register_routes(self) -> None:
             """Register all Flask routes for the web service."""
@@ -529,7 +549,7 @@ class FlextWebServices:
             self.app.run(
                 host=self.config.host,
                 port=self.config.port,
-                debug=self.config.debug,
+                debug=self.config.debug_bool,
                 use_reloader=False,  # Disable reloader for production use
                 threaded=True,  # Enable threading for concurrent requests
             )

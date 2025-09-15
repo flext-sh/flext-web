@@ -121,6 +121,7 @@ class TestConfigCompleteCoverage:
         # Validate production settings - should fail
         result = production_config.validate_production_settings()
         assert result.is_failure
+        assert result.error is not None
         assert "production configuration validation failed" in result.error.lower()
 
         # Test valid production config

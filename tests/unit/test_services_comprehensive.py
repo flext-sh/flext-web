@@ -7,7 +7,7 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-from collections import UserDict
+from collections.abc import ValuesView
 
 import pytest
 from flext_core import FlextResult, FlextTypes
@@ -518,12 +518,12 @@ class TestServiceExceptionHandling:
         original_apps = service.apps
 
         # Create a proper mock for apps that will raise exception on iteration
-        class MockAppsDict(UserDict[str, FlextWebModels.WebApp]):
-            def values(self) -> object:
+        class MockAppsDict(dict[str, FlextWebModels.WebApp]):
+            def values(self) -> ValuesView[FlextWebModels.WebApp]:
                 msg = "Simulated list apps exception"
                 raise RuntimeError(msg)
 
-        # Replace the apps dict with our mock
+        # Replace the apps dict with our mock - use type ignore for test purposes
         service.apps = MockAppsDict(original_apps)
 
         response = client.get("/api/v1/apps")

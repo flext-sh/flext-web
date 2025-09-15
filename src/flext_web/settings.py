@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_core import FlextConfig, FlextResult
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from flext_web.config import FlextWebConfigs
 
@@ -32,6 +32,18 @@ class FlextWebSettings(FlextConfig):
     host: str = Field(default="localhost")
     port: int = Field(default=8080)
     debug: bool = Field(default=False)
+
+    @field_validator("debug", mode="before")
+    @classmethod
+    def validate_debug(cls, value: object) -> bool:
+        """Validate debug field, converting string values."""
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.lower() in {"true", "1", "yes", "on"}
+        # For other types, convert to bool
+        return bool(value)
+
     # Web-specific configuration fields
     secret_key: str = Field(default="")
     request_timeout: int = Field(default=30)

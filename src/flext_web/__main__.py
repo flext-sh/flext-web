@@ -94,7 +94,7 @@ def main() -> None:
     elif args.no_debug:
         debug = False
     else:
-        debug = config.debug
+        debug = config.debug_bool
 
     # Validate port
     max_port_number = 65535
@@ -110,7 +110,7 @@ def main() -> None:
             host,
             port,
         )
-        logger.info("📊 Debug: %s | Production: %s", debug, not config.debug)
+        logger.info("📊 Debug: %s | Production: %s", debug, not config.debug_bool)
 
         service = FlextWebServices.WebService(config)
         service.run()

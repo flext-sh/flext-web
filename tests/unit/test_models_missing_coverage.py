@@ -82,16 +82,19 @@ class TestModelsMissingCoverage:
         # Test create with edge case parameters
         create_result = handler.create("", 8080, "localhost")  # Empty name
         if create_result.is_failure:
+            assert create_result.error is not None
             assert "name" in create_result.error.lower()
 
         # Test create with invalid port
         create_result = handler.create("test-app", 0, "localhost")  # Invalid port
         if create_result.is_failure:
+            assert create_result.error is not None
             assert "port" in create_result.error.lower()
 
         # Test create with empty host
         create_result = handler.create("test-app", 8080, "")  # Empty host
         if create_result.is_failure:
+            assert create_result.error is not None
             assert "host" in create_result.error.lower()
 
         # Test successful creation for comparison

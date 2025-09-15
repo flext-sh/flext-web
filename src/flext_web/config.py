@@ -93,9 +93,26 @@ class FlextWebConfigs:
         )
 
         debug: bool = Field(
-            default=True,
+            default=False,
             description="Enable debug mode",
         )
+
+        @field_validator("debug", mode="before")
+        @classmethod
+        def validate_debug(cls, value: object) -> bool:
+            """Validate debug field, converting string values."""
+            if isinstance(value, bool):
+                return value
+            if isinstance(value, str):
+                return value.lower() in {"true", "1", "yes", "on"}
+            # For other types, convert to bool
+            return bool(value)
+
+        @property
+        def debug_bool(self) -> bool:
+            """Get debug value as boolean (guaranteed to be bool after validation)."""
+            # The validator ensures this is always bool, but MyPy needs help understanding this
+            return bool(self.debug)
 
         secret_key: str = Field(
             default=FlextWebConstants.WebSpecific.DEV_SECRET_KEY,
@@ -150,7 +167,7 @@ class FlextWebConfigs:
 
             # For production, require explicit host configuration
             # Replace binding to all interfaces with localhost for security
-            if host == "0.0.0.0":  # noqa: S104
+            if host == FlextWebConstants.WebSpecific.ALL_INTERFACES:
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
                     return host
@@ -267,10 +284,10 @@ class FlextWebConfigs:
             env_is_dev = env in {"development", "dev", "local"}
             # If environment suggests production but debug is True, consider it development
             # If environment suggests development but debug is False, check other indicators
-            if env_is_dev and not self.debug:
+            if env_is_dev and not self.debug_bool:
                 # Environment says dev but debug=False, check other production indicators
                 return self.secret_key == FlextWebConstants.WebSpecific.DEV_SECRET_KEY
-            return env_is_dev or self.debug
+            return env_is_dev or self.debug_bool
 
         def is_production(self) -> bool:
             """Check if running in production environment."""
@@ -290,7 +307,7 @@ class FlextWebConfigs:
                 errors: FlextTypes.Core.StringList = []
 
                 # Production-specific validations only
-                if self.debug:
+                if self.debug_bool:
                     errors.append("Debug mode must be disabled in production")
 
                 if self.secret_key == FlextWebConstants.WebSpecific.DEV_SECRET_KEY:
@@ -325,7 +342,7 @@ class FlextWebConfigs:
 
                 # Production-specific validations
                 if not self._is_development():
-                    if self.debug:
+                    if self.debug_bool:
                         errors.append("Debug mode must be disabled in production")
 
                     if self.secret_key == FlextWebConstants.WebSpecific.DEV_SECRET_KEY:
@@ -369,14 +386,14 @@ class FlextWebConfigs:
             """Validate web-specific business rules."""
             try:
                 # Validate production constraints - only block 'localhost', 127.0.0.1 is valid for containers
-                if not self.debug and self.host == "localhost":
+                if not self.debug_bool and self.host == "localhost":
                     return FlextResult[None].fail(
                         "Production mode cannot use 'localhost' binding, use specific IP address"
                     )
 
                 # Validate secret key strength in production
                 if (
-                    not self.debug
+                    not self.debug_bool
                     and self.secret_key == FlextWebConstants.WebSpecific.DEV_SECRET_KEY
                 ):
                     return FlextResult[None].fail(
@@ -384,7 +401,7 @@ class FlextWebConfigs:
                     )
 
                 # Validate CORS settings
-                if self.enable_cors and not self.debug:
+                if self.enable_cors and not self.debug_bool:
                     return FlextResult[None].fail(
                         "CORS should be disabled in production for security"
                     )
@@ -431,7 +448,7 @@ class FlextWebConfigs:
             return {
                 "host": self.host,
                 "port": self.port,
-                "debug": self.debug,
+                "debug": self.debug_bool,
                 "app_name": self.app_name,
                 "version": self.version,
                 "enable_cors": self.enable_cors,
@@ -441,7 +458,7 @@ class FlextWebConfigs:
 
         def is_development(self) -> bool:
             """Check if running in development mode."""
-            return self.debug
+            return self.debug_bool
 
     # =============================================================================
     # FACTORY METHODS AND UTILITIES

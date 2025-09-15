@@ -15,14 +15,15 @@ class TestModelsQuickCoverage:
 
     def test_status_validation_error_path(self) -> None:
         """Test status validation error path (lines 67-70)."""
-        # Use Pydantic's __set_attr__ to test validation
-        app = FlextWebModels.WebApp(
-            id="test_status_error", name="test-app", host="localhost", port=8080
-        )
-
-        # This should trigger the ValueError path in validate_status
+        # Test invalid status during model creation
         with pytest.raises(ValidationError):
-            app.status = "invalid_status"  # This will trigger the validation error
+            FlextWebModels.WebApp(
+                id="test_status_error",
+                name="test-app",
+                host="localhost",
+                port=8080,
+                status="invalid_status"
+            )  # This will trigger the validation error
 
     def test_name_validation_reserved_words(self) -> None:
         """Test name validation with reserved words (lines 78-79, 83-84)."""

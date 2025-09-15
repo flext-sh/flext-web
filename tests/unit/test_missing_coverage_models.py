@@ -99,10 +99,11 @@ class TestModelsMissingCoverage:
 
         # Testa serialização com status ERROR (linhas 235, 239, 244, 246)
         serialized = app.to_dict()
-        # Status é um Enum que é serializado como dict, pegamos o valor do _value_
-        status_dict = serialized["status"]
-        assert isinstance(status_dict, dict)
-        assert status_dict["_value_"] == "error"
+        # Status é um Enum que é serializado como o próprio enum object
+        status_value = serialized["status"]
+        assert isinstance(status_value, FlextWebModels.WebAppStatus)
+        assert status_value == FlextWebModels.WebAppStatus.ERROR
+        assert status_value.value == "error"
         assert serialized["host"] == "0.0.0.0"
 
         # Testa criação de dados com valores edge case (linha 254)

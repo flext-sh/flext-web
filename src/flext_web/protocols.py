@@ -11,15 +11,18 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable
+
+# Framework-agnostic web interface types
 from typing import Protocol, runtime_checkable
 
-from flask import jsonify
-from flask.typing import ResponseReturnValue
 from flext_core import FlextProtocols, FlextResult, FlextTypes
 
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
 
+# Framework-agnostic web response types
+WebResponse = tuple[str, int] | tuple[str, int, dict[str, str]] | str
+JsonResponse = FlextTypes.Core.JsonObject
 
 class FlextWebProtocols(FlextProtocols):
     """Consolidated web protocol system extending flext-core patterns.
@@ -112,7 +115,7 @@ class FlextWebProtocols(FlextProtocols):
             data: FlextTypes.Core.Dict,
             message: str = "Success",
             status_code: int = 200,
-        ) -> ResponseReturnValue:
+        ) -> WebResponse:
             """Format success response.
 
             Args:
@@ -131,7 +134,7 @@ class FlextWebProtocols(FlextProtocols):
             message: str,
             status_code: int = 500,
             details: str | None = None,
-        ) -> ResponseReturnValue:
+        ) -> WebResponse:
             """Format error response.
 
             Args:
@@ -148,6 +151,29 @@ class FlextWebProtocols(FlextProtocols):
     # Use flext-core Configurable protocol instead of custom ConfigurationProtocol
     # This reduces duplication and leverages existing abstractions
     ConfigurationProtocol = FlextProtocols.Infrastructure.Configurable
+
+    # =========================================================================
+    # WEB FRAMEWORK ABSTRACTION PROTOCOLS
+    # =========================================================================
+
+    class WebFrameworkInterface(Protocol):
+        """Framework-agnostic web interface.
+
+        Abstracts web framework dependencies (Flask, FastAPI, etc.)
+        to enable framework independence.
+        """
+
+        def create_json_response(self, data: JsonResponse, status_code: int = 200) -> WebResponse:
+            """Create a JSON response in framework-agnostic way."""
+            ...
+
+        def get_request_data(self) -> FlextTypes.Core.JsonObject:
+            """Get request data in framework-agnostic way."""
+            ...
+
+        def is_json_request(self) -> bool:
+            """Check if current request is JSON."""
+            ...
 
     class TemplateRendererProtocol(Protocol):
         """Protocol for template rendering services.
@@ -210,8 +236,8 @@ class FlextWebProtocols(FlextProtocols):
                 msg = "Protocol implementation for type checking only"
                 raise NotImplementedError(msg)
 
-            def health(self) -> ResponseReturnValue:
-                return jsonify({"status": "ok"})
+            def health(self) -> WebResponse:
+                return '{"status": "ok"}', 200
 
         return _WebServiceProtocolImpl()
 
@@ -374,7 +400,7 @@ class FlextWebProtocols(FlextProtocols):
             """Process response after handler execution."""
             ...
 
-        def handle__error(self, _error: Exception) -> ResponseReturnValue:
+        def handle__error(self, _error: Exception) -> WebResponse:
             """Handle exceptions during request processing."""
             ...
 

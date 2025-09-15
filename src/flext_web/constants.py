@@ -40,6 +40,11 @@ class FlextWebConstants(FlextConstants):
         # Port validation - usa FlextConstants.Web.MIN_PORT e FlextConstants.Web.MAX_PORT
         # Security validation - usa FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
 
+        # Network interface constants
+        ALL_INTERFACES = "0.0.0.0"  # nosec B104 # noqa: S104 - intentional binding to all interfaces for web server
+        LOCALHOST_IPV4 = "127.0.0.1"
+        LOCALHOST_HOSTNAME = "localhost"
+
         # Development/test keys (properly marked for security scanners)
         DEV_SECRET_KEY = "dev-key-change-in-production-32chars!"  # nosec B105
         DEV_ENVIRONMENT_KEY = "dev-key-for-development-environment!"
