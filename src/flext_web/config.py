@@ -149,9 +149,8 @@ class FlextWebConfigs:
                 return host
 
             # For production, require explicit host configuration
-            # Replace 0.0.0.0 with localhost for security
-            dangerous_host = "0.0.0.0"
-            if host == dangerous_host:
+            # Replace binding to all interfaces with localhost for security
+            if host == "0.0.0.0":  # noqa: S104
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
                     return host
