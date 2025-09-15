@@ -50,10 +50,12 @@ make test-web      # Web-specific functionality tests
 ## Architecture Context
 
 **flext-web design** follows patterns from:
+
 - **flext-core**: Foundation patterns (FlextResult, FlextModels, Clean Architecture)
 - **FLEXT workspace**: Overall architecture guidance (see ../docs/architecture)
 
 **flext-web specific concerns**:
+
 - Web application lifecycle management
 - Flask integration patterns
 - HTTP request/response handling
@@ -64,6 +66,7 @@ make test-web      # Web-specific functionality tests
 ## Code Organization
 
 **Current structure** (4,441 lines across 15 files):
+
 ```
 src/flext_web/
 ├── services.py (818 lines)    # Flask web services
@@ -78,18 +81,21 @@ src/flext_web/
 ## Development Priorities
 
 ### Priority 1: Architectural Compliance
+
 - **Fix Direct Flask Imports**: Abstract Flask through flext-web interfaces
 - **Single Class Pattern**: Refactor services.py nested classes
 - **Enhanced flext-core Integration**: Complete FlextResult usage
 - **Type Safety**: Achieve zero MyPy errors in strict mode
 
 ### Priority 2: Web Framework Enhancement
+
 - **HTTP Interface**: Create framework-agnostic request/response handling
 - **Error Handling**: Standardize FlextResult patterns
 - **Middleware System**: Request/response pipeline
 - **Configuration**: Environment-based configuration management
 
 ### Priority 3: Modern Web Patterns
+
 - **Async Research**: Investigate FastAPI compatibility
 - **API Documentation**: Auto-generated documentation
 - **Testing Infrastructure**: Web-specific test utilities
@@ -98,11 +104,13 @@ src/flext_web/
 ## Quality Standards
 
 **Static analysis** (works on source files):
+
 - Ruff linting: Zero violations
 - MyPy strict mode: Zero errors
 - Type annotations: Complete coverage
 
 **Functional testing** (needs implementation):
+
 - Web service functionality tests
 - HTTP request/response testing
 - Integration tests with flext-core
@@ -111,12 +119,14 @@ src/flext_web/
 ## Integration Guidelines
 
 **flext-core integration patterns**:
+
 - Use FlextResult[T] for all operations returning values
 - Use FlextModels.Entity for domain entities (WebApp, etc.)
 - Use FlextContainer for dependency injection
 - Follow Clean Architecture layer separation
 
 **Web-specific patterns**:
+
 - Flask application factory patterns
 - HTTP request/response handling
 - Web application lifecycle management

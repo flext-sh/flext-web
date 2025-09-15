@@ -34,6 +34,7 @@ flext-web provides web interface patterns and Flask integration for FLEXT ecosys
 **Recently Fixed**: Circular import issue resolved - basic imports now functional
 
 **Architecture Implementation**:
+
 - **4,441 lines** across **15 Python files**
 - **Clean Architecture** with domain, application, and infrastructure layers
 - **CQRS Pattern** implemented in handlers (691 lines)
@@ -41,6 +42,7 @@ flext-web provides web interface patterns and Flask integration for FLEXT ecosys
 - **Configuration System** comprehensive but needs enhancement (774 lines)
 
 **Current Gaps**:
+
 - Direct Flask imports (architectural violation of FLEXT patterns)
 - Limited async/modern web framework support
 - Missing flext-cli integration for web commands
@@ -84,6 +86,7 @@ print(f"Available methods: {methods}")
 ### Foundation Integration
 
 Built on flext-core patterns:
+
 - **FlextResult[T]** - Railway-oriented error handling
 - **FlextModels.Entity** - Domain modeling
 - **FlextContainer** - Dependency injection
@@ -92,14 +95,17 @@ Built on flext-core patterns:
 ### Web-Specific Components
 
 **Domain Layer**:
+
 - `models.py` - WebApp entities with business rules
 - Domain events and validation
 
 **Application Layer**:
+
 - `handlers.py` - CQRS command handlers
 - Web application use cases
 
 **Infrastructure Layer**:
+
 - `services.py` - Flask service implementations
 - `config.py` - Configuration management
 
@@ -154,18 +160,21 @@ models = FlextWebModels()
 ## Roadmap
 
 ### Phase 1: Foundation (Priority 1)
+
 - Fix direct Flask imports through abstraction
 - Complete FlextResult integration
 - Implement single class per module pattern
 - Achieve zero type errors
 
 ### Phase 2: Web Capabilities (Priority 2)
+
 - HTTP request/response enhancement
 - Security and authentication integration
 - CLI command support
 - Testing infrastructure
 
 ### Phase 3: Modern Patterns (Priority 3)
+
 - Research FastAPI compatibility
 - WebSocket support foundation
 - Caching integration

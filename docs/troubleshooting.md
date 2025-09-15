@@ -14,6 +14,7 @@ from flext_web import FlextWebServices
 ```
 
 **Root Cause**: Circular dependency chain:
+
 - `config.py` imports `FlextWebSettings` from `settings.py`
 - `settings.py` imports `FlextWebConfigs` from `config.py`
 
@@ -103,11 +104,13 @@ print(f'App created: {app.name}')
 ### Development Commands Affected
 
 **Works**:
+
 - `make lint` - lints source files
 - `make type-check` - type checks source files
 - `make format` - formats source files
 
 **Blocked**:
+
 - `make test` - cannot import modules to test
 - `make validate` - includes testing
 - Any actual usage of the library
@@ -115,11 +118,13 @@ print(f'App created: {app.name}')
 ### Quality Impact
 
 Cannot measure:
+
 - Test coverage (tests cannot import modules)
 - Integration with flext-core (imports fail)
 - Actual functionality (nothing works)
 
 Can measure:
+
 - Static analysis on source files
 - Type checking on individual files
 - Linting results
