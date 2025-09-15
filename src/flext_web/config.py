@@ -150,7 +150,7 @@ class FlextWebConfigs:
 
             # For production, require explicit host configuration
             # Replace 0.0.0.0 with localhost for security
-            dangerous_host = "0.0.0.0"  # noqa: S104
+            dangerous_host = "0.0.0.0"  # noqa: S104 - Intentional security validation check
             if host == dangerous_host:
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
