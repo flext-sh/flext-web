@@ -83,7 +83,9 @@ class FlextWebServices:
         class _FlaskAdapter:
             """Framework adapter for Flask - provides framework-agnostic interface."""
 
-            def create_json_response(self, data: FlextTypes.Core.JsonObject, status_code: int = 200) -> ResponseReturnValue:
+            def create_json_response(
+                self, data: FlextTypes.Core.JsonObject, status_code: int = 200
+            ) -> ResponseReturnValue:
                 """Create JSON response using Flask."""
                 return jsonify(data), status_code
 

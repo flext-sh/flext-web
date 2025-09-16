@@ -24,6 +24,7 @@ from flext_web.typings import FlextWebTypes
 WebResponse = tuple[str, int] | tuple[str, int, dict[str, str]] | str
 JsonResponse = FlextTypes.Core.JsonObject
 
+
 class FlextWebProtocols(FlextProtocols):
     """Consolidated web protocol system extending flext-core patterns.
 
@@ -163,7 +164,9 @@ class FlextWebProtocols(FlextProtocols):
         to enable framework independence.
         """
 
-        def create_json_response(self, data: JsonResponse, status_code: int = 200) -> WebResponse:
+        def create_json_response(
+            self, data: JsonResponse, status_code: int = 200
+        ) -> WebResponse:
             """Create a JSON response in framework-agnostic way."""
             ...
 

@@ -22,7 +22,7 @@ class TestModelsQuickCoverage:
                 name="test-app",
                 host="localhost",
                 port=8080,
-                status="invalid_status"
+                status="invalid_status",
             )  # This will trigger the validation error
 
     def test_name_validation_reserved_words(self) -> None:
