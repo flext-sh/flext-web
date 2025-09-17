@@ -10,7 +10,6 @@ import argparse
 import sys
 
 from flext_core import FlextLogger
-
 from flext_web.config import FlextWebConfigs
 from flext_web.services import FlextWebServices
 

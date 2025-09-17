@@ -11,7 +11,6 @@ import signal
 import sys
 
 from flext_core import FlextLogger
-
 from flext_web import FlextWebConfigs, FlextWebServices
 
 logger = FlextLogger(__name__)

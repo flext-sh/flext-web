@@ -145,7 +145,7 @@ class FlextWebConfig(BaseSettings, FlextConfig):
     )
 
     def validate_config(self) -> FlextResult[None]:
-        """Validate configuration using FlextValidators"""
+        """Validate configuration"""
         # Implementation includes business rules and security validation
         if not self.debug and "change-in-production" in self.secret_key:
             return FlextResult[None].fail("Secret key must be changed in production")

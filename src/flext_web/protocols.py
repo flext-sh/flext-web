@@ -16,7 +16,6 @@ from collections.abc import Callable
 from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, FlextResult, FlextTypes
-
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
 

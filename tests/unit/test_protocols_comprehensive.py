@@ -10,8 +10,8 @@ SPDX-License-Identifier: MIT
 
 import pytest
 from flask import Flask
-from flext_core import FlextProtocols, FlextResult
 
+from flext_core import FlextProtocols, FlextResult
 from flext_web import FlextWebModels, FlextWebProtocols
 
 

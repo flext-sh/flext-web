@@ -11,14 +11,14 @@ from typing import TypedDict, TypeVar
 
 from flext_core import FlextResult, FlextTypes
 
-# Web domain-specific type variables
-TWebApp = TypeVar("TWebApp")
-TWebConfig = TypeVar("TWebConfig")
-TWebService = TypeVar("TWebService")
-TWebHandler = TypeVar("TWebHandler")
-TWebRequest = TypeVar("TWebRequest")
-TWebResponse = TypeVar("TWebResponse")
-TFlaskApp = TypeVar("TFlaskApp")
+# Web domain-specific TypeVars - defined locally in flext-web
+TWebApp = TypeVar("TWebApp")  # Web application type
+TWebConfig = TypeVar("TWebConfig")  # Web configuration type
+TWebService = TypeVar("TWebService")  # Web service type
+TWebHandler = TypeVar("TWebHandler")  # Web handler type
+TWebRequest = TypeVar("TWebRequest")  # Web request type
+TWebResponse = TypeVar("TWebResponse")  # Web response type
+TFlaskApp = TypeVar("TFlaskApp")  # Flask application type
 
 
 class FlextWebTypes:

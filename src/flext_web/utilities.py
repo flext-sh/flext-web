@@ -12,9 +12,10 @@ from __future__ import annotations
 import re
 from urllib.parse import urlparse
 
-from flext_core import FlextConstants, FlextResult, FlextTypes, FlextUtilities, T
 from pydantic import ValidationError
 
+from flext_core import FlextResult, FlextTypes, FlextUtilities, T
+from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 
 
@@ -65,7 +66,7 @@ class FlextWebUtilities:
             bool: Description of return value.
 
         """
-        return FlextConstants.Web.MIN_PORT <= port <= FlextConstants.Web.MAX_PORT
+        return FlextWebConstants.Web.MIN_PORT <= port <= FlextWebConstants.Web.MAX_PORT
 
     @staticmethod
     def validate_url(url: str) -> bool:

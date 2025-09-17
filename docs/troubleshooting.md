@@ -113,7 +113,7 @@ print(f'App created: {app.name}')
 
 - `make test` - cannot import modules to test
 - `make validate` - includes testing
-- Any actual usage of the library
+- object actual usage of the library
 
 ### Quality Impact
 

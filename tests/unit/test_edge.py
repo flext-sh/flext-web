@@ -16,10 +16,10 @@ from collections.abc import Generator
 
 import pytest
 import requests
-from flext_core import FlextTypes
 from pydantic import ValidationError
 from tests.port_manager import TestPortManager
 
+from flext_core import FlextTypes
 from flext_web import (
     FlextWebConfigs,
     FlextWebHandlers,

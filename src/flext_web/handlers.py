@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
+
 from flext_core import (
     FlextLogger,
     FlextMixins,
@@ -16,7 +17,6 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
-
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities

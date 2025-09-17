@@ -6,9 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextConfig, FlextResult
 from pydantic import Field, field_validator
 
+from flext_core import FlextConfig, FlextResult
 from flext_web.config import FlextWebConfigs
 
 

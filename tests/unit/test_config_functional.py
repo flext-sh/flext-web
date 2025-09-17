@@ -259,14 +259,12 @@ FLEXT_WEB_APP_NAME=File Config Test
     def test_functional_config_with_flext_tests_builders(self) -> None:
         """Test configuration creation using flext_tests builders."""
         # Use FlextTestsBuilders from flext_tests
-        config_builder = FlextTestsBuilders.ConfigBuilder()
-        config_data = (
-            config_builder.with_debug(debug=False)
-            .with_log_level(level="INFO")
-            .with_environment(env="test")
-            .with_custom_setting(key="host", value="builder-test-host")
-            .with_custom_setting(key="port", value=8091)
-            .build()
+        config_data = FlextTestsBuilders.create_test_config(
+            debug=False,
+            log_level="INFO",
+            environment="test",
+            host="builder-test-host",
+            port=8091,
         )
 
         # Create FlextWebConfig using builder data for available fields

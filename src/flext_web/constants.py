@@ -7,21 +7,34 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
+from typing import Final
 
-from flext_core import FlextConstants
 
+class FlextWebConstants:
+    """Web domain-specific constants moved from FlextConstants.Web."""
 
-class FlextWebConstants(FlextConstants):
-    """Web domain-specific constants - APENAS extensões necessárias.
+    class Web:
+        """Web application constants moved from FlextConstants.Web."""
 
-    ZERO DUPLICAÇÃO: Herda TUDO de FlextConstants e adiciona APENAS
-    constantes específicas do domínio web que não podem ser genéricas.
+        # Port constants - moved from FlextConstants.Web
+        MIN_PORT: Final[int] = 1024  # Usage count: 8
+        MAX_PORT: Final[int] = 65535  # Usage count: 8
+        DEFAULT_PORT: Final[int] = 8080  # Usage count: 1
 
-    Usar FlextConstants.Web.* para tudo que já existe lá!
-    """
+        # App name validation - moved from FlextConstants.Web
+        MIN_APP_NAME_LENGTH: Final[int] = 2  # Usage count: 1
+        MAX_APP_NAME_LENGTH: Final[int] = 50  # Usage count: 0
+
+        # HTTP status codes - moved from FlextConstants.Web and added missing ones
+        HTTP_OK: Final[int] = 200  # Usage count: 2
+        HTTP_NOT_FOUND: Final[int] = 404  # Usage count: 12
+        MAX_HTTP_STATUS: Final[int] = 599  # Usage count: 0
+
+        # MIME types - added missing constants
+        JSON_MIME: Final[str] = "application/json"  # Usage count: 2
 
     class WebSpecific:
-        """Constantes ESPECÍFICAS do domínio flext-web (não genéricas)."""
+        """Web domain-specific constants that don't belong in core FlextConstants."""
 
         # Environment variable específica do flext-web
         ENV_SECRET_KEY = "FLEXT_WEB_SECRET_KEY"  # nosec B105
@@ -36,9 +49,6 @@ class FlextWebConstants(FlextConstants):
 
         # Port threshold for system ports (web-specific business rule)
         SYSTEM_PORTS_THRESHOLD = 1024
-
-        # Port validation - usa FlextConstants.Web.MIN_PORT e FlextConstants.Web.MAX_PORT
-        # Security validation - usa FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
 
         # Network interface constants
         ALL_INTERFACES = "0.0.0.0"  # nosec B104 # noqa: S104 - intentional binding to all interfaces for web server

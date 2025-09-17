@@ -10,16 +10,16 @@ import re
 import uuid
 from enum import Enum
 
+from pydantic import ConfigDict, Field, computed_field, field_validator
+
 from flext_core import (
-    FlextConstants,
     FlextMixins,
     FlextModels,
     FlextResult,
     FlextTypes,
     FlextUtilities,
 )
-from pydantic import ConfigDict, Field, computed_field, field_validator
-
+from flext_web.constants import FlextWebConstants
 from flext_web.typings import FlextWebTypes
 
 
@@ -49,8 +49,8 @@ class FlextWebModels:
         host: str = Field(default="localhost", min_length=1)
         port: int = Field(
             default=8080,
-            ge=FlextConstants.Web.MIN_PORT,
-            le=FlextConstants.Web.MAX_PORT,
+            ge=FlextWebConstants.Web.MIN_PORT,
+            le=FlextWebConstants.Web.MAX_PORT,
         )
         status: FlextWebModels.WebAppStatus = Field(
             default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED
@@ -168,9 +168,9 @@ class FlextWebModels:
 
                 # Validate port range
                 if not (
-                    FlextConstants.Web.MIN_PORT
+                    FlextWebConstants.Web.MIN_PORT
                     <= self.port
-                    <= FlextConstants.Web.MAX_PORT
+                    <= FlextWebConstants.Web.MAX_PORT
                 ):
                     return FlextResult[None].fail(f"Port out of range: {self.port}")
 

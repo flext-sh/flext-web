@@ -204,7 +204,6 @@ The module extensively uses flext-core foundation patterns for consistency acros
 - **FlextModels.Entity**: Domain entity base class with validation
 - **FlextConfig**: Configuration management with validation
 - **FlextProcessing**: CQRS command handler patterns
-- **FlextValidators**: Consistent validation rules
 
 ### Error Handling
 

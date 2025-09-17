@@ -9,22 +9,21 @@ from __future__ import annotations
 import re
 from typing import ClassVar, cast
 
-from flext_core import FlextConstants, FlextFields, FlextUtilities
 from pydantic import Field
 from pydantic.fields import FieldInfo
 
+from flext_core import FlextConstants, FlextModels, FlextUtilities
 from flext_web.constants import FlextWebConstants
 
 FieldReturn = FieldInfo
 
 
-class FlextWebFields(FlextFields):
+class FlextWebFields(FlextModels):
     """Consolidated web field system extending flext-core patterns.
 
     This class serves as the single point of access for all web-specific
-    field definitions, validators, and serializers while extending FlextFields
+    field definitions, validators, and serializers while extending FlextModels
     from flext-core for proper architectural inheritance.
-    from typing import Optional
 
     All field functionality is accessible through this single class following the
     "one class per module" architectural requirement.
@@ -157,9 +156,7 @@ class FlextWebFields(FlextFields):
         field_kwargs.setdefault("default", safe_default)
         field_kwargs.setdefault("description", "Host address (IP or hostname)")
         field_kwargs.setdefault("pattern", cls.HOST_PATTERN.pattern)
-        field_kwargs.setdefault(
-            "max_length", FlextWebConstants.Limits.MAX_STRING_LENGTH
-        )
+        field_kwargs.setdefault("max_length", FlextConstants.Limits.MAX_STRING_LENGTH)
 
         # Simplified Field creation for host field with proper default
         field_description = kwargs.get("description", "Host field")
@@ -174,7 +171,7 @@ class FlextWebFields(FlextFields):
     @classmethod
     def port_field(
         cls,
-        default: int = FlextConstants.Web.DEFAULT_PORT,
+        default: int = FlextWebConstants.Web.DEFAULT_PORT,
         **kwargs: object,
     ) -> FieldReturn:
         """Create port number field with validation.
@@ -190,8 +187,8 @@ class FlextWebFields(FlextFields):
         field_kwargs = dict(kwargs)
         field_kwargs.setdefault("default", default)
         field_kwargs.setdefault("description", "Port number (1-65535)")
-        field_kwargs.setdefault("ge", FlextConstants.Web.MIN_PORT)
-        field_kwargs.setdefault("le", FlextConstants.Web.MAX_PORT)
+        field_kwargs.setdefault("ge", FlextWebConstants.Web.MIN_PORT)
+        field_kwargs.setdefault("le", FlextWebConstants.Web.MAX_PORT)
 
         # Simplified Field creation for port field
         field_description = kwargs.get("description", "Port field")

@@ -17,8 +17,8 @@ from collections.abc import Generator
 
 import pytest
 from flask import Flask
-from flext_core import FlextTypes
 
+from flext_core import FlextTypes
 from flext_web import FlextWebConfigs, FlextWebServices
 from tests.port_manager import TestPortManager
 

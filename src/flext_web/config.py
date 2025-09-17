@@ -14,6 +14,12 @@ from typing import TYPE_CHECKING, ClassVar
 if TYPE_CHECKING:
     from flext_web.settings import FlextWebSettings
 
+from pydantic import (
+    Field,
+    field_validator,
+    model_validator,
+)
+
 from flext_core import (
     FlextConfig,
     FlextConstants,
@@ -21,12 +27,6 @@ from flext_core import (
     FlextResult,
     FlextTypes,
 )
-from pydantic import (
-    Field,
-    field_validator,
-    model_validator,
-)
-
 from flext_web.constants import FlextWebConstants
 
 # Flag to indicate if web settings are available
@@ -87,8 +87,8 @@ class FlextWebConfigs:
 
         port: int = Field(
             default=8080,
-            ge=FlextConstants.Web.MIN_PORT,
-            le=FlextConstants.Web.MAX_PORT,
+            ge=FlextWebConstants.Web.MIN_PORT,
+            le=FlextWebConstants.Web.MAX_PORT,
             description="Port number for web service",
         )
 
@@ -202,8 +202,8 @@ class FlextWebConfigs:
         @classmethod
         def validate_port(cls, value: int) -> int:
             """Validate port number and check for system reserved ports."""
-            min_port = FlextConstants.Web.MIN_PORT
-            max_port = FlextConstants.Web.MAX_PORT
+            min_port = FlextWebConstants.Web.MIN_PORT
+            max_port = FlextWebConstants.Web.MAX_PORT
             if not (min_port <= value <= max_port):
                 msg = f"Port must be between {min_port} and {max_port}, got {value}"
                 raise ValueError(msg)
@@ -361,8 +361,8 @@ class FlextWebConfigs:
                     )
 
                 # Network validations
-                min_port = FlextConstants.Web.MIN_PORT
-                max_port = FlextConstants.Web.MAX_PORT
+                min_port = FlextWebConstants.Web.MIN_PORT
+                max_port = FlextWebConstants.Web.MAX_PORT
                 if self.port < min_port or self.port > max_port:
                     errors.append(
                         f"Port must be in valid range ({min_port}-{max_port})"
