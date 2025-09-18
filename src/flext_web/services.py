@@ -6,6 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import cast
+
 from flask import Flask, jsonify, render_template_string, request
 from flask.typing import ResponseReturnValue
 
@@ -382,19 +384,33 @@ class FlextWebServices:
             try:
                 FlextMixins.log_operation(self, "create_app_request")
 
-                # Railway-oriented programming: compose operations monadically
-                result = (
-                    self._validate_json_request()
-                    .bind(self._validate_app_data)
-                    .bind(lambda args: self._create_and_store_app(*args))
+                # FlextResult chain with proper error handling
+                json_validation = self._validate_json_request()
+                if json_validation.is_failure:
+                    return self._build_error_response(
+                        json_validation.error or "Validation failed"
+                    )
+
+                app_validation = self._validate_app_data(json_validation.unwrap())
+                if app_validation.is_failure:
+                    return self._build_error_response(
+                        app_validation.error or "App validation failed"
+                    )
+
+                # Unpack the validated data for method call
+                app_data = app_validation.unwrap()
+
+                # Use type cast to tell mypy about the expected structure
+                validated_data = cast("tuple[str, str, int]", app_data)
+                result = self._create_and_store_app(
+                    validated_data[0], validated_data[1], validated_data[2]
                 )
 
-                # Handle result using functional approach
-                return (
-                    self._build_success_response(result.value)
-                    if result.is_success
-                    else self._build_error_response(result.error or "Unknown error")
-                )
+                # Handle final result
+                if result.is_failure:
+                    return self._build_error_response(result.error or "Unknown error")
+
+                return self._build_success_response(result.unwrap())
 
             except Exception as e:
                 return self._build_error_response(

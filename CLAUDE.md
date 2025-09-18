@@ -3,8 +3,20 @@
 **Enterprise-Grade Web Interface Quality Assurance & Refactoring Guidelines**
 **Version**: 2.1.0 | **Authority**: WORKSPACE | **Updated**: 2025-01-08
 **Environment**: `/home/marlonsc/flext/.venv/bin/python` (No PYTHONPATH required)
-**Based on**: flext-core 0.9.0 with 79% test coverage (PROVEN FOUNDATION)
+**Based on**: flext-core 0.9.0 with 75%+ test coverage (PROVEN FOUNDATION)
 **Project Context**: Flask-based web interface and REST API foundation for FLEXT ecosystem
+
+**Hierarchy**: This document provides project-specific standards based on workspace-level patterns defined in [../CLAUDE.md](../CLAUDE.md). For architectural principles, quality gates, and MCP server usage, reference the main workspace standards.
+
+## 🔗 MCP SERVER INTEGRATION
+
+| MCP Server | Purpose | Status |
+|------------|---------|--------|
+| **serena** | Web interface codebase analysis and Flask patterns | **ACTIVE** |
+| **sequential-thinking** | Web architecture and REST API problem solving | **ACTIVE** |
+| **github** | Web ecosystem integration and interface PRs | **ACTIVE** |
+
+**Usage**: `claude mcp list` for available servers, leverage for web-specific development patterns and Flask interface analysis.
 
 ---
 
@@ -41,8 +53,8 @@
 ### ❌ FORBIDDEN WEB PRACTICES
 
 1. **WEB CODE QUALITY VIOLATIONS**:
-   - Any use of `# type: ignore` without specific error codes in Flask handlers
-   - Any use of `Any` types instead of proper Flask type annotations
+   - object use of `# type: ignore` without specific error codes in Flask handlers
+   - object use of `object` types instead of proper Flask type annotations
    - Silencing web errors with ignore hints instead of fixing Flask root causes
    - Creating Flask wrappers, aliases, or compatibility facades
    - Using sed, awk, or automated scripts for complex Flask refactoring
@@ -60,7 +72,7 @@
    - **FORBIDDEN**: Direct `import rich` in any web project code for output/formatting
    - **FORBIDDEN**: Direct `from flask import Flask` bypassing FlextWebService
    - **FORBIDDEN**: Local Flask CLI implementations bypassing flext-cli
-   - **FORBIDDEN**: Any web CLI functionality not going through flext-cli layer
+   - **FORBIDDEN**: object web CLI functionality not going through flext-cli layer
    - **REQUIRED**: If flext-cli lacks web functionality, IMPROVE flext-cli first - NEVER work around
    - **PRINCIPLE**: Fix the foundation, don't work around Flask patterns
    - **OUTPUT RULE**: ALL web data output, formatting, tables, progress bars MUST use flext-cli wrappers
@@ -644,7 +656,7 @@ class UnifiedFlextWebService(FlextDomainService):
 
 ```python
 # BEFORE - Weak Flask typing
-def handle_request(data: Any) -> Any:
+def handle_request(data: object) -> object:
     return data
 
 # AFTER - Strong Flask typing (incremental improvement)
@@ -794,7 +806,7 @@ class FlaskDataProcessor(Generic[T]):
         """Process Flask data maintaining type safety."""
         return FlextResult[T].ok(data)
 
-# ✅ CORRECT - Protocol usage instead of Any for Flask
+# ✅ CORRECT - Protocol usage instead of object for Flask
 class FlaskProcessable(Protocol):
     """Protocol defining Flask processable interface."""
 
@@ -809,7 +821,7 @@ def process_flask_item(item: FlaskProcessable) -> FlextResult[dict]:
     except Exception as e:
         return FlextResult[dict].fail(str(e))
 
-# ✅ CORRECT - Proper Flask error handling without Any
+# ✅ CORRECT - Proper Flask error handling without object
 def safe_flask_operation() -> FlextResult[FlaskResult]:
     """Flask operation with comprehensive error handling."""
     try:
@@ -928,7 +940,7 @@ class TestFlextWebServiceComprehensive:
 
 ## ⚡ EXECUTION CHECKLIST FOR FLASK WEB REFACTORING
 
-### Before Starting Any Flask Web Work
+### Before Starting object Flask Web Work
 
 - [ ] Read all Flask web documentation: `CLAUDE.md`, `FLEXT_REFACTORING_PROMPT.md`, project `README.md`
 - [ ] Verify virtual environment: `/home/marlonsc/flext/.venv/bin/python` (VERIFIED WORKING)

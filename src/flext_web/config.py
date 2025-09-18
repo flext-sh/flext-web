@@ -9,10 +9,7 @@ from __future__ import annotations
 import logging
 import os
 import warnings
-from typing import TYPE_CHECKING, ClassVar
-
-if TYPE_CHECKING:
-    from flext_web.settings import FlextWebSettings
+from typing import ClassVar, cast
 
 from pydantic import (
     Field,
@@ -29,23 +26,33 @@ from flext_core import (
 )
 from flext_web.constants import FlextWebConstants
 
-# Flag to indicate if web settings are available
-_web_settings_available = True
-
-# Logger for this module
 _logger = logging.getLogger(__name__)
 
 
-def _get_flext_web_settings() -> type[FlextWebSettings] | None:
-    """Get FlextWebSettings with lazy import to avoid circular dependency."""
-    try:
-        from flext_web.settings import (
-            FlextWebSettings as _FlextWebSettings,
-        )
+def _get_flext_web_settings() -> type | None:
+    """Get FlextWebSettings class if available.
 
-        return _FlextWebSettings
-    except ImportError:
-        return None
+    Returns:
+        FlextWebSettings class or None if not available
+
+    """
+    from flext_web.settings import FlextWebSettings
+
+    return FlextWebSettings
+
+
+def _web_settings_available() -> bool:
+    """Check if FlextWebSettings is available.
+
+    Returns:
+        True if FlextWebSettings can be imported, False otherwise
+
+    """
+    return _get_flext_web_settings() is not None
+
+
+# Settings availability flag
+_web_settings_available = _web_settings_available()
 
 
 class FlextWebConfigs:
@@ -590,7 +597,15 @@ class FlextWebConfigs:
         try:
             # Use FlextWebSettings to load from environment
             settings = flext_web_settings()
-            return settings.to_config()
+            config_result = settings.to_config()
+            if config_result.is_failure:
+                return FlextResult[FlextWebConfigs.WebConfig].fail(
+                    config_result.error or "Unknown error"
+                )
+            # Type cast to resolve namespace issue
+            return FlextResult[FlextWebConfigs.WebConfig].ok(
+                cast("FlextWebConfigs.WebConfig", config_result.unwrap())
+            )
         except Exception as e:
             return FlextResult[FlextWebConfigs.WebConfig].fail(
                 f"Failed to load config from environment: {e}"
@@ -625,35 +640,31 @@ class FlextWebConfigs:
 
             # Core validation completed successfully
 
-            # WebSettings → WebConfig validation (full bridge)
+            # Get FlextWebSettings class
             flext_web_settings = _get_flext_web_settings()
-            if _web_settings_available and flext_web_settings is not None:
-                try:
-                    # Create settings using Pydantic model validation
-                    try:
-                        settings_obj = flext_web_settings.model_validate(
-                            validated_config
-                        )
-                        settings_res = FlextResult["FlextWebSettings"].ok(settings_obj)
-                    except Exception as e:
-                        settings_res = FlextResult["FlextWebSettings"].fail(
-                            f"Settings validation failed: {e}"
-                        )
-                    if settings_res.is_failure:
-                        return FlextResult[FlextTypes.Core.Dict].fail(
-                            settings_res.error or "Failed to build WebSettings",
-                        )
-                    cfg_res = settings_res.value.to_config()
-                    if cfg_res.is_failure:
-                        return FlextResult[FlextTypes.Core.Dict].fail(
-                            cfg_res.error or "Failed to validate WebConfig",
-                        )
-                    validated_config = cfg_res.value.model_dump()
-                except Exception as e:
-                    # Log the exception instead of silent pass
-                    _logger.warning(
-                        "WebSettings bridge failed, using backward-compat path: %s", e
-                    )
+            if not _web_settings_available or flext_web_settings is None:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    "FlextWebSettings not available - import failed"
+                )
+
+            # Create settings using Pydantic model validation
+            try:
+                settings_obj = flext_web_settings.model_validate(validated_config)
+                settings_res = FlextResult["FlextWebSettings"].ok(settings_obj)
+            except Exception as e:
+                settings_res = FlextResult["FlextWebSettings"].fail(
+                    f"Settings validation failed: {e}"
+                )
+            if settings_res.is_failure:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    settings_res.error or "Failed to build WebSettings",
+                )
+            cfg_res = settings_res.value.to_config()
+            if cfg_res.is_failure:
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    cfg_res.error or "Failed to validate WebConfig",
+                )
+            validated_config = cfg_res.value.model_dump()
 
             # Web configs specific settings
             validated_config.setdefault("enable_environment_validation", True)
