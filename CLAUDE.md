@@ -3,18 +3,18 @@
 **Enterprise-Grade Web Interface Quality Assurance & Refactoring Guidelines**
 **Version**: 2.1.0 | **Authority**: WORKSPACE | **Updated**: 2025-01-08
 **Environment**: `/home/marlonsc/flext/.venv/bin/python` (No PYTHONPATH required)
-**Based on**: flext-core 0.9.0 with 75%+ test coverage (PROVEN FOUNDATION)
+**Based on**: flext-core 0.9.9 with 75%+ test coverage (PROVEN FOUNDATION)
 **Project Context**: Flask-based web interface and REST API foundation for FLEXT ecosystem
 
 **Hierarchy**: This document provides project-specific standards based on workspace-level patterns defined in [../CLAUDE.md](../CLAUDE.md). For architectural principles, quality gates, and MCP server usage, reference the main workspace standards.
 
 ## 🔗 MCP SERVER INTEGRATION
 
-| MCP Server | Purpose | Status |
-|------------|---------|--------|
-| **serena** | Web interface codebase analysis and Flask patterns | **ACTIVE** |
-| **sequential-thinking** | Web architecture and REST API problem solving | **ACTIVE** |
-| **github** | Web ecosystem integration and interface PRs | **ACTIVE** |
+| MCP Server              | Purpose                                            | Status     |
+| ----------------------- | -------------------------------------------------- | ---------- |
+| **serena**              | Web interface codebase analysis and Flask patterns | **ACTIVE** |
+| **sequential-thinking** | Web architecture and REST API problem solving      | **ACTIVE** |
+| **github**              | Web ecosystem integration and interface PRs        | **ACTIVE** |
 
 **Usage**: `claude mcp list` for available servers, leverage for web-specific development patterns and Flask interface analysis.
 
@@ -143,7 +143,7 @@ from flext_cli import (
 # from flask import Flask           # FORBIDDEN - use FlextWebService
 # from flask import request, jsonify # FORBIDDEN - use unified web handlers
 
-# VERIFIED: flext-core API signatures for web operations (tested against actual code v0.9.0)
+# VERIFIED: flext-core API signatures for web operations (tested against actual code v0.9.9)
 # - FlextResult[T].ok(value) -> creates success result for web operations
 # - FlextResult[T].fail(error) -> creates failure result for web operations
 # - result.is_success -> boolean property for web validation

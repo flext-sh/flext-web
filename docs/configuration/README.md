@@ -47,7 +47,7 @@ FlextWebConfig(BaseSettings, FlextConfig)
 | `FLEXT_WEB_PORT`     | `int`  | `8080`      | Server listen port                        |
 | `FLEXT_WEB_DEBUG`    | `bool` | `true`      | Debug mode (auto-reload, detailed errors) |
 | `FLEXT_WEB_APP_NAME` | `str`  | `FLEXT Web` | Application display name                  |
-| `FLEXT_WEB_VERSION`  | `str`  | `0.9.0`     | Application version                       |
+| `FLEXT_WEB_VERSION`  | `str`  | `0.9.9`     | Application version                       |
 
 ### Security Configuration
 
@@ -132,7 +132,7 @@ class FlextWebConfig(BaseSettings, FlextConfig):
 
     # Server settings
     app_name: str = Field(default="FLEXT Web", description="Application name")
-    version: str = Field(default="0.9.0", description="Application version")
+    version: str = Field(default="0.9.9", description="Application version")
     debug: bool = Field(default=True, description="Debug mode")
     host: str = Field(default="localhost", description="Server host")
     port: int = Field(default=8080, ge=1, le=65535, description="Server port")

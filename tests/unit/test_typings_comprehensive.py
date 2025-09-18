@@ -415,8 +415,8 @@ class TestFactoryMethodEdgeCases:
         )
 
         # Should handle empty values
-        assert app_data["id"] == ""
-        assert app_data["name"] == ""
+        assert not app_data["id"]
+        assert not app_data["name"]
         assert app_data["port"] == 0
 
     def test_create_config_data_boundary_values(self) -> None:

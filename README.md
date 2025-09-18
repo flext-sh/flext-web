@@ -4,7 +4,7 @@
 
 > **⚠️ STATUS**: Functional for imports and basic services - architectural improvements needed
 
-**Version**: 0.9.0 | **Updated**: September 17, 2025
+**Version**: 0.9.9 RC | **Updated**: September 17, 2025
 
 ---
 
@@ -209,4 +209,4 @@ models = FlextWebModels()
 
 ---
 
-**flext-web v0.9.0** - Web application patterns for FLEXT ecosystem projects, providing Flask integration with Clean Architecture and modern web development capabilities.
+**flext-web v0.9.9** - Web application patterns for FLEXT ecosystem projects, providing Flask integration with Clean Architecture and modern web development capabilities.

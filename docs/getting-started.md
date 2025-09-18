@@ -1,6 +1,6 @@
 # Getting Started - flext-web
 
-**Updated**: September 17, 2025 | **Version**: 0.9.0
+**Updated**: September 17, 2025 | **Version**: 0.9.9 RC
 
 ## Current Status
 
@@ -69,4 +69,4 @@ See [../flext-core/README.md](../flext-core/README.md) for foundation patterns.
 
 ---
 
-**Status**: Functional for imports - ready for architectural improvements
+**Status**: Functional for imports - ready for architectural improvements · 1.0.0 Release Preparation

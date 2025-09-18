@@ -182,8 +182,8 @@ class TestTypingsMissingCoverage:
         )
 
         # Should handle empty values gracefully
-        assert context.get("method") == ""
-        assert context.get("path") == ""
+        assert not context.get("method")
+        assert not context.get("path")
         assert context.get("headers") == {}
         assert context.get("data") == {}
 

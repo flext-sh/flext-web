@@ -9,7 +9,6 @@ from __future__ import annotations
 from pydantic import Field, field_validator
 
 from flext_core import FlextConfig, FlextResult
-from flext_web.config import FlextWebConfigs
 
 
 class FlextWebSettings(FlextConfig):
@@ -49,16 +48,17 @@ class FlextWebSettings(FlextConfig):
     request_timeout: int = Field(default=30)
     enable_cors: bool = Field(default=True)
 
-    def to_config(self) -> FlextResult[FlextWebConfigs.WebConfig]:
+    def to_config(self) -> FlextResult[object]:
         """Convert settings to validated WebConfig model - import delayed to avoid circular import."""
         try:
             # Import only when needed to avoid circular dependency
+            from flext_web.config import FlextWebConfigs  # noqa: PLC0415
 
             data = self.model_dump(exclude_none=True)
             model = FlextWebConfigs.WebConfig.model_validate(data)
-            return FlextResult["FlextWebConfigs.WebConfig"].ok(model)
+            return FlextResult[object].ok(model)
         except Exception as e:
-            return FlextResult["FlextWebConfigs.WebConfig"].fail(
+            return FlextResult[object].fail(
                 f"Failed to build WebConfig: {e}",
             )
 

@@ -35,5 +35,5 @@ class TestVersionModule:
         assert isinstance(version_module.__version__, str)
 
         # Test version is not empty or placeholder
-        assert version_module.__version__ != ""
+        assert version_module.__version__
         assert version_module.__version__ != "0.0.0"

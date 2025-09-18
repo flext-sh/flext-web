@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import cast
-
 from flask import Flask, jsonify, render_template_string, request
 from flask.typing import ResponseReturnValue
 
@@ -400,10 +398,9 @@ class FlextWebServices:
                 # Unpack the validated data for method call
                 app_data = app_validation.unwrap()
 
-                # Use type cast to tell mypy about the expected structure
-                validated_data = cast("tuple[str, str, int]", app_data)
+                # Unpack the validated data for method call
                 result = self._create_and_store_app(
-                    validated_data[0], validated_data[1], validated_data[2]
+                    app_data[0], app_data[1], app_data[2]
                 )
 
                 # Handle final result

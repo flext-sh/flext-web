@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import os
 import warnings
-from typing import ClassVar, cast
+from typing import ClassVar
 
 from pydantic import (
     Field,
@@ -25,11 +25,12 @@ from flext_core import (
     FlextTypes,
 )
 from flext_web.constants import FlextWebConstants
+from flext_web.settings import FlextWebSettings
 
 _logger = logging.getLogger(__name__)
 
 
-def _get_flext_web_settings() -> type | None:
+def _get_flext_web_settings() -> type[FlextWebSettings] | None:
     """Get FlextWebSettings class if available.
 
     Returns:
@@ -52,7 +53,7 @@ def _web_settings_available() -> bool:
 
 
 # Settings availability flag
-_web_settings_available = _web_settings_available()
+_web_settings_available_flag = _web_settings_available()
 
 
 class FlextWebConfigs:
@@ -589,7 +590,7 @@ class FlextWebConfigs:
     def create_config_from_env(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Create configuration from environment variables."""
         flext_web_settings = _get_flext_web_settings()
-        if not _web_settings_available or flext_web_settings is None:
+        if not _web_settings_available_flag or flext_web_settings is None:
             return FlextResult[FlextWebConfigs.WebConfig].fail(
                 "FlextWebSettings not available - import failed"
             )
@@ -602,10 +603,7 @@ class FlextWebConfigs:
                 return FlextResult[FlextWebConfigs.WebConfig].fail(
                     config_result.error or "Unknown error"
                 )
-            # Type cast to resolve namespace issue
-            return FlextResult[FlextWebConfigs.WebConfig].ok(
-                cast("FlextWebConfigs.WebConfig", config_result.unwrap())
-            )
+            return FlextResult[FlextWebConfigs.WebConfig].ok(config_result.unwrap())
         except Exception as e:
             return FlextResult[FlextWebConfigs.WebConfig].fail(
                 f"Failed to load config from environment: {e}"
@@ -642,7 +640,7 @@ class FlextWebConfigs:
 
             # Get FlextWebSettings class
             flext_web_settings = _get_flext_web_settings()
-            if not _web_settings_available or flext_web_settings is None:
+            if not _web_settings_available_flag or flext_web_settings is None:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     "FlextWebSettings not available - import failed"
                 )
@@ -650,9 +648,9 @@ class FlextWebConfigs:
             # Create settings using Pydantic model validation
             try:
                 settings_obj = flext_web_settings.model_validate(validated_config)
-                settings_res = FlextResult["FlextWebSettings"].ok(settings_obj)
+                settings_res = FlextResult[FlextWebSettings].ok(settings_obj)
             except Exception as e:
-                settings_res = FlextResult["FlextWebSettings"].fail(
+                settings_res = FlextResult[FlextWebSettings].fail(
                     f"Settings validation failed: {e}"
                 )
             if settings_res.is_failure:

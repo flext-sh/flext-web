@@ -25,7 +25,7 @@ src/
 
 ## Implementation Architecture
 
-### **Current Architecture (v0.9.0)**
+### **Current Architecture (v0.9.9)**
 
 **Pattern**: Monolithic single-file implementation with comprehensive documentation
 
@@ -185,7 +185,7 @@ make security                  # Security scanning
 
 ## Migration Path
 
-### **Current State (v0.9.0)**
+### **Current State (v0.9.9)**
 
 - **Architecture**: Monolithic single-file with complete documentation
 - **Quality**: Enterprise-grade documentation and type safety

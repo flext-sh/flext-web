@@ -2,7 +2,7 @@
 
 **Module**: `flext_web` - Enterprise web management console for FLEXT ecosystem
 **Architecture**: Clean Architecture + Domain-Driven Design + FLEXT Core Integration
-**Version**: 0.9.0 (Development)
+**Version**: 0.9.9 RC (Development)
 
 ## Overview
 
@@ -291,8 +291,8 @@ def process_request(data: dict) -> FlextResult[FlextWebApp]:
 
 ## Version History
 
-- **0.9.0**: Current development version with monolithic architecture
-- **0.9.0**: Target production version with Clean Architecture (planned)
+- **0.9.9**: Current development version with monolithic architecture
+- **0.9.9**: Target production version with Clean Architecture (planned)
 
 ---
 
