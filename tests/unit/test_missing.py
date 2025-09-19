@@ -118,7 +118,8 @@ class TestMissingCoverage:
         # Test invalid port in config
         with pytest.raises(ValueError, match=r"port|range"):
             FlextWebConfigs.WebConfig(
-                port=70000, secret_key="valid-32-char-key-for-testing-ok!",
+                port=70000,
+                secret_key="valid-32-char-key-for-testing-ok!",
             )
 
         # Test invalid secret key length
@@ -126,7 +127,8 @@ class TestMissingCoverage:
             FlextWebConfigs.WebConfig(secret_key="short")
 
     def test_service_error_response_creation(
-        self, real_missing_service: FlextWebServices.WebService,
+        self,
+        real_missing_service: FlextWebServices.WebService,
     ) -> None:
         """Test error response creation paths using real HTTP."""
         assert real_missing_service is not None
@@ -222,7 +224,8 @@ class TestMissingCoverage:
         assert settings1.secret_key == settings2.secret_key
 
     def test_service_dashboard_with_error_handling(
-        self, real_missing_service: FlextWebServices.WebService,
+        self,
+        real_missing_service: FlextWebServices.WebService,
     ) -> None:
         """Test dashboard rendering with various app states using real HTTP."""
         assert real_missing_service is not None
@@ -270,7 +273,8 @@ class TestMissingCoverage:
         assert isinstance(service.config, FlextWebConfigs.WebConfig)
 
     def test_comprehensive_api_workflow_with_edge_cases(
-        self, real_missing_service: FlextWebServices.WebService,
+        self,
+        real_missing_service: FlextWebServices.WebService,
     ) -> None:
         """Test complete API workflow with edge cases using real HTTP."""
         assert real_missing_service is not None
@@ -296,7 +300,9 @@ class TestMissingCoverage:
         created_apps = []
         for test_case in test_cases:
             response = requests.post(
-                f"{base_url}/api/v1/apps", json=test_case, timeout=5,
+                f"{base_url}/api/v1/apps",
+                json=test_case,
+                timeout=5,
             )
             if response.status_code == 200:
                 data = response.json()
@@ -310,7 +316,8 @@ class TestMissingCoverage:
 
             # Test start app
             response = requests.post(
-                f"{base_url}/api/v1/apps/{app_id}/start", timeout=5,
+                f"{base_url}/api/v1/apps/{app_id}/start",
+                timeout=5,
             )
             assert response.status_code == 200
 

@@ -156,7 +156,8 @@ def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers for real testing."""
     config.addinivalue_line("markers", "unit: Unit tests with real execution")
     config.addinivalue_line(
-        "markers", "integration: Integration tests with real services",
+        "markers",
+        "integration: Integration tests with real services",
     )
     config.addinivalue_line("markers", "api: API tests with real HTTP")
     config.addinivalue_line("markers", "web: Web interface tests with real Flask")

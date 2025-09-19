@@ -242,7 +242,8 @@ class TestRealServiceEdgeCases:
 
     @pytest.mark.integration
     def test_real_api_edge_cases(
-        self, real_edge_service: FlextWebServices.WebService,
+        self,
+        real_edge_service: FlextWebServices.WebService,
     ) -> None:
         """Test real API edge cases and error handling using real HTTP."""
         assert real_edge_service is not None
@@ -282,7 +283,8 @@ class TestRealServiceEdgeCases:
 
     @pytest.mark.integration
     def test_real_app_lifecycle_edge_cases(
-        self, real_edge_service: FlextWebServices.WebService,
+        self,
+        real_edge_service: FlextWebServices.WebService,
     ) -> None:
         """Test real application lifecycle edge cases using real HTTP."""
         assert real_edge_service is not None
@@ -327,7 +329,8 @@ class TestRealServiceEdgeCases:
 
     @pytest.mark.integration
     def test_real_dashboard_with_apps(
-        self, real_edge_service: FlextWebServices.WebService,
+        self,
+        real_edge_service: FlextWebServices.WebService,
     ) -> None:
         """Test real dashboard rendering with various app states using real HTTP."""
         assert real_edge_service is not None
@@ -343,7 +346,9 @@ class TestRealServiceEdgeCases:
         created_apps: FlextTypes.Core.StringList = []
         for app_data in apps_data:
             response = requests.post(
-                f"{base_url}/api/v1/apps", json=app_data, timeout=5,
+                f"{base_url}/api/v1/apps",
+                json=app_data,
+                timeout=5,
             )
             assert response.status_code == 201  # Created status for POST /apps
             data = response.json()
@@ -365,7 +370,8 @@ class TestRealServiceEdgeCases:
 
     @pytest.mark.integration
     def test_real_service_error_responses(
-        self, real_edge_service: FlextWebServices.WebService,
+        self,
+        real_edge_service: FlextWebServices.WebService,
     ) -> None:
         """Test real service error response formatting using real HTTP."""
         assert real_edge_service is not None

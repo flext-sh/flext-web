@@ -124,7 +124,10 @@ class TestModelsMissingCoverage:
     def test_webapp_status_transitions_real(self) -> None:
         """Test status transitions with real state changes."""
         webapp = FlextWebModels.WebApp(
-            id="test_status_app", name="status-test-app", host="localhost", port=8080,
+            id="test_status_app",
+            name="status-test-app",
+            host="localhost",
+            port=8080,
         )
         handler = FlextWebHandlers.WebAppHandler()
 
@@ -166,7 +169,10 @@ class TestModelsMissingCoverage:
         # Test with long but valid host name
         long_hostname = "sub" * 20 + ".example.com"  # Valid but long hostname
         webapp_long_host = FlextWebModels.WebApp(
-            id="test_long_host", name="long-host-test", host=long_hostname, port=8080,
+            id="test_long_host",
+            name="long-host-test",
+            host=long_hostname,
+            port=8080,
         )
         assert len(webapp_long_host.host) > 20
 

@@ -67,7 +67,10 @@ class TestWebModelsFunctionalValidation:
 
         # Test wildcard host binding
         wildcard_app = FlextWebModels.WebApp(
-            id="wildcard-app", name="Wildcard App", host="0.0.0.0", port=8103,
+            id="wildcard-app",
+            name="Wildcard App",
+            host="0.0.0.0",
+            port=8103,
         )
         assert (
             wildcard_app.host == "0.0.0.0"
@@ -77,7 +80,8 @@ class TestWebModelsFunctionalValidation:
         """Test WebApp validation with real error scenarios."""
         # Test invalid port values
         with pytest.raises(
-            ValidationError, match="Input should be greater than or equal to",
+            ValidationError,
+            match="Input should be greater than or equal to",
         ):
             FlextWebModels.WebApp(
                 id="invalid-port-low",
@@ -87,7 +91,8 @@ class TestWebModelsFunctionalValidation:
             )
 
         with pytest.raises(
-            ValidationError, match="Input should be less than or equal to",
+            ValidationError,
+            match="Input should be less than or equal to",
         ):
             FlextWebModels.WebApp(
                 id="invalid-port-high",
@@ -98,7 +103,8 @@ class TestWebModelsFunctionalValidation:
 
         # Test invalid name (empty)
         with pytest.raises(
-            ValidationError, match="String should have at least 1 character",
+            ValidationError,
+            match="String should have at least 1 character",
         ):
             FlextWebModels.WebApp(
                 id="empty-name-app",
@@ -109,7 +115,8 @@ class TestWebModelsFunctionalValidation:
 
         # Test invalid host (empty)
         with pytest.raises(
-            ValidationError, match="String should have at least 1 character",
+            ValidationError,
+            match="String should have at least 1 character",
         ):
             FlextWebModels.WebApp(
                 id="empty-host-app",
@@ -173,7 +180,9 @@ class TestWebModelsFunctionalValidation:
 
         # Test create command
         create_result = handler.create(
-            name="handler-test-app", host="127.0.0.1", port=8107,
+            name="handler-test-app",
+            host="127.0.0.1",
+            port=8107,
         )
 
         assert create_result.success
@@ -290,7 +299,9 @@ class TestWebModelsFunctionalValidation:
 
         # Create app
         create_result = handler.create(
-            name="lifecycle-test-app", host="127.0.0.1", port=8114,
+            name="lifecycle-test-app",
+            host="127.0.0.1",
+            port=8114,
         )
         assert create_result.success
         app = create_result.value

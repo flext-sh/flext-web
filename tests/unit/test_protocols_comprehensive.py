@@ -61,7 +61,8 @@ class TestWebServiceProtocolFactory:
         run_method = getattr(protocol_impl, "run", None)
         assert run_method is not None  # Verify method exists
         with pytest.raises(
-            NotImplementedError, match="Protocol implementation for type checking only",
+            NotImplementedError,
+            match="Protocol implementation for type checking only",
         ):
             run_method(host="localhost", port=8000, debug=True)
 
@@ -336,10 +337,16 @@ class TestProtocolImplementationExamples:
                 self.apps: dict[str, FlextWebModels.WebApp] = {}
 
             def create_app(
-                self, name: str, port: int, host: str,
+                self,
+                name: str,
+                port: int,
+                host: str,
             ) -> FlextResult[FlextWebModels.WebApp]:
                 app = FlextWebModels.WebApp(
-                    id=f"app_{name}", name=name, port=port, host=host,
+                    id=f"app_{name}",
+                    name=name,
+                    port=port,
+                    host=host,
                 )
                 self.apps[app.id] = app
                 return FlextResult[FlextWebModels.WebApp].ok(app)

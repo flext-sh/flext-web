@@ -70,7 +70,8 @@ class TestRealWebServiceExecution:
 
     @pytest.mark.integration
     def test_real_service_health_check(
-        self, real_comprehensive_service: FlextWebServices.WebService,
+        self,
+        real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test real health endpoint with actual HTTP request."""
         port = real_comprehensive_service.config.port
@@ -85,7 +86,8 @@ class TestRealWebServiceExecution:
 
     @pytest.mark.integration
     def test_real_application_complete_lifecycle(
-        self, real_comprehensive_service: FlextWebServices.WebService,
+        self,
+        real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test complete application lifecycle with real HTTP requests."""
         port = real_comprehensive_service.config.port
@@ -134,7 +136,8 @@ class TestRealWebServiceExecution:
 
     @pytest.mark.integration
     def test_real_error_handling_validation(
-        self, real_comprehensive_service: FlextWebServices.WebService,
+        self,
+        real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test real error handling with actual invalid requests."""
         port = real_comprehensive_service.config.port
@@ -147,7 +150,9 @@ class TestRealWebServiceExecution:
             "host": "",  # Invalid empty host
         }
         response = requests.post(
-            f"{base_url}/api/v1/apps", json=invalid_data, timeout=5,
+            f"{base_url}/api/v1/apps",
+            json=invalid_data,
+            timeout=5,
         )
 
         assert response.status_code == 400
@@ -167,7 +172,8 @@ class TestRealWebServiceExecution:
 
     @pytest.mark.web
     def test_real_web_dashboard_rendering(
-        self, real_comprehensive_service: FlextWebServices.WebService,
+        self,
+        real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test real web dashboard rendering with applications."""
         port = real_comprehensive_service.config.port
@@ -371,7 +377,8 @@ class TestRealServiceIntegration:
 
     @pytest.mark.integration
     def test_real_service_with_multiple_apps(
-        self, real_comprehensive_service: FlextWebServices.WebService,
+        self,
+        real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test real service managing multiple applications using real HTTP."""
         real_comprehensive_service.apps.clear()
@@ -389,7 +396,9 @@ class TestRealServiceIntegration:
         created_apps = []
         for app_data in apps_data:
             response = requests.post(
-                f"{base_url}/api/v1/apps", json=app_data, timeout=5,
+                f"{base_url}/api/v1/apps",
+                json=app_data,
+                timeout=5,
             )
             assert response.status_code == 201  # Created status for POST /apps
             data = response.json()
@@ -406,7 +415,8 @@ class TestRealServiceIntegration:
         for app_id in created_apps:
             # Start app
             response = requests.post(
-                f"{base_url}/api/v1/apps/{app_id}/start", timeout=5,
+                f"{base_url}/api/v1/apps/{app_id}/start",
+                timeout=5,
             )
             assert response.status_code == 200
 
@@ -422,7 +432,8 @@ class TestRealServiceIntegration:
 
     @pytest.mark.integration
     def test_real_service_error_recovery(
-        self, real_comprehensive_service: FlextWebServices.WebService,
+        self,
+        real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test real service error recovery scenarios using real HTTP."""
         assert real_comprehensive_service is not None

@@ -37,8 +37,6 @@ def _get_flext_web_settings() -> type[FlextWebSettings] | None:
         FlextWebSettings class or None if not available
 
     """
-    from flext_web.settings import FlextWebSettings
-
     return FlextWebSettings
 
 
@@ -523,7 +521,8 @@ class FlextWebConfigs:
 
     @classmethod
     def create_web_config(
-        cls, **overrides: object,
+        cls,
+        **overrides: object,
     ) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Create web configuration instance with optional overrides using FlextConfig patterns."""
         try:
@@ -581,7 +580,8 @@ class FlextWebConfigs:
 
     @classmethod
     def validate_web_config(
-        cls, config: FlextWebConfigs.WebConfig,
+        cls,
+        config: FlextWebConfigs.WebConfig,
     ) -> FlextResult[None]:
         """Validate web configuration instance."""
         return config.validate_config()
@@ -623,7 +623,8 @@ class FlextWebConfigs:
 
     @classmethod
     def configure_web_configs_system(
-        cls, config: FlextTypes.Core.Dict,
+        cls,
+        config: FlextTypes.Core.Dict,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Configure web configurations system using FlextWebTypes.ConfigDict with validation."""
         try:
@@ -791,7 +792,9 @@ class FlextWebConfigs:
 
     @classmethod
     def merge_web_config(
-        cls, base_config: FlextWebConfigs.WebConfig, overrides: FlextTypes.Core.Dict,
+        cls,
+        base_config: FlextWebConfigs.WebConfig,
+        overrides: FlextTypes.Core.Dict,
     ) -> FlextResult[FlextWebConfigs.WebConfig]:
         """Merge web config with override data."""
         try:

@@ -44,7 +44,8 @@ class FlextWebConstants:
 
         # Default secret key com valor específico flext-web
         DEFAULT_SECRET_KEY = os.getenv(
-            ENV_SECRET_KEY, "dev-secret-key-change-in-production",
+            ENV_SECRET_KEY,
+            "dev-secret-key-change-in-production",
         )
 
         # Port threshold for system ports (web-specific business rule)

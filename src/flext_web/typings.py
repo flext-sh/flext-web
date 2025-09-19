@@ -184,13 +184,18 @@ class FlextWebTypes:
         *,
         debug: bool = True,
         secret_key: str = os.getenv(
-            "FLEXT_WEB_SECRET_KEY", "dev-key-unsafe-change-in-prod",
+            "FLEXT_WEB_SECRET_KEY",
+            "dev-key-unsafe-change-in-prod",
         ),
         app_name: str = "FLEXT Web",
     ) -> ConfigData:
         """Create config data structure with defaults."""
         return cls.ConfigData(
-            host=host, port=port, debug=debug, secret_key=secret_key, app_name=app_name,
+            host=host,
+            port=port,
+            debug=debug,
+            secret_key=secret_key,
+            app_name=app_name,
         )
 
     @classmethod
@@ -203,12 +208,16 @@ class FlextWebTypes:
     ) -> RequestContext:
         """Create request context structure."""
         return cls.RequestContext(
-            method=method, path=path, headers=headers or {}, data=data or {},
+            method=method,
+            path=path,
+            headers=headers or {},
+            data=data or {},
         )
 
     @classmethod
     def validate_config_data(
-        cls, data: object,
+        cls,
+        data: object,
     ) -> FlextResult[FlextWebTypes.ConfigData]:
         """Validate configuration data structure."""
         try:
@@ -316,7 +325,8 @@ class FlextWebTypes:
     # Configuration methods
     @classmethod
     def configure_web_types_system(
-        cls, config: FlextTypes.Core.Dict,
+        cls,
+        config: FlextTypes.Core.Dict,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Configure web types system.
 

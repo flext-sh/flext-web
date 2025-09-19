@@ -59,7 +59,8 @@ class FlextWebModels:
         @field_validator("status")
         @classmethod
         def validate_status(
-            cls, v: FlextWebModels.WebAppStatus | str,
+            cls,
+            v: FlextWebModels.WebAppStatus | str,
         ) -> FlextWebModels.WebAppStatus:
             """Validate status field."""
             if isinstance(v, str):
@@ -225,7 +226,8 @@ class FlextWebModels:
 
     @classmethod
     def create_web_app(
-        cls, data: FlextWebTypes.AppData,
+        cls,
+        data: FlextWebTypes.AppData,
     ) -> FlextResult[FlextWebModels.WebApp]:
         """Create web application."""
         try:

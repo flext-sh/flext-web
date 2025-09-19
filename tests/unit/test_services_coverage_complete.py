@@ -26,7 +26,8 @@ class TestServicesCompleteCoverage:
 
     @pytest.fixture
     def test_service(
-        self, test_config: FlextWebConfigs.WebConfig,
+        self,
+        test_config: FlextWebConfigs.WebConfig,
     ) -> FlextWebServices.WebService:
         """Service instance for coverage tests."""
         service = FlextWebServices.WebService(test_config)

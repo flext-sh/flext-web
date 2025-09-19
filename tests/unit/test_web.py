@@ -87,7 +87,8 @@ class TestWebInterface:
         )
 
     def test_dashboard_route(
-        self, real_web_service: FlextWebServices.WebService,
+        self,
+        real_web_service: FlextWebServices.WebService,
     ) -> None:
         """Test dashboard route using real HTTP requests."""
         assert real_web_service is not None

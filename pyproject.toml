@@ -59,7 +59,6 @@ flext-web = "flext_web.__main__:main"
 [tool.ruff]
 extend = "../ruff-shared.toml"
 lint.isort.known-first-party = ["flext_web"]
-lint.extend-per-file-ignores = { "src/flext_web/config.py" = ["PLC0415"] }
 
 [tool.mypy]
 # Strict mode - enables all recommended checks
@@ -69,7 +68,7 @@ strict = true
 check_untyped_defs = true
 disallow_any_decorated = false
 disallow_any_explicit = true
-disallow_any_expr = false          # Too restrictive for real-world usage
+disallow_any_expr = false           # Too restrictive for real-world usage
 disallow_any_generics = true
 disallow_any_unimported = true
 disallow_incomplete_defs = true
@@ -165,16 +164,11 @@ known_first_party = ["flext_web"]
 [tool.pytest.ini_options]
 minversion = "8.0"
 asyncio_mode = "auto"
-addopts = [
-    "-ra", 
-    "--strict-config",
-    "--maxfail=1",
-    "--tb=short",
-]
+addopts = ["-ra", "--strict-config", "--maxfail=1", "--tb=short"]
 testpaths = ["tests"]
 markers = [
     "unit: Unit tests",
-    "integration: Integration tests", 
+    "integration: Integration tests",
     "slow: Slow tests",
     "smoke: Smoke tests",
     "e2e: End-to-end tests",
@@ -221,8 +215,8 @@ python = ">=3.13,<3.14"
 djangorestframework = ">=3.14.0"
 
 # Local workspace dependencies (path-based)
-flext-core = {path = "../flext-core", develop = true}
-flext-observability = {path = "../flext-observability", develop = true}
+flext-core = { path = "../flext-core", develop = true }
+flext-observability = { path = "../flext-observability", develop = true }
 
 [tool.poetry.group.dev.dependencies]
 detect-secrets = ">=1.5.0"

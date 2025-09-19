@@ -31,7 +31,8 @@ class TestExamplesDeepValidation:
         # Test that it can be imported without errors
 
         spec = importlib.util.spec_from_file_location(
-            "_example_basic_service", Path("examples") / "01_basic_service.py",
+            "_example_basic_service",
+            Path("examples") / "01_basic_service.py",
         )
         assert spec
         assert spec.loader
@@ -50,7 +51,8 @@ class TestExamplesDeepValidation:
         """Test api_usage.py example with comprehensive edge cases."""
         # Import the module to test all functions
         spec = importlib.util.spec_from_file_location(
-            "_example_api_usage", Path("examples") / "02_api_usage.py",
+            "_example_api_usage",
+            Path("examples") / "02_api_usage.py",
         )
         assert spec
         assert spec.loader
@@ -82,7 +84,8 @@ class TestExamplesDeepValidation:
 
         # Test 3: Create application returns expected type
         create_result: FlextTypes.Core.Dict | None = api_usage.create_application(
-            "test-app", 3000,
+            "test-app",
+            3000,
         )
         # Could be None (no service) or dict (service running)
         assert create_result is None or isinstance(create_result, dict)
@@ -102,7 +105,8 @@ class TestExamplesDeepValidation:
         # Test 1: Import test - docker_ready doesn't handle CLI args, uses environment
 
         spec = importlib.util.spec_from_file_location(
-            "_example_docker_ready", Path("examples") / "03_docker_ready.py",
+            "_example_docker_ready",
+            Path("examples") / "03_docker_ready.py",
         )
         assert spec
         assert spec.loader
@@ -192,7 +196,8 @@ class TestExamplesDeepValidation:
 
         for example_path in example_files:
             spec = importlib.util.spec_from_file_location(
-                f"_example_{example_path.stem}", example_path,
+                f"_example_{example_path.stem}",
+                example_path,
             )
             assert spec
             assert spec.loader

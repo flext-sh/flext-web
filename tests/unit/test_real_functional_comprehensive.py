@@ -128,7 +128,9 @@ class TestRealFunctionalFlextWebValidation:
 
         # Test create command with real validation
         create_result = handler.create(
-            name="handler-functional-app", host="127.0.0.1", port=8303,
+            name="handler-functional-app",
+            host="127.0.0.1",
+            port=8303,
         )
 
         # Validate real create result
@@ -367,7 +369,9 @@ class TestRealFunctionalFlextWebValidation:
             handler = FlextWebHandlers.WebAppHandler()
 
             create_result = handler.create(
-                name="comprehensive-integration-app", host=config.host, port=8313,
+                name="comprehensive-integration-app",
+                host=config.host,
+                port=8313,
             )
             assert create_result.success
             app = create_result.value
@@ -433,7 +437,9 @@ class TestRealFunctionalFlextWebValidation:
         start_time = time.time()
         for i, _app in enumerate(apps[:10]):  # Test first 10 for performance
             create_result = handler.create(
-                name=f"perf-handler-app-{i}", host="127.0.0.1", port=8500 + i,
+                name=f"perf-handler-app-{i}",
+                host="127.0.0.1",
+                port=8500 + i,
             )
             assert create_result.success
 
@@ -472,7 +478,9 @@ class TestRealBenchmarkWithFlextTests:
 
         def handler_create_operation() -> bool:
             create_result = handler.create(
-                name="benchmark-handler-app", host="127.0.0.1", port=8601,
+                name="benchmark-handler-app",
+                host="127.0.0.1",
+                port=8601,
             )
             return create_result.success
 

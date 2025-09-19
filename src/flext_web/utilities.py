@@ -133,7 +133,8 @@ class FlextWebUtilities:
 
     @staticmethod
     def create_success_response(
-        message: str, data: object = None,
+        message: str,
+        data: object = None,
     ) -> FlextTypes.Core.Dict:
         """Create success response structure.
 
@@ -150,7 +151,8 @@ class FlextWebUtilities:
 
     @staticmethod
     def create_error_response(
-        message: str, status_code: int = 400,
+        message: str,
+        status_code: int = 400,
     ) -> FlextTypes.Core.Dict:
         """Create error response structure.
 
@@ -168,7 +170,10 @@ class FlextWebUtilities:
 
     @staticmethod
     def create_api_response(
-        message: str, *, success: bool = True, data: object = None,
+        message: str,
+        *,
+        success: bool = True,
+        data: object = None,
     ) -> FlextTypes.Core.Dict:
         """Create API response structure.
 
@@ -193,15 +198,22 @@ class FlextWebUtilities:
         """
         if result.success:
             return FlextWebUtilities.create_api_response(
-                "Operation successful", success=True, data=result.value,
+                "Operation successful",
+                success=True,
+                data=result.value,
             )
         return FlextWebUtilities.create_api_response(
-            f"Operation failed: {result.error}", success=False, data=None,
+            f"Operation failed: {result.error}",
+            success=False,
+            data=None,
         )
 
     @classmethod
     def create_web_app_data(
-        cls, name: str, port: int = 8000, host: str = "localhost",
+        cls,
+        name: str,
+        port: int = 8000,
+        host: str = "localhost",
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Create web application data with Pydantic validation.
 

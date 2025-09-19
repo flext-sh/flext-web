@@ -464,7 +464,10 @@ class TestWebAppProperties:
     def test_web_app_url_property(self) -> None:
         """Test URL property generation."""
         app = FlextWebModels.WebApp(
-            id="app_test", name="test-app", host="localhost", port=8000,
+            id="app_test",
+            name="test-app",
+            host="localhost",
+            port=8000,
         )
 
         expected_url = "http://localhost:8000"
@@ -474,7 +477,10 @@ class TestWebAppProperties:
     def test_web_app_url_property_https(self) -> None:
         """Test URL property with HTTPS port."""
         app = FlextWebModels.WebApp(
-            id="app_test", name="test-app", host="example.com", port=8443,
+            id="app_test",
+            name="test-app",
+            host="example.com",
+            port=8443,
         )
 
         expected_url = "https://example.com:8443"
@@ -484,7 +490,10 @@ class TestWebAppProperties:
     def test_web_app_string_representation(self) -> None:
         """Test WebApp string representations."""
         app = FlextWebModels.WebApp(
-            id="app_test", name="test-app", host="localhost", port=8000,
+            id="app_test",
+            name="test-app",
+            host="localhost",
+            port=8000,
         )
 
         str_repr = str(app)
@@ -502,7 +511,10 @@ class TestWebAppBusinessRules:
     def test_validate_business_rules_success(self) -> None:
         """Test business rules validation success."""
         app = FlextWebModels.WebApp(
-            id="app_test", name="test-app", host="localhost", port=8000,
+            id="app_test",
+            name="test-app",
+            host="localhost",
+            port=8000,
         )
 
         # Should return successful FlextResult
@@ -533,7 +545,10 @@ class TestWebAppBusinessRules:
     def test_web_app_model_config(self) -> None:
         """Test WebApp model configuration."""
         app = FlextWebModels.WebApp(
-            id="app_test", name="test-app", host="localhost", port=8000,
+            id="app_test",
+            name="test-app",
+            host="localhost",
+            port=8000,
         )
 
         # Should be able to convert to dict

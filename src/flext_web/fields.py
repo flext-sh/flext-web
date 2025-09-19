@@ -91,7 +91,8 @@ class FlextWebFields(FlextModels):
             )
             ge_val = cast("int", kwargs.get("ge", FlextWebConstants.Web.HTTP_OK))
             le_val = cast(
-                "int", kwargs.get("le", FlextWebConstants.Web.MAX_HTTP_STATUS),
+                "int",
+                kwargs.get("le", FlextWebConstants.Web.MAX_HTTP_STATUS),
             )
 
             if isinstance(field_description, str):
@@ -105,7 +106,8 @@ class FlextWebFields(FlextModels):
                     ),
                 )
             return cast(
-                "FieldInfo", Field(default=self.status_code, ge=ge_val, le=le_val),
+                "FieldInfo",
+                Field(default=self.status_code, ge=ge_val, le=le_val),
             )
 
         @classmethod
@@ -277,10 +279,12 @@ class FlextWebFields(FlextModels):
         """
         field_kwargs = dict(kwargs)
         field_kwargs.setdefault(
-            "description", "Secret key for cryptographic operations",
+            "description",
+            "Secret key for cryptographic operations",
         )
         field_kwargs.setdefault(
-            "min_length", FlextConstants.Validation.MIN_SECRET_KEY_LENGTH,
+            "min_length",
+            FlextConstants.Validation.MIN_SECRET_KEY_LENGTH,
         )
 
         # Hide secret key values in repr and str
@@ -298,7 +302,10 @@ class FlextWebFields(FlextModels):
 
     @classmethod
     def http_status_field(
-        cls, status_code: int, description: str | None = None, **kwargs: object,
+        cls,
+        status_code: int,
+        description: str | None = None,
+        **kwargs: object,
     ) -> FieldReturn:
         """Create HTTP status field.
 

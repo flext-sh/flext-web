@@ -153,7 +153,9 @@ class TestFlextWebHandlers:
     def test_format_app_data_real(self) -> None:
         """Test REAL app data formatting functionality."""
         app = FlextWebModels.WebApp(
-            id="app_format-test", name="FormatTestApp", port=8083,
+            id="app_format-test",
+            name="FormatTestApp",
+            port=8083,
         )
 
         formatted_data = FlextWebHandlers.format_app_data(app)
@@ -220,7 +222,8 @@ class TestWebResponseHandler:
         return FlextWebHandlers.WebResponseHandler()
 
     def test_create_success_response_real(
-        self, response_handler: FlextWebHandlers.WebResponseHandler,
+        self,
+        response_handler: FlextWebHandlers.WebResponseHandler,
     ) -> None:
         """Test REAL success response creation."""
         test_data = {"key": "value", "count": 42}
@@ -230,7 +233,8 @@ class TestWebResponseHandler:
 
         with app.test_request_context():
             response_result = response_handler.create_success_response(
-                test_data, "Operation successful",
+                test_data,
+                "Operation successful",
             )
 
             # Validate that response is created (ResponseReturnValue type)
@@ -244,7 +248,8 @@ class TestWebResponseHandler:
                 assert response_result is not None  # Direct response object
 
     def test_create_error_response_real(
-        self, response_handler: FlextWebHandlers.WebResponseHandler,
+        self,
+        response_handler: FlextWebHandlers.WebResponseHandler,
     ) -> None:
         """Test REAL error response creation."""
         error_message = "Test error occurred"
@@ -254,7 +259,9 @@ class TestWebResponseHandler:
 
         with app.test_request_context():
             response_result = response_handler.create_error_response(
-                "Operation failed", None, error_message,
+                "Operation failed",
+                None,
+                error_message,
             )
 
             # Validate that response is created (ResponseReturnValue type)

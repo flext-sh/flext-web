@@ -84,7 +84,9 @@ class FlextWebServices:
             """Framework adapter for Flask - provides framework-agnostic interface."""
 
             def create_json_response(
-                self, data: FlextTypes.Core.JsonObject, status_code: int = 200,
+                self,
+                data: FlextTypes.Core.JsonObject,
+                status_code: int = 200,
             ) -> ResponseReturnValue:
                 """Create JSON response using Flask."""
                 return jsonify(data), status_code
@@ -281,17 +283,20 @@ class FlextWebServices:
                 )
 
         def _validate_app_data(
-            self, data: FlextTypes.Core.Dict,
+            self,
+            data: FlextTypes.Core.Dict,
         ) -> FlextResult[tuple[str, str, int]]:
             """Validate application data using Railway pattern."""
             # Extract and validate required fields
             try:
                 name = data.get("name")
                 host = data.get(
-                    "host", "localhost",
+                    "host",
+                    "localhost",
                 )  # Use string literal for localhost (not configurable)
                 port = data.get(
-                    "port", 8000,
+                    "port",
+                    8000,
                 )  # Use 8000 for web service development (not 80 which requires root)
 
                 if not name or not isinstance(name, str):
@@ -323,7 +328,10 @@ class FlextWebServices:
                 return FlextResult[tuple[str, str, int]].fail(f"Validation failed: {e}")
 
         def _create_and_store_app(
-            self, name: str, host: str, port: int,
+            self,
+            name: str,
+            host: str,
+            port: int,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Create and store application using existing handler."""
             create_result = self.app_handler.create(name, port, host)
@@ -341,7 +349,8 @@ class FlextWebServices:
             return FlextResult[FlextWebModels.WebApp].ok(app)
 
         def _build_success_response(
-            self, app: FlextWebModels.WebApp,
+            self,
+            app: FlextWebModels.WebApp,
         ) -> ResponseReturnValue:
             """Build success response using consistent format."""
             return jsonify(
@@ -359,7 +368,9 @@ class FlextWebServices:
             ), 201
 
         def _build_error_response(
-            self, error: str, status_code: int = 400,
+            self,
+            error: str,
+            status_code: int = 400,
         ) -> ResponseReturnValue:
             """Build error response using consistent format."""
             return jsonify(
@@ -400,7 +411,9 @@ class FlextWebServices:
 
                 # Unpack the validated data for method call
                 result = self._create_and_store_app(
-                    app_data[0], app_data[1], app_data[2],
+                    app_data[0],
+                    app_data[1],
+                    app_data[2],
                 )
 
                 # Handle final result
@@ -411,7 +424,8 @@ class FlextWebServices:
 
             except Exception as e:
                 return self._build_error_response(
-                    f"Internal error during application creation: {e}", 500,
+                    f"Internal error during application creation: {e}",
+                    500,
                 )
 
         def get_app(self, app_id: str) -> ResponseReturnValue:
@@ -592,7 +606,9 @@ class FlextWebServices:
             FlextMixins.log_operation(self, "registry_init")
 
         def register_web_service(
-            self, name: str, service: FlextWebServices.WebService,
+            self,
+            name: str,
+            service: FlextWebServices.WebService,
         ) -> FlextResult[None]:
             """Register web service instance.
 
@@ -616,7 +632,8 @@ class FlextWebServices:
                 return FlextResult[None].fail(f"Service registration failed: {e}")
 
         def discover_web_service(
-            self, name: str,
+            self,
+            name: str,
         ) -> FlextResult[FlextWebServices.WebService]:
             """Discover web service by name."""
             try:
@@ -653,7 +670,9 @@ class FlextWebServices:
                 )
 
         def register_service(
-            self, name: str, service: FlextWebServices.WebService,
+            self,
+            name: str,
+            service: FlextWebServices.WebService,
         ) -> FlextResult[None]:
             """Alias for register_web_service.
 
@@ -673,7 +692,8 @@ class FlextWebServices:
 
     @classmethod
     def create_web_service(
-        cls, config: FlextWebConfigs.WebConfig | None = None,
+        cls,
+        config: FlextWebConfigs.WebConfig | None = None,
     ) -> FlextResult[FlextWebServices.WebService]:
         """Create web service instance with configuration.
 
@@ -714,7 +734,8 @@ class FlextWebServices:
 
     @classmethod
     def create_web_system_services(
-        cls, config: FlextTypes.Core.Dict | None = None,
+        cls,
+        config: FlextTypes.Core.Dict | None = None,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Create web system services."""
         _ = config  # Acknowledge parameter
@@ -761,7 +782,8 @@ class FlextWebServices:
 
     @classmethod
     def configure_web_services_system(
-        cls, config: FlextTypes.Config.ConfigDict,
+        cls,
+        config: FlextTypes.Config.ConfigDict,
     ) -> FlextResult[FlextTypes.Config.ConfigDict]:
         """Configure web services system using FlextTypes.Config with validation."""
         try:

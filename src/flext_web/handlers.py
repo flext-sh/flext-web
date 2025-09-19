@@ -126,7 +126,9 @@ class FlextWebHandlers(FlextProcessing):
                 # Step 2: Validate all inputs (chained validation)
                 .flat_map(
                     lambda inputs: self._validate_app_inputs(
-                        inputs["name"], port, inputs["host"],
+                        inputs["name"],
+                        port,
+                        inputs["host"],
                     ),
                 )
                 # Step 3: Create domain entity
@@ -142,7 +144,9 @@ class FlextWebHandlers(FlextProcessing):
             )
 
         def _sanitize_inputs(
-            self, name: str, host: str,
+            self,
+            name: str,
+            host: str,
         ) -> FlextResult[FlextTypes.Core.Headers]:
             """Sanitize inputs using MASSIVE FlextUtilities delegation."""
             try:
@@ -161,7 +165,10 @@ class FlextWebHandlers(FlextProcessing):
                 )
 
         def _validate_app_inputs(
-            self, name: str, port: int, host: str,
+            self,
+            name: str,
+            port: int,
+            host: str,
         ) -> FlextResult[FlextTypes.Core.Headers]:
             """Validate all app inputs - simplified to rely on Pydantic model validation."""
             return FlextResult[FlextTypes.Core.Headers].ok(
@@ -173,7 +180,10 @@ class FlextWebHandlers(FlextProcessing):
             )
 
         def _create_app_entity(
-            self, name: str, port: int, host: str,
+            self,
+            name: str,
+            port: int,
+            host: str,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Create app entity using FlextWebUtilities for ID generation."""
             try:
@@ -186,7 +196,8 @@ class FlextWebHandlers(FlextProcessing):
                 )
 
         def _validate_and_return_app(
-            self, app: FlextWebModels.WebApp,
+            self,
+            app: FlextWebModels.WebApp,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Validate business rules and return app using FlextResult."""
             validation = app.validate_business_rules()
@@ -235,7 +246,8 @@ class FlextWebHandlers(FlextProcessing):
             return result
 
         def start(
-            self, app: FlextWebModels.WebApp,
+            self,
+            app: FlextWebModels.WebApp,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Start web application with validation and state management.
 
@@ -285,7 +297,8 @@ class FlextWebHandlers(FlextProcessing):
             return self._execute_app_lifecycle_operation(app, "start", "start")
 
         def stop(
-            self, app: FlextWebModels.WebApp,
+            self,
+            app: FlextWebModels.WebApp,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Stop web application with graceful shutdown and validation.
 
@@ -386,7 +399,8 @@ class FlextWebHandlers(FlextProcessing):
 
             # Use FlextWebUtilities as base and extend with Flask-specific fields
             response_data = FlextWebUtilities.create_success_response(
-                safe_message, data,
+                safe_message,
+                data,
             )
             response_data["errors"] = []  # Flask-specific field
 
@@ -415,7 +429,8 @@ class FlextWebHandlers(FlextProcessing):
 
             # Use FlextWebUtilities as base and extend with Flask-specific fields
             response_data = FlextWebUtilities.create_error_response(
-                safe_message, status_code or self.error_status,
+                safe_message,
+                status_code or self.error_status,
             )
             response_data["errors"] = (
                 errors if isinstance(errors, dict) else ([errors] if errors else [])
@@ -549,7 +564,8 @@ class FlextWebHandlers(FlextProcessing):
 
     @classmethod
     def handle_start_app(
-        cls, app: FlextWebModels.WebApp,
+        cls,
+        app: FlextWebModels.WebApp,
     ) -> FlextResult[FlextWebModels.WebApp]:
         """Handle application start requests.
 
@@ -565,7 +581,8 @@ class FlextWebHandlers(FlextProcessing):
 
     @classmethod
     def handle_stop_app(
-        cls, app: FlextWebModels.WebApp,
+        cls,
+        app: FlextWebModels.WebApp,
     ) -> FlextResult[FlextWebModels.WebApp]:
         """Handle application stop requests.
 

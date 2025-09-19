@@ -198,7 +198,8 @@ class TestFactoryMethods:
     def test_create_success_response(self) -> None:
         """Test creating success response via utilities (moved from typings)."""
         response = FlextWebUtilities.create_success_response(
-            "Success message", {"key": "value"},
+            "Success message",
+            {"key": "value"},
         )
 
         assert response["success"] is True
@@ -411,7 +412,12 @@ class TestFactoryMethodEdgeCases:
     def test_create_app_data_edge_values(self) -> None:
         """Test creating app data with edge values."""
         app_data = FlextWebTypes.create_app_data(
-            app_id="", name="", host="", port=0, status="", is_running=False,
+            app_id="",
+            name="",
+            host="",
+            port=0,
+            status="",
+            is_running=False,
         )
 
         # Should handle empty values

@@ -34,7 +34,8 @@ class TestWebServiceFunctionalExecution:
 
     @pytest.fixture
     def running_service(
-        self, functional_config: FlextWebConfigs.WebConfig,
+        self,
+        functional_config: FlextWebConfigs.WebConfig,
     ) -> Generator[FlextWebServices.WebService]:
         """Create service for functional testing using Flask test client."""
         service = FlextWebServices.WebService(functional_config)
@@ -66,7 +67,8 @@ class TestWebServiceFunctionalExecution:
         assert service.config.port == 8086
 
     def test_functional_app_creation_lifecycle(
-        self, running_service: FlextWebServices.WebService,
+        self,
+        running_service: FlextWebServices.WebService,
     ) -> None:
         """Test complete app creation lifecycle using Flask test client."""
         client = running_service.app.test_client()
@@ -98,7 +100,8 @@ class TestWebServiceFunctionalExecution:
         assert any(app["id"] == app_id for app in data["data"]["apps"])
 
     def test_functional_app_operations_with_flext_tests(
-        self, running_service: FlextWebServices.WebService,
+        self,
+        running_service: FlextWebServices.WebService,
     ) -> None:
         """Test app start/stop operations using flext_tests patterns."""
         client = running_service.app.test_client()
@@ -126,7 +129,8 @@ class TestWebServiceFunctionalExecution:
         assert data["data"]["status"] == "stopped"
 
     def test_functional_error_handling_paths(
-        self, running_service: FlextWebServices.WebService,
+        self,
+        running_service: FlextWebServices.WebService,
     ) -> None:
         """Test error handling paths using Flask test client."""
         client = running_service.app.test_client()
@@ -152,7 +156,8 @@ class TestWebServiceFunctionalExecution:
         assert data["success"] is False
 
     def test_functional_service_health_with_apps(
-        self, running_service: FlextWebServices.WebService,
+        self,
+        running_service: FlextWebServices.WebService,
     ) -> None:
         """Test service health endpoint with real apps created using Flask test client."""
         client = running_service.app.test_client()

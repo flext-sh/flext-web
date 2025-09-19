@@ -185,7 +185,9 @@ class TestWebConfigFactoryMethods:
     def test_create_web_config_with_overrides(self) -> None:
         """Test creating web config with overrides."""
         result = FlextWebConfigs.create_web_config(
-            host="custom-host", port=9999, debug=False,
+            host="custom-host",
+            port=9999,
+            debug=False,
         )
 
         assert result.is_success

@@ -242,7 +242,8 @@ class TestFlextWebUtilitiesResponseCreation:
         """Test creating success response with data."""
         data = {"id": "123", "name": "test"}
         response = FlextWebUtilities.create_success_response(
-            "Created successfully", data,
+            "Created successfully",
+            data,
         )
 
         assert response["success"] is True
@@ -273,7 +274,9 @@ class TestFlextWebUtilitiesResponseCreation:
         """Test creating API response for success."""
         data = {"result": "ok"}
         response = FlextWebUtilities.create_api_response(
-            "Success", success=True, data=data,
+            "Success",
+            success=True,
+            data=data,
         )
 
         assert response["success"] is True
@@ -284,7 +287,9 @@ class TestFlextWebUtilitiesResponseCreation:
     def test_create_api_response_error(self) -> None:
         """Test creating API response for error."""
         response = FlextWebUtilities.create_api_response(
-            "Failed", success=False, data=None,
+            "Failed",
+            success=False,
+            data=None,
         )
 
         assert response["success"] is False
