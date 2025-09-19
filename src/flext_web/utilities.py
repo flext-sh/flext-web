@@ -56,7 +56,8 @@ class FlextWebUtilities:
         if name is None:
             return False
         safe_name = FlextUtilities.TextProcessor.safe_string(name)
-        return safe_name.strip() and len(safe_name.strip()) >= 1
+        stripped_name = safe_name.strip()
+        return bool(stripped_name and len(stripped_name) >= 1)
 
     @staticmethod
     def validate_port_range(port: int) -> bool:

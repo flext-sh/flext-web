@@ -603,7 +603,15 @@ class FlextWebConfigs:
                 return FlextResult[FlextWebConfigs.WebConfig].fail(
                     config_result.error or "Unknown error"
                 )
-            return FlextResult[FlextWebConfigs.WebConfig].ok(config_result.unwrap())
+
+            # Type narrowing for config_result.unwrap()
+            config_obj = config_result.unwrap()
+            if not isinstance(config_obj, cls.WebConfig):
+                return FlextResult[FlextWebConfigs.WebConfig].fail(
+                    "Invalid config object type returned from settings"
+                )
+
+            return FlextResult[FlextWebConfigs.WebConfig].ok(config_obj)
         except Exception as e:
             return FlextResult[FlextWebConfigs.WebConfig].fail(
                 f"Failed to load config from environment: {e}"
@@ -662,7 +670,14 @@ class FlextWebConfigs:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     cfg_res.error or "Failed to validate WebConfig",
                 )
-            validated_config = cfg_res.value.model_dump()
+
+            # Type narrowing for cfg_res.value
+            config_obj = cfg_res.value
+            if not isinstance(config_obj, cls.WebConfig):
+                return FlextResult[FlextTypes.Core.Dict].fail(
+                    "Invalid config object type returned"
+                )
+            validated_config = config_obj.model_dump()
 
             # Web configs specific settings
             validated_config.setdefault("enable_environment_validation", True)
