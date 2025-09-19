@@ -27,7 +27,7 @@ class TestConfigMissingCoverage:
     def test_secret_key_validation_too_short(self) -> None:
         """Testa validação de secret_key muito curta (linhas 138-139)."""
         with pytest.raises(
-            ValidationError, match="String should have at least 32 characters"
+            ValidationError, match="String should have at least 32 characters",
         ):
             FlextWebConfigs.WebConfig(
                 secret_key="short",  # Muito curta (< 32 chars)
@@ -39,7 +39,7 @@ class TestConfigMissingCoverage:
         """Testa validação de porta fora do range (linhas 146-147, 158-159)."""
         # Porta muito baixa
         with pytest.raises(
-            ValidationError, match="Input should be greater than or equal to 1"
+            ValidationError, match="Input should be greater than or equal to 1",
         ):
             FlextWebConfigs.WebConfig(
                 secret_key="test-secret-key-32-characters-long!",
@@ -49,7 +49,7 @@ class TestConfigMissingCoverage:
 
         # Porta muito alta
         with pytest.raises(
-            ValidationError, match="Input should be less than or equal to 65535"
+            ValidationError, match="Input should be less than or equal to 65535",
         ):
             FlextWebConfigs.WebConfig(
                 secret_key="test-secret-key-32-characters-long!",
@@ -67,7 +67,7 @@ class TestConfigMissingCoverage:
                     "FLEXT_WEB_HOST": "127.0.0.1",  # IPv4 localhost
                     "FLEXT_WEB_PORT": "65535",  # Porta máxima
                     "FLEXT_WEB_SECRET_KEY": "x" * 32,  # Exatamente 32 chars
-                }
+                },
             )
 
             FlextWebConfigs.reset_web_settings()

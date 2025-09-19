@@ -51,7 +51,7 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def create_app(
-            self, name: str, port: int, host: str
+            self, name: str, port: int, host: str,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Create a new application.
 
@@ -164,7 +164,7 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def create_json_response(
-            self, data: JsonResponse, status_code: int = 200
+            self, data: JsonResponse, status_code: int = 200,
         ) -> WebResponse:
             """Create a JSON response in framework-agnostic way."""
             ...
@@ -198,7 +198,7 @@ class FlextWebProtocols(FlextProtocols):
             ...
 
         def render_dashboard(
-            self, apps: list[FlextWebModels.WebApp], **context: object
+            self, apps: list[FlextWebModels.WebApp], **context: object,
         ) -> str:
             """Render dashboard template.
 
@@ -254,10 +254,10 @@ class FlextWebProtocols(FlextProtocols):
 
         class _AppManagerProtocolImpl:
             def create_app(
-                self, name: str, port: int, host: str
+                self, name: str, port: int, host: str,
             ) -> FlextResult[FlextWebModels.WebApp]:
                 app = FlextWebModels.WebApp(
-                    id=f"app_{name}", name=name, port=port, host=host
+                    id=f"app_{name}", name=name, port=port, host=host,
                 )
                 return FlextResult[FlextWebModels.WebApp].ok(app)
 
@@ -352,7 +352,7 @@ class FlextWebProtocols(FlextProtocols):
 
     @runtime_checkable
     class AppRepositoryInterface(
-        FlextProtocols.Domain.Repository[FlextWebModels.WebApp], Protocol
+        FlextProtocols.Domain.Repository[FlextWebModels.WebApp], Protocol,
     ):
         """Application repository protocol extending flext-core Repository patterns.
 
@@ -362,7 +362,7 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def create(
-            self, app: FlextWebModels.WebApp
+            self, app: FlextWebModels.WebApp,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Create and store a new application."""
             ...
@@ -372,7 +372,7 @@ class FlextWebProtocols(FlextProtocols):
             ...
 
         def update(
-            self, app: FlextWebModels.WebApp
+            self, app: FlextWebModels.WebApp,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Update existing application."""
             ...
@@ -391,13 +391,13 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def before_request(
-            self, request: FlextWebTypes.RequestContext
+            self, request: FlextWebTypes.RequestContext,
         ) -> FlextResult[FlextWebTypes.RequestContext]:
             """Process request before routing to handlers."""
             ...
 
         def after_request(
-            self, response: FlextTypes.Core.Dict
+            self, response: FlextTypes.Core.Dict,
         ) -> FlextResult[FlextTypes.Core.Dict]:
             """Process response after handler execution."""
             ...
@@ -437,7 +437,7 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def record_request(
-            self, method: str, path: str, status_code: int, duration: float
+            self, method: str, path: str, status_code: int, duration: float,
         ) -> None:
             """Record HTTP request metrics."""
             ...

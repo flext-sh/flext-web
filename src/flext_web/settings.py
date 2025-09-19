@@ -25,7 +25,7 @@ class FlextWebSettings(FlextConfig):
             "validate_assignment": True,
             "extra": "allow",
             "str_strip_whitespace": True,
-        }
+        },
     )
 
     # Core web fields (inherit from FlextConfig, override with web-specific defaults)

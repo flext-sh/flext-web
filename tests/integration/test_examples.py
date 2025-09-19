@@ -136,7 +136,7 @@ class ExamplesFullFunctionalityTest:
         try:
             example_path = Path("examples/01_basic_service.py")
             spec = importlib.util.spec_from_file_location(
-                "basic_service", str(example_path)
+                "basic_service", str(example_path),
             )
             assert spec is not None
             assert hasattr(spec, "loader")
@@ -170,7 +170,7 @@ class ExamplesFullFunctionalityTest:
         try:
             example_path = Path("examples/02_api_usage.py")
             spec = importlib.util.spec_from_file_location(
-                "api_usage", str(example_path)
+                "api_usage", str(example_path),
             )
             assert spec is not None
             assert hasattr(spec, "loader")
@@ -221,7 +221,7 @@ class ExamplesFullFunctionalityTest:
         try:
             example_path = Path("examples/03_docker_ready.py")
             spec = importlib.util.spec_from_file_location(
-                "docker_ready", str(example_path)
+                "docker_ready", str(example_path),
             )
             assert spec is not None
             assert hasattr(spec, "loader")
@@ -293,7 +293,7 @@ class ExamplesFullFunctionalityTest:
         try:
             example_path = Path("examples/02_api_usage.py")
             spec = importlib.util.spec_from_file_location(
-                "api_usage", str(example_path)
+                "api_usage", str(example_path),
             )
             assert spec is not None
             assert hasattr(spec, "loader")

@@ -64,7 +64,7 @@ class TestWebAppEdgeCases:
 
         # Test port 0 - Pydantic validation prevents this assignment
         with pytest.raises(
-            ValidationError, match="Input should be greater than or equal to 1"
+            ValidationError, match="Input should be greater than or equal to 1",
         ):
             app.port = 0
 
@@ -106,7 +106,7 @@ class TestWebAppEdgeCases:
     def test_webapp_repr_string_representation(self) -> None:
         """Test string representation - covers lines 219, 233."""
         app = FlextWebModels.WebApp(
-            id="test-app", name="Test App", host="localhost", port=8080
+            id="test-app", name="Test App", host="localhost", port=8080,
         )
 
         repr_str = repr(app)

@@ -104,7 +104,7 @@ class TestServicesCoverage:
 
         with service.app.test_client() as client:
             response = client.post(
-                "/api/v1/apps", data="invalid json", content_type="application/json"
+                "/api/v1/apps", data="invalid json", content_type="application/json",
             )
             # Should handle malformed JSON gracefully
             assert response.status_code in {400, 500}

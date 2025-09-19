@@ -39,7 +39,7 @@ class TestWebConfigFunctionalValidation:
                     "FLEXT_WEB_REQUEST_TIMEOUT": "60",
                     "FLEXT_WEB_ENABLE_CORS": "false",
                     "FLEXT_WEB_LOG_LEVEL": "INFO",
-                }
+                },
             )
 
             # Test production config creation
@@ -76,7 +76,7 @@ class TestWebConfigFunctionalValidation:
                     "FLEXT_WEB_DEBUG": "true",
                     "FLEXT_WEB_SECRET_KEY": "dev-secret-key-for-testing-32-chars!",
                     "FLEXT_WEB_LOG_LEVEL": "DEBUG",
-                }
+                },
             )
 
             config_result = FlextWebConfigs.create_development_config()
@@ -124,7 +124,7 @@ class TestWebConfigFunctionalValidation:
         """Test configuration validation with real error scenarios."""
         # Test invalid port values
         with pytest.raises(
-            pydantic.ValidationError, match="Input should be greater than or equal to 1"
+            pydantic.ValidationError, match="Input should be greater than or equal to 1",
         ):
             FlextWebConfigs.WebConfig(
                 secret_key="invalid-port-test-key-32-chars!!",
@@ -144,7 +144,7 @@ class TestWebConfigFunctionalValidation:
 
         # Test invalid secret key
         with pytest.raises(
-            pydantic.ValidationError, match="String should have at least 32 characters"
+            pydantic.ValidationError, match="String should have at least 32 characters",
         ):
             FlextWebConfigs.WebConfig(
                 secret_key="short",  # Too short
@@ -154,7 +154,7 @@ class TestWebConfigFunctionalValidation:
 
         # Test invalid host
         with pytest.raises(
-            pydantic.ValidationError, match="Host address cannot be empty"
+            pydantic.ValidationError, match="Host address cannot be empty",
         ):
             FlextWebConfigs.WebConfig(
                 secret_key="invalid-host-test-key-32-chars!!",
@@ -188,7 +188,7 @@ class TestWebConfigFunctionalValidation:
                     "FLEXT_WEB_HOST": "0.0.0.0",
                     "FLEXT_WEB_PORT": "9000",
                     # Missing other variables - should use defaults
-                }
+                },
             )
 
             config = FlextWebConfigs.get_web_settings()
@@ -211,7 +211,7 @@ class TestWebConfigFunctionalValidation:
         """Test configuration loading from real file system."""
         # Create temporary config file
         with tempfile.NamedTemporaryFile(
-            encoding="utf-8", mode="w", suffix=".env", delete=False
+            encoding="utf-8", mode="w", suffix=".env", delete=False,
         ) as temp_file:
             temp_file.write(
                 """
@@ -221,7 +221,7 @@ FLEXT_WEB_PORT=8090
 FLEXT_WEB_DEBUG=false
 FLEXT_WEB_SECRET_KEY=file-config-secret-key-32-chars!
 FLEXT_WEB_APP_NAME=File Config Test
-            """.strip()
+            """.strip(),
             )
             temp_file_path = temp_file.name
 
@@ -293,7 +293,7 @@ FLEXT_WEB_APP_NAME=File Config Test
 
         # Test configuration merging
         base_config = FlextWebConfigs.WebConfig(
-            secret_key="base-config-secret-key-32-chars!", host="base-host", port=8092
+            secret_key="base-config-secret-key-32-chars!", host="base-host", port=8092,
         )
 
         override_data = {

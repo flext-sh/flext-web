@@ -44,14 +44,14 @@ class FlextWebConstants:
 
         # Default secret key com valor específico flext-web
         DEFAULT_SECRET_KEY = os.getenv(
-            ENV_SECRET_KEY, "dev-secret-key-change-in-production"
+            ENV_SECRET_KEY, "dev-secret-key-change-in-production",
         )
 
         # Port threshold for system ports (web-specific business rule)
         SYSTEM_PORTS_THRESHOLD = 1024
 
         # Network interface constants
-        ALL_INTERFACES = "0.0.0.0"  # nosec B104 # noqa: S104 - intentional binding to all interfaces for web server
+        ALL_INTERFACES = "0.0.0.0"  # nosec B104
         LOCALHOST_IPV4 = "127.0.0.1"
         LOCALHOST_HOSTNAME = "localhost"
 

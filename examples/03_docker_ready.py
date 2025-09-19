@@ -30,7 +30,7 @@ def create_docker_config() -> FlextWebConfigs.WebConfig:
         logger.warning("No SECRET_KEY provided, generated temporary key")
 
     config = FlextWebConfigs.WebConfig(
-        host=host, port=port, debug=debug, secret_key=secret_key
+        host=host, port=port, debug=debug, secret_key=secret_key,
     )
 
     # Validate configuration

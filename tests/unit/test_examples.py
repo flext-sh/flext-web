@@ -41,7 +41,7 @@ class TestExamplesSimple:
 
         # Test import works via importlib for numerically prefixed module
         spec = importlib.util.spec_from_file_location(
-            "_example_basic_service", Path("examples") / "01_basic_service.py"
+            "_example_basic_service", Path("examples") / "01_basic_service.py",
         )
         assert spec
         assert spec.loader
@@ -153,7 +153,7 @@ class TestExamplesSimple:
             "import examples.basic_service; print('Executable')",
         ]
         result = subprocess.run(
-            cmd, check=False, capture_output=True, text=True, timeout=5
+            cmd, check=False, capture_output=True, text=True, timeout=5,
         )
         # It's OK if it fails due to imports, we just want to test it's executable
         # The important thing is no syntax errors

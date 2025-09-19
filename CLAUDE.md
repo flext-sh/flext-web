@@ -130,7 +130,7 @@ from flext_core import (
 from flext_cli import (
     FlextCliApi,           # High-level CLI API for web CLI operations
     FlextCliMain,          # Main CLI entry point for web command registration
-    FlextCliConfig,        # Configuration management for web CLI
+    FlextCliConfigs,        # Configuration management for web CLI
     FlextCliConstants,     # Web CLI-specific constants
     # NEVER import click or rich directly - ALL WEB CLI + OUTPUT through flext-cli
 )
@@ -239,7 +239,7 @@ __all__ = ["UnifiedFlextWebService"]
 ```python
 # ✅ CORRECT - Using VERIFIED flext-core API patterns for Flask web services
 from flext_core import FlextModels, FlextResult
-from flext_cli import FlextCliConfig
+from flext_cli import FlextCliConfigs
 
 # ✅ CORRECT - Web domain models using flext-core verified patterns
 class FlaskWebApp(FlextModels.Entity):
@@ -343,7 +343,7 @@ class FlaskWebCliService:
     def __init__(self) -> None:
         """Initialize Flask web CLI service with flext-cli integration."""
         self._cli_api = FlextCliApi()
-        self._config = FlextCliConfig()
+        self._config = FlextCliConfigs()
         self._logger = FlextLogger(__name__)
 
     def setup_flask_web_configuration_schema(self) -> FlextResult[dict]:
@@ -545,7 +545,7 @@ try:
     print('✅ flext-core web integration: SUCCESS')
 
     # Test flext-cli integration for web CLI
-    from flext_cli import FlextCliApi, FlextCliMain, FlextCliConfig
+    from flext_cli import FlextCliApi, FlextCliMain, FlextCliConfigs
     print('✅ flext-cli web CLI integration: SUCCESS')
 
     # Test Flask web service imports
@@ -1013,7 +1013,7 @@ try:
     print('✅ Flask web service imports: SUCCESS')
 
     # Test Flask web CLI integration
-    from flext_cli import FlextCliApi, FlextCliMain, FlextCliConfig
+    from flext_cli import FlextCliApi, FlextCliMain, FlextCliConfigs
     print('✅ flext-cli Flask web integration: SUCCESS')
 
     # Test Flask web domain models

@@ -30,7 +30,7 @@ class TestConfigCompleteCoverage:
         """Test secret key validation error paths (lines 138-139, 146-147)."""
         # Test short secret key
         with pytest.raises(
-            ValidationError, match="String should have at least 32 characters"
+            ValidationError, match="String should have at least 32 characters",
         ):
             FlextWebConfigs.WebConfig(
                 host="localhost",
@@ -43,7 +43,7 @@ class TestConfigCompleteCoverage:
         with (
             patch.dict(os.environ, {"FLEXT_WEB_ENVIRONMENT": "production"}),
             pytest.raises(
-                ValidationError, match="Must change default secret key for production"
+                ValidationError, match="Must change default secret key for production",
             ),
         ):
             FlextWebConfigs.WebConfig(
@@ -57,7 +57,7 @@ class TestConfigCompleteCoverage:
         """Test port validation error paths (lines 158-159)."""
         # Test port too low
         with pytest.raises(
-            ValidationError, match="Input should be greater than or equal to 1"
+            ValidationError, match="Input should be greater than or equal to 1",
         ):
             FlextWebConfigs.WebConfig(
                 host="localhost",
@@ -68,7 +68,7 @@ class TestConfigCompleteCoverage:
 
         # Test port too high
         with pytest.raises(
-            ValidationError, match="Input should be less than or equal to 65535"
+            ValidationError, match="Input should be less than or equal to 65535",
         ):
             FlextWebConfigs.WebConfig(
                 host="localhost",
@@ -249,7 +249,7 @@ class TestConfigCompleteCoverage:
 
         # Test environment variable precedence using settings
         with patch.dict(
-            os.environ, {"FLEXT_WEB_HOST": "env-host", "FLEXT_WEB_PORT": "9999"}
+            os.environ, {"FLEXT_WEB_HOST": "env-host", "FLEXT_WEB_PORT": "9999"},
         ):
             settings = FlextWebSettings()
             config_result = settings.to_config()

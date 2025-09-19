@@ -26,7 +26,7 @@ class TestServicesMissingCoverage:
 
     @pytest.fixture
     def test_service(
-        self, test_config: FlextWebConfigs.WebConfig
+        self, test_config: FlextWebConfigs.WebConfig,
     ) -> FlextWebServices.WebService:
         """Serviço de teste configurado."""
         service = FlextWebServices.WebService(test_config)
@@ -119,14 +119,14 @@ class TestServicesMissingCoverage:
 
         # Teste com JSON malformado
         response = test_client.post(
-            "/api/v1/apps", data="invalid-json-data", content_type="application/json"
+            "/api/v1/apps", data="invalid-json-data", content_type="application/json",
         )
         assert response.status_code == 400
         data = response.get_json()
         assert data["success"] is False
 
     def test_service_internal_error_handling(
-        self, test_service: FlextWebServices.WebService
+        self, test_service: FlextWebServices.WebService,
     ) -> None:
         """Testa tratamento de erros internos (linhas 700-701)."""
         # Testa cenário de erro interno sem mock - usando dados que causam erro
@@ -166,7 +166,7 @@ class TestServicesMissingCoverage:
         assert hasattr(registry, "get_service")
 
     def test_service_app_management_comprehensive(
-        self, test_client: FlaskClient
+        self, test_client: FlaskClient,
     ) -> None:
         """Testa gerenciamento completo de aplicações."""
         # Cria múltiplas apps para testar listagem

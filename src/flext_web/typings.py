@@ -184,13 +184,13 @@ class FlextWebTypes:
         *,
         debug: bool = True,
         secret_key: str = os.getenv(
-            "FLEXT_WEB_SECRET_KEY", "dev-key-unsafe-change-in-prod"
+            "FLEXT_WEB_SECRET_KEY", "dev-key-unsafe-change-in-prod",
         ),
         app_name: str = "FLEXT Web",
     ) -> ConfigData:
         """Create config data structure with defaults."""
         return cls.ConfigData(
-            host=host, port=port, debug=debug, secret_key=secret_key, app_name=app_name
+            host=host, port=port, debug=debug, secret_key=secret_key, app_name=app_name,
         )
 
     @classmethod
@@ -203,46 +203,46 @@ class FlextWebTypes:
     ) -> RequestContext:
         """Create request context structure."""
         return cls.RequestContext(
-            method=method, path=path, headers=headers or {}, data=data or {}
+            method=method, path=path, headers=headers or {}, data=data or {},
         )
 
     @classmethod
     def validate_config_data(
-        cls, data: object
+        cls, data: object,
     ) -> FlextResult[FlextWebTypes.ConfigData]:
         """Validate configuration data structure."""
         try:
             if not isinstance(data, dict):
                 return FlextResult[FlextWebTypes.ConfigData].fail(
-                    "Data must be a dictionary"
+                    "Data must be a dictionary",
                 )
 
             required_fields = ["host", "port", "debug", "secret_key", "app_name"]
             for field in required_fields:
                 if field not in data:
                     return FlextResult[FlextWebTypes.ConfigData].fail(
-                        f"Required field '{field}' is missing"
+                        f"Required field '{field}' is missing",
                     )
 
             if not isinstance(data["host"], str):
                 return FlextResult[FlextWebTypes.ConfigData].fail(
-                    "Field 'host' must be a string"
+                    "Field 'host' must be a string",
                 )
             if not isinstance(data["port"], int):
                 return FlextResult[FlextWebTypes.ConfigData].fail(
-                    "Field 'port' must be an integer"
+                    "Field 'port' must be an integer",
                 )
             if not isinstance(data["debug"], bool):
                 return FlextResult[FlextWebTypes.ConfigData].fail(
-                    "Field 'debug' must be a boolean"
+                    "Field 'debug' must be a boolean",
                 )
             if not isinstance(data["secret_key"], str):
                 return FlextResult[FlextWebTypes.ConfigData].fail(
-                    "Field 'secret_key' must be a string"
+                    "Field 'secret_key' must be a string",
                 )
             if not isinstance(data["app_name"], str):
                 return FlextResult[FlextWebTypes.ConfigData].fail(
-                    "Field 'app_name' must be a string"
+                    "Field 'app_name' must be a string",
                 )
 
             config_data = cls.ConfigData(
@@ -256,7 +256,7 @@ class FlextWebTypes:
 
         except Exception as e:
             return FlextResult[FlextWebTypes.ConfigData].fail(
-                f"Configuration validation error: {e}"
+                f"Configuration validation error: {e}",
             )
 
     @classmethod
@@ -265,39 +265,39 @@ class FlextWebTypes:
         try:
             if not isinstance(data, dict):
                 return FlextResult[FlextWebTypes.AppData].fail(
-                    "Data must be a dictionary"
+                    "Data must be a dictionary",
                 )
 
             required_fields = ["id", "name", "host", "port", "status", "is_running"]
             for field in required_fields:
                 if field not in data:
                     return FlextResult[FlextWebTypes.AppData].fail(
-                        f"Required field '{field}' is missing"
+                        f"Required field '{field}' is missing",
                     )
 
             if not isinstance(data["id"], str):
                 return FlextResult[FlextWebTypes.AppData].fail(
-                    "Field 'id' must be a string"
+                    "Field 'id' must be a string",
                 )
             if not isinstance(data["name"], str):
                 return FlextResult[FlextWebTypes.AppData].fail(
-                    "Field 'name' must be a string"
+                    "Field 'name' must be a string",
                 )
             if not isinstance(data["host"], str):
                 return FlextResult[FlextWebTypes.AppData].fail(
-                    "Field 'host' must be a string"
+                    "Field 'host' must be a string",
                 )
             if not isinstance(data["port"], int):
                 return FlextResult[FlextWebTypes.AppData].fail(
-                    "Field 'port' must be an integer"
+                    "Field 'port' must be an integer",
                 )
             if not isinstance(data["status"], str):
                 return FlextResult[FlextWebTypes.AppData].fail(
-                    "Field 'status' must be a string"
+                    "Field 'status' must be a string",
                 )
             if not isinstance(data["is_running"], bool):
                 return FlextResult[FlextWebTypes.AppData].fail(
-                    "Field 'is_running' must be a boolean"
+                    "Field 'is_running' must be a boolean",
                 )
 
             app_data = cls.AppData(
@@ -316,7 +316,7 @@ class FlextWebTypes:
     # Configuration methods
     @classmethod
     def configure_web_types_system(
-        cls, config: FlextTypes.Core.Dict
+        cls, config: FlextTypes.Core.Dict,
     ) -> FlextResult[FlextTypes.Core.Dict]:
         """Configure web types system.
 
@@ -331,7 +331,7 @@ class FlextWebTypes:
             return FlextResult[FlextTypes.Core.Dict].ok(validated_config)
         except Exception as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to configure web types system: {e}"
+                f"Failed to configure web types system: {e}",
             )
 
     @classmethod
@@ -349,7 +349,7 @@ class FlextWebTypes:
             return FlextResult[FlextTypes.Core.Dict].ok(config)
         except Exception as e:
             return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to get web types system config: {e}"
+                f"Failed to get web types system config: {e}",
             )
 
 

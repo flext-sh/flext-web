@@ -95,7 +95,7 @@ def create_application(
 
 
 def _extract_apps_from_response(
-    response_data: object, data_key: str
+    response_data: object, data_key: str,
 ) -> list[FlextWebTypes.AppData]:
     """Extract apps list from response data with proper type checking."""
     if not isinstance(response_data, dict):
@@ -118,7 +118,7 @@ def _extract_apps_from_response(
 
 
 def _execute_app_operation(
-    method: str, endpoint: str, json_data: FlextTypes.Core.Dict | None = None
+    method: str, endpoint: str, json_data: FlextTypes.Core.Dict | None = None,
 ) -> FlextWebTypes.AppData | None:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
@@ -149,11 +149,11 @@ def _execute_app_operation(
         .bind(
             lambda resp: FlextResult[FlextTypes.Core.Dict].ok(resp.json())
             if resp.status_code == ExampleConstants.HTTP_OK
-            else FlextResult[FlextTypes.Core.Dict].fail("Invalid response")
+            else FlextResult[FlextTypes.Core.Dict].fail("Invalid response"),
         )
         .bind(
             lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
-                cast("FlextWebTypes.AppData", json_data["data"])
+                cast("FlextWebTypes.AppData", json_data["data"]),
             )
             if all(
                 [
@@ -161,11 +161,11 @@ def _execute_app_operation(
                     isinstance(data := json_data.get("data"), dict),
                     data
                     and {"id", "name"}.issubset(
-                        cast("FlextTypes.Core.Dict", data).keys()
+                        cast("FlextTypes.Core.Dict", data).keys(),
                     ),
-                ]
+                ],
             )
-            else FlextResult[FlextWebTypes.AppData].fail("Invalid app data")
+            else FlextResult[FlextWebTypes.AppData].fail("Invalid app data"),
         )
     )
 
@@ -173,21 +173,21 @@ def _execute_app_operation(
 
 
 def _execute_list_operation(
-    endpoint: str, data_key: str
+    endpoint: str, data_key: str,
 ) -> list[FlextWebTypes.AppData]:
     """Advanced Monad Composition using flext-core - eliminates 7 returns with Kleisli composition."""
     # Pure functional Kleisli composition using flext-core patterns
     return (
         FlextResult.safe_call(
-            lambda: requests.get(f"{ExampleConstants.BASE_URL}{endpoint}", timeout=5)
+            lambda: requests.get(f"{ExampleConstants.BASE_URL}{endpoint}", timeout=5),
         )
         .filter(
-            lambda r: r.status_code == ExampleConstants.HTTP_OK, "HTTP request failed"
+            lambda r: r.status_code == ExampleConstants.HTTP_OK, "HTTP request failed",
         )
         .bind(
             lambda r: FlextResult.safe_call(r.json)
             if hasattr(r, "json")
-            else FlextResult[FlextTypes.Core.Dict].fail("Invalid response object")
+            else FlextResult[FlextTypes.Core.Dict].fail("Invalid response object"),
         )
         .map(lambda d: _extract_apps_from_response(d, data_key))
         .unwrap_or([])

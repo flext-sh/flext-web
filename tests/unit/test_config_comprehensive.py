@@ -72,7 +72,7 @@ class TestWebConfigValidation:
 
         # Test with very large value
         config = FlextWebConfigs.WebConfig(
-            max_content_length=100 * 1024 * 1024  # 100MB
+            max_content_length=100 * 1024 * 1024,  # 100MB
         )
         assert config.max_content_length == 100 * 1024 * 1024
 
@@ -83,7 +83,7 @@ class TestWebConfigValidation:
 
         # Test with maximum allowed timeout
         config = FlextWebConfigs.WebConfig(
-            request_timeout=300  # Maximum allowed (5 minutes)
+            request_timeout=300,  # Maximum allowed (5 minutes)
         )
         assert config.request_timeout == 300
 
@@ -185,7 +185,7 @@ class TestWebConfigFactoryMethods:
     def test_create_web_config_with_overrides(self) -> None:
         """Test creating web config with overrides."""
         result = FlextWebConfigs.create_web_config(
-            host="custom-host", port=9999, debug=False
+            host="custom-host", port=9999, debug=False,
         )
 
         assert result.is_success

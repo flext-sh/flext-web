@@ -53,13 +53,13 @@ class FlextWebModels:
             le=FlextWebConstants.Web.MAX_PORT,
         )
         status: FlextWebModels.WebAppStatus = Field(
-            default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED
+            default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED,
         )
 
         @field_validator("status")
         @classmethod
         def validate_status(
-            cls, v: FlextWebModels.WebAppStatus | str
+            cls, v: FlextWebModels.WebAppStatus | str,
         ) -> FlextWebModels.WebAppStatus:
             """Validate status field."""
             if isinstance(v, str):
@@ -225,7 +225,7 @@ class FlextWebModels:
 
     @classmethod
     def create_web_app(
-        cls, data: FlextWebTypes.AppData
+        cls, data: FlextWebTypes.AppData,
     ) -> FlextResult[FlextWebModels.WebApp]:
         """Create web application."""
         try:
@@ -245,7 +245,7 @@ class FlextWebModels:
                 app_data["port"] = int(port)
             elif not isinstance(port, int):
                 return FlextResult[FlextWebModels.WebApp].fail(
-                    f"Invalid port type: {type(port)}"
+                    f"Invalid port type: {type(port)}",
                 )
 
             # Create app with explicit parameters to avoid type issues
@@ -253,7 +253,7 @@ class FlextWebModels:
             port_value = app_data["port"]
             if not isinstance(port_value, int):
                 return FlextResult[FlextWebModels.WebApp].fail(
-                    f"Port validation failed: expected int, got {type(port_value)}"
+                    f"Port validation failed: expected int, got {type(port_value)}",
                 )
 
             app = FlextWebModels.WebApp(
@@ -267,7 +267,7 @@ class FlextWebModels:
             validation_result = app.validate_business_rules()
             if validation_result.is_failure:
                 return FlextResult[FlextWebModels.WebApp].fail(
-                    validation_result.error or "Validation failed"
+                    validation_result.error or "Validation failed",
                 )
 
             return FlextResult[FlextWebModels.WebApp].ok(app)

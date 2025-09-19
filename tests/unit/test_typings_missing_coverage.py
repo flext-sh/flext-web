@@ -193,8 +193,8 @@ class TestTypingsMissingCoverage:
                 "deep": {
                     "structure": ["list", "with", "values"],
                     "numbers": [1, 2, math.pi, True],
-                }
-            }
+                },
+            },
         }
         context = FlextWebTypes.create_request_context(
             method="POST",

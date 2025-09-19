@@ -100,7 +100,7 @@ class TestRealMainEntry:
                 "--port",
                 "9000",
                 "--debug",
-            ]
+            ],
         )
 
         assert args.host == "0.0.0.0"  # Argument parsing preserves original value

@@ -49,7 +49,7 @@ class TestFlextWebService:
                 "port": port,
                 "debug": True,
                 "secret_key": "api-test-secret-key-32-characters-long!",
-            }
+            },
         )
         service = FlextWebServices.WebService(config)
 

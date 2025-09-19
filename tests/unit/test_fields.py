@@ -28,7 +28,7 @@ class TestWebFields:
 
         # Test with custom parameters
         custom_field = WebFields.app_name_field(
-            description="Custom app name", min_length=3, max_length=50
+            description="Custom app name", min_length=3, max_length=50,
         )
         assert custom_field.description == "Custom app name"
 
@@ -40,7 +40,7 @@ class TestWebFields:
 
         # Test with custom parameters
         custom_field = WebFields.host_field(
-            description="Custom host", default="0.0.0.0"
+            description="Custom host", default="0.0.0.0",
         )
         assert custom_field.default == "0.0.0.0"
 
@@ -76,7 +76,7 @@ class TestWebFields:
 
         # Test with custom parameters
         custom_field = WebFields.secret_key_field(
-            description="Custom secret", min_length=16
+            description="Custom secret", min_length=16,
         )
         assert custom_field.description == "Custom secret"
 
@@ -339,7 +339,7 @@ class TestFieldIntegration:
         """Test fields handle additional kwargs properly."""
         # Test with extra kwargs
         field = WebFields.app_name_field(
-            description="Test field", alias="app_name", examples=["test-app"]
+            description="Test field", alias="app_name", examples=["test-app"],
         )
 
         assert field.description == "Test field"

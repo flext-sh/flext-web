@@ -42,7 +42,7 @@ class TestFlextWebServiceAdvanced:
 
     @pytest.fixture
     def real_running_service(
-        self, config: FlextWebConfigs.WebConfig
+        self, config: FlextWebConfigs.WebConfig,
     ) -> Generator[FlextWebServices.WebService]:
         """Create and start real service for HTTP testing."""
         service = FlextWebServices.WebService(config)
@@ -71,7 +71,7 @@ class TestFlextWebServiceAdvanced:
         return FlextWebServices.WebService(config)
 
     def test_service_app_registration(
-        self, service: FlextWebServices.WebService
+        self, service: FlextWebServices.WebService,
     ) -> None:
         """Test Flask app registration and configuration."""
         app = service.app
@@ -94,7 +94,7 @@ class TestFlextWebServiceAdvanced:
         assert service.config.is_production() is True
 
     def test_create_app_with_validation_error(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test app creation with validation errors using real HTTP."""
         assert real_running_service is not None
@@ -113,7 +113,7 @@ class TestFlextWebServiceAdvanced:
         assert "name" in data["message"].lower()
 
     def test_create_app_with_invalid_port(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test app creation with invalid port using real HTTP."""
         assert real_running_service is not None
@@ -130,7 +130,7 @@ class TestFlextWebServiceAdvanced:
         assert not data["success"]
 
     def test_create_app_with_missing_fields(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test app creation with missing optional fields uses defaults using real HTTP."""
         assert real_running_service is not None
@@ -150,7 +150,7 @@ class TestFlextWebServiceAdvanced:
         assert data["data"]["port"] == 8000
 
     def test_start_nonexistent_app(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test starting non-existent application using real HTTP."""
         assert real_running_service is not None
@@ -164,7 +164,7 @@ class TestFlextWebServiceAdvanced:
         assert "not found" in data["message"].lower()
 
     def test_stop_nonexistent_app(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test stopping non-existent application using real HTTP."""
         assert real_running_service is not None
@@ -177,7 +177,7 @@ class TestFlextWebServiceAdvanced:
         assert not data["success"]
 
     def test_get_nonexistent_app(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test getting non-existent application using real HTTP."""
         assert real_running_service is not None
@@ -190,7 +190,7 @@ class TestFlextWebServiceAdvanced:
         assert not data["success"]
 
     def test_invalid_json_request(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test API with invalid JSON using real HTTP."""
         assert real_running_service is not None
@@ -206,7 +206,7 @@ class TestFlextWebServiceAdvanced:
         assert response.status_code == 400
 
     def test_service_real_validation_error_handling(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test service error handling with REAL validation failures using real HTTP."""
         assert real_running_service is not None
@@ -230,7 +230,7 @@ class TestFlextWebServiceAdvanced:
         )
 
     def test_service_real_duplicate_error_handling(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test service handling of real business logic errors using real HTTP."""
         assert real_running_service is not None
@@ -253,7 +253,7 @@ class TestFlextWebServiceAdvanced:
         assert data["success"] is False
 
     def test_dashboard_with_apps(
-        self, real_running_service: FlextWebServices.WebService
+        self, real_running_service: FlextWebServices.WebService,
     ) -> None:
         """Test dashboard display with applications using real HTTP."""
         assert real_running_service is not None
@@ -544,7 +544,7 @@ class TestServiceIntegration:
         service.apps.clear()
 
     def test_complete_app_workflow(
-        self, real_integration_service: FlextWebServices.WebService
+        self, real_integration_service: FlextWebServices.WebService,
     ) -> None:
         """Test complete application workflow through real HTTP API."""
         assert real_integration_service is not None
