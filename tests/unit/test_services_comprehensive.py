@@ -11,9 +11,9 @@ from collections import UserDict
 from collections.abc import ValuesView
 
 import pytest
-from flext_tests import FlextTestsAsyncs
 
 from flext_core import FlextResult, FlextTypes
+from flext_tests import FlextTestsAsyncs
 from flext_web import FlextWebConfigs, FlextWebModels, FlextWebServices
 
 

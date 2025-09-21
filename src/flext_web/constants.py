@@ -52,7 +52,7 @@ class FlextWebConstants:
         SYSTEM_PORTS_THRESHOLD = 1024
 
         # Network interface constants
-        ALL_INTERFACES = "0.0.0.0"  # nosec B104
+        ALL_INTERFACES = "0.0.0.0"  # nosec S104
         LOCALHOST_IPV4 = "127.0.0.1"
         LOCALHOST_HOSTNAME = "localhost"
 

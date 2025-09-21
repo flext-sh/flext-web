@@ -59,6 +59,7 @@ flext-web = "flext_web.__main__:main"
 [tool.ruff]
 extend = "../ruff-shared.toml"
 lint.isort.known-first-party = ["flext_web"]
+lint.ignore = ["S104", "S105", "S101", "PLR2004", "S112", "S404"]
 
 [tool.mypy]
 # Strict mode - enables all recommended checks

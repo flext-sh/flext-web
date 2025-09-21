@@ -7,9 +7,9 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from flext_tests import FlextTestsAsyncs
 from pydantic import ValidationError
 
+from flext_tests import FlextTestsAsyncs
 from flext_web import FlextWebHandlers, FlextWebModels
 
 

@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import os
-import subprocess
+import subprocess  # nosec S404
 import sys
 from typing import TYPE_CHECKING
 
@@ -24,7 +24,7 @@ from flext_web import (
 from flext_web.settings import FlextWebSettings
 
 if TYPE_CHECKING:
-    from subprocess import CompletedProcess
+    from subprocess import CompletedProcess  # nosec S404
 
 
 class TestRealMainEntry:

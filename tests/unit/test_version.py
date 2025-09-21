@@ -4,8 +4,7 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-import flext_web.__version__ as version_module
-from flext_web.__version__ import __version__
+import flext_web
 
 
 class TestVersionModule:
@@ -13,14 +12,14 @@ class TestVersionModule:
 
     def test_version_import(self) -> None:
         """Test version module can be imported and contains version info."""
-        assert isinstance(__version__, str)
-        assert len(__version__) > 0
-        assert "." in __version__  # Should be in format like "0.9.0"
+        assert isinstance(flext_web.__version__, str)
+        assert len(flext_web.__version__) > 0
+        assert "." in flext_web.__version__  # Should be in format like "0.9.0"
 
     def test_version_format(self) -> None:
         """Test version follows semantic versioning format."""
         # Basic semantic version validation
-        parts = __version__.split(".")
+        parts = flext_web.__version__.split(".")
         assert len(parts) >= 2  # At least major.minor
 
         # First two parts should be numeric
@@ -31,9 +30,9 @@ class TestVersionModule:
         """Test version is accessible through main module."""
         # Test direct import
 
-        assert hasattr(version_module, "__version__")
-        assert isinstance(version_module.__version__, str)
+        assert hasattr(flext_web, "__version__")
+        assert isinstance(flext_web.__version__, str)
 
         # Test version is not empty or placeholder
-        assert version_module.__version__
-        assert version_module.__version__ != "0.0.0"
+        assert flext_web.__version__
+        assert flext_web.__version__ != "0.0.0"
