@@ -60,7 +60,7 @@ class FlextWebServices:
             self.logger.info("Service initialized")
 
             # Configure Flask application
-            self.app.config.update(  # type: ignore[misc]
+            self.app.config.update(
                 {
                     "SECRET_KEY": config.secret_key,
                     "DEBUG": config.debug_bool,

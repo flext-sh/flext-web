@@ -123,17 +123,25 @@ class FlextWebFields(FlextModels):
         @classmethod
         def bad_request(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 400 Bad Request status field."""
-            return cls(FlextConstants.Platform.HTTP_STATUS_BAD_REQUEST, "Bad Request", **kwargs)
+            return cls(
+                FlextConstants.Platform.HTTP_STATUS_BAD_REQUEST, "Bad Request", **kwargs
+            )
 
         @classmethod
         def not_found(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 404 Not Found status field."""
-            return cls(FlextConstants.Platform.HTTP_STATUS_NOT_FOUND, "Not Found", **kwargs)
+            return cls(
+                FlextConstants.Platform.HTTP_STATUS_NOT_FOUND, "Not Found", **kwargs
+            )
 
         @classmethod
         def server_error(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 500 Internal Server Error status field."""
-            return cls(FlextConstants.Platform.HTTP_STATUS_INTERNAL_ERROR, "Internal Server Error", **kwargs)
+            return cls(
+                FlextConstants.Platform.HTTP_STATUS_INTERNAL_ERROR,
+                "Internal Server Error",
+                **kwargs,
+            )
 
     # =========================================================================
     # WEB-SPECIFIC FIELD METHODS

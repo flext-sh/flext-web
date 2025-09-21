@@ -39,6 +39,7 @@ def _get_flext_web_settings() -> type | None:
     """
     try:
         from flext_web.settings import FlextWebSettings
+
         return FlextWebSettings
     except ImportError:
         return None
