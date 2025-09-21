@@ -12,7 +12,6 @@ from flask.typing import ResponseReturnValue
 from flext_core import (
     FlextConstants,
     FlextLogger,
-    FlextMixins,
     FlextResult,
     FlextTypes,
     FlextUtilities,
@@ -56,14 +55,9 @@ class FlextWebServices:
             # Create framework adapter for abstraction
             self._framework = self._FlaskAdapter()
 
-            # Initialize FlextMixins functionality
-            FlextMixins.create_timestamp_fields(self)
-            FlextMixins.ensure_id(self)
-            FlextMixins.initialize_validation(self)
-            FlextMixins.initialize_state(self, "initializing")
-
-            # Log service initialization
-            FlextMixins.log_operation(self, "service_init")
+            # Initialize service state
+            self._initialized = True
+            self.logger.info("Service initialized")
 
             # Configure Flask application
             self.app.config.update(
@@ -77,8 +71,8 @@ class FlextWebServices:
             self._register_routes()
 
             # Mark service as ready
-            FlextMixins.initialize_state(self, "ready")
-            FlextMixins.log_operation(self, "service_ready")
+            self._ready = True
+            self.logger.info("Service ready")
 
         class _FlaskAdapter:
             """Framework adapter for Flask - provides framework-agnostic interface."""
@@ -123,7 +117,7 @@ class FlextWebServices:
         def health_check(self) -> ResponseReturnValue:
             """Health check endpoint returning service status."""
             try:
-                FlextMixins.log_operation(self, "health_check")
+                self.logger.info("Health check performed")
 
                 health_data: FlextWebTypes.HealthResponse = {
                     "status": "healthy",
@@ -143,7 +137,7 @@ class FlextWebServices:
                     },
                 ), 200
             except Exception:
-                FlextMixins.log_operation(self, "health_check_error")
+                self.logger.exception("Health check failed")
                 return jsonify(
                     {
                         "success": False,
@@ -344,7 +338,7 @@ class FlextWebServices:
             app = create_result.value
             self.apps[app.id] = app
 
-            FlextMixins.log_operation(self, "app_created")
+            self.logger.info("App created")
 
             return FlextResult[FlextWebModels.WebApp].ok(app)
 
@@ -391,7 +385,7 @@ class FlextWebServices:
 
             """
             try:
-                FlextMixins.log_operation(self, "create_app_request")
+                self.logger.info("Create app request received")
 
                 # FlextResult chain with proper error handling
                 json_validation = self._validate_json_request()
@@ -569,12 +563,7 @@ class FlextWebServices:
                 ), 500
 
         def run(self) -> None:
-            """Run the Flask web service.
-
-            Returns:
-            ResponseReturnValue:: Description of return value.
-
-            """
+            """Run the Flask web service."""
             self.app.run(
                 host=self.config.host,
                 port=self.config.port,
@@ -597,13 +586,9 @@ class FlextWebServices:
             self._health_status: dict[str, bool] = {}
             self.logger = FlextLogger(__name__)
 
-            # Initialize FlextMixins functionality
-            FlextMixins.create_timestamp_fields(self)
-            FlextMixins.ensure_id(self)
-            FlextMixins.initialize_validation(self)
-            FlextMixins.initialize_state(self, "active")
-
-            FlextMixins.log_operation(self, "registry_init")
+            # Initialize registry state
+            self._initialized = True
+            self.logger.info("Registry initialized")
 
         def register_web_service(
             self,
@@ -617,7 +602,7 @@ class FlextWebServices:
 
             """
             try:
-                FlextMixins.log_operation(self, "register_service")
+                self.logger.info("Registering service")
 
                 if name in self._services:
                     return FlextResult[None].fail(f"Service {name} already registered")
@@ -625,7 +610,7 @@ class FlextWebServices:
                 self._services[name] = service
                 self._health_status[name] = True
 
-                FlextMixins.log_operation(self, "service_registered")
+                self.logger.info("Service registered successfully")
                 return FlextResult[None].ok(None)
 
             except Exception as e:
@@ -637,16 +622,16 @@ class FlextWebServices:
         ) -> FlextResult[FlextWebServices.WebService]:
             """Discover web service by name."""
             try:
-                FlextMixins.log_operation(self, "discover_service")
+                self.logger.info("Discovering service")
 
                 if name not in self._services:
-                    FlextMixins.log_operation(self, "service_not_found")
+                    self.logger.warning(f"Service {name} not found")
                     return FlextResult[FlextWebServices.WebService].fail(
                         f"Service {name} not found",
                     )
 
                 service = self._services[name]
-                FlextMixins.log_operation(self, "service_discovered")
+                self.logger.info("Service discovered successfully")
                 return FlextResult[FlextWebServices.WebService].ok(service)
 
             except Exception as e:
@@ -811,7 +796,7 @@ class FlextWebServices:
             )
             validated_config.setdefault(
                 "log_level",
-                FlextConstants.Config.LogLevel.INFO.value,
+                FlextConstants.Config.LogLevel.INFO,
             )
             validated_config.setdefault(
                 "validation_level",
@@ -840,7 +825,7 @@ class FlextWebServices:
             config: FlextTypes.Config.ConfigDict = {
                 # Environment configuration
                 "environment": FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value,
-                "log_level": FlextConstants.Config.LogLevel.INFO.value,
+                "log_level": FlextConstants.Config.LogLevel.INFO,
                 # Web services specific settings
                 "enable_web_service": True,
                 "enable_service_registry": True,

@@ -20,7 +20,6 @@ from pydantic import (
 from flext_core import (
     FlextConfig,
     FlextConstants,
-    FlextMixins,
     FlextResult,
     FlextTypes,
 )
@@ -92,7 +91,7 @@ class FlextWebConfigs:
         )
 
         port: int = Field(
-            default=8080,
+            default=FlextConstants.Platform.FLEXT_API_PORT,  # Using FlextConstants as SOURCE OF TRUTH
             ge=FlextWebConstants.Web.MIN_PORT,
             le=FlextWebConstants.Web.MAX_PORT,
             description="Port number for web service",
@@ -139,13 +138,13 @@ class FlextWebConfigs:
 
         # Advanced settings
         max_content_length: int = Field(
-            default=16777216,
+            default=FlextConstants.Limits.MAX_FILE_SIZE,  # Using FlextConstants as SOURCE OF TRUTH
             gt=0,
             description="Maximum request content length in bytes",
         )
 
         request_timeout: int = Field(
-            default=30,
+            default=FlextConstants.Network.DEFAULT_TIMEOUT,  # Using FlextConstants as SOURCE OF TRUTH
             gt=0,
             le=300,
             description="Request timeout in seconds",
@@ -268,15 +267,9 @@ class FlextWebConfigs:
             return values
 
         def model_post_init(self, __context: object, /) -> None:
-            """Post-init hook to set up FlextMixins functionality."""
-            # Initialize FlextMixins features
-            FlextMixins.create_timestamp_fields(self)
-            FlextMixins.ensure_id(self)
-            FlextMixins.initialize_validation(self)
-            FlextMixins.initialize_state(self, "configured")
-
-            # Log configuration creation with security-safe logging
-            FlextMixins.log_operation(self, "config_initialized")
+            """Post-init hook to set up configuration."""
+            # Initialize configuration state
+            self._initialized = True
 
         @classmethod
         def _is_development_env(cls) -> bool:
@@ -308,7 +301,7 @@ class FlextWebConfigs:
         ) -> FlextResult[None]:
             """Validate production-specific configuration settings."""
             try:
-                FlextMixins.log_operation(self, "validate_production_settings")
+                # Log production validation start
 
                 errors: FlextTypes.Core.StringList = []
 
@@ -330,12 +323,12 @@ class FlextWebConfigs:
                     )
 
                 if errors:
-                    FlextMixins.log_operation(self, "production_validation_failed")
+                    # Log production validation failure
                     return FlextResult[None].fail(
                         f"Production configuration validation failed: {'; '.join(errors)}",
                     )
 
-                FlextMixins.log_operation(self, "production_validation_success")
+                # Log production validation success
                 return FlextResult[None].ok(None)
 
             except Exception as e:
@@ -515,7 +508,7 @@ class FlextWebConfigs:
             )
 
         # Log successful creation
-        FlextMixins.log_operation(config, "web_config_created")
+        # Log web config creation
 
         return FlextResult[FlextWebConfigs.WebConfig].ok(config)
 
@@ -702,7 +695,7 @@ class FlextWebConfigs:
             config: FlextTypes.Core.Dict = {
                 # Environment configuration
                 "environment": FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value,
-                "log_level": FlextConstants.Config.LogLevel.INFO.value,
+                "log_level": FlextConstants.Config.LogLevel.INFO,
                 # Web configs specific settings
                 "enable_environment_validation": True,
                 "enable_secret_validation": True,

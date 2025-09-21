@@ -206,7 +206,7 @@ class FlextWebUtilities:
             FlextTypes.Core.Dict: Description of return value.
 
         """
-        if result.success:
+        if result.is_success:
             return FlextWebUtilities.create_api_response(
                 "Operation successful",
                 success=True,

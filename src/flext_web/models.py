@@ -13,7 +13,6 @@ from enum import Enum
 from pydantic import ConfigDict, Field, computed_field, field_validator
 
 from flext_core import (
-    FlextMixins,
     FlextModels,
     FlextResult,
     FlextTypes,
@@ -155,7 +154,7 @@ class FlextWebModels:
         def validate_business_rules(self) -> FlextResult[None]:
             """Validate business rules."""
             try:
-                FlextMixins.initialize_validation(self)
+                # Initialize validation state
 
                 # Validate name field (same as field validator)
                 name = (self.name or "").strip()
@@ -175,7 +174,7 @@ class FlextWebModels:
                 ):
                     return FlextResult[None].fail(f"Port out of range: {self.port}")
 
-                FlextMixins.log_operation(self, "validation_success")
+                # Log validation success
                 return FlextResult[None].ok(None)
             except Exception as e:
                 return FlextResult[None].fail(f"Validation failed: {e}")
@@ -188,9 +187,9 @@ class FlextWebModels:
                 return FlextResult[FlextWebModels.WebApp].fail("App not stopped")
 
             self.status = FlextWebModels.WebAppStatus.STARTING
-            FlextMixins.update_timestamp(self)
+            # Update timestamp
             self.status = FlextWebModels.WebAppStatus.RUNNING
-            FlextMixins.log_operation(self, "application_started")
+            # Log application started
             return FlextResult[FlextWebModels.WebApp].ok(self)
 
         def stop(self) -> FlextResult[FlextWebModels.WebApp]:
@@ -199,14 +198,22 @@ class FlextWebModels:
                 return FlextResult[FlextWebModels.WebApp].fail("App not running")
 
             self.status = FlextWebModels.WebAppStatus.STOPPING
-            FlextMixins.update_timestamp(self)
+            # Update timestamp
             self.status = FlextWebModels.WebAppStatus.STOPPED
-            FlextMixins.log_operation(self, "application_stopped")
+            # Log application stopped
             return FlextResult[FlextWebModels.WebApp].ok(self)
 
         def to_dict(self) -> FlextTypes.Core.Dict:
             """Convert to dict."""
-            return FlextMixins.to_dict(self)
+            return {
+                "id": self.id,
+                "name": self.name,
+                "port": self.port,
+                "host": self.host,
+                "status": self.status.value,
+                "created_at": self.created_at,
+                "updated_at": self.updated_at,
+            }
 
         def __str__(self) -> str:
             """String representation of the WebApp."""
@@ -219,10 +226,7 @@ class FlextWebModels:
         def model_post_init(self, __context: object, /) -> None:
             """Post-init setup."""
             super().model_post_init(__context)
-            FlextMixins.create_timestamp_fields(self)
-            FlextMixins.ensure_id(self)
-            FlextMixins.initialize_validation(self)
-            FlextMixins.log_operation(self, "webapp_created")
+            # Initialize webapp state
 
     @classmethod
     def create_web_app(

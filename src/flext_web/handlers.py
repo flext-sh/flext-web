@@ -11,7 +11,6 @@ from flask.typing import ResponseReturnValue
 
 from flext_core import (
     FlextLogger,
-    FlextMixins,
     FlextProcessing,
     FlextResult,
     FlextTypes,
@@ -84,13 +83,9 @@ class FlextWebHandlers(FlextProcessing):
             """Initialize WebApp handler with FlextMixins functionality."""
             self.logger = FlextLogger(__name__)
 
-            # Initialize FlextMixins features
-            FlextMixins.create_timestamp_fields(self)
-            FlextMixins.ensure_id(self)
-            FlextMixins.initialize_validation(self)
-            FlextMixins.initialize_state(self, "ready")
-
-            FlextMixins.log_operation(self, "webapp_handler_initialized")
+            # Initialize handler state
+            self._initialized = True
+            self.logger.info("WebApp handler initialized")
 
         def create(
             self,
@@ -117,7 +112,7 @@ class FlextWebHandlers(FlextProcessing):
 
             """
             # Log create operation
-            FlextMixins.log_operation(self, "create_app_command")
+            self.logger.info("Create app command")
 
             # MASSIVE USAGE: Railway-oriented programming with FlextResult composition
             return (
@@ -201,7 +196,7 @@ class FlextWebHandlers(FlextProcessing):
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Validate business rules and return app using FlextResult."""
             validation = app.validate_business_rules()
-            if not validation.success:
+            if validation.is_failure:
                 return FlextResult[FlextWebModels.WebApp].fail(
                     f"Domain validation failed: {validation.error}",
                 )
@@ -225,12 +220,12 @@ class FlextWebHandlers(FlextProcessing):
 
             """
             # Step 1: Log operation start
-            FlextMixins.log_operation(self, f"{operation_name}_app_command")
+            self.logger.info(f"{operation_name}_app_command")
 
             # Step 2: Validate domain rules before attempting state change
             validation = app.validate_business_rules()
-            if not validation.success:
-                FlextMixins.log_operation(self, f"{operation_name}_validation_failed")
+            if validation.is_failure:
+                self.logger.warning(f"{operation_name}_validation_failed")
                 return FlextResult[FlextWebModels.WebApp].fail(
                     validation.error or "Validation failed",
                 )
@@ -241,7 +236,7 @@ class FlextWebHandlers(FlextProcessing):
 
             # Step 4: Log success if applicable
             if result.is_success:
-                FlextMixins.log_operation(self, f"app_{operation_name}_success")
+                self.logger.info(f"app_{operation_name}_success")
 
             return result
 
@@ -371,12 +366,9 @@ class FlextWebHandlers(FlextProcessing):
             self.logger = FlextLogger(__name__)
 
             # Initialize FlextMixins features
-            FlextMixins.create_timestamp_fields(self)
-            FlextMixins.ensure_id(self)
-            FlextMixins.initialize_validation(self)
-            FlextMixins.initialize_state(self, "initialized")
-
-            FlextMixins.log_operation(self, "response_handler_initialized")
+            # Initialize response handler state
+            self._initialized = True
+            self.logger.info("Response handler initialized")
 
         def create_success_response(
             self,
@@ -455,7 +447,7 @@ class FlextWebHandlers(FlextProcessing):
                 Flask JSON response based on result status
 
             """
-            if result.success:
+            if result.is_success:
                 return self.create_success_response(
                     data=result.value
                     if isinstance(result.value, (dict, list))
@@ -550,7 +542,7 @@ class FlextWebHandlers(FlextProcessing):
             app = FlextWebModels.WebApp(id=app_id, name=name, port=port, host=host)
             validation_result = app.validate_business_rules()
 
-            if not validation_result.success:
+            if validation_result.is_failure:
                 return FlextResult[FlextWebModels.WebApp].fail(
                     f"Application validation failed: {validation_result.error}",
                 )

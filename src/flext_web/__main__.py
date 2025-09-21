@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from flext_core import FlextLogger
+from flext_core import FlextConstants, FlextLogger
 from flext_web.config import FlextWebConfigs
 from flext_web.services import FlextWebServices
 
@@ -96,7 +96,7 @@ def main() -> None:
         debug = config.debug_bool
 
     # Validate port
-    max_port_number = 65535
+    max_port_number = FlextConstants.Network.MAX_PORT
     if not (1 <= port <= max_port_number):
         logger.error("Port must be between 1 and 65535")
         sys.exit(1)
