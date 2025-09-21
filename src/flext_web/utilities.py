@@ -27,9 +27,19 @@ class FlextWebUtilities:
     """
 
     @staticmethod
+    def _slugify(text: str) -> str:
+        """Convert text to URL-safe slug format."""
+        import re
+
+        # Convert to lowercase and replace spaces/special chars with hyphens
+        slug = re.sub(r"[^\w\s-]", "", text.lower())
+        slug = re.sub(r"[-\s]+", "-", slug)
+        return slug.strip("-")
+
+    @staticmethod
     def generate_app_id(name: str) -> str:
         """Generate web application ID using flext-core utilities."""
-        clean_name = FlextUtilities.TextProcessor.slugify(name)
+        clean_name = FlextWebUtilities._slugify(name)
         base_id = FlextUtilities.Generators.generate_entity_id()
         return f"app_{clean_name}_{base_id.split('_')[1]}"
 
@@ -42,7 +52,7 @@ class FlextWebUtilities:
 
         """
         clean_name = FlextUtilities.TextProcessor.safe_string(name).strip()
-        slugified = FlextUtilities.TextProcessor.slugify(clean_name)
+        slugified = FlextWebUtilities._slugify(clean_name)
         return f"app_{slugified}" if slugified else "app_default"
 
     @staticmethod
