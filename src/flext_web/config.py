@@ -24,19 +24,24 @@ from flext_core import (
     FlextTypes,
 )
 from flext_web.constants import FlextWebConstants
-from flext_web.settings import FlextWebSettings
+
+# from flext_web.settings import FlextWebSettings  # Removed to fix circular import
 
 _logger = logging.getLogger(__name__)
 
 
-def _get_flext_web_settings() -> type[FlextWebSettings] | None:
+def _get_flext_web_settings() -> type | None:
     """Get FlextWebSettings class if available.
 
     Returns:
         FlextWebSettings class or None if not available
 
     """
-    return FlextWebSettings
+    try:
+        from flext_web.settings import FlextWebSettings
+        return FlextWebSettings
+    except ImportError:
+        return None
 
 
 def _web_settings_available() -> bool:
