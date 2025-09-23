@@ -138,7 +138,7 @@ class FlextWebConfigs:
         )
 
         version: str = Field(
-            default="0.9.0",
+            default=FlextConstants.Core.VERSION,
             description="Application version",
         )
 
@@ -152,7 +152,7 @@ class FlextWebConfigs:
         request_timeout: int = Field(
             default=FlextConstants.Network.DEFAULT_TIMEOUT,  # Using FlextConstants as SOURCE OF TRUTH
             gt=0,
-            le=300,
+            le=FlextConstants.Performance.DEFAULT_TIMEOUT_LIMIT,
             description="Request timeout in seconds",
         )
 
@@ -173,7 +173,7 @@ class FlextWebConfigs:
             host = value.strip()
 
             # Allow localhost and local IPs for development
-            if host in {"localhost", "127.0.0.1"}:
+            if host in {"localhost", FlextConstants.Platform.LOOPBACK_IP}:
                 return host
 
             # For production, require explicit host configuration
@@ -183,7 +183,7 @@ class FlextWebConfigs:
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
                     return host
                 # In production, use localhost instead
-                return "127.0.0.1"
+                return FlextConstants.Platform.LOOPBACK_IP
 
             if not host.replace(".", "").replace("-", "").replace("_", "").isalnum():
                 msg = f"Invalid host address format: {host}"
@@ -300,7 +300,7 @@ class FlextWebConfigs:
 
         def get_server_url(self) -> str:
             """Get the complete server URL."""
-            return f"http://{self.host}:{self.port}"
+            return f"{FlextConstants.Platform.PROTOCOL_HTTP.rstrip('/')}//{self.host}:{self.port}"
 
         def validate_production_settings(
             self,
@@ -487,7 +487,9 @@ class FlextWebConfigs:
             "debug": True,
             "secret_key": "dev-secret-key-change-in-production",
             "app_name": "FLEXT Web",
-            "max_content_length": 16 * 1024 * 1024,
+            "max_content_length": 16
+            * FlextConstants.Utilities.BYTES_PER_KB
+            * FlextConstants.Utilities.BYTES_PER_KB,  # 16MB
             "request_timeout": 30,
             "enable_cors": False,
         }
@@ -558,7 +560,7 @@ class FlextWebConfigs:
         return cls.create_web_config(
             host=os.getenv(
                 "FLEXT_WEB_HOST",
-                "127.0.0.1",  # Use localhost instead of 0.0.0.0 for security
+                FlextConstants.Platform.LOOPBACK_IP,  # Use localhost instead of 0.0.0.0 for security
             ),
             port=int(os.getenv("FLEXT_WEB_PORT", "8080")),
             debug=False,
@@ -656,9 +658,9 @@ class FlextWebConfigs:
             # Create settings using Pydantic model validation
             try:
                 settings_obj = flext_web_settings.model_validate(validated_config)
-                settings_res = FlextResult[FlextWebSettings].ok(settings_obj)
+                settings_res = FlextResult["FlextWebSettings"].ok(settings_obj)
             except Exception as e:
-                settings_res = FlextResult[FlextWebSettings].fail(
+                settings_res = FlextResult["FlextWebSettings"].fail(
                     f"Settings validation failed: {e}",
                 )
             if settings_res.is_failure:

@@ -122,7 +122,7 @@ class FlextWebServices:
                 health_data: FlextWebTypes.HealthResponse = {
                     "status": "healthy",
                     "service": "flext-web",
-                    "version": "0.9.0",
+                    "version": FlextConstants.Core.VERSION,
                     "applications": len(self.apps),
                     "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
                     "service_id": getattr(self, "_id", "unknown"),
@@ -359,7 +359,7 @@ class FlextWebServices:
                         "status": app.status.value,
                     },
                 },
-            ), 201
+            ), FlextConstants.Platform.HTTP_STATUS_CREATED
 
         def _build_error_response(
             self,

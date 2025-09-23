@@ -12,7 +12,7 @@ from collections.abc import ValuesView
 
 import pytest
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextConstants, FlextResult, FlextTypes
 from flext_tests import FlextTestsAsyncs
 from flext_web import FlextWebConfigs, FlextWebModels, FlextWebServices
 
@@ -167,7 +167,7 @@ class TestWebServiceCreateApp:
         response = client.post(
             "/api/v1/apps",
             data="invalid json",
-            content_type="text/plain",
+            content_type=FlextConstants.Platform.MIME_TYPE_PLAIN,
         )
 
         assert response.status_code == 400
@@ -448,7 +448,7 @@ class TestWebServiceFactoryMethods:
         assert result.is_success
         service = result.value
         # Note: 0.0.0.0 gets converted to 127.0.0.1 for security unless FLEXT_DEVELOPMENT_MODE=true
-        assert service.config.host == "127.0.0.1"
+        assert service.config.host == FlextConstants.Platform.LOOPBACK_IP
         assert service.config.port == 9000
         assert service.config.debug is False
 
