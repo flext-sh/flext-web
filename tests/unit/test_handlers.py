@@ -9,8 +9,7 @@ from __future__ import annotations
 import pytest
 from flask import Flask
 
-from flext_web.handlers import FlextWebHandlers
-from flext_web.models import FlextWebModels
+from flext_web import FlextWebHandlers, FlextWebModels
 
 
 class TestFlextWebHandlers:

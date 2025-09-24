@@ -25,8 +25,8 @@ from flext_web import (
     FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
+    FlextWebSettings,
 )
-from flext_web.settings import FlextWebSettings
 
 
 class TestRealEdgeCases:

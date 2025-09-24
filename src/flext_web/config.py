@@ -6,13 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import logging
 import os
 import warnings
-from typing import ClassVar
+from datetime import datetime
+from pathlib import Path
+from typing import Any, ClassVar, Self
 
 from pydantic import (
     Field,
+    SettingsConfigDict,
+    computed_field,
     field_validator,
     model_validator,
 )
@@ -20,14 +23,21 @@ from pydantic import (
 from flext_core import (
     FlextConfig,
     FlextConstants,
+    FlextLogger,
+    FlextModels,
     FlextResult,
-    FlextTypes,
 )
 from flext_web.constants import FlextWebConstants
 
-# from flext_web.settings import FlextWebSettings  # Removed to fix circular import
+_logger = FlextLogger(__name__)
 
-_logger = logging.getLogger(__name__)
+# Import FlextWebSettings at module level to avoid conditional imports
+try:
+    from flext_web.settings import FlextWebSettings
+
+    _FlextWebSettings = FlextWebSettings
+except ImportError:
+    _FlextWebSettings = None
 
 
 def _get_flext_web_settings() -> type | None:
@@ -37,12 +47,7 @@ def _get_flext_web_settings() -> type | None:
         FlextWebSettings class or None if not available
 
     """
-    try:
-        from flext_web.settings import FlextWebSettings
-
-        return FlextWebSettings
-    except ImportError:
-        return None
+    return _FlextWebSettings
 
 
 def _web_settings_available() -> bool:
@@ -60,44 +65,69 @@ _web_settings_available_flag = _web_settings_available()
 
 
 class FlextWebConfigs:
-    """Consolidated FLEXT web configuration system providing all configuration functionality.
+    """Enhanced FLEXT web configuration system providing all configuration functionality.
 
     This is the complete web configuration system for the FLEXT Web ecosystem, providing
     unified configuration patterns built on flext-core foundation with web-specific
     settings and validation. All configuration types are organized as nested classes
-    within this single container for consistent management and easy access.
-
-
+    within this single container for consistent management and easy access with
+    enhanced Pydantic 2.11 features.
     """
 
     # =============================================================================
-    # WEB CONFIGURATION CLASSES
+    # ENHANCED WEB CONFIGURATION CLASSES
     # =============================================================================
 
     class WebConfig(FlextConfig):
-        """Primary web service configuration with environment variable support.
+        """Enhanced web service configuration with Pydantic 2.11 features.
 
         Enterprise-grade configuration class providing comprehensive web service
         settings with environment variable integration, type-safe validation,
-        and security-focused secret management.
+        security-focused secret management, and enhanced Pydantic 2.11 capabilities.
         """
 
-        model_config = FlextConfig.model_config.copy()
-        model_config.update(
-            {
-                "validate_assignment": True,
-                "extra": "allow",
+        model_config = SettingsConfigDict(
+            # Inherit from FlextConfig and enhance with Pydantic 2.11 features
+            env_prefix="FLEXT_WEB_",
+            case_sensitive=False,
+            env_file=".env",
+            env_file_encoding="utf-8",
+            env_nested_delimiter="__",
+            extra="ignore",
+            use_enum_values=True,
+            frozen=False,
+            # Enhanced Pydantic 2.11 features
+            arbitrary_types_allowed=True,
+            validate_return=True,
+            serialize_by_alias=True,
+            populate_by_name=True,
+            ser_json_timedelta="iso8601",
+            ser_json_bytes="base64",
+            str_strip_whitespace=True,
+            defer_build=False,
+            coerce_numbers_to_str=False,
+            validate_default=True,
+            enable_decoding=True,
+            nested_model_default_partial_update=True,
+            cli_parse_args=False,
+            cli_avoid_json=True,
+            # Custom encoders for complex types
+            json_encoders={
+                Path: str,
+                datetime: lambda dt: dt.isoformat(),
             },
         )
 
-        # Web service settings
+        # Enhanced web service settings with comprehensive validation
         host: str = Field(
             default="localhost",
             description="Host address for web service",
+            min_length=1,
+            max_length=255,
         )
 
         port: int = Field(
-            default=FlextConstants.Platform.FLEXT_API_PORT,  # Using FlextConstants as SOURCE OF TRUTH
+            default=FlextConstants.Platform.FLEXT_API_PORT,
             ge=FlextWebConstants.Web.MIN_PORT,
             le=FlextWebConstants.Web.MAX_PORT,
             description="Port number for web service",
@@ -108,24 +138,7 @@ class FlextWebConfigs:
             description="Enable debug mode",
         )
 
-        @field_validator("debug", mode="before")
-        @classmethod
-        def validate_debug(cls, value: object) -> bool:
-            """Validate debug field, converting string values."""
-            if isinstance(value, bool):
-                return value
-            if isinstance(value, str):
-                return value.lower() in {"true", "1", "yes", "on"}
-            # For other types, convert to bool
-            return bool(value)
-
-        @property
-        def debug_bool(self) -> bool:
-            """Get debug value as boolean (guaranteed to be bool after validation)."""
-            # The validator ensures this is always bool, but MyPy needs help understanding this
-            return bool(self.debug)
-
-        secret_key: str = Field(
+        secret_key: str | None = Field(
             default=FlextWebConstants.WebSpecific.DEV_SECRET_KEY,
             min_length=FlextConstants.Validation.MIN_SECRET_KEY_LENGTH,
             description="Flask secret key for sessions",
@@ -134,6 +147,7 @@ class FlextWebConfigs:
         app_name: str = Field(
             default="FLEXT Web",
             min_length=1,
+            max_length=255,
             description="Application name",
         )
 
@@ -142,15 +156,15 @@ class FlextWebConfigs:
             description="Application version",
         )
 
-        # Advanced settings
+        # Enhanced advanced settings
         max_content_length: int = Field(
-            default=FlextConstants.Limits.MAX_FILE_SIZE,  # Using FlextConstants as SOURCE OF TRUTH
+            default=FlextConstants.Limits.MAX_FILE_SIZE,
             gt=0,
             description="Maximum request content length in bytes",
         )
 
         request_timeout: int = Field(
-            default=FlextConstants.Network.DEFAULT_TIMEOUT,  # Using FlextConstants as SOURCE OF TRUTH
+            default=FlextConstants.Network.DEFAULT_TIMEOUT,
             gt=0,
             le=FlextConstants.Performance.DEFAULT_TIMEOUT_LIMIT,
             description="Request timeout in seconds",
@@ -161,23 +175,83 @@ class FlextWebConfigs:
             description="Enable CORS support",
         )
 
+        cors_origins: list[str] = Field(
+            default_factory=list,
+            description="CORS allowed origins",
+        )
+
+        # Enhanced SSL/TLS configuration
+        ssl_enabled: bool = Field(
+            default=False,
+            description="Enable SSL/TLS",
+        )
+
+        ssl_cert_path: str | None = Field(
+            default=None,
+            description="SSL certificate file path",
+        )
+
+        ssl_key_path: str | None = Field(
+            default=None,
+            description="SSL private key file path",
+        )
+
+        # Enhanced security settings
+        session_cookie_secure: bool = Field(
+            default=False,
+            description="Secure session cookies",
+        )
+
+        session_cookie_httponly: bool = Field(
+            default=True,
+            description="HTTP-only session cookies",
+        )
+
+        session_cookie_samesite: str = Field(
+            default="Lax",
+            description="SameSite attribute for session cookies",
+        )
+
+        # Enhanced logging configuration
+        log_level: str = Field(
+            default=FlextConstants.Logging.DEFAULT_LEVEL,
+            description="Logging level",
+        )
+
+        log_format: str = Field(
+            default=FlextConstants.Logging.DEFAULT_FORMAT,
+            description="Log message format",
+        )
+
+        # Enhanced validation methods with Pydantic 2.11 features
+        @field_validator("debug", mode="before")
+        @classmethod
+        def validate_debug(cls, value: object) -> bool:
+            """Enhanced debug field validation with comprehensive type conversion."""
+            if isinstance(value, bool):
+                return value
+            if isinstance(value, str):
+                return value.lower() in {"true", "1", "yes", "on", "enabled"}
+            if isinstance(value, int):
+                return bool(value)
+            # For other types, convert to bool
+            return bool(value)
+
         @field_validator("host")
         @classmethod
         def validate_host(cls, value: str) -> str:
-            """Validate host address format."""
+            """Enhanced host address validation with security checks."""
             if not value or not value.strip():
                 msg = "Host address cannot be empty"
                 raise ValueError(msg)
 
-            # Basic host validation - allow localhost, IP addresses, and domain names
             host = value.strip()
 
             # Allow localhost and local IPs for development
             if host in {"localhost", FlextConstants.Platform.LOOPBACK_IP}:
                 return host
 
-            # For production, require explicit host configuration
-            # Replace binding to all interfaces with localhost for security
+            # Security validation for production
             if host == FlextWebConstants.WebSpecific.ALL_INTERFACES:
                 # Only allow 0.0.0.0 in development mode
                 if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
@@ -185,16 +259,21 @@ class FlextWebConfigs:
                 # In production, use localhost instead
                 return FlextConstants.Platform.LOOPBACK_IP
 
-            if not host.replace(".", "").replace("-", "").replace("_", "").isalnum():
-                msg = f"Invalid host address format: {host}"
-                raise ValueError(msg)
+            # Use flext-core validation
+            result = FlextModels.Validation.validate_hostname(host)
+            if result.is_failure:
+                raise ValueError(result.error)
 
-            return host
+            return result.unwrap()
 
         @field_validator("secret_key")
         @classmethod
-        def validate_secret_key(cls, value: str) -> str:
-            """Validate secret key strength."""
+        def validate_secret_key(cls, value: str | None) -> str:
+            """Enhanced secret key validation with security checks."""
+            if value is None:
+                msg = "Secret key cannot be None"
+                raise ValueError(msg)
+
             if len(value) < FlextConstants.Validation.MIN_SECRET_KEY_LENGTH:
                 msg = f"Secret key must be at least {FlextConstants.Validation.MIN_SECRET_KEY_LENGTH} characters long"
                 raise ValueError(msg)
@@ -207,12 +286,17 @@ class FlextWebConfigs:
                 msg = "Must change default secret key for production"
                 raise ValueError(msg)
 
+            # Additional security checks
+            if value.lower() in {"password", "secret", "key", "123456", "REDACTED_LDAP_BIND_PASSWORD"}:
+                msg = "Secret key is too weak"
+                raise ValueError(msg)
+
             return value
 
         @field_validator("port")
         @classmethod
         def validate_port(cls, value: int) -> int:
-            """Validate port number and check for system reserved ports."""
+            """Enhanced port validation with security checks."""
             min_port = FlextWebConstants.Web.MIN_PORT
             max_port = FlextWebConstants.Web.MAX_PORT
             if not (min_port <= value <= max_port):
@@ -221,7 +305,6 @@ class FlextWebConfigs:
 
             # Warn about system reserved ports (1-1023) but allow them
             if value <= FlextWebConstants.WebSpecific.SYSTEM_PORTS_THRESHOLD:
-                # Note: In production, this might require special permissions
                 warnings.warn(
                     f"Using system reserved port {value}. May require special permissions in production.",
                     UserWarning,
@@ -230,88 +313,123 @@ class FlextWebConfigs:
 
             return value
 
-        @model_validator(mode="before")
+        @field_validator("cors_origins")
         @classmethod
-        def load_from_env(cls, values: FlextTypes.Core.Dict) -> FlextTypes.Core.Dict:
-            """Load configuration from environment variables with proper validation."""
-            # Only load from env if not explicitly provided
-            # Convert to set for more reliable membership testing
-            provided_fields = set(values.keys())
+        def validate_cors_origins(cls, v: list[str]) -> list[str]:
+            """Validate CORS origins with comprehensive URL validation."""
+            if not v:
+                return []
 
-            env_mapping = {
-                "host": ("FLEXT_WEB_HOST", str),
-                "port": ("FLEXT_WEB_PORT", int),
-                "debug": ("FLEXT_WEB_DEBUG", bool),
-                "secret_key": ("FLEXT_WEB_SECRET_KEY", str),
-                "app_name": ("FLEXT_WEB_APP_NAME", str),
-                "max_content_length": ("FLEXT_WEB_MAX_CONTENT_LENGTH", int),
-                "request_timeout": ("FLEXT_WEB_REQUEST_TIMEOUT", int),
-                "enable_cors": ("FLEXT_WEB_ENABLE_CORS", bool),
-            }
+            validated_origins: list[str] = []
+            for origin in v:
+                if origin == "*":
+                    validated_origins.append(origin)
+                else:
+                    # Validate URL format
+                    result = FlextModels.create_validated_url(origin)
+                    if result.is_failure:
+                        error_msg = f"Invalid CORS origin: {origin}"
+                        raise ValueError(error_msg)
+                    validated_origins.append(result.unwrap())
+            return validated_origins
 
-            for field_name, (env_var, field_type) in env_mapping.items():
-                # Skip if field was explicitly provided
-                if field_name in provided_fields:
-                    continue
-                # Only load from env if env var exists
-                if env_var in os.environ:
-                    env_value = os.environ[env_var]
-                    try:
-                        if field_type is int:
-                            values[field_name] = int(env_value)
-                        elif field_type is bool:
-                            if env_value.lower() not in {"true", "false"}:
-                                msg = f"Boolean must be 'true' or 'false', got '{env_value}'"
-                                raise ValueError(msg)
-                            values[field_name] = env_value.lower() == "true"
-                        else:  # str
-                            values[field_name] = env_value
-                    except ValueError as e:
-                        msg = f"Invalid {field_type.__name__} value for {env_var}: {env_value}"
-                        raise ValueError(msg) from e
-
-            return values
-
-        def model_post_init(self, __context: object, /) -> None:
-            """Post-init hook to set up configuration."""
-            # Initialize configuration state
-            self._initialized = True
-
+        @field_validator("session_cookie_samesite")
         @classmethod
-        def _is_development_env(cls) -> bool:
-            """Check if running in development environment (class method for validators)."""
-            env = os.getenv("FLEXT_WEB_ENVIRONMENT", "development").lower()
-            return env in {"development", "dev", "local"}
+        def validate_samesite(cls, v: str) -> str:
+            """Validate SameSite attribute."""
+            valid_values = {"Strict", "Lax", "None"}
+            if v not in valid_values:
+                msg = f"Invalid SameSite value: {v}. Valid values: {valid_values}"
+                raise ValueError(msg)
+            return v
 
-        def _is_development(self) -> bool:
-            """Check if running in development environment."""
-            env = os.getenv("FLEXT_WEB_ENVIRONMENT", "development").lower()
-            env_is_dev = env in {"development", "dev", "local"}
-            # If environment suggests production but debug is True, consider it development
-            # If environment suggests development but debug is False, check other indicators
-            if env_is_dev and not self.debug_bool:
-                # Environment says dev but debug=False, check other production indicators
-                return self.secret_key == FlextWebConstants.WebSpecific.DEV_SECRET_KEY
-            return env_is_dev or self.debug_bool
+        @field_validator("log_level")
+        @classmethod
+        def validate_log_level(cls, v: str) -> str:
+            """Validate log level."""
+            valid_levels = FlextConstants.Logging.VALID_LEVELS
+            if v.upper() not in valid_levels:
+                msg = f"Invalid log level: {v}. Valid levels: {valid_levels}"
+                raise ValueError(msg)
+            return v.upper()
 
+        @model_validator(mode="after")
+        def validate_ssl_config(self) -> Self:
+            """Validate SSL configuration."""
+            if self.ssl_enabled:
+                if not self.ssl_cert_path or not self.ssl_key_path:
+                    msg = (
+                        "SSL certificate and key paths are required when SSL is enabled"
+                    )
+                    raise ValueError(msg)
+
+                # Validate file paths exist
+                if not Path(self.ssl_cert_path).exists():
+                    msg = f"SSL certificate file not found: {self.ssl_cert_path}"
+                    raise ValueError(msg)
+
+                if not Path(self.ssl_key_path).exists():
+                    msg = f"SSL key file not found: {self.ssl_key_path}"
+                    raise ValueError(msg)
+
+            return self
+
+        @model_validator(mode="after")
+        def validate_security_settings(self) -> Self:
+            """Validate security-related settings."""
+            # SSL and cookie security consistency
+            if self.ssl_enabled and not self.session_cookie_secure:
+                warnings.warn(
+                    "SSL is enabled but session cookies are not marked as secure",
+                    UserWarning,
+                    stacklevel=2,
+                )
+
+            # CORS and SSL consistency
+            if self.enable_cors and self.ssl_enabled:
+                for origin in self.cors_origins:
+                    if origin != "*" and not origin.startswith("https://"):
+                        warnings.warn(
+                            f"CORS origin {origin} should use HTTPS when SSL is enabled",
+                            UserWarning,
+                            stacklevel=2,
+                        )
+
+            return self
+
+        # Enhanced computed fields
+        @computed_field
+        def debug_bool(self) -> bool:
+            """Get debug value as boolean (guaranteed to be bool after validation)."""
+            return bool(self.debug)
+
+        @computed_field
+        def protocol(self) -> str:
+            """Get protocol based on SSL configuration."""
+            return "https" if self.ssl_enabled else "http"
+
+        @computed_field
+        def base_url(self) -> str:
+            """Get base URL."""
+            return f"{self.protocol}://{self.host}:{self.port}"
+
+        @computed_field
+        def is_development(self) -> bool:
+            """Check if running in development mode."""
+            return self.debug_bool or self._is_development_env()
+
+        @computed_field
         def is_production(self) -> bool:
-            """Check if running in production environment."""
-            return not self._is_development()
+            """Check if running in production mode."""
+            return not self.is_development
 
-        def get_server_url(self) -> str:
-            """Get the complete server URL."""
-            return f"{FlextConstants.Platform.PROTOCOL_HTTP.rstrip('/')}//{self.host}:{self.port}"
-
-        def validate_production_settings(
-            self,
-        ) -> FlextResult[None]:
-            """Validate production-specific configuration settings."""
+        # Enhanced validation methods
+        def validate_production_settings(self) -> FlextResult[None]:
+            """Enhanced production-specific configuration validation."""
             try:
-                # Log production validation start
+                errors: list[str] = []
 
-                errors: FlextTypes.Core.StringList = []
-
-                # Production-specific validations only
+                # Production-specific validations
                 if self.debug_bool:
                     errors.append("Debug mode must be disabled in production")
 
@@ -321,61 +439,74 @@ class FlextWebConfigs:
                 if self.host == "localhost":
                     errors.append("Host should not be 'localhost' in production")
 
+                if self.enable_cors and "*" in self.cors_origins:
+                    errors.append(
+                        "Wildcard CORS origin should not be used in production"
+                    )
+
+                if not self.ssl_enabled:
+                    errors.append("SSL should be enabled in production")
+
+                if not self.session_cookie_secure:
+                    errors.append("Session cookies should be secure in production")
+
                 # Security validations
                 min_key_len = FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
-                if len(self.secret_key) < min_key_len:
+                if self.secret_key and len(self.secret_key) < min_key_len:
                     errors.append(
-                        f"Secret key must be at least {min_key_len} characters",
+                        f"Secret key must be at least {min_key_len} characters"
                     )
 
                 if errors:
-                    # Log production validation failure
                     return FlextResult[None].fail(
-                        f"Production configuration validation failed: {'; '.join(errors)}",
+                        f"Production configuration validation failed: {'; '.join(errors)}"
                     )
 
-                # Log production validation success
                 return FlextResult[None].ok(None)
 
             except Exception as e:
                 return FlextResult[None].fail(f"Production validation error: {e}")
 
         def validate_config(self) -> FlextResult[None]:
-            """Validate complete configuration for consistency and security."""
+            """Enhanced complete configuration validation."""
             try:
-                errors: FlextTypes.Core.StringList = []
+                errors: list[str] = []
 
-                # Production-specific validations
-                if not self._is_development():
-                    if self.debug_bool:
-                        errors.append("Debug mode must be disabled in production")
-
-                    if self.secret_key == FlextWebConstants.WebSpecific.DEV_SECRET_KEY:
+                # Environment-specific validations
+                if not self.is_development:
+                    prod_result = self.validate_production_settings()
+                    if prod_result.is_failure:
                         errors.append(
-                            "Default secret key must be changed for production",
+                            prod_result.error or "Production validation failed"
                         )
-
-                    if self.host == "localhost":
-                        errors.append("Host should not be 'localhost' in production")
-
-                # Security validations
-                min_key_len = FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
-                if len(self.secret_key) < min_key_len:
-                    errors.append(
-                        f"Secret key must be at least {min_key_len} characters",
-                    )
 
                 # Network validations
                 min_port = FlextWebConstants.Web.MIN_PORT
                 max_port = FlextWebConstants.Web.MAX_PORT
                 if self.port < min_port or self.port > max_port:
                     errors.append(
-                        f"Port must be in valid range ({min_port}-{max_port})",
+                        f"Port must be in valid range ({min_port}-{max_port})"
+                    )
+
+                # Security validations
+                if (
+                    self.secret_key
+                    and len(self.secret_key)
+                    < FlextConstants.Validation.MIN_SECRET_KEY_LENGTH
+                ):
+                    errors.append("Secret key is too short")
+
+                # SSL validations - combine nested if statements
+                if self.ssl_enabled and (
+                    not self.ssl_cert_path or not self.ssl_key_path
+                ):
+                    errors.append(
+                        "SSL certificate and key paths are required when SSL is enabled"
                     )
 
                 if errors:
                     return FlextResult[None].fail(
-                        f"Configuration validation failed: {'; '.join(errors)}",
+                        f"Configuration validation failed: {'; '.join(errors)}"
                     )
 
                 return FlextResult[None].ok(None)
@@ -383,17 +514,13 @@ class FlextWebConfigs:
             except Exception as e:
                 return FlextResult[None].fail(f"Configuration validation error: {e}")
 
-        # =============================================================================
-        # FLEXT CONFIG METHODS - Inherited and specialized
-        # =============================================================================
-
         def validate_business_rules(self) -> FlextResult[None]:
-            """Validate web-specific business rules."""
+            """Enhanced web-specific business rules validation."""
             try:
-                # Validate production constraints - only block 'localhost', 127.0.0.1 is valid for containers
+                # Validate production constraints
                 if not self.debug_bool and self.host == "localhost":
                     return FlextResult[None].fail(
-                        "Production mode cannot use 'localhost' binding, use specific IP address",
+                        "Production mode cannot use 'localhost' binding, use specific IP address"
                     )
 
                 # Validate secret key strength in production
@@ -402,14 +529,22 @@ class FlextWebConfigs:
                     and self.secret_key == FlextWebConstants.WebSpecific.DEV_SECRET_KEY
                 ):
                     return FlextResult[None].fail(
-                        "Production mode cannot use development secret key",
+                        "Production mode cannot use development secret key"
                     )
 
                 # Validate CORS settings
-                if self.enable_cors and not self.debug_bool:
+                if (
+                    self.enable_cors
+                    and not self.debug_bool
+                    and "*" in self.cors_origins
+                ):
                     return FlextResult[None].fail(
-                        "CORS should be disabled in production for security",
+                        "Wildcard CORS should be disabled in production for security"
                     )
+
+                # Validate SSL requirements
+                if not self.debug_bool and not self.ssl_enabled:
+                    return FlextResult[None].fail("SSL should be enabled in production")
 
                 return FlextResult[None].ok(None)
 
@@ -417,39 +552,17 @@ class FlextWebConfigs:
                 return FlextResult[None].fail(f"Business rules validation error: {e}")
 
         @classmethod
-        def create_with_validation(
-            cls,
-            overrides: FlextTypes.Core.Dict | None = None,
-            **kwargs: object,
-        ) -> FlextResult[FlextWebConfigs.WebConfig]:
-            """Create WebConfig instance with validation and proper override handling."""
-            try:
-                # Prepare overrides dict
-                all_overrides: FlextTypes.Core.Dict = {}
-                if overrides:
-                    all_overrides.update(overrides)
-                all_overrides.update(kwargs)
+        def _is_development_env(cls) -> bool:
+            """Check if running in development environment."""
+            env = os.getenv("FLEXT_WEB_ENVIRONMENT", "development").lower()
+            return env in {"development", "dev", "local"}
 
-                # Create instance with overrides using ternary operator
-                # Use model_validate to safely handle FlextTypes.Core.Dict -> Pydantic model
-                instance = cls.model_validate(all_overrides) if all_overrides else cls()
+        def get_server_url(self) -> str:
+            """Get the complete server URL."""
+            return f"{self.protocol}://{self.host}:{self.port}"
 
-                # Validate business rules
-                validation_result = instance.validate_business_rules()
-                if validation_result.is_failure:
-                    return FlextResult["FlextWebConfigs.WebConfig"].fail(
-                        f"Business rules validation failed: {validation_result.error}",
-                    )
-
-                return FlextResult["FlextWebConfigs.WebConfig"].ok(instance)
-
-            except Exception as e:
-                return FlextResult["FlextWebConfigs.WebConfig"].fail(
-                    f"Configuration creation failed: {e}",
-                )
-
-        def get_config_summary(self) -> FlextTypes.Core.Dict:
-            """Get configuration summary for logging and debugging."""
+        def get_config_summary(self) -> dict[str, Any]:
+            """Get enhanced configuration summary."""
             return {
                 "host": self.host,
                 "port": self.port,
@@ -457,41 +570,87 @@ class FlextWebConfigs:
                 "app_name": self.app_name,
                 "version": self.version,
                 "enable_cors": self.enable_cors,
+                "cors_origins": self.cors_origins,
+                "ssl_enabled": self.ssl_enabled,
+                "protocol": self.protocol,
+                "base_url": self.base_url,
                 "max_content_length": self.max_content_length,
                 "request_timeout": self.request_timeout,
+                "session_cookie_secure": self.session_cookie_secure,
+                "session_cookie_httponly": self.session_cookie_httponly,
+                "session_cookie_samesite": self.session_cookie_samesite,
+                "log_level": self.log_level,
+                "is_development": self.is_development,
+                "is_production": self.is_production,
             }
 
-        def is_development(self) -> bool:
-            """Check if running in development mode."""
-            return self.debug_bool
+        @classmethod
+        def create_with_validation(
+            cls,
+            overrides: dict[str, str | int | bool | list[str] | None] | None = None,
+            **kwargs: str | int | bool | list[str] | None,
+        ) -> FlextResult[FlextWebConfigs.WebConfig]:
+            """Enhanced WebConfig creation with comprehensive validation."""
+            try:
+                # Prepare overrides dict
+                all_overrides: dict[str, str | int | bool | list[str] | None] = {}
+                if overrides:
+                    all_overrides.update(overrides)
+                all_overrides.update(kwargs)
+
+                # Create instance with overrides
+                instance = cls.model_validate(all_overrides) if all_overrides else cls()
+
+                # Validate business rules
+                validation_result = instance.validate_business_rules()
+                if validation_result.is_failure:
+                    return FlextResult[FlextWebConfigs.WebConfig].fail(
+                        f"Business rules validation failed: {validation_result.error}"
+                    )
+
+                # Validate complete configuration
+                config_result = instance.validate_config()
+                if config_result.is_failure:
+                    return FlextResult[FlextWebConfigs.WebConfig].fail(
+                        f"Configuration validation failed: {config_result.error}"
+                    )
+
+                return FlextResult[FlextWebConfigs.WebConfig].ok(instance)
+
+            except Exception as e:
+                return FlextResult[FlextWebConfigs.WebConfig].fail(
+                    f"Configuration creation failed: {e}"
+                )
 
     # =============================================================================
-    # FACTORY METHODS AND UTILITIES
+    # ENHANCED FACTORY METHODS AND UTILITIES
     # =============================================================================
 
     @classmethod
-    def _create_config_builder(cls, **overrides: object) -> FlextTypes.Core.Dict:
-        """Advanced Builder pattern for configuration construction.
-
-        Reduces complexity from 61 to ~20 by eliminating repetitive type checking
-        and using functional composition with Python 3.13 features.
-
-        Returns:
-            FlextTypes.Core.Dict:: Description of return value.
-
-        """
-        # Configuration schema with defaults
+    def _create_config_builder(
+        cls, **overrides: str | int | bool | list[str] | None
+    ) -> dict[str, str | int | bool | list[str] | None]:
+        """Enhanced Builder pattern for configuration construction."""
+        # Enhanced configuration schema with comprehensive defaults
         config_schema = {
             "host": "localhost",
-            "port": 8080,
+            "port": FlextWebConstants.Web.DEFAULT_PORT,
             "debug": True,
-            "secret_key": "dev-secret-key-change-in-production",
+            "secret_key": FlextWebConstants.WebSpecific.DEV_SECRET_KEY,
             "app_name": "FLEXT Web",
-            "max_content_length": 16
-            * FlextConstants.Utilities.BYTES_PER_KB
-            * FlextConstants.Utilities.BYTES_PER_KB,  # 16MB
-            "request_timeout": 30,
+            "version": FlextConstants.Core.VERSION,
+            "max_content_length": FlextConstants.Limits.MAX_FILE_SIZE,
+            "request_timeout": FlextConstants.Network.DEFAULT_TIMEOUT,
             "enable_cors": False,
+            "cors_origins": [],
+            "ssl_enabled": False,
+            "ssl_cert_path": None,
+            "ssl_key_path": None,
+            "session_cookie_secure": False,
+            "session_cookie_httponly": True,
+            "session_cookie_samesite": "Lax",
+            "log_level": FlextConstants.Logging.DEFAULT_LEVEL,
+            "log_format": FlextConstants.Logging.DEFAULT_FORMAT,
         }
 
         # Build configuration using overrides
@@ -500,248 +659,110 @@ class FlextWebConfigs:
         }
 
     @classmethod
-    def _validate_and_finalize_config(
-        cls,
-        config: FlextWebConfigs.WebConfig,
-        _factory_method: str,
-        *,
-        _has_overrides: bool,
-    ) -> FlextResult[FlextWebConfigs.WebConfig]:
-        """Finalize configuration with validation and logging."""
-        # Validate configuration
-        validation_result = config.validate_config()
-        if validation_result.is_failure:
-            return FlextResult[FlextWebConfigs.WebConfig].fail(
-                f"Configuration validation failed: {validation_result.error}",
-            )
-
-        # Log successful creation
-        # Log web config creation
-
-        return FlextResult[FlextWebConfigs.WebConfig].ok(config)
-
-    @classmethod
     def create_web_config(
         cls,
-        **overrides: object,
+        **overrides: str | int | bool | list[str] | None,
     ) -> FlextResult[FlextWebConfigs.WebConfig]:
-        """Create web configuration instance with optional overrides using FlextConfig patterns."""
+        """Enhanced web configuration creation with comprehensive validation."""
         try:
-            # Use FlextConfig's create_with_validation method
             return FlextWebConfigs.WebConfig.create_with_validation(
-                overrides=dict(overrides),
+                overrides=dict(overrides)
             )
-
         except Exception as e:
-            return FlextResult[FlextWebConfigs.WebConfig].fail(
-                f"Configuration creation failed: {e}",
-            )
+            return FlextResult.fail(f"Configuration creation failed: {e}")
 
-    # Consolidated factory methods using aliases - reduces duplication
     @classmethod
     def create_development_config(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
-        """Create development configuration."""
+        """Create enhanced development configuration."""
         return cls.create_web_config(
             host="localhost",
-            port=8080,
+            port=FlextWebConstants.Web.DEFAULT_PORT,
             debug=True,
             secret_key=FlextWebConstants.WebSpecific.DEV_ENVIRONMENT_KEY,
             enable_cors=True,
+            cors_origins=["*"],
+            ssl_enabled=False,
+            session_cookie_secure=False,
+            log_level=FlextConstants.Logging.DEBUG,
         )
 
     @classmethod
     def create_production_config(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
-        """Create production configuration."""
+        """Create enhanced production configuration."""
         secret_key = os.getenv("FLEXT_WEB_SECRET_KEY")
         if not secret_key:
-            return FlextResult[FlextWebConfigs.WebConfig].fail(
-                "FLEXT_WEB_SECRET_KEY required for production",
-            )
+            return FlextResult.fail("FLEXT_WEB_SECRET_KEY required for production")
+
+        ssl_cert = os.getenv("FLEXT_WEB_SSL_CERT_PATH")
+        ssl_key = os.getenv("FLEXT_WEB_SSL_KEY_PATH")
+
         return cls.create_web_config(
-            host=os.getenv(
-                "FLEXT_WEB_HOST",
-                FlextConstants.Platform.LOOPBACK_IP,  # Use localhost instead of 0.0.0.0 for security
+            host=os.getenv("FLEXT_WEB_HOST", FlextConstants.Platform.LOOPBACK_IP),
+            port=int(
+                os.getenv("FLEXT_WEB_PORT", str(FlextWebConstants.Web.DEFAULT_PORT))
             ),
-            port=int(os.getenv("FLEXT_WEB_PORT", "8080")),
             debug=False,
             secret_key=secret_key,
             enable_cors=False,
+            cors_origins=[],
+            ssl_enabled=bool(ssl_cert and ssl_key),
+            ssl_cert_path=ssl_cert,
+            ssl_key_path=ssl_key,
+            session_cookie_secure=True,
+            session_cookie_httponly=True,
+            session_cookie_samesite="Strict",
+            log_level=FlextConstants.Logging.WARNING,
         )
 
     @classmethod
     def create_test_config(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
-        """Create test configuration."""
+        """Create enhanced test configuration."""
         return cls.create_web_config(
             host="localhost",
-            port=0,
+            port=0,  # Let OS assign port
             debug=False,
             secret_key=FlextWebConstants.WebSpecific.TEST_ENVIRONMENT_KEY,
+            enable_cors=True,
+            cors_origins=["*"],
+            ssl_enabled=False,
             request_timeout=5,
+            log_level=FlextConstants.Logging.INFO,
         )
 
     @classmethod
     def validate_web_config(
-        cls,
-        config: FlextWebConfigs.WebConfig,
+        cls, config: FlextWebConfigs.WebConfig
     ) -> FlextResult[None]:
         """Validate web configuration instance."""
         return config.validate_config()
 
     @classmethod
     def create_config_from_env(cls) -> FlextResult[FlextWebConfigs.WebConfig]:
-        """Create configuration from environment variables."""
-        flext_web_settings = _get_flext_web_settings()
-        if not _web_settings_available_flag or flext_web_settings is None:
-            return FlextResult[FlextWebConfigs.WebConfig].fail(
-                "FlextWebSettings not available - import failed",
-            )
-
+        """Create enhanced configuration from environment variables."""
         try:
-            # Use FlextWebSettings to load from environment
-            settings = flext_web_settings()
-            config_result = settings.to_config()
-            if config_result.is_failure:
-                return FlextResult[FlextWebConfigs.WebConfig].fail(
-                    config_result.error or "Unknown error",
+            # Create configuration from environment
+            config = cls.WebConfig()
+
+            # Validate the configuration
+            validation_result = config.validate_config()
+            if validation_result.is_failure:
+                return FlextResult.fail(
+                    f"Environment configuration validation failed: {validation_result.error}"
                 )
 
-            # Type narrowing for config_result.unwrap()
-            config_obj = config_result.unwrap()
-            if not isinstance(config_obj, cls.WebConfig):
-                return FlextResult[FlextWebConfigs.WebConfig].fail(
-                    "Invalid config object type returned from settings",
-                )
-
-            return FlextResult[FlextWebConfigs.WebConfig].ok(config_obj)
+            return FlextResult.ok(config)
         except Exception as e:
-            return FlextResult[FlextWebConfigs.WebConfig].fail(
-                f"Failed to load config from environment: {e}",
-            )
+            return FlextResult.fail(f"Failed to load config from environment: {e}")
 
     # =============================================================================
-    # FLEXT WEB CONFIGS CONFIGURATION METHODS
-    # =============================================================================
-
-    @classmethod
-    def configure_web_configs_system(
-        cls,
-        config: FlextTypes.Core.Dict,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
-        """Configure web configurations system using FlextWebTypes.ConfigDict with validation."""
-        try:
-            validated_config = dict(config)
-
-            # Validate environment using flext-core enums first
-            if "environment" in config:
-                env_value = config["environment"]
-                valid_environments = [
-                    e.value for e in FlextConstants.Environment.ConfigEnvironment
-                ]
-                if env_value not in valid_environments:
-                    return FlextResult[FlextTypes.Core.Dict].fail(
-                        f"Invalid environment '{env_value}'. Valid options: {valid_environments}",
-                    )
-            else:
-                validated_config["environment"] = (
-                    FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value
-                )
-
-            # Core validation completed successfully
-
-            # Get FlextWebSettings class
-            flext_web_settings = _get_flext_web_settings()
-            if not _web_settings_available_flag or flext_web_settings is None:
-                return FlextResult[FlextTypes.Core.Dict].fail(
-                    "FlextWebSettings not available - import failed",
-                )
-
-            # Create settings using Pydantic model validation
-            try:
-                settings_obj = flext_web_settings.model_validate(validated_config)
-                settings_res = FlextResult["FlextWebSettings"].ok(settings_obj)
-            except Exception as e:
-                settings_res = FlextResult["FlextWebSettings"].fail(
-                    f"Settings validation failed: {e}",
-                )
-            if settings_res.is_failure:
-                return FlextResult[FlextTypes.Core.Dict].fail(
-                    settings_res.error or "Failed to build WebSettings",
-                )
-            cfg_res = settings_res.value.to_config()
-            if cfg_res.is_failure:
-                return FlextResult[FlextTypes.Core.Dict].fail(
-                    cfg_res.error or "Failed to validate WebConfig",
-                )
-
-            # Type narrowing for cfg_res.value
-            config_obj = cfg_res.value
-            if not isinstance(config_obj, cls.WebConfig):
-                return FlextResult[FlextTypes.Core.Dict].fail(
-                    "Invalid config object type returned",
-                )
-            validated_config = config_obj.model_dump()
-
-            # Web configs specific settings
-            validated_config.setdefault("enable_environment_validation", True)
-            validated_config.setdefault("enable_secret_validation", True)
-            validated_config.setdefault("require_production_secrets", True)
-            validated_config.setdefault("enable_config_caching", False)
-
-            return FlextResult[FlextTypes.Core.Dict].ok(validated_config)
-
-        except Exception as e:
-            return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to configure web configs system: {e}",
-            )
-
-    @classmethod
-    def get_web_configs_system_config(
-        cls,
-    ) -> FlextResult[FlextTypes.Core.Dict]:
-        """Get current web configurations system configuration with runtime information."""
-        try:
-            config: FlextTypes.Core.Dict = {
-                # Environment configuration
-                "environment": FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value,
-                "log_level": FlextConstants.Config.LogLevel.INFO,
-                # Web configs specific settings
-                "enable_environment_validation": True,
-                "enable_secret_validation": True,
-                "require_production_secrets": True,
-                "enable_config_caching": False,
-                # Available configuration types
-                "available_configs": [
-                    "WebConfig",
-                ],
-                "available_factories": [
-                    "create_web_config",
-                    "create_development_config",
-                    "create_production_config",
-                    "create_test_config",
-                    "create_config_from_env",
-                ],
-                # Runtime metrics
-                "active_configurations": 0,
-                "validation_success_rate": 100.0,
-                "environment_variable_usage": 0,
-            }
-
-            return FlextResult[FlextTypes.Core.Dict].ok(config)
-
-        except Exception as e:
-            return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to get web configs system config: {e}",
-            )
-
-    # =============================================================================
-    # SINGLETON SETTINGS METHODS
+    # ENHANCED SINGLETON SETTINGS METHODS
     # =============================================================================
 
     _web_settings_instance: ClassVar[FlextWebConfigs.WebConfig | None] = None
 
     @classmethod
     def get_web_settings(cls) -> FlextWebConfigs.WebConfig:
-        """Get singleton web settings instance."""
+        """Get enhanced singleton web settings instance."""
         if cls._web_settings_instance is None:
             # Create default settings from environment
             config_result = cls.create_config_from_env()
@@ -763,12 +784,12 @@ class FlextWebConfigs:
         cls._web_settings_instance = None
 
     @classmethod
-    def create_web_system_configs(cls) -> FlextResult[FlextTypes.Core.Dict]:
-        """Create complete web system configurations."""
+    def create_web_system_configs(cls) -> FlextResult[dict[str, Any]]:
+        """Create enhanced complete web system configurations."""
         try:
             web_config_result = cls.get_web_settings()
 
-            system_configs = {
+            system_configs: dict[str, Any] = {
                 "web_config": web_config_result,
                 "system_info": {
                     "version": web_config_result.version,
@@ -777,30 +798,40 @@ class FlextWebConfigs:
                     else "production",
                     "host": web_config_result.host,
                     "port": web_config_result.port,
+                    "protocol": web_config_result.protocol,
+                    "base_url": web_config_result.base_url,
                 },
                 "feature_flags": {
                     "enable_cors": web_config_result.enable_cors,
                     "debug_mode": web_config_result.debug,
+                    "ssl_enabled": web_config_result.ssl_enabled,
+                },
+                "security_settings": {
+                    "session_cookie_secure": web_config_result.session_cookie_secure,
+                    "session_cookie_httponly": web_config_result.session_cookie_httponly,
+                    "session_cookie_samesite": web_config_result.session_cookie_samesite,
+                },
+                "performance_settings": {
+                    "max_content_length": web_config_result.max_content_length,
+                    "request_timeout": web_config_result.request_timeout,
                 },
             }
 
-            return FlextResult[FlextTypes.Core.Dict].ok(system_configs)
+            return FlextResult.ok(system_configs)
 
         except Exception as e:
-            return FlextResult[FlextTypes.Core.Dict].fail(
-                f"Failed to create web system configs: {e}",
-            )
+            return FlextResult.fail(f"Failed to create web system configs: {e}")
 
     @classmethod
     def merge_web_config(
         cls,
         base_config: FlextWebConfigs.WebConfig,
-        overrides: FlextTypes.Core.Dict,
+        overrides: dict[str, Any],
     ) -> FlextResult[FlextWebConfigs.WebConfig]:
-        """Merge web config with override data."""
+        """Enhanced web config merging with validation."""
         try:
             # Get current config as dict
-            config_dict = base_config.model_dump()
+            config_dict: dict[str, Any] = base_config.model_dump()
 
             # Apply overrides
             config_dict.update(overrides)
@@ -808,12 +839,17 @@ class FlextWebConfigs:
             # Create new config with merged data
             merged_config = cls.WebConfig.model_validate(config_dict)
 
-            return FlextResult[FlextWebConfigs.WebConfig].ok(merged_config)
+            # Validate the merged configuration
+            validation_result = merged_config.validate_config()
+            if validation_result.is_failure:
+                return FlextResult.fail(
+                    f"Merged configuration validation failed: {validation_result.error}"
+                )
+
+            return FlextResult.ok(merged_config)
 
         except Exception as e:
-            return FlextResult[FlextWebConfigs.WebConfig].fail(
-                f"Failed to merge web config: {e}",
-            )
+            return FlextResult.fail(f"Failed to merge web config: {e}")
 
 
 __all__ = [

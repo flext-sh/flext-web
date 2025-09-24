@@ -13,18 +13,15 @@ from __future__ import annotations
 import os
 import subprocess  # nosec S404
 import sys
-from typing import TYPE_CHECKING
+from subprocess import CompletedProcess
 
 import pytest
 
 from flext_web import (
     FlextWebConfigs,
+    FlextWebSettings,
     __main__ as main_module,
 )
-from flext_web.settings import FlextWebSettings
-
-if TYPE_CHECKING:
-    from subprocess import CompletedProcess  # nosec S404
 
 
 class TestRealMainEntry:

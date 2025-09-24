@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_web.exceptions import FlextWebExceptions
+from flext_web import FlextWebExceptions
 
 # Use nested classes from FlextWebExceptions
 FlextWebError = FlextWebExceptions.WebError

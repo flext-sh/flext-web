@@ -93,7 +93,7 @@ class FlextWebProtocols(FlextProtocols):
             """
             ...
 
-        def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
+        def list_apps(self: object) -> FlextResult[list[FlextWebModels.WebApp]]:
             """List all applications.
 
             Returns:
@@ -174,11 +174,11 @@ class FlextWebProtocols(FlextProtocols):
             """Create a JSON response in framework-agnostic way."""
             ...
 
-        def get_request_data(self) -> FlextTypes.Core.JsonObject:
+        def get_request_data(self: object) -> FlextTypes.Core.JsonObject:
             """Get request data in framework-agnostic way."""
             ...
 
-        def is_json_request(self) -> bool:
+        def is_json_request(self: object) -> bool:
             """Check if current request is JSON."""
             ...
 
@@ -224,7 +224,7 @@ class FlextWebProtocols(FlextProtocols):
     # =========================================================================
 
     @classmethod
-    def create_web_service_protocol(cls) -> object:
+    def create_web_service_protocol(cls: object) -> object:
         """Create web service protocol instance.
 
         Returns:
@@ -245,13 +245,13 @@ class FlextWebProtocols(FlextProtocols):
                 msg = "Protocol implementation for type checking only"
                 raise NotImplementedError(msg)
 
-            def health(self) -> WebResponse:
+            def health(self: object) -> WebResponse:
                 return '{"status": "ok"}', 200
 
         return _WebServiceProtocolImpl()
 
     @classmethod
-    def create_app_manager_protocol(cls) -> AppManagerProtocol:
+    def create_app_manager_protocol(cls: object) -> AppManagerProtocol:
         """Create app manager protocol instance.
 
         Returns:
@@ -294,7 +294,7 @@ class FlextWebProtocols(FlextProtocols):
                 )
                 return FlextResult[FlextWebModels.WebApp].ok(app)
 
-            def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
+            def list_apps(self: object) -> FlextResult[list[FlextWebModels.WebApp]]:
                 return FlextResult[list[FlextWebModels.WebApp]].ok([])
 
         return _AppManagerProtocolImpl()
@@ -340,11 +340,11 @@ class FlextWebProtocols(FlextProtocols):
         adding web-specific contract requirements.
         """
 
-        def initialize_routes(self) -> None:
+        def initialize_routes(self: object) -> None:
             """Initialize web service routes and endpoints."""
             ...
 
-        def configure_middleware(self) -> None:
+        def configure_middleware(self: object) -> None:
             """Configure request/response middleware."""
             ...
 
@@ -359,7 +359,7 @@ class FlextWebProtocols(FlextProtocols):
             """Start the web service with specified configuration."""
             ...
 
-        def stop_service(self) -> None:
+        def stop_service(self: object) -> None:
             """Stop the web service gracefully."""
             ...
 
@@ -473,11 +473,11 @@ class FlextWebProtocols(FlextProtocols):
             """Record error occurrence."""
             ...
 
-        def get_health_status(self) -> dict[str, FlextTypes.Core.Dict]:
+        def get_health_status(self: object) -> dict[str, FlextTypes.Core.Dict]:
             """Get current service health status."""
             ...
 
-        def get_metrics(self) -> dict[str, FlextTypes.Core.Dict]:
+        def get_metrics(self: object) -> dict[str, FlextTypes.Core.Dict]:
             """Get collected metrics data."""
             ...
 

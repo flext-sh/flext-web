@@ -67,7 +67,7 @@ class FlextWebFields(FlextModels):
             self.description = description
             self.field_kwargs = field_kwargs
 
-        def create_field(self) -> FieldReturn:
+        def create_field(self: object) -> FieldReturn:
             """Create Pydantic field for HTTP status."""
             kwargs = dict(self.field_kwargs)
 

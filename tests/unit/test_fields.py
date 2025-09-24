@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from flext_web.fields import FlextWebFields
+from flext_web import FlextWebFields
 
 # Extract nested classes for convenience
 HTTPStatusField = FlextWebFields.HTTPStatusField

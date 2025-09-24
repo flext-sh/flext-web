@@ -9,8 +9,7 @@ SPDX-License-Identifier: MIT
 
 import pytest
 
-from flext_web import FlextWebTypes, FlextWebUtilities
-from flext_web.typings import FlextTypes
+from flext_web import FlextTypes, FlextWebTypes, FlextWebUtilities
 
 
 class TestFlextWebTypesStructure:

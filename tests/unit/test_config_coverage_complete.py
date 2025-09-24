@@ -19,8 +19,7 @@ from unittest.mock import patch
 import pytest
 from pydantic import ValidationError
 
-from flext_web import FlextWebConfigs
-from flext_web.settings import FlextWebSettings
+from flext_web import FlextWebConfigs, FlextWebSettings
 
 
 class TestConfigCompleteCoverage:

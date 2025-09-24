@@ -21,8 +21,8 @@ TWebResponse = TypeVar("TWebResponse")  # Web response type
 TFlaskApp = TypeVar("TFlaskApp")  # Flask application type
 
 
-class FlextWebTypes:
-    """Consolidated FLEXT web type system."""
+class FlextWebTypes(FlextTypes):
+    """Consolidated FLEXT web type system extending FlextTypes."""
 
     # Application types
     class AppData(TypedDict):
@@ -335,7 +335,7 @@ class FlextWebTypes:
 
         """
         try:
-            validated_config = dict(config)
+            validated_config: dict[str, object] = dict(config)
             validated_config.setdefault("enable_strict_typing", True)
             validated_config.setdefault("enable_runtime_validation", True)
             return FlextResult[FlextTypes.Core.Dict].ok(validated_config)

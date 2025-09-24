@@ -15,7 +15,7 @@ from flext_web.config import FlextWebConfigs
 class FlextWebSettings(FlextConfig):
     """Web settings with environment support and bridge to WebConfig."""
 
-    model_config = FlextConfig.model_config.copy()
+    model_config: dict[str, object] = FlextConfig.model_config.copy()
     model_config.update(
         {
             "env_prefix": "FLEXT_WEB_",
@@ -49,10 +49,10 @@ class FlextWebSettings(FlextConfig):
     request_timeout: int = Field(default=30)
     enable_cors: bool = Field(default=True)
 
-    def to_config(self) -> FlextResult[object]:
+    def to_config(self: object) -> FlextResult[object]:
         """Convert settings to validated WebConfig model - import delayed to avoid circular import."""
         try:
-            data = self.model_dump(exclude_none=True)
+            data: dict[str, object] = self.model_dump(exclude_none=True)
             model = FlextWebConfigs.WebConfig.model_validate(data)
             return FlextResult[object].ok(model)
         except Exception as e:

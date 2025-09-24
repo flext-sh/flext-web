@@ -70,16 +70,18 @@ class FlextWebHandlers(FlextProcessors):
           Basic handler usage:
 
           >>> handler = FlextWebHandlers.WebAppHandler()
-          >>> result = handler.create("web-service", 3000, "localhost")
+          >>> result: FlextResult[object] = handler.create(
+          ...     "web-service", 3000, "localhost"
+          ... )
           >>> if result.success:
           ...     app = result.value
-          ...     start_result = handler.start(app)
+          ...     start_result: FlextResult[object] = handler.start(app)
           ...     if start_result.success:
           ...         print(f"Started {start_result.value.name}")
 
         """
 
-        def __init__(self) -> None:
+        def __init__(self: object) -> None:
             """Initialize WebApp handler with FlextMixins functionality."""
             self.logger = FlextLogger(__name__)
 
@@ -279,7 +281,7 @@ class FlextWebHandlers(FlextProcessors):
                 ...     name="service",
                 ...     status=FlextWebModels.WebAppStatus.STOPPED,
                 ... )
-                >>> result = handler.start(app)
+                >>> result: FlextResult[object] = handler.start(app)
                 >>> if result.success:
                 ...     running_app = result.value
                 ...     print(
@@ -331,7 +333,7 @@ class FlextWebHandlers(FlextProcessors):
                 ...     name="service",
                 ...     status=FlextWebModels.WebAppStatus.RUNNING,
                 ... )
-                >>> result = handler.stop(app)
+                >>> result: FlextResult[object] = handler.stop(app)
                 >>> if result.success:
                 ...     stopped_app = result.value
                 ...     print(
@@ -486,7 +488,7 @@ class FlextWebHandlers(FlextProcessors):
         )
 
     @classmethod
-    def handle_system_info(cls) -> FlextResult[FlextTypes.Core.Dict]:
+    def handle_system_info(cls: object) -> FlextResult[FlextTypes.Core.Dict]:
         """Handle system information requests.
 
         Returns:
@@ -540,7 +542,7 @@ class FlextWebHandlers(FlextProcessors):
             app_id = FlextWebUtilities.format_app_id(name)
             # Create app directly with typed parameters
             app = FlextWebModels.WebApp(id=app_id, name=name, port=port, host=host)
-            validation_result = app.validate_business_rules()
+            validation_result: FlextResult[object] = app.validate_business_rules()
 
             if validation_result.is_failure:
                 return FlextResult[FlextWebModels.WebApp].fail(
@@ -631,7 +633,7 @@ class FlextWebHandlers(FlextProcessors):
         )
 
     @classmethod
-    def format_health_data(cls) -> FlextWebTypes.HealthResponse:
+    def format_health_data(cls: object) -> FlextWebTypes.HealthResponse:
         """Format health check data for API responses.
 
         Returns:

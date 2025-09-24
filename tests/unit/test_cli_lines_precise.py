@@ -3,13 +3,12 @@
 
 import asyncio
 import contextlib
-import logging
 import os
 import sys
 
-from flext_core import FlextTypes
+from flext_core import FlextLogger, FlextTypes
 
-logger = logging.getLogger(__name__)
+logger = FlextLogger(__name__)
 
 
 def test_line_114_debug_flag_direct() -> None:

@@ -9,8 +9,7 @@ from __future__ import annotations
 import os
 
 from flext_core import FlextTypes
-from flext_web import FlextWebConfigs
-from flext_web.settings import FlextWebSettings
+from flext_web import FlextWebConfigs, FlextWebSettings
 
 
 class TestConfigFactoryMethods:

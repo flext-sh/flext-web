@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT.
 import asyncio
 import importlib
 import importlib.util
-import logging
 import shutil
 import sys
 import time
@@ -15,11 +14,10 @@ from pathlib import Path
 
 import requests
 
-from flext_core import FlextTypes
+from flext_core import FlextLogger, FlextTypes
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+logger = FlextLogger(__name__)
 
 
 class ExamplesFullFunctionalityTest:

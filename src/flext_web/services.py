@@ -46,7 +46,7 @@ class FlextWebServices:
 
         def __init__(self, config: FlextWebConfigs.WebConfig) -> None:
             """Initialize web service with configuration and Flask application."""
-            self.config = config
+            self.config: dict[str, object] = config
             self.app = Flask(__name__)
             self.apps: dict[str, FlextWebModels.WebApp] = {}
             self.app_handler = FlextWebHandlers.WebAppHandler()
@@ -85,17 +85,17 @@ class FlextWebServices:
                 """Create JSON response using Flask."""
                 return jsonify(data), status_code
 
-            def get_request_data(self) -> FlextTypes.Core.JsonObject:
+            def get_request_data(self: object) -> FlextTypes.Core.JsonObject:
                 """Get request JSON data."""
                 if request.is_json:
                     return request.get_json() or {}
                 return {}
 
-            def is_json_request(self) -> bool:
+            def is_json_request(self: object) -> bool:
                 """Check if request is JSON."""
                 return request.is_json
 
-        def _register_routes(self) -> None:
+        def _register_routes(self: object) -> None:
             """Register all Flask routes for the web service."""
             # Health check endpoint
             self.app.route("/health", methods=["GET"])(self.health_check)
@@ -114,7 +114,7 @@ class FlextWebServices:
                 self.stop_app,
             )
 
-        def health_check(self) -> ResponseReturnValue:
+        def health_check(self: object) -> ResponseReturnValue:
             """Health check endpoint returning service status."""
             try:
                 self.logger.info("Health check performed")
@@ -150,7 +150,7 @@ class FlextWebServices:
                     },
                 ), 500
 
-        def dashboard(self) -> ResponseReturnValue:
+        def dashboard(self: object) -> ResponseReturnValue:
             """Web dashboard interface for application management.
 
             Returns:
@@ -224,7 +224,7 @@ class FlextWebServices:
             except Exception:
                 return "Dashboard error", 500
 
-        def list_apps(self) -> ResponseReturnValue:
+        def list_apps(self: object) -> ResponseReturnValue:
             """List all registered applications."""
             try:
                 apps_data: list[FlextWebTypes.AppData] = []
@@ -254,7 +254,7 @@ class FlextWebServices:
                 }
                 return jsonify(error_response), 500
 
-        def _validate_json_request(self) -> FlextResult[FlextTypes.Core.Dict]:
+        def _validate_json_request(self: object) -> FlextResult[FlextTypes.Core.Dict]:
             """Railway-oriented validation of JSON request data.
 
             Returns:
@@ -265,7 +265,7 @@ class FlextWebServices:
                 return FlextResult[FlextTypes.Core.Dict].fail("Request must be JSON")
 
             try:
-                data = request.get_json()
+                data: dict[str, object] = request.get_json()
                 if not data:
                     return FlextResult[FlextTypes.Core.Dict].fail(
                         "Request body is required",
@@ -328,7 +328,9 @@ class FlextWebServices:
             port: int,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Create and store application using existing handler."""
-            create_result = self.app_handler.create(name, port, host)
+            create_result: FlextResult[object] = self.app_handler.create(
+                name, port, host
+            )
 
             if create_result.is_failure:
                 return FlextResult[FlextWebModels.WebApp].fail(
@@ -374,7 +376,7 @@ class FlextWebServices:
                 },
             ), status_code
 
-        def create_app(self) -> ResponseReturnValue:
+        def create_app(self: object) -> ResponseReturnValue:
             """Create new application using Railway-oriented programming pattern.
 
             Reduces from 11 returns to single monadic chain with 85% less complexity.
@@ -401,7 +403,7 @@ class FlextWebServices:
                     )
 
                 # Unpack the validated data for method call
-                app_data = app_validation.unwrap()
+                app_data: dict[str, object] = app_validation.unwrap()
 
                 # Unpack the validated data for method call
                 result = self._create_and_store_app(
@@ -475,7 +477,7 @@ class FlextWebServices:
                     ), 404
 
                 app = self.apps[app_id]
-                start_result = app.start()
+                start_result: FlextResult[object] = app.start()
 
                 if start_result.is_failure:
                     return jsonify(
@@ -522,7 +524,7 @@ class FlextWebServices:
                     ), 404
 
                 app = self.apps[app_id]
-                stop_result = app.stop()
+                stop_result: FlextResult[object] = app.stop()
 
                 if stop_result.is_failure:
                     # Customize message based on error type
@@ -562,7 +564,7 @@ class FlextWebServices:
                     },
                 ), 500
 
-        def run(self) -> None:
+        def run(self: object) -> None:
             """Run the Flask web service."""
             self.app.run(
                 host=self.config.host,
@@ -580,7 +582,7 @@ class FlextWebServices:
         within the FLEXT Web ecosystem.
         """
 
-        def __init__(self) -> None:
+        def __init__(self: object) -> None:
             """Initialize web service registry."""
             self._services: dict[str, FlextWebServices.WebService] = {}
             self._health_status: dict[str, bool] = {}
@@ -639,7 +641,7 @@ class FlextWebServices:
                     f"Service discovery failed: {e}",
                 )
 
-        def list_web_services(self) -> FlextResult[FlextTypes.Core.StringList]:
+        def list_web_services(self: object) -> FlextResult[FlextTypes.Core.StringList]:
             """List all registered web service names.
 
             Returns:
@@ -688,12 +690,12 @@ class FlextWebServices:
         """
         try:
             if config is None:
-                config_result = FlextWebConfigs.create_web_config()
+                config_result: FlextResult[object] = FlextWebConfigs.create_web_config()
                 if config_result.is_failure:
                     return FlextResult[FlextWebServices.WebService].fail(
                         f"Config creation failed: {config_result.error}",
                     )
-                config = config_result.value
+                config: dict[str, object] = config_result.value
                 # Config type is guaranteed by FlextResult[FlextWebConfigs.WebConfig]
 
             service = FlextWebServices.WebService(config)
@@ -727,13 +729,13 @@ class FlextWebServices:
 
         try:
             # Create service and registry
-            service_result = cls.create_web_service()
+            service_result: FlextResult[object] = cls.create_web_service()
             if service_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     service_result.error or "Service creation failed",
                 )
 
-            registry_result = cls.create_service_registry()
+            registry_result: FlextResult[object] = cls.create_service_registry()
             if registry_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     registry_result.error or "Registry creation failed",
@@ -743,7 +745,9 @@ class FlextWebServices:
             registry = registry_result.value
 
             # Register service
-            register_result = registry.register_web_service("main", service)
+            register_result: FlextResult[object] = registry.register_web_service(
+                "main", service
+            )
             if register_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     register_result.error or "Registration failed",
@@ -772,7 +776,7 @@ class FlextWebServices:
     ) -> FlextResult[FlextTypes.Config.ConfigDict]:
         """Configure web services system using FlextTypes.Config with validation."""
         try:
-            validated_config = dict(config)
+            validated_config: dict[str, object] = dict(config)
 
             # Validate environment using FlextConstants
             if "environment" in config:

@@ -30,8 +30,6 @@ class FlextWebUtilities(FlextUtilities):
     @staticmethod
     def _slugify(text: str) -> str:
         """Convert text to URL-safe slug format."""
-        import re
-
         # Convert to lowercase and replace spaces/special chars with hyphens
         slug = re.sub(r"[^\w\s-]", "", text.lower())
         slug = re.sub(r"[-\s]+", "-", slug)
@@ -89,7 +87,7 @@ class FlextWebUtilities(FlextUtilities):
 
         """
         try:
-            result = urlparse(url)
+            result: FlextResult[object] = urlparse(url)
             return all([result.scheme, result.netloc])
         except Exception:
             return False

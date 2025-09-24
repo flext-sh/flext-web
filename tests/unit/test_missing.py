@@ -19,11 +19,11 @@ import requests
 
 from flext_web import (
     FlextWebConfigs,
+    FlextWebExceptions,
     FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
 )
-from flext_web.exceptions import FlextWebExceptions
 
 # Use nested classes from FlextWebExceptions
 FlextWebError = FlextWebExceptions.WebError

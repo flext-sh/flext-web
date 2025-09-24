@@ -82,7 +82,7 @@ def main() -> None:
     args = parser.parse_args()
 
     # Get configuration
-    config = FlextWebConfigs.WebConfig()
+    config: dict[str, object] = FlextWebConfigs.WebConfig()
 
     # Override with command line arguments
     host = args.host or config.host

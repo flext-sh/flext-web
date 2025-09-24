@@ -20,11 +20,11 @@ import requests
 
 from flext_web import (
     FlextWebConfigs,
+    FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
+    FlextWebSettings,
 )
-from flext_web.handlers import FlextWebHandlers
-from flext_web.settings import FlextWebSettings
 
 
 class TestFlextWebServiceAdvanced:

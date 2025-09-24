@@ -16,7 +16,7 @@ from typing import cast
 import requests
 
 from flext_core import FlextResult, FlextTypes
-from flext_web.typings import FlextWebTypes
+from flext_web import FlextWebTypes
 
 
 class ExampleConstants:

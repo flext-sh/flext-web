@@ -21,9 +21,9 @@ from tests.port_manager import TestPortManager
 
 from flext_web import (
     FlextWebConfigs,
+    FlextWebConstants,
     FlextWebServices,
 )
-from flext_web.constants import FlextWebConstants
 
 
 class TestWebInterface:

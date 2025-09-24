@@ -11,8 +11,7 @@ import pytest
 from pydantic import ValidationError
 
 from flext_core import FlextTypes
-from flext_web import FlextWebConfigs, FlextWebModels, FlextWebTypes
-from flext_web.handlers import FlextWebHandlers
+from flext_web import FlextWebConfigs, FlextWebHandlers, FlextWebModels, FlextWebTypes
 
 
 class TestWebAppStatusEnum:
