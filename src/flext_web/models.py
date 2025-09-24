@@ -22,8 +22,11 @@ from flext_web.constants import FlextWebConstants
 from flext_web.typings import FlextWebTypes
 
 
-class FlextWebModels:
-    """Consolidated FLEXT web model system with FlextMixins integration."""
+class FlextWebModels(FlextModels):
+    """Consolidated FLEXT web model system with FlextMixins integration.
+
+    Inherits from FlextModels to avoid duplication and ensure consistency.
+    """
 
     class WebAppStatus(Enum):
         """Web application status enumeration."""

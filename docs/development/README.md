@@ -392,9 +392,9 @@ class FlextWebApp(FlextModels.Entity):
 
 ```python
 # src/flext_web/application/handlers.py (target)
-from flext_core import FlextProcessing, FlextResult
+from flext_core import FlextProcessors, FlextResult
 
-class FlextWebAppHandler(FlextProcessing.Handler):
+class FlextWebAppHandler(FlextProcessors.Handler):
     """CQRS command handlers"""
 
     def __init__(self, repository: FlextWebAppRepository):
@@ -458,7 +458,7 @@ from flext_core import (
     FlextResult,      # Railway-oriented programming
     FlextModels.Entity,      # Domain entity base class
     FlextConfig,      # Configuration management
-    FlextProcessing,    # CQRS handlers
+    FlextProcessors,    # CQRS handlers
     FlextLogger        # Structured logging
 )
 

@@ -19,9 +19,10 @@ from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 
 
-class FlextWebUtilities:
+class FlextWebUtilities(FlextUtilities):
     """Web-specific utilities delegating to flext-core.
 
+    Inherits from FlextUtilities to avoid duplication and ensure consistency.
     Provides only web-domain-specific functionality not available in FlextUtilities.
     All generic operations delegate to FlextUtilities from flext-core.
     """

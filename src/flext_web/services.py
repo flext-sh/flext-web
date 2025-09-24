@@ -26,7 +26,7 @@ class FlextWebServices:
     """Consolidated FLEXT web service system providing all service functionality.
 
     This is the complete web service system for the FLEXT Web ecosystem, providing
-    unified service patterns built on FlextProcessing foundation with web-specific
+    unified service patterns built on FlextProcessors foundation with web-specific
     implementations. All web service types are organized as nested classes within
     this single container for consistent configuration and easy access.
 
@@ -41,7 +41,7 @@ class FlextWebServices:
 
         Enterprise-grade web service providing REST API endpoints, web dashboard,
         and comprehensive application lifecycle management. Built on Flask with
-        FlextProcessing integration for consistent service patterns.
+        FlextProcessors integration for consistent service patterns.
         """
 
         def __init__(self, config: FlextWebConfigs.WebConfig) -> None:

@@ -203,7 +203,7 @@ The module extensively uses flext-core foundation patterns for consistency acros
 - **FlextResult**: Railway-oriented programming for error handling
 - **FlextModels.Entity**: Domain entity base class with validation
 - **FlextConfig**: Configuration management with validation
-- **FlextProcessing**: CQRS command handler patterns
+- **FlextProcessors**: CQRS command handler patterns
 
 ### Error Handling
 

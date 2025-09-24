@@ -174,7 +174,7 @@ make security                  # Security scanning
 - **FlextResult**: Railway-oriented programming for all operations
 - **FlextModels.Entity**: Domain entity base classes with validation
 - **FlextConfig**: Configuration management with environment integration
-- **FlextProcessing**: CQRS command handler patterns
+- **FlextProcessors**: CQRS command handler patterns
 
 ### **Ecosystem Integration**
 
