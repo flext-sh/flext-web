@@ -17,9 +17,8 @@ import warnings
 from unittest.mock import patch
 
 import pytest
+from Flext_web import FlextWebConfig, FlextWebSettings
 from pydantic import ValidationError
-
-from flext_web import FlextWebConfigs, FlextWebSettings
 
 
 class TestConfigCompleteCoverage:
@@ -32,7 +31,7 @@ class TestConfigCompleteCoverage:
             ValidationError,
             match="String should have at least 32 characters",
         ):
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 host="localhost",
                 port=8080,
                 secret_key="short",  # Too short
@@ -47,7 +46,7 @@ class TestConfigCompleteCoverage:
                 match="Must change default secret key for production",
             ),
         ):
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 host="localhost",
                 port=8080,
                 secret_key="dev-key-change-in-production-32chars!",  # Default development key
@@ -61,7 +60,7 @@ class TestConfigCompleteCoverage:
             ValidationError,
             match="Input should be greater than or equal to 1",
         ):
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 host="localhost",
                 port=0,  # Too low
                 secret_key="port-test-secret-32-characters-key!",
@@ -73,7 +72,7 @@ class TestConfigCompleteCoverage:
             ValidationError,
             match="Input should be less than or equal to 65535",
         ):
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 host="localhost",
                 port=99999,  # Too high
                 secret_key="port-test-secret-32-characters-key!",
@@ -85,7 +84,7 @@ class TestConfigCompleteCoverage:
         # Test system port warning
         with warnings.catch_warnings(record=True) as warning_list:
             warnings.simplefilter("always")
-            config = FlextWebConfigs.WebConfig(
+            config = FlextWebConfig.WebConfig(
                 host="localhost",
                 port=8080,  # Valid port for testing
                 secret_key="system-port-test-32-character-key!",
@@ -102,19 +101,19 @@ class TestConfigCompleteCoverage:
             patch.dict(os.environ, {"FLEXT_WEB_DEBUG": "invalid_boolean"}),
             pytest.raises(ValueError, match="Invalid bool value for FLEXT_WEB_DEBUG"),
         ):
-            FlextWebConfigs.WebConfig.load_from_env({})
+            FlextWebConfig.WebConfig.load_from_env({})
 
         # Test invalid integer port
         with (
             patch.dict(os.environ, {"FLEXT_WEB_PORT": "not_an_integer"}),
             pytest.raises(ValueError, match="Invalid int value"),
         ):
-            FlextWebConfigs.WebConfig.load_from_env({})
+            FlextWebConfig.WebConfig.load_from_env({})
 
     def test_production_validation_comprehensive(self) -> None:
         """Test production validation methods (lines 276, 301-302)."""
         # Test production config with errors
-        production_config = FlextWebConfigs.WebConfig(
+        production_config = FlextWebConfig.WebConfig(
             host="localhost",  # Problem in production
             port=8080,
             secret_key="dev-key-change-in-production-32chars!",  # Default key problem
@@ -128,7 +127,7 @@ class TestConfigCompleteCoverage:
         assert "production configuration validation failed" in result.error.lower()
 
         # Test valid production config
-        valid_production_config = FlextWebConfigs.WebConfig(
+        valid_production_config = FlextWebConfig.WebConfig(
             host="0.0.0.0",  # Valid for production
             port=8080,
             secret_key="production-secret-key-32-chars-long!",  # Valid production key
@@ -143,13 +142,13 @@ class TestConfigCompleteCoverage:
         """Test environment detection methods (lines 315, 344-345, 356, 365, 371, 377-378)."""
         # Test development environment detection (class method)
         with patch.dict(os.environ, {"FLEXT_WEB_ENVIRONMENT": "development"}):
-            assert FlextWebConfigs.WebConfig._is_development_env() is True
+            assert FlextWebConfig.WebConfig._is_development_env() is True
 
         with patch.dict(os.environ, {"FLEXT_WEB_ENVIRONMENT": "production"}):
-            assert FlextWebConfigs.WebConfig._is_development_env() is False
+            assert FlextWebConfig.WebConfig._is_development_env() is False
 
         # Test instance environment detection
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             secret_key="env-test-secret-32-character-key!",
@@ -161,7 +160,7 @@ class TestConfigCompleteCoverage:
         assert config.is_production() is False
 
         # Test production detection
-        prod_config = FlextWebConfigs.WebConfig(
+        prod_config = FlextWebConfig.WebConfig(
             host="0.0.0.0",
             port=8080,
             secret_key="prod-env-test-32-character-secret!",
@@ -175,13 +174,13 @@ class TestConfigCompleteCoverage:
     def test_factory_method_error_paths(self) -> None:
         """Test factory method error paths (lines 401, 414, 427)."""
         # Test create_web_config success path
-        config_result = FlextWebConfigs.create_web_config()
+        config_result = FlextWebConfig.create_web_config()
         assert config_result.success
         config = config_result.value
-        assert isinstance(config, FlextWebConfigs.WebConfig)
+        assert isinstance(config, FlextWebConfig.WebConfig)
 
         # Test create_web_config with custom parameters
-        custom_result = FlextWebConfigs.create_web_config(
+        custom_result = FlextWebConfig.create_web_config(
             host="custom-host",
             port=9000,
             secret_key="custom-secret-32-character-test-key!",
@@ -193,7 +192,7 @@ class TestConfigCompleteCoverage:
     def test_additional_config_methods(self) -> None:
         """Test additional configuration methods and edge cases."""
         # Test configuration with all optional fields
-        full_config = FlextWebConfigs.WebConfig(
+        full_config = FlextWebConfig.WebConfig(
             host="0.0.0.0",
             port=8080,
             secret_key="full-config-test-32-character-key!",
@@ -217,7 +216,7 @@ class TestConfigCompleteCoverage:
 
     def test_server_url_generation(self) -> None:
         """Test server URL generation method."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="example.com",
             port=8080,
             secret_key="url-test-secret-32-character-key!",
@@ -228,7 +227,7 @@ class TestConfigCompleteCoverage:
         assert server_url == "http://example.com:8080"
 
         # Test with different host and port
-        config2 = FlextWebConfigs.WebConfig(
+        config2 = FlextWebConfig.WebConfig(
             host="0.0.0.0",
             port=3000,
             secret_key="url-test-2-secret-32-character-key!",
@@ -243,11 +242,11 @@ class TestConfigCompleteCoverage:
         """Test edge cases with environment variable loading."""
         # Test with various boolean values
         with patch.dict(os.environ, {"FLEXT_WEB_DEBUG": "true"}):
-            values = FlextWebConfigs.WebConfig.load_from_env({})
+            values = FlextWebConfig.WebConfig.load_from_env({})
             assert values.get("debug") is True
 
         with patch.dict(os.environ, {"FLEXT_WEB_DEBUG": "false"}):
-            values = FlextWebConfigs.WebConfig.load_from_env({})
+            values = FlextWebConfig.WebConfig.load_from_env({})
             assert values.get("debug") is False
 
         # Test environment variable precedence using settings

@@ -81,7 +81,7 @@ class FlextWebHandlers(FlextProcessors):
 
         """
 
-        def __init__(self: object) -> None:
+        def __init__(self) -> None:
             """Initialize WebApp handler with FlextMixins functionality."""
             self.logger = FlextLogger(__name__)
 
@@ -185,7 +185,9 @@ class FlextWebHandlers(FlextProcessors):
             """Create app entity using FlextWebUtilities for ID generation."""
             try:
                 app_id = FlextWebUtilities.format_app_id(name)
-                app = FlextWebModels.WebApp(id=app_id, name=name, port=port, host=host)
+                app = FlextWebModels.WebApp(
+                    id=app_id, name=name, port=port, host=host, domain_events=[]
+                )
                 return FlextResult[FlextWebModels.WebApp].ok(app)
             except Exception as e:
                 return FlextResult[FlextWebModels.WebApp].fail(
@@ -280,6 +282,7 @@ class FlextWebHandlers(FlextProcessors):
                 >>> app = FlextWebModels.WebApp(
                 ...     name="service",
                 ...     status=FlextWebModels.WebAppStatus.STOPPED,
+                ...     domain_events=[],
                 ... )
                 >>> result: FlextResult[object] = handler.start(app)
                 >>> if result.success:
@@ -332,6 +335,7 @@ class FlextWebHandlers(FlextProcessors):
                 >>> app = FlextWebModels.WebApp(
                 ...     name="service",
                 ...     status=FlextWebModels.WebAppStatus.RUNNING,
+                ...     domain_events=[],
                 ... )
                 >>> result: FlextResult[object] = handler.stop(app)
                 >>> if result.success:
@@ -541,8 +545,10 @@ class FlextWebHandlers(FlextProcessors):
         try:
             app_id = FlextWebUtilities.format_app_id(name)
             # Create app directly with typed parameters
-            app = FlextWebModels.WebApp(id=app_id, name=name, port=port, host=host)
-            validation_result: FlextResult[object] = app.validate_business_rules()
+            app = FlextWebModels.WebApp(
+                id=app_id, name=name, port=port, host=host, domain_events=[]
+            )
+            validation_result: FlextResult[None] = app.validate_business_rules()
 
             if validation_result.is_failure:
                 return FlextResult[FlextWebModels.WebApp].fail(

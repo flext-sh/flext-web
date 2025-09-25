@@ -150,9 +150,8 @@ class ExamplesFullFunctionalityTest:
             # Test 3: Can create service programmatically
             flext_web = importlib.import_module("flext_web")
             # Using direct FlextWebServices.create_web_service instead of alias
-            flext_web_configs = flext_web.FlextWebConfigs
 
-            config = flext_web_configs.create_web_config()
+            config = Flext_web_Config.create_web_config()
             service = flext_web.FlextWebServices.create_web_service(config)
 
             # Test 4: Service has correct attributes
@@ -258,14 +257,12 @@ class ExamplesFullFunctionalityTest:
         # Test 1: All examples can work together
         try:
             flext_web = importlib.import_module("flext_web")
-            flext_web_config_cls = flext_web.FlextWebConfigs.WebConfig
             # Using direct FlextWebServices.create_web_service instead of alias
-            flext_web_configs = flext_web.FlextWebConfigs
 
             # Create services using different approaches from examples
 
             # Approach 1: basic_service style
-            config1 = flext_web_configs.create_web_config()
+            config1 = Flext_web_Config.create_web_config()
             service1 = flext_web.FlextWebServices.create_web_service(config1)
 
             # Approach 2: docker_ready style

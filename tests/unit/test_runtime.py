@@ -20,7 +20,7 @@ import requests
 from tests.port_manager import TestPortManager
 
 from flext_web import (
-    FlextWebConfigs,
+    FlextWebConfig,
     FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
@@ -33,7 +33,7 @@ def real_comprehensive_service() -> Generator[FlextWebServices.WebService]:
     # Allocate unique port to avoid conflicts
     port = TestPortManager.allocate_port()
 
-    config = FlextWebConfigs.WebConfig(
+    config = FlextWebConfig.WebConfig(
         host="localhost",
         port=port,
         debug=True,
@@ -294,7 +294,7 @@ class TestRealConfigurationManagement:
     @pytest.mark.unit
     def test_real_config_validation_success(self) -> None:
         """Test real configuration validation with valid data."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8083,
             debug=True,
@@ -315,7 +315,7 @@ class TestRealConfigurationManagement:
 
         try:
             # Test production validation failure with default key
-            config = FlextWebConfigs.WebConfig(
+            config = FlextWebConfig.WebConfig(
                 host="localhost",
                 port=8083,
                 debug=False,  # Production mode
@@ -355,7 +355,7 @@ class TestRealConfigurationManagement:
             # reset_web_settings()
 
             # Test real config loading from environment
-            config_result = FlextWebConfigs.create_config_from_env()
+            config_result = FlextWebConfig.create_config_from_env()
             assert config_result.is_success
             config = config_result.value
             assert config.host == "test-host"

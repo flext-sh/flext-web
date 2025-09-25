@@ -18,7 +18,7 @@ import pytest
 import requests
 
 from flext_web import (
-    FlextWebConfigs,
+    FlextWebConfig,
     FlextWebExceptions,
     FlextWebHandlers,
     FlextWebModels,
@@ -44,7 +44,7 @@ class TestMissingCoverage:
     @pytest.fixture
     def real_missing_service(self) -> Generator[FlextWebServices.WebService]:
         """Create real running service for missing coverage tests."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8096,  # Unique port for missing coverage tests
             debug=True,
@@ -116,15 +116,15 @@ class TestMissingCoverage:
     def test_config_validation_failure_paths(self) -> None:
         """Test configuration validation failure scenarios."""
         # Test invalid port in config
-        with pytest.raises(ValueError, match=r"port|range"):
-            FlextWebConfigs.WebConfig(
+        with pytest.raises(ValueError, match=r"Union[port, range]"):
+            FlextWebConfig.WebConfig(
                 port=70000,
                 secret_key="valid-32-char-key-for-testing-ok!",
             )
 
         # Test invalid secret key length
-        with pytest.raises(ValueError, match=r"secret.*key|length"):
-            FlextWebConfigs.WebConfig(secret_key="short")
+        with pytest.raises(ValueError, match=r"secret.*Union[key, length]"):
+            FlextWebConfig.WebConfig(secret_key="short")
 
     def test_service_error_response_creation(
         self,
@@ -193,7 +193,7 @@ class TestMissingCoverage:
 
     def test_service_run_method_error_paths(self) -> None:
         """Test service run method error handling."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             secret_key="test-key-32-characters-long-valid!",
         )
         service = FlextWebServices.WebService(config)
@@ -209,12 +209,12 @@ class TestMissingCoverage:
         # reset_web_settings()
 
         # Test first call creates instance
-        settings1_result = FlextWebConfigs.create_web_config()
+        settings1_result = FlextWebConfig.create_web_config()
         assert settings1_result.is_success
         settings1 = settings1_result.value
 
         # Test second call creates equivalent configuration
-        settings2_result = FlextWebConfigs.create_web_config()
+        settings2_result = FlextWebConfig.create_web_config()
         assert settings2_result.is_success
         settings2 = settings2_result.value
 
@@ -253,7 +253,7 @@ class TestMissingCoverage:
 
     def test_service_create_factory_function(self) -> None:
         """Test service creation factory function."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             secret_key="test-key-32-characters-long-valid!",
         )
         service_result = FlextWebServices.create_web_service(config)
@@ -270,7 +270,7 @@ class TestMissingCoverage:
         assert service_result.is_success
         service = service_result.value
         assert isinstance(service, FlextWebServices.WebService)
-        assert isinstance(service.config, FlextWebConfigs.WebConfig)
+        assert isinstance(service.config, FlextWebConfig.WebConfig)
 
     def test_comprehensive_api_workflow_with_edge_cases(
         self,

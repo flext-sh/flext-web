@@ -11,10 +11,10 @@ from collections import UserDict
 from collections.abc import ValuesView
 
 import pytest
+from Flext_web import FlextWebConfig, FlextWebModels, FlextWebServices
 
 from flext_core import FlextConstants, FlextResult, FlextTypes
 from flext_tests import FlextTestsAsyncs
-from flext_web import FlextWebConfigs, FlextWebModels, FlextWebServices
 
 
 class TestWebServiceHealthEndpoint:
@@ -437,11 +437,11 @@ class TestWebServiceFactoryMethods:
         assert result.is_success
         service = result.value
         assert isinstance(service, FlextWebServices.WebService)
-        assert isinstance(service.config, FlextWebConfigs.WebConfig)
+        assert isinstance(service.config, FlextWebConfig.WebConfig)
 
     def test_create_web_service_with_config(self) -> None:
         """Test creating web service with provided config."""
-        config = FlextWebConfigs.WebConfig(host="0.0.0.0", port=9000, debug=False)
+        config = FlextWebConfig.WebConfig(host="0.0.0.0", port=9000, debug=False)
 
         result = FlextWebServices.create_web_service(config)
 
@@ -455,7 +455,7 @@ class TestWebServiceFactoryMethods:
     def test_create_web_service_exception_handling(self) -> None:
         """Test web service creation error handling."""
         # Create a valid config but test that the factory method handles it properly
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -501,7 +501,7 @@ class TestServiceExceptionHandling:
 
     def test_dashboard_render_exception(self) -> None:
         """Test dashboard rendering handles template exceptions."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -538,7 +538,7 @@ class TestServiceExceptionHandling:
 
     def test_list_apps_exception_handling(self) -> None:
         """Test list_apps handles exceptions gracefully."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -571,7 +571,7 @@ class TestServiceExceptionHandling:
 
     def test_create_app_validation_failures(self) -> None:
         """Test create_app handles validation failures - lines 291-292."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -592,7 +592,7 @@ class TestServiceExceptionHandling:
 
     def test_get_app_not_found_edge_cases(self) -> None:
         """Test get_app handles various edge cases - lines 368-369."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -611,7 +611,7 @@ class TestServiceExceptionHandling:
 
     def test_start_app_edge_cases(self) -> None:
         """Test start_app handles edge cases - lines 396-397."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -629,7 +629,7 @@ class TestServiceExceptionHandling:
 
     def test_stop_app_edge_cases(self) -> None:
         """Test stop_app handles edge cases - lines 435-436."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -651,7 +651,7 @@ class TestServiceExceptionHandling:
 
         # Test register service exception handling
         # Create a service with invalid state to trigger exception
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -712,7 +712,7 @@ class TestComplexServiceScenarios:
 
     def test_full_application_lifecycle_with_exceptions(self) -> None:
         """Test complete app lifecycle with forced exceptions."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -750,7 +750,7 @@ class TestComplexServiceScenarios:
 
     def test_async_service_operations(self) -> None:
         """Test service operations using flext_tests async utilities."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -770,7 +770,7 @@ class TestComplexServiceScenarios:
 @pytest.fixture
 def web_service_fixture() -> FlextWebServices.WebService:
     """Create a web service instance for testing."""
-    config = FlextWebConfigs.WebConfig(
+    config = FlextWebConfig.WebConfig(
         host="localhost",
         port=8080,  # Use valid port
         debug=True,

@@ -22,7 +22,7 @@ from flext_tests import (
     FlextTestsFactories,
 )
 from flext_web import (
-    FlextWebConfigs,
+    FlextWebConfig,
     FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
@@ -93,10 +93,10 @@ class TestRealFunctionalFlextWebValidation:
 
         try:
             # Reset singleton to force re-reading environment
-            FlextWebConfigs.reset_web_settings()
+            FlextWebConfig.reset_web_settings()
 
             # Get real configuration from environment
-            config = FlextWebConfigs.get_web_settings()
+            config = FlextWebConfig.get_web_settings()
 
             # Validate real configuration values
             assert (
@@ -109,7 +109,7 @@ class TestRealFunctionalFlextWebValidation:
             )
 
             # Test configuration business rules - config was validated during creation
-            assert isinstance(config, FlextWebConfigs.WebConfig)
+            assert isinstance(config, FlextWebConfig.WebConfig)
 
         finally:
             # Restore original environment
@@ -119,7 +119,7 @@ class TestRealFunctionalFlextWebValidation:
                         del os.environ[key]
                 else:
                     os.environ[key] = original_value
-            FlextWebConfigs.reset_web_settings()
+            FlextWebConfig.reset_web_settings()
 
     def test_real_webapp_handler_operations_functional(self) -> None:
         """Test WebAppHandler operations with real command execution."""
@@ -159,7 +159,7 @@ class TestRealFunctionalFlextWebValidation:
     def test_real_service_creation_and_configuration(self) -> None:
         """Test WebService creation with real configuration patterns."""
         # Create real configuration
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="127.0.0.1",
             port=8304,
             debug=True,
@@ -337,7 +337,7 @@ class TestRealFunctionalFlextWebValidation:
             )
 
             # Test configuration creation from file data
-            config = FlextWebConfigs.WebConfig(**loaded_data)
+            config = FlextWebConfig.WebConfig(**loaded_data)
             assert config.host == "127.0.0.1"
             assert config.port == 8311
             assert config.debug is True
@@ -359,8 +359,8 @@ class TestRealFunctionalFlextWebValidation:
 
         try:
             # Step 2: Configuration from environment
-            FlextWebConfigs.reset_web_settings()
-            config = FlextWebConfigs.get_web_settings()
+            FlextWebConfig.reset_web_settings()
+            config = FlextWebConfig.get_web_settings()
 
             # Step 3: Service creation
             FlextWebServices.WebService(config)
@@ -408,7 +408,7 @@ class TestRealFunctionalFlextWebValidation:
                         del os.environ[key]
                 else:
                     os.environ[key] = original_value
-            FlextWebConfigs.reset_web_settings()
+            FlextWebConfig.reset_web_settings()
 
     def test_real_performance_characteristics(self) -> None:
         """Test performance characteristics with real operations."""
@@ -495,8 +495,8 @@ class TestRealBenchmarkWithFlextTests:
     def test_config_creation_benchmark(self) -> None:
         """Test configuration creation performance."""
 
-        def create_config() -> FlextWebConfigs.WebConfig:
-            return FlextWebConfigs.WebConfig(
+        def create_config() -> FlextWebConfig.WebConfig:
+            return FlextWebConfig.WebConfig(
                 host="127.0.0.1",
                 port=8602,
                 debug=True,
@@ -508,7 +508,7 @@ class TestRealBenchmarkWithFlextTests:
         result = create_config()
         end_time = time.time()
 
-        assert isinstance(result, FlextWebConfigs.WebConfig)
+        assert isinstance(result, FlextWebConfig.WebConfig)
         assert result.port == 8602
         assert end_time - start_time < 1.0  # Should be fast
 

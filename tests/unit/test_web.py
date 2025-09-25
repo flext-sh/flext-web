@@ -20,7 +20,7 @@ import requests
 from tests.port_manager import TestPortManager
 
 from flext_web import (
-    FlextWebConfigs,
+    FlextWebConfig,
     FlextWebConstants,
     FlextWebServices,
 )
@@ -39,7 +39,7 @@ class TestWebInterface:
         """Create real running web service for dashboard testing."""
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=port,
             debug=True,
@@ -74,7 +74,7 @@ class TestWebInterface:
         Flask application instance with route registration and middleware setup.
         Tests fundamental web application patterns for enterprise deployment.
         """
-        config_result = FlextWebConfigs.create_development_config()
+        config_result = FlextWebConfig.create_development_config()
         assert config_result.is_success
         service_result = FlextWebServices.create_web_service(config_result.value)
         assert service_result.is_success

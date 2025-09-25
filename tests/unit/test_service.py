@@ -19,7 +19,7 @@ import pytest
 import requests
 
 from flext_web import (
-    FlextWebConfigs,
+    FlextWebConfig,
     FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
@@ -31,9 +31,9 @@ class TestFlextWebServiceAdvanced:
     """Advanced tests for FlextWebServices.WebService functionality."""
 
     @pytest.fixture
-    def config(self) -> FlextWebConfigs.WebConfig:
+    def config(self) -> FlextWebConfig.WebConfig:
         """Create test configuration."""
-        return FlextWebConfigs.WebConfig(
+        return FlextWebConfig.WebConfig(
             host="localhost",
             port=8093,  # Unique port for advanced tests
             debug=True,
@@ -43,7 +43,7 @@ class TestFlextWebServiceAdvanced:
     @pytest.fixture
     def real_running_service(
         self,
-        config: FlextWebConfigs.WebConfig,
+        config: FlextWebConfig.WebConfig,
     ) -> Generator[FlextWebServices.WebService]:
         """Create and start real service for HTTP testing."""
         service = FlextWebServices.WebService(config)
@@ -67,7 +67,7 @@ class TestFlextWebServiceAdvanced:
         service.apps.clear()
 
     @pytest.fixture
-    def service(self, config: FlextWebConfigs.WebConfig) -> FlextWebServices.WebService:
+    def service(self, config: FlextWebConfig.WebConfig) -> FlextWebServices.WebService:
         """Create test service instance for unit tests."""
         return FlextWebServices.WebService(config)
 
@@ -83,7 +83,7 @@ class TestFlextWebServiceAdvanced:
 
     def test_service_with_production_config(self) -> None:
         """Test service with production configuration."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="0.0.0.0",
             port=8080,
             debug=False,
@@ -286,7 +286,7 @@ class TestFlextWebServiceAdvanced:
 
 
 class TestWebConfigAdvanced:
-    """Advanced tests for FlextWebConfigs.WebConfig functionality."""
+    """Advanced tests for FlextWebConfig.WebConfig functionality."""
 
     def test_config_real_environment_loading(self) -> None:
         """Test configuration loading with real environment variables."""
@@ -331,7 +331,7 @@ class TestWebConfigAdvanced:
     def test_config_validation_edge_cases(self) -> None:
         """Test configuration validation edge cases."""
         # Test minimum valid port
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             port=1024,
             secret_key="valid-secret-key-32-characters-long!",
         )
@@ -339,7 +339,7 @@ class TestWebConfigAdvanced:
         assert result.success
 
         # Test maximum valid port
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             port=65535,
             secret_key="valid-secret-key-32-characters-long!",
         )
@@ -349,14 +349,14 @@ class TestWebConfigAdvanced:
     def test_config_production_detection(self) -> None:
         """Test production environment detection."""
         # Test debug=False as production indicator
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             debug=False,
             secret_key="prod-secret-key-32-characters-long!!",
         )
         assert config.is_production() is True
 
         # Test debug=True as development indicator
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             debug=True,
             secret_key="dev-secret-key-32-characters-long!!!",
         )
@@ -365,7 +365,7 @@ class TestWebConfigAdvanced:
     def test_config_secret_key_validation(self) -> None:
         """Test secret key validation scenarios."""
         # Test production with default key (should fail)
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             debug=False,
             secret_key="dev-secret-key-change-in-production",  # Exact default key
         )
@@ -377,12 +377,12 @@ class TestWebConfigAdvanced:
     def test_web_config_caching(self) -> None:
         """Test settings caching functionality."""
         # First call creates instance
-        settings1_result = FlextWebConfigs.create_web_config()
+        settings1_result = FlextWebConfig.create_web_config()
         assert settings1_result.is_success
         settings1 = settings1_result.value
 
         # Second call should return equivalent configuration
-        settings2_result = FlextWebConfigs.create_web_config()
+        settings2_result = FlextWebConfig.create_web_config()
         assert settings2_result.is_success
         settings2 = settings2_result.value
 
@@ -529,7 +529,7 @@ class TestServiceIntegration:
     @pytest.fixture
     def real_integration_service(self) -> Generator[FlextWebServices.WebService]:
         """Create real running service for integration tests."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=8097,  # Unique port for integration tests
             debug=True,

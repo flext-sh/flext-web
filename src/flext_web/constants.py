@@ -16,6 +16,32 @@ class FlextWebConstants(FlextConstants):
     enhanced organization, validation limits, and security considerations.
     """
 
+    # Web Server Constants
+    class Web:
+        """Web server constants and configuration values."""
+
+        MIN_PORT: int = 1024
+        MAX_PORT: int = 65535
+        DEFAULT_PORT: int = 8080
+
+        # HTTP Status Constants
+        HTTP_OK: int = 200
+        MAX_HTTP_STATUS: int = 599
+
+        # App Name Validation
+        MIN_APP_NAME_LENGTH: int = 3
+        MAX_APP_NAME_LENGTH: int = 100
+
+    # Web-Specific Constants
+    class WebSpecific:
+        """Web-specific constants for development and security."""
+
+        DEV_SECRET_KEY: str = "dev-secret-key-32-characters-long-for-development"
+        DEV_ENVIRONMENT_KEY: str = "dev-environment-key-32-characters-long-for-testing"
+        TEST_ENVIRONMENT_KEY: str = "test-environment-key-32-characters-long-for-tests"
+        ALL_INTERFACES: str = "0.0.0.0"
+        SYSTEM_PORTS_THRESHOLD: int = 1023
+
 
 __all__ = [
     "FlextWebConstants",

@@ -13,15 +13,15 @@ from pathlib import Path
 
 import pydantic
 import pytest
+from Flext_web import FlextWebConfig
 
 from flext_tests import (
     FlextTestsBuilders,
 )
-from flext_web import FlextWebConfigs
 
 
 class TestWebConfigFunctionalValidation:
-    """Functional tests for FlextWebConfigs using real validation scenarios."""
+    """Functional tests for FlextWebConfig using real validation scenarios."""
 
     def test_functional_production_config_creation(self) -> None:
         """Test production configuration creation with real environment variables."""
@@ -43,7 +43,7 @@ class TestWebConfigFunctionalValidation:
             )
 
             # Test production config creation
-            config_result = FlextWebConfigs.create_production_config()
+            config_result = FlextWebConfig.create_production_config()
             assert config_result.success
             config = config_result.value
 
@@ -79,7 +79,7 @@ class TestWebConfigFunctionalValidation:
                 },
             )
 
-            config_result = FlextWebConfigs.create_development_config()
+            config_result = FlextWebConfig.create_development_config()
             assert config_result.success
             config = config_result.value
 
@@ -97,7 +97,7 @@ class TestWebConfigFunctionalValidation:
     def test_functional_config_validation_edge_cases(self) -> None:
         """Test configuration validation with real edge case scenarios."""
         # Test minimum valid secret key length
-        min_key_config = FlextWebConfigs.WebConfig(
+        min_key_config = FlextWebConfig.WebConfig(
             secret_key="x" * 32,  # Exactly 32 characters
             host="127.0.0.1",
             port=8080,
@@ -105,7 +105,7 @@ class TestWebConfigFunctionalValidation:
         assert min_key_config.secret_key == "x" * 32
 
         # Test maximum port value
-        max_port_config = FlextWebConfigs.WebConfig(
+        max_port_config = FlextWebConfig.WebConfig(
             secret_key="max-port-test-key-32-characters!",
             host="127.0.0.1",
             port=65535,  # Maximum valid port
@@ -113,7 +113,7 @@ class TestWebConfigFunctionalValidation:
         assert max_port_config.port == 65535
 
         # Test minimum port value
-        min_port_config = FlextWebConfigs.WebConfig(
+        min_port_config = FlextWebConfig.WebConfig(
             secret_key="min-port-test-key-32-characters!",
             host="127.0.0.1",
             port=1024,  # Minimum unprivileged port
@@ -127,7 +127,7 @@ class TestWebConfigFunctionalValidation:
             pydantic.ValidationError,
             match="Input should be greater than or equal to 1",
         ):
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 secret_key="invalid-port-test-key-32-chars!!",
                 host="127.0.0.1",
                 port=0,  # Invalid port
@@ -137,7 +137,7 @@ class TestWebConfigFunctionalValidation:
             pydantic.ValidationError,
             match="Input should be less than or equal to 65535",
         ):
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 secret_key="invalid-port-test-key-32-chars!!",
                 host="127.0.0.1",
                 port=99999,  # Port too high
@@ -148,7 +148,7 @@ class TestWebConfigFunctionalValidation:
             pydantic.ValidationError,
             match="String should have at least 32 characters",
         ):
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 secret_key="short",  # Too short
                 host="127.0.0.1",
                 port=8080,
@@ -159,7 +159,7 @@ class TestWebConfigFunctionalValidation:
             pydantic.ValidationError,
             match="Host address cannot be empty",
         ):
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 secret_key="invalid-host-test-key-32-chars!!",
                 host="",  # Empty host
                 port=8080,
@@ -171,9 +171,9 @@ class TestWebConfigFunctionalValidation:
         try:
             # Test with missing environment variables (should use defaults)
             os.environ.clear()
-            FlextWebConfigs.reset_web_settings()
+            FlextWebConfig.reset_web_settings()
 
-            config = FlextWebConfigs.get_web_settings()
+            config = FlextWebConfig.get_web_settings()
             assert config.host == "localhost"  # Default
             assert config.port == 8080  # Default
             assert config.debug is False  # Default (production-safe)
@@ -183,7 +183,7 @@ class TestWebConfigFunctionalValidation:
             )  # From .env file
 
             # Reset config cache
-            FlextWebConfigs.reset_web_settings()
+            FlextWebConfig.reset_web_settings()
 
             # Test with partial environment variables
             os.environ.update(
@@ -194,7 +194,7 @@ class TestWebConfigFunctionalValidation:
                 },
             )
 
-            config = FlextWebConfigs.get_web_settings()
+            config = FlextWebConfig.get_web_settings()
             assert (
                 config.host == "127.0.0.1"
             )  # Security validation converts 0.0.0.0 to localhost  # From env
@@ -206,7 +206,7 @@ class TestWebConfigFunctionalValidation:
             )  # From .env file
 
         finally:
-            FlextWebConfigs.reset_web_settings()
+            FlextWebConfig.reset_web_settings()
             os.environ.clear()
             os.environ.update(original_env)
 
@@ -244,9 +244,9 @@ FLEXT_WEB_APP_NAME=File Config Test
             original_env = os.environ.copy()
             try:
                 os.environ.update(env_vars)
-                FlextWebConfigs.reset_web_settings()
+                FlextWebConfig.reset_web_settings()
 
-                config = FlextWebConfigs.get_web_settings()
+                config = FlextWebConfig.get_web_settings()
                 assert config.host == "file-test-host"
                 assert config.port == 8090
                 assert config.debug is False
@@ -256,7 +256,7 @@ FLEXT_WEB_APP_NAME=File Config Test
             finally:
                 os.environ.clear()
                 os.environ.update(original_env)
-                FlextWebConfigs.reset_web_settings()
+                FlextWebConfig.reset_web_settings()
 
         finally:
             # Clean up temp file
@@ -274,7 +274,7 @@ FLEXT_WEB_APP_NAME=File Config Test
         )
 
         # Create FlextWebConfig using builder data for available fields
-        web_config = FlextWebConfigs.WebConfig(
+        web_config = FlextWebConfig.WebConfig(
             host="localhost",  # Use default since ConfigBuilder doesn't provide host
             port=8080,  # Use default since ConfigBuilder doesn't provide port
             debug=getattr(config_data, "debug", True),
@@ -290,15 +290,15 @@ FLEXT_WEB_APP_NAME=File Config Test
     def test_functional_config_system_integration(self) -> None:
         """Test configuration system integration with real system calls."""
         # Test configuration creation and validation pipeline
-        config_result = FlextWebConfigs.create_web_system_configs()
+        config_result = FlextWebConfigs.create_web_system_Config()
         assert config_result.success
 
         system_configs = config_result.value
         assert "web_config" in system_configs
-        assert isinstance(system_configs["web_config"], FlextWebConfigs.WebConfig)
+        assert isinstance(system_configs["web_config"], FlextWebConfig.WebConfig)
 
         # Test configuration merging
-        base_config = FlextWebConfigs.WebConfig(
+        base_config = FlextWebConfig.WebConfig(
             secret_key="base-config-secret-key-32-chars!",
             host="base-host",
             port=8092,
@@ -310,7 +310,7 @@ FLEXT_WEB_APP_NAME=File Config Test
             "app_name": "Override Test",
         }
 
-        merged_result = FlextWebConfigs.merge_web_config(base_config, override_data)
+        merged_result = FlextWebConfig.merge_web_config(base_config, override_data)
         assert merged_result.success
         merged_config = merged_result.value
 
@@ -325,7 +325,7 @@ FLEXT_WEB_APP_NAME=File Config Test
     def test_functional_config_edge_case_validation(self) -> None:
         """Test configuration validation with real edge cases and boundary values."""
         # Test localhost variations
-        localhost_config = FlextWebConfigs.WebConfig(
+        localhost_config = FlextWebConfig.WebConfig(
             secret_key="localhost-test-secret-key-32-chars!",
             host="127.0.0.1",  # IPv4 localhost
             port=8093,
@@ -333,7 +333,7 @@ FLEXT_WEB_APP_NAME=File Config Test
         assert localhost_config.host == "127.0.0.1"
 
         # Test wildcard binding
-        wildcard_config = FlextWebConfigs.WebConfig(
+        wildcard_config = FlextWebConfig.WebConfig(
             secret_key="wildcard-test-secret-key-32-chars!",
             host="0.0.0.0",  # Wildcard binding
             port=8094,
@@ -343,7 +343,7 @@ FLEXT_WEB_APP_NAME=File Config Test
         )  # Security validation converts 0.0.0.0 to localhost
 
         # Test maximum content length
-        max_content_config = FlextWebConfigs.WebConfig(
+        max_content_config = FlextWebConfig.WebConfig(
             secret_key="max-content-secret-key-32-chars!",
             host="localhost",
             port=8095,

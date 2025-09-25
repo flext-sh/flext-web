@@ -6,17 +6,16 @@ SPDX-License-Identifier: MIT
 
 import pytest
 from flask.testing import FlaskClient
-
-from flext_web import FlextWebConfigs, FlextWebServices
+from Flext_web import FlextWebConfig, FlextWebServices
 
 
 class TestServicesCompleteCoverage:
     """Complete coverage tests for services.py using real execution without mocks."""
 
     @pytest.fixture
-    def test_config(self) -> FlextWebConfigs.WebConfig:
+    def test_config(self) -> FlextWebConfig.WebConfig:
         """Configuration for coverage tests."""
-        return FlextWebConfigs.WebConfig(
+        return FlextWebConfig.WebConfig(
             host="127.0.0.1",
             port=8900,
             debug=True,
@@ -27,7 +26,7 @@ class TestServicesCompleteCoverage:
     @pytest.fixture
     def test_service(
         self,
-        test_config: FlextWebConfigs.WebConfig,
+        test_config: FlextWebConfig.WebConfig,
     ) -> FlextWebServices.WebService:
         """Service instance for coverage tests."""
         service = FlextWebServices.WebService(test_config)
@@ -39,7 +38,7 @@ class TestServicesCompleteCoverage:
         """Flask test client."""
         return test_service.app.test_client()
 
-    def test_validation_error_handling(self, test_client: FlaskClient) -> None:
+    def test_self(self, test_client: FlaskClient) -> None:
         """Test validation error paths (lines 303-304)."""
         # Send completely malformed data to trigger validation exceptions
         response = test_client.post(
@@ -76,7 +75,7 @@ class TestServicesCompleteCoverage:
     def test_create_web_service_exception_handling(self) -> None:
         """Test exception handling in create_web_service (lines 644-645)."""
         # Test with valid config that should succeed
-        valid_config = FlextWebConfigs.WebConfig(
+        valid_config = FlextWebConfig.WebConfig(
             host="127.0.0.1",
             port=8903,
             secret_key="test-exception-handling-32-chars!",
@@ -106,7 +105,7 @@ class TestServicesCompleteCoverage:
         assert list_result.value == []
 
         # Create test service
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="127.0.0.1",
             port=8901,
             secret_key="registry-test-32-character-secret-key!",
@@ -145,7 +144,7 @@ class TestServicesCompleteCoverage:
         registry = registry_result.value
 
         # Create test service
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="127.0.0.1",
             port=8902,
             secret_key="alias-test-32-character-secret-key!",
@@ -162,7 +161,7 @@ class TestServicesCompleteCoverage:
         assert get_result.success
         assert get_result.value is service
 
-    def test_internal_helper_methods_coverage(self, test_client: FlaskClient) -> None:
+    def test_self(self, test_client: FlaskClient) -> None:
         """Test internal helper methods by triggering them through API calls."""
         # Create valid app to test _create_and_store_app and _build_success_response
         response = test_client.post(
@@ -194,7 +193,7 @@ class TestServicesCompleteCoverage:
         data = response.get_json()
         assert data["success"] is False
 
-    def test_edge_case_operations(self, test_client: FlaskClient) -> None:
+    def test_self(self, test_client: FlaskClient) -> None:
         """Test edge cases and error conditions."""
         # Test with extremely long names
         response = test_client.post(

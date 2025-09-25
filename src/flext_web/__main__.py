@@ -10,7 +10,7 @@ import argparse
 import sys
 
 from flext_core import FlextConstants, FlextLogger
-from flext_web.config import FlextWebConfigs
+from flext_web.config import FlextWebConfig
 from flext_web.services import FlextWebServices
 
 logger = FlextLogger(__name__)
@@ -82,7 +82,7 @@ def main() -> None:
     args = parser.parse_args()
 
     # Get configuration
-    config: dict[str, object] = FlextWebConfigs.WebConfig()
+    config = FlextWebConfig()
 
     # Override with command line arguments
     host = args.host or config.host
@@ -93,7 +93,7 @@ def main() -> None:
     elif args.no_debug:
         debug = False
     else:
-        debug = config.debug_bool
+        debug = config.debug
 
     # Validate port
     max_port_number = FlextConstants.Network.MAX_PORT
@@ -105,13 +105,13 @@ def main() -> None:
         logger.info(
             "🚀 Starting %s v%s on %s:%d",
             config.app_name,
-            "0.9.0",  # Version hardcoded since config.version doesn't exist
+            config.version,
             host,
             port,
         )
-        logger.info("📊 Debug: %s | Production: %s", debug, not config.debug_bool)
+        logger.info("📊 Debug: %s, Production: %s", debug, not config.debug)
 
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices.WebService(config.__dict__)  # type: ignore[arg-type]
         service.run()
     except KeyboardInterrupt:
         logger.info("🛑 Shutting down FlextWeb service")

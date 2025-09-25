@@ -6,17 +6,16 @@ SPDX-License-Identifier: MIT
 
 import pytest
 from flask.testing import FlaskClient
-
-from flext_web import FlextWebConfigs, FlextWebServices
+from Flext_web import FlextWebConfig, FlextWebServices
 
 
 class TestServicesMissingCoverage:
     """Tests para cobrir lacunas específicas em services.py."""
 
     @pytest.fixture
-    def test_config(self) -> FlextWebConfigs.WebConfig:
+    def test_config(self) -> FlextWebConfig.WebConfig:
         """Configuração de teste para services."""
-        return FlextWebConfigs.WebConfig(
+        return FlextWebConfig.WebConfig(
             host="127.0.0.1",
             port=8500,
             debug=True,
@@ -27,7 +26,7 @@ class TestServicesMissingCoverage:
     @pytest.fixture
     def test_service(
         self,
-        test_config: FlextWebConfigs.WebConfig,
+        test_config: FlextWebConfig.WebConfig,
     ) -> FlextWebServices.WebService:
         """Serviço de teste configurado."""
         service = FlextWebServices.WebService(test_config)
@@ -39,7 +38,7 @@ class TestServicesMissingCoverage:
         """Cliente Flask de teste."""
         return test_service.app.test_client()
 
-    def test_service_error_handling_paths(self, test_client: FlaskClient) -> None:
+    def test_self(self, test_client: FlaskClient) -> None:
         """Testa caminhos de tratamento de erro não cobertos."""
         # Teste com dados completamente inválidos (linhas 303-304, 384-385)
         invalid_data = {
@@ -54,7 +53,7 @@ class TestServicesMissingCoverage:
         data = response.get_json()
         assert data["success"] is False
 
-    def test_service_edge_case_operations(self, test_client: FlaskClient) -> None:
+    def test_self(self, test_client: FlaskClient) -> None:
         """Testa operações em casos extremos (linhas 416-417, 463-464)."""
         # Cria uma aplicação válida primeiro
         app_data = {
@@ -90,7 +89,7 @@ class TestServicesMissingCoverage:
         assert result.error is not None
         assert "not found" in result.error or "not registered" in result.error
 
-    def test_service_lifecycle_edge_cases(self, test_client: FlaskClient) -> None:
+    def test_self(self, test_client: FlaskClient) -> None:
         """Testa casos extremos do ciclo de vida (linhas 644-645, 657-658)."""
         # Teste operação em app não existente
         response = test_client.get("/api/v1/apps/non-existent-app")
@@ -104,7 +103,7 @@ class TestServicesMissingCoverage:
         data = response.get_json()
         assert data["success"] is False
 
-    def test_service_validation_comprehensive(self, test_client: FlaskClient) -> None:
+    def test_self(self, test_client: FlaskClient) -> None:
         """Testa validação abrangente (linhas 673, 679, 689)."""
         # Teste com dados completamente inválidos
         invalid_data = {
@@ -203,7 +202,7 @@ class TestServicesMissingCoverage:
     def test_service_configuration_edge_cases(self) -> None:
         """Testa casos extremos de configuração."""
         # Configuração com valores mínimos
-        minimal_config = FlextWebConfigs.WebConfig(
+        minimal_config = FlextWebConfig.WebConfig(
             host="127.0.0.1",
             port=1024,  # Porta mínima
             secret_key="minimal-config-test-32-characters!",

@@ -18,7 +18,7 @@ from subprocess import CompletedProcess
 import pytest
 
 from flext_web import (
-    FlextWebConfigs,
+    FlextWebConfig,
     FlextWebSettings,
     __main__ as main_module,
 )
@@ -121,7 +121,7 @@ class TestRealMainEntry:
 
         try:
             # Test with custom arguments
-            config = FlextWebConfigs.WebConfig(
+            config = FlextWebConfig.WebConfig(
                 host="test-host",
                 port=9001,
                 debug=False,

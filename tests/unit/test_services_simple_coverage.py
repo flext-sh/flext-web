@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 
-from flext_web import FlextWebConfigs, FlextWebServices
+from Flext_web import FlextWebConfig, FlextWebServices
 
 
 class TestServicesCoverage:
@@ -18,7 +18,7 @@ class TestServicesCoverage:
 
     def test_service_basic_functionality(self) -> None:
         """Test basic service functionality."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         service = FlextWebServices.WebService(config)
 
         # Basic service properties
@@ -27,7 +27,7 @@ class TestServicesCoverage:
 
     def test_health_endpoint_structure(self) -> None:
         """Test health endpoint response structure."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         service = FlextWebServices.WebService(config)
 
         with service.app.test_client() as client:
@@ -48,7 +48,7 @@ class TestServicesCoverage:
 
     def test_create_app_success_path(self) -> None:
         """Test successful app creation."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         service = FlextWebServices.WebService(config)
 
         with service.app.test_client() as client:
@@ -64,7 +64,7 @@ class TestServicesCoverage:
 
     def test_create_app_validation_error(self) -> None:
         """Test app creation with validation errors."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         service = FlextWebServices.WebService(config)
 
         with service.app.test_client() as client:
@@ -77,7 +77,7 @@ class TestServicesCoverage:
 
     def test_list_apps_endpoint(self) -> None:
         """Test list apps endpoint."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         service = FlextWebServices.WebService(config)
 
         with service.app.test_client() as client:
@@ -90,7 +90,7 @@ class TestServicesCoverage:
 
     def test_get_nonexistent_app(self) -> None:
         """Test getting a non-existent app."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         service = FlextWebServices.WebService(config)
 
         with service.app.test_client() as client:
@@ -99,7 +99,7 @@ class TestServicesCoverage:
 
     def test_malformed_json_request(self) -> None:
         """Test handling of malformed JSON."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         service = FlextWebServices.WebService(config)
 
         with service.app.test_client() as client:
@@ -113,7 +113,7 @@ class TestServicesCoverage:
 
     def test_service_with_custom_config(self) -> None:
         """Test service with custom configuration values."""
-        config = FlextWebConfigs.WebConfig(host="0.0.0.0", port=9000, debug=False)
+        config = FlextWebConfig.WebConfig(host="0.0.0.0", port=9000, debug=False)
         service = FlextWebServices.WebService(config)
 
         assert (

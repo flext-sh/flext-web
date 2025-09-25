@@ -11,9 +11,8 @@ import os
 from unittest.mock import patch
 
 import pytest
+from Flext_web import FlextWebConfig
 from pydantic import ValidationError
-
-from flext_web import FlextWebConfigs
 
 
 class TestWebConfigValidation:
@@ -22,21 +21,21 @@ class TestWebConfigValidation:
     def test_config_with_invalid_port_negative(self) -> None:
         """Test config creation with negative port."""
         with pytest.raises(ValidationError) as exc_info:
-            FlextWebConfigs.WebConfig(port=-1)
+            FlextWebConfig.WebConfig(port=-1)
 
         assert "greater than or equal to 1" in str(exc_info.value)
 
     def test_config_with_invalid_port_too_high(self) -> None:
         """Test config creation with port too high."""
         with pytest.raises(ValidationError) as exc_info:
-            FlextWebConfigs.WebConfig(port=70000)
+            FlextWebConfig.WebConfig(port=70000)
 
         assert "less than or equal to 65535" in str(exc_info.value)
 
     def test_config_with_empty_secret_key_production(self) -> None:
         """Test config with empty secret key in production."""
         with pytest.raises(ValidationError) as exc_info:
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 secret_key="",  # Empty secret key
                 debug=False,  # Production mode
             )
@@ -46,7 +45,7 @@ class TestWebConfigValidation:
     def test_config_with_weak_secret_key_production(self) -> None:
         """Test config with weak secret key in production."""
         with pytest.raises(ValidationError) as exc_info:
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 secret_key="weak",  # Too short
                 debug=False,  # Production mode
             )
@@ -55,7 +54,7 @@ class TestWebConfigValidation:
 
     def test_config_cors_enabled_debug_disabled(self) -> None:
         """Test config with CORS enabled but debug disabled."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             enable_cors=True,
             debug=False,
             secret_key="very-secure-production-secret-key-12345",
@@ -67,22 +66,22 @@ class TestWebConfigValidation:
 
     def test_config_max_content_length_validation(self) -> None:
         """Test max_content_length validation."""
-        config = FlextWebConfigs.WebConfig(max_content_length=1024)
+        config = FlextWebConfig.WebConfig(max_content_length=1024)
         assert config.max_content_length == 1024
 
         # Test with very large value
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             max_content_length=100 * 1024 * 1024,  # 100MB
         )
         assert config.max_content_length == 100 * 1024 * 1024
 
     def test_config_request_timeout_validation(self) -> None:
         """Test request_timeout validation."""
-        config = FlextWebConfigs.WebConfig(request_timeout=60)
+        config = FlextWebConfig.WebConfig(request_timeout=60)
         assert config.request_timeout == 60
 
         # Test with maximum allowed timeout
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             request_timeout=300,  # Maximum allowed (5 minutes)
         )
         assert config.request_timeout == 300
@@ -105,7 +104,7 @@ class TestWebConfigEnvironmentVariables:
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
-            config_result = FlextWebConfigs.create_config_from_env()
+            config_result = FlextWebConfig.create_config_from_env()
             assert config_result.is_success
             config = config_result.value
 
@@ -128,7 +127,7 @@ class TestWebConfigEnvironmentVariables:
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
-            config_result = FlextWebConfigs.create_config_from_env()
+            config_result = FlextWebConfig.create_config_from_env()
             assert config_result.is_success
             config = config_result.value
 
@@ -151,7 +150,7 @@ class TestWebConfigEnvironmentVariables:
             patch.dict(os.environ, env_vars, clear=False),
             pytest.raises(ValidationError),
         ):
-            FlextWebConfigs.WebConfig()
+            FlextWebConfig.WebConfig()
 
     def test_config_env_override_precedence(self) -> None:
         """Test that explicit parameters override environment variables."""
@@ -161,7 +160,7 @@ class TestWebConfigEnvironmentVariables:
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
-            config = FlextWebConfigs.WebConfig(
+            config = FlextWebConfig.WebConfig(
                 host="explicit-host",  # Should override env
                 port=9000,  # Should override env
             )
@@ -171,20 +170,20 @@ class TestWebConfigEnvironmentVariables:
 
 
 class TestWebConfigFactoryMethods:
-    """Test FlextWebConfigs factory methods."""
+    """Test FlextWebConfig factory methods."""
 
     def test_create_web_config_no_overrides(self) -> None:
         """Test creating web config without overrides."""
-        result = FlextWebConfigs.create_web_config()
+        result = FlextWebConfig.create_web_config()
 
         assert result.is_success
         config = result.value
-        assert isinstance(config, FlextWebConfigs.WebConfig)
+        assert isinstance(config, FlextWebConfig.WebConfig)
         assert config.host == "localhost"  # Default
 
     def test_create_web_config_with_overrides(self) -> None:
         """Test creating web config with overrides."""
-        result = FlextWebConfigs.create_web_config(
+        result = FlextWebConfig.create_web_config(
             host="custom-host",
             port=9999,
             debug=False,
@@ -198,7 +197,7 @@ class TestWebConfigFactoryMethods:
 
     def test_create_development_config(self) -> None:
         """Test creating development-optimized config."""
-        result = FlextWebConfigs.create_development_config()
+        result = FlextWebConfig.create_development_config()
 
         assert result.is_success
         config = result.value
@@ -214,7 +213,7 @@ class TestWebConfigFactoryMethods:
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
-            result = FlextWebConfigs.create_production_config()
+            result = FlextWebConfig.create_production_config()
 
             assert result.is_success
             config = result.value
@@ -227,12 +226,12 @@ class TestWebConfigFactoryMethods:
     def test_create_production_config_missing_secret(self) -> None:
         """Test creating production config without required secret key."""
         # Clear any existing FLEXT_WEB_SECRET_KEY
-        env_vars = {}
+        env_vars: dict[str, str] = {}
         if "FLEXT_WEB_SECRET_KEY" in os.environ:
             env_vars["FLEXT_WEB_SECRET_KEY"] = ""
 
         with patch.dict(os.environ, env_vars, clear=True):
-            result = FlextWebConfigs.create_production_config()
+            result = FlextWebConfig.create_production_config()
 
             # Should fail due to missing secret key
             assert result.is_failure
@@ -241,7 +240,7 @@ class TestWebConfigFactoryMethods:
 
     def test_create_test_config(self) -> None:
         """Test creating test-optimized config."""
-        result = FlextWebConfigs.create_test_config()
+        result = FlextWebConfig.create_test_config()
 
         # Test config creation should fail due to port=0 validation
         assert result.is_failure
@@ -254,7 +253,7 @@ class TestWebConfigFactoryMethods:
         env_vars = {"FLEXT_WEB_HOST": "env-host", "FLEXT_WEB_PORT": "7777"}
 
         with patch.dict(os.environ, env_vars, clear=False):
-            result = FlextWebConfigs.create_config_from_env()
+            result = FlextWebConfig.create_config_from_env()
 
             assert result.is_success
             config = result.value
@@ -269,7 +268,7 @@ class TestWebConfigFactoryMethods:
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
-            result = FlextWebConfigs.create_config_from_env()
+            result = FlextWebConfig.create_config_from_env()
 
             assert result.is_failure
             # Environment variable conversion error is now caught properly
@@ -282,7 +281,7 @@ class TestWebConfigFactoryMethods:
     def test_create_web_config_alternative_methods(self) -> None:
         """Test alternative config creation methods."""
         # Test with custom parameters passed directly to WebConfig
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="dict-host",
             port=6666,
             debug=False,
@@ -297,7 +296,7 @@ class TestWebConfigFactoryMethods:
         """Test config validation through direct instantiation."""
         # This should fail due to invalid port
         with pytest.raises((ValueError, ValidationError)) as exc_info:
-            FlextWebConfigs.WebConfig(
+            FlextWebConfig.WebConfig(
                 host="valid-host",
                 port=-1,  # Invalid port
                 debug=False,
@@ -314,7 +313,7 @@ class TestWebConfigEdgeCases:
 
     def test_config_with_extreme_values(self) -> None:
         """Test config with boundary values."""
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="a" * 255,  # Very long hostname
             port=65535,  # Maximum port
             app_name="X" * 100,  # Long app name
@@ -328,7 +327,7 @@ class TestWebConfigEdgeCases:
 
     def test_config_model_dump(self) -> None:
         """Test config serialization."""
-        config = FlextWebConfigs.WebConfig(host="test-host", port=8080, debug=True)
+        config = FlextWebConfig.WebConfig(host="test-host", port=8080, debug=True)
 
         config_dict = config.model_dump()
 
@@ -339,7 +338,7 @@ class TestWebConfigEdgeCases:
 
     def test_config_model_copy(self) -> None:
         """Test config copying with updates."""
-        original = FlextWebConfigs.WebConfig(host="original-host", port=8080)
+        original = FlextWebConfig.WebConfig(host="original-host", port=8080)
 
         copied = original.model_copy(update={"host": "updated-host"})
 
@@ -349,7 +348,7 @@ class TestWebConfigEdgeCases:
 
     def test_config_repr_and_str(self) -> None:
         """Test config string representations."""
-        config = FlextWebConfigs.WebConfig(host="test-host", port=8080)
+        config = FlextWebConfig.WebConfig(host="test-host", port=8080)
 
         repr_str = repr(config)
         str_str = str(config)

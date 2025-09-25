@@ -282,7 +282,7 @@ class TestWebAppHandler:
         """Create REAL app handler instance."""
         return FlextWebHandlers.WebAppHandler()
 
-    def test_create_app_real(self, app_handler: FlextWebHandlers.WebAppHandler) -> None:
+    def test_self(self, app_handler: FlextWebHandlers.WebAppHandler) -> None:
         """Test REAL app creation through handler."""
         result = app_handler.create("TestHandlerApp", port=8084)
 
@@ -298,7 +298,7 @@ class TestWebAppHandler:
         assert app.port == 8084
         assert app.status == FlextWebModels.WebAppStatus.STOPPED
 
-    def test_start_app_real(self, app_handler: FlextWebHandlers.WebAppHandler) -> None:
+    def test_self(self, app_handler: FlextWebHandlers.WebAppHandler) -> None:
         """Test REAL app start through handler."""
         # Create app first
         create_result = app_handler.create("TestHandlerStartApp", port=8085)
@@ -318,7 +318,7 @@ class TestWebAppHandler:
         assert started_app.is_running
         assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
 
-    def test_stop_app_real(self, app_handler: FlextWebHandlers.WebAppHandler) -> None:
+    def test_self(self, app_handler: FlextWebHandlers.WebAppHandler) -> None:
         """Test REAL app stop through handler."""
         # Create and start app first
         create_result = app_handler.create("TestHandlerStopApp", port=8086)

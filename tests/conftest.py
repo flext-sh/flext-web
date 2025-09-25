@@ -17,9 +17,9 @@ from collections.abc import Generator
 
 import pytest
 from flask import Flask
+from Flext_web import FlextWebConfig, FlextWebServices
 
 from flext_core import FlextTypes
-from flext_web import FlextWebConfigs, FlextWebServices
 from tests.port_manager import TestPortManager
 
 
@@ -44,9 +44,9 @@ def setup_test_environment() -> Generator[None]:
 
 
 @pytest.fixture
-def real_config() -> FlextWebConfigs.WebConfig:
+def real_config() -> FlextWebConfig.WebConfig:
     """Create real test configuration."""
-    config_result = FlextWebConfigs.create_test_config()
+    config_result = FlextWebConfig.create_test_config()
     assert config_result.is_success, (
         f"Test config creation failed: {config_result.error}"
     )
@@ -55,7 +55,7 @@ def real_config() -> FlextWebConfigs.WebConfig:
 
 @pytest.fixture
 def real_service(
-    real_config: FlextWebConfigs.WebConfig,
+    real_config: FlextWebConfig.WebConfig,
 ) -> Generator[FlextWebServices.WebService]:
     """Create real FlextWebServices.WebService instance with clean state."""
     service_result = FlextWebServices.create_web_service(real_config)
@@ -67,7 +67,7 @@ def real_service(
 
 
 @pytest.fixture
-def real_app(real_config: FlextWebConfigs.WebConfig) -> Flask:
+def real_app(real_config: FlextWebConfig.WebConfig) -> Flask:
     """Create real Flask app."""
     service_result = FlextWebServices.create_web_service(real_config)
     assert service_result.is_success, f"Service creation failed: {service_result.error}"
@@ -76,13 +76,13 @@ def real_app(real_config: FlextWebConfigs.WebConfig) -> Flask:
 
 @pytest.fixture
 def running_service(
-    real_config: FlextWebConfigs.WebConfig,
+    real_config: FlextWebConfig.WebConfig,
 ) -> Generator[FlextWebServices.WebService]:
     """Start real service in background thread with clean state."""
     # Allocate unique port to avoid conflicts
     test_port = TestPortManager.allocate_port()
 
-    test_config = FlextWebConfigs.WebConfig.model_validate(
+    test_config = FlextWebConfig.WebConfig.model_validate(
         {
             "host": real_config.host,
             "port": test_port,

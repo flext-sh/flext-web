@@ -21,7 +21,7 @@ from tests.port_manager import TestPortManager
 
 from flext_core import FlextTypes
 from flext_web import (
-    FlextWebConfigs,
+    FlextWebConfig,
     FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
@@ -153,7 +153,7 @@ class TestRealEdgeCases:
     def test_real_config_validation_edge_cases(self) -> None:
         """Test real configuration validation edge cases."""
         # Test production mode with default secret key
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             debug=False,  # Production mode
             secret_key="change-in-production-xxxxxxxxxxxx",  # Default key
         )
@@ -163,7 +163,7 @@ class TestRealEdgeCases:
         assert config.secret_key == "change-in-production-xxxxxxxxxxxx"
 
         # Test valid production config
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             debug=False,
             secret_key="real-production-secret-key-32-chars!",
         )
@@ -212,7 +212,7 @@ class TestRealServiceEdgeCases:
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
 
-        config = FlextWebConfigs.WebConfig(
+        config = FlextWebConfig.WebConfig(
             host="localhost",
             port=port,
             debug=True,
@@ -409,35 +409,35 @@ class TestRealConfigurationEdgeCases:
         """Test real configuration field validation."""
         # Test invalid app name
         with pytest.raises(ValidationError):
-            FlextWebConfigs.WebConfig(app_name="")
+            FlextWebConfig.WebConfig(app_name="")
 
         # Version field accepts any string (no specific validation)
         # This should work fine
-        config = FlextWebConfigs.WebConfig(version="invalid-version")
+        config = FlextWebConfig.WebConfig(version="invalid-version")
         assert config.version == "invalid-version"
 
         # Test invalid host
         with pytest.raises(ValidationError):
-            FlextWebConfigs.WebConfig(host="")
+            FlextWebConfig.WebConfig(host="")
 
         # Test invalid port range
         with pytest.raises(ValidationError):
-            FlextWebConfigs.WebConfig(port=0)
+            FlextWebConfig.WebConfig(port=0)
 
         with pytest.raises(ValidationError):
-            FlextWebConfigs.WebConfig(port=99999)
+            FlextWebConfig.WebConfig(port=99999)
 
         # Test invalid secret key length
         with pytest.raises(ValidationError):
-            FlextWebConfigs.WebConfig(secret_key="short")
+            FlextWebConfig.WebConfig(secret_key="short")
 
     @pytest.mark.unit
     def test_real_config_server_url_generation(self) -> None:
         """Test real server URL generation."""
-        config = FlextWebConfigs.WebConfig(host="test-host", port=9000)
+        config = FlextWebConfig.WebConfig(host="test-host", port=9000)
         assert config.get_server_url() == "http://test-host:9000"
 
-        config = FlextWebConfigs.WebConfig(host="0.0.0.0", port=8080)
+        config = FlextWebConfig.WebConfig(host="0.0.0.0", port=8080)
         # Note: 0.0.0.0 gets converted to 127.0.0.1 for security unless FLEXT_DEVELOPMENT_MODE=true
         assert config.get_server_url() == "http://127.0.0.1:8080"
 
@@ -445,11 +445,11 @@ class TestRealConfigurationEdgeCases:
     def test_real_config_production_detection(self) -> None:
         """Test real production mode detection."""
         # Development mode
-        config = FlextWebConfigs.WebConfig(debug=True)
+        config = FlextWebConfig.WebConfig(debug=True)
         assert config.is_production() is False
 
         # Production mode
-        config = FlextWebConfigs.WebConfig(debug=False)
+        config = FlextWebConfig.WebConfig(debug=False)
         assert config.is_production() is True
 
 

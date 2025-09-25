@@ -8,7 +8,7 @@
 
 ```python
 from flext_web import FlextWebServices
-# ImportError: cannot import name 'FlextWebConfigs' from partially initialized module
+# ImportError: cannot import name 'FlextWebConfig' from partially initialized module
 # 'flext_web.config' (most likely due to a circular import)
 # (/home/marlonsc/flext/flext-web/src/flext_web/config.py)
 ```
@@ -16,7 +16,7 @@ from flext_web import FlextWebServices
 **Root Cause**: Circular dependency chain:
 
 - `config.py` imports `FlextWebSettings` from `settings.py`
-- `settings.py` imports `FlextWebConfigs` from `config.py`
+- `settings.py` imports `FlextWebConfig` from `config.py`
 
 **Impact**: Complete library non-functionality
 
@@ -39,7 +39,7 @@ grep -n "from.*settings" src/flext_web/config.py
 grep -n "from.*config" src/flext_web/settings.py
 
 # Look for the circular reference
-grep -n "FlextWebConfigs" src/flext_web/settings.py
+grep -n "FlextWebConfig" src/flext_web/settings.py
 grep -n "FlextWebSettings" src/flext_web/config.py
 ```
 

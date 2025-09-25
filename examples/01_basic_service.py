@@ -5,13 +5,13 @@ Simple example demonstrating how to start the FLEXT Web Interface service
 with default configuration for development purposes using the refactored API.
 """
 
-from flext_web import FlextWebConfigs, FlextWebServices
+from Flext_web import FlextWebConfig, FlextWebServices
 
 
 def main() -> None:
     """Start FLEXT Web Interface with default configuration."""
     # Get default configuration using factory function
-    config_result = FlextWebConfigs.create_web_config()
+    config_result = FlextWebConfig.create_web_config()
     if config_result.is_failure:
         print(f"Configuration creation failed: {config_result.error}")
         return

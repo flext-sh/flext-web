@@ -9,41 +9,40 @@ from __future__ import annotations
 import os
 
 import pytest
+from Flext_web import FlextWebConfig
 from pydantic import ValidationError
-
-from flext_web import FlextWebConfigs
 
 
 class TestWebConfigBasic:
     """Enterprise configuration testing for basic functionality and validation.
 
-    Test suite covering fundamental FlextWebConfigs.WebConfig creation, default values,
+    Test suite covering fundamental FlextWebConfig.WebConfig creation, default values,
     and basic validation patterns. Ensures configuration follows enterprise
     standards with proper type safety and business rule enforcement.
     """
 
     def test_web_config_creation(self) -> None:
-        """Test basic FlextWebConfigs.WebConfig creation with default values.
+        """Test basic FlextWebConfig.WebConfig creation with default values.
 
         Validates that configuration instance creates successfully with
         all default values properly set and business rules satisfied.
         Tests fundamental configuration patterns used throughout the system.
         """
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         if config.app_name != "FLEXT Web":
             msg: str = f"Expected {'FLEXT Web'}, got {config.app_name}"
             raise AssertionError(msg)
 
     def test_web_config_with_custom_settings(self) -> None:
         """Test WebConfig with custom settings."""
-        config = FlextWebConfigs.WebConfig(app_name="Custom Web App")
+        config = FlextWebConfig.WebConfig(app_name="Custom Web App")
         if config.app_name != "Custom Web App":
             msg: str = f"Expected {'Custom Web App'}, got {config.app_name}"
             raise AssertionError(msg)
 
     def test_web_config_security_settings(self) -> None:
         """Test security-related settings."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         assert config.secret_key is not None
         if len(config.secret_key) < 32:
             msg: str = f"Expected {len(config.secret_key)} >= {32}"
@@ -52,7 +51,7 @@ class TestWebConfigBasic:
 
     def test_web_config_server_settings(self) -> None:
         """Test server-related settings."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         if config.host != "localhost":
             msg: str = f"Expected {'localhost'}, got {config.host}"
             raise AssertionError(msg)
@@ -61,24 +60,24 @@ class TestWebConfigBasic:
 
     def test_web_config_validation(self) -> None:
         """Test configuration validation."""
-        config = FlextWebConfigs.WebConfig()
+        config = FlextWebConfig.WebConfig()
         result = config.validate_config()
         assert result.success
 
     def test_web_config_port_validation(self) -> None:
         """Test port validation."""
         with pytest.raises(ValidationError):
-            FlextWebConfigs.WebConfig(port=0)  # Below minimum
+            FlextWebConfig.WebConfig(port=0)  # Below minimum
 
         with pytest.raises(ValidationError):
-            FlextWebConfigs.WebConfig(port=65536)  # Above maximum
+            FlextWebConfig.WebConfig(port=65536)  # Above maximum
 
     def test_create_web_config_function(self) -> None:
         """Test create_web_config function."""
-        settings_result = FlextWebConfigs.create_web_config()
+        settings_result = FlextWebConfig.create_web_config()
         assert settings_result.is_success
         settings = settings_result.value
-        assert isinstance(settings, FlextWebConfigs.WebConfig)
+        assert isinstance(settings, FlextWebConfig.WebConfig)
         if settings.app_name != "FLEXT Web":
             msg: str = f"Expected {'FLEXT Web'}, got {settings.app_name}"
             raise AssertionError(msg)
@@ -93,7 +92,7 @@ class TestConfigIntegration:
         os.environ["FLEXT_WEB_APP_NAME"] = "Test App From Env"
 
         try:
-            config = FlextWebConfigs.WebConfig()
+            config = FlextWebConfig.WebConfig()
             if config.app_name != "Test App From Env":
                 msg: str = f"Expected {'Test App From Env'}, got {config.app_name}"
                 raise AssertionError(msg)
@@ -109,4 +108,4 @@ class TestConfigIntegration:
             ValidationError,
             match="String should have at least 1 character",
         ):
-            FlextWebConfigs.WebConfig(app_name="")
+            FlextWebConfig.WebConfig(app_name="")

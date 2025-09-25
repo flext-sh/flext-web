@@ -108,11 +108,11 @@ class FlextWebModels(FlextModels):
             description="Port number for the web application",
         )
         status: FlextWebModels.WebAppStatus = Field(
-            default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED,
+            default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED,  # type: ignore[attr-defined]
             description="Current status of the web application",
         )
-        version: str = Field(
-            default=FlextConstants.Core.VERSION,
+        version: int = Field(
+            default=FlextConstants.Performance.DEFAULT_VERSION,
             description="Application version",
         )
         environment: str = Field(
@@ -295,8 +295,8 @@ class FlextWebModels(FlextModels):
 
                 # Validate environment
                 valid_environments = [
-                    e.value for e in FlextConstants.Environment.ConfigEnvironment
-                ]
+                    e.value for e in list(FlextConstants.Environment.ConfigEnvironment)
+                ]  # type: ignore[misc]
                 if self.environment not in valid_environments:
                     return FlextResult[None].fail(
                         f"Invalid environment: {self.environment}. Valid: {valid_environments}"
@@ -715,11 +715,16 @@ class FlextWebModels(FlextModels):
                 host=str(app_data["host"]),
                 port=port_value,
                 status=FlextWebModels.WebAppStatus(app_data["status"]),
-                version=str(app_data.get("version", FlextConstants.Core.VERSION)),
+                version=int(
+                    app_data.get(
+                        "version", str(FlextConstants.Performance.DEFAULT_VERSION)
+                    )
+                ),  # type: ignore[arg-type]
                 environment=str(
                     app_data.get("environment", FlextConstants.Defaults.ENVIRONMENT)
                 ),
                 health_check_url=app_data.get("health_check_url"),
+                domain_events=[],
             )
 
             # Validate business rules

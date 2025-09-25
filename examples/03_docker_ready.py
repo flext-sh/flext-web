@@ -10,13 +10,14 @@ import secrets
 import signal
 import sys
 
+from Flext_web import FlextWebConfig, FlextWebServices
+
 from flext_core import FlextLogger
-from flext_web import FlextWebConfigs, FlextWebServices
 
 logger = FlextLogger(__name__)
 
 
-def create_docker_config() -> FlextWebConfigs.WebConfig:
+def create_docker_config() -> FlextWebConfig.WebConfig:
     """Create Docker-optimized configuration from environment variables."""
     # Read configuration from environment
     host = os.environ.get("FLEXT_WEB_HOST", "127.0.0.1")
@@ -29,7 +30,7 @@ def create_docker_config() -> FlextWebConfigs.WebConfig:
         secret_key = secrets.token_urlsafe(32)
         logger.warning("No SECRET_KEY provided, generated temporary key")
 
-    config = FlextWebConfigs.WebConfig(
+    config = FlextWebConfig.WebConfig(
         host=host,
         port=port,
         debug=debug,

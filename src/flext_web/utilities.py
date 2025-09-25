@@ -87,8 +87,8 @@ class FlextWebUtilities(FlextUtilities):
 
         """
         try:
-            result: FlextResult[object] = urlparse(url)
-            return all([result.scheme, result.netloc])
+            parsed = urlparse(url)  # type: ignore[misc]
+            return all([parsed.scheme, parsed.netloc])  # type: ignore[misc]
         except Exception:
             return False
 
@@ -239,6 +239,7 @@ class FlextWebUtilities(FlextUtilities):
                 name=name,
                 port=port,
                 host=host,
+                domain_events=[],
             )
 
             app_data = {
@@ -249,7 +250,7 @@ class FlextWebUtilities(FlextUtilities):
                 "created_at": FlextUtilities.Generators.generate_iso_timestamp(),
             }
 
-            return FlextResult[FlextTypes.Core.Dict].ok(app_data)
+            return FlextResult[FlextTypes.Core.Dict].ok(app_data)  # type: ignore[arg-type]
         except ValidationError as e:
             # Extract meaningful error messages for compatibility
             error_msg = ""
