@@ -104,7 +104,7 @@ class TestConfigMissingCoverage:
 
     def test_web_system_configs_creation(self) -> None:
         """Testa criação de configurações do sistema web (linhas 576, 588-589)."""
-        result = FlextWebConfigs.create_web_system_Config()
+        result = FlextWebConfig.create_web_system_Config()
         assert result.success
         system_configs = result.value
         assert isinstance(system_configs, dict)

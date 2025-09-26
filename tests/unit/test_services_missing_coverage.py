@@ -38,7 +38,7 @@ class TestServicesMissingCoverage:
         """Cliente Flask de teste."""
         return test_service.app.test_client()
 
-    def test_self(self, test_client: FlaskClient) -> None:
+    def test_uncovered_error_handling_paths(self, test_client: FlaskClient) -> None:
         """Testa caminhos de tratamento de erro não cobertos."""
         # Teste com dados completamente inválidos (linhas 303-304, 384-385)
         invalid_data = {
@@ -53,7 +53,7 @@ class TestServicesMissingCoverage:
         data = response.get_json()
         assert data["success"] is False
 
-    def test_self(self, test_client: FlaskClient) -> None:
+    def test_extreme_case_operations(self, test_client: FlaskClient) -> None:
         """Testa operações em casos extremos (linhas 416-417, 463-464)."""
         # Cria uma aplicação válida primeiro
         app_data = {
@@ -89,7 +89,7 @@ class TestServicesMissingCoverage:
         assert result.error is not None
         assert "not found" in result.error or "not registered" in result.error
 
-    def test_self(self, test_client: FlaskClient) -> None:
+    def test_lifecycle_extreme_cases(self, test_client: FlaskClient) -> None:
         """Testa casos extremos do ciclo de vida (linhas 644-645, 657-658)."""
         # Teste operação em app não existente
         response = test_client.get("/api/v1/apps/non-existent-app")
@@ -103,7 +103,7 @@ class TestServicesMissingCoverage:
         data = response.get_json()
         assert data["success"] is False
 
-    def test_self(self, test_client: FlaskClient) -> None:
+    def test_comprehensive_validation_coverage(self, test_client: FlaskClient) -> None:
         """Testa validação abrangente (linhas 673, 679, 689)."""
         # Teste com dados completamente inválidos
         invalid_data = {

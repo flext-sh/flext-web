@@ -11,7 +11,7 @@ import uuid
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Self
+from typing import Any, Self, override
 
 from pydantic import ConfigDict, Field, computed_field, field_validator, model_validator
 
@@ -42,8 +42,8 @@ class FlextWebModels(FlextModels):
             use_enum_values=True,
             arbitrary_types_allowed=True,
             validate_return=True,
-            ser_json_timedelta="iso8601",
-            ser_json_bytes="base64",
+            ser_json_timedelta=iso8601,
+            ser_json_bytes=base64,
             serialize_by_alias=True,
             populate_by_name=True,
             str_strip_whitespace=True,
@@ -52,7 +52,7 @@ class FlextWebModels(FlextModels):
             validate_default=True,
             # Custom encoders for complex types
             json_encoders={
-                Path: str,
+                Path: "str",
                 datetime: lambda dt: dt.isoformat(),
             },
         )
@@ -74,13 +74,13 @@ class FlextWebModels(FlextModels):
         model_config = ConfigDict(
             validate_assignment=True,
             use_enum_values=True,
-            extra="forbid",
+            extra=forbid,
             frozen=False,
             # Enhanced Pydantic 2.11 features
             arbitrary_types_allowed=True,
             validate_return=True,
-            ser_json_timedelta="iso8601",
-            ser_json_bytes="base64",
+            ser_json_timedelta=iso8601,
+            ser_json_bytes=base64,
             serialize_by_alias=True,
             populate_by_name=True,
             str_strip_whitespace=True,
@@ -96,7 +96,7 @@ class FlextWebModels(FlextModels):
             description="Web application name",
         )
         host: str = Field(
-            default="localhost",
+            default=localhost,
             min_length=1,
             max_length=255,
             description="Host address for the web application",
@@ -108,7 +108,7 @@ class FlextWebModels(FlextModels):
             description="Port number for the web application",
         )
         status: FlextWebModels.WebAppStatus = Field(
-            default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED,  # type: ignore[attr-defined]
+            default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED,
             description="Current status of the web application",
         )
         version: int = Field(
@@ -198,7 +198,7 @@ class FlextWebModels(FlextModels):
                 raise ValueError(result.error)
 
             # Additional security checks
-            if host.lower() in {"localhost", "127.0.0.1", "::", "::1"}:
+            if host.lower() in {"localhost", "127.0.0.1", ":: , ::1"}:
                 return host
 
             # Validate against known malicious patterns
@@ -296,7 +296,7 @@ class FlextWebModels(FlextModels):
                 # Validate environment
                 valid_environments = [
                     e.value for e in list(FlextConstants.Environment.ConfigEnvironment)
-                ]  # type: ignore[misc]
+                ]
                 if self.environment not in valid_environments:
                     return FlextResult[None].fail(
                         f"Invalid environment: {self.environment}. Valid: {valid_environments}"
@@ -401,10 +401,12 @@ class FlextWebModels(FlextModels):
                 "metrics": self.metrics,
             }
 
+        @override
         def __str__(self) -> str:
             """String representation of the WebApp."""
             return f"{self.name} ({self.host}:{self.port}) [{self.status.value}]"
 
+        @override
         def __repr__(self) -> str:
             """Detailed string representation."""
             return (
@@ -419,10 +421,10 @@ class FlextWebModels(FlextModels):
             # Initialize webapp-specific state
             if not self.metrics:
                 self.metrics = {
-                    "startup_time": None,
+                    "startup_time": "None",
                     "request_count": 0,
                     "error_count": 0,
-                    "last_request": None,
+                    "last_request": "None",
                 }
 
     # Enhanced Web Request Models
@@ -577,7 +579,7 @@ class FlextWebModels(FlextModels):
             description="Application name",
         )
         host: str = Field(
-            default="localhost",
+            default=localhost,
             min_length=1,
             max_length=255,
             description="Host address",
@@ -719,7 +721,7 @@ class FlextWebModels(FlextModels):
                     app_data.get(
                         "version", str(FlextConstants.Performance.DEFAULT_VERSION)
                     )
-                ),  # type: ignore[arg-type]
+                ),
                 environment=str(
                     app_data.get("environment", FlextConstants.Defaults.ENVIRONMENT)
                 ),

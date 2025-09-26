@@ -13,8 +13,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import os
-from typing import TypedDict, TypeVar
+from typing import Literal, TypedDict
 
 from flext_core import FlextResult, FlextTypes
 
@@ -22,17 +21,8 @@ from flext_core import FlextResult, FlextTypes
 # WEB-SPECIFIC TYPE VARIABLES - Domain-specific TypeVars for web operations
 # =============================================================================
 
+
 # Web domain TypeVars
-TWebApp = TypeVar("TWebApp")
-TWebConfig = TypeVar("TWebConfig")
-TWebHandler = TypeVar("TWebHandler")
-TWebRequest = TypeVar("TWebRequest")
-TWebResponse = TypeVar("TWebResponse")
-TWebService = TypeVar("TWebService")
-TFlaskApp = TypeVar("TFlaskApp")
-TWebMiddleware = TypeVar("TWebMiddleware")
-
-
 class FlextWebTypes(FlextTypes):
     """Web-specific type definitions extending FlextTypes.
 
@@ -88,7 +78,7 @@ class FlextWebTypes(FlextTypes):
     # WEB SERVICE TYPES - Complex web service types
     # =========================================================================
 
-    class WebService:  # type: ignore[misc]
+    class WebService:
         """Web service complex types."""
 
         type ServiceConfiguration = dict[
@@ -145,6 +135,41 @@ class FlextWebTypes(FlextTypes):
             str, str | int | dict[str, FlextTypes.Core.ConfigValue]
         ]
         type RateLimiting = dict[str, int | dict[str, FlextTypes.Core.JsonValue]]
+
+    # =========================================================================
+    # WEB PROJECT TYPES - Domain-specific project types extending FlextTypes
+    # =========================================================================
+
+    class Project(FlextTypes.Project):
+        """Web-specific project types extending FlextTypes.Project.
+
+        Adds web-specific project types while inheriting generic types from FlextTypes.
+        Follows domain separation principle: Web domain owns web-specific types.
+        """
+
+        # Web-specific project types extending the generic ones
+        type ProjectType = Literal[
+            # Generic types inherited from FlextTypes.Project
+            "library",
+            "application",
+            "service",
+            # Web-specific types
+            "webapp",
+            "spa",
+            "api-server",
+            "web-service",
+            "microservice",
+            "rest-api",
+            "web-portal",
+            "dashboard",
+            "REDACTED_LDAP_BIND_PASSWORD-panel",
+        ]
+
+        # Web-specific project configurations
+        type WebProjectConfig = dict[str, FlextTypes.Core.ConfigValue | object]
+        type FlaskProjectConfig = dict[str, str | int | bool | list[str]]
+        type ApiProjectConfig = dict[str, bool | str | dict[str, object]]
+        type SecurityProjectConfig = dict[str, FlextTypes.Core.ConfigValue | object]
 
     # =========================================================================
     # LEGACY TYPEDDICT CLASSES - Preserved for compatibility
@@ -309,13 +334,29 @@ class FlextWebTypes(FlextTypes):
         port: int = 8080,
         *,
         debug: bool = True,
-        secret_key: str = os.getenv(
-            "FLEXT_WEB_SECRET_KEY",
-            "dev-key-unsafe-change-in-prod",
-        ),
+        secret_key: str | None = None,
         app_name: str = "FLEXT Web",
     ) -> ConfigData:
-        """Create config data structure with defaults."""
+        """Create config data structure with defaults.
+
+        DEPRECATED: Use FlextWebConfig.get_global_instance() instead.
+        This method will be removed in a future version.
+        """
+        import warnings
+
+        warnings.warn(
+            "create_config_data is deprecated. "
+            "Use FlextWebConfig.get_global_instance() with Pydantic 2 Settings instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        # Use environment-aware config or fallback
+        if secret_key is None:
+            # TODO: Replace with FlextWebConfig singleton access
+            # For now, use a safe default (this should come from config)
+            secret_key = "dev-key-unsafe-change-in-prod"
+
         return cls.ConfigData(
             host=host,
             port=port,
@@ -477,8 +518,8 @@ class FlextWebTypes(FlextTypes):
         """Get current web types system configuration."""
         try:
             config: FlextTypes.Core.Dict = {
-                "enable_strict_typing": True,
-                "enable_runtime_validation": True,
+                "enable_strict_typing": "True",
+                "enable_runtime_validation": "True",
                 "total_type_definitions": 50,
                 "factory_methods": 2,
             }

@@ -88,7 +88,9 @@ class TestFlextWebService:
             raise AssertionError(msg)
         assert hasattr(service, "config")
 
-    def test_self(self, real_api_service: FlextWebService) -> None:
+    def test_health_check_endpoint_real_http(
+        self, real_api_service: FlextWebService
+    ) -> None:
         """Test health check endpoint using real HTTP."""
         assert real_api_service is not None
         base_url = f"http://localhost:{real_api_service.config.port}"
@@ -106,7 +108,9 @@ class TestFlextWebService:
             health_msg: str = f"Expected {'healthy'} in {data['message']}"
             raise AssertionError(health_msg)
 
-    def test_self(self, real_api_service: FlextWebService) -> None:
+    def test_api_list_empty_apps_real_http(
+        self, real_api_service: FlextWebService
+    ) -> None:
         """Test listing empty apps using real HTTP."""
         assert real_api_service is not None
         base_url = f"http://localhost:{real_api_service.config.port}"
@@ -124,7 +128,7 @@ class TestFlextWebService:
             apps_msg: str = f"Expected {[]}, got {data['data']['apps']}"
             raise AssertionError(apps_msg)
 
-    def test_self(self, real_api_service: FlextWebService) -> None:
+    def test_api_create_app_real_http(self, real_api_service: FlextWebService) -> None:
         """Test creating an app using real HTTP."""
         assert real_api_service is not None
         base_url = f"http://localhost:{real_api_service.config.port}"
@@ -152,7 +156,9 @@ class TestFlextWebService:
             )
         assert data["data"]["port"] == 8080
 
-    def test_self(self, real_api_service: FlextWebService) -> None:
+    def test_api_create_app_missing_name_validation(
+        self, real_api_service: FlextWebService
+    ) -> None:
         """Test creating app with missing name using real HTTP."""
         assert real_api_service is not None
         base_url = f"http://localhost:{real_api_service.config.port}"

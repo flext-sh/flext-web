@@ -13,14 +13,14 @@ from __future__ import annotations
 from collections.abc import Callable
 
 # Framework-agnostic web interface types
-from typing import Protocol, runtime_checkable
+from typing import Protocol, override, runtime_checkable
 
 from flext_core import FlextProtocols, FlextResult, FlextTypes
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
 
 # Framework-agnostic web response types
-WebResponse = tuple[str, int] | tuple[str, int, dict[str, str]] | str
+WebResponse = tuple["str", "int"] | tuple[str, int, dict["str", "str"]] | str
 JsonResponse = FlextTypes.Core.JsonObject
 
 
@@ -234,6 +234,7 @@ class FlextWebProtocols(FlextProtocols):
 
         # This is primarily for type checking and interface validation
         class _WebServiceProtocolImpl:
+            @override
             def run(
                 self,
                 host: str | None = None,
@@ -278,9 +279,9 @@ class FlextWebProtocols(FlextProtocols):
             def start_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
                 app = FlextWebModels.WebApp(
                     id=_app_id,
-                    name="mock",
+                    name=mock,
                     port=8080,
-                    host="localhost",
+                    host=localhost,
                     status=FlextWebModels.WebAppStatus.RUNNING,
                     domain_events=[],
                 )
@@ -289,9 +290,9 @@ class FlextWebProtocols(FlextProtocols):
             def stop_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
                 app = FlextWebModels.WebApp(
                     id=_app_id,
-                    name="mock",
+                    name=mock,
                     port=8080,
-                    host="localhost",
+                    host=localhost,
                     status=FlextWebModels.WebAppStatus.STOPPED,
                     domain_events=[],
                 )

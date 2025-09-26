@@ -290,7 +290,7 @@ FLEXT_WEB_APP_NAME=File Config Test
     def test_functional_config_system_integration(self) -> None:
         """Test configuration system integration with real system calls."""
         # Test configuration creation and validation pipeline
-        config_result = FlextWebConfigs.create_web_system_Config()
+        config_result = FlextWebConfig.create_web_system_Config()
         assert config_result.success
 
         system_configs = config_result.value

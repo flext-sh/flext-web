@@ -6,6 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import override
+
 from flask import jsonify
 from flask.typing import ResponseReturnValue
 
@@ -81,6 +83,7 @@ class FlextWebHandlers(FlextProcessors):
 
         """
 
+        @override
         def __init__(self) -> None:
             """Initialize WebApp handler with FlextMixins functionality."""
             self.logger = FlextLogger(__name__)
@@ -147,13 +150,13 @@ class FlextWebHandlers(FlextProcessors):
         ) -> FlextResult[FlextTypes.Core.Headers]:
             """Sanitize inputs using MASSIVE FlextUtilities delegation."""
             try:
-                safe_name = FlextUtilities.TextProcessor.safe_string(name)
-                safe_host = FlextUtilities.TextProcessor.safe_string(host)
+                FlextUtilities.TextProcessor.safe_string(name)
+                FlextUtilities.TextProcessor.safe_string(host)
 
                 return FlextResult[FlextTypes.Core.Headers].ok(
                     {
-                        "name": safe_name,
-                        "host": safe_host,
+                        "name": "safe_name",
+                        "host": "safe_host",
                     },
                 )
             except Exception as e:
@@ -170,9 +173,9 @@ class FlextWebHandlers(FlextProcessors):
             """Validate all app inputs - simplified to rely on Pydantic model validation."""
             return FlextResult[FlextTypes.Core.Headers].ok(
                 {
-                    "name": name,
+                    "name": "name",
                     "port": str(port),
-                    "host": host,
+                    "host": "host",
                 },
             )
 
@@ -356,6 +359,7 @@ class FlextWebHandlers(FlextProcessors):
         proper error handling, status codes, and structured response data.
         """
 
+        @override
         def __init__(self, success_status: int = 200, error_status: int = 500) -> None:
             """Initialize response handler with default status codes.
 
@@ -480,7 +484,7 @@ class FlextWebHandlers(FlextProcessors):
         return FlextResult[FlextTypes.Core.Dict].ok(
             {
                 "status": "healthy",
-                "service": "flext-web",
+                "service": "flext - web",
                 "version": "0.9.0",
                 "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
                 "components": {
@@ -647,7 +651,7 @@ class FlextWebHandlers(FlextProcessors):
 
         """
         return FlextWebTypes.HealthResponse(
-            status="healthy",
+            status=healthy,
             service="flext-web",
             version="0.9.0",
             applications=0,  # This would be populated by the service

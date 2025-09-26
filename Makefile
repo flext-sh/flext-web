@@ -13,7 +13,7 @@ TESTS_DIR := tests
 COV_DIR := flext_web
 
 # Quality Standards
-MIN_COVERAGE := 90
+MIN_COVERAGE := 100
 
 # Flask Configuration
 FLASK_HOST := localhost
@@ -40,7 +40,7 @@ info: ## Show project information
 	@echo "Project: $(PROJECT_NAME)"
 	@echo "Python: $(PYTHON_VERSION)+"
 	@echo "Poetry: $(POETRY)"
-	@echo "Coverage: $(MIN_COVERAGE)% minimum"
+	@echo "Coverage: $(MIN_COVERAGE)% minimum (MANDATORY)"
 	@echo "Flask Host: $(FLASK_HOST)"
 	@echo "Flask Port: $(FLASK_PORT)"
 	@echo "Flask Environment: $(FLASK_ENV)"
@@ -63,26 +63,26 @@ setup: install-dev ## Complete project setup
 	$(POETRY) run pre-commit install
 
 # =============================================================================
-# QUALITY GATES (MANDATORY)
+# QUALITY GATES (MANDATORY - ZERO TOLERANCE)
 # =============================================================================
 
 .PHONY: validate
-validate: lint type-check security test ## Run all quality gates
+validate: lint type-check security test ## Run all quality gates (MANDATORY ORDER)
 
 .PHONY: check
 check: lint type-check ## Quick health check
 
 .PHONY: lint
-lint: ## Run linting
-	$(POETRY) run ruff check $(SRC_DIR) $(TESTS_DIR)
+lint: ## Run linting (ZERO TOLERANCE)
+	$(POETRY) run ruff check .
 
 .PHONY: format
 format: ## Format code
-	$(POETRY) run ruff format $(SRC_DIR) $(TESTS_DIR)
+	$(POETRY) run ruff format .
 
 .PHONY: type-check
-type-check: ## Run type checking
-	$(POETRY) run mypy $(SRC_DIR) --strict
+type-check: ## Run type checking with Pyrefly (ZERO TOLERANCE)
+	PYTHONPATH=$(SRC_DIR) $(POETRY) run pyrefly check .
 
 .PHONY: security
 security: ## Run security scanning
@@ -91,24 +91,24 @@ security: ## Run security scanning
 
 .PHONY: fix
 fix: ## Auto-fix issues
-	$(POETRY) run ruff check $(SRC_DIR) $(TESTS_DIR) --fix
-	$(POETRY) run ruff format $(SRC_DIR) $(TESTS_DIR)
+	$(POETRY) run ruff check . --fix
+	$(POETRY) run ruff format .
 
 # =============================================================================
-# TESTING
+# TESTING (MANDATORY - 100% COVERAGE)
 # =============================================================================
 
 .PHONY: test
-test: ## Run tests with coverage
-	$(POETRY) run pytest $(TESTS_DIR) --cov=$(COV_DIR) --cov-report=term-missing --cov-fail-under=$(MIN_COVERAGE)
+test: ## Run tests with 100% coverage (MANDATORY)
+	PYTHONPATH=$(SRC_DIR) $(POETRY) run pytest -q --maxfail=10000 --cov=$(COV_DIR) --cov-report=term-missing:skip-covered --cov-fail-under=$(MIN_COVERAGE)
 
 .PHONY: test-unit
 test-unit: ## Run unit tests
-	$(POETRY) run pytest $(TESTS_DIR) -m "not integration" -v
+	PYTHONPATH=$(SRC_DIR) $(POETRY) run pytest -m "not integration" -v
 
 .PHONY: test-integration
-test-integration: ## Run integration tests
-	$(POETRY) run pytest $(TESTS_DIR) -m integration -v
+test-integration: ## Run integration tests with Docker
+	PYTHONPATH=$(SRC_DIR) $(POETRY) run pytest -m integration -v
 
 .PHONY: test-web
 test-web: ## Run web interface tests
@@ -124,11 +124,11 @@ test-e2e: ## Run end-to-end tests
 
 .PHONY: test-fast
 test-fast: ## Run tests without coverage
-	$(POETRY) run pytest $(TESTS_DIR) -v
+	PYTHONPATH=$(SRC_DIR) $(POETRY) run pytest -v
 
 .PHONY: coverage-html
 coverage-html: ## Generate HTML coverage report
-	$(POETRY) run pytest $(TESTS_DIR) --cov=$(COV_DIR) --cov-report=html
+	PYTHONPATH=$(SRC_DIR) $(POETRY) run pytest --cov=$(COV_DIR) --cov-report=html
 
 # =============================================================================
 # BUILD & DISTRIBUTION
@@ -151,22 +151,22 @@ build-docker: ## Build Docker image
 
 .PHONY: runserver
 runserver: ## Start Flask development server
-	$(POETRY) run python -m flext_web --host $(FLASK_HOST) --port $(FLASK_PORT)
+	PYTHONPATH=$(SRC_DIR) $(POETRY) run python -m flext_web --host $(FLASK_HOST) --port $(FLASK_PORT)
 
 .PHONY: serve
 serve: runserver ## Alias for runserver
 
 .PHONY: dev-server
 dev-server: ## Start dev server with hot reload
-	FLASK_ENV=development $(POETRY) run python -m flext_web --debug
+	FLASK_ENV=development PYTHONPATH=$(SRC_DIR) $(POETRY) run python -m flext_web --debug
 
 .PHONY: prod-server
 prod-server: ## Start production server
-	FLASK_ENV=production $(POETRY) run python -m flext_web --no-debug
+	FLASK_ENV=production PYTHONPATH=$(SRC_DIR) $(POETRY) run python -m flext_web --no-debug
 
 .PHONY: web-test
 web-test: ## Test web service locally
-	$(POETRY) run python -c "from flext_web import create_service; s = create_service(); print('Service created successfully')"
+	PYTHONPATH=$(SRC_DIR) $(POETRY) run python -c "from flext_web import create_service; s = create_service(); print('Service created successfully')"
 
 .PHONY: web-health
 web-health: ## Check web service health
@@ -206,7 +206,7 @@ deps-audit: ## Audit dependencies
 
 .PHONY: shell
 shell: ## Open Python shell
-	$(POETRY) run python
+	PYTHONPATH=$(SRC_DIR) $(POETRY) run python
 
 .PHONY: pre-commit
 pre-commit: ## Run pre-commit hooks
@@ -218,7 +218,7 @@ pre-commit: ## Run pre-commit hooks
 
 .PHONY: clean
 clean: ## Clean build artifacts
-	rm -rf build/ dist/ *.egg-info/ .pytest_cache/ htmlcov/ .coverage .mypy_cache/ .ruff_cache/
+	rm -rf build/ dist/ *.egg-info/ .pytest_cache/ htmlcov/ .coverage .mypy_cache/ .pyrefly_cache/ .ruff_cache/
 	rm -rf static/build/ templates/build/ instance/ logs/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
@@ -238,8 +238,8 @@ reset: clean-all setup ## Reset project
 diagnose: ## Project diagnostics
 	@echo "Python: $$(python --version)"
 	@echo "Poetry: $$($(POETRY) --version)"
-	@echo "Flask: $$($(POETRY) run python -c 'import flask; print(flask.__version__)' 2>/dev/null || echo 'Not available')"
-	@echo "Web Service: $$($(POETRY) run python -c 'import flext_web; print(getattr(flext_web, \"__version__\", \"dev\"))' 2>/dev/null || echo 'Not available')"
+	@echo "Flask: $$(PYTHONPATH=$(SRC_DIR) $(POETRY) run python -c 'import flask; print(flask.__version__)' 2>/dev/null || echo 'Not available')"
+	@echo "Web Service: $$(PYTHONPATH=$(SRC_DIR) $(POETRY) run python -c 'import flext_web; print(getattr(flext_web, \"__version__\", \"dev\"))' 2>/dev/null || echo 'Not available')"
 	@$(POETRY) env info
 
 .PHONY: doctor

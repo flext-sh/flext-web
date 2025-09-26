@@ -6,6 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import override
+
 from flask import Flask, jsonify, render_template_string, request
 from flask.typing import ResponseReturnValue
 
@@ -44,7 +46,8 @@ class FlextWebServices:
         FlextProcessors integration for consistent service patterns.
         """
 
-        def __init__(self, config: dict[str, object]) -> None:  # type: ignore[misc]
+        @override
+        def __init__(self, config: dict[str, object]) -> None:
             """Initialize web service with configuration and Flask application."""
             self.config: dict[str, object] = config
             self.app = Flask(__name__)
@@ -62,8 +65,8 @@ class FlextWebServices:
             # Configure Flask application
             self.app.config.update(
                 {
-                    "SECRET_KEY": config.get("secret_key", "default-secret-key"),  # type: ignore[misc]
-                    "DEBUG": config.get("debug_bool", False),  # type: ignore[misc]
+                    "SECRET_KEY": config.get("secret_key", "default-secret-key"),
+                    "DEBUG": config.get("debug_bool", False),
                 },
             )
 
@@ -119,9 +122,9 @@ class FlextWebServices:
             try:
                 self.logger.info("Health check performed")
 
-                health_data: FlextWebTypes.HealthResponse = {
+                {
                     "status": "healthy",
-                    "service": "flext-web",
+                    "service": "flext - web",
                     "version": FlextConstants.Core.VERSION,
                     "applications": len(self.apps),
                     "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
@@ -131,16 +134,16 @@ class FlextWebServices:
 
                 return jsonify(
                     {
-                        "success": True,
+                        "success": "True",
                         "message": "Service is healthy",
-                        "data": health_data,
+                        "data": "health_data",
                     },
                 ), 200
             except Exception:
                 self.logger.exception("Health check failed")
                 return jsonify(
                     {
-                        "success": False,
+                        "success": "False",
                         "message": "Service health check failed",
                         "data": {
                             "status": "unhealthy",
@@ -170,7 +173,7 @@ class FlextWebServices:
                 <head>
                     <title>FLEXT Web Dashboard</title>
                     <style>
-                        body { font-family: Arial, sans-serif; margin: 40px; }
+                        body { font-family: "Arial", sans-serif; margin: 40px; }
                         .header { color: #333; border-bottom: 2px solid #007acc; padding-bottom: 10px; }
                         .stats { background: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0; }
                         .app-list { margin-top: 20px; }
@@ -240,15 +243,15 @@ class FlextWebServices:
                     apps_data.append(app_data)
 
                 response: FlextWebTypes.SuccessResponse = {
-                    "success": True,
+                    "success": "True",
                     "message": f"Found {len(apps_data)} applications",
-                    "data": {"apps": apps_data},
+                    "data": {"apps": "apps_data"},
                 }
                 return jsonify(response)
 
             except Exception as e:
                 error_response: FlextWebTypes.ErrorResponse = {
-                    "success": False,
+                    "success": "False",
                     "message": "Failed to list applications",
                     "error": str(e),
                 }
@@ -330,7 +333,7 @@ class FlextWebServices:
             """Create and store application using existing handler."""
             create_result: FlextResult[FlextWebModels.WebApp] = self.app_handler.create(
                 name, port, host
-            )  # type: ignore[assignment]
+            )
 
             if create_result.is_failure:
                 return FlextResult[FlextWebModels.WebApp].fail(
@@ -338,11 +341,11 @@ class FlextWebServices:
                 )
 
             app = create_result.value
-            self.apps[app.id] = app  # type: ignore[index]
+            self.apps[app.id] = app
 
             self.logger.info("App created")
 
-            return FlextResult[FlextWebModels.WebApp].ok(app)  # type: ignore[arg-type]
+            return FlextResult[FlextWebModels.WebApp].ok(app)
 
         def _build_success_response(
             self,
@@ -351,7 +354,7 @@ class FlextWebServices:
             """Build success response using consistent format."""
             return jsonify(
                 {
-                    "success": True,
+                    "success": "True",
                     "message": "Application created successfully",
                     "data": {
                         "id": app.id,
@@ -371,8 +374,8 @@ class FlextWebServices:
             """Build error response using consistent format."""
             return jsonify(
                 {
-                    "success": False,
-                    "message": error,
+                    "success": "False",
+                    "message": "error",
                 },
             ), status_code
 
@@ -403,13 +406,13 @@ class FlextWebServices:
                     )
 
                 # Unpack the validated data for method call
-                app_data_tuple = app_validation.unwrap()  # type: ignore[misc]
+                app_data_tuple = app_validation.unwrap()
 
                 # Unpack the validated data for method call
                 result = self._create_and_store_app(
-                    str(app_data_tuple[0]),  # type: ignore[index]
-                    str(app_data_tuple[1]),  # type: ignore[index]
-                    int(app_data_tuple[2]),  # type: ignore[index]
+                    str(app_data_tuple[0]),
+                    str(app_data_tuple[1]),
+                    int(app_data_tuple[2]),
                 )
 
                 # Handle final result
@@ -430,7 +433,7 @@ class FlextWebServices:
                 if app_id not in self.apps:
                     return jsonify(
                         {
-                            "success": False,
+                            "success": "False",
                             "message": f"Application {app_id} not found",
                         },
                     ), 404
@@ -438,7 +441,7 @@ class FlextWebServices:
                 app = self.apps[app_id]
                 return jsonify(
                     {
-                        "success": True,
+                        "success": "True",
                         "message": "Application found",
                         "data": {
                             "id": app.id,
@@ -454,7 +457,7 @@ class FlextWebServices:
             except Exception as e:
                 return jsonify(
                     {
-                        "success": False,
+                        "success": "False",
                         "message": "Failed to get application",
                         "error": str(e),
                     },
@@ -471,18 +474,18 @@ class FlextWebServices:
                 if app_id not in self.apps:
                     return jsonify(
                         {
-                            "success": False,
+                            "success": "False",
                             "message": f"Application {app_id} not found",
                         },
                     ), 404
 
                 app = self.apps[app_id]
-                start_result: FlextResult[None] = app.start()  # type: ignore[assignment]
+                start_result: FlextResult[None] = app.start()
 
                 if start_result.is_failure:
                     return jsonify(
                         {
-                            "success": False,
+                            "success": "False",
                             "message": start_result.error or "Application start failed",
                             "error": start_result.error,
                         },
@@ -490,14 +493,14 @@ class FlextWebServices:
 
                 # Update stored application - start returns updated app
                 if start_result.value is not None:
-                    self.apps[app_id] = start_result.value  # type: ignore[misc]
+                    self.apps[app_id] = start_result.value
 
                 return jsonify(
                     {
-                        "success": True,
+                        "success": "True",
                         "message": f"Application {app.name} started successfully",
                         "data": {
-                            "id": app_id,
+                            "id": "app_id",
                             "name": app.name,
                             "status": "running",
                         },
@@ -507,7 +510,7 @@ class FlextWebServices:
             except Exception as e:
                 return jsonify(
                     {
-                        "success": False,
+                        "success": "False",
                         "message": "Failed to start application",
                         "error": str(e),
                     },
@@ -519,38 +522,37 @@ class FlextWebServices:
                 if app_id not in self.apps:
                     return jsonify(
                         {
-                            "success": False,
+                            "success": "False",
                             "message": f"Application {app_id} not found",
                         },
                     ), 404
 
                 app = self.apps[app_id]
-                stop_result: FlextResult[None] = app.stop()  # type: ignore[assignment]
+                stop_result: FlextResult[None] = app.stop()
 
                 if stop_result.is_failure:
                     # Customize message based on error type
-                    message = "Application stop failed"
                     if "not running" in (stop_result.error or "").lower():
-                        message = "Application is already stopped"
+                        pass
 
                     return jsonify(
                         {
-                            "success": False,
-                            "message": message,
+                            "success": "False",
+                            "message": "message",
                             "error": stop_result.error,
                         },
                     ), 400
 
                 # Update stored application - stop returns updated app
                 if stop_result.value is not None:
-                    self.apps[app_id] = stop_result.value  # type: ignore[misc]
+                    self.apps[app_id] = stop_result.value
 
                 return jsonify(
                     {
-                        "success": True,
+                        "success": "True",
                         "message": f"Application {app.name} stopped successfully",
                         "data": {
-                            "id": app_id,
+                            "id": "app_id",
                             "name": app.name,
                             "status": "stopped",
                         },
@@ -560,18 +562,19 @@ class FlextWebServices:
             except Exception as e:
                 return jsonify(
                     {
-                        "success": False,
+                        "success": "False",
                         "message": "Failed to stop application",
                         "error": str(e),
                     },
                 ), 500
 
+        @override
         def run(self) -> None:
             """Run the Flask web service."""
             self.app.run(
-                host=self.config.get("host", "localhost"),  # type: ignore[misc]
-                port=self.config.get("port", 8080),  # type: ignore[misc]
-                debug=self.config.get("debug_bool", False),  # type: ignore[misc]
+                host=self.config.get("host", "localhost"),
+                port=self.config.get("port", 8080),
+                debug=self.config.get("debug_bool", False),
                 use_reloader=False,  # Disable reloader for production use
                 threaded=True,  # Enable threading for concurrent requests
             )
@@ -584,6 +587,7 @@ class FlextWebServices:
         within the FLEXT Web ecosystem.
         """
 
+        @override
         def __init__(self) -> None:
             """Initialize web service registry."""
             self._services: dict[str, FlextWebServices.WebService] = {}
@@ -682,7 +686,7 @@ class FlextWebServices:
     @classmethod
     def create_web_service(
         cls,
-        config: dict[str, object] | None = None,  # type: ignore[misc]
+        config: dict[str, object] | None = None,
     ) -> FlextResult[FlextWebServices.WebService]:
         """Create web service instance with configuration.
 
@@ -692,17 +696,17 @@ class FlextWebServices:
         """
         try:
             if config is None:
-                config_result = FlextWebConfig.create_web_config()  # type: ignore[misc]
+                config_result = FlextWebConfig.create_web_config()
                 if config_result.is_failure:
                     return FlextResult[FlextWebServices.WebService].fail(
                         f"Config creation failed: {config_result.error}",
                     )
-                validated_config: dict[str, object] = config_result.value  # type: ignore[misc]
+                validated_config: dict[str, object] = config_result.value
                 # Config type is guaranteed by FlextResult[FlextWebConfig.WebConfig]
 
             service = FlextWebServices.WebService(
                 validated_config if config is None else config
-            )  # type: ignore[misc]
+            )
             return FlextResult[FlextWebServices.WebService].ok(service)
 
         except Exception as e:
@@ -733,13 +737,13 @@ class FlextWebServices:
 
         try:
             # Create service and registry
-            service_result = cls.create_web_service()  # type: ignore[misc]
+            service_result = cls.create_web_service()
             if service_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     service_result.error or "Service creation failed",
                 )
 
-            registry_result = cls.create_service_registry()  # type: ignore[misc]
+            registry_result = cls.create_service_registry()
             if registry_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     registry_result.error or "Registry creation failed",
@@ -749,9 +753,7 @@ class FlextWebServices:
             registry = registry_result.value
 
             # Register service
-            register_result = registry.register_web_service(  # type: ignore[misc]
-                "main", service
-            )
+            register_result = registry.register_web_service("main", service)
             if register_result.is_failure:
                 return FlextResult[FlextTypes.Core.Dict].fail(
                     register_result.error or "Registration failed",
@@ -759,8 +761,8 @@ class FlextWebServices:
 
             return FlextResult[FlextTypes.Core.Dict].ok(
                 {
-                    "web_service": service,
-                    "registry": registry,
+                    "web_service": "service",
+                    "registry": "registry",
                 },
             )
 
@@ -786,11 +788,10 @@ class FlextWebServices:
             if "environment" in config:
                 env_value = config["environment"]
                 valid_environments = [
-                    e.value
-                    for e in list(FlextConstants.Environment.ConfigEnvironment)  # type: ignore[misc]
+                    e.value for e in list(FlextConstants.Environment.ConfigEnvironment)
                 ]
                 if env_value not in valid_environments:
-                    return FlextResult[dict[str, object]].fail(
+                    return FlextResult[dict["str", "object"]].fail(
                         f"Invalid environment '{env_value}'. Valid options: {valid_environments}",
                     )
             else:
@@ -818,10 +819,10 @@ class FlextWebServices:
             validated_config.setdefault("max_concurrent_requests", 100)
             validated_config.setdefault("request_timeout_seconds", 30)
 
-            return FlextResult[dict[str, object]].ok(validated_config)
+            return FlextResult[dict["str", "object"]].ok(validated_config)
 
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[dict["str", "object"]].fail(
                 f"Failed to configure web services system: {e}",
             )
 
@@ -836,8 +837,8 @@ class FlextWebServices:
                 "environment": FlextConstants.Environment.ConfigEnvironment.DEVELOPMENT.value,
                 "log_level": FlextConstants.Config.LogLevel.INFO,
                 # Web services specific settings
-                "enable_web_service": True,
-                "enable_service_registry": True,
+                "enable_web_service": "True",
+                "enable_service_registry": "True",
                 "max_concurrent_requests": 100,
                 "request_timeout_seconds": 30,
                 # Available service types
@@ -856,10 +857,10 @@ class FlextWebServices:
                 "average_response_time": 0.0,
             }
 
-            return FlextResult[dict[str, object]].ok(config)
+            return FlextResult[dict["str", "object"]].ok(config)
 
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[dict["str", "object"]].fail(
                 f"Failed to get web services system config: {e}",
             )
 

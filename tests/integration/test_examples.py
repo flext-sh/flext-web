@@ -4,17 +4,16 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT.
 """
 
-import asyncio
 import importlib
 import importlib.util
-import shutil
 import sys
 import time
 from pathlib import Path
 
 import requests
 
-from flext_core import FlextLogger, FlextTypes
+from flext_core import FlextLogger
+from flext_tests import FlextTestDocker
 
 # Configure logging
 logger = FlextLogger(__name__)
@@ -29,104 +28,71 @@ class ExamplesFullFunctionalityTest:
         self.service_url = (
             "http://localhost:8093"  # Port específica para evitar conflitos
         )
-        self.DOCKER_PATH = shutil.which("docker")
+        self.docker_manager = FlextTestDocker(workspace_root=Path().absolute())
 
     def start_service_in_docker(self) -> bool | None:
-        """Inicia o serviço em Docker para teste completo."""
-        # Build container if needed
-        if self.DOCKER_PATH is None:
-            return False
-        build_cmd = [self.DOCKER_PATH, "build", "-t", "flext-web-full-test", "."]
-
-        async def _run_exec(
-            cmd: FlextTypes.Core.StringList,
-            cwd: str | None = None,
-        ) -> tuple[int, str, str]:
-            """Helper to run a command asynchronously and return (rc, stdout, stderr)."""
-            try:
-                async with asyncio.timeout(120):
-                    process = await asyncio.create_subprocess_exec(
-                        *[str(c) for c in cmd],
-                        stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE,
-                        cwd=cwd,
-                    )
-                    stdout, stderr = await process.communicate()
-                    return process.returncode or 0, stdout.decode(), stderr.decode()
-            except TimeoutError:
-                return -1, "", "Command timed out after 120 seconds"
-
-        build_rc, _build_out, _build_err = asyncio.run(
-            _run_exec(build_cmd, cwd=str(Path(__file__).resolve().parent)),
+        """Inicia o serviço em Docker para teste completo usando FlextTestDocker."""
+        # Build container using FlextTestDocker
+        build_result = self.docker_manager.build_image(
+            tag="flext-web-full-test", dockerfile="Dockerfile", path=".", timeout=120
         )
-        if build_rc != 0:
+
+        if build_result.is_failure:
+            logger.error(f"Docker build failed: {build_result.error}")
             return False
 
-        # Start container with examples
-        start_cmd = [
-            self.DOCKER_PATH,
-            "run",
-            "--rm",
-            "-d",
-            "-p",
-            "8093:8080",
-            "-e",
-            "FLEXT_WEB_SECRET_KEY=test-full-functionality-key-32-chars!",
-            "-e",
-            "FLEXT_WEB_HOST=0.0.0.0",
-            "-e",
-            "FLEXT_WEB_PORT=8080",
-            "-e",
-            "FLEXT_WEB_DEBUG=false",
-            "--name",
-            "flext-full-test",
-            "flext-web-full-test",
-        ]
+        # Start container using FlextTestDocker
+        environment = {
+            "FLEXT_WEB_SECRET_KEY": "test-full-functionality-key-32-chars!",
+            "FLEXT_WEB_HOST": "0.0.0.0",
+            "FLEXT_WEB_PORT": "8080",
+            "FLEXT_WEB_DEBUG": "false",
+        }
 
-        try:
-            start_rc, start_out, _start_err = asyncio.run(
-                _run_exec(start_cmd),
-            )
-            if start_rc != 0:
-                return False
+        run_result = self.docker_manager.run_container(
+            image="flext-web-full-test",
+            name="flext-full-test",
+            ports={"8080/tcp": 8093},
+            environment=environment,
+            detach=True,
+            remove=True,
+            timeout=30,
+        )
 
-            self.container_id = start_out.strip()
-
-            # Wait for service to be ready
-            for _i in range(30):  # 30 seconds timeout
-                try:
-                    response = requests.get(f"{self.service_url}/health", timeout=2)
-                    if response.status_code == 200:
-                        return True
-                except Exception as exc:
-                    # Log the transient failure but keep waiting
-                    logger.debug("health check attempt failed: %s", exc)
-                time.sleep(1)
-
+        if run_result.is_failure:
+            logger.error(f"Container start failed: {run_result.error}")
             return False
 
-        except Exception:
-            return False
+        self.container_id = "flext-full-test"
+
+        # Wait for service to be ready
+        for _i in range(30):  # 30 seconds timeout
+            try:
+                response = requests.get(f"{self.service_url}/health", timeout=2)
+                if response.status_code == 200:
+                    return True
+            except Exception as exc:
+                # Log the transient failure but keep waiting
+                logger.debug("health check attempt failed: %s", exc)
+            time.sleep(1)
+
+        return False
 
     def stop_docker_service(self) -> None:
-        """Para o serviço Docker."""
+        """Para o serviço Docker usando FlextTestDocker."""
         if self.container_id:
-
-            async def _stop() -> None:
-                process = await asyncio.create_subprocess_exec(
-                    str(self.DOCKER_PATH),
-                    "stop",
-                    "flext-full-test",
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
+            # Stop container using FlextTestDocker
+            stop_result = self.docker_manager.stop_container(self.container_id)
+            if stop_result.is_failure:
+                logger.warning(f"Container stop failed: {stop_result.error}")
+                # Try to force remove if stop failed
+                remove_result = self.docker_manager.remove_container(
+                    self.container_id, force=True
                 )
-                try:
-                    await asyncio.wait_for(process.communicate(), timeout=10)
-                except TimeoutError:
-                    process.kill()
-                    await process.communicate()
-
-            asyncio.run(_stop())
+                if remove_result.is_failure:
+                    logger.error(
+                        f"Container force removal failed: {remove_result.error}"
+                    )
 
     def test_basic_service_full_functionality(self) -> bool | None:
         """Testa TODA funcionalidade do basic_service.py."""
@@ -151,7 +117,7 @@ class ExamplesFullFunctionalityTest:
             flext_web = importlib.import_module("flext_web")
             # Using direct FlextWebServices.create_web_service instead of alias
 
-            config = Flext_web_Config.create_web_config()
+            config = flext_web.FlextWebConfig.create_web_config()
             service = flext_web.FlextWebServices.create_web_service(config)
 
             # Test 4: Service has correct attributes
@@ -262,11 +228,11 @@ class ExamplesFullFunctionalityTest:
             # Create services using different approaches from examples
 
             # Approach 1: basic_service style
-            config1 = Flext_web_Config.create_web_config()
+            config1 = flext_web.FlextWebConfig.create_web_config()
             service1 = flext_web.FlextWebServices.create_web_service(config1)
 
             # Approach 2: docker_ready style
-            config2 = flext_web_config_cls(
+            config2 = flext_web.FlextWebConfig(
                 host="127.0.0.1",
                 port=8094,
                 debug=False,

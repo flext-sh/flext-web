@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import re
-from typing import ClassVar, cast
+from typing import ClassVar, cast, override
 
 from pydantic import Field
 from pydantic.fields import FieldInfo
@@ -49,6 +49,7 @@ class FlextWebFields(FlextModels):
     class HTTPStatusField:
         """HTTP status code field with validation and description support."""
 
+        @override
         def __init__(
             self,
             status_code: int,

@@ -6,6 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import override
+
 from flext_core import FlextExceptions
 
 
@@ -31,6 +33,7 @@ class FlextWebExceptions(FlextExceptions):
         Accepts arbitrary keyword details and stores them as context.
         """
 
+        @override
         def __init__(
             self,
             message: str,
@@ -46,6 +49,7 @@ class FlextWebExceptions(FlextExceptions):
     class WebValidationError(WebError):
         """Web service configuration and input validation errors."""
 
+        @override
         def __init__(
             self,
             message: str = "Web validation error",
@@ -78,6 +82,7 @@ class FlextWebExceptions(FlextExceptions):
     class WebTemplateError(WebError):
         """Web template processing errors."""
 
+        @override
         def __init__(
             self,
             message: str = "Web template error",
@@ -90,6 +95,7 @@ class FlextWebExceptions(FlextExceptions):
     class WebRoutingError(WebError):
         """Web routing errors."""
 
+        @override
         def __init__(
             self,
             message: str = "Web routing error",
@@ -105,6 +111,7 @@ class FlextWebExceptions(FlextExceptions):
     class WebSessionError(WebError):
         """Web session management errors."""
 
+        @override
         def __init__(
             self,
             message: str = "Web session error",
@@ -117,6 +124,7 @@ class FlextWebExceptions(FlextExceptions):
     class WebMiddlewareError(WebError):
         """Web middleware processing errors."""
 
+        @override
         def __init__(
             self,
             message: str = "Web middleware error",

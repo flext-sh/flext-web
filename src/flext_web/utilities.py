@@ -87,8 +87,8 @@ class FlextWebUtilities(FlextUtilities):
 
         """
         try:
-            parsed = urlparse(url)  # type: ignore[misc]
-            return all([parsed.scheme, parsed.netloc])  # type: ignore[misc]
+            parsed = urlparse(url)
+            return all([parsed.scheme, parsed.netloc])
         except Exception:
             return False
 
@@ -120,7 +120,7 @@ class FlextWebUtilities(FlextUtilities):
         if re.match(hostname_pattern, safe_host):
             return True
 
-        return safe_host.lower() in {"localhost", "127.0.0.1", "::", "::1"}
+        return safe_host.lower() in {"localhost", "127.0.0.1", ":: , ::1"}
 
     @staticmethod
     def sanitize_request_data(data: FlextTypes.Core.Dict) -> FlextTypes.Core.Dict:
@@ -152,9 +152,9 @@ class FlextWebUtilities(FlextUtilities):
 
         """
         return {
-            "success": True,
-            "message": message,
-            "data": data,
+            "success": "True",
+            "message": "message",
+            "data": "data",
             "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
         }
 
@@ -170,10 +170,10 @@ class FlextWebUtilities(FlextUtilities):
 
         """
         return {
-            "success": False,
-            "message": message,
-            "data": None,
-            "status_code": status_code,
+            "success": "False",
+            "message": "message",
+            "data": "None",
+            "status_code": "status_code",
             "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
         }
 
@@ -191,9 +191,9 @@ class FlextWebUtilities(FlextUtilities):
 
         """
         return {
-            "success": success,
-            "message": message,
-            "data": data,
+            "success": "success",
+            "message": "message",
+            "data": "data",
             "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
         }
 
@@ -250,7 +250,7 @@ class FlextWebUtilities(FlextUtilities):
                 "created_at": FlextUtilities.Generators.generate_iso_timestamp(),
             }
 
-            return FlextResult[FlextTypes.Core.Dict].ok(app_data)  # type: ignore[arg-type]
+            return FlextResult[FlextTypes.Core.Dict].ok(app_data)
         except ValidationError as e:
             # Extract meaningful error messages for compatibility
             error_msg = ""

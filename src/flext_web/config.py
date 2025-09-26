@@ -6,10 +6,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import os
+import threading
 import warnings
 from pathlib import Path
-from typing import Any, Self
+from typing import Any, ClassVar, Self
 
 from pydantic import Field, computed_field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
@@ -29,13 +29,17 @@ class FlextWebConfig(FlextConfig):
     - Uses Pydantic 2.11+ features (field_validator, model_validator)
     """
 
+    # Singleton pattern attributes
+    _global_instance: ClassVar[FlextWebConfig | None] = None
+    _lock: ClassVar[threading.Lock] = threading.Lock()
+
     model_config = SettingsConfigDict(
-        env_prefix="FLEXT_WEB_",
+        env_prefix=FLEXT_WEB_,
         case_sensitive=False,
-        extra="allow",
+        extra=allow,
         env_file=".env",
         env_file_encoding="utf-8",
-        env_nested_delimiter="__",
+        env_nested_delimiter=__,
         use_enum_values=True,
         frozen=False,
         # Enhanced Pydantic 2.11 features
@@ -43,8 +47,8 @@ class FlextWebConfig(FlextConfig):
         validate_return=True,
         serialize_by_alias=True,
         populate_by_name=True,
-        ser_json_timedelta="iso8601",
-        ser_json_bytes="base64",
+        ser_json_timedelta=iso8601,
+        ser_json_bytes=base64,
         str_strip_whitespace=True,
         defer_build=False,
         coerce_numbers_to_str=False,
@@ -53,7 +57,7 @@ class FlextWebConfig(FlextConfig):
 
     # Web service configuration using FlextWebConstants for defaults
     host: str = Field(
-        default="localhost",
+        default=localhost,
         description="Host address for web service",
         min_length=1,
         max_length=255,
@@ -69,6 +73,16 @@ class FlextWebConfig(FlextConfig):
     debug: bool = Field(
         default=False,
         description="Enable debug mode",
+    )
+
+    development_mode: bool = Field(
+        default=False,
+        description="Enable development mode with additional features",
+    )
+
+    web_environment: str = Field(
+        default=development,
+        description="Web environment setting (development, testing, production)",
     )
 
     secret_key: str | None = Field(
@@ -141,13 +155,13 @@ class FlextWebConfig(FlextConfig):
     )
 
     session_cookie_samesite: str = Field(
-        default="Lax",
+        default=Lax,
         description="SameSite attribute for session cookies",
     )
 
     # Logging configuration
     log_level: str = Field(
-        default="INFO",
+        default=INFO,
         description="Logging level",
     )
 
@@ -156,7 +170,7 @@ class FlextWebConfig(FlextConfig):
         description="Log message format",
     )
 
-    @field_validator("debug", mode="before")
+    @field_validator(debug, mode="before")
     @classmethod
     def validate_debug(cls, value: object) -> bool:
         """Enhanced debug field validation with comprehensive type conversion."""
@@ -185,7 +199,8 @@ class FlextWebConfig(FlextConfig):
         # Security validation for production
         if host == FlextWebConstants.WebSpecific.ALL_INTERFACES:
             # Only allow 0.0.0.0 in development mode
-            if os.getenv("FLEXT_DEVELOPMENT_MODE", "false").lower() == "true":
+            config = cls.get_global_instance()
+            if config.development_mode:
                 return host
             # In production, use localhost instead
             return "127.0.0.1"
@@ -326,13 +341,13 @@ class FlextWebConfig(FlextConfig):
 
         return self
 
-    @computed_field  # type: ignore[misc]
+    @computed_field
     @property
     def protocol(self) -> str:
         """Get protocol based on SSL configuration."""
         return "https" if self.ssl_enabled else "http"
 
-    @computed_field  # type: ignore[misc]
+    @computed_field
     @property
     def base_url(self) -> str:
         """Get base URL."""
@@ -349,7 +364,8 @@ class FlextWebConfig(FlextConfig):
     @classmethod
     def _is_development_env(cls) -> bool:
         """Check if running in development environment."""
-        env = os.getenv("FLEXT_WEB_ENVIRONMENT", "development").lower()
+        config = cls.get_global_instance()
+        env = config.web_environment.lower()
         return env in {"development", "dev", "local"}
 
     def get_server_config(self) -> dict[str, Any]:
@@ -380,6 +396,26 @@ class FlextWebConfig(FlextConfig):
     ) -> FlextWebConfig:
         """Create configuration for specific environment."""
         return cls(environment=environment, **overrides)
+
+    @classmethod
+    def create_default(cls) -> FlextWebConfig:
+        """Create default configuration instance."""
+        return cls()
+
+    # Singleton pattern override for proper typing
+    @classmethod
+    def get_global_instance(cls) -> FlextWebConfig:
+        """Get the global singleton instance of FlextWebConfig."""
+        if cls._global_instance is None:
+            with cls._lock:
+                if cls._global_instance is None:
+                    cls._global_instance = cls()
+        return cls._global_instance
+
+    @classmethod
+    def reset_global_instance(cls) -> None:
+        """Reset the global FlextWebConfig instance (mainly for testing)."""
+        cls._global_instance = None
 
 
 __all__ = [

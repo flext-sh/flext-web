@@ -38,7 +38,7 @@ class TestServicesCompleteCoverage:
         """Flask test client."""
         return test_service.app.test_client()
 
-    def test_self(self, test_client: FlaskClient) -> None:
+    def test_validation_error_paths(self, test_client: FlaskClient) -> None:
         """Test validation error paths (lines 303-304)."""
         # Send completely malformed data to trigger validation exceptions
         response = test_client.post(
@@ -161,7 +161,7 @@ class TestServicesCompleteCoverage:
         assert get_result.success
         assert get_result.value is service
 
-    def test_self(self, test_client: FlaskClient) -> None:
+    def test_internal_helper_methods_via_api(self, test_client: FlaskClient) -> None:
         """Test internal helper methods by triggering them through API calls."""
         # Create valid app to test _create_and_store_app and _build_success_response
         response = test_client.post(
@@ -193,7 +193,7 @@ class TestServicesCompleteCoverage:
         data = response.get_json()
         assert data["success"] is False
 
-    def test_self(self, test_client: FlaskClient) -> None:
+    def test_edge_cases_and_error_conditions(self, test_client: FlaskClient) -> None:
         """Test edge cases and error conditions."""
         # Test with extremely long names
         response = test_client.post(

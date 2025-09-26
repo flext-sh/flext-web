@@ -26,8 +26,8 @@ def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="FlextWeb - Enterprise Web Interface")
     parser.add_argument("--host", help="Host to bind to (overrides config)")
     parser.add_argument("--port", type=int, help="Port to bind to (overrides config)")
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
-    parser.add_argument("--no-debug", action="store_true", help="Disable debug mode")
+    parser.add_argument("--debug", action=store_true, help="Enable debug mode")
+    parser.add_argument("--no-debug", action=store_true, help="Disable debug mode")
     return parser
 
 
@@ -111,7 +111,7 @@ def main() -> None:
         )
         logger.info("📊 Debug: %s, Production: %s", debug, not config.debug)
 
-        service = FlextWebServices.WebService(config.__dict__)  # type: ignore[arg-type]
+        service = FlextWebServices.WebService(config.__dict__)
         service.run()
     except KeyboardInterrupt:
         logger.info("🛑 Shutting down FlextWeb service")

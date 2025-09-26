@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 """Precise tests for CLI lines 114, 116, 133-135."""
 
 import asyncio

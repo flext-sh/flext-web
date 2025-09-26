@@ -14,13 +14,12 @@ from flext_web.interfaces import FlextWebInterfaces
 from flext_web.models import FlextWebModels
 from flext_web.protocols import FlextWebProtocols
 from flext_web.services import FlextWebServices
-from flext_web.typings import FlextTypes, FlextWebTypes
+from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
 
 __version__ = "0.9.0"
 
 __all__ = [
-    "FlextTypes",
     "FlextWebConfig",
     "FlextWebConstants",
     "FlextWebExceptions",
