@@ -19,6 +19,7 @@ from flext_core import (
     FlextUtilities,
 )
 from flext_web.config import FlextWebConfig
+from flext_web.constants import FlextWebConstants
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
@@ -47,9 +48,9 @@ class FlextWebServices:
         """
 
         @override
-        def __init__(self, config: dict[str, object]) -> None:
+        def __init__(self, config: FlextWebTypes.Core.WebConfigDict) -> None:
             """Initialize web service with configuration and Flask application."""
-            self.config: dict[str, object] = config
+            self.config: FlextWebTypes.Core.WebConfigDict = config
             self.app = Flask(__name__)
             self.apps: dict[str, FlextWebModels.WebApp] = {}
             self.app_handler = FlextWebHandlers.WebAppHandler()
@@ -83,7 +84,7 @@ class FlextWebServices:
             def create_json_response(
                 self,
                 data: FlextTypes.Core.JsonObject,
-                status_code: int = 200,
+                status_code: int = FlextWebConstants.Web.HTTP_OK,
             ) -> ResponseReturnValue:
                 """Create JSON response using Flask."""
                 return jsonify(data), status_code
@@ -138,7 +139,7 @@ class FlextWebServices:
                         "message": "Service is healthy",
                         "data": "health_data",
                     },
-                ), 200
+                ), FlextWebConstants.Web.HTTP_OK
             except Exception:
                 self.logger.exception("Health check failed")
                 return jsonify(
@@ -151,7 +152,7 @@ class FlextWebServices:
                             "service_id": getattr(self, "_id", "unknown"),
                         },
                     },
-                ), 500
+                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
 
         def dashboard(self) -> ResponseReturnValue:
             """Web dashboard interface for application management.
@@ -225,7 +226,7 @@ class FlextWebServices:
                 )
 
             except Exception:
-                return "Dashboard error", 500
+                return "Dashboard error", FlextWebConstants.Web.HTTP_INTERNAL_ERROR
 
         def list_apps(self) -> ResponseReturnValue:
             """List all registered applications."""
@@ -255,7 +256,9 @@ class FlextWebServices:
                     "message": "Failed to list applications",
                     "error": str(e),
                 }
-                return jsonify(error_response), 500
+                return jsonify(
+                    error_response
+                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
 
         def _validate_json_request(self) -> FlextResult[FlextTypes.Core.Dict]:
             """Railway-oriented validation of JSON request data.
@@ -268,7 +271,7 @@ class FlextWebServices:
                 return FlextResult[FlextTypes.Core.Dict].fail("Request must be JSON")
 
             try:
-                data: dict[str, object] = request.get_json()
+                data: FlextWebTypes.Core.RequestDict = request.get_json()
                 if not data:
                     return FlextResult[FlextTypes.Core.Dict].fail(
                         "Request body is required",
@@ -289,12 +292,12 @@ class FlextWebServices:
                 name = data.get("name")
                 host = data.get(
                     "host",
-                    "localhost",
-                )  # Use string literal for localhost (not configurable)
+                    FlextWebConstants.Web.DEFAULT_HOST,
+                )  # Use FlextWebConstants for host default
                 port = data.get(
                     "port",
-                    8000,
-                )  # Use 8000 for web service development (not 80 which requires root)
+                    FlextWebConstants.Web.DEFAULT_PORT,
+                )  # Use FlextWebConstants for port default
 
                 if not name or not isinstance(name, str):
                     return FlextResult[tuple[str, str, int]].fail(
@@ -364,18 +367,18 @@ class FlextWebServices:
                         "status": app.status.value,
                     },
                 },
-            ), FlextConstants.Platform.HTTP_STATUS_CREATED
+            ), FlextWebConstants.Web.HTTP_CREATED
 
         def _build_error_response(
             self,
             error: str,
-            status_code: int = 400,
+            status_code: int = FlextWebConstants.Web.HTTP_BAD_REQUEST,
         ) -> ResponseReturnValue:
             """Build error response using consistent format."""
             return jsonify(
                 {
                     "success": "False",
-                    "message": "error",
+                    "message": error,
                 },
             ), status_code
 
@@ -424,7 +427,7 @@ class FlextWebServices:
             except Exception as e:
                 return self._build_error_response(
                     f"Internal error during application creation: {e}",
-                    500,
+                    FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
                 )
 
         def get_app(self, app_id: str) -> ResponseReturnValue:
@@ -436,7 +439,7 @@ class FlextWebServices:
                             "success": "False",
                             "message": f"Application {app_id} not found",
                         },
-                    ), 404
+                    ), FlextWebConstants.Web.HTTP_NOT_FOUND
 
                 app = self.apps[app_id]
                 return jsonify(
@@ -461,7 +464,7 @@ class FlextWebServices:
                         "message": "Failed to get application",
                         "error": str(e),
                     },
-                ), 500
+                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
 
         def start_app(self, app_id: str) -> ResponseReturnValue:
             """Start application by ID.
@@ -477,7 +480,7 @@ class FlextWebServices:
                             "success": "False",
                             "message": f"Application {app_id} not found",
                         },
-                    ), 404
+                    ), FlextWebConstants.Web.HTTP_NOT_FOUND
 
                 app = self.apps[app_id]
                 start_result: FlextResult[None] = app.start()
@@ -489,7 +492,7 @@ class FlextWebServices:
                             "message": start_result.error or "Application start failed",
                             "error": start_result.error,
                         },
-                    ), 400
+                    ), FlextWebConstants.Web.HTTP_BAD_REQUEST
 
                 # Update stored application - start returns updated app
                 if start_result.value is not None:
@@ -514,7 +517,7 @@ class FlextWebServices:
                         "message": "Failed to start application",
                         "error": str(e),
                     },
-                ), 500
+                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
 
         def stop_app(self, app_id: str) -> ResponseReturnValue:
             """Stop application by ID."""
@@ -525,7 +528,7 @@ class FlextWebServices:
                             "success": "False",
                             "message": f"Application {app_id} not found",
                         },
-                    ), 404
+                    ), FlextWebConstants.Web.HTTP_NOT_FOUND
 
                 app = self.apps[app_id]
                 stop_result: FlextResult[None] = app.stop()
@@ -541,7 +544,7 @@ class FlextWebServices:
                             "message": "message",
                             "error": stop_result.error,
                         },
-                    ), 400
+                    ), FlextWebConstants.Web.HTTP_BAD_REQUEST
 
                 # Update stored application - stop returns updated app
                 if stop_result.value is not None:
@@ -566,17 +569,15 @@ class FlextWebServices:
                         "message": "Failed to stop application",
                         "error": str(e),
                     },
-                ), 500
+                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
 
         @override
         def run(self) -> None:
             """Run the Flask web service."""
             self.app.run(
-                host=self.config.get("host", "localhost"),
-                port=self.config.get("port", 8080),
-                debug=self.config.get("debug_bool", False),
-                use_reloader=False,  # Disable reloader for production use
-                threaded=True,  # Enable threading for concurrent requests
+                host=self.config.get("host", FlextWebConstants.Web.DEFAULT_HOST),
+                port=self.config.get("port", FlextWebConstants.Web.DEFAULT_PORT),
+                debug=self.config.get("debug", False),
             )
 
     class WebServiceRegistry:
@@ -686,7 +687,7 @@ class FlextWebServices:
     @classmethod
     def create_web_service(
         cls,
-        config: dict[str, object] | None = None,
+        config: FlextWebTypes.Core.WebConfigDict | None = None,
     ) -> FlextResult[FlextWebServices.WebService]:
         """Create web service instance with configuration.
 
@@ -701,7 +702,7 @@ class FlextWebServices:
                     return FlextResult[FlextWebServices.WebService].fail(
                         f"Config creation failed: {config_result.error}",
                     )
-                validated_config: dict[str, object] = config_result.value
+                validated_config: FlextWebTypes.Core.WebConfigDict = config_result.value
                 # Config type is guaranteed by FlextResult[FlextWebConfig.WebConfig]
 
             service = FlextWebServices.WebService(

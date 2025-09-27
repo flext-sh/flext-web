@@ -6,10 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import threading
 import warnings
 from pathlib import Path
-from typing import Any, ClassVar, Self
+from typing import Any, Self
 
 from pydantic import Field, computed_field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
@@ -25,39 +24,26 @@ class FlextWebConfig(FlextConfig):
     - Extends FlextConfig from flext-core
     - No nested classes within Config
     - All defaults from FlextWebConstants
-    - Dependency injection integration with flext-core container
+    - Uses enhanced singleton pattern with inverse dependency injection
     - Uses Pydantic 2.11+ features (field_validator, model_validator)
     """
 
-    # Singleton pattern attributes
-    _global_instance: ClassVar[FlextWebConfig | None] = None
-    _lock: ClassVar[threading.Lock] = threading.Lock()
-
     model_config = SettingsConfigDict(
-        env_prefix=FLEXT_WEB_,
+        env_prefix="FLEXT_WEB_",
         case_sensitive=False,
-        extra=allow,
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_nested_delimiter=__,
-        use_enum_values=True,
-        frozen=False,
-        # Enhanced Pydantic 2.11 features
-        arbitrary_types_allowed=True,
-        validate_return=True,
-        serialize_by_alias=True,
-        populate_by_name=True,
-        ser_json_timedelta=iso8601,
-        ser_json_bytes=base64,
+        extra="allow",
+        # Inherit enhanced Pydantic 2.11+ features from FlextConfig
+        validate_assignment=True,
         str_strip_whitespace=True,
-        defer_build=False,
-        coerce_numbers_to_str=False,
-        validate_default=True,
+        json_schema_extra={
+            "title": "FLEXT Web Configuration",
+            "description": "Enterprise web service configuration extending FlextConfig",
+        },
     )
 
     # Web service configuration using FlextWebConstants for defaults
     host: str = Field(
-        default=localhost,
+        default=FlextWebConstants.Web.DEFAULT_HOST,
         description="Host address for web service",
         min_length=1,
         max_length=255,
@@ -81,7 +67,7 @@ class FlextWebConfig(FlextConfig):
     )
 
     web_environment: str = Field(
-        default=development,
+        default="development",
         description="Web environment setting (development, testing, production)",
     )
 
@@ -155,13 +141,13 @@ class FlextWebConfig(FlextConfig):
     )
 
     session_cookie_samesite: str = Field(
-        default=Lax,
+        default="Lax",
         description="SameSite attribute for session cookies",
     )
 
     # Logging configuration
     log_level: str = Field(
-        default=INFO,
+        default="INFO",
         description="Logging level",
     )
 
@@ -170,7 +156,7 @@ class FlextWebConfig(FlextConfig):
         description="Log message format",
     )
 
-    @field_validator(debug, mode="before")
+    @field_validator("debug", mode="before")
     @classmethod
     def validate_debug(cls, value: object) -> bool:
         """Enhanced debug field validation with comprehensive type conversion."""
@@ -193,17 +179,20 @@ class FlextWebConfig(FlextConfig):
         host = value.strip()
 
         # Allow localhost and local IPs for development
-        if host in {"localhost", "127.0.0.1"}:
+        if host in {
+            FlextWebConstants.Web.DEFAULT_HOST,
+            FlextWebConstants.WebSpecific.LOCALHOST_IP,
+        }:
             return host
 
         # Security validation for production
         if host == FlextWebConstants.WebSpecific.ALL_INTERFACES:
             # Only allow 0.0.0.0 in development mode
-            config = cls.get_global_instance()
+            config = cls.get_or_create_shared_instance(project_name="flext-web")
             if config.development_mode:
                 return host
             # In production, use localhost instead
-            return "127.0.0.1"
+            return FlextWebConstants.WebSpecific.LOCALHOST_IP
 
         # Use flext-core validation
         result = FlextModels.Validation.validate_hostname(host)
@@ -364,7 +353,7 @@ class FlextWebConfig(FlextConfig):
     @classmethod
     def _is_development_env(cls) -> bool:
         """Check if running in development environment."""
-        config = cls.get_global_instance()
+        config = cls.get_or_create_shared_instance(project_name="flext-web")
         env = config.web_environment.lower()
         return env in {"development", "dev", "local"}
 
@@ -394,28 +383,26 @@ class FlextWebConfig(FlextConfig):
     def create_for_environment(
         cls, environment: str, **overrides: object
     ) -> FlextWebConfig:
-        """Create configuration for specific environment."""
-        return cls(environment=environment, **overrides)
+        """Create configuration for specific environment using enhanced singleton pattern."""
+        return cls.get_or_create_shared_instance(
+            project_name="flext-web", environment=environment, **overrides
+        )
 
     @classmethod
     def create_default(cls) -> FlextWebConfig:
-        """Create default configuration instance."""
-        return cls()
+        """Create default configuration instance using enhanced singleton pattern."""
+        return cls.get_or_create_shared_instance(project_name="flext-web")
 
-    # Singleton pattern override for proper typing
     @classmethod
     def get_global_instance(cls) -> FlextWebConfig:
-        """Get the global singleton instance of FlextWebConfig."""
-        if cls._global_instance is None:
-            with cls._lock:
-                if cls._global_instance is None:
-                    cls._global_instance = cls()
-        return cls._global_instance
+        """Get the global singleton instance using enhanced FlextConfig pattern."""
+        return cls.get_or_create_shared_instance(project_name="flext-web")
 
     @classmethod
     def reset_global_instance(cls) -> None:
         """Reset the global FlextWebConfig instance (mainly for testing)."""
-        cls._global_instance = None
+        # Use the enhanced FlextConfig reset mechanism
+        cls.reset_shared_instance()
 
 
 __all__ = [

@@ -153,8 +153,8 @@ class FlextWebUtilities(FlextUtilities):
         """
         return {
             "success": "True",
-            "message": "message",
-            "data": "data",
+            "message": message,
+            "data": data,
             "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
         }
 
@@ -171,9 +171,9 @@ class FlextWebUtilities(FlextUtilities):
         """
         return {
             "success": "False",
-            "message": "message",
-            "data": "None",
-            "status_code": "status_code",
+            "message": message,
+            "data": None,
+            "status_code": status_code,
             "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
         }
 
@@ -191,9 +191,9 @@ class FlextWebUtilities(FlextUtilities):
 
         """
         return {
-            "success": "success",
-            "message": "message",
-            "data": "data",
+            "success": success,
+            "message": message,
+            "data": data,
             "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
         }
 

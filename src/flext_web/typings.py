@@ -32,6 +32,42 @@ class FlextWebTypes(FlextTypes):
     """
 
     # =========================================================================
+    # CORE WEB TYPES - Commonly used type aliases extending FlextTypes.Core
+    # =========================================================================
+
+    class Core(FlextTypes.Core):
+        """Core Web types extending FlextTypes.Core.
+
+        Replaces generic dict[str, object] with semantic web types.
+        """
+
+        # Configuration and settings types
+        type ConfigDict = dict[str, FlextTypes.Core.ConfigValue | dict[str, object]]
+        type WebConfigDict = dict[str, object]
+        type AppConfigDict = dict[str, object]
+        type ServiceConfigDict = dict[str, object]
+        type ServerConfigDict = dict[str, object]
+
+        # Data processing types
+        type DataDict = dict[str, object]
+        type RequestDict = dict[str, object]
+        type ResponseDict = dict[str, object]
+        type ValidationDict = dict[str, object]
+        type RoutingDict = dict[str, object]
+
+        # Template and structured response types
+        type TemplateDict = dict[str, str | dict[str, object]]
+        type EndpointDict = dict[str, object]
+        type MiddlewareDict = dict[str, object]
+        type SecurityDict = dict[str, object]
+
+        # Operation and context types
+        type OperationDict = dict[str, object]
+        type ContextDict = dict[str, object]
+        type SettingsDict = dict[str, object]
+        type MetricsDict = dict[str, object]
+
+    # =========================================================================
     # WEB APPLICATION TYPES - Complex web application types
     # =========================================================================
 
@@ -537,12 +573,4 @@ class FlextWebTypes(FlextTypes):
 __all__ = [
     "FlextTypes",
     "FlextWebTypes",
-    "TFlaskApp",
-    "TWebApp",
-    "TWebConfig",
-    "TWebHandler",
-    "TWebMiddleware",
-    "TWebRequest",
-    "TWebResponse",
-    "TWebService",
 ]

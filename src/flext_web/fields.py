@@ -114,12 +114,12 @@ class FlextWebFields(FlextModels):
         @classmethod
         def ok(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 200 OK status field."""
-            return cls(200, "OK", **kwargs)
+            return cls(FlextWebConstants.Web.HTTP_OK, "OK", **kwargs)
 
         @classmethod
         def created(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 201 Created status field."""
-            return cls(201, "Created", **kwargs)
+            return cls(FlextWebConstants.Web.HTTP_CREATED, "Created", **kwargs)
 
         @classmethod
         def bad_request(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
@@ -149,7 +149,9 @@ class FlextWebFields(FlextModels):
     # =========================================================================
 
     @classmethod
-    def host_field(cls, default: str = "localhost", **kwargs: object) -> FieldReturn:
+    def host_field(
+        cls, default: str = FlextWebConstants.Web.DEFAULT_HOST, **kwargs: object
+    ) -> FieldReturn:
         """Create host address field with MASSIVE FlextUtilities validation.
 
         Args:
@@ -209,11 +211,18 @@ class FlextWebFields(FlextModels):
                 Field(
                     default=default,
                     description=field_description,
-                    ge=1,
-                    le=65535,
+                    ge=FlextWebConstants.Web.MIN_PORT,
+                    le=FlextWebConstants.Web.MAX_PORT,
                 ),
             )
-        return cast("FieldReturn", Field(default=default, ge=1, le=65535))
+        return cast(
+            "FieldReturn",
+            Field(
+                default=default,
+                ge=FlextWebConstants.Web.MIN_PORT,
+                le=FlextWebConstants.Web.MAX_PORT,
+            ),
+        )
 
     @classmethod
     def url_field(cls, **kwargs: object) -> FieldReturn:

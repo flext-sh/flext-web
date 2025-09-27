@@ -279,9 +279,9 @@ class FlextWebProtocols(FlextProtocols):
             def start_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
                 app = FlextWebModels.WebApp(
                     id=_app_id,
-                    name=mock,
+                    name="mock",
                     port=8080,
-                    host=localhost,
+                    host="localhost",
                     status=FlextWebModels.WebAppStatus.RUNNING,
                     domain_events=[],
                 )
@@ -290,9 +290,9 @@ class FlextWebProtocols(FlextProtocols):
             def stop_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
                 app = FlextWebModels.WebApp(
                     id=_app_id,
-                    name=mock,
+                    name="mock",
                     port=8080,
-                    host=localhost,
+                    host="localhost",
                     status=FlextWebModels.WebAppStatus.STOPPED,
                     domain_events=[],
                 )

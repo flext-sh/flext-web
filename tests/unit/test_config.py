@@ -12,6 +12,8 @@ import pytest
 from Flext_web import FlextWebConfig
 from pydantic import ValidationError
 
+from flext_web.constants import FlextWebConstants
+
 
 class TestWebConfigBasic:
     """Enterprise configuration testing for basic functionality and validation.
@@ -52,8 +54,10 @@ class TestWebConfigBasic:
     def test_web_config_server_settings(self) -> None:
         """Test server-related settings."""
         config = FlextWebConfig.WebConfig()
-        if config.host != "localhost":
-            msg: str = f"Expected {'localhost'}, got {config.host}"
+        if config.host != FlextWebConstants.Web.DEFAULT_HOST:
+            msg: str = (
+                f"Expected {FlextWebConstants.Web.DEFAULT_HOST}, got {config.host}"
+            )
             raise AssertionError(msg)
         assert isinstance(config.port, int)
         assert 1 <= config.port <= 65535

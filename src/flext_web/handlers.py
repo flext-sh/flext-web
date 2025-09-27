@@ -18,6 +18,7 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
+from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
@@ -95,8 +96,8 @@ class FlextWebHandlers(FlextProcessors):
         def create(
             self,
             name: str,
-            port: int = 8000,
-            host: str = "localhost",
+            port: int = FlextWebConstants.Web.DEFAULT_PORT,
+            host: str = FlextWebConstants.Web.DEFAULT_HOST,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Create new web application with comprehensive validation.
 
@@ -173,9 +174,9 @@ class FlextWebHandlers(FlextProcessors):
             """Validate all app inputs - simplified to rely on Pydantic model validation."""
             return FlextResult[FlextTypes.Core.Headers].ok(
                 {
-                    "name": "name",
+                    "name": name,
                     "port": str(port),
-                    "host": "host",
+                    "host": host,
                 },
             )
 
@@ -360,7 +361,11 @@ class FlextWebHandlers(FlextProcessors):
         """
 
         @override
-        def __init__(self, success_status: int = 200, error_status: int = 500) -> None:
+        def __init__(
+            self,
+            success_status: int = FlextWebConstants.Web.HTTP_OK,
+            error_status: int = FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+        ) -> None:
             """Initialize response handler with default status codes.
 
             Args:
@@ -466,7 +471,7 @@ class FlextWebHandlers(FlextProcessors):
                 )
             return self.create_error_response(
                 message=f"{error_message}: {result.error}",
-                status_code=400,  # Bad request for business logic errors
+                status_code=FlextWebConstants.Web.HTTP_BAD_REQUEST,  # Bad request for business logic errors
             )
 
     # =========================================================================
@@ -531,8 +536,8 @@ class FlextWebHandlers(FlextProcessors):
     def handle_create_app(
         cls,
         name: str,
-        port: int = 8000,
-        host: str = "localhost",
+        port: int = FlextWebConstants.Web.DEFAULT_PORT,
+        host: str = FlextWebConstants.Web.DEFAULT_HOST,
     ) -> FlextResult[FlextWebModels.WebApp]:
         """Handle application creation requests.
 
@@ -607,8 +612,8 @@ class FlextWebHandlers(FlextProcessors):
     @classmethod
     def create_response_handler(
         cls,
-        success_status: int = 200,
-        error_status: int = 500,
+        success_status: int = FlextWebConstants.Web.HTTP_OK,
+        error_status: int = FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
     ) -> WebResponseHandler:
         """Create response handler instance.
 
@@ -651,7 +656,7 @@ class FlextWebHandlers(FlextProcessors):
 
         """
         return FlextWebTypes.HealthResponse(
-            status=healthy,
+            status="healthy",
             service="flext-web",
             version="0.9.0",
             applications=0,  # This would be populated by the service

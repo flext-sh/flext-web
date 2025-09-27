@@ -20,12 +20,15 @@ class FlextWebConstants(FlextConstants):
     class Web:
         """Web server constants and configuration values."""
 
+        DEFAULT_HOST: str = "localhost"
         MIN_PORT: int = 1024
         MAX_PORT: int = 65535
         DEFAULT_PORT: int = 8080
 
         # HTTP Status Constants
         HTTP_OK: int = 200
+        HTTP_BAD_REQUEST: int = 400
+        HTTP_INTERNAL_ERROR: int = 500
         MAX_HTTP_STATUS: int = 599
 
         # App Name Validation
@@ -40,6 +43,7 @@ class FlextWebConstants(FlextConstants):
         DEV_ENVIRONMENT_KEY: str = "dev-environment-key-32-characters-long-for-testing"
         TEST_ENVIRONMENT_KEY: str = "test-environment-key-32-characters-long-for-tests"
         ALL_INTERFACES: str = "0.0.0.0"
+        LOCALHOST_IP: str = "127.0.0.1"
         SYSTEM_PORTS_THRESHOLD: int = 1023
 
 

@@ -20,6 +20,7 @@ from flask import Flask
 from Flext_web import FlextWebConfig, FlextWebServices
 
 from flext_core import FlextTypes
+from flext_web.constants import FlextWebConstants
 from tests.port_manager import TestPortManager
 
 
@@ -33,8 +34,10 @@ def setup_test_environment() -> Generator[None]:
     os.environ["FLEXT_ENV"] = "test"
     os.environ["FLEXT_LOG_LEVEL"] = "info"  # Reduce noise
     os.environ["FLEXT_WEB_DEBUG"] = "true"
-    os.environ["FLEXT_WEB_HOST"] = "localhost"
-    os.environ["FLEXT_WEB_SECRET_KEY"] = "test-secret-key-32-characters-long!!"
+    os.environ["FLEXT_WEB_HOST"] = FlextWebConstants.Web.DEFAULT_HOST
+    os.environ["FLEXT_WEB_SECRET_KEY"] = (
+        FlextWebConstants.WebSpecific.TEST_ENVIRONMENT_KEY
+    )
 
     yield
 
@@ -124,8 +127,8 @@ def test_app_data() -> dict[str, str | int]:
     """Real application data for testing."""
     return {
         "name": "test-application",
-        "port": 9001,
-        "host": "localhost",
+        "port": FlextWebConstants.Web.DEFAULT_PORT + 1001,
+        "host": FlextWebConstants.Web.DEFAULT_HOST,
     }
 
 
@@ -144,10 +147,10 @@ def invalid_app_data() -> dict[str, str | int]:
 def production_config() -> FlextTypes.Core.Headers:
     """Production-like configuration for testing."""
     return {
-        "FLEXT_WEB_HOST": "0.0.0.0",
-        "FLEXT_WEB_PORT": "8080",
+        "FLEXT_WEB_HOST": FlextWebConstants.WebSpecific.ALL_INTERFACES,
+        "FLEXT_WEB_PORT": str(FlextWebConstants.Web.DEFAULT_PORT),
         "FLEXT_WEB_DEBUG": "false",
-        "FLEXT_WEB_SECRET_KEY": "production-secret-key-32-chars-long!!",
+        "FLEXT_WEB_SECRET_KEY": FlextWebConstants.WebSpecific.DEV_SECRET_KEY,
     }
 
 

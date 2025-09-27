@@ -42,8 +42,8 @@ class FlextWebModels(FlextModels):
             use_enum_values=True,
             arbitrary_types_allowed=True,
             validate_return=True,
-            ser_json_timedelta=iso8601,
-            ser_json_bytes=base64,
+            ser_json_timedelta="iso8601",
+            ser_json_bytes="base64",
             serialize_by_alias=True,
             populate_by_name=True,
             str_strip_whitespace=True,
@@ -74,13 +74,13 @@ class FlextWebModels(FlextModels):
         model_config = ConfigDict(
             validate_assignment=True,
             use_enum_values=True,
-            extra=forbid,
+            extra="forbid",
             frozen=False,
             # Enhanced Pydantic 2.11 features
             arbitrary_types_allowed=True,
             validate_return=True,
-            ser_json_timedelta=iso8601,
-            ser_json_bytes=base64,
+            ser_json_timedelta="iso8601",
+            ser_json_bytes="base64",
             serialize_by_alias=True,
             populate_by_name=True,
             str_strip_whitespace=True,
@@ -96,7 +96,7 @@ class FlextWebModels(FlextModels):
             description="Web application name",
         )
         host: str = Field(
-            default=localhost,
+            default=FlextWebConstants.Web.DEFAULT_HOST,
             min_length=1,
             max_length=255,
             description="Host address for the web application",
@@ -250,7 +250,10 @@ class FlextWebModels(FlextModels):
         def url(self) -> str:
             """Get app URL with proper protocol detection."""
             # Standard HTTPS ports
-            https_ports = {443, 8443}
+            https_ports = {
+                FlextWebConstants.Web.HTTPS_PORT,
+                FlextWebConstants.Web.HTTPS_ALT_PORT,
+            }
             protocol = "https" if self.port in https_ports else "http"
             return f"{protocol}://{self.host}:{self.port}"
 
@@ -551,17 +554,29 @@ class FlextWebModels(FlextModels):
         @computed_field
         def is_success(self) -> bool:
             """Check if response indicates success."""
-            return 200 <= self.status_code < 300
+            return (
+                FlextWebConstants.Web.HTTP_OK
+                <= self.status_code
+                < FlextWebConstants.Web.HTTP_MULTIPLE_CHOICES
+            )
 
         @computed_field
         def is_client_error(self) -> bool:
             """Check if response indicates client error."""
-            return 400 <= self.status_code < 500
+            return (
+                FlextWebConstants.Web.HTTP_BAD_REQUEST
+                <= self.status_code
+                < FlextWebConstants.Web.HTTP_INTERNAL_ERROR
+            )
 
         @computed_field
         def is_server_error(self) -> bool:
             """Check if response indicates server error."""
-            return 500 <= self.status_code < 600
+            return (
+                FlextWebConstants.Web.HTTP_INTERNAL_ERROR
+                <= self.status_code
+                < FlextWebConstants.Web.MAX_HTTP_STATUS
+            )
 
         @computed_field
         def processing_time_seconds(self) -> float:
@@ -579,7 +594,7 @@ class FlextWebModels(FlextModels):
             description="Application name",
         )
         host: str = Field(
-            default=localhost,
+            default=FlextWebConstants.Web.DEFAULT_HOST,
             min_length=1,
             max_length=255,
             description="Host address",
