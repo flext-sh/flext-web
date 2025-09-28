@@ -5,7 +5,7 @@ Simple example demonstrating how to start the FLEXT Web Interface service
 with default configuration for development purposes using the refactored API.
 """
 
-from Flext_web import FlextWebConfig, FlextWebServices
+from flext_web import FlextWebConfig, FlextWebServices
 
 
 def main() -> None:

@@ -10,7 +10,6 @@ from flext_web.constants import FlextWebConstants
 from flext_web.exceptions import FlextWebExceptions
 from flext_web.fields import FlextWebFields
 from flext_web.handlers import FlextWebHandlers
-from flext_web.interfaces import FlextWebInterfaces
 from flext_web.models import FlextWebModels
 from flext_web.protocols import FlextWebProtocols
 from flext_web.services import FlextWebServices
@@ -25,7 +24,6 @@ __all__ = [
     "FlextWebExceptions",
     "FlextWebFields",
     "FlextWebHandlers",
-    "FlextWebInterfaces",
     "FlextWebModels",
     "FlextWebProtocols",
     "FlextWebServices",

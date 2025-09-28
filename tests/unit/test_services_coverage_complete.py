@@ -6,7 +6,8 @@ SPDX-License-Identifier: MIT
 
 import pytest
 from flask.testing import FlaskClient
-from Flext_web import FlextWebConfig, FlextWebServices
+
+from flext_web import FlextWebConfig, FlextWebServices
 
 
 class TestServicesCompleteCoverage:

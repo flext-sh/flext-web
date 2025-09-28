@@ -82,7 +82,11 @@ def main() -> None:
     args = parser.parse_args()
 
     # Get configuration
-    config = FlextWebConfig()
+    config_result = FlextWebConfig.create_web_config()
+    if config_result.is_failure:
+        logger.error(f"Failed to load configuration: {config_result.error}")
+        sys.exit(1)
+    config = config_result.value
 
     # Override with command line arguments
     host = args.host or config.host

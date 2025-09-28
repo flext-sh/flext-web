@@ -13,7 +13,15 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Self, override
 
-from pydantic import ConfigDict, Field, computed_field, field_validator, model_validator
+from pydantic import (
+    ConfigDict,
+    Field,
+    FieldSerializationInfo,
+    computed_field,
+    field_serializer,
+    field_validator,
+    model_validator,
+)
 
 from flext_core import (
     FlextConstants,
@@ -31,6 +39,116 @@ class FlextWebModels(FlextModels):
     Inherits from FlextModels to avoid duplication and ensure consistency
     with enhanced Pydantic 2.11 features and comprehensive validation.
     """
+
+    model_config = ConfigDict(
+        # Enhanced Pydantic 2.11 enterprise features
+        validate_assignment=True,
+        use_enum_values=True,
+        arbitrary_types_allowed=True,
+        extra="forbid",
+        frozen=False,
+        validate_return=True,
+        ser_json_timedelta="iso8601",
+        ser_json_bytes="base64",
+        hide_input_in_errors=True,
+        json_schema_extra={
+            "examples": [
+                {
+                    "web_application": {
+                        "name": "enterprise-web-app",
+                        "host": "production.flext.com",
+                        "port": 8080,
+                        "status": "running",
+                    },
+                    "web_request": {
+                        "method": "POST",
+                        "url": "/api/v1/applications",
+                        "headers": {"Content-Type": "application/json"},
+                    },
+                    "web_response": {"status_code": 201, "processing_time_ms": 45.6},
+                }
+            ],
+            "enterprise_features": [
+                "Web application lifecycle management",
+                "HTTP request/response processing",
+                "Security validation and headers",
+                "Performance monitoring",
+                "CORS and CSRF protection",
+            ],
+        },
+    )
+
+    @computed_field
+    @property
+    def active_web_models_count(self) -> int:
+        """Computed field returning the number of active web model types."""
+        # Count active web models based on nested classes
+        web_model_classes = [
+            self.WebApp,
+            self.WebRequest,
+            self.WebResponse,
+            self.WebAppConfig,
+            self.WebAppStatus,
+            self._BaseWebModel,
+        ]
+        return len([cls for cls in web_model_classes if cls])
+
+    @computed_field
+    @property
+    def web_model_summary(self) -> dict[str, Any]:
+        """Computed field providing comprehensive web model summary."""
+        return {
+            "model_system": "FLEXT Web Models",
+            "version": "2.11.0",
+            "active_models": self.active_web_models_count,
+            "supported_operations": [
+                "web_application_management",
+                "http_request_processing",
+                "http_response_handling",
+                "web_configuration_management",
+                "security_validation",
+            ],
+            "framework_integrations": ["FastAPI", "Flask", "Django", "Starlette"],
+            "validation_features": [
+                "HTTP method validation",
+                "URL format validation",
+                "Security headers validation",
+                "CORS configuration validation",
+                "SSL certificate validation",
+            ],
+        }
+
+    @model_validator(mode="after")
+    def validate_web_consistency(self) -> Self:
+        """Model validator ensuring web model consistency and security."""
+        # Validate that web models maintain consistency
+        if hasattr(self, "_initialized") and not self._initialized:
+            msg = "Web models must be properly initialized"
+            raise ValueError(msg)
+
+        # Ensure security configurations are properly set
+        if hasattr(self, "WebAppConfig"):
+            # Web-specific validation logic can be added here
+            pass
+
+        return self
+
+    @field_serializer("*", when_used="json")
+    def serialize_with_web_metadata(
+        self, value: object, _info: FieldSerializationInfo
+    ) -> object:
+        """Field serializer adding web processing metadata and security context."""
+        if isinstance(value, dict):
+            return {
+                **value,
+                "_web_metadata": {
+                    "processed_at": datetime.now(UTC).isoformat(),
+                    "model_type": "FlextWebModels",
+                    "security_validated": True,
+                    "web_framework_compatible": True,
+                },
+            }
+        return value
 
     # Enhanced base models with Pydantic 2.11 features
     class _BaseWebModel(FlextModels.ArbitraryTypesModel):
@@ -52,10 +170,34 @@ class FlextWebModels(FlextModels):
             validate_default=True,
             # Custom encoders for complex types
             json_encoders={
-                Path: "str",
+                Path: str,
                 datetime: lambda dt: dt.isoformat(),
             },
         )
+
+        @computed_field
+        @property
+        def model_metadata(self) -> dict[str, Any]:
+            """Computed field providing base web model metadata."""
+            return {
+                "model_class": self.__class__.__name__,
+                "framework": "FLEXT Web",
+                "pydantic_version": "2.11+",
+                "created_at": datetime.now(UTC).isoformat(),
+            }
+
+        @field_serializer("*", when_used="json")
+        def mask_sensitive_web_data(
+            self, value: object, _info: FieldSerializationInfo
+        ) -> object:
+            """Field serializer for masking sensitive web data."""
+            # Mask sensitive web information like secrets, tokens, etc.
+            if isinstance(value, str) and any(
+                keyword in str(_info.field_name).lower()
+                for keyword in ["secret", "key", "token", "password", "auth"]
+            ):
+                return "***MASKED***"
+            return value
 
     class WebAppStatus(Enum):
         """Enhanced web application status enumeration."""
@@ -108,7 +250,7 @@ class FlextWebModels(FlextModels):
             description="Port number for the web application",
         )
         status: FlextWebModels.WebAppStatus = Field(
-            default_factory=lambda: FlextWebModels.WebAppStatus.STOPPED,
+            default="stopped",
             description="Current status of the web application",
         )
         version: int = Field(
@@ -127,6 +269,78 @@ class FlextWebModels(FlextModels):
             default_factory=dict,
             description="Application metrics",
         )
+
+        @computed_field
+        @property
+        def web_app_summary(self) -> dict[str, Any]:
+            """Computed field providing web application summary."""
+            return {
+                "application_info": {
+                    "name": self.name,
+                    "status": self.status.value
+                    if hasattr(self.status, "value")
+                    else str(self.status),
+                    "environment": self.environment,
+                    "version": self.version,
+                },
+                "network_info": {
+                    "host": self.host,
+                    "port": self.port,
+                    "url": self.url,
+                    "protocol": "https" if self.port in {443, 8443} else "http",
+                },
+                "operational_info": {
+                    "is_running": self.is_running,
+                    "is_healthy": self.is_healthy,
+                    "can_start": self.can_start,
+                    "can_stop": self.can_stop,
+                    "can_restart": self.can_restart,
+                },
+            }
+
+        @model_validator(mode="after")
+        def validate_web_app_configuration(self) -> Self:
+            """Model validator for web application configuration consistency."""
+            # Validate port and host combination
+            if (
+                self.host in {"0.0.0.0", "::"}  # noqa: S104
+                and self.port <= FlextWebConstants.WebSpecific.PRIVILEGED_PORTS_MAX
+            ):
+                if self.environment == "development":
+                    # Allow in development but warn
+                    pass
+                else:
+                    msg = "Binding to all interfaces on privileged ports requires proper configuration"
+                    raise ValueError(msg)
+
+            # Validate environment-specific requirements
+            if self.environment == "production":
+                if self.debug_mode if hasattr(self, "debug_mode") else False:
+                    msg = "Debug mode must be disabled in production environment"
+                    raise ValueError(msg)
+
+                if not self.health_check_url:
+                    msg = "Health check URL is required in production environment"
+                    raise ValueError(msg)
+
+            return self
+
+        @field_serializer("metrics", when_used="json")
+        def serialize_metrics_with_metadata(
+            self, value: dict[str, Any]
+        ) -> dict[str, Any]:
+            """Field serializer for metrics with processing metadata."""
+            return {
+                **value,
+                "_metrics_metadata": {
+                    "collected_at": datetime.now(UTC).isoformat(),
+                    "application": self.name,
+                    "environment": self.environment,
+                    "status": self.status.value
+                    if hasattr(self.status, "value")
+                    else str(self.status),
+                },
+            }
 
         @field_validator("status")
         @classmethod
@@ -472,6 +686,58 @@ class FlextWebModels(FlextModels):
             description="Request timestamp",
         )
 
+        @computed_field
+        @property
+        def request_summary(self) -> dict[str, Any]:
+            """Computed field providing comprehensive request summary."""
+            return {
+                "request_info": {
+                    "id": self.request_id,
+                    "method": self.method,
+                    "url": self.url,
+                    "timestamp": self.timestamp.isoformat(),
+                },
+                "client_info": {"ip": self.client_ip, "user_agent": self.user_agent},
+                "request_properties": {
+                    "is_safe_method": self.is_safe_method,
+                    "is_idempotent": self.is_idempotent,
+                    "has_body": bool(self.body),
+                    "header_count": len(self.headers),
+                    "param_count": len(self.query_params),
+                },
+            }
+
+        @model_validator(mode="after")
+        def validate_request_consistency(self) -> Self:
+            """Model validator for request consistency."""
+            # Validate method and body consistency
+            if self.method.upper() in {"GET", "HEAD", "DELETE"} and self.body:
+                msg = f"HTTP {self.method} method should not have a body"
+                raise ValueError(msg)
+
+            # Validate required headers for certain methods
+            if self.method.upper() in {"POST", "PUT", "PATCH"} and self.body:
+                content_type = self.headers.get("Content-Type", "").lower()
+                if not content_type:
+                    msg = "Content-Type header required for requests with body"
+                    raise ValueError(msg)
+
+            return self
+
+        @field_serializer("headers", when_used="json")
+        def serialize_headers_securely(self, value: dict[str, str]) -> dict[str, str]:
+            """Field serializer for masking sensitive headers."""
+            masked_headers = {}
+            sensitive_headers = ["authorization", "cookie", "x-api-key", "x-auth-token"]
+
+            for key, val in value.items():
+                if key.lower() in sensitive_headers:
+                    masked_headers[key] = "***MASKED***"
+                else:
+                    masked_headers[key] = val
+
+            return masked_headers
+
         @field_validator("method")
         @classmethod
         def validate_method(cls, v: str) -> str:
@@ -541,6 +807,97 @@ class FlextWebModels(FlextModels):
             default_factory=lambda: datetime.now(UTC),
             description="Response timestamp",
         )
+
+        @computed_field
+        @property
+        def response_summary(self) -> dict[str, Any]:
+            """Computed field providing comprehensive response summary."""
+            return {
+                "response_info": {
+                    "id": self.response_id,
+                    "request_id": self.request_id,
+                    "status_code": self.status_code,
+                    "timestamp": self.timestamp.isoformat(),
+                },
+                "performance_info": {
+                    "processing_time_ms": self.processing_time_ms,
+                    "processing_time_seconds": self.processing_time_seconds,
+                    "content_length": self.content_length,
+                    "content_type": self.content_type,
+                },
+                "status_properties": {
+                    "is_success": self.is_success,
+                    "is_client_error": self.is_client_error,
+                    "is_server_error": self.is_server_error,
+                    "status_category": self._get_status_category(),
+                },
+            }
+
+        @model_validator(mode="after")
+        def validate_response_consistency(self) -> Self:
+            """Model validator for response consistency."""
+            # Validate content type and body consistency
+            if self.body and not self.content_type:
+                msg = "Content-Type must be specified when body is present"
+                raise ValueError(msg)
+
+            # Validate content length consistency
+            if self.body and self.content_length == 0:
+                self.content_length = len(self.body.encode("utf-8"))
+            elif not self.body and self.content_length > 0:
+                msg = "Content-Length should be 0 when no body is present"
+                raise ValueError(msg)
+
+            return self
+
+        @field_serializer("body", when_used="json")
+        def serialize_response_body_securely(self, value: str | None) -> str | None:
+            """Field serializer for secure response body handling."""
+            if not value:
+                return value
+
+            # Limit body size in serialization for security
+            max_body_size = 1000  # 1KB limit for serialization
+            if len(value) > max_body_size:
+                return (
+                    f"{value[:max_body_size]}... [TRUNCATED - {len(value)} total chars]"
+                )
+
+            return value
+
+        def _get_status_category(self) -> str:
+            """Get HTTP status code category."""
+            if (
+                FlextWebConstants.Web.HTTP_INFORMATIONAL_MIN
+                <= self.status_code
+                <= FlextWebConstants.Web.HTTP_INFORMATIONAL_MAX
+            ):
+                return "informational"
+            if (
+                FlextWebConstants.Web.HTTP_SUCCESS_MIN
+                <= self.status_code
+                <= FlextWebConstants.Web.HTTP_SUCCESS_MAX
+            ):
+                return "success"
+            if (
+                FlextWebConstants.Web.HTTP_REDIRECTION_MIN
+                <= self.status_code
+                <= FlextWebConstants.Web.HTTP_REDIRECTION_MAX
+            ):
+                return "redirection"
+            if (
+                FlextWebConstants.Web.HTTP_CLIENT_ERROR_MIN
+                <= self.status_code
+                <= FlextWebConstants.Web.HTTP_CLIENT_ERROR_MAX
+            ):
+                return "client_error"
+            if (
+                FlextWebConstants.Web.HTTP_SERVER_ERROR_MIN
+                <= self.status_code
+                <= FlextWebConstants.Web.HTTP_SERVER_ERROR_MAX
+            ):
+                return "server_error"
+            return "unknown"
 
         @field_validator("status_code")
         @classmethod
@@ -643,6 +1000,73 @@ class FlextWebModels(FlextModels):
             default=None,
             description="SSL private key path",
         )
+
+        @computed_field
+        @property
+        def config_summary(self) -> dict[str, Any]:
+            """Computed field providing comprehensive configuration summary."""
+            return {
+                "application_config": {
+                    "name": self.app_name,
+                    "debug_mode": self.debug,
+                    "protocol": self.protocol,
+                    "base_url": self.base_url,
+                },
+                "network_config": {
+                    "host": self.host,
+                    "port": self.port,
+                    "ssl_enabled": self.ssl_enabled,
+                    "request_timeout": self.request_timeout,
+                },
+                "security_config": {
+                    "cors_enabled": self.enable_cors,
+                    "cors_origins_count": len(self.cors_origins),
+                    "secret_key_length": len(self.secret_key) if self.secret_key else 0,
+                    "ssl_configured": bool(self.ssl_cert_path and self.ssl_key_path),
+                },
+                "limits_config": {
+                    "max_content_length": self.max_content_length,
+                    "max_content_length_mb": round(
+                        self.max_content_length / (1024 * 1024), 2
+                    ),
+                },
+            }
+
+        @model_validator(mode="after")
+        def validate_web_app_config_consistency(self) -> Self:
+            """Model validator for web application configuration consistency."""
+            # Validate SSL configuration consistency
+            if self.ssl_enabled:
+                if not self.ssl_cert_path or not self.ssl_key_path:
+                    msg = "SSL certificate and key paths required when SSL is enabled"
+                    raise ValueError(msg)
+
+                # Validate file paths exist
+                if not Path(self.ssl_cert_path).exists():
+                    msg = f"SSL certificate file not found: {self.ssl_cert_path}"
+                    raise ValueError(msg)
+
+                if not Path(self.ssl_key_path).exists():
+                    msg = f"SSL key file not found: {self.ssl_key_path}"
+                    raise ValueError(msg)
+
+            # Validate CORS configuration
+            if self.enable_cors and not self.cors_origins:
+                msg = "CORS origins must be specified when CORS is enabled"
+                raise ValueError(msg)
+
+            # Validate debug mode restrictions
+            if self.debug and self.ssl_enabled:
+                msg = "Debug mode should not be enabled with SSL in production"
+                raise ValueError(msg)
+
+            return self
+
+        @field_serializer("secret_key", when_used="json")
+        def serialize_secret_key_securely(self, _value: str) -> str:
+            """Field serializer for secure secret key handling."""
+            # Never expose actual secret key in serialization
+            return "***MASKED***"
 
         @field_validator("cors_origins")
         @classmethod

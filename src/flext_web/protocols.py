@@ -33,10 +33,6 @@ class FlextWebProtocols(FlextProtocols):
     # WEB SERVICE PROTOCOLS
     # =========================================================================
 
-    # DEPRECATED: Use WebServiceInterface instead (extends FlextProtocols.Domain.Service)
-    # Keeping for backward compatibility only
-    WebServiceProtocol = FlextProtocols.Domain.Service
-
     class AppManagerProtocol(Protocol):
         """Protocol for application management operations.
 
@@ -323,7 +319,7 @@ class FlextWebProtocols(FlextProtocols):
         return all(hasattr(manager, method) for method in required_methods)
 
     # =========================================================================
-    # CONSOLIDATED INTERFACE PROTOCOLS (from interfaces.py)
+    # CONSOLIDATED INTERFACE PROTOCOLS
     # =========================================================================
 
     @runtime_checkable
@@ -478,7 +474,7 @@ class FlextWebProtocols(FlextProtocols):
 
 
 # =============================================================================
-# BACKWARD COMPATIBILITY ALIASES
+# PUBLIC API EXPORTS
 __all__ = [
     "FlextWebProtocols",
 ]

@@ -12,8 +12,9 @@ from collections.abc import Generator
 
 import pytest
 import requests
-from Flext_web import FlextWebConfig, FlextWebConstants, FlextWebServices
 from tests.port_manager import TestPortManager
+
+from flext_web import FlextWebConfig, FlextWebConstants, FlextWebServices
 
 # Type alias for readability
 FlextWebService = FlextWebServices.WebService

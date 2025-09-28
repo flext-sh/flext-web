@@ -8,10 +8,10 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-from Flext_web import FlextWebConfig, FlextWebHandlers, FlextWebModels, FlextWebTypes
 from pydantic import ValidationError
 
 from flext_core import FlextTypes
+from flext_web import FlextWebConfig, FlextWebHandlers, FlextWebModels, FlextWebTypes
 
 
 class TestWebAppStatusEnum:

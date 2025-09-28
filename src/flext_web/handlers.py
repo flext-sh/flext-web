@@ -51,6 +51,12 @@ class FlextWebHandlers(FlextProcessors):
         domain entities and infrastructure concerns while maintaining clean
         separation of responsibilities.
 
+        Implements FlextWebProtocols.AppManagerProtocol through structural subtyping:
+        - create_app: Create new web application with validation
+        - start_app: Start existing application with state validation
+        - stop_app: Stop running application with graceful shutdown
+        - list_apps: List all applications (delegated to registry)
+
         Responsibilities:
           - Command validation and processing
           - Business rule enforcement
@@ -88,10 +94,72 @@ class FlextWebHandlers(FlextProcessors):
         def __init__(self) -> None:
             """Initialize WebApp handler with FlextMixins functionality."""
             self.logger = FlextLogger(__name__)
+            self._apps_registry: dict[str, FlextWebModels.WebApp] = {}
 
             # Initialize handler state
             self._initialized = True
             self.logger.info("WebApp handler initialized")
+
+        # =============================================================================
+        # PROTOCOL IMPLEMENTATION METHODS - AppManagerProtocol
+        # =============================================================================
+
+        def create_app(
+            self,
+            name: str,
+            port: int,
+            host: str,
+        ) -> FlextResult[FlextWebModels.WebApp]:
+            """Create a new application - implements AppManagerProtocol."""
+            return self.create(name, port, host)
+
+        def start_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+            """Start an application - implements AppManagerProtocol."""
+            if app_id not in self._apps_registry:
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    f"Application {app_id} not found"
+                )
+
+            app = self._apps_registry[app_id]
+            start_result = self.start(app)
+
+            if start_result.is_success:
+                # Update registry with new state
+                updated_app = start_result.unwrap()
+                self._apps_registry[app_id] = updated_app
+
+            return start_result
+
+        def stop_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+            """Stop an application - implements AppManagerProtocol."""
+            if app_id not in self._apps_registry:
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    f"Application {app_id} not found"
+                )
+
+            app = self._apps_registry[app_id]
+            stop_result = self.stop(app)
+
+            if stop_result.is_success:
+                # Update registry with new state
+                updated_app = stop_result.unwrap()
+                self._apps_registry[app_id] = updated_app
+
+            return stop_result
+
+        def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
+            """List all applications - implements AppManagerProtocol."""
+            try:
+                apps_list = list(self._apps_registry.values())
+                return FlextResult[list[FlextWebModels.WebApp]].ok(apps_list)
+            except Exception as e:
+                return FlextResult[list[FlextWebModels.WebApp]].fail(
+                    f"List apps failed: {e}"
+                )
+
+        # =============================================================================
+        # EXISTING HANDLER METHODS - Enhanced with registry integration
+        # =============================================================================
 
         def create(
             self,
@@ -121,7 +189,7 @@ class FlextWebHandlers(FlextProcessors):
             self.logger.info("Create app command")
 
             # MASSIVE USAGE: Railway-oriented programming with FlextResult composition
-            return (
+            result = (
                 # Step 1: Sanitize inputs using FlextUtilities
                 self._sanitize_inputs(name, host)
                 # Step 2: Validate all inputs (chained validation)
@@ -144,6 +212,13 @@ class FlextWebHandlers(FlextProcessors):
                 .flat_map(self._validate_and_return_app)
             )
 
+            # Register app if created successfully
+            if result.is_success:
+                app = result.unwrap()
+                self._apps_registry[app.id] = app
+
+            return result
+
         def _sanitize_inputs(
             self,
             name: str,
@@ -151,13 +226,13 @@ class FlextWebHandlers(FlextProcessors):
         ) -> FlextResult[FlextTypes.Core.Headers]:
             """Sanitize inputs using MASSIVE FlextUtilities delegation."""
             try:
-                FlextUtilities.TextProcessor.safe_string(name)
-                FlextUtilities.TextProcessor.safe_string(host)
+                safe_name = FlextUtilities.TextProcessor.safe_string(name)
+                safe_host = FlextUtilities.TextProcessor.safe_string(host)
 
                 return FlextResult[FlextTypes.Core.Headers].ok(
                     {
-                        "name": "safe_name",
-                        "host": "safe_host",
+                        "name": safe_name,
+                        "host": safe_host,
                     },
                 )
             except Exception as e:
@@ -242,9 +317,11 @@ class FlextWebHandlers(FlextProcessors):
             domain_method_func = getattr(app, domain_method)
             result: FlextResult[FlextWebModels.WebApp] = domain_method_func()
 
-            # Step 4: Log success if applicable
+            # Step 4: Log success if applicable and update registry
             if result.is_success:
                 self.logger.info(f"app_{operation_name}_success")
+                updated_app = result.unwrap()
+                self._apps_registry[app.id] = updated_app
 
             return result
 
@@ -356,6 +433,10 @@ class FlextWebHandlers(FlextProcessors):
 
         Provides consistent response formatting across all web endpoints with
         proper error handling, status codes, and structured response data.
+
+        Implements FlextWebProtocols.ResponseFormatterProtocol through structural subtyping:
+        - format_success: Format success responses with data
+        - format_error: Format error responses with details
         """
 
         @override
@@ -370,18 +451,64 @@ class FlextWebHandlers(FlextProcessors):
                 success_status: Default HTTP status for successful responses
                 error_status: Default HTTP status for error responses
 
-            Returns:
-            object: Description of return value.
-
             """
             self.success_status = success_status
             self.error_status = error_status
             self.logger = FlextLogger(__name__)
 
-            # Initialize FlextMixins features
             # Initialize response handler state
             self._initialized = True
             self.logger.info("Response handler initialized")
+
+        # =============================================================================
+        # PROTOCOL IMPLEMENTATION METHODS - ResponseFormatterProtocol
+        # =============================================================================
+
+        def format_success(
+            self,
+            data: FlextTypes.Core.Dict,
+            message: str = "Success",
+            status_code: int = 200,
+        ) -> FlextWebTypes.Core.WebResponse:
+            """Format success response - implements ResponseFormatterProtocol."""
+            safe_message = FlextUtilities.TextProcessor.safe_string(message)
+
+            response_data = {
+                "success": True,
+                "message": safe_message,
+                "data": data,
+                "status_code": status_code,
+                "errors": [],  # Flask-specific field
+            }
+
+            return jsonify(response_data), status_code
+
+        def format_error(
+            self,
+            message: str,
+            status_code: int = 500,
+            details: str | None = None,
+        ) -> FlextWebTypes.Core.WebResponse:
+            """Format error response - implements ResponseFormatterProtocol."""
+            safe_message = FlextUtilities.TextProcessor.safe_string(
+                message or "Unknown error",
+            )
+
+            response_data = {
+                "success": False,
+                "message": safe_message,
+                "status_code": status_code,
+                "errors": ([details] if details else []),
+            }
+
+            if details:
+                response_data["details"] = details
+
+            return jsonify(response_data), status_code
+
+        # =============================================================================
+        # EXISTING METHODS - Updated to use protocol methods
+        # =============================================================================
 
         def create_success_response(
             self,
@@ -389,7 +516,7 @@ class FlextWebHandlers(FlextProcessors):
             message: str = "Success",
             status_code: int | None = None,
         ) -> ResponseReturnValue:
-            """Create successful JSON response using FlextWebUtilities.
+            """Create successful JSON response using protocol method.
 
             Args:
                 data: Response data
@@ -400,16 +527,19 @@ class FlextWebHandlers(FlextProcessors):
                 Flask JSON response with success format
 
             """
-            safe_message = FlextUtilities.TextProcessor.safe_string(message)
+            # Convert data to dict if needed for protocol compliance
+            if data is None:
+                formatted_data = {}
+            elif isinstance(data, list):
+                formatted_data = {"items": data}
+            else:
+                formatted_data = data
 
-            # Use FlextWebUtilities as base and extend with Flask-specific fields
-            response_data = FlextWebUtilities.create_success_response(
-                safe_message,
-                data,
+            return self.format_success(
+                data=formatted_data,
+                message=message,
+                status_code=status_code or self.success_status,
             )
-            response_data["errors"] = []  # Flask-specific field
-
-            return jsonify(response_data), status_code or self.success_status
 
         def create_error_response(
             self,
@@ -417,7 +547,7 @@ class FlextWebHandlers(FlextProcessors):
             status_code: int | None = None,
             errors: str | FlextTypes.Core.Dict | None = None,
         ) -> ResponseReturnValue:
-            """Create error JSON response using FlextWebUtilities.
+            """Create error JSON response using protocol method.
 
             Args:
                 message: Error message
@@ -428,20 +558,18 @@ class FlextWebHandlers(FlextProcessors):
                 Flask JSON response with error format
 
             """
-            safe_message = FlextUtilities.TextProcessor.safe_string(
-                message or "Unknown error",
-            )
+            details = None
+            if errors:
+                if isinstance(errors, str):
+                    details = errors
+                elif isinstance(errors, dict):
+                    details = str(errors)
 
-            # Use FlextWebUtilities as base and extend with Flask-specific fields
-            response_data = FlextWebUtilities.create_error_response(
-                safe_message,
-                status_code or self.error_status,
+            return self.format_error(
+                message=message,
+                status_code=status_code or self.error_status,
+                details=details,
             )
-            response_data["errors"] = (
-                errors if isinstance(errors, dict) else ([errors] if errors else [])
-            )
-
-            return jsonify(response_data), status_code or self.error_status
 
         def handle_result(
             self,
@@ -461,13 +589,19 @@ class FlextWebHandlers(FlextProcessors):
 
             """
             if result.is_success:
-                return self.create_success_response(
-                    data=result.value
-                    if isinstance(result.value, (dict, list))
-                    else {"value": result.value},
-                    message=success_message,
-                )
-            return self.create_error_response(
+                result_data = result.value
+                if isinstance(result_data, (dict, list)):
+                    data = (
+                        result_data
+                        if isinstance(result_data, dict)
+                        else {"items": result_data}
+                    )
+                else:
+                    data = {"value": result_data}
+
+                return self.format_success(data=data, message=success_message)
+
+            return self.format_error(
                 message=f"{error_message}: {result.error}",
                 status_code=FlextWebConstants.Web.HTTP_BAD_REQUEST,  # Bad request for business logic errors
             )

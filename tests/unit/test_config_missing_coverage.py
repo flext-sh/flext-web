@@ -7,8 +7,9 @@ SPDX-License-Identifier: MIT
 import os
 
 import pytest
-from Flext_web import FlextWebConfig
 from pydantic import ValidationError
+
+from flext_web import FlextWebConfig
 
 
 class TestConfigMissingCoverage:

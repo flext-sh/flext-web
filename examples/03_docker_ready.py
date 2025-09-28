@@ -10,9 +10,8 @@ import secrets
 import signal
 import sys
 
-from Flext_web import FlextWebConfig, FlextWebServices
-
 from flext_core import FlextLogger
+from flext_web import FlextWebConfig, FlextWebServices
 
 logger = FlextLogger(__name__)
 

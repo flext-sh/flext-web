@@ -11,8 +11,9 @@ import os
 from unittest.mock import patch
 
 import pytest
-from Flext_web import FlextWebConfig
 from pydantic import ValidationError
+
+from flext_web import FlextWebConfig
 
 
 class TestWebConfigValidation:

@@ -9,9 +9,9 @@ from __future__ import annotations
 import os
 
 import pytest
-from Flext_web import FlextWebConfig
 from pydantic import ValidationError
 
+from flext_web import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 
 

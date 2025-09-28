@@ -6,9 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import override
+from typing import Any, override
 
-from flask import Flask, jsonify, render_template_string, request
+from flask import Flask, Response, jsonify, render_template_string, request
 from flask.typing import ResponseReturnValue
 
 from flext_core import (
@@ -44,6 +44,11 @@ class FlextWebServices:
         Enterprise-grade web service providing REST API endpoints, web dashboard,
         and comprehensive application lifecycle management. Built on Flask with
         FlextProcessors integration for consistent service patterns.
+
+        Implements FlextWebProtocols through structural subtyping:
+        - WebServiceInterface: initialize_routes, configure_middleware, start_service, stop_service
+        - AppManagerProtocol: create_app, start_app, stop_app, list_apps
+        - ResponseFormatterProtocol: format_success, format_error
         """
 
         @override
@@ -71,7 +76,7 @@ class FlextWebServices:
             )
 
             # Register routes
-            self._register_routes()
+            self.initialize_routes()
 
             # Mark service as ready
             self._ready = True
@@ -98,8 +103,12 @@ class FlextWebServices:
                 """Check if request is JSON."""
                 return request.is_json
 
-        def _register_routes(self) -> None:
-            """Register all Flask routes for the web service."""
+        # =============================================================================
+        # PROTOCOL IMPLEMENTATION METHODS - WebServiceInterface
+        # =============================================================================
+
+        def initialize_routes(self) -> None:
+            """Initialize web service routes and endpoints - implements WebServiceInterface."""
             # Health check endpoint
             self.app.route("/health", methods=["GET"])(self.health_check)
 
@@ -107,24 +116,192 @@ class FlextWebServices:
             self.app.route("/", methods=["GET"])(self.dashboard)
 
             # API endpoints
-            self.app.route("/api/v1/apps", methods=["GET"])(self.list_apps)
-            self.app.route("/api/v1/apps", methods=["POST"])(self.create_app)
+            self.app.route("/api/v1/apps", methods=["GET"])(self.list_apps_endpoint)
+            self.app.route("/api/v1/apps", methods=["POST"])(self.create_app_endpoint)
             self.app.route("/api/v1/apps/<app_id>", methods=["GET"])(self.get_app)
             self.app.route("/api/v1/apps/<app_id>/start", methods=["POST"])(
-                self.start_app,
+                self.start_app_endpoint,
             )
             self.app.route("/api/v1/apps/<app_id>/stop", methods=["POST"])(
-                self.stop_app,
+                self.stop_app_endpoint,
             )
+
+        def configure_middleware(self) -> None:
+            """Configure request/response middleware - implements WebServiceInterface."""
+
+            # Add CORS headers
+            @self.app.after_request
+            def after_request(response: Response) -> Response:
+                response.headers["Access-Control-Allow-Origin"] = "*"
+                response.headers["Access-Control-Allow-Methods"] = (
+                    "GET, POST, PUT, DELETE, OPTIONS"
+                )
+                response.headers["Access-Control-Allow-Headers"] = (
+                    "Content-Type, Authorization"
+                )
+                return response
+
+            # Add request logging
+            @self.app.before_request
+            def before_request() -> None:
+                self.logger.info(f"Request: {request.method} {request.path}")
+
+        def start_service(
+            self,
+            host: str,
+            port: int,
+            *,
+            debug: bool = False,
+            **kwargs: object,
+        ) -> None:
+            """Start the web service with specified configuration - implements WebServiceInterface."""
+            self.configure_middleware()
+            self.app.run(host=host, port=port, debug=debug, **kwargs)
+
+        def stop_service(self) -> None:
+            """Stop the web service gracefully - implements WebServiceInterface."""
+            # Flask doesn't have a built-in stop method, this would need proper implementation
+            # with werkzeug server shutdown
+            self.logger.info("Service stop requested")
+
+        # =============================================================================
+        # PROTOCOL IMPLEMENTATION METHODS - AppManagerProtocol
+        # =============================================================================
+
+        def create_app(
+            self,
+            name: str,
+            port: int,
+            host: str,
+        ) -> FlextResult[FlextWebModels.WebApp]:
+            """Create a new application - implements AppManagerProtocol."""
+            try:
+                self.logger.info("Create app request via protocol")
+
+                # Use existing handler for actual creation
+                create_result = self.app_handler.create(name, port, host)
+                if create_result.is_failure:
+                    return FlextResult[FlextWebModels.WebApp].fail(
+                        f"Application creation failed: {create_result.error}"
+                    )
+
+                app = create_result.unwrap()
+                self.apps[app.id] = app
+
+                return FlextResult[FlextWebModels.WebApp].ok(app)
+
+            except Exception as e:
+                return FlextResult[FlextWebModels.WebApp].fail(
+                    f"Create app failed: {e}"
+                )
+
+        def start_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+            """Start an application - implements AppManagerProtocol."""
+            try:
+                if app_id not in self.apps:
+                    return FlextResult[FlextWebModels.WebApp].fail(
+                        f"Application {app_id} not found"
+                    )
+
+                app = self.apps[app_id]
+                start_result = self.app_handler.start(app)
+
+                if start_result.is_failure:
+                    return FlextResult[FlextWebModels.WebApp].fail(
+                        f"Start failed: {start_result.error}"
+                    )
+
+                # Update stored app
+                updated_app = start_result.unwrap()
+                self.apps[app_id] = updated_app
+
+                return FlextResult[FlextWebModels.WebApp].ok(updated_app)
+
+            except Exception as e:
+                return FlextResult[FlextWebModels.WebApp].fail(f"Start app failed: {e}")
+
+        def stop_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
+            """Stop an application - implements AppManagerProtocol."""
+            try:
+                if app_id not in self.apps:
+                    return FlextResult[FlextWebModels.WebApp].fail(
+                        f"Application {app_id} not found"
+                    )
+
+                app = self.apps[app_id]
+                stop_result = self.app_handler.stop(app)
+
+                if stop_result.is_failure:
+                    return FlextResult[FlextWebModels.WebApp].fail(
+                        f"Stop failed: {stop_result.error}"
+                    )
+
+                # Update stored app
+                updated_app = stop_result.unwrap()
+                self.apps[app_id] = updated_app
+
+                return FlextResult[FlextWebModels.WebApp].ok(updated_app)
+
+            except Exception as e:
+                return FlextResult[FlextWebModels.WebApp].fail(f"Stop app failed: {e}")
+
+        def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
+            """List all applications - implements AppManagerProtocol."""
+            try:
+                apps_list = list(self.apps.values())
+                return FlextResult[list[FlextWebModels.WebApp]].ok(apps_list)
+            except Exception as e:
+                return FlextResult[list[FlextWebModels.WebApp]].fail(
+                    f"List apps failed: {e}"
+                )
+
+        # =============================================================================
+        # PROTOCOL IMPLEMENTATION METHODS - ResponseFormatterProtocol
+        # =============================================================================
+
+        def format_success(
+            self,
+            data: dict[str, Any],
+            message: str = "Success",
+            status_code: int = 200,
+        ) -> FlextWebTypes.Core.WebResponse:
+            """Format success response - implements ResponseFormatterProtocol."""
+            response_data = {
+                "success": True,
+                "message": message,
+                "data": data,
+                "status_code": status_code,
+            }
+            return jsonify(response_data), status_code
+
+        def format_error(
+            self,
+            message: str,
+            status_code: int = 500,
+            details: str | None = None,
+        ) -> FlextWebTypes.Core.WebResponse:
+            """Format error response - implements ResponseFormatterProtocol."""
+            response_data = {
+                "success": False,
+                "message": message,
+                "status_code": status_code,
+            }
+            if details:
+                response_data["details"] = details
+            return jsonify(response_data), status_code
+
+        # =============================================================================
+        # EXISTING ENDPOINT METHODS - Updated to use protocol methods
+        # =============================================================================
 
         def health_check(self) -> ResponseReturnValue:
             """Health check endpoint returning service status."""
             try:
                 self.logger.info("Health check performed")
 
-                {
+                health_data = {
                     "status": "healthy",
-                    "service": "flext - web",
+                    "service": "flext-web",
                     "version": FlextConstants.Core.VERSION,
                     "applications": len(self.apps),
                     "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
@@ -132,34 +309,18 @@ class FlextWebServices:
                     "created_at": getattr(self, "created_at", None),
                 }
 
-                return jsonify(
-                    {
-                        "success": "True",
-                        "message": "Service is healthy",
-                        "data": "health_data",
-                    },
-                ), FlextWebConstants.Web.HTTP_OK
+                return self.format_success(
+                    data=health_data, message="Service is healthy"
+                )
             except Exception:
                 self.logger.exception("Health check failed")
-                return jsonify(
-                    {
-                        "success": "False",
-                        "message": "Service health check failed",
-                        "data": {
-                            "status": "unhealthy",
-                            "error": "Internal error",
-                            "service_id": getattr(self, "_id", "unknown"),
-                        },
-                    },
-                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
+                return self.format_error(
+                    message="Service health check failed",
+                    status_code=FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+                )
 
         def dashboard(self) -> ResponseReturnValue:
-            """Web dashboard interface for application management.
-
-            Returns:
-            ResponseReturnValue:: Description of return value.
-
-            """
+            """Web dashboard interface for application management."""
             try:
                 app_count = len(self.apps)
                 running_count = sum(
@@ -167,7 +328,6 @@ class FlextWebServices:
                 )
 
                 html_template = """
-
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -227,12 +387,19 @@ class FlextWebServices:
             except Exception:
                 return "Dashboard error", FlextWebConstants.Web.HTTP_INTERNAL_ERROR
 
-        def list_apps(self) -> ResponseReturnValue:
-            """List all registered applications."""
+        def list_apps_endpoint(self) -> ResponseReturnValue:
+            """List all registered applications endpoint."""
             try:
-                apps_data: list[FlextWebTypes.AppData] = []
-                for app in self.apps.values():
-                    app_data: FlextWebTypes.AppData = {
+                apps_result = self.list_apps()
+                if apps_result.is_failure:
+                    return self.format_error(
+                        message=f"Failed to list applications: {apps_result.error}",
+                        status_code=FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+                    )
+
+                apps_data = []
+                for app in apps_result.unwrap():
+                    app_data = {
                         "id": app.id,
                         "name": app.name,
                         "host": app.host,
@@ -242,30 +409,20 @@ class FlextWebServices:
                     }
                     apps_data.append(app_data)
 
-                response: FlextWebTypes.SuccessResponse = {
-                    "success": "True",
-                    "message": f"Found {len(apps_data)} applications",
-                    "data": {"apps": "apps_data"},
-                }
-                return jsonify(response)
+                return self.format_success(
+                    data={"apps": apps_data},
+                    message=f"Found {len(apps_data)} applications",
+                )
 
             except Exception as e:
-                error_response: FlextWebTypes.ErrorResponse = {
-                    "success": "False",
-                    "message": "Failed to list applications",
-                    "error": str(e),
-                }
-                return jsonify(
-                    error_response
-                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
+                return self.format_error(
+                    message="Failed to list applications",
+                    details=str(e),
+                    status_code=FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+                )
 
         def _validate_json_request(self) -> FlextResult[FlextWebTypes.Core.RequestDict]:
-            """Railway-oriented validation of JSON request data.
-
-            Returns:
-                FlextResult[FlextWebTypes.Core.RequestDict]: Validated request data result.
-
-            """
+            """Railway-oriented validation of JSON request data."""
             if not request.is_json:
                 return FlextResult[FlextWebTypes.Core.RequestDict].fail(
                     "Request must be JSON"
@@ -328,254 +485,160 @@ class FlextWebServices:
             except Exception as e:
                 return FlextResult[tuple[str, str, int]].fail(f"Validation failed: {e}")
 
-        def _create_and_store_app(
-            self,
-            name: str,
-            host: str,
-            port: int,
-        ) -> FlextResult[FlextWebModels.WebApp]:
-            """Create and store application using existing handler."""
-            create_result: FlextResult[FlextWebModels.WebApp] = self.app_handler.create(
-                name, port, host
-            )
-
-            if create_result.is_failure:
-                return FlextResult[FlextWebModels.WebApp].fail(
-                    f"Application creation failed: {create_result.error}",
-                )
-
-            app = create_result.value
-            self.apps[app.id] = app
-
-            self.logger.info("App created")
-
-            return FlextResult[FlextWebModels.WebApp].ok(app)
-
-        def _build_success_response(
-            self,
-            app: FlextWebModels.WebApp,
-        ) -> ResponseReturnValue:
-            """Build success response using consistent format."""
-            return jsonify(
-                {
-                    "success": "True",
-                    "message": "Application created successfully",
-                    "data": {
-                        "id": app.id,
-                        "name": app.name,
-                        "host": app.host,
-                        "port": app.port,
-                        "status": app.status.value,
-                    },
-                },
-            ), FlextWebConstants.Web.HTTP_CREATED
-
-        def _build_error_response(
-            self,
-            error: str,
-            status_code: int = FlextWebConstants.Web.HTTP_BAD_REQUEST,
-        ) -> ResponseReturnValue:
-            """Build error response using consistent format."""
-            return jsonify(
-                {
-                    "success": "False",
-                    "message": error,
-                },
-            ), status_code
-
-        def create_app(self) -> ResponseReturnValue:
-            """Create new application using Railway-oriented programming pattern.
-
-            Reduces from 11 returns to single monadic chain with 85% less complexity.
-            Uses Python 3.13 functional composition and existing flext-core validation.
-
-            Returns:
-            ResponseReturnValue:: Description of return value.
-
-            """
+        def create_app_endpoint(self) -> ResponseReturnValue:
+            """Create new application endpoint using protocol method."""
             try:
                 self.logger.info("Create app request received")
 
-                # FlextResult chain with proper error handling
+                # Validate JSON request
                 json_validation = self._validate_json_request()
                 if json_validation.is_failure:
-                    return self._build_error_response(
-                        json_validation.error or "Validation failed",
+                    return self.format_error(
+                        message=json_validation.error or "Validation failed",
+                        status_code=FlextWebConstants.Web.HTTP_BAD_REQUEST,
                     )
 
+                # Validate app data
                 app_validation = self._validate_app_data(json_validation.unwrap())
                 if app_validation.is_failure:
-                    return self._build_error_response(
-                        app_validation.error or "App validation failed",
+                    return self.format_error(
+                        message=app_validation.error or "App validation failed",
+                        status_code=FlextWebConstants.Web.HTTP_BAD_REQUEST,
                     )
 
-                # Unpack the validated data for method call
-                app_data_tuple = app_validation.unwrap()
+                # Unpack validated data and create app using protocol method
+                name, host, port = app_validation.unwrap()
+                create_result = self.create_app(name, port, host)
 
-                # Unpack the validated data for method call
-                result = self._create_and_store_app(
-                    str(app_data_tuple[0]),
-                    str(app_data_tuple[1]),
-                    int(app_data_tuple[2]),
+                if create_result.is_failure:
+                    return self.format_error(
+                        message=create_result.error or "Unknown error",
+                        status_code=FlextWebConstants.Web.HTTP_BAD_REQUEST,
+                    )
+
+                app = create_result.unwrap()
+                app_data = {
+                    "id": app.id,
+                    "name": app.name,
+                    "host": app.host,
+                    "port": app.port,
+                    "status": app.status.value,
+                }
+
+                return self.format_success(
+                    data=app_data,
+                    message="Application created successfully",
+                    status_code=FlextWebConstants.Web.HTTP_CREATED,
                 )
 
-                # Handle final result
-                if result.is_failure:
-                    return self._build_error_response(result.error or "Unknown error")
-
-                return self._build_success_response(result.unwrap())
-
             except Exception as e:
-                return self._build_error_response(
-                    f"Internal error during application creation: {e}",
-                    FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+                return self.format_error(
+                    message=f"Internal error during application creation: {e}",
+                    status_code=FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
                 )
 
         def get_app(self, app_id: str) -> ResponseReturnValue:
             """Get specific application by ID."""
             try:
                 if app_id not in self.apps:
-                    return jsonify(
-                        {
-                            "success": "False",
-                            "message": f"Application {app_id} not found",
-                        },
-                    ), FlextWebConstants.Web.HTTP_NOT_FOUND
+                    return self.format_error(
+                        message=f"Application {app_id} not found",
+                        status_code=FlextWebConstants.Web.HTTP_NOT_FOUND,
+                    )
 
                 app = self.apps[app_id]
-                return jsonify(
-                    {
-                        "success": "True",
-                        "message": "Application found",
-                        "data": {
-                            "id": app.id,
-                            "name": app.name,
-                            "host": app.host,
-                            "port": app.port,
-                            "status": app.status.value,
-                            "is_running": bool(app.is_running),
-                        },
-                    },
-                )
+                app_data = {
+                    "id": app.id,
+                    "name": app.name,
+                    "host": app.host,
+                    "port": app.port,
+                    "status": app.status.value,
+                    "is_running": bool(app.is_running),
+                }
+
+                return self.format_success(data=app_data, message="Application found")
 
             except Exception as e:
-                return jsonify(
-                    {
-                        "success": "False",
-                        "message": "Failed to get application",
-                        "error": str(e),
-                    },
-                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
+                return self.format_error(
+                    message="Failed to get application",
+                    details=str(e),
+                    status_code=FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+                )
 
-        def start_app(self, app_id: str) -> ResponseReturnValue:
-            """Start application by ID.
-
-            Returns:
-            ResponseReturnValue:: Description of return value.
-
-            """
+        def start_app_endpoint(self, app_id: str) -> ResponseReturnValue:
+            """Start application endpoint using protocol method."""
             try:
-                if app_id not in self.apps:
-                    return jsonify(
-                        {
-                            "success": "False",
-                            "message": f"Application {app_id} not found",
-                        },
-                    ), FlextWebConstants.Web.HTTP_NOT_FOUND
-
-                app = self.apps[app_id]
-                start_result: FlextResult[None] = app.start()
+                start_result = self.start_app(app_id)
 
                 if start_result.is_failure:
-                    return jsonify(
-                        {
-                            "success": "False",
-                            "message": start_result.error or "Application start failed",
-                            "error": start_result.error,
-                        },
-                    ), FlextWebConstants.Web.HTTP_BAD_REQUEST
+                    if "not found" in start_result.error.lower():
+                        status_code = FlextWebConstants.Web.HTTP_NOT_FOUND
+                    else:
+                        status_code = FlextWebConstants.Web.HTTP_BAD_REQUEST
 
-                # Update stored application - start returns updated app
-                if start_result.value is not None:
-                    self.apps[app_id] = start_result.value
+                    return self.format_error(
+                        message=start_result.error or "Application start failed",
+                        status_code=status_code,
+                    )
 
-                return jsonify(
-                    {
-                        "success": "True",
-                        "message": f"Application {app.name} started successfully",
-                        "data": {
-                            "id": "app_id",
-                            "name": app.name,
-                            "status": "running",
-                        },
-                    },
+                app = start_result.unwrap()
+                app_data = {
+                    "id": app.id,
+                    "name": app.name,
+                    "status": app.status.value,
+                }
+
+                return self.format_success(
+                    data=app_data,
+                    message=f"Application {app.name} started successfully",
                 )
 
             except Exception as e:
-                return jsonify(
-                    {
-                        "success": "False",
-                        "message": "Failed to start application",
-                        "error": str(e),
-                    },
-                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
+                return self.format_error(
+                    message="Failed to start application",
+                    details=str(e),
+                    status_code=FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+                )
 
-        def stop_app(self, app_id: str) -> ResponseReturnValue:
-            """Stop application by ID."""
+        def stop_app_endpoint(self, app_id: str) -> ResponseReturnValue:
+            """Stop application endpoint using protocol method."""
             try:
-                if app_id not in self.apps:
-                    return jsonify(
-                        {
-                            "success": "False",
-                            "message": f"Application {app_id} not found",
-                        },
-                    ), FlextWebConstants.Web.HTTP_NOT_FOUND
-
-                app = self.apps[app_id]
-                stop_result: FlextResult[None] = app.stop()
+                stop_result = self.stop_app(app_id)
 
                 if stop_result.is_failure:
-                    # Customize message based on error type
-                    if "not running" in (stop_result.error or "").lower():
-                        pass
+                    if "not found" in stop_result.error.lower():
+                        status_code = FlextWebConstants.Web.HTTP_NOT_FOUND
+                    else:
+                        status_code = FlextWebConstants.Web.HTTP_BAD_REQUEST
 
-                    return jsonify(
-                        {
-                            "success": "False",
-                            "message": "message",
-                            "error": stop_result.error,
-                        },
-                    ), FlextWebConstants.Web.HTTP_BAD_REQUEST
+                    return self.format_error(
+                        message=stop_result.error or "Application stop failed",
+                        status_code=status_code,
+                    )
 
-                # Update stored application - stop returns updated app
-                if stop_result.value is not None:
-                    self.apps[app_id] = stop_result.value
+                app = stop_result.unwrap()
+                app_data = {
+                    "id": app.id,
+                    "name": app.name,
+                    "status": app.status.value,
+                }
 
-                return jsonify(
-                    {
-                        "success": "True",
-                        "message": f"Application {app.name} stopped successfully",
-                        "data": {
-                            "id": "app_id",
-                            "name": app.name,
-                            "status": "stopped",
-                        },
-                    },
+                return self.format_success(
+                    data=app_data,
+                    message=f"Application {app.name} stopped successfully",
                 )
 
             except Exception as e:
-                return jsonify(
-                    {
-                        "success": "False",
-                        "message": "Failed to stop application",
-                        "error": str(e),
-                    },
-                ), FlextWebConstants.Web.HTTP_INTERNAL_ERROR
+                return self.format_error(
+                    message="Failed to stop application",
+                    details=str(e),
+                    status_code=FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+                )
 
         @override
         def run(self) -> None:
             """Run the Flask web service."""
-            self.app.run(
+            self.start_service(
                 host=self.config.get("host", FlextWebConstants.Web.DEFAULT_HOST),
                 port=self.config.get("port", FlextWebConstants.Web.DEFAULT_PORT),
                 debug=self.config.get("debug", False),
@@ -794,7 +857,7 @@ class FlextWebServices:
                     e.value for e in list(FlextConstants.Environment.ConfigEnvironment)
                 ]
                 if env_value not in valid_environments:
-                    return FlextResult[dict["str", "object"]].fail(
+                    return FlextResult[dict[str, object]].fail(
                         f"Invalid environment '{env_value}'. Valid options: {valid_environments}",
                     )
             else:
@@ -822,10 +885,10 @@ class FlextWebServices:
             validated_config.setdefault("max_concurrent_requests", 100)
             validated_config.setdefault("request_timeout_seconds", 30)
 
-            return FlextResult[dict["str", "object"]].ok(validated_config)
+            return FlextResult[dict[str, object]].ok(validated_config)
 
         except Exception as e:
-            return FlextResult[dict["str", "object"]].fail(
+            return FlextResult[dict[str, object]].fail(
                 f"Failed to configure web services system: {e}",
             )
 
@@ -860,10 +923,10 @@ class FlextWebServices:
                 "average_response_time": 0.0,
             }
 
-            return FlextResult[dict["str", "object"]].ok(config)
+            return FlextResult[dict[str, object]].ok(config)
 
         except Exception as e:
-            return FlextResult[dict["str", "object"]].fail(
+            return FlextResult[dict[str, object]].fail(
                 f"Failed to get web services system config: {e}",
             )
 

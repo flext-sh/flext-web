@@ -18,9 +18,7 @@ class FlextWebExceptions(FlextExceptions):
     exceptions, consolidating functionality while extending FlextExceptions
     from flext-core for proper architectural inheritance.
 
-    All exceptions are accessible as nested classes and through aliases
-    for backward compatibility. The class provides factory methods for
-    common exception creation patterns.
+    All exceptions are accessible as nested classes for direct instantiation.
     """
 
     # =========================================================================
@@ -132,51 +130,6 @@ class FlextWebExceptions(FlextExceptions):
         ) -> None:
             """Initialize middleware error."""
             super().__init__(message, operation=middleware_name)
-
-    # =========================================================================
-    # FACTORY METHODS
-    # =========================================================================
-
-    @classmethod
-    def create_web_error(
-        cls,
-        message: str,
-        route: str | None = None,
-        **kwargs: object,
-    ) -> WebError:
-        """Create base web error instance."""
-        return cls.WebError(message, route=route, **kwargs)
-
-    @classmethod
-    def create_validation_error(
-        cls,
-        message: str = "Web validation error",
-        field: str | None = None,
-        value: str | None = None,
-    ) -> WebValidationError:
-        """Create web validation error instance."""
-        return cls.WebValidationError(message, field=field, value=value)
-
-    @classmethod
-    def create_template_error(
-        cls,
-        message: str = "Web template error",
-        template_name: str | None = None,
-        **kwargs: object,
-    ) -> WebTemplateError:
-        """Create web template error instance."""
-        return cls.WebTemplateError(message, template_name=template_name, **kwargs)
-
-    @classmethod
-    def create_routing_error(
-        cls,
-        message: str = "Web routing error",
-        endpoint: str | None = None,
-        method: str | None = None,
-        **kwargs: object,
-    ) -> WebRoutingError:
-        """Create web routing error instance."""
-        return cls.WebRoutingError(message, endpoint=endpoint, method=method, **kwargs)
 
 
 __all__ = [

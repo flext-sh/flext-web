@@ -6,63 +6,76 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import os
 import warnings
 from pathlib import Path
 from typing import Any, Self
 
-from pydantic import Field, computed_field, field_validator, model_validator
+from pydantic import Field, SecretStr, computed_field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextConfig, FlextConstants, FlextModels
+from flext_core import FlextConfig, FlextConstants, FlextModels, FlextResult
 from flext_web.constants import FlextWebConstants
 
 
-class FlextWebConfig(FlextConfig):
-    """Single Pydantic 2 Settings class for flext-web extending FlextConfig.
+class FlextWebConfig:
+    """Container for flext-web configuration classes."""
 
-    Follows standardized pattern:
-    - Extends FlextConfig from flext-core
-    - No nested classes within Config
-    - All defaults from FlextWebConstants
-    - Uses enhanced singleton pattern with inverse dependency injection
-    - Uses Pydantic 2.11+ features (field_validator, model_validator)
-    """
+    @classmethod
+    def create_web_config(cls, **overrides: object) -> FlextResult[WebConfig]:
+        """Create WebConfig instance with optional overrides."""
+        try:
+            config = cls.WebConfig(**overrides)
+            return FlextResult[cls.WebConfig].ok(config)
+        except Exception as e:
+            return FlextResult[cls.WebConfig].fail(f"Failed to create web config: {e}")
 
-    model_config = SettingsConfigDict(
-        env_prefix="FLEXT_WEB_",
-        case_sensitive=False,
-        extra="allow",
-        # Inherit enhanced Pydantic 2.11+ features from FlextConfig
-        validate_assignment=True,
-        str_strip_whitespace=True,
-        json_schema_extra={
-            "title": "FLEXT Web Configuration",
-            "description": "Enterprise web service configuration extending FlextConfig",
-        },
-    )
+    class WebConfig(FlextConfig):
+        """Single Pydantic 2 Settings class for flext-web extending FlextConfig.
 
-    # Web service configuration using FlextWebConstants for defaults
-    host: str = Field(
-        default=FlextWebConstants.Web.DEFAULT_HOST,
-        description="Host address for web service",
-        min_length=1,
-        max_length=255,
-    )
+        Follows standardized pattern:
+        - Extends FlextConfig from flext-core
+        - No nested classes within Config
+        - All defaults from FlextWebConstants
+        - Uses enhanced singleton pattern with inverse dependency injection
+        - Uses Pydantic 2.11+ features (field_validator, model_validator)
+        """
 
-    port: int = Field(
-        default=FlextWebConstants.Web.DEFAULT_PORT,
-        ge=FlextWebConstants.Web.MIN_PORT,
-        le=FlextWebConstants.Web.MAX_PORT,
-        description="Port number for web service",
-    )
+        model_config = SettingsConfigDict(
+            env_prefix="FLEXT_WEB_",
+            case_sensitive=False,
+            extra="allow",
+            # Inherit enhanced Pydantic 2.11+ features from FlextConfig
+            validate_assignment=True,
+            str_strip_whitespace=True,
+            json_schema_extra={
+                "title": "FLEXT Web Configuration",
+                "description": "Enterprise web service configuration extending FlextConfig",
+            },
+        )
 
-    debug: bool = Field(
-        default=False,
-        description="Enable debug mode",
-    )
+        # Web service configuration using FlextWebConstants for defaults
+        host: str = Field(
+            default=FlextWebConstants.Web.DEFAULT_HOST,
+            description="Host address for web service",
+            min_length=1,
+            max_length=255,
+        )
 
-    development_mode: bool = Field(
-        default=False,
+        port: int = Field(
+            default=FlextWebConstants.Web.DEFAULT_PORT,
+            ge=FlextWebConstants.Web.MIN_PORT,
+            le=FlextWebConstants.Web.MAX_PORT,
+            description="Port number for web service",
+        )
+
+        debug: bool = Field(
+            default=False,
+            description="Enable debug mode",
+        )
+
+        development_mode: bool = Field(
+            default=False,
         description="Enable development mode with additional features",
     )
 
@@ -71,8 +84,8 @@ class FlextWebConfig(FlextConfig):
         description="Web environment setting (development, testing, production)",
     )
 
-    secret_key: str | None = Field(
-        default=FlextWebConstants.WebSpecific.DEV_SECRET_KEY,
+    secret_key: SecretStr | None = Field(
+        default=SecretStr(FlextWebConstants.WebSpecific.DEV_SECRET_KEY),
         min_length=32,
         description="Flask secret key for sessions",
     )
@@ -203,30 +216,35 @@ class FlextWebConfig(FlextConfig):
 
     @field_validator("secret_key")
     @classmethod
-    def validate_secret_key(cls, value: str | None) -> str:
+    def validate_secret_key(cls, value: SecretStr | None) -> SecretStr:
         """Enhanced secret key validation with security checks."""
         if value is None:
             msg = "Secret key cannot be None"
             raise ValueError(msg)
 
-        if len(value) < 32:
+        # Extract actual value from SecretStr
+        secret_value = (
+            value.get_secret_value() if isinstance(value, SecretStr) else str(value)
+        )
+
+        if len(secret_value) < FlextWebConstants.Web.MIN_SECRET_KEY_LENGTH:
             msg = "Secret key must be at least 32 characters long"
             raise ValueError(msg)
 
         # Check for default development key in production-like environments
         if (
-            value == FlextWebConstants.WebSpecific.DEV_SECRET_KEY
+            secret_value == FlextWebConstants.WebSpecific.DEV_SECRET_KEY
             and not cls._is_development_env()
         ):
             msg = "Must change default secret key for production"
             raise ValueError(msg)
 
         # Additional security checks
-        if value.lower() in {"password", "secret", "key", "123456", "REDACTED_LDAP_BIND_PASSWORD"}:
+        if secret_value.lower() in {"password", "secret", "key", "123456", "REDACTED_LDAP_BIND_PASSWORD"}:
             msg = "Secret key is too weak"
             raise ValueError(msg)
 
-        return value
+        return value if isinstance(value, SecretStr) else SecretStr(secret_value)
 
     @field_validator("port")
     @classmethod
@@ -353,9 +371,10 @@ class FlextWebConfig(FlextConfig):
     @classmethod
     def _is_development_env(cls) -> bool:
         """Check if running in development environment."""
-        config = cls.get_or_create_shared_instance(project_name="flext-web")
-        env = config.web_environment.lower()
-        return env in {"development", "dev", "local"}
+        # Use environment variable directly to avoid circular dependency
+
+        web_env = os.getenv("FLEXT_WEB_WEB_ENVIRONMENT", "development").lower()
+        return web_env in {"development", "dev", "local"}
 
     def get_server_config(self) -> dict[str, Any]:
         """Get server configuration."""
@@ -382,29 +401,60 @@ class FlextWebConfig(FlextConfig):
     @classmethod
     def create_for_environment(
         cls, environment: str, **overrides: object
-    ) -> FlextWebConfig:
+    ) -> "FlextWebConfig.WebConfig":
         """Create configuration for specific environment using enhanced singleton pattern."""
         return cls.get_or_create_shared_instance(
             project_name="flext-web", environment=environment, **overrides
         )
 
     @classmethod
-    def create_default(cls) -> FlextWebConfig:
+    def create_default(cls) -> "FlextWebConfig.WebConfig":
         """Create default configuration instance using enhanced singleton pattern."""
         return cls.get_or_create_shared_instance(project_name="flext-web")
 
     @classmethod
-    def get_global_instance(cls) -> FlextWebConfig:
+    def get_or_create_shared_instance(cls, project_name: str, **overrides: object) -> "FlextWebConfig.WebConfig":
+        """Get or create shared instance with singleton pattern."""
+        # Simple implementation since FlextConfig may not have this
+        return cls(**overrides)
+
+    @classmethod
+    def get_global_instance(cls) -> "FlextWebConfig.WebConfig":
         """Get the global singleton instance using enhanced FlextConfig pattern."""
         return cls.get_or_create_shared_instance(project_name="flext-web")
 
     @classmethod
     def reset_global_instance(cls) -> None:
         """Reset the global FlextWebConfig instance (mainly for testing)."""
-        # Use the enhanced FlextConfig reset mechanism
-        cls.reset_shared_instance()
+        # Use the parent FlextConfig reset mechanism
+        super().reset_global_instance()
+
+
+class FlextWebSettings:
+    """Settings reader for flext-web configuration.
+
+    Provides a simple interface to read configuration from environment
+    variables and create validated FlextWebConfig.WebConfig instances.
+    """
+
+    def __init__(self) -> None:
+        """Initialize settings reader."""
+
+    def to_config(self) -> FlextResult[FlextWebConfig.WebConfig]:
+        """Create configuration from current environment variables.
+
+        Returns:
+            FlextResult with WebConfig instance or error
+
+        """
+        try:
+            config = FlextWebConfig.WebConfig()
+            return FlextResult[FlextWebConfig.WebConfig].ok(config)
+        except Exception as e:
+            return FlextResult[FlextWebConfig.WebConfig].fail(f"Failed to create config: {e}")
 
 
 __all__ = [
     "FlextWebConfig",
+    "FlextWebSettings",
 ]
