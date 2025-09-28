@@ -286,7 +286,6 @@ class FlextWebHandlers(FlextProcessors):
                 >>> app = FlextWebModels.WebApp(
                 ...     name="service",
                 ...     status=FlextWebModels.WebAppStatus.STOPPED,
-                ...     domain_events=[],
                 ... )
                 >>> result: FlextResult[object] = handler.start(app)
                 >>> if result.success:
@@ -339,7 +338,6 @@ class FlextWebHandlers(FlextProcessors):
                 >>> app = FlextWebModels.WebApp(
                 ...     name="service",
                 ...     status=FlextWebModels.WebAppStatus.RUNNING,
-                ...     domain_events=[],
                 ... )
                 >>> result: FlextResult[object] = handler.stop(app)
                 >>> if result.success:

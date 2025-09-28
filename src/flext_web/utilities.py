@@ -14,9 +14,10 @@ from urllib.parse import urlparse
 
 from pydantic import ValidationError
 
-from flext_core import FlextResult, FlextTypes, FlextUtilities, T
+from flext_core import FlextResult, FlextUtilities, T
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
+from flext_web.typings import FlextWebTypes
 
 
 class FlextWebUtilities(FlextUtilities):
@@ -123,14 +124,16 @@ class FlextWebUtilities(FlextUtilities):
         return safe_host.lower() in {"localhost", "127.0.0.1", ":: , ::1"}
 
     @staticmethod
-    def sanitize_request_data(data: FlextTypes.Core.Dict) -> FlextTypes.Core.Dict:
+    def sanitize_request_data(
+        data: FlextWebTypes.Core.RequestDict,
+    ) -> FlextWebTypes.Core.RequestDict:
         """Sanitize web request data.
 
         Returns:
-            FlextTypes.Core.Dict: Description of return value.
+            FlextWebTypes.Core.RequestDict: Sanitized request data dictionary.
 
         """
-        sanitized: FlextTypes.Core.Dict = {}
+        sanitized: FlextWebTypes.Core.RequestDict = {}
         for key, value in data.items():
             safe_key = FlextUtilities.TextProcessor.safe_string(key)
             if isinstance(value, str):
@@ -144,11 +147,11 @@ class FlextWebUtilities(FlextUtilities):
     def create_success_response(
         message: str,
         data: object = None,
-    ) -> FlextTypes.Core.Dict:
+    ) -> FlextWebTypes.Core.ResponseDict:
         """Create success response structure.
 
         Returns:
-            FlextTypes.Core.Dict: Description of return value.
+            FlextWebTypes.Core.ResponseDict: Success response data dictionary.
 
         """
         return {
@@ -162,11 +165,11 @@ class FlextWebUtilities(FlextUtilities):
     def create_error_response(
         message: str,
         status_code: int = 400,
-    ) -> FlextTypes.Core.Dict:
+    ) -> FlextWebTypes.Core.ResponseDict:
         """Create error response structure.
 
         Returns:
-            FlextTypes.Core.Dict: Description of return value.
+            FlextWebTypes.Core.ResponseDict: Error response data dictionary.
 
         """
         return {
@@ -183,11 +186,11 @@ class FlextWebUtilities(FlextUtilities):
         *,
         success: bool = True,
         data: object = None,
-    ) -> FlextTypes.Core.Dict:
+    ) -> FlextWebTypes.Core.ResponseDict:
         """Create API response structure.
 
         Returns:
-            FlextTypes.Core.Dict:: Description of return value.
+            FlextWebTypes.Core.ResponseDict: API response data dictionary.
 
         """
         return {
@@ -198,11 +201,11 @@ class FlextWebUtilities(FlextUtilities):
         }
 
     @staticmethod
-    def handle_flext_result(result: FlextResult[T]) -> FlextTypes.Core.Dict:
+    def handle_flext_result(result: FlextResult[T]) -> FlextWebTypes.Core.ResponseDict:
         """Convert FlextResult to API response.
 
         Returns:
-            FlextTypes.Core.Dict: Description of return value.
+            FlextWebTypes.Core.ResponseDict: API response data dictionary.
 
         """
         if result.is_success:
@@ -223,11 +226,11 @@ class FlextWebUtilities(FlextUtilities):
         name: str,
         port: int = 8000,
         host: str = "localhost",
-    ) -> FlextResult[FlextTypes.Core.Dict]:
+    ) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
         """Create web application data with Pydantic validation.
 
         Returns:
-            FlextTypes.Core.Dict: Description of return value.
+            FlextResult[FlextWebTypes.Core.ResponseDict]: Web application data result.
 
         """
         # Import at runtime to avoid circular imports
@@ -239,7 +242,6 @@ class FlextWebUtilities(FlextUtilities):
                 name=name,
                 port=port,
                 host=host,
-                domain_events=[],
             )
 
             app_data = {
@@ -250,7 +252,7 @@ class FlextWebUtilities(FlextUtilities):
                 "created_at": FlextUtilities.Generators.generate_iso_timestamp(),
             }
 
-            return FlextResult[FlextTypes.Core.Dict].ok(app_data)
+            return FlextResult[FlextWebTypes.Core.ResponseDict].ok(app_data)
         except ValidationError as e:
             # Extract meaningful error messages for compatibility
             error_msg = ""
@@ -265,9 +267,9 @@ class FlextWebUtilities(FlextUtilities):
                 else:
                     error_msg = f"Validation error: {error['msg']}"
                 break  # Use first error
-            return FlextResult[FlextTypes.Core.Dict].fail(error_msg)
+            return FlextResult[FlextWebTypes.Core.ResponseDict].fail(error_msg)
         except ValueError as e:
-            return FlextResult[FlextTypes.Core.Dict].fail(str(e))
+            return FlextResult[FlextWebTypes.Core.ResponseDict].fail(str(e))
 
 
 __all__ = [

@@ -11,17 +11,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable
-
-# Framework-agnostic web interface types
 from typing import Protocol, override, runtime_checkable
 
 from flext_core import FlextProtocols, FlextResult, FlextTypes
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
-
-# Framework-agnostic web response types
-WebResponse = tuple["str", "int"] | tuple[str, int, dict["str", "str"]] | str
-JsonResponse = FlextTypes.Core.JsonObject
 
 
 class FlextWebProtocols(FlextProtocols):
@@ -118,7 +112,7 @@ class FlextWebProtocols(FlextProtocols):
             data: FlextTypes.Core.Dict,
             message: str = "Success",
             status_code: int = 200,
-        ) -> WebResponse:
+        ) -> FlextWebTypes.Core.WebResponse:
             """Format success response.
 
             Args:
@@ -137,7 +131,7 @@ class FlextWebProtocols(FlextProtocols):
             message: str,
             status_code: int = 500,
             details: str | None = None,
-        ) -> WebResponse:
+        ) -> FlextWebTypes.Core.WebResponse:
             """Format error response.
 
             Args:
@@ -168,9 +162,9 @@ class FlextWebProtocols(FlextProtocols):
 
         def create_json_response(
             self,
-            data: JsonResponse,
+            data: FlextWebTypes.Core.JsonResponse,
             status_code: int = 200,
-        ) -> WebResponse:
+        ) -> FlextWebTypes.Core.WebResponse:
             """Create a JSON response in framework-agnostic way."""
             ...
 
@@ -246,7 +240,7 @@ class FlextWebProtocols(FlextProtocols):
                 msg = "Protocol implementation for type checking only"
                 raise NotImplementedError(msg)
 
-            def health(self) -> WebResponse:
+            def health(self) -> FlextWebTypes.Core.WebResponse:
                 return '{"status": "ok"}', 200
 
         return _WebServiceProtocolImpl()
@@ -272,7 +266,6 @@ class FlextWebProtocols(FlextProtocols):
                     name=name,
                     port=port,
                     host=host,
-                    domain_events=[],
                 )
                 return FlextResult[FlextWebModels.WebApp].ok(app)
 
@@ -283,7 +276,6 @@ class FlextWebProtocols(FlextProtocols):
                     port=8080,
                     host="localhost",
                     status=FlextWebModels.WebAppStatus.RUNNING,
-                    domain_events=[],
                 )
                 return FlextResult[FlextWebModels.WebApp].ok(app)
 
@@ -294,7 +286,6 @@ class FlextWebProtocols(FlextProtocols):
                     port=8080,
                     host="localhost",
                     status=FlextWebModels.WebAppStatus.STOPPED,
-                    domain_events=[],
                 )
                 return FlextResult[FlextWebModels.WebApp].ok(app)
 
@@ -424,7 +415,7 @@ class FlextWebProtocols(FlextProtocols):
             """Process response after handler execution."""
             ...
 
-        def handle__error(self, _error: Exception) -> WebResponse:
+        def handle__error(self, _error: Exception) -> FlextWebTypes.Core.WebResponse:
             """Handle exceptions during request processing."""
             ...
 

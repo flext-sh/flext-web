@@ -13,16 +13,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import warnings
 from typing import Literal, TypedDict
 
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextResult, FlextTypes, FlextUtilities
 
 # =============================================================================
 # WEB-SPECIFIC TYPE VARIABLES - Domain-specific TypeVars for web operations
 # =============================================================================
 
 
-# Web domain TypeVars
 class FlextWebTypes(FlextTypes):
     """Web-specific type definitions extending FlextTypes.
 
@@ -40,6 +40,9 @@ class FlextWebTypes(FlextTypes):
 
         Replaces generic dict[str, object] with semantic web types.
         """
+
+        type WebResponse = tuple[str, int] | tuple[str, int, dict[str, str]] | str
+        type JsonResponse = FlextTypes.Core.JsonObject
 
         # Configuration and settings types
         type ConfigDict = dict[str, FlextTypes.Core.ConfigValue | dict[str, object]]
@@ -378,8 +381,6 @@ class FlextWebTypes(FlextTypes):
         DEPRECATED: Use FlextWebConfig.get_global_instance() instead.
         This method will be removed in a future version.
         """
-        import warnings
-
         warnings.warn(
             "create_config_data is deprecated. "
             "Use FlextWebConfig.get_global_instance() with Pydantic 2 Settings instead.",
@@ -389,9 +390,8 @@ class FlextWebTypes(FlextTypes):
 
         # Use environment-aware config or fallback
         if secret_key is None:
-            # TODO: Replace with FlextWebConfig singleton access
-            # For now, use a safe default (this should come from config)
-            secret_key = "dev-key-unsafe-change-in-prod"
+            # Generate secure default secret key using FlextUtilities
+            secret_key = f"flext_web_{FlextUtilities.Generators.generate_entity_id()}"
 
         return cls.ConfigData(
             host=host,
@@ -571,6 +571,5 @@ class FlextWebTypes(FlextTypes):
 # =============================================================================
 
 __all__ = [
-    "FlextTypes",
     "FlextWebTypes",
 ]

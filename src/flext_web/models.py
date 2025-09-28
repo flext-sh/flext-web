@@ -741,7 +741,6 @@ class FlextWebModels(FlextModels):
                     app_data.get("environment", FlextConstants.Defaults.ENVIRONMENT)
                 ),
                 health_check_url=app_data.get("health_check_url"),
-                domain_events=[],
             )
 
             # Validate business rules

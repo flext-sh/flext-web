@@ -15,8 +15,6 @@ from pydantic.fields import FieldInfo
 from flext_core import FlextConstants, FlextModels, FlextUtilities
 from flext_web.constants import FlextWebConstants
 
-FieldReturn = FieldInfo
-
 
 class FlextWebFields(FlextModels):
     """Consolidated web field system extending flext-core patterns.
@@ -68,7 +66,7 @@ class FlextWebFields(FlextModels):
             self.description = description
             self.field_kwargs = field_kwargs
 
-        def create_field(self) -> FieldReturn:
+        def create_field(self) -> FieldInfo:
             """Create Pydantic field for HTTP status."""
             kwargs = dict(self.field_kwargs)
 
@@ -151,7 +149,7 @@ class FlextWebFields(FlextModels):
     @classmethod
     def host_field(
         cls, default: str = FlextWebConstants.Web.DEFAULT_HOST, **kwargs: object
-    ) -> FieldReturn:
+    ) -> FieldInfo:
         """Create host address field with MASSIVE FlextUtilities validation.
 
         Args:
@@ -176,17 +174,17 @@ class FlextWebFields(FlextModels):
         field_default = kwargs.get("default", safe_default)
         if isinstance(field_description, str):
             return cast(
-                "FieldReturn",
+                "FieldInfo",
                 Field(default=field_default, description=field_description),
             )
-        return cast("FieldReturn", Field(default=field_default))
+        return cast("FieldInfo", Field(default=field_default))
 
     @classmethod
     def port_field(
         cls,
         default: int = FlextWebConstants.Web.DEFAULT_PORT,
         **kwargs: object,
-    ) -> FieldReturn:
+    ) -> FieldInfo:
         """Create port number field with validation.
 
         Args:
@@ -207,7 +205,7 @@ class FlextWebFields(FlextModels):
         field_description = kwargs.get("description", "Port field")
         if isinstance(field_description, str):
             return cast(
-                "FieldReturn",
+                "FieldInfo",
                 Field(
                     default=default,
                     description=field_description,
@@ -216,7 +214,7 @@ class FlextWebFields(FlextModels):
                 ),
             )
         return cast(
-            "FieldReturn",
+            "FieldInfo",
             Field(
                 default=default,
                 ge=FlextWebConstants.Web.MIN_PORT,
@@ -225,7 +223,7 @@ class FlextWebFields(FlextModels):
         )
 
     @classmethod
-    def url_field(cls, **kwargs: object) -> FieldReturn:
+    def url_field(cls, **kwargs: object) -> FieldInfo:
         """Create URL field with validation.
 
         Args:
@@ -241,11 +239,11 @@ class FlextWebFields(FlextModels):
         # Simplified Field creation for URL field
         field_description = kwargs.get("description", "URL field")
         if isinstance(field_description, str):
-            return cast("FieldReturn", Field(description=field_description))
-        return cast("FieldReturn", Field())
+            return cast("FieldInfo", Field(description=field_description))
+        return cast("FieldInfo", Field())
 
     @classmethod
-    def app_name_field(cls, **kwargs: object) -> FieldReturn:
+    def app_name_field(cls, **kwargs: object) -> FieldInfo:
         """Create application name field with MASSIVE FlextUtilities validation.
 
         Args:
@@ -275,17 +273,17 @@ class FlextWebFields(FlextModels):
 
         if isinstance(field_description, str):
             return cast(
-                "FieldReturn",
+                "FieldInfo",
                 Field(
                     description=field_description,
                     min_length=min_len,
                     max_length=max_len,
                 ),
             )
-        return cast("FieldReturn", Field(min_length=min_len, max_length=max_len))
+        return cast("FieldInfo", Field(min_length=min_len, max_length=max_len))
 
     @classmethod
-    def secret_key_field(cls, **kwargs: object) -> FieldReturn:
+    def secret_key_field(cls, **kwargs: object) -> FieldInfo:
         """Create secret key field with validation.
 
         Args:
@@ -311,8 +309,8 @@ class FlextWebFields(FlextModels):
         # Simplified Field creation for secret key field
         field_description = kwargs.get("description", "Secret key field")
         if isinstance(field_description, str):
-            return cast("FieldReturn", Field(description=field_description))
-        return cast("FieldReturn", Field())
+            return cast("FieldInfo", Field(description=field_description))
+        return cast("FieldInfo", Field())
 
     # =========================================================================
     # HTTP STATUS FIELD FACTORIES
@@ -324,7 +322,7 @@ class FlextWebFields(FlextModels):
         status_code: int,
         description: str | None = None,
         **kwargs: object,
-    ) -> FieldReturn:
+    ) -> FieldInfo:
         """Create HTTP status field.
 
         Args:
