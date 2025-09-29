@@ -41,11 +41,15 @@ class FlextWebTypes(FlextTypes):
         Replaces generic dict[str, object] with semantic web types.
         """
 
-        type WebResponse = tuple[str, int] | tuple[str, int, dict[str, str]] | str
+        type WebResponse = (
+            tuple[object, int] | tuple[str, int] | tuple[str, int, dict[str, str]] | str
+        )
         type JsonResponse = FlextTypes.Core.JsonObject
 
         # Configuration and settings types (extends flext-core ConfigDict)
-        type ExtendedConfigDict = dict[str, FlextTypes.Core.ConfigValue | dict[str, object]]
+        type ExtendedConfigDict = dict[
+            str, FlextTypes.Core.ConfigValue | dict[str, object]
+        ]
         type WebConfigDict = dict[str, object]
         type AppConfigDict = dict[str, object]
         type ServiceConfigDict = dict[str, object]
@@ -292,6 +296,7 @@ class FlextWebTypes(FlextTypes):
             return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to get web types system config: {e}",
             )
+
 
 # =============================================================================
 # PUBLIC API EXPORTS - Web TypeVars and types

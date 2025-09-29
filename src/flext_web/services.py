@@ -152,11 +152,10 @@ class FlextWebServices:
             port: int,
             *,
             debug: bool = False,
-            **kwargs: object,
         ) -> None:
             """Start the web service with specified configuration - implements WebServiceInterface."""
             self.configure_middleware()
-            self.app.run(host=host, port=port, debug=debug, **kwargs)
+            self.app.run(host=host, port=port, debug=debug)
 
         def stop_service(self) -> None:
             """Stop the web service gracefully - implements WebServiceInterface."""
@@ -571,7 +570,7 @@ class FlextWebServices:
                 start_result = self.start_app(app_id)
 
                 if start_result.is_failure:
-                    if "not found" in start_result.error.lower():
+                    if start_result.error and "not found" in start_result.error.lower():
                         status_code = FlextWebConstants.Web.HTTP_NOT_FOUND
                     else:
                         status_code = FlextWebConstants.Web.HTTP_BAD_REQUEST
@@ -606,7 +605,7 @@ class FlextWebServices:
                 stop_result = self.stop_app(app_id)
 
                 if stop_result.is_failure:
-                    if "not found" in stop_result.error.lower():
+                    if stop_result.error and "not found" in stop_result.error.lower():
                         status_code = FlextWebConstants.Web.HTTP_NOT_FOUND
                     else:
                         status_code = FlextWebConstants.Web.HTTP_BAD_REQUEST
@@ -635,13 +634,12 @@ class FlextWebServices:
                     status_code=FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
                 )
 
-        @override
         def run(self) -> None:
             """Run the Flask web service."""
             self.start_service(
-                host=self.config.get("host", FlextWebConstants.Web.DEFAULT_HOST),
-                port=self.config.get("port", FlextWebConstants.Web.DEFAULT_PORT),
-                debug=self.config.get("debug", False),
+                host=str(self.config.get("host", FlextWebConstants.Web.DEFAULT_HOST)),
+                port=int(self.config.get("port", FlextWebConstants.Web.DEFAULT_PORT)),
+                debug=bool(self.config.get("debug", False)),
             )
 
     class WebServiceRegistry:
@@ -721,7 +719,10 @@ class FlextWebServices:
             """
             try:
                 service_names = list(self._services.keys())
-                service_data = {"services": service_names, "count": len(service_names)}
+                service_data: FlextWebTypes.Core.DataDict = {
+                    "services": service_names,
+                    "count": len(service_names),
+                }
                 return FlextResult[FlextWebTypes.Core.DataDict].ok(service_data)
             except Exception as e:
                 return FlextResult[FlextWebTypes.Core.DataDict].fail(
@@ -767,7 +768,9 @@ class FlextWebServices:
                     return FlextResult[FlextWebServices.WebService].fail(
                         f"Config creation failed: {config_result.error}",
                     )
-                validated_config: FlextWebTypes.Core.WebConfigDict = config_result.value
+                validated_config: FlextWebTypes.Core.WebConfigDict = (
+                    config_result.value.model_dump()
+                )
                 # Config type is guaranteed by FlextResult[FlextWebConfig.WebConfig]
 
             service = FlextWebServices.WebService(
@@ -854,7 +857,7 @@ class FlextWebServices:
             if "environment" in config:
                 env_value = config["environment"]
                 valid_environments = [
-                    e.value for e in list(FlextConstants.Environment.ConfigEnvironment)
+                    e.value for e in FlextConstants.Environment.ConfigEnvironment
                 ]
                 if env_value not in valid_environments:
                     return FlextResult[dict[str, object]].fail(

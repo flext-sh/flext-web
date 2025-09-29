@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Protocol, override, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, FlextResult, FlextTypes
 from flext_web.models import FlextWebModels
@@ -224,7 +224,6 @@ class FlextWebProtocols(FlextProtocols):
 
         # This is primarily for type checking and interface validation
         class _WebServiceProtocolImpl:
-            @override
             def run(
                 self,
                 host: str | None = None,

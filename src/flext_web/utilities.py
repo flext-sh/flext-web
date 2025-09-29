@@ -244,7 +244,7 @@ class FlextWebUtilities(FlextUtilities):
                 host=host,
             )
 
-            app_data = {
+            app_data: FlextWebTypes.Core.ResponseDict = {
                 "id": app.id,
                 "name": app.name,
                 "port": app.port,

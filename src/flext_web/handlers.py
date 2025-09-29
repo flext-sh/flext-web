@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import override
+from typing import Any, override
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
@@ -466,7 +466,7 @@ class FlextWebHandlers(FlextProcessors):
 
         def format_success(
             self,
-            data: FlextTypes.Core.Dict,
+            data: dict[str, Any],
             message: str = "Success",
             status_code: int = 200,
         ) -> FlextWebTypes.Core.WebResponse:

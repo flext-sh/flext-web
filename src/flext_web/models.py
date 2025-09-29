@@ -121,11 +121,6 @@ class FlextWebModels(FlextModels):
     @model_validator(mode="after")
     def validate_web_consistency(self) -> Self:
         """Model validator ensuring web model consistency and security."""
-        # Validate that web models maintain consistency
-        if hasattr(self, "_initialized") and not self._initialized:
-            msg = "Web models must be properly initialized"
-            raise ValueError(msg)
-
         # Ensure security configurations are properly set
         if hasattr(self, "WebAppConfig"):
             # Web-specific validation logic can be added here
@@ -303,7 +298,7 @@ class FlextWebModels(FlextModels):
             """Model validator for web application configuration consistency."""
             # Validate port and host combination
             if (
-                self.host in {"0.0.0.0", "::"}  # noqa: S104
+                self.host in {"0.0.0.0", "::"}
                 and self.port <= FlextWebConstants.WebSpecific.PRIVILEGED_PORTS_MAX
             ):
                 if self.environment == "development":
@@ -351,11 +346,24 @@ class FlextWebModels(FlextModels):
             """Validate status field with enhanced error handling."""
             if isinstance(v, str):
                 try:
+                    # Access WebAppStatus from the parent class's context
                     return FlextWebModels.WebAppStatus(v)
-                except ValueError as e:
-                    valid_statuses = [
-                        status.value for status in FlextWebModels.WebAppStatus
-                    ]
+                except (ValueError, AttributeError) as e:
+                    # Get valid statuses using direct reference
+                    try:
+                        valid_statuses = [
+                            status.value for status in FlextWebModels.WebAppStatus
+                        ]
+                    except AttributeError:
+                        valid_statuses = [
+                            "stopped",
+                            "starting",
+                            "running",
+                            "stopping",
+                            "error",
+                            "maintenance",
+                            "deploying",
+                        ]
                     msg = f"Invalid status: {v}. Valid statuses: {valid_statuses}"
                     raise ValueError(msg) from e
             return v
@@ -450,15 +458,13 @@ class FlextWebModels(FlextModels):
         @computed_field
         def is_running(self) -> bool:
             """Check if app is running."""
-            return self.status == FlextWebModels.WebAppStatus.RUNNING
+            return str(self.status) == "running"
 
         @computed_field
         def is_healthy(self) -> bool:
             """Check if app is healthy (running and not in error state)."""
-            return (
-                self.status == FlextWebModels.WebAppStatus.RUNNING
-                and self.status != FlextWebModels.WebAppStatus.ERROR
-            )
+            status_str = str(self.status)
+            return status_str == "running" and status_str != "error"
 
         @computed_field
         def url(self) -> str:
@@ -474,20 +480,18 @@ class FlextWebModels(FlextModels):
         @computed_field
         def can_start(self) -> bool:
             """Check if app can be started."""
-            return self.status == FlextWebModels.WebAppStatus.STOPPED
+            return str(self.status) == "stopped"
 
         @computed_field
         def can_stop(self) -> bool:
             """Check if app can be stopped."""
-            return self.status == FlextWebModels.WebAppStatus.RUNNING
+            return str(self.status) == "running"
 
         @computed_field
         def can_restart(self) -> bool:
             """Check if app can be restarted."""
-            return self.status in {
-                FlextWebModels.WebAppStatus.RUNNING,
-                FlextWebModels.WebAppStatus.STOPPED,
-            }
+            status_str = str(self.status)
+            return status_str in {"running", "stopped"}
 
         def validate_business_rules(self) -> FlextResult[None]:
             """Enhanced business rules validation."""
@@ -512,7 +516,7 @@ class FlextWebModels(FlextModels):
 
                 # Validate environment
                 valid_environments = [
-                    e.value for e in list(FlextConstants.Environment.ConfigEnvironment)
+                    e.value for e in FlextConstants.Environment.ConfigEnvironment
                 ]
                 if self.environment not in valid_environments:
                     return FlextResult[None].fail(
@@ -533,35 +537,47 @@ class FlextWebModels(FlextModels):
 
         def start(self) -> FlextResult[FlextWebModels.WebApp]:
             """Start application with enhanced state management."""
-            if self.status == FlextWebModels.WebAppStatus.RUNNING:
+            current_status = str(self.status)
+            if current_status == "running":
                 return FlextResult[FlextWebModels.WebApp].fail("App already running")
-            if self.status not in {
-                FlextWebModels.WebAppStatus.STOPPED,
-                FlextWebModels.WebAppStatus.ERROR,
-            }:
+            if current_status not in {"stopped", "error"}:
                 return FlextResult[FlextWebModels.WebApp].fail(
-                    f"App cannot be started from status: {self.status.value}"
+                    f"App cannot be started from status: {current_status}"
                 )
 
-            self.status = FlextWebModels.WebAppStatus.STARTING
+            # Update status through enum value
+            try:
+                self.status = FlextWebModels.WebAppStatus.STARTING
+            except AttributeError:
+                self.status = FlextWebModels.WebAppStatus.STARTING
             self.update_timestamp()
 
             # Simulate startup process
-            self.status = FlextWebModels.WebAppStatus.RUNNING
+            try:
+                self.status = FlextWebModels.WebAppStatus.RUNNING
+            except AttributeError:
+                self.status = FlextWebModels.WebAppStatus.RUNNING
             self.update_timestamp()
 
             return FlextResult[FlextWebModels.WebApp].ok(self)
 
         def stop(self) -> FlextResult[FlextWebModels.WebApp]:
             """Stop application with enhanced state management."""
-            if self.status != FlextWebModels.WebAppStatus.RUNNING:
+            if str(self.status) != "running":
                 return FlextResult[FlextWebModels.WebApp].fail("App not running")
 
-            self.status = FlextWebModels.WebAppStatus.STOPPING
+            # Update status through enum value
+            try:
+                self.status = FlextWebModels.WebAppStatus.STOPPING
+            except AttributeError:
+                self.status = FlextWebModels.WebAppStatus.STOPPING
             self.update_timestamp()
 
             # Simulate shutdown process
-            self.status = FlextWebModels.WebAppStatus.STOPPED
+            try:
+                self.status = FlextWebModels.WebAppStatus.STOPPED
+            except AttributeError:
+                self.status = FlextWebModels.WebAppStatus.STOPPED
             self.update_timestamp()
 
             return FlextResult[FlextWebModels.WebApp].ok(self)
@@ -570,7 +586,7 @@ class FlextWebModels(FlextModels):
             """Restart application."""
             if not self.can_restart:
                 return FlextResult[FlextWebModels.WebApp].fail(
-                    f"App cannot be restarted from status: {self.status.value}"
+                    f"App cannot be restarted from status: {self.status}"
                 )
 
             # Stop first
@@ -589,7 +605,7 @@ class FlextWebModels(FlextModels):
         def get_health_status(self) -> dict[str, Any]:
             """Get comprehensive health status."""
             return {
-                "status": self.status.value,
+                "status": str(self.status),
                 "is_running": self.is_running,
                 "is_healthy": self.is_healthy,
                 "url": self.url,
@@ -609,7 +625,7 @@ class FlextWebModels(FlextModels):
                 "name": self.name,
                 "host": self.host,
                 "port": self.port,
-                "status": self.status.value,
+                "status": str(self.status),
                 "version": self.version,
                 "environment": self.environment,
                 "health_check_url": self.health_check_url,
@@ -621,7 +637,7 @@ class FlextWebModels(FlextModels):
         @override
         def __str__(self) -> str:
             """String representation of the WebApp."""
-            return f"{self.name} ({self.host}:{self.port}) [{self.status.value}]"
+            return f"{self.name} ({self.host}:{self.port}) [{self.status}]"
 
         @override
         def __repr__(self) -> str:
@@ -629,7 +645,7 @@ class FlextWebModels(FlextModels):
             return (
                 f"WebApp(id='{self.id}', name='{self.name}', "
                 f"host='{self.host}', port={self.port}, "
-                f"status='{self.status.value}', version='{self.version}')"
+                f"status='{self.status}', version='{self.version}')"
             )
 
         def model_post_init(self, __context: object, /) -> None:
