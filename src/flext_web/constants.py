@@ -25,30 +25,12 @@ class FlextWebConstants(FlextConstants):
         MAX_PORT: int = 65535
         DEFAULT_PORT: int = 8080
 
-        # HTTP Status Constants
-        HTTP_OK: int = 200
-        HTTP_CREATED: int = 201
-        HTTP_MULTIPLE_CHOICES: int = 300
-        HTTP_BAD_REQUEST: int = 400
-        HTTP_NOT_FOUND: int = 404
-        HTTP_INTERNAL_ERROR: int = 500
-        MAX_HTTP_STATUS: int = 599
-
-        # HTTP Status Ranges
-        HTTP_INFORMATIONAL_MIN: int = 100
-        HTTP_INFORMATIONAL_MAX: int = 199
-        HTTP_SUCCESS_MIN: int = 200
-        HTTP_SUCCESS_MAX: int = 299
-        HTTP_REDIRECTION_MIN: int = 300
-        HTTP_REDIRECTION_MAX: int = 399
-        HTTP_CLIENT_ERROR_MIN: int = 400
-        HTTP_CLIENT_ERROR_MAX: int = 499
-        HTTP_SERVER_ERROR_MIN: int = 500
-        HTTP_SERVER_ERROR_MAX: int = 599
-
-        # HTTPS Ports
-        HTTPS_PORT: int = 443
-        HTTPS_ALT_PORT: int = 8443
+        # =============================================================================
+        # HTTP CONSTANTS - Moved to flext-core.FlextConstants.Http
+        # Use FlextConstants.Http.HTTP_OK, FlextConstants.Http.HTTP_CREATED, etc.
+        # Use FlextConstants.Http.HTTP_SUCCESS_MIN, HTTP_SUCCESS_MAX, etc.
+        # Use FlextConstants.Http.HTTPS_PORT, HTTPS_ALT_PORT, etc.
+        # =============================================================================
 
         # App Name Validation
         MIN_APP_NAME_LENGTH: int = 3

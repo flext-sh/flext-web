@@ -12,6 +12,7 @@ from flask import jsonify
 from flask.typing import ResponseReturnValue
 
 from flext_core import (
+    FlextConstants,
     FlextLogger,
     FlextProcessors,
     FlextResult,
@@ -442,8 +443,8 @@ class FlextWebHandlers(FlextProcessors):
         @override
         def __init__(
             self,
-            success_status: int = FlextWebConstants.Web.HTTP_OK,
-            error_status: int = FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+            success_status: int = FlextConstants.Http.HTTP_OK,
+            error_status: int = FlextConstants.Http.HTTP_INTERNAL_SERVER_ERROR,
         ) -> None:
             """Initialize response handler with default status codes.
 
@@ -603,7 +604,7 @@ class FlextWebHandlers(FlextProcessors):
 
             return self.format_error(
                 message=f"{error_message}: {result.error}",
-                status_code=FlextWebConstants.Web.HTTP_BAD_REQUEST,  # Bad request for business logic errors
+                status_code=FlextConstants.Http.HTTP_BAD_REQUEST,  # Bad request for business logic errors
             )
 
     # =========================================================================
@@ -744,8 +745,8 @@ class FlextWebHandlers(FlextProcessors):
     @classmethod
     def create_response_handler(
         cls,
-        success_status: int = FlextWebConstants.Web.HTTP_OK,
-        error_status: int = FlextWebConstants.Web.HTTP_INTERNAL_ERROR,
+        success_status: int = FlextConstants.Http.HTTP_OK,
+        error_status: int = FlextConstants.Http.HTTP_INTERNAL_SERVER_ERROR,
     ) -> WebResponseHandler:
         """Create response handler instance.
 

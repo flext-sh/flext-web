@@ -72,8 +72,8 @@ class FlextWebFields(FlextModels):
 
             # Set default values
             kwargs.setdefault("default", self.status_code)
-            kwargs.setdefault("ge", FlextWebConstants.Web.HTTP_OK)  # 200 como base
-            kwargs.setdefault("le", FlextWebConstants.Web.MAX_HTTP_STATUS)  # 599
+            kwargs.setdefault("ge", FlextConstants.Http.HTTP_OK)  # 200 como base
+            kwargs.setdefault("le", FlextConstants.Http.HTTP_STATUS_MAX)  # 599
 
             if self.description:
                 kwargs.setdefault(
@@ -88,10 +88,10 @@ class FlextWebFields(FlextModels):
                 "description",
                 f"HTTP {self.status_code}: {self.description or 'Status'}",
             )
-            ge_val = cast("int", kwargs.get("ge", FlextWebConstants.Web.HTTP_OK))
+            ge_val = cast("int", kwargs.get("ge", FlextConstants.Http.HTTP_OK))
             le_val = cast(
                 "int",
-                kwargs.get("le", FlextWebConstants.Web.MAX_HTTP_STATUS),
+                kwargs.get("le", FlextConstants.Http.HTTP_STATUS_MAX),
             )
 
             if isinstance(field_description, str):
@@ -112,12 +112,12 @@ class FlextWebFields(FlextModels):
         @classmethod
         def ok(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 200 OK status field."""
-            return cls(FlextWebConstants.Web.HTTP_OK, "OK", **kwargs)
+            return cls(FlextConstants.Http.HTTP_OK, "OK", **kwargs)
 
         @classmethod
         def created(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 201 Created status field."""
-            return cls(FlextWebConstants.Web.HTTP_CREATED, "Created", **kwargs)
+            return cls(FlextConstants.Http.HTTP_CREATED, "Created", **kwargs)
 
         @classmethod
         def bad_request(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:

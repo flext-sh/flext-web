@@ -97,7 +97,7 @@ class TestWebInterface:
 
         response = requests.get(f"{base_url}/", timeout=5)
 
-        if response.status_code != FlextWebConstants.Web.HTTP_OK:
+        if response.status_code != FlextConstants.Http.HTTP_OK:
             msg: str = f"Expected {200}, got {response.status_code}"
             raise AssertionError(msg)
         content = response.content

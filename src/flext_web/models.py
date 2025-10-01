@@ -471,8 +471,8 @@ class FlextWebModels(FlextModels):
             """Get app URL with proper protocol detection."""
             # Standard HTTPS ports
             https_ports = {
-                FlextWebConstants.Web.HTTPS_PORT,
-                FlextWebConstants.Web.HTTPS_ALT_PORT,
+                FlextConstants.Http.HTTPS_PORT,
+                FlextConstants.Http.HTTPS_ALT_PORT,
             }
             protocol = "https" if self.port in https_ports else "http"
             return f"{protocol}://{self.host}:{self.port}"
@@ -661,33 +661,36 @@ class FlextWebModels(FlextModels):
                 }
 
     # Enhanced Web Request Models
-    class WebRequest(_BaseWebModel):
-        """Enhanced web request model with comprehensive tracking."""
+    class WebRequest(FlextModels.HttpRequest):
+        """Enhanced web request model extending flext-core HttpRequest base.
 
+        Inherits from flext-core:
+            - url: Request URL
+            - method: HTTP method (GET, POST, etc.)
+            - headers: Request headers
+            - body: Request body
+            - timeout: Request timeout
+            - has_body: Computed field - check if request has body
+            - is_secure: Computed field - check if request uses HTTPS
+            - validate_method: Validates HTTP method against centralized constants
+            - validate_request_consistency: Cross-field validation
+
+        Server-specific additions:
+            - request_id: Unique request identifier
+            - query_params: Query parameters
+            - client_ip: Client IP address
+            - user_agent: User agent string
+            - timestamp: Request timestamp
+        """
+
+        # SERVER-SPECIFIC fields for request tracking
         request_id: str = Field(
             default_factory=lambda: str(uuid.uuid4()),
             description="Unique request identifier",
         )
-        method: str = Field(
-            description="HTTP method",
-            min_length=1,
-            max_length=10,
-        )
-        url: str = Field(
-            description="Request URL",
-            min_length=1,
-        )
-        headers: dict[str, str] = Field(
-            default_factory=dict,
-            description="Request headers",
-        )
         query_params: dict[str, Any] = Field(
             default_factory=dict,
             description="Query parameters",
-        )
-        body: str | None = Field(
-            default=None,
-            description="Request body",
         )
         client_ip: str | None = Field(
             default=None,
@@ -724,14 +727,9 @@ class FlextWebModels(FlextModels):
             }
 
         @model_validator(mode="after")
-        def validate_request_consistency(self) -> Self:
-            """Model validator for request consistency."""
-            # Validate method and body consistency
-            if self.method.upper() in {"GET", "HEAD", "DELETE"} and self.body:
-                msg = f"HTTP {self.method} method should not have a body"
-                raise ValueError(msg)
-
-            # Validate required headers for certain methods
+        def validate_request_consistency_server_specific(self) -> Self:
+            """SERVER-SPECIFIC model validator for additional web server requirements."""
+            # Server-specific validation: require Content-Type for POST/PUT/PATCH
             if self.method.upper() in {"POST", "PUT", "PATCH"} and self.body:
                 content_type = self.headers.get("Content-Type", "").lower()
                 if not content_type:
@@ -742,7 +740,7 @@ class FlextWebModels(FlextModels):
 
         @field_serializer("headers", when_used="json")
         def serialize_headers_securely(self, value: dict[str, str]) -> dict[str, str]:
-            """Field serializer for masking sensitive headers."""
+            """SERVER-SPECIFIC field serializer for masking sensitive headers."""
             masked_headers = {}
             sensitive_headers = ["authorization", "cookie", "x-api-key", "x-auth-token"]
 
@@ -754,56 +752,46 @@ class FlextWebModels(FlextModels):
 
             return masked_headers
 
-        @field_validator("method")
-        @classmethod
-        def validate_method(cls, v: str) -> str:
-            """Validate HTTP method."""
-            result = FlextModels.create_validated_http_method(v)
-            if result.is_failure:
-                raise ValueError(result.error)
-            return result.unwrap()
-
-        @field_validator("url")
-        @classmethod
-        def validate_url(cls, v: str) -> str:
-            """Validate URL format."""
-            result = FlextModels.create_validated_url(v)
-            if result.is_failure:
-                raise ValueError(result.error)
-            return result.unwrap()
-
         @computed_field
+        @property
         def is_safe_method(self) -> bool:
-            """Check if HTTP method is safe (GET, HEAD, OPTIONS)."""
+            """Check if HTTP method is safe (GET, HEAD, OPTIONS) - SERVER SPECIFIC."""
             return self.method.upper() in {"GET", "HEAD", "OPTIONS"}
 
         @computed_field
+        @property
         def is_idempotent(self) -> bool:
-            """Check if HTTP method is idempotent."""
+            """Check if HTTP method is idempotent - SERVER SPECIFIC."""
             return self.method.upper() in {"GET", "HEAD", "PUT", "DELETE", "OPTIONS"}
 
-    class WebResponse(_BaseWebModel):
-        """Enhanced web response model with comprehensive tracking."""
+    class WebResponse(FlextModels.HttpResponse):
+        """Enhanced web response model extending flext-core HttpResponse base.
 
+        Inherits from flext-core:
+            - status_code: HTTP status code
+            - headers: Response headers
+            - body: Response body
+            - elapsed_time: Request/response elapsed time
+            - is_success: Computed field - check if response is successful (2xx)
+            - is_client_error: Computed field - check if response is client error (4xx)
+            - is_server_error: Computed field - check if response is server error (5xx)
+
+        Server-specific additions:
+            - response_id: Unique response identifier
+            - request_id: Associated request identifier
+            - content_type: Content type
+            - content_length: Content length in bytes
+            - processing_time_ms: Processing time in milliseconds
+            - timestamp: Response timestamp
+        """
+
+        # SERVER-SPECIFIC fields for response tracking
         response_id: str = Field(
             default_factory=lambda: str(uuid.uuid4()),
             description="Unique response identifier",
         )
         request_id: str = Field(
             description="Associated request identifier",
-        )
-        status_code: int = Field(
-            description="HTTP status code",
-            ge=100,
-            le=599,
-        )
-        headers: dict[str, str] = Field(
-            default_factory=dict,
-            description="Response headers",
-        )
-        body: str | None = Field(
-            default=None,
-            description="Response body",
         )
         content_type: str | None = Field(
             default=None,
@@ -882,78 +870,45 @@ class FlextWebModels(FlextModels):
             return value
 
         def _get_status_category(self) -> str:
-            """Get HTTP status code category."""
+            """Get HTTP status code category - SERVER SPECIFIC."""
             if (
-                FlextWebConstants.Web.HTTP_INFORMATIONAL_MIN
+                FlextConstants.Http.HTTP_INFORMATIONAL_MIN
                 <= self.status_code
-                <= FlextWebConstants.Web.HTTP_INFORMATIONAL_MAX
+                <= FlextConstants.Http.HTTP_INFORMATIONAL_MAX
             ):
                 return "informational"
             if (
-                FlextWebConstants.Web.HTTP_SUCCESS_MIN
+                FlextConstants.Http.HTTP_SUCCESS_MIN
                 <= self.status_code
-                <= FlextWebConstants.Web.HTTP_SUCCESS_MAX
+                <= FlextConstants.Http.HTTP_SUCCESS_MAX
             ):
                 return "success"
             if (
-                FlextWebConstants.Web.HTTP_REDIRECTION_MIN
+                FlextConstants.Http.HTTP_REDIRECTION_MIN
                 <= self.status_code
-                <= FlextWebConstants.Web.HTTP_REDIRECTION_MAX
+                <= FlextConstants.Http.HTTP_REDIRECTION_MAX
             ):
                 return "redirection"
             if (
-                FlextWebConstants.Web.HTTP_CLIENT_ERROR_MIN
+                FlextConstants.Http.HTTP_CLIENT_ERROR_MIN
                 <= self.status_code
-                <= FlextWebConstants.Web.HTTP_CLIENT_ERROR_MAX
+                <= FlextConstants.Http.HTTP_CLIENT_ERROR_MAX
             ):
                 return "client_error"
             if (
-                FlextWebConstants.Web.HTTP_SERVER_ERROR_MIN
+                FlextConstants.Http.HTTP_SERVER_ERROR_MIN
                 <= self.status_code
-                <= FlextWebConstants.Web.HTTP_SERVER_ERROR_MAX
+                <= FlextConstants.Http.HTTP_SERVER_ERROR_MAX
             ):
                 return "server_error"
             return "unknown"
 
-        @field_validator("status_code")
-        @classmethod
-        def validate_status_code(cls, v: int) -> int:
-            """Validate HTTP status code."""
-            result = FlextModels.create_validated_http_status(v)
-            if result.is_failure:
-                raise ValueError(result.error)
-            return result.unwrap()
-
+        # SERVER-SPECIFIC computed field (processing_time_seconds)
+        # Inherited from base: is_success, is_client_error, is_server_error, validate_status_code
         @computed_field
-        def is_success(self) -> bool:
-            """Check if response indicates success."""
-            return (
-                FlextWebConstants.Web.HTTP_OK
-                <= self.status_code
-                < FlextWebConstants.Web.HTTP_MULTIPLE_CHOICES
-            )
-
-        @computed_field
-        def is_client_error(self) -> bool:
-            """Check if response indicates client error."""
-            return (
-                FlextWebConstants.Web.HTTP_BAD_REQUEST
-                <= self.status_code
-                < FlextWebConstants.Web.HTTP_INTERNAL_ERROR
-            )
-
-        @computed_field
-        def is_server_error(self) -> bool:
-            """Check if response indicates server error."""
-            return (
-                FlextWebConstants.Web.HTTP_INTERNAL_ERROR
-                <= self.status_code
-                < FlextWebConstants.Web.MAX_HTTP_STATUS
-            )
-
-        @computed_field
+        @property
         def processing_time_seconds(self) -> float:
-            """Get processing time in seconds."""
+            """Get processing time in seconds - SERVER SPECIFIC."""
             return self.processing_time_ms / 1000.0
 
     # Enhanced Web Application Configuration Models
@@ -1133,6 +1088,75 @@ class FlextWebModels(FlextModels):
         def base_url(self) -> str:
             """Get base URL."""
             return f"{self.protocol}://{self.host}:{self.port}"
+
+    class AppConfig(_BaseWebModel):
+        """FastAPI application configuration model.
+
+        Simplified configuration for FastAPI application creation via create_fastapi_app().
+        For more comprehensive web configuration, use WebAppConfig.
+
+        Example:
+            >>> from flext_web.models import FlextWebModels
+            >>> config = FlextWebModels.AppConfig(
+            ...     title="My API",
+            ...     version="1.0.0",
+            ...     description="Enterprise API"
+            ... )
+
+        """
+
+        title: str = Field(
+            default="FlextWeb API",
+            min_length=1,
+            max_length=255,
+            description="Application title",
+        )
+        version: str = Field(
+            default="1.0.0",
+            min_length=1,
+            max_length=50,
+            description="Application version",
+        )
+        description: str = Field(
+            default="FlextWeb FastAPI Application",
+            min_length=1,
+            max_length=1000,
+            description="Application description",
+        )
+        docs_url: str = Field(
+            default="/docs",
+            description="Documentation URL",
+        )
+        redoc_url: str = Field(
+            default="/redoc",
+            description="ReDoc URL",
+        )
+        openapi_url: str = Field(
+            default="/openapi.json",
+            description="OpenAPI JSON URL",
+        )
+        middlewares: list[Any] = Field(
+            default_factory=list,
+            description="Middleware instances (e.g., from flext-auth)",
+        )
+
+        @computed_field
+        @property
+        def config_summary(self) -> dict[str, Any]:
+            """Computed field providing configuration summary."""
+            return {
+                "application": {
+                    "title": self.title,
+                    "version": self.version,
+                    "description": self.description,
+                },
+                "documentation": {
+                    "docs_url": self.docs_url,
+                    "redoc_url": self.redoc_url,
+                    "openapi_url": self.openapi_url,
+                },
+                "middleware_count": len(self.middlewares),
+            }
 
     @classmethod
     def create_web_app(
