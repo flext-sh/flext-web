@@ -355,9 +355,7 @@ class TestRealConfigurationManagement:
             # reset_web_settings()
 
             # Test real config loading from environment
-            config_result = FlextWebConfig.create_config_from_env()
-            assert config_result.is_success
-            config = config_result.value
+            config = FlextWebConfig()
             assert config.host == "test-host"
             assert config.port == 9000
             assert config.debug is False

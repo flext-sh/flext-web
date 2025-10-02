@@ -70,8 +70,8 @@ class TestServicesCompleteCoverage:
         assert result.success
         service = result.value
         assert isinstance(service, FlextWebServices.WebService)
-        assert service.config['host'] == "localhost"  # Default value
-        assert service.config['port'] == 8080  # Default value
+        assert service.config["host"] == "localhost"  # Default value
+        assert service.config["port"] == 8080  # Default value
 
     def test_create_web_service_exception_handling(self) -> None:
         """Test exception handling in create_web_service (lines 644-645)."""

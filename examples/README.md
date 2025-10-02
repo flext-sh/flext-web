@@ -371,13 +371,13 @@ from flext_web import create_service
 
 ```python
 # examples/performance_testing.py
-import aiohttp
+import httpx
 import time
 from concurrent.futures import ThreadPoolExecutor
 
 def load_test_health_endpoint():
     """Load test the health endpoint"""
-    with aiohttp.ClientSession() as session:
+    with httpx.ClientSession() as session:
         tasks = []
         for i in range(100):  # 100 concurrent requests
             task = session.get('http://localhost:8080/health')

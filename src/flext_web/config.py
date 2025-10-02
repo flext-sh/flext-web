@@ -190,9 +190,8 @@ class FlextWebConfig(FlextConfig):
         # Security validation for production
         if host == FlextWebConstants.WebSpecific.ALL_INTERFACES:
             # Only allow 0.0.0.0 in development mode
-            config = cls.get_or_create_shared_instance(project_name="flext-web")
-            # Cast to FlextWebConfig to access development_mode
-            if isinstance(config, cls) and config.development_mode:
+            # Check development mode via environment variable to avoid recursion
+            if cls._is_development_env():
                 return host
             # In production, use localhost instead
             return FlextWebConstants.WebSpecific.LOCALHOST_IP

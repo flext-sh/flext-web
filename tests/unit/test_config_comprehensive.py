@@ -97,6 +97,7 @@ class TestWebConfigEnvironmentVariables:
             "FLEXT_WEB_HOST": "0.0.0.0",
             "FLEXT_WEB_PORT": "9000",
             "FLEXT_WEB_DEBUG": "false",
+            "FLEXT_WEB_WEB_ENVIRONMENT": "production",  # Set production mode for security validation
             "FLEXT_WEB_SECRET_KEY": "production-secret-key-from-env-12345",
             "FLEXT_WEB_APP_NAME": "Production FLEXT Web",
             "FLEXT_WEB_MAX_CONTENT_LENGTH": "32777216",  # 32MB
@@ -105,16 +106,17 @@ class TestWebConfigEnvironmentVariables:
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
-            config_result = FlextWebConfig.create_config_from_env()
-            assert config_result.is_success
-            config = config_result.value
+            config = FlextWebConfig()
 
             assert (
                 config.host == "127.0.0.1"
-            )  # Security validation converts 0.0.0.0 to localhost
+            )  # Security validation converts 0.0.0.0 to localhost in production
             assert config.port == 9000
             assert config.debug is False
-            assert config.secret_key == "production-secret-key-from-env-12345"
+            assert (
+                config.secret_key.get_secret_value()
+                == "production-secret-key-from-env-12345"
+            )
             assert config.app_name == "Production FLEXT Web"
             assert config.max_content_length == 32777216
             assert config.request_timeout == 120
@@ -128,9 +130,7 @@ class TestWebConfigEnvironmentVariables:
         }
 
         with patch.dict(os.environ, env_vars, clear=False):
-            config_result = FlextWebConfig.create_config_from_env()
-            assert config_result.is_success
-            config = config_result.value
+            config = FlextWebConfig()
 
             assert config.host == "custom-host"
             assert config.port == 8888
@@ -138,7 +138,7 @@ class TestWebConfigEnvironmentVariables:
             assert (
                 config.debug is True
             )  # From .env file which sets FLEXT_WEB_DEBUG=true
-            assert config.app_name == "flext-app"  # From FlextConfig inheritance
+            assert config.app_name == "FLEXT Web"  # Default from FlextWebConfig
 
     def test_config_from_env_invalid_types(self) -> None:
         """Test config creation with invalid environment variable types."""
@@ -254,10 +254,7 @@ class TestWebConfigFactoryMethods:
         env_vars = {"FLEXT_WEB_HOST": "env-host", "FLEXT_WEB_PORT": "7777"}
 
         with patch.dict(os.environ, env_vars, clear=False):
-            result = FlextWebConfig.create_config_from_env()
-
-            assert result.is_success
-            config = result.value
+            config = FlextWebConfig()
             assert config.host == "env-host"
             assert config.port == 7777
 
@@ -268,16 +265,17 @@ class TestWebConfigFactoryMethods:
             "FLEXT_WEB_DEBUG": "invalid_boolean",
         }
 
-        with patch.dict(os.environ, env_vars, clear=False):
-            result = FlextWebConfig.create_config_from_env()
+        with (
+            patch.dict(os.environ, env_vars, clear=False),
+            pytest.raises(ValidationError) as exc_info,
+        ):
+            FlextWebConfig()
 
-            assert result.is_failure
-            # Environment variable conversion error is now caught properly
-            assert result.error is not None
-            assert (
-                "invalid literal for int()" in result.error.lower()
-                or "validation" in result.error.lower()
-            )
+        # Environment variable conversion error is now caught properly
+        assert (
+            "invalid literal for int()" in str(exc_info.value).lower()
+            or "validation" in str(exc_info.value).lower()
+        )
 
     def test_create_web_config_alternative_methods(self) -> None:
         """Test alternative config creation methods."""

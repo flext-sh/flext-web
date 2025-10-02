@@ -115,12 +115,8 @@ class TestConfigFactoryMethods:
             os.environ.pop(key, None)
 
         try:
-            result = FlextWebConfig.create_config_from_env()
+            config = FlextWebConfig()
 
-            assert result.is_success, (
-                f"Config from env should succeed with defaults, got: {result.error}"
-            )
-            config = result.value
             assert isinstance(config, FlextWebConfig)
             # Should use default values when env vars not set
             assert config.host == "localhost"
