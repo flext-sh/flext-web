@@ -238,7 +238,7 @@ class TestRealDomainLogicExecution:
         result = app.validate_business_rules()
         assert result.is_failure is True
         assert result.error is not None
-        assert "application name" in result.error.lower()
+        assert result.error is not None and "application name" in result.error.lower()
 
     @pytest.mark.unit
     def test_real_handler_operations(self) -> None:

@@ -11,8 +11,14 @@ import uuid
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Self, override
+from typing import Self, override
 
+from flext_core import (
+    FlextConstants,
+    FlextModels,
+    FlextResult,
+    FlextTypes,
+)
 from pydantic import (
     ConfigDict,
     Field,
@@ -23,12 +29,6 @@ from pydantic import (
     model_validator,
 )
 
-from flext_core import (
-    FlextConstants,
-    FlextModels,
-    FlextResult,
-    FlextTypes,
-)
 from flext_web.constants import FlextWebConstants
 from flext_web.typings import FlextWebTypes
 
@@ -95,7 +95,7 @@ class FlextWebModels(FlextModels):
 
     @computed_field
     @property
-    def web_model_summary(self) -> dict[str, Any]:
+    def web_model_summary(self) -> dict[str, object]:
         """Computed field providing comprehensive web model summary."""
         return {
             "model_system": "FLEXT Web Models",
@@ -172,7 +172,7 @@ class FlextWebModels(FlextModels):
 
         @computed_field
         @property
-        def model_metadata(self) -> dict[str, Any]:
+        def model_metadata(self) -> dict[str, object]:
             """Computed field providing base web model metadata."""
             return {
                 "model_class": self.__class__.__name__,
@@ -260,14 +260,14 @@ class FlextWebModels(FlextModels):
             default=None,
             description="Health check endpoint URL",
         )
-        metrics: dict[str, Any] = Field(
+        metrics: dict[str, object] = Field(
             default_factory=dict,
             description="Application metrics",
         )
 
         @computed_field
         @property
-        def web_app_summary(self) -> dict[str, Any]:
+        def web_app_summary(self) -> dict[str, object]:
             """Computed field providing web application summary."""
             return {
                 "application_info": {
@@ -322,8 +322,8 @@ class FlextWebModels(FlextModels):
 
         @field_serializer("metrics", when_used="json")
         def serialize_metrics_with_metadata(
-            self, value: dict[str, Any]
-        ) -> dict[str, Any]:
+            self, value: dict[str, object]
+        ) -> dict[str, object]:
             """Field serializer for metrics with processing metadata."""
             return {
                 **value,
@@ -597,12 +597,12 @@ class FlextWebModels(FlextModels):
             # Start again
             return self.start()
 
-        def update_metrics(self, metrics: dict[str, Any]) -> None:
+        def update_metrics(self, metrics: dict[str, object]) -> None:
             """Update application metrics."""
             self.metrics.update(metrics)
             self.update_timestamp()
 
-        def get_health_status(self) -> dict[str, Any]:
+        def get_health_status(self) -> dict[str, object]:
             """Get comprehensive health status."""
             return {
                 "status": str(self.status),
@@ -688,7 +688,7 @@ class FlextWebModels(FlextModels):
             default_factory=lambda: str(uuid.uuid4()),
             description="Unique request identifier",
         )
-        query_params: dict[str, Any] = Field(
+        query_params: dict[str, object] = Field(
             default_factory=dict,
             description="Query parameters",
         )
@@ -707,7 +707,7 @@ class FlextWebModels(FlextModels):
 
         @computed_field
         @property
-        def request_summary(self) -> dict[str, Any]:
+        def request_summary(self) -> dict[str, object]:
             """Computed field providing comprehensive request summary."""
             return {
                 "request_info": {
@@ -814,7 +814,7 @@ class FlextWebModels(FlextModels):
 
         @computed_field
         @property
-        def response_summary(self) -> dict[str, Any]:
+        def response_summary(self) -> dict[str, object]:
             """Computed field providing comprehensive response summary."""
             return {
                 "response_info": {
@@ -974,7 +974,7 @@ class FlextWebModels(FlextModels):
 
         @computed_field
         @property
-        def config_summary(self) -> dict[str, Any]:
+        def config_summary(self) -> dict[str, object]:
             """Computed field providing comprehensive configuration summary."""
             return {
                 "application_config": {
@@ -1133,14 +1133,14 @@ class FlextWebModels(FlextModels):
             default="/openapi.json",
             description="OpenAPI JSON URL",
         )
-        middlewares: list[Any] = Field(
+        middlewares: list[object] = Field(
             default_factory=list,
             description="Middleware instances (e.g., from flext-auth)",
         )
 
         @computed_field
         @property
-        def config_summary(self) -> dict[str, Any]:
+        def config_summary(self) -> dict[str, object]:
             """Computed field providing configuration summary."""
             return {
                 "application": {

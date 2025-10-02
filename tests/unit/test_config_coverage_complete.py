@@ -125,7 +125,10 @@ class TestConfigCompleteCoverage:
         result = production_config.validate_production_settings()
         assert result.is_failure
         assert result.error is not None
-        assert "production configuration validation failed" in result.error.lower()
+        assert (
+            result.error is not None
+            and "production configuration validation failed" in result.error.lower()
+        )
 
         # Test valid production config
         valid_production_config = FlextWebConfig(

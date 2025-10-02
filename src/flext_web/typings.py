@@ -50,6 +50,14 @@ class FlextWebTypes(FlextTypes):
         # Response type definitions (class attributes for runtime access)
         SuccessResponse = dict
         BaseResponse = dict
+        ErrorResponse = dict
+        ResponseDataDict = dict
+        ConfigData = dict
+        ProductionConfigData = dict
+        DevelopmentConfigData = dict
+        StatusInfo = dict
+        AppData = dict
+        RequestContext = dict
 
         # Configuration and settings types (extends flext-core ConfigDict)
         type ExtendedConfigDict = dict[
@@ -313,6 +321,55 @@ class FlextWebTypes(FlextTypes):
             return FlextResult[FlextTypes.Core.Dict].fail(
                 f"Failed to get web types system config: {e}",
             )
+
+    @classmethod
+    def create_app_data(
+        cls,
+        **kwargs: object,
+    ) -> dict[str, object]:
+        """Create app data dictionary."""
+        return dict(kwargs)
+
+    @classmethod
+    def create_config_data(cls) -> dict[str, object]:
+        """Create config data dictionary."""
+        return {}
+
+    @classmethod
+    def create_request_context(
+        cls,
+        method: str = "GET",
+        path: str = "/",
+        headers: dict[str, str] | None = None,
+        data: dict[str, object] | None = None,
+    ) -> dict[str, object]:
+        """Create request context dictionary."""
+        return {
+            "method": method,
+            "path": path,
+            "headers": headers or {},
+            "data": data or {},
+        }
+
+    @classmethod
+    def validate_app_data(
+        cls, data: dict[str, object]
+    ) -> FlextResult[dict[str, object]]:
+        """Validate app data."""
+        if not isinstance(data, dict):
+            return FlextResult[dict[str, object]].fail("App data must be a dictionary")
+        return FlextResult[dict[str, object]].ok(data)
+
+    @classmethod
+    def validate_config_data(
+        cls, data: dict[str, object] | str
+    ) -> FlextResult[dict[str, object]]:
+        """Validate config data."""
+        if isinstance(data, str):
+            return FlextResult[dict[str, object]].fail(
+                "Config data must be a dictionary"
+            )
+        return FlextResult[dict[str, object]].ok(data)
 
 
 # =============================================================================

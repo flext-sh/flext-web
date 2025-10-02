@@ -676,7 +676,9 @@ class TestServiceExceptionHandling:
 
         assert result.is_failure
         assert result.error is not None
-        assert "Service registration failed" in result.error
+        assert (
+            result.error is not None and "Service registration failed" in result.error
+        )
 
         # Restore original state
         registry._services = original_services

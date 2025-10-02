@@ -111,7 +111,7 @@ class TestMissingCoverage:
         result = app.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "application name" in result.error.lower()
+        assert result.error is not None and "application name" in result.error.lower()
 
     def test_config_validation_failure_paths(self) -> None:
         """Test configuration validation failure scenarios."""

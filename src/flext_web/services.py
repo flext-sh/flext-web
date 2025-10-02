@@ -6,11 +6,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any, override
+from typing import override
 
 from flask import Flask, Response, jsonify, render_template_string, request
 from flask.typing import ResponseReturnValue
-
 from flext_api import FlextApiClient
 from flext_auth import FlextAuth, FlextAuthModels
 from flext_core import (
@@ -19,10 +18,12 @@ from flext_core import (
     FlextResult,
     FlextUtilities,
 )
+
 from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels
+from flext_web.protocols import FlextWebProtocols
 from flext_web.typings import FlextWebTypes
 
 
@@ -40,8 +41,12 @@ class FlextWebServices:
     # WEB SERVICE CLASSES
     # =============================================================================
 
-    class WebService:
+    class WebService(FlextWebProtocols.WebServiceInterface):
         """Primary web service implementation with Flask integration and application management.
+
+        **PROTOCOL IMPLEMENTATION**: This service implements FlextWebProtocols.WebServiceInterface,
+        extending FlextProtocols.Domain.Service with web-specific lifecycle operations including
+        route initialization, middleware configuration, and service start/stop management.
 
         Enterprise-grade web service providing REST API endpoints, web dashboard,
         and comprehensive application lifecycle management. Built on Flask with
@@ -479,7 +484,7 @@ class FlextWebServices:
 
         def format_success(
             self,
-            data: dict[str, Any],
+            data: dict[str, object],
             message: str = "Success",
             status_code: int = 200,
         ) -> FlextWebTypes.Core.WebResponse:
@@ -646,7 +651,7 @@ class FlextWebServices:
         # API CLIENT INTEGRATION EXAMPLES
         # =============================================================================
 
-        def fetch_apps_from_api(self) -> FlextResult[list[dict[str, Any]]]:
+        def fetch_apps_from_api(self) -> FlextResult[list[dict[str, object]]]:
             """Example: Fetch applications from backend API using flext-api client.
 
             This demonstrates how flext-web delegates REST API operations to flext-api.
@@ -661,20 +666,20 @@ class FlextWebServices:
                 response = self.api_client.get("/api/v1/apps")
 
                 if response.is_failure:
-                    return FlextResult[list[dict[str, Any]]].fail(
+                    return FlextResult[list[dict[str, object]]].fail(
                         f"API call failed: {response.error}"
                     )
 
                 apps_data = response.value.get("apps", [])
-                return FlextResult[list[dict[str, Any]]].ok(apps_data)
+                return FlextResult[list[dict[str, object]]].ok(apps_data)
 
             except Exception as e:
                 self.logger.exception("Error fetching apps from API")
-                return FlextResult[list[dict[str, Any]]].fail(str(e))
+                return FlextResult[list[dict[str, object]]].fail(str(e))
 
         def create_app_via_api(
-            self, app_data: dict[str, Any]
-        ) -> FlextResult[dict[str, Any]]:
+            self, app_data: dict[str, object]
+        ) -> FlextResult[dict[str, object]]:
             """Example: Create application via backend API using flext-api client.
 
             Args:
@@ -689,15 +694,15 @@ class FlextWebServices:
                 response = self.api_client.post("/api/v1/apps", json=app_data)
 
                 if response.is_failure:
-                    return FlextResult[dict[str, Any]].fail(
+                    return FlextResult[dict[str, object]].fail(
                         f"API call failed: {response.error}"
                     )
 
-                return FlextResult[dict[str, Any]].ok(response.value)
+                return FlextResult[dict[str, object]].ok(response.value)
 
             except Exception as e:
                 self.logger.exception("Error creating app via API")
-                return FlextResult[dict[str, Any]].fail(str(e))
+                return FlextResult[dict[str, object]].fail(str(e))
 
         # =============================================================================
         # LEGACY API ENDPOINTS (TO BE DEPRECATED AND MOVED TO FLEXT-API)

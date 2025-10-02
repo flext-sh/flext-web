@@ -16,10 +16,10 @@ from collections.abc import Generator
 
 import pytest
 import requests
+from flext_core import FlextTypes
 from pydantic import ValidationError
 from tests.port_manager import TestPortManager
 
-from flext_core import FlextTypes
 from flext_web import (
     FlextWebConfig,
     FlextWebHandlers,
@@ -56,7 +56,9 @@ class TestRealEdgeCases:
         result = started_app.start()
         assert result.is_failure is True
         assert result.error is not None
-        assert "app already running" in result.error.lower()
+        assert (
+            result.error is not None and "app already running" in result.error.lower()
+        )
 
         # Stop app
         result = started_app.stop()
@@ -69,7 +71,7 @@ class TestRealEdgeCases:
         result = stopped_app.stop()
         assert result.is_failure is True
         assert result.error is not None
-        assert "app not running" in result.error.lower()
+        assert result.error is not None and "app not running" in result.error.lower()
 
     @pytest.mark.unit
     def test_real_domain_validation_edge_cases(self) -> None:
@@ -84,7 +86,9 @@ class TestRealEdgeCases:
         result = app.validate_business_rules()
         assert result.is_failure is True
         assert result.error is not None
-        assert "Application name is required" in result.error
+        assert (
+            result.error is not None and "Application name is required" in result.error
+        )
 
         # Test empty host
         app = FlextWebModels.WebApp.model_construct(
@@ -96,7 +100,7 @@ class TestRealEdgeCases:
         result = app.validate_business_rules()
         assert result.is_failure is True
         assert result.error is not None
-        assert "Host address is required" in result.error
+        assert result.error is not None and "Host address is required" in result.error
 
     @pytest.mark.unit
     def test_real_status_enum_coercion(self) -> None:

@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 import warnings
 from pathlib import Path
-from typing import Any, Self
+from typing import Self
 
 from pydantic import Field, SecretStr, computed_field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
@@ -364,7 +364,7 @@ class FlextWebConfig(FlextConfig):
         web_env = os.getenv("FLEXT_WEB_WEB_ENVIRONMENT", "development").lower()
         return web_env in {"development", "dev", "local"}
 
-    def get_server_config(self) -> dict[str, Any]:
+    def get_server_config(self) -> dict[str, object]:
         """Get server configuration."""
         return {
             "host": self.host,
@@ -375,7 +375,7 @@ class FlextWebConfig(FlextConfig):
             "ssl_enabled": self.ssl_enabled,
         }
 
-    def get_security_config(self) -> dict[str, Any]:
+    def get_security_config(self) -> dict[str, object]:
         """Get security configuration."""
         return {
             "session_cookie_secure": self.session_cookie_secure,

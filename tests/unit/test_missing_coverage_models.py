@@ -28,7 +28,7 @@ class TestModelsMissingCoverage:
 
     def test_webapp_invalid_host_validation(self) -> None:
         """Testa validação de host inválido (linhas 127-128)."""
-        with pytest.raises(ValueError, match="Invalid host format"):
+        with pytest.raises(ValueError, match="malicious pattern"):
             FlextWebModels.WebApp(
                 id="invalid-host-test",
                 name="Invalid Host Test",

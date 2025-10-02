@@ -210,6 +210,7 @@ class TestWebConfigFactoryMethods:
         env_vars = {
             "FLEXT_WEB_SECRET_KEY": "production-secret-key-that-is-long-enough-for-validation-12345",
             "FLEXT_WEB_HOST": "0.0.0.0",  # Override conftest.py localhost for production test
+            "FLEXT_WEB_DEBUG": "false",  # Ensure debug is disabled for production
         }
 
         with patch.dict(os.environ, env_vars, clear=False):

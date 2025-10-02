@@ -88,7 +88,9 @@ class TestServicesMissingCoverage:
         result = registry.get_service("non-existent")
         assert result.is_failure
         assert result.error is not None
-        assert "not found" in result.error or "not registered" in result.error
+        assert (
+            result.error is not None and "not found" in result.error
+        ) or "not registered" in result.error
 
     def test_lifecycle_extreme_cases(self, test_client: FlaskClient) -> None:
         """Testa casos extremos do ciclo de vida (linhas 644-645, 657-658)."""
@@ -160,7 +162,7 @@ class TestServicesMissingCoverage:
         result = FlextWebServices.create_web_service(None)
         if result.is_failure:
             assert result.error is not None
-            assert "config" in result.error.lower()
+            assert result.error is not None and "config" in result.error.lower()
 
         # Teste create_service_registry
         result = FlextWebServices.create_service_registry()

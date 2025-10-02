@@ -57,7 +57,6 @@ class FlextWebProtocols(FlextProtocols):
                 FlextResult containing created application or error.
 
             """
-            ...
 
         def start_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Start an application.
@@ -69,7 +68,6 @@ class FlextWebProtocols(FlextProtocols):
                 FlextResult containing updated application or error.
 
             """
-            ...
 
         def stop_app(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Stop an application.
@@ -81,7 +79,6 @@ class FlextWebProtocols(FlextProtocols):
                 FlextResult containing updated application or error.
 
             """
-            ...
 
         def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
             """List all applications.
@@ -90,7 +87,6 @@ class FlextWebProtocols(FlextProtocols):
                 FlextResult containing list of applications or error.
 
             """
-            ...
 
     # =========================================================================
     # RESPONSE AND CONFIGURATION PROTOCOLS
@@ -120,7 +116,6 @@ class FlextWebProtocols(FlextProtocols):
                 Formatted HTTP response.
 
             """
-            ...
 
         def format_error(
             self,
@@ -139,7 +134,6 @@ class FlextWebProtocols(FlextProtocols):
                 Formatted HTTP error response.
 
             """
-            ...
 
     # Use flext-core Configurable protocol instead of custom ConfigurationProtocol
     # This reduces duplication and leverages existing abstractions
@@ -162,15 +156,12 @@ class FlextWebProtocols(FlextProtocols):
             status_code: int = 200,
         ) -> FlextWebTypes.Core.WebResponse:
             """Create a JSON response in framework-agnostic way."""
-            ...
 
         def get_request_data(self) -> FlextTypes.Core.JsonObject:
             """Get request data in framework-agnostic way."""
-            ...
 
         def is_json_request(self) -> bool:
             """Check if current request is JSON."""
-            ...
 
     class TemplateRendererProtocol(Protocol):
         """Protocol for template rendering services.
@@ -190,7 +181,6 @@ class FlextWebProtocols(FlextProtocols):
                 Rendered HTML string.
 
             """
-            ...
 
         def render_dashboard(
             self,
@@ -207,7 +197,6 @@ class FlextWebProtocols(FlextProtocols):
                 Rendered dashboard HTML.
 
             """
-            ...
 
     # =========================================================================
     # PROTOCOL FACTORY METHODS
@@ -332,11 +321,9 @@ class FlextWebProtocols(FlextProtocols):
 
         def initialize_routes(self) -> None:
             """Initialize web service routes and endpoints."""
-            ...
 
         def configure_middleware(self) -> None:
             """Configure request/response middleware."""
-            ...
 
         def start_service(
             self,
@@ -347,11 +334,9 @@ class FlextWebProtocols(FlextProtocols):
             **kwargs: object,
         ) -> None:
             """Start the web service with specified configuration."""
-            ...
 
         def stop_service(self) -> None:
             """Stop the web service gracefully."""
-            ...
 
     @runtime_checkable
     class AppRepositoryInterface(
@@ -370,22 +355,18 @@ class FlextWebProtocols(FlextProtocols):
             app: FlextWebModels.WebApp,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Create and store a new application."""
-            ...
 
         def get(self, _app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Retrieve application by ID."""
-            ...
 
         def update(
             self,
             app: FlextWebModels.WebApp,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Update existing application."""
-            ...
 
         def find_by__name(self, _name: str) -> FlextResult[FlextWebModels.WebApp]:
             """Find application by name."""
-            ...
 
     @runtime_checkable
     class MiddlewareInterface(FlextProtocols.Extensions.Middleware, Protocol):
@@ -401,18 +382,15 @@ class FlextWebProtocols(FlextProtocols):
             request: FlextWebTypes.RequestContext,
         ) -> FlextResult[FlextWebTypes.RequestContext]:
             """Process request before routing to handlers."""
-            ...
 
         def after_request(
             self,
             response: FlextTypes.Core.Dict,
         ) -> FlextResult[FlextTypes.Core.Dict]:
             """Process response after handler execution."""
-            ...
 
         def handle__error(self, _error: Exception) -> FlextWebTypes.Core.WebResponse:
             """Handle exceptions during request processing."""
-            ...
 
     @runtime_checkable
     class TemplateEngineInterface(FlextProtocols.Infrastructure.Configurable, Protocol):
@@ -425,15 +403,12 @@ class FlextWebProtocols(FlextProtocols):
 
         def render(self, _template_name: str, **context: object) -> str:
             """Render template with context variables."""
-            ...
 
         def add_filter(self, _name: str, filter_func: Callable[[str], str]) -> None:
             """Add custom template filter."""
-            ...
 
         def add_global(self, _name: str, value: object) -> None:
             """Add global template variable."""
-            ...
 
     @runtime_checkable
     class MonitoringInterface(FlextProtocols.Extensions.Observability, Protocol):
@@ -452,7 +427,6 @@ class FlextWebProtocols(FlextProtocols):
             duration: float,
         ) -> None:
             """Record HTTP request metrics."""
-            ...
 
         def record_error(
             self,
@@ -461,15 +435,12 @@ class FlextWebProtocols(FlextProtocols):
             context: dict[str, FlextTypes.Core.Dict] | None = None,
         ) -> None:
             """Record error occurrence."""
-            ...
 
         def get_health_status(self) -> dict[str, FlextTypes.Core.Dict]:
             """Get current service health status."""
-            ...
 
         def get_metrics(self) -> dict[str, FlextTypes.Core.Dict]:
             """Get collected metrics data."""
-            ...
 
 
 # =============================================================================

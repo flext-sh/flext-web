@@ -19,7 +19,7 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_config_data("not_a_dict")
         assert result.is_failure
         assert result.error is not None
-        assert "must be a dictionary" in result.error
+        assert result.error is not None and "must be a dictionary" in result.error
 
         # Test missing fields (lines 224-226)
         incomplete_data = {
@@ -29,7 +29,7 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_config_data(incomplete_data)
         assert result.is_failure
         assert result.error is not None
-        assert "required field" in result.error.lower()
+        assert result.error is not None and "required field" in result.error.lower()
 
         # Test invalid host type (line 230)
         invalid_host_data = {
@@ -42,8 +42,8 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_config_data(invalid_host_data)
         assert result.is_failure
         assert result.error is not None
-        assert "host" in result.error
-        assert "string" in result.error
+        assert result.error is not None and "host" in result.error
+        assert result.error is not None and "string" in result.error
 
         # Test invalid port type (line 238)
         invalid_port_data = {
@@ -56,8 +56,8 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_config_data(invalid_port_data)
         assert result.is_failure
         assert result.error is not None
-        assert "port" in result.error
-        assert "integer" in result.error
+        assert result.error is not None and "port" in result.error
+        assert result.error is not None and "integer" in result.error
 
         # Test invalid debug type (line 242)
         invalid_debug_data = {
@@ -70,8 +70,8 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_config_data(invalid_debug_data)
         assert result.is_failure
         assert result.error is not None
-        assert "debug" in result.error
-        assert "boolean" in result.error
+        assert result.error is not None and "debug" in result.error
+        assert result.error is not None and "boolean" in result.error
 
         # Test invalid secret_key type (line 246)
         invalid_secret_data = {
@@ -84,8 +84,8 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_config_data(invalid_secret_data)
         assert result.is_failure
         assert result.error is not None
-        assert "secret_key" in result.error
-        assert "string" in result.error
+        assert result.error is not None and "secret_key" in result.error
+        assert result.error is not None and "string" in result.error
 
     def test_validate_config_data_app_name_errors(self) -> None:
         """Test app_name validation errors (lines 259-260)."""
@@ -99,8 +99,8 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_config_data(invalid_app_name_data)
         assert result.is_failure
         assert result.error is not None
-        assert "app_name" in result.error
-        assert "string" in result.error
+        assert result.error is not None and "app_name" in result.error
+        assert result.error is not None and "string" in result.error
 
     def test_validate_app_data_real_errors(self) -> None:
         """Test app data validation with real errors (lines 282, 286, 290, 298, 302)."""
@@ -108,7 +108,7 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_app_data("not_a_dict")
         assert result.is_failure
         assert result.error is not None
-        assert "must be a dictionary" in result.error
+        assert result.error is not None and "must be a dictionary" in result.error
 
         # Test invalid name type (line 286)
         invalid_name_data = {
@@ -122,8 +122,8 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_app_data(invalid_name_data)
         assert result.is_failure
         assert result.error is not None
-        assert "name" in result.error
-        assert "string" in result.error
+        assert result.error is not None and "name" in result.error
+        assert result.error is not None and "string" in result.error
 
         # Test invalid host type (line 290)
         invalid_host_data = {
@@ -137,8 +137,8 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_app_data(invalid_host_data)
         assert result.is_failure
         assert result.error is not None
-        assert "host" in result.error
-        assert "string" in result.error
+        assert result.error is not None and "host" in result.error
+        assert result.error is not None and "string" in result.error
 
         # Test invalid port type (line 298)
         invalid_port_data = {
@@ -152,8 +152,8 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_app_data(invalid_port_data)
         assert result.is_failure
         assert result.error is not None
-        assert "port" in result.error
-        assert "integer" in result.error
+        assert result.error is not None and "port" in result.error
+        assert result.error is not None and "integer" in result.error
 
         # Test invalid is_running type (line 302)
         invalid_is_running_data = {
@@ -167,8 +167,8 @@ class TestTypingsMissingCoverage:
         result = FlextWebTypes.validate_app_data(invalid_is_running_data)
         assert result.is_failure
         assert result.error is not None
-        assert "is_running" in result.error
-        assert "boolean" in result.error
+        assert result.error is not None and "is_running" in result.error
+        assert result.error is not None and "boolean" in result.error
 
     def test_factory_methods_edge_cases_real(self) -> None:
         """Test factory methods with real edge cases (lines 316-317, 325-331)."""

@@ -54,10 +54,10 @@ class TestModelsMissingCoverage:
         # Since validate_assignment is True, we can't set invalid values directly
         # Instead we test the validation method's logic paths
 
-        # Create another webapp with minimum valid port to test edge case
+        # Create another webapp with minimum valid values to test edge case
         edge_webapp = FlextWebModels.WebApp(
             id="test_edge_rules",
-            name="a",  # Minimum valid name
+            name="app",  # Minimum valid name (3 characters)
             host="localhost",
             port=1024,  # Minimum valid port
         )

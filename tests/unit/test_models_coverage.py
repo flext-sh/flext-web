@@ -45,7 +45,9 @@ class TestWebAppEdgeCases:
         result = app.validate_business_rules()
         assert result.is_failure
         assert result.error is not None
-        assert "name" in result.error.lower() or "required" in result.error.lower()
+        assert (
+            result.error is not None and "name" in result.error.lower()
+        ) or "required" in result.error.lower()
 
     def test_webapp_invalid_port_validation(self) -> None:
         """Test invalid port validation - covers lines 151-152, 159."""
