@@ -97,7 +97,7 @@ class TestWebConfigFunctionalValidation:
     def test_functional_config_validation_edge_cases(self) -> None:
         """Test configuration validation with real edge case scenarios."""
         # Test minimum valid secret key length
-        min_key_config = FlextWebConfig.WebConfig(
+        min_key_config = FlextWebConfig(
             secret_key="x" * 32,  # Exactly 32 characters
             host="127.0.0.1",
             port=8080,
@@ -105,7 +105,7 @@ class TestWebConfigFunctionalValidation:
         assert min_key_config.secret_key == "x" * 32
 
         # Test maximum port value
-        max_port_config = FlextWebConfig.WebConfig(
+        max_port_config = FlextWebConfig(
             secret_key="max-port-test-key-32-characters!",
             host="127.0.0.1",
             port=65535,  # Maximum valid port
@@ -113,7 +113,7 @@ class TestWebConfigFunctionalValidation:
         assert max_port_config.port == 65535
 
         # Test minimum port value
-        min_port_config = FlextWebConfig.WebConfig(
+        min_port_config = FlextWebConfig(
             secret_key="min-port-test-key-32-characters!",
             host="127.0.0.1",
             port=1024,  # Minimum unprivileged port
@@ -127,7 +127,7 @@ class TestWebConfigFunctionalValidation:
             pydantic.ValidationError,
             match="Input should be greater than or equal to 1",
         ):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 secret_key="invalid-port-test-key-32-chars!!",
                 host="127.0.0.1",
                 port=0,  # Invalid port
@@ -137,7 +137,7 @@ class TestWebConfigFunctionalValidation:
             pydantic.ValidationError,
             match="Input should be less than or equal to 65535",
         ):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 secret_key="invalid-port-test-key-32-chars!!",
                 host="127.0.0.1",
                 port=99999,  # Port too high
@@ -148,7 +148,7 @@ class TestWebConfigFunctionalValidation:
             pydantic.ValidationError,
             match="String should have at least 32 characters",
         ):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 secret_key="short",  # Too short
                 host="127.0.0.1",
                 port=8080,
@@ -159,7 +159,7 @@ class TestWebConfigFunctionalValidation:
             pydantic.ValidationError,
             match="Host address cannot be empty",
         ):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 secret_key="invalid-host-test-key-32-chars!!",
                 host="",  # Empty host
                 port=8080,
@@ -274,7 +274,7 @@ FLEXT_WEB_APP_NAME=File Config Test
         )
 
         # Create FlextWebConfig using builder data for available fields
-        web_config = FlextWebConfig.WebConfig(
+        web_config = FlextWebConfig(
             host="localhost",  # Use default since ConfigBuilder doesn't provide host
             port=8080,  # Use default since ConfigBuilder doesn't provide port
             debug=getattr(config_data, "debug", True),
@@ -295,10 +295,10 @@ FLEXT_WEB_APP_NAME=File Config Test
 
         system_configs = config_result.value
         assert "web_config" in system_configs
-        assert isinstance(system_configs["web_config"], FlextWebConfig.WebConfig)
+        assert isinstance(system_configs["web_config"], FlextWebConfig)
 
         # Test configuration merging
-        base_config = FlextWebConfig.WebConfig(
+        base_config = FlextWebConfig(
             secret_key="base-config-secret-key-32-chars!",
             host="base-host",
             port=8092,
@@ -325,7 +325,7 @@ FLEXT_WEB_APP_NAME=File Config Test
     def test_functional_config_edge_case_validation(self) -> None:
         """Test configuration validation with real edge cases and boundary values."""
         # Test localhost variations
-        localhost_config = FlextWebConfig.WebConfig(
+        localhost_config = FlextWebConfig(
             secret_key="localhost-test-secret-key-32-chars!",
             host="127.0.0.1",  # IPv4 localhost
             port=8093,
@@ -333,7 +333,7 @@ FLEXT_WEB_APP_NAME=File Config Test
         assert localhost_config.host == "127.0.0.1"
 
         # Test wildcard binding
-        wildcard_config = FlextWebConfig.WebConfig(
+        wildcard_config = FlextWebConfig(
             secret_key="wildcard-test-secret-key-32-chars!",
             host="0.0.0.0",  # Wildcard binding
             port=8094,
@@ -343,7 +343,7 @@ FLEXT_WEB_APP_NAME=File Config Test
         )  # Security validation converts 0.0.0.0 to localhost
 
         # Test maximum content length
-        max_content_config = FlextWebConfig.WebConfig(
+        max_content_config = FlextWebConfig(
             secret_key="max-content-secret-key-32-chars!",
             host="localhost",
             port=8095,

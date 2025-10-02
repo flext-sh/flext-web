@@ -357,7 +357,7 @@ class TestFlextWebModelsFactoryMethods:
     def test_create_web_system_config_from_string(self) -> None:
         """Test creating web system config from string."""
         # Direct config creation since factory method doesn't exist
-        config = FlextWebConfig.WebConfig()
+        config = FlextWebConfig()
         config_dict = config.model_dump()
 
         assert isinstance(config_dict, dict)
@@ -378,7 +378,7 @@ class TestFlextWebModelsFactoryMethods:
         }
 
         # Direct config validation since factory method doesn't exist
-        config = FlextWebConfig.WebConfig(**input_config)
+        config = FlextWebConfig(**input_config)
         config_dict = config.model_dump()
 
         assert config_dict["host"] == "localhost"
@@ -389,7 +389,7 @@ class TestFlextWebModelsFactoryMethods:
         # Test that config validation handles invalid data gracefully
         # Test with invalid data that should cause ValidationError
         with pytest.raises(ValidationError):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 host="",  # Empty host should fail validation
                 port=-1,  # Invalid port should fail validation
                 secret_key="short",  # Too short key should fail validation

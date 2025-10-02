@@ -19,9 +19,9 @@ import pytest
 import requests
 from tests.port_manager import TestPortManager
 
+from flext_core import FlextConstants
 from flext_web import (
     FlextWebConfig,
-    FlextWebConstants,
     FlextWebServices,
 )
 
@@ -39,7 +39,7 @@ class TestWebInterface:
         """Create real running web service for dashboard testing."""
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=port,
             debug=True,
@@ -92,7 +92,7 @@ class TestWebInterface:
     ) -> None:
         """Test dashboard route using real HTTP requests."""
         assert real_web_service is not None
-        port = real_web_service.config.port
+        port = real_web_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         response = requests.get(f"{base_url}/", timeout=5)

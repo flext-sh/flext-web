@@ -33,7 +33,7 @@ def real_comprehensive_service() -> Generator[FlextWebServices.WebService]:
     # Allocate unique port to avoid conflicts
     port = TestPortManager.allocate_port()
 
-    config = FlextWebConfig.WebConfig(
+    config = FlextWebConfig(
         host="localhost",
         port=port,
         debug=True,
@@ -74,7 +74,7 @@ class TestRealWebServiceExecution:
         real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test real health endpoint with actual HTTP request."""
-        port = real_comprehensive_service.config.port
+        port = real_comprehensive_service.config["port"]
         response = requests.get(f"http://localhost:{port}/health", timeout=5)
 
         assert response.status_code == 200
@@ -90,7 +90,7 @@ class TestRealWebServiceExecution:
         real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test complete application lifecycle with real HTTP requests."""
-        port = real_comprehensive_service.config.port
+        port = real_comprehensive_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # 1. Create application
@@ -140,7 +140,7 @@ class TestRealWebServiceExecution:
         real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test real error handling with actual invalid requests."""
-        port = real_comprehensive_service.config.port
+        port = real_comprehensive_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Test creating app with invalid data
@@ -176,7 +176,7 @@ class TestRealWebServiceExecution:
         real_comprehensive_service: FlextWebServices.WebService,
     ) -> None:
         """Test real web dashboard rendering with applications."""
-        port = real_comprehensive_service.config.port
+        port = real_comprehensive_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Create test applications first
@@ -294,14 +294,14 @@ class TestRealConfigurationManagement:
     @pytest.mark.unit
     def test_real_config_validation_success(self) -> None:
         """Test real configuration validation with valid data."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8083,
             debug=True,
             secret_key="real-config-test-key-32-characters!",
         )
 
-        result = config.validate_config()
+        result = config.validate_business_rules()
         assert result.success is True
         assert config.is_production() is False  # debug=True
         assert config.get_server_url() == "http://localhost:8083"
@@ -315,7 +315,7 @@ class TestRealConfigurationManagement:
 
         try:
             # Test production validation failure with default key
-            config = FlextWebConfig.WebConfig(
+            config = FlextWebConfig(
                 host="localhost",
                 port=8083,
                 debug=False,  # Production mode
@@ -323,7 +323,7 @@ class TestRealConfigurationManagement:
             )
 
             # Force production validation by calling it directly
-            result = config.validate_config()
+            result = config.validate_business_rules()
             assert result.is_failure is True
             assert result.error is not None
             assert (
@@ -383,7 +383,7 @@ class TestRealServiceIntegration:
         """Test real service managing multiple applications using real HTTP."""
         real_comprehensive_service.apps.clear()
 
-        port = real_comprehensive_service.config.port
+        port = real_comprehensive_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Create multiple applications
@@ -437,7 +437,7 @@ class TestRealServiceIntegration:
     ) -> None:
         """Test real service error recovery scenarios using real HTTP."""
         assert real_comprehensive_service is not None
-        port = real_comprehensive_service.config.port
+        port = real_comprehensive_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Create valid app

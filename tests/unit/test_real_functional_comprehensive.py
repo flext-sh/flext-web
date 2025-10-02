@@ -109,7 +109,7 @@ class TestRealFunctionalFlextWebValidation:
             )
 
             # Test configuration business rules - config was validated during creation
-            assert isinstance(config, FlextWebConfig.WebConfig)
+            assert isinstance(config, FlextWebConfig)
 
         finally:
             # Restore original environment
@@ -159,7 +159,7 @@ class TestRealFunctionalFlextWebValidation:
     def test_real_service_creation_and_configuration(self) -> None:
         """Test WebService creation with real configuration patterns."""
         # Create real configuration
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="127.0.0.1",
             port=8304,
             debug=True,
@@ -171,9 +171,9 @@ class TestRealFunctionalFlextWebValidation:
 
         # Validate service properties
         assert service.config == config
-        assert service.config.host == "127.0.0.1"
-        assert service.config.port == 8304
-        assert service.config.debug is True
+        assert service.config["host"] == "127.0.0.1"
+        assert service.config["port"] == 8304
+        assert service.config["debug"] is True
 
         # Validate service Flask app creation
         assert service.app is not None
@@ -337,7 +337,7 @@ class TestRealFunctionalFlextWebValidation:
             )
 
             # Test configuration creation from file data
-            config = FlextWebConfig.WebConfig(**loaded_data)
+            config = FlextWebConfig(**loaded_data)
             assert config.host == "127.0.0.1"
             assert config.port == 8311
             assert config.debug is True
@@ -495,8 +495,8 @@ class TestRealBenchmarkWithFlextTests:
     def test_config_creation_benchmark(self) -> None:
         """Test configuration creation performance."""
 
-        def create_config() -> FlextWebConfig.WebConfig:
-            return FlextWebConfig.WebConfig(
+        def create_config() -> FlextWebConfig:
+            return FlextWebConfig(
                 host="127.0.0.1",
                 port=8602,
                 debug=True,
@@ -508,7 +508,7 @@ class TestRealBenchmarkWithFlextTests:
         result = create_config()
         end_time = time.time()
 
-        assert isinstance(result, FlextWebConfig.WebConfig)
+        assert isinstance(result, FlextWebConfig)
         assert result.port == 8602
         assert end_time - start_time < 1.0  # Should be fast
 

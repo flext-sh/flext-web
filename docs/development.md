@@ -96,7 +96,7 @@ src/flext_web/
 
 ### Priority 3: Modern Web Patterns
 
-- **Async Research**: Investigate FastAPI compatibility
+- **Research**: Investigate FastAPI compatibility
 - **API Documentation**: Auto-generated documentation
 - **Testing Infrastructure**: Web-specific test utilities
 - **CLI Integration**: flext-cli command support

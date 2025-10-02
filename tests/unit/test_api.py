@@ -14,7 +14,8 @@ import pytest
 import requests
 from tests.port_manager import TestPortManager
 
-from flext_web import FlextWebConfig, FlextWebConstants, FlextWebServices
+from flext_core import FlextConstants
+from flext_web import FlextWebConfig, FlextWebServices
 
 # Type alias for readability
 FlextWebService = FlextWebServices.WebService
@@ -28,7 +29,7 @@ class TestFlextWebService:
 
     # Test constants within class scope
     HTTP_OK = FlextConstants.Http.HTTP_OK
-    HTTP_CREATED = 201
+    HTTP_CREATED = FlextConstants.Http.HTTP_CREATED
     EXPECTED_TOTAL_PAGES = 8
     """Enterprise REST API testing for FlextWebService functionality.
 
@@ -42,7 +43,7 @@ class TestFlextWebService:
         """Create real running service for API testing."""
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
-        config = FlextWebConfig.WebConfig.model_validate(
+        config = FlextWebConfig.model_validate(
             {
                 "host": "localhost",
                 "port": port,
@@ -94,7 +95,7 @@ class TestFlextWebService:
     ) -> None:
         """Test health check endpoint using real HTTP."""
         assert real_api_service is not None
-        base_url = f"http://localhost:{real_api_service.config.port}"
+        base_url = f"http://localhost:{real_api_service.config['port']}"
 
         response = requests.get(f"{base_url}/health", timeout=5)
 
@@ -114,7 +115,7 @@ class TestFlextWebService:
     ) -> None:
         """Test listing empty apps using real HTTP."""
         assert real_api_service is not None
-        base_url = f"http://localhost:{real_api_service.config.port}"
+        base_url = f"http://localhost:{real_api_service.config['port']}"
 
         response = requests.get(f"{base_url}/api/v1/apps", timeout=5)
 
@@ -132,7 +133,7 @@ class TestFlextWebService:
     def test_api_create_app_real_http(self, real_api_service: FlextWebService) -> None:
         """Test creating an app using real HTTP."""
         assert real_api_service is not None
-        base_url = f"http://localhost:{real_api_service.config.port}"
+        base_url = f"http://localhost:{real_api_service.config['port']}"
 
         response = requests.post(
             f"{base_url}/api/v1/apps",
@@ -162,7 +163,7 @@ class TestFlextWebService:
     ) -> None:
         """Test creating app with missing name using real HTTP."""
         assert real_api_service is not None
-        base_url = f"http://localhost:{real_api_service.config.port}"
+        base_url = f"http://localhost:{real_api_service.config['port']}"
 
         response = requests.post(
             f"{base_url}/api/v1/apps",

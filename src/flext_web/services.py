@@ -54,9 +54,18 @@ class FlextWebServices:
         """
 
         @override
-        def __init__(self, config: FlextWebTypes.Core.WebConfigDict) -> None:
+        def __init__(
+            self, config: FlextWebTypes.Core.WebConfigDict | FlextWebConfig
+        ) -> None:
             """Initialize web service with configuration and Flask application."""
-            self.config: FlextWebTypes.Core.WebConfigDict = config
+            # Store original config and convert to dict for internal use
+            if isinstance(config, FlextWebConfig):
+                self._config_object = config
+                self.config: FlextWebTypes.Core.WebConfigDict = config.model_dump()
+            else:
+                self._config_object = None
+                self.config: FlextWebTypes.Core.WebConfigDict = config
+
             self.app = Flask(__name__)
             self.apps: dict[str, FlextWebModels.WebApp] = {}
             self.app_handler = FlextWebHandlers.WebAppHandler()
@@ -67,7 +76,7 @@ class FlextWebServices:
             self.logger.info("Authentication system initialized")
 
             # Initialize flext-api client for REST API calls
-            api_base_url = config.get("api_base_url", "http://localhost:8000")
+            api_base_url = self.config.get("api_base_url", "http://localhost:8000")
             self.api_client = FlextApiClient(base_url=api_base_url)
             self.logger.info(f"API client initialized with base URL: {api_base_url}")
 
@@ -81,8 +90,8 @@ class FlextWebServices:
             # Configure Flask application
             self.app.config.update(
                 {
-                    "SECRET_KEY": config.get("secret_key", "default-secret-key"),
-                    "DEBUG": config.get("debug_bool", False),
+                    "SECRET_KEY": self.config.get("secret_key", "default-secret-key"),
+                    "DEBUG": self.config.get("debug", False),
                 },
             )
 
@@ -537,18 +546,16 @@ class FlextWebServices:
             - Current implementation uses local data, can be switched to API calls when backend available
 
             Note: Dashboard currently uses local data (self.apps).
-            To use backend API, the application needs async support or background task for API calls.
+            To use backend API, the application needs support or background task for API calls.
             The fetch_apps_from_api() method is available and ready to use.
             """
             try:
                 # Current: Use local data
-                # Future: When async support added, use: apps_result = await self.fetch_apps_from_api()
+                # Future: When support added, use: apps_result = self.fetch_apps_from_api()
                 apps_data = list(self.apps.values())
 
                 app_count = len(apps_data)
-                running_count = sum(
-                    1 for app in apps_data if bool(app.is_running)
-                )
+                running_count = sum(1 for app in apps_data if bool(app.is_running))
 
                 html_template = """
                 <!DOCTYPE html>
@@ -639,7 +646,7 @@ class FlextWebServices:
         # API CLIENT INTEGRATION EXAMPLES
         # =============================================================================
 
-        async def fetch_apps_from_api(self) -> FlextResult[list[dict[str, Any]]]:
+        def fetch_apps_from_api(self) -> FlextResult[list[dict[str, Any]]]:
             """Example: Fetch applications from backend API using flext-api client.
 
             This demonstrates how flext-web delegates REST API operations to flext-api.
@@ -651,7 +658,7 @@ class FlextWebServices:
             """
             try:
                 # Use FlextApiClient to call backend REST API
-                response = await self.api_client.get("/api/v1/apps")
+                response = self.api_client.get("/api/v1/apps")
 
                 if response.is_failure:
                     return FlextResult[list[dict[str, Any]]].fail(
@@ -665,7 +672,7 @@ class FlextWebServices:
                 self.logger.exception("Error fetching apps from API")
                 return FlextResult[list[dict[str, Any]]].fail(str(e))
 
-        async def create_app_via_api(
+        def create_app_via_api(
             self, app_data: dict[str, Any]
         ) -> FlextResult[dict[str, Any]]:
             """Example: Create application via backend API using flext-api client.
@@ -679,7 +686,7 @@ class FlextWebServices:
             """
             try:
                 # Use FlextApiClient to call backend REST API with POST
-                response = await self.api_client.post("/api/v1/apps", json=app_data)
+                response = self.api_client.post("/api/v1/apps", json=app_data)
 
                 if response.is_failure:
                     return FlextResult[dict[str, Any]].fail(

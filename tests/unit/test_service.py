@@ -23,7 +23,6 @@ from flext_web import (
     FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
-    FlextWebSettings,
 )
 
 
@@ -31,9 +30,9 @@ class TestFlextWebServiceAdvanced:
     """Advanced tests for FlextWebServices.WebService functionality."""
 
     @pytest.fixture
-    def config(self) -> FlextWebConfig.WebConfig:
+    def config(self) -> FlextWebConfig:
         """Create test configuration."""
-        return FlextWebConfig.WebConfig(
+        return FlextWebConfig(
             host="localhost",
             port=8093,  # Unique port for advanced tests
             debug=True,
@@ -43,7 +42,7 @@ class TestFlextWebServiceAdvanced:
     @pytest.fixture
     def real_running_service(
         self,
-        config: FlextWebConfig.WebConfig,
+        config: FlextWebConfig,
     ) -> Generator[FlextWebServices.WebService]:
         """Create and start real service for HTTP testing."""
         service = FlextWebServices.WebService(config)
@@ -67,7 +66,7 @@ class TestFlextWebServiceAdvanced:
         service.apps.clear()
 
     @pytest.fixture
-    def service(self, config: FlextWebConfig.WebConfig) -> FlextWebServices.WebService:
+    def service(self, config: FlextWebConfig) -> FlextWebServices.WebService:
         """Create test service instance for unit tests."""
         return FlextWebServices.WebService(config)
 
@@ -79,11 +78,11 @@ class TestFlextWebServiceAdvanced:
         app = service.app
         assert app.config["SECRET_KEY"] == "test-secret-key-32-characters-long!"
         # Flask debug is independent of business logic debug setting
-        assert service.config.debug_bool is True
+        assert service.config["debug"] is True
 
     def test_service_with_production_config(self) -> None:
         """Test service with production configuration."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="0.0.0.0",
             port=8080,
             debug=False,
@@ -92,8 +91,10 @@ class TestFlextWebServiceAdvanced:
         service = FlextWebServices.WebService(config)
 
         # Flask debug is controlled separately from config debug
-        assert service.config.debug_bool is False
-        assert service.config.is_production() is True
+        assert service.config["debug"] is False
+        # is_production() is a method on FlextWebConfig object, not available in dict
+        assert service._config_object is not None
+        assert service._config_object.is_production() is True
 
     def test_create_app_with_validation_error(
         self,
@@ -101,7 +102,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test app creation with validation errors using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Test empty name with real HTTP request
@@ -121,7 +122,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test app creation with invalid port using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         response = requests.post(
@@ -139,7 +140,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test app creation with missing optional fields uses defaults using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         response = requests.post(
@@ -160,7 +161,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test starting non-existent application using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         response = requests.post(f"{base_url}/api/v1/apps/nonexistent/start", timeout=5)
@@ -175,7 +176,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test stopping non-existent application using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         response = requests.post(f"{base_url}/api/v1/apps/nonexistent/stop", timeout=5)
@@ -189,7 +190,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test getting non-existent application using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         response = requests.get(f"{base_url}/api/v1/apps/nonexistent", timeout=5)
@@ -203,7 +204,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test API with invalid JSON using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         response = requests.post(
@@ -220,7 +221,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test service error handling with REAL validation failures using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Test with genuinely invalid data that will cause real validation errors
@@ -245,7 +246,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test service handling of real business logic errors using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Create first app successfully
@@ -269,7 +270,7 @@ class TestFlextWebServiceAdvanced:
     ) -> None:
         """Test dashboard display with applications using real HTTP."""
         assert real_running_service is not None
-        port = real_running_service.config.port
+        port = real_running_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Create test app
@@ -331,32 +332,32 @@ class TestWebConfigAdvanced:
     def test_config_validation_edge_cases(self) -> None:
         """Test configuration validation edge cases."""
         # Test minimum valid port
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             port=1024,
             secret_key="valid-secret-key-32-characters-long!",
         )
-        result = config.validate_config()
+        result = config.validate_business_rules()
         assert result.success
 
         # Test maximum valid port
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             port=65535,
             secret_key="valid-secret-key-32-characters-long!",
         )
-        result = config.validate_config()
+        result = config.validate_business_rules()
         assert result.success
 
     def test_config_production_detection(self) -> None:
         """Test production environment detection."""
         # Test debug=False as production indicator
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             debug=False,
             secret_key="prod-secret-key-32-characters-long!!",
         )
         assert config.is_production() is True
 
         # Test debug=True as development indicator
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             debug=True,
             secret_key="dev-secret-key-32-characters-long!!!",
         )
@@ -365,7 +366,7 @@ class TestWebConfigAdvanced:
     def test_config_secret_key_validation(self) -> None:
         """Test secret key validation scenarios."""
         # Test production with default key (should fail)
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             debug=False,
             secret_key="dev-secret-key-change-in-production",  # Exact default key
         )
@@ -529,7 +530,7 @@ class TestServiceIntegration:
     @pytest.fixture
     def real_integration_service(self) -> Generator[FlextWebServices.WebService]:
         """Create real running service for integration tests."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8097,  # Unique port for integration tests
             debug=True,
@@ -561,7 +562,7 @@ class TestServiceIntegration:
     ) -> None:
         """Test complete application workflow through real HTTP API."""
         assert real_integration_service is not None
-        port = real_integration_service.config.port
+        port = real_integration_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # 1. Create application

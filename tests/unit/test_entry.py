@@ -19,7 +19,6 @@ import pytest
 
 from flext_web import (
     FlextWebConfig,
-    FlextWebSettings,
     __main__ as main_module,
 )
 
@@ -121,7 +120,7 @@ class TestRealMainEntry:
 
         try:
             # Test with custom arguments
-            config = FlextWebConfig.WebConfig(
+            config = FlextWebConfig(
                 host="test-host",
                 port=9001,
                 debug=False,

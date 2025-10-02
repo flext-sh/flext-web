@@ -371,21 +371,20 @@ from flext_web import create_service
 
 ```python
 # examples/performance_testing.py
-import asyncio
 import aiohttp
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-async def load_test_health_endpoint():
+def load_test_health_endpoint():
     """Load test the health endpoint"""
-    async with aiohttp.ClientSession() as session:
+    with aiohttp.ClientSession() as session:
         tasks = []
         for i in range(100):  # 100 concurrent requests
             task = session.get('http://localhost:8080/health')
             tasks.append(task)
 
         start_time = time.time()
-        responses = await asyncio.gather(*tasks)
+        responses = gather(*tasks)
         end_time = time.time()
 
         success_count = sum(1 for resp in responses if resp.status == 200)
@@ -419,7 +418,7 @@ def benchmark_application_creation():
 
 if __name__ == "__main__":
     # Run load tests
-    asyncio.run(load_test_health_endpoint())
+    run(load_test_health_endpoint())
     benchmark_application_creation()
 ```
 

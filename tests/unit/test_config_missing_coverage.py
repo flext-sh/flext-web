@@ -18,7 +18,7 @@ class TestConfigMissingCoverage:
     def test_host_validation_invalid_characters(self) -> None:
         """Testa validação de host com caracteres inválidos (linhas 128-129)."""
         with pytest.raises(ValueError, match="Invalid host address format"):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 secret_key="test-secret-key-32-characters-long!",
                 host="invalid@host#",  # Caracteres inválidos @ e #
                 port=8080,
@@ -30,7 +30,7 @@ class TestConfigMissingCoverage:
             ValidationError,
             match="String should have at least 32 characters",
         ):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 secret_key="short",  # Muito curta (< 32 chars)
                 host="localhost",
                 port=8080,
@@ -43,7 +43,7 @@ class TestConfigMissingCoverage:
             ValidationError,
             match="Input should be greater than or equal to 1",
         ):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 secret_key="test-secret-key-32-characters-long!",
                 host="localhost",
                 port=0,  # Porta inválida
@@ -54,7 +54,7 @@ class TestConfigMissingCoverage:
             ValidationError,
             match="Input should be less than or equal to 65535",
         ):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 secret_key="test-secret-key-32-characters-long!",
                 host="localhost",
                 port=99999,  # Porta muito alta
@@ -113,7 +113,7 @@ class TestConfigMissingCoverage:
 
     def test_config_merging_edge_cases(self) -> None:
         """Testa casos extremos de merge de configuração (linhas 627-628, 641->654)."""
-        base_config = FlextWebConfig.WebConfig(
+        base_config = FlextWebConfig(
             secret_key="base-config-secret-key-32-characters!",
             host="base-host",
             port=8080,
@@ -137,7 +137,7 @@ class TestConfigMissingCoverage:
     def test_config_validation_comprehensive_edge_cases(self) -> None:
         """Testa casos extremos de validação (linhas 685-686, 707-708)."""
         # Teste com configuração válida nos limites
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             secret_key="x" * 32,  # Exatamente 32 caracteres
             host="127.0.0.1",  # IP válido
             port=1024,  # Porta mínima válida (>= 1024)

@@ -59,7 +59,7 @@ See [../flext-core/README.md](../flext-core/README.md) for foundation patterns.
 1. **Architecture Compliance**: Fix direct Flask imports and follow FLEXT standards
 2. **API Implementation**: Complete web service methods
 3. **Testing**: Implement comprehensive test coverage
-4. **Modern Patterns**: Research FastAPI integration for async support
+4. **Modern Patterns**: Research FastAPI integration for support
 
 ## Getting Help
 

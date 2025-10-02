@@ -46,7 +46,7 @@ def check_service_health() -> bool:
     try:
         response = requests.get(f"{ExampleConstants.BASE_URL}/health", timeout=5)
         if response.status_code == ExampleConstants.HTTP_OK:
-            result = cast("FlextWebTypes.SuccessResponse", response.json())
+            result = response.json()
             # Check the standardized response format
             if result.get("success", False):
                 data = result.get("data")
@@ -82,7 +82,7 @@ def create_application(
             timeout=5,
         )
         if response.status_code == ExampleConstants.HTTP_OK:
-            result = cast("FlextWebTypes.BaseResponse", response.json())
+            result = response.json()
             if result.get("success"):
                 data = result.get("data")
 
@@ -133,7 +133,10 @@ def _execute_app_operation(
         """Make HTTP request using FlextResult for error handling."""
         try:
             request_func = getattr(requests, method.lower())
-            kwargs = {"url": f"{ExampleConstants.BASE_URL}{endpoint}", "timeout": 5}
+            kwargs: dict[str, object] = {
+                "url": f"{ExampleConstants.BASE_URL}{endpoint}",
+                "timeout": 5,
+            }
             if json_data:
                 kwargs["json"] = json_data
 
@@ -149,12 +152,12 @@ def _execute_app_operation(
     # Use existing flext-core monadic chain
     result = (
         _make_http_request()
-        .bind(
+        .flat_map(
             lambda resp: FlextResult[FlextTypes.Core.Dict].ok(resp.json())
             if resp.status_code == ExampleConstants.HTTP_OK
             else FlextResult[FlextTypes.Core.Dict].fail("Invalid response"),
         )
-        .bind(
+        .flat_map(
             lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
                 cast("FlextWebTypes.AppData", json_data["data"]),
             )
@@ -189,7 +192,7 @@ def _execute_list_operation(
             lambda r: r.status_code == ExampleConstants.HTTP_OK,
             "HTTP request failed",
         )
-        .bind(
+        .flat_map(
             lambda r: FlextResult.safe_call(r.json)
             if hasattr(r, "json")
             else FlextResult[FlextTypes.Core.Dict].fail("Invalid response object"),

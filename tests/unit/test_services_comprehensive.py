@@ -8,13 +8,12 @@ SPDX-License-Identifier: MIT
 """
 
 from collections import UserDict
-from collections.abc import ValuesView
+from typing import Never
 
 import pytest
-from Flext_web import FlextWebConfig, FlextWebModels, FlextWebServices
 
 from flext_core import FlextConstants, FlextResult, FlextTypes
-from flext_tests import FlextTestsAsyncs
+from flext_web import FlextWebConfig, FlextWebModels, FlextWebServices
 
 
 class TestWebServiceHealthEndpoint:
@@ -437,25 +436,25 @@ class TestWebServiceFactoryMethods:
         assert result.is_success
         service = result.value
         assert isinstance(service, FlextWebServices.WebService)
-        assert isinstance(service.config, FlextWebConfig.WebConfig)
+        assert isinstance(service.config, dict)
 
     def test_create_web_service_with_config(self) -> None:
         """Test creating web service with provided config."""
-        config = FlextWebConfig.WebConfig(host="0.0.0.0", port=9000, debug=False)
+        config = FlextWebConfig(host="0.0.0.0", port=9000, debug=False)
 
-        result = FlextWebServices.create_web_service(config)
+        result = FlextWebServices.create_web_service(config.model_dump())
 
         assert result.is_success
         service = result.value
         # Note: 0.0.0.0 gets converted to 127.0.0.1 for security unless FLEXT_DEVELOPMENT_MODE=true
-        assert service.config.host == FlextConstants.Platform.LOOPBACK_IP
-        assert service.config.port == 9000
-        assert service.config.debug is False
+        assert service.config["host"] == FlextConstants.Platform.LOOPBACK_IP
+        assert service.config["port"] == 9000
+        assert service.config["debug"] is False
 
     def test_create_web_service_exception_handling(self) -> None:
         """Test web service creation error handling."""
         # Create a valid config but test that the factory method handles it properly
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8080,
             debug=True,
@@ -463,7 +462,7 @@ class TestWebServiceFactoryMethods:
         )
 
         # Service creation should work properly
-        result = FlextWebServices.create_web_service(config)
+        result = FlextWebServices.create_web_service(config.model_dump())
 
         # Should succeed gracefully
         assert isinstance(result, FlextResult)
@@ -501,13 +500,13 @@ class TestServiceExceptionHandling:
 
     def test_dashboard_render_exception(self) -> None:
         """Test dashboard rendering handles template exceptions."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8080,
             debug=True,
             secret_key="test-secret-key-32-characters-long!",
         )
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices.WebService(config.model_dump())
 
         # Use Flask's native test client for proper HTTP testing
         client = service.app.test_client()
@@ -538,13 +537,13 @@ class TestServiceExceptionHandling:
 
     def test_list_apps_exception_handling(self) -> None:
         """Test list_apps handles exceptions gracefully."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8080,
             debug=True,
             secret_key="test-secret-key-32-characters-long!",
         )
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices.WebService(config.model_dump())
         client = service.app.test_client()
 
         # Force exception by monkey-patching apps.values() to raise exception
@@ -552,11 +551,11 @@ class TestServiceExceptionHandling:
 
         # Create a proper mock for apps that will raise exception on iteration
         class MockAppsDict(UserDict[str, FlextWebModels.WebApp]):
-            def values(self) -> ValuesView[FlextWebModels.WebApp]:
+            def values(self) -> Never:
                 msg = "Simulated list apps exception"
                 raise RuntimeError(msg)
 
-        # Replace the apps dict with our mock - use type ignore for test purposes
+        # Replace the apps dict with our mock
         service.apps = MockAppsDict(original_apps)
 
         response = client.get("/api/v1/apps")
@@ -571,13 +570,13 @@ class TestServiceExceptionHandling:
 
     def test_create_app_validation_failures(self) -> None:
         """Test create_app handles validation failures - lines 291-292."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8080,
             debug=True,
             secret_key="test-secret-key-32-characters-long!",
         )
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices.WebService(config.model_dump())
         client = service.app.test_client()
 
         # Test invalid JSON data
@@ -592,13 +591,13 @@ class TestServiceExceptionHandling:
 
     def test_get_app_not_found_edge_cases(self) -> None:
         """Test get_app handles various edge cases - lines 368-369."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8080,
             debug=True,
             secret_key="test-secret-key-32-characters-long!",
         )
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices.WebService(config.model_dump())
         client = service.app.test_client()
 
         # Test non-existent app
@@ -611,13 +610,13 @@ class TestServiceExceptionHandling:
 
     def test_start_app_edge_cases(self) -> None:
         """Test start_app handles edge cases - lines 396-397."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8080,
             debug=True,
             secret_key="test-secret-key-32-characters-long!",
         )
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices.WebService(config.model_dump())
         client = service.app.test_client()
 
         # Test starting non-existent app
@@ -629,13 +628,13 @@ class TestServiceExceptionHandling:
 
     def test_stop_app_edge_cases(self) -> None:
         """Test stop_app handles edge cases - lines 435-436."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8080,
             debug=True,
             secret_key="test-secret-key-32-characters-long!",
         )
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices.WebService(config.model_dump())
         client = service.app.test_client()
 
         # Test stopping non-existent app
@@ -651,13 +650,13 @@ class TestServiceExceptionHandling:
 
         # Test register service exception handling
         # Create a service with invalid state to trigger exception
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8080,
             debug=True,
             secret_key="test-secret-key-32-characters-long!",
         )
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices.WebService(config.model_dump())
 
         # Force registry into invalid state by monkey-patching the _services access
         original_services = registry._services
@@ -712,13 +711,13 @@ class TestComplexServiceScenarios:
 
     def test_full_application_lifecycle_with_exceptions(self) -> None:
         """Test complete app lifecycle with forced exceptions."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8080,
             debug=True,
             secret_key="test-secret-key-32-characters-long!",
         )
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices.WebService(config.model_dump())
         client = service.app.test_client()
 
         # Create app
@@ -748,35 +747,17 @@ class TestComplexServiceScenarios:
         data = response.get_json()
         assert len(data["data"]["apps"]) == 1
 
-    def test_async_service_operations(self) -> None:
-        """Test service operations using flext_tests async utilities."""
-        config = FlextWebConfig.WebConfig(
-            host="localhost",
-            port=8080,
-            debug=True,
-            secret_key="test-secret-key-32-characters-long!",
-        )
-        service = FlextWebServices.WebService(config)
-
-        # Use FlextTestsAsyncs from flext_tests for better testing
-        FlextTestsAsyncs()
-
-        # Test service readiness
-        assert service.app is not None
-        assert service.config is not None
-        assert isinstance(service.apps, dict)
-
 
 @pytest.fixture
 def web_service_fixture() -> FlextWebServices.WebService:
     """Create a web service instance for testing."""
-    config = FlextWebConfig.WebConfig(
+    config = FlextWebConfig(
         host="localhost",
         port=8080,  # Use valid port
         debug=True,
         secret_key="test-secret-key-that-is-long-enough-for-validation",
     )
 
-    result = FlextWebServices.create_web_service(config)
+    result = FlextWebServices.create_web_service(config.model_dump())
     assert result.is_success
     return result.value

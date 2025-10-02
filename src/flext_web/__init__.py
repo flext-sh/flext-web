@@ -5,6 +5,7 @@ SPDX-License-Identifier: MIT.
 
 from __future__ import annotations
 
+from flext_web.app import FlextWebApp, create_fastapi_app
 from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.exceptions import FlextWebExceptions
@@ -19,6 +20,7 @@ from flext_web.utilities import FlextWebUtilities
 __version__ = "0.9.0"
 
 __all__ = [
+    "FlextWebApp",
     "FlextWebConfig",
     "FlextWebConstants",
     "FlextWebExceptions",
@@ -29,4 +31,5 @@ __all__ = [
     "FlextWebServices",
     "FlextWebTypes",
     "FlextWebUtilities",
+    "create_fastapi_app",
 ]

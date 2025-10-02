@@ -13,6 +13,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections import UserDict
 from dataclasses import dataclass
 from typing import Literal
 
@@ -45,6 +46,10 @@ class FlextWebTypes(FlextTypes):
             tuple[object, int] | tuple[str, int] | tuple[str, int, dict[str, str]] | str
         )
         type JsonResponse = FlextTypes.Core.JsonObject
+
+        # Response type definitions (class attributes for runtime access)
+        SuccessResponse = dict
+        BaseResponse = dict
 
         # Configuration and settings types (extends flext-core ConfigDict)
         type ExtendedConfigDict = dict[
@@ -184,7 +189,7 @@ class FlextWebTypes(FlextTypes):
     # =========================================================================
 
     @dataclass
-    class AppData:
+    class AppData(UserDict):
         """Application data structure for API responses."""
 
         id: str
@@ -193,6 +198,18 @@ class FlextWebTypes(FlextTypes):
         port: int
         status: str
         is_running: bool
+
+        def __post_init__(self) -> None:
+            """Initialize dict with dataclass fields."""
+            super().__init__(
+                id=self.id,
+                name=self.name,
+                host=self.host,
+                port=self.port,
+                status=self.status,
+                is_running=self.is_running,
+            )
+
         created_at: str | None = None
         updated_at: str | None = None
         description: str | None = None

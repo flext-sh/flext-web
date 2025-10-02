@@ -1098,9 +1098,7 @@ class FlextWebModels(FlextModels):
         Example:
             >>> from flext_web.models import FlextWebModels
             >>> config = FlextWebModels.AppConfig(
-            ...     title="My API",
-            ...     version="1.0.0",
-            ...     description="Enterprise API"
+            ...     title="My API", version="1.0.0", description="Enterprise API"
             ... )
 
         """

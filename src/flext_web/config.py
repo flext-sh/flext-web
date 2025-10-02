@@ -388,25 +388,6 @@ class FlextWebConfig(FlextConfig):
         }
 
     @classmethod
-    def create_for_environment(
-        cls, environment: str, **overrides: object
-    ) -> FlextWebConfig:
-        """Create configuration for specific environment using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(
-            project_name="flext-web", environment=environment, **overrides
-        )
-
-    @classmethod
-    def create_default(cls) -> FlextWebConfig:
-        """Create default configuration instance using enhanced singleton pattern."""
-        return cls.get_or_create_shared_instance(project_name="flext-web")
-
-    @classmethod
-    def get_global_instance(cls) -> FlextWebConfig:
-        """Get the global singleton instance using enhanced FlextConfig pattern."""
-        return cls.get_or_create_shared_instance(project_name="flext-web")
-
-    @classmethod
     def reset_global_instance(cls) -> None:
         """Reset the global FlextWebConfig instance (mainly for testing)."""
         # Use the enhanced FlextConfig reset mechanism

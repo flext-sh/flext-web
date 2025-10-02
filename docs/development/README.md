@@ -244,7 +244,7 @@ pytest tests/test_name.py::test_function --pdb
 # pytest.ini_options in pyproject.toml
 [tool.pytest.ini_options]
 minversion = "8.0"
-asyncio_mode = "auto"
+mode = "auto"
 addopts = ["-ra", "--strict-markers", "--maxfail=1"]
 testpaths = ["tests"]
 markers = [

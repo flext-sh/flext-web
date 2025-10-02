@@ -22,9 +22,9 @@ class TestWebServiceFunctionalExecution:
     """Functional tests for FlextWebServices.WebService using real execution."""
 
     @pytest.fixture
-    def functional_config(self) -> FlextWebConfig.WebConfig:
+    def functional_config(self) -> FlextWebConfig:
         """Create real config for functional tests."""
-        return FlextWebConfig.WebConfig(
+        return FlextWebConfig(
             host="127.0.0.1",
             port=8085,  # Different port to avoid conflicts
             debug=True,
@@ -35,7 +35,7 @@ class TestWebServiceFunctionalExecution:
     @pytest.fixture
     def running_service(
         self,
-        functional_config: FlextWebConfig.WebConfig,
+        functional_config: FlextWebConfig,
     ) -> Generator[FlextWebServices.WebService]:
         """Create service for functional testing using Flask test client."""
         service = FlextWebServices.WebService(functional_config)
@@ -49,7 +49,7 @@ class TestWebServiceFunctionalExecution:
     def test_functional_service_creation_with_flext_tests(self) -> None:
         """Test service creation using standard configuration."""
         # Create config data directly (flext_tests ConfigBuilder may not have all methods)
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="127.0.0.1",
             port=8086,
             debug=True,
@@ -63,8 +63,8 @@ class TestWebServiceFunctionalExecution:
         assert service is not None
         assert hasattr(service, "app")
         assert hasattr(service, "config")
-        assert service.config.host == "127.0.0.1"
-        assert service.config.port == 8086
+        assert service.config["host"] == "127.0.0.1"
+        assert service.config["port"] == 8086
 
     def test_functional_app_creation_lifecycle(
         self,
@@ -194,7 +194,7 @@ class TestWebServiceFunctionalExecution:
         """Test service creation using FlextResult patterns from flext_tests."""
         # Use FlextTestsFactories from flext_tests
         config_result = FlextTestsFactories.ResultFactory.success_result(
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 host="127.0.0.1",
                 port=8087,
                 debug=True,
@@ -205,7 +205,7 @@ class TestWebServiceFunctionalExecution:
 
         assert config_result.success
         config = config_result.value
-        assert isinstance(config, FlextWebConfig.WebConfig)
+        assert isinstance(config, FlextWebConfig)
 
         # Test service creation with the config
         service_result = FlextWebServices.create_web_service(config)
@@ -213,8 +213,8 @@ class TestWebServiceFunctionalExecution:
         service = service_result.value
 
         assert isinstance(service, FlextWebServices.WebService)
-        assert service.config.host == "127.0.0.1"
-        assert service.config.port == 8087
+        assert service.config["host"] == "127.0.0.1"
+        assert service.config["port"] == 8087
 
     def test_functional_web_service_registry_real_execution(self) -> None:
         """Test WebServiceRegistry with real service instances."""
@@ -224,14 +224,14 @@ class TestWebServiceFunctionalExecution:
         registry = registry_result.value
 
         # Create real services
-        config1 = FlextWebConfig.WebConfig(
+        config1 = FlextWebConfig(
             host="127.0.0.1",
             port=8088,
             secret_key="registry-test-1-key-32-characters!",
             app_name="Registry Test 1",
         )
 
-        config2 = FlextWebConfig.WebConfig(
+        config2 = FlextWebConfig(
             host="127.0.0.1",
             port=8089,
             secret_key="registry-test-2-key-32-characters!",

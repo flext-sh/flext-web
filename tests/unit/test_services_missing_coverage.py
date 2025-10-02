@@ -14,9 +14,9 @@ class TestServicesMissingCoverage:
     """Tests para cobrir lacunas específicas em services.py."""
 
     @pytest.fixture
-    def test_config(self) -> FlextWebConfig.WebConfig:
+    def test_config(self) -> FlextWebConfig:
         """Configuração de teste para services."""
-        return FlextWebConfig.WebConfig(
+        return FlextWebConfig(
             host="127.0.0.1",
             port=8500,
             debug=True,
@@ -27,7 +27,7 @@ class TestServicesMissingCoverage:
     @pytest.fixture
     def test_service(
         self,
-        test_config: FlextWebConfig.WebConfig,
+        test_config: FlextWebConfig,
     ) -> FlextWebServices.WebService:
         """Serviço de teste configurado."""
         service = FlextWebServices.WebService(test_config)
@@ -203,7 +203,7 @@ class TestServicesMissingCoverage:
     def test_service_configuration_edge_cases(self) -> None:
         """Testa casos extremos de configuração."""
         # Configuração com valores mínimos
-        minimal_config = FlextWebConfig.WebConfig(
+        minimal_config = FlextWebConfig(
             host="127.0.0.1",
             port=1024,  # Porta mínima
             secret_key="minimal-config-test-32-characters!",
@@ -213,9 +213,9 @@ class TestServicesMissingCoverage:
         )
 
         service = FlextWebServices.WebService(minimal_config)
-        assert service.config.port == 1024
-        assert service.config.max_content_length == 1
-        assert service.config.request_timeout == 1
+        assert service.config["port"] == 1024
+        assert service.config["max_content_length"] == 1
+        assert service.config["request_timeout"] == 1
 
 
 __all__ = [

@@ -47,9 +47,9 @@ def setup_test_environment() -> Generator[None]:
 
 
 @pytest.fixture
-def real_config() -> FlextWebConfig.WebConfig:
+def real_config() -> FlextWebConfig:
     """Create real test configuration."""
-    config_result = FlextWebConfig.create_test_config()
+    config_result = FlextWebConfig.create_web_config()
     assert config_result.is_success, (
         f"Test config creation failed: {config_result.error}"
     )
@@ -58,10 +58,10 @@ def real_config() -> FlextWebConfig.WebConfig:
 
 @pytest.fixture
 def real_service(
-    real_config: FlextWebConfig.WebConfig,
+    real_config: FlextWebConfig,
 ) -> Generator[FlextWebServices.WebService]:
     """Create real FlextWebServices.WebService instance with clean state."""
-    service_result = FlextWebServices.create_web_service(real_config)
+    service_result = FlextWebServices.create_web_service(real_config.dict())
     assert service_result.is_success, f"Service creation failed: {service_result.error}"
     service = service_result.value
     yield service
@@ -70,22 +70,22 @@ def real_service(
 
 
 @pytest.fixture
-def real_app(real_config: FlextWebConfig.WebConfig) -> Flask:
+def real_app(real_config: FlextWebConfig) -> Flask:
     """Create real Flask app."""
-    service_result = FlextWebServices.create_web_service(real_config)
+    service_result = FlextWebServices.create_web_service(real_config.dict())
     assert service_result.is_success, f"Service creation failed: {service_result.error}"
     return service_result.value.app
 
 
 @pytest.fixture
 def running_service(
-    real_config: FlextWebConfig.WebConfig,
+    real_config: FlextWebConfig,
 ) -> Generator[FlextWebServices.WebService]:
     """Start real service in background thread with clean state."""
     # Allocate unique port to avoid conflicts
     test_port = TestPortManager.allocate_port()
 
-    test_config = FlextWebConfig.WebConfig.model_validate(
+    test_config = FlextWebConfig.model_validate(
         {
             "host": real_config.host,
             "port": test_port,
@@ -94,7 +94,7 @@ def running_service(
         },
     )
 
-    service = FlextWebServices.WebService(test_config)
+    service = FlextWebServices.WebService(test_config.dict())
 
     # Start service in background thread
     def run_service() -> None:

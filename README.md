@@ -12,20 +12,60 @@
 
 ### For the FLEXT Ecosystem
 
-flext-web provides web interface patterns and Flask integration for FLEXT ecosystem projects that require web capabilities. Built on flext-core foundation patterns, it offers web-specific domain models, HTTP handling, and application lifecycle management.
+flext-web provides **Web UI/Dashboard layer** for FLEXT ecosystem projects, focusing on Flask-based web interfaces and HTML rendering. It integrates with flext-auth for authentication and flext-api for REST API communication, creating a cohesive web application stack.
 
 ### Key Responsibilities
 
-1. **Web Application Management** - Flask app creation and lifecycle
-2. **HTTP Request/Response Handling** - Structured web request processing
-3. **Web Domain Models** - Web-specific entities and value objects
-4. **Configuration Management** - Web service configuration patterns
+1. **Web UI/Dashboard** - Flask-based web dashboards and HTML rendering
+2. **Session Management** - Flask session handling with secure cookies
+3. **Authentication UI** - Login/logout/registration interfaces using flext-auth
+4. **Frontend for REST APIs** - Uses flext-api client for backend communication
 
-### Integration Points
+### Domain Separation in FLEXT Web Stack
 
+- **flext-web** → Web UI layer (Flask dashboards, HTML rendering, sessions)
+- **flext-api** → HTTP client layer (FlextApiClient for backend communication)
+- **flext-auth** → Authentication layer (JWT, OAuth2, 10 providers + middleware)
 - **flext-core** → Foundation patterns (FlextResult, FlextContainer, FlextModels)
-- **FLEXT projects** → Import web patterns from flext-web
-- **Web frameworks** → Flask integration with Clean Architecture
+
+**Phase 2 Status**: FastAPI application factory (FlextWebApp) migrated to flext-web ✅. Full server implementation (FlextWebServer) pending middleware/plugin migration.
+
+### Integration Points (Phase 1 Complete)
+
+✅ **flext-auth Integration Complete**:
+- JWT-based authentication with 10 provider support
+- WebAuthMiddleware integration for Flask session management
+- Endpoints: `/auth/login`, `/auth/logout`, `/auth/register`
+- User management with FlextResult error handling
+
+✅ **flext-api Integration Complete**:
+- FlextApiClient initialized for backend HTTP communication
+- Methods: `fetch_apps_from_api()`, `create_app_via_api()`, `delete_app_via_api()`
+- Ready for backend integration when service available
+
+✅ **flext-core Foundation**:
+- FlextResult[T] for railway-oriented error handling
+- FlextLogger for structured logging
+- FlextContainer for dependency injection
+- FlextModels.Entity for domain modeling
+
+### Phase 2 Progress: FastAPI Migration
+
+✅ **Phase 2.1 Complete: FastAPI Application Factory**
+- `FlextWebApp` - Enterprise-grade FastAPI application creation (242 lines)
+- `create_fastapi_app()` - Helper function for quick app creation
+- Health check endpoints with /health route
+- OpenAPI documentation support (/docs, /redoc)
+- Middleware support for authentication (flext-auth integration)
+- Exported from flext-web and fully functional
+
+🔄 **Phase 2.2 Pending: FastAPI Server**
+- `FlextWebServer` - Full-featured server with protocol handlers (planned)
+- Requires migration of BaseMiddleware and ProtocolPlugin from flext-api
+- WebSocket, SSE, and GraphQL endpoint support (pending)
+- Server lifecycle management (start/stop/restart) (pending)
+
+**Migration Path**: Applications should use FlextWebApp for FastAPI app creation. The flext-api deprecation warnings already point to flext-web. Full server functionality will be completed in a future phase.
 
 ---
 
@@ -44,7 +84,7 @@ flext-web provides web interface patterns and Flask integration for FLEXT ecosys
 **Current Gaps**:
 
 - Direct Flask imports (architectural violation of FLEXT patterns)
-- Limited async/modern web framework support
+- Limited /modern web framework support
 - Missing flext-cli integration for web commands
 
 ---
@@ -62,22 +102,152 @@ make setup
 python -c "from flext_web import FlextWebServices; print('Import successful')"
 ```
 
-### Basic Usage
+### Basic Usage - Flask Web Service
 
 ```python
-from flext_web import FlextWebServices, FlextWebModels
+from flext_web import FlextWebServices
+from flext_auth import FlextAuth
+from flext_api import FlextApiClient
 
-# Create web service
-service = FlextWebServices()
+# Create Flask web service with integrated auth and API client
+config = {
+    "secret_key": "your-secret-key-min-32-chars-long",
+    "debug_bool": False,
+    "api_base_url": "http://localhost:8000",  # Backend REST API
+    "session_cookie_secure": True,
+    "session_cookie_httponly": True,
+    "session_cookie_samesite": "Lax"
+}
 
-# Available service methods
-methods = [m for m in dir(service) if not m.startswith('_')]
-print(f"Available methods: {methods}")
+# Initialize Flask web service (automatically integrates flext-auth and flext-api)
+web_service = FlextWebServices.WebService(config)
 
-# Create web configuration (when methods are implemented)
-# config = FlextWebModels.WebAppConfig(host="localhost", port=8080)
-# result = service.create_web_application(config)
+# Start Flask application
+web_service.start()
+
+# Available endpoints:
+# - POST /auth/login - User authentication
+# - POST /auth/logout - User logout
+# - POST /auth/register - User registration
+# - GET / - Dashboard (requires authentication)
+# - GET /health - Health check
 ```
+
+### Basic Usage - FastAPI Application
+
+```python
+from flext_web import create_fastapi_app, FlextWebApp
+from flext_web.models import FlextWebModels
+
+# Quick FastAPI app creation
+config = FlextWebModels.AppConfig(
+    title="My Enterprise API",
+    version="1.0.0",
+    description="Enterprise-grade API with FLEXT patterns"
+)
+
+# Create FastAPI application
+result = create_fastapi_app(config)
+if result.is_success:
+    app = result.unwrap()
+    # app is ready to use with uvicorn
+    # uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# With authentication middleware
+from flext_auth import OAuth2AuthProvider, WebAuthMiddleware
+
+auth_provider = OAuth2AuthProvider(
+    client_id="your-client-id",
+    client_secret="your-client-secret",
+    authorization_url="https://auth.example.com/oauth/authorize",
+    token_url="https://auth.example.com/oauth/token"
+)
+auth_middleware = WebAuthMiddleware(provider=auth_provider)
+
+config_with_auth = FlextWebModels.AppConfig(
+    title="Authenticated API",
+    version="1.0.0",
+    middlewares=[auth_middleware]
+)
+app_result = create_fastapi_app(config_with_auth)
+```
+
+### Integration Example: Authentication + API Client
+
+```python
+from flext_web import FlextWebServices
+from flext_auth import FlextAuth
+from flext_api import FlextApiClient
+
+# Create web service with integrated auth and API client
+config = {
+    "secret_key": "your-secret-key-min-32-chars-long",
+    "debug_bool": False,
+    "api_base_url": "http://localhost:8000",
+}
+
+web_service = FlextWebServices.WebService(config)
+
+# Authentication Example (flext-auth integration)
+def login_user(username: str, password: str):
+    """Login using flext-auth JWT authentication."""
+    # POST /auth/login
+    # Body: {"username": "user@example.com", "password": "password123"}
+    # Response: Sets session cookie with JWT token
+    # Handled automatically by FlextWebService with flext-auth
+
+def logout_user():
+    """Logout and clear session."""
+    # POST /auth/logout
+    # Response: Clears session cookie
+    # Handled by FlextWebService
+
+# API Client Example (flext-api integration)
+def fetch_applications():
+    """Fetch applications from backend using FlextApiClient."""
+    apps_result = web_service.fetch_apps_from_api()
+    if apps_result.is_failure:
+        return {"error": apps_result.error}, 500
+
+    return {"apps": apps_result.value}, 200
+
+def create_application(app_data: dict):
+    """Create application via backend API."""
+    result = web_service.create_app_via_api(app_data)
+    if result.is_failure:
+        return {"error": result.error}, 400
+
+    return {"app": result.value}, 201
+
+# Dashboard Example (combined integration)
+def protected_dashboard():
+    """Dashboard showing authentication + API client integration.
+
+    Integration demonstration:
+    - Uses flext-auth for JWT authentication
+    - Uses FlextApiClient for backend communication
+    - FlextResult error handling throughout
+    """
+    # Authentication handled by FlextWebService middleware
+    # API calls available through fetch_apps_from_api() method
+    # Current implementation uses local data, ready for backend
+```
+
+### Available Endpoints
+
+**Authentication Endpoints** (flext-auth):
+- `POST /auth/login` - User login with JWT token generation
+- `POST /auth/logout` - User logout and session clearing
+- `POST /auth/register` - User registration
+
+**Application Endpoints**:
+- `GET /` - Dashboard (requires authentication)
+- `GET /health` - Health check endpoint
+
+**API Client Methods** (flext-api):
+- `fetch_apps_from_api()` - Fetch applications from backend
+- `create_app_via_api(app_data)` - Create application via backend
+- `delete_app_via_api(app_name)` - Delete application via backend
 
 ---
 
@@ -152,7 +322,7 @@ models = FlextWebModels()
 - Complete API methods (create_application, etc.)
 - Flask abstraction layer
 - flext-cli integration
-- Async web framework support research
+- web framework support research
 - Production-ready web patterns
 
 ---

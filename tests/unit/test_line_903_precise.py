@@ -20,7 +20,7 @@ from flext_web import (
 @pytest.fixture
 def real_line_903_service() -> Generator[FlextWebServices.WebService]:
     """Create real running service for line 903 test."""
-    config = FlextWebConfig.WebConfig(
+    config = FlextWebConfig(
         host="localhost",
         port=8099,  # Unique port for line 903 test
         secret_key="line903-test-key-32-characters-long!",

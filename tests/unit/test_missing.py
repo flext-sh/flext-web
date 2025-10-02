@@ -44,7 +44,7 @@ class TestMissingCoverage:
     @pytest.fixture
     def real_missing_service(self) -> Generator[FlextWebServices.WebService]:
         """Create real running service for missing coverage tests."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=8096,  # Unique port for missing coverage tests
             debug=True,
@@ -117,14 +117,14 @@ class TestMissingCoverage:
         """Test configuration validation failure scenarios."""
         # Test invalid port in config
         with pytest.raises(ValueError, match=r"Union[port, range]"):
-            FlextWebConfig.WebConfig(
+            FlextWebConfig(
                 port=70000,
                 secret_key="valid-32-char-key-for-testing-ok!",
             )
 
         # Test invalid secret key length
         with pytest.raises(ValueError, match=r"secret.*Union[key, length]"):
-            FlextWebConfig.WebConfig(secret_key="short")
+            FlextWebConfig(secret_key="short")
 
     def test_service_error_response_creation(
         self,
@@ -193,7 +193,7 @@ class TestMissingCoverage:
 
     def test_service_run_method_error_paths(self) -> None:
         """Test service run method error handling."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             secret_key="test-key-32-characters-long-valid!",
         )
         service = FlextWebServices.WebService(config)
@@ -229,7 +229,7 @@ class TestMissingCoverage:
     ) -> None:
         """Test dashboard rendering with various app states using real HTTP."""
         assert real_missing_service is not None
-        port = real_missing_service.config.port
+        port = real_missing_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Create apps in different states
@@ -253,7 +253,7 @@ class TestMissingCoverage:
 
     def test_service_create_factory_function(self) -> None:
         """Test service creation factory function."""
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             secret_key="test-key-32-characters-long-valid!",
         )
         service_result = FlextWebServices.create_web_service(config)
@@ -270,7 +270,7 @@ class TestMissingCoverage:
         assert service_result.is_success
         service = service_result.value
         assert isinstance(service, FlextWebServices.WebService)
-        assert isinstance(service.config, FlextWebConfig.WebConfig)
+        assert isinstance(service.config, FlextWebConfig)
 
     def test_comprehensive_api_workflow_with_edge_cases(
         self,
@@ -278,7 +278,7 @@ class TestMissingCoverage:
     ) -> None:
         """Test complete API workflow with edge cases using real HTTP."""
         assert real_missing_service is not None
-        port = real_missing_service.config.port
+        port = real_missing_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Test creating app with edge case names

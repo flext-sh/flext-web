@@ -14,9 +14,9 @@ class TestServicesCompleteCoverage:
     """Complete coverage tests for services.py using real execution without mocks."""
 
     @pytest.fixture
-    def test_config(self) -> FlextWebConfig.WebConfig:
+    def test_config(self) -> FlextWebConfig:
         """Configuration for coverage tests."""
-        return FlextWebConfig.WebConfig(
+        return FlextWebConfig(
             host="127.0.0.1",
             port=8900,
             debug=True,
@@ -27,7 +27,7 @@ class TestServicesCompleteCoverage:
     @pytest.fixture
     def test_service(
         self,
-        test_config: FlextWebConfig.WebConfig,
+        test_config: FlextWebConfig,
     ) -> FlextWebServices.WebService:
         """Service instance for coverage tests."""
         service = FlextWebServices.WebService(test_config)
@@ -70,13 +70,13 @@ class TestServicesCompleteCoverage:
         assert result.success
         service = result.value
         assert isinstance(service, FlextWebServices.WebService)
-        assert service.config.host == "localhost"  # Default value
-        assert service.config.port == 8080  # Default value
+        assert service.config['host'] == "localhost"  # Default value
+        assert service.config['port'] == 8080  # Default value
 
     def test_create_web_service_exception_handling(self) -> None:
         """Test exception handling in create_web_service (lines 644-645)."""
         # Test with valid config that should succeed
-        valid_config = FlextWebConfig.WebConfig(
+        valid_config = FlextWebConfig(
             host="127.0.0.1",
             port=8903,
             secret_key="test-exception-handling-32-chars!",
@@ -106,7 +106,7 @@ class TestServicesCompleteCoverage:
         assert list_result.value == []
 
         # Create test service
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="127.0.0.1",
             port=8901,
             secret_key="registry-test-32-character-secret-key!",
@@ -145,7 +145,7 @@ class TestServicesCompleteCoverage:
         registry = registry_result.value
 
         # Create test service
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="127.0.0.1",
             port=8902,
             secret_key="alias-test-32-character-secret-key!",

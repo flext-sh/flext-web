@@ -201,7 +201,7 @@ class ExamplesFullFunctionalityTest:
             assert isinstance(config.port, int), "Docker config port incorreto"
 
             # Test 2: Configuration validation
-            validation_result = config.validate_config()
+            validation_result = config.validate_business_rules()
             if validation_result.success:
                 assert validation_result.success is True
                 assert validation_result.value is not None

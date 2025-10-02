@@ -25,7 +25,6 @@ from flext_web import (
     FlextWebHandlers,
     FlextWebModels,
     FlextWebServices,
-    FlextWebSettings,
 )
 
 
@@ -153,7 +152,7 @@ class TestRealEdgeCases:
     def test_real_config_validation_edge_cases(self) -> None:
         """Test real configuration validation edge cases."""
         # Test production mode with default secret key
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             debug=False,  # Production mode
             secret_key="change-in-production-xxxxxxxxxxxx",  # Default key
         )
@@ -163,7 +162,7 @@ class TestRealEdgeCases:
         assert config.secret_key == "change-in-production-xxxxxxxxxxxx"
 
         # Test valid production config
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             debug=False,
             secret_key="real-production-secret-key-32-chars!",
         )
@@ -212,7 +211,7 @@ class TestRealServiceEdgeCases:
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
 
-        config = FlextWebConfig.WebConfig(
+        config = FlextWebConfig(
             host="localhost",
             port=port,
             debug=True,
@@ -247,7 +246,7 @@ class TestRealServiceEdgeCases:
     ) -> None:
         """Test real API edge cases and error handling using real HTTP."""
         assert real_edge_service is not None
-        port = real_edge_service.config.port
+        port = real_edge_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Test creating app with missing fields
@@ -288,7 +287,7 @@ class TestRealServiceEdgeCases:
     ) -> None:
         """Test real application lifecycle edge cases using real HTTP."""
         assert real_edge_service is not None
-        port = real_edge_service.config.port
+        port = real_edge_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Create valid app
@@ -334,7 +333,7 @@ class TestRealServiceEdgeCases:
     ) -> None:
         """Test real dashboard rendering with various app states using real HTTP."""
         assert real_edge_service is not None
-        port = real_edge_service.config.port
+        port = real_edge_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Create apps in different states
@@ -375,7 +374,7 @@ class TestRealServiceEdgeCases:
     ) -> None:
         """Test real service error response formatting using real HTTP."""
         assert real_edge_service is not None
-        port = real_edge_service.config.port
+        port = real_edge_service.config["port"]
         base_url = f"http://localhost:{port}"
 
         # Test 404 error formatting
@@ -409,35 +408,35 @@ class TestRealConfigurationEdgeCases:
         """Test real configuration field validation."""
         # Test invalid app name
         with pytest.raises(ValidationError):
-            FlextWebConfig.WebConfig(app_name="")
+            FlextWebConfig(app_name="")
 
         # Version field accepts any string (no specific validation)
         # This should work fine
-        config = FlextWebConfig.WebConfig(version="invalid-version")
+        config = FlextWebConfig(version="invalid-version")
         assert config.version == "invalid-version"
 
         # Test invalid host
         with pytest.raises(ValidationError):
-            FlextWebConfig.WebConfig(host="")
+            FlextWebConfig(host="")
 
         # Test invalid port range
         with pytest.raises(ValidationError):
-            FlextWebConfig.WebConfig(port=0)
+            FlextWebConfig(port=0)
 
         with pytest.raises(ValidationError):
-            FlextWebConfig.WebConfig(port=99999)
+            FlextWebConfig(port=99999)
 
         # Test invalid secret key length
         with pytest.raises(ValidationError):
-            FlextWebConfig.WebConfig(secret_key="short")
+            FlextWebConfig(secret_key="short")
 
     @pytest.mark.unit
     def test_real_config_server_url_generation(self) -> None:
         """Test real server URL generation."""
-        config = FlextWebConfig.WebConfig(host="test-host", port=9000)
+        config = FlextWebConfig(host="test-host", port=9000)
         assert config.get_server_url() == "http://test-host:9000"
 
-        config = FlextWebConfig.WebConfig(host="0.0.0.0", port=8080)
+        config = FlextWebConfig(host="0.0.0.0", port=8080)
         # Note: 0.0.0.0 gets converted to 127.0.0.1 for security unless FLEXT_DEVELOPMENT_MODE=true
         assert config.get_server_url() == "http://127.0.0.1:8080"
 
@@ -445,11 +444,11 @@ class TestRealConfigurationEdgeCases:
     def test_real_config_production_detection(self) -> None:
         """Test real production mode detection."""
         # Development mode
-        config = FlextWebConfig.WebConfig(debug=True)
+        config = FlextWebConfig(debug=True)
         assert config.is_production() is False
 
         # Production mode
-        config = FlextWebConfig.WebConfig(debug=False)
+        config = FlextWebConfig(debug=False)
         assert config.is_production() is True
 
 
