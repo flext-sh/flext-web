@@ -33,17 +33,20 @@ flext-web provides **Web UI/Dashboard layer** for FLEXT ecosystem projects, focu
 ### Integration Points (Phase 1 Complete)
 
 ✅ **flext-auth Integration Complete**:
+
 - JWT-based authentication with 10 provider support
 - WebAuthMiddleware integration for Flask session management
 - Endpoints: `/auth/login`, `/auth/logout`, `/auth/register`
 - User management with FlextResult error handling
 
 ✅ **flext-api Integration Complete**:
+
 - FlextApiClient initialized for backend HTTP communication
 - Methods: `fetch_apps_from_api()`, `create_app_via_api()`, `delete_app_via_api()`
 - Ready for backend integration when service available
 
 ✅ **flext-core Foundation**:
+
 - FlextResult[T] for railway-oriented error handling
 - FlextLogger for structured logging
 - FlextContainer for dependency injection
@@ -52,6 +55,7 @@ flext-web provides **Web UI/Dashboard layer** for FLEXT ecosystem projects, focu
 ### Phase 2 Progress: FastAPI Migration
 
 ✅ **Phase 2.1 Complete: FastAPI Application Factory**
+
 - `FlextWebApp` - Enterprise-grade FastAPI application creation (242 lines)
 - `create_fastapi_app()` - Helper function for quick app creation
 - Health check endpoints with /health route
@@ -60,6 +64,7 @@ flext-web provides **Web UI/Dashboard layer** for FLEXT ecosystem projects, focu
 - Exported from flext-web and fully functional
 
 🔄 **Phase 2.2 Pending: FastAPI Server**
+
 - `FlextWebServer` - Full-featured server with protocol handlers (planned)
 - Requires migration of BaseMiddleware and ProtocolPlugin from flext-api
 - WebSocket, SSE, and GraphQL endpoint support (pending)
@@ -236,15 +241,18 @@ def protected_dashboard():
 ### Available Endpoints
 
 **Authentication Endpoints** (flext-auth):
+
 - `POST /auth/login` - User login with JWT token generation
 - `POST /auth/logout` - User logout and session clearing
 - `POST /auth/register` - User registration
 
 **Application Endpoints**:
+
 - `GET /` - Dashboard (requires authentication)
 - `GET /health` - Health check endpoint
 
 **API Client Methods** (flext-api):
+
 - `fetch_apps_from_api()` - Fetch applications from backend
 - `create_app_via_api(app_data)` - Create application via backend
 - `delete_app_via_api(app_name)` - Delete application via backend

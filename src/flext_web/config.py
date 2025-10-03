@@ -469,7 +469,10 @@ class FlextWebConfig(FlextConfig):
                 )
 
             # Port security validation
-            if self.host == "0.0.0.0" and self.port <= FlextWebConstants.WebSpecific.SYSTEM_PORTS_THRESHOLD:  # noqa: S104
+            if (
+                self.host == "0.0.0.0"  # noqa: S104
+                and self.port <= FlextWebConstants.WebSpecific.SYSTEM_PORTS_THRESHOLD
+            ):
                 return FlextResult[None].fail(
                     f"Binding to all interfaces (0.0.0.0) with system port {self.port} is not allowed"
                 )
@@ -487,7 +490,9 @@ class FlextWebConfig(FlextConfig):
         try:
             # Use base FlextConfig validation
             if self.validate_business_rules().is_failure:
-                return FlextResult[FlextTypes.Dict].fail("Configuration validation failed")
+                return FlextResult[FlextTypes.Dict].fail(
+                    "Configuration validation failed"
+                )
 
             # Build configuration using direct attribute access
             web_service_config = {
@@ -533,7 +538,9 @@ class FlextWebConfig(FlextConfig):
             return FlextResult[FlextTypes.Dict].ok(web_service_config)
 
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(f"Failed to build web service config: {e}")
+            return FlextResult[FlextTypes.Dict].fail(
+                f"Failed to build web service config: {e}"
+            )
 
     # Web-specific project identification (extends base project fields)
     project_name: str = Field(
