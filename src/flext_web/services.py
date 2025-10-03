@@ -472,7 +472,7 @@ class FlextWebServices:
             port: int,
             *,
             debug: bool = False,
-            **kwargs: object,
+            **kwargs: object,  # noqa: ARG001 # reserved for future extensions
         ) -> None:
             """Start the web service with specified configuration - implements WebServiceInterface."""
             # kwargs reserved for future extensions
