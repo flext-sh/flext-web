@@ -2,15 +2,14 @@
 
 from __future__ import annotations
 
-from flext_core.metadata import build_metadata_exports
+from importlib.metadata import metadata
+from typing import Final
 
-_metadata = build_metadata_exports(__file__)
+_metadata = metadata("flext-web")
 
-__version__: Final[str] = cast("str", _metadata["__version__"])
-__version_info__: Final[tuple[int | str, ...]] = cast(
-    "tuple[int | str, ...]",
-    _metadata["__version_info__"],
+__version__: Final[str] = _metadata["Version"]
+__version_info__: Final[tuple[int | str, ...]] = tuple(
+    int(part) if part.isdigit() else part for part in __version__.split(".")
 )
 
 __all__ = ["__version__", "__version_info__"]
-from typing import Final

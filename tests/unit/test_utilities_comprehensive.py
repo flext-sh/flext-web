@@ -219,7 +219,7 @@ class TestFlextWebUtilitiesDataSanitization:
 
     def test_sanitize_request_data_empty(self) -> None:
         """Test sanitizing empty data."""
-        data: FlextTypes.Core.Dict = {}
+        data: FlextTypes.Dict = {}
 
         sanitized = FlextWebUtilities.sanitize_request_data(data)
 
@@ -312,7 +312,7 @@ class TestFlextWebUtilitiesFlextResultHandling:
 
     def test_handle_flext_result_success(self) -> None:
         """Test handling successful FlextResult."""
-        success_result = FlextResult[FlextTypes.Core.Headers].ok(
+        success_result = FlextResult[FlextTypes.StringDict].ok(
             {"id": "123", "name": "test"},
         )
 
@@ -423,7 +423,7 @@ class TestFlextWebUtilitiesEdgeCases:
 
     def test_sanitize_request_data_none_values(self) -> None:
         """Test sanitizing request data with None values."""
-        data: FlextTypes.Core.Dict = {"name": None, "port": 8000, "description": None}
+        data: FlextTypes.Dict = {"name": None, "port": 8000, "description": None}
 
         sanitized = FlextWebUtilities.sanitize_request_data(data)
 

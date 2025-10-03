@@ -478,7 +478,7 @@ class TestWebServiceFactoryMethods:
 
     def test_create_web_system_services_with_config(self) -> None:
         """Test creating web system services with config."""
-        config: FlextTypes.Core.Dict = {"environment": "test"}
+        config: FlextTypes.Dict = {"environment": "test"}
 
         result = FlextWebServices.create_web_system_services(config)
 

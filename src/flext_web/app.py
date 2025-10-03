@@ -36,8 +36,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextLogger, FlextResult, FlextService
+try:
+    from fastapi import FastAPI
+except ImportError:
+    FastAPI = None
 
+from flext_core import FlextLogger, FlextResult, FlextService, FlextTypes
 from flext_web.models import FlextWebModels
 
 
@@ -91,9 +95,12 @@ class FlextWebApp(FlextService[object]):
                 FlextResult with FastAPI application or error
 
             """
-            try:
-                from fastapi import FastAPI
+            if FastAPI is None:
+                return FlextResult[object].fail(
+                    "FastAPI is required for FlextWeb application creation"
+                )
 
+            try:
                 app = FastAPI(
                     title=title or "FlextWeb FastAPI",
                     version=version or "1.0.0",
@@ -105,10 +112,6 @@ class FlextWebApp(FlextService[object]):
 
                 return FlextResult[object].ok(app)
 
-            except ImportError as e:
-                return FlextResult[object].fail(
-                    f"FastAPI is required for FlextWeb application creation: {e}"
-                )
             except Exception as e:
                 return FlextResult[object].fail(
                     f"Failed to create FastAPI application: {e}"
@@ -170,7 +173,7 @@ class FlextWebApp(FlextService[object]):
         # Add health check endpoint
         if hasattr(app, "get") and hasattr(app, "add_api_route"):
 
-            def health_check() -> dict[str, str]:
+            def health_check() -> FlextTypes.StringDict:
                 """Health check endpoint."""
                 return {"status": "healthy", "service": "flext-web"}
 

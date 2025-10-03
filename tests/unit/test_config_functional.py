@@ -13,10 +13,10 @@ from pathlib import Path
 
 import pydantic
 import pytest
-
 from flext_tests import (
     FlextTestsBuilders,
 )
+
 from flext_web import FlextWebConfig
 
 

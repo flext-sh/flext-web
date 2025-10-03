@@ -309,16 +309,15 @@ class TestWebConfigAdvanced:
             os.environ["FLEXT_WEB_DEBUG"] = "false"
             os.environ["FLEXT_WEB_SECRET_KEY"] = "env-secret-key-32-characters-long!!"
 
-            # Test real config loading from environment using the settings class
+            # Test real config loading from environment using FlextWebConfig
 
-            settings = FlextWebSettings()
-            config_result = settings.to_config()
+            config_result = FlextWebConfig.create_web_config()
             assert config_result.is_success
             config = config_result.value
 
             assert config.host == "test-host"
             assert config.port == 9000
-            assert config.debug_bool is False
+            assert config.debug is False
             assert config.secret_key == "env-secret-key-32-characters-long!!"
 
         finally:

@@ -16,10 +16,10 @@ from collections.abc import Generator
 
 import pytest
 import requests
-from flext_core import FlextTypes
 from pydantic import ValidationError
 from tests.port_manager import TestPortManager
 
+from flext_core import FlextTypes
 from flext_web import (
     FlextWebConfig,
     FlextWebHandlers,
@@ -182,18 +182,17 @@ class TestRealEdgeCases:
         original_env = dict(os.environ)
 
         try:
-            # Test with invalid port in environment using settings
+            # Test with invalid port in environment using FlextWebConfig
             os.environ["FLEXT_WEB_PORT"] = "invalid"
 
             with pytest.raises((ValueError, Exception)):
-                FlextWebSettings()  # This should raise error with invalid port
+                FlextWebConfig.create_web_config()  # This should raise error with invalid port
 
-            # Test with valid environment using settings
+            # Test with valid environment using FlextWebConfig
             os.environ["FLEXT_WEB_PORT"] = "8085"
             os.environ["FLEXT_WEB_HOST"] = "test-host"
 
-            settings = FlextWebSettings()
-            config_result = settings.to_config()
+            config_result = FlextWebConfig.create_web_config()
             assert config_result.is_success
             config = config_result.value
             assert config.port == 8085
@@ -346,7 +345,7 @@ class TestRealServiceEdgeCases:
             {"name": "dashboard-stopped", "port": 9012, "host": "localhost"},
         ]
 
-        created_apps: FlextTypes.Core.StringList = []
+        created_apps: FlextTypes.StringList = []
         for app_data in apps_data:
             response = requests.post(
                 f"{base_url}/api/v1/apps",

@@ -144,7 +144,7 @@ def invalid_app_data() -> dict[str, str | int]:
 
 # Configuration for real environment tests
 @pytest.fixture
-def production_config() -> FlextTypes.Core.Headers:
+def production_config() -> FlextTypes.StringDict:
     """Production-like configuration for testing."""
     return {
         "FLEXT_WEB_HOST": FlextWebConstants.WebSpecific.ALL_INTERFACES,

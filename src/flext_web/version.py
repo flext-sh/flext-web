@@ -2,25 +2,29 @@
 
 from __future__ import annotations
 
-from typing import Final, cast
+from importlib.metadata import metadata
+from typing import Final
 
-from flext_core.metadata import (
-    FlextProjectVersion,
-    build_metadata_exports,
+_metadata = metadata("flext-web")
+
+__version__: Final[str] = _metadata["Version"]
+__version_info__: Final[tuple[int | str, ...]] = tuple(
+    int(part) if part.isdigit() else part for part in __version__.split(".")
 )
 
-_metadata = build_metadata_exports(__file__)
-globals().update(_metadata)
-_metadata_obj = cast("FlextProjectMetadata", _metadata["__flext_metadata__"])
 
-
-class FlextWebVersion(FlextProjectVersion):
+class FlextWebVersion:
     """Structured metadata for the flext web distribution."""
+
+    def __init__(self, version: str, version_info: tuple[int | str, ...]) -> None:
+        """Initialize version metadata."""
+        self.version = version
+        self.version_info = version_info
 
     @classmethod
     def current(cls) -> FlextWebVersion:
         """Return canonical metadata loaded from pyproject.toml."""
-        return cls.from_metadata(_metadata_obj)
+        return cls(__version__, __version_info__)
 
 
 VERSION: Final[FlextWebVersion] = FlextWebVersion.current()

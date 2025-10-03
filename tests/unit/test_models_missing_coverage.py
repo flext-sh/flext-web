@@ -5,6 +5,7 @@ SPDX-License-Identifier: MIT
 """
 
 from flext_tests import FlextTestsUtilities
+
 from flext_web import FlextWebHandlers, FlextWebModels
 
 

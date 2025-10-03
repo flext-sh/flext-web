@@ -83,7 +83,7 @@ class TestExamplesDeepValidation:
         )
 
         # Test 3: Create application returns expected type
-        create_result: FlextTypes.Core.Dict | None = api_usage.create_application(
+        create_result: FlextTypes.Dict | None = api_usage.create_application(
             "test-app",
             3000,
         )
@@ -91,7 +91,7 @@ class TestExamplesDeepValidation:
         assert create_result is None or isinstance(create_result, dict)
 
         # Test 4: List applications returns expected type
-        apps_result: list[FlextTypes.Core.Dict] | None = api_usage.list_applications()
+        apps_result: list[FlextTypes.Dict] | None = api_usage.list_applications()
         assert isinstance(
             apps_result,
             list,

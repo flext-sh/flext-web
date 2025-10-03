@@ -17,7 +17,7 @@ class FlextWebConstants(FlextConstants):
     """
 
     # Web Server Constants
-    class Web:
+    class WebServer:
         """Web server constants and configuration values."""
 
         DEFAULT_HOST: str = "localhost"

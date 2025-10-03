@@ -28,21 +28,43 @@ class FlextWebExceptions(FlextExceptions):
     class WebError(FlextExceptions.BaseError):
         """Base exception for all FLEXT Web Interface operations.
 
-        Accepts arbitrary keyword details and stores them as context.
+        Accepts arbitrary keyword details and stores them as context using helpers.
         """
 
         @override
         def __init__(
             self,
             message: str,
+            *,
             route: str | None = None,
             **kwargs: object,
         ) -> None:
-            """Initialize web error with context."""
-            context = dict(kwargs)
-            if route is not None:
-                context["route"] = route
-            super().__init__(message, context=context)
+            """Initialize web error with context using helpers.
+
+            Args:
+                message: Error message
+                route: Web route that triggered the error
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with web-specific fields
+            context = self._build_context(
+                base_context,
+                route=route,
+            )
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class WebValidationError(WebError):
         """Web service configuration and input validation errors."""
@@ -51,31 +73,186 @@ class FlextWebExceptions(FlextExceptions):
         def __init__(
             self,
             message: str = "Web validation error",
+            *,
             field: str | None = None,
             value: str | None = None,
+            **kwargs: object,
         ) -> None:
-            """Initialize web validation error with context."""
+            """Initialize web validation error with context using helpers.
+
+            Args:
+                message: Error message
+                field: Field name that failed validation
+                value: Invalid value
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Build full message with field context
             full_message = f"Web validation: {message}"
             if field:
                 full_message += f" (field: {field})"
             if value:
                 full_message += f" [value: {value}]"
-            super().__init__(full_message)
+
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with validation-specific fields
+            context = self._build_context(
+                base_context,
+                field=field,
+                value=value,
+            )
+
+            # Call parent with complete error information
+            super().__init__(
+                full_message,
+                code=error_code or "WEB_VALIDATION_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class WebConfigurationError(WebError):
         """Web service configuration errors."""
 
+        @override
+        def __init__(self, message: str, **kwargs: object) -> None:
+            """Initialize configuration error using helpers.
+
+            Args:
+                message: Error message
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context
+            context = self._build_context(base_context)
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_CONFIG_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class WebConnectionError(WebError):
         """Web service network and connection errors."""
+
+        @override
+        def __init__(self, message: str, **kwargs: object) -> None:
+            """Initialize connection error using helpers.
+
+            Args:
+                message: Error message
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context
+            context = self._build_context(base_context)
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_CONNECTION_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class WebProcessingError(WebError):
         """Web service data processing and business logic errors."""
 
+        @override
+        def __init__(self, message: str, **kwargs: object) -> None:
+            """Initialize processing error using helpers.
+
+            Args:
+                message: Error message
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context
+            context = self._build_context(base_context)
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_PROCESSING_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class WebAuthenticationError(WebError):
         """Web service authentication and authorization errors."""
 
+        @override
+        def __init__(self, message: str, **kwargs: object) -> None:
+            """Initialize authentication error using helpers.
+
+            Args:
+                message: Error message
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context
+            context = self._build_context(base_context)
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_AUTH_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
+
     class WebTimeoutError(WebError):
         """Web service operation timeout errors."""
+
+        @override
+        def __init__(self, message: str, **kwargs: object) -> None:
+            """Initialize timeout error using helpers.
+
+            Args:
+                message: Error message
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context
+            context = self._build_context(base_context)
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_TIMEOUT_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class WebTemplateError(WebError):
         """Web template processing errors."""
@@ -84,11 +261,39 @@ class FlextWebExceptions(FlextExceptions):
         def __init__(
             self,
             message: str = "Web template error",
+            *,
             template_name: str | None = None,
+            **kwargs: object,
         ) -> None:
-            """Initialize web template error."""
-            super().__init__(message)
+            """Initialize web template error using helpers.
+
+            Args:
+                message: Error message
+                template_name: Name of the template that failed
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Store template_name before extracting common kwargs
             self.template_name = template_name
+
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with template-specific fields
+            context = self._build_context(
+                base_context,
+                template_name=template_name,
+            )
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_TEMPLATE_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class WebRoutingError(WebError):
         """Web routing errors."""
@@ -97,14 +302,43 @@ class FlextWebExceptions(FlextExceptions):
         def __init__(
             self,
             message: str = "Web routing error",
+            *,
             endpoint: str | None = None,
             method: str | None = None,
+            **kwargs: object,
         ) -> None:
-            """Initialize web routing error."""
-            super().__init__(message)
-            """Initialize web routing error."""
+            """Initialize web routing error using helpers.
+
+            Args:
+                message: Error message
+                endpoint: Endpoint that failed routing
+                method: HTTP method used
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Store routing-specific attributes before extracting common kwargs
             self.endpoint = endpoint
             self.method = method
+
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with routing-specific fields
+            context = self._build_context(
+                base_context,
+                endpoint=endpoint,
+                method=method,
+            )
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_ROUTING_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class WebSessionError(WebError):
         """Web session management errors."""
@@ -113,11 +347,39 @@ class FlextWebExceptions(FlextExceptions):
         def __init__(
             self,
             message: str = "Web session error",
+            *,
             session_id: str | None = None,
+            **kwargs: object,
         ) -> None:
-            """Initialize web session error."""
-            super().__init__(message)
+            """Initialize web session error using helpers.
+
+            Args:
+                message: Error message
+                session_id: Session identifier
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Store session_id before extracting common kwargs
             self.session_id = session_id
+
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with session-specific fields
+            context = self._build_context(
+                base_context,
+                session_id=session_id,
+            )
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_SESSION_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
     class WebMiddlewareError(WebError):
         """Web middleware processing errors."""
@@ -126,10 +388,36 @@ class FlextWebExceptions(FlextExceptions):
         def __init__(
             self,
             message: str = "Web middleware error",
+            *,
             middleware_name: str | None = None,
+            **kwargs: object,
         ) -> None:
-            """Initialize middleware error."""
-            super().__init__(message, operation=middleware_name)
+            """Initialize middleware error using helpers.
+
+            Args:
+                message: Error message
+                middleware_name: Name of the middleware that failed
+                **kwargs: Additional context (context, correlation_id, error_code)
+
+            """
+            # Extract common parameters using helper
+            base_context, correlation_id, error_code = self._extract_common_kwargs(
+                kwargs
+            )
+
+            # Build context with middleware-specific fields
+            context = self._build_context(
+                base_context,
+                operation=middleware_name,
+            )
+
+            # Call parent with complete error information
+            super().__init__(
+                message,
+                code=error_code or "WEB_MIDDLEWARE_ERROR",
+                context=context,
+                correlation_id=correlation_id,
+            )
 
 
 __all__ = [

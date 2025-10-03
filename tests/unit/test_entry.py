@@ -194,9 +194,8 @@ class TestRealMainEntry:
             # Reset to reload config
             # reset_web_settings()
 
-            # Get configuration using settings (properly loads from environment)
-            settings = FlextWebSettings()
-            config_result = settings.to_config()
+            # Get configuration using FlextWebConfig (properly loads from environment)
+            config_result = FlextWebConfig.create_web_config()
             assert config_result.is_success
             config = config_result.value
             assert config.host == "env-host"

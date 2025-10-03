@@ -16,11 +16,11 @@ import time
 from pathlib import Path
 
 import pytest
-from pydantic import ValidationError
-
 from flext_tests import (
     FlextTestsFactories,
 )
+from pydantic import ValidationError
+
 from flext_web import (
     FlextWebConfig,
     FlextWebHandlers,

@@ -112,35 +112,27 @@ class FlextWebFields(FlextModels):
         @classmethod
         def ok(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 200 OK status field."""
-            return cls(FlextConstants.Http.HTTP_OK, "OK", **kwargs)
+            return cls(FlextConstants.Http.HTTP_OK, **kwargs)
 
         @classmethod
         def created(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 201 Created status field."""
-            return cls(FlextConstants.Http.HTTP_CREATED, "Created", **kwargs)
+            return cls(FlextConstants.Http.HTTP_CREATED, **kwargs)
 
         @classmethod
         def bad_request(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 400 Bad Request status field."""
-            return cls(
-                FlextConstants.Platform.HTTP_STATUS_BAD_REQUEST, "Bad Request", **kwargs
-            )
+            return cls(FlextConstants.Http.HTTP_BAD_REQUEST, **kwargs)
 
         @classmethod
         def not_found(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 404 Not Found status field."""
-            return cls(
-                FlextConstants.Platform.HTTP_STATUS_NOT_FOUND, "Not Found", **kwargs
-            )
+            return cls(FlextConstants.Http.HTTP_NOT_FOUND, **kwargs)
 
         @classmethod
         def server_error(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 500 Internal Server Error status field."""
-            return cls(
-                FlextConstants.Platform.HTTP_STATUS_INTERNAL_ERROR,
-                "Internal Server Error",
-                **kwargs,
-            )
+            return cls(FlextConstants.Http.HTTP_INTERNAL_SERVER_ERROR, **kwargs)
 
     # =========================================================================
     # WEB-SPECIFIC FIELD METHODS
@@ -148,7 +140,7 @@ class FlextWebFields(FlextModels):
 
     @classmethod
     def host_field(
-        cls, default: str = FlextWebConstants.Web.DEFAULT_HOST, **kwargs: object
+        cls, default: str = FlextWebConstants.WebServer.DEFAULT_HOST, **kwargs: object
     ) -> FieldInfo:
         """Create host address field with MASSIVE FlextUtilities validation.
 
@@ -182,7 +174,7 @@ class FlextWebFields(FlextModels):
     @classmethod
     def port_field(
         cls,
-        default: int = FlextWebConstants.Web.DEFAULT_PORT,
+        default: int = FlextWebConstants.WebServer.DEFAULT_PORT,
         **kwargs: object,
     ) -> FieldInfo:
         """Create port number field with validation.
@@ -198,8 +190,8 @@ class FlextWebFields(FlextModels):
         field_kwargs = dict(kwargs)
         field_kwargs.setdefault("default", default)
         field_kwargs.setdefault("description", "Port number (1-65535)")
-        field_kwargs.setdefault("ge", FlextWebConstants.Web.MIN_PORT)
-        field_kwargs.setdefault("le", FlextWebConstants.Web.MAX_PORT)
+        field_kwargs.setdefault("ge", FlextWebConstants.WebServer.MIN_PORT)
+        field_kwargs.setdefault("le", FlextWebConstants.WebServer.MAX_PORT)
 
         # Simplified Field creation for port field
         field_description = kwargs.get("description", "Port field")
@@ -209,16 +201,16 @@ class FlextWebFields(FlextModels):
                 Field(
                     default=default,
                     description=field_description,
-                    ge=FlextWebConstants.Web.MIN_PORT,
-                    le=FlextWebConstants.Web.MAX_PORT,
+                    ge=FlextWebConstants.WebServer.MIN_PORT,
+                    le=FlextWebConstants.WebServer.MAX_PORT,
                 ),
             )
         return cast(
             "FieldInfo",
             Field(
                 default=default,
-                ge=FlextWebConstants.Web.MIN_PORT,
-                le=FlextWebConstants.Web.MAX_PORT,
+                ge=FlextWebConstants.WebServer.MIN_PORT,
+                le=FlextWebConstants.WebServer.MAX_PORT,
             ),
         )
 
@@ -257,18 +249,26 @@ class FlextWebFields(FlextModels):
         # MASSIVE USAGE: FlextUtilities.TextProcessor.safe_string for description
         safe_description = FlextUtilities.TextProcessor.safe_string("Application name")
         field_kwargs.setdefault("description", safe_description)
-        field_kwargs.setdefault("min_length", FlextWebConstants.Web.MIN_APP_NAME_LENGTH)
-        field_kwargs.setdefault("max_length", FlextWebConstants.Web.MAX_APP_NAME_LENGTH)
+        field_kwargs.setdefault(
+            "min_length", FlextWebConstants.WebServer.MIN_APP_NAME_LENGTH
+        )
+        field_kwargs.setdefault(
+            "max_length", FlextWebConstants.WebServer.MAX_APP_NAME_LENGTH
+        )
 
         # Field creation with constraints for app name field
         field_description = field_kwargs.get("description", "Application name field")
         min_len = cast(
             "int",
-            field_kwargs.get("min_length", FlextWebConstants.Web.MIN_APP_NAME_LENGTH),
+            field_kwargs.get(
+                "min_length", FlextWebConstants.WebServer.MIN_APP_NAME_LENGTH
+            ),
         )
         max_len = cast(
             "int",
-            field_kwargs.get("max_length", FlextWebConstants.Web.MAX_APP_NAME_LENGTH),
+            field_kwargs.get(
+                "max_length", FlextWebConstants.WebServer.MAX_APP_NAME_LENGTH
+            ),
         )
 
         if isinstance(field_description, str):

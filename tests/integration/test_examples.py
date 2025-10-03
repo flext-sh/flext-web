@@ -11,9 +11,9 @@ import time
 from pathlib import Path
 
 import requests
+from flext_tests import FlextTestDocker
 
 from flext_core import FlextLogger
-from flext_tests import FlextTestDocker
 
 # Configure logging
 logger = FlextLogger(__name__)

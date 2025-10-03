@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 import math
 
 from flext_tests import FlextTestsUtilities
+
 from flext_web import FlextWebTypes
 
 

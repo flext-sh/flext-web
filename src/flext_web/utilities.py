@@ -77,7 +77,11 @@ class FlextWebUtilities(FlextUtilities):
             bool: Description of return value.
 
         """
-        return FlextWebConstants.Web.MIN_PORT <= port <= FlextWebConstants.Web.MAX_PORT
+        return (
+            FlextWebConstants.WebServer.MIN_PORT
+            <= port
+            <= FlextWebConstants.WebServer.MAX_PORT
+        )
 
     @staticmethod
     def validate_url(url: str) -> bool:

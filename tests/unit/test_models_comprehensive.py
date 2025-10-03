@@ -313,7 +313,7 @@ class TestFlextWebModelsFactoryMethods:
         """Test web app creation handles exceptions."""
         # Use FlextWebTypes validation method instead of direct create_web_app
         # Pass data that might cause unexpected errors
-        malformed_data: FlextTypes.Core.Dict = {
+        malformed_data: FlextTypes.Dict = {
             "id": "app_test",
             "name": "test-app",
             "host": "localhost",

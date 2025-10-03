@@ -11,10 +11,10 @@ SPDX-License-Identifier: MIT
 from collections.abc import Generator
 
 import pytest
-
 from flext_tests import (
     FlextTestsFactories,
 )
+
 from flext_web import FlextWebConfig, FlextWebServices
 
 

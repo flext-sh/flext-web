@@ -27,8 +27,8 @@ def test_line_114_debug_flag_direct() -> None:
 
 
 def _run(
-    cmd: FlextTypes.Core.StringList,
-    env: FlextTypes.Core.Headers | None = None,
+    cmd: FlextTypes.StringList,
+    env: FlextTypes.StringDict | None = None,
 ) -> tuple[int, str, str]:
     """Helper to run a command synchronously and return (rc, stdout, stderr)."""
     try:

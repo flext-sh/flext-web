@@ -165,8 +165,8 @@ class FlextWebHandlers(FlextProcessors):
         def create(
             self,
             name: str,
-            port: int = FlextWebConstants.Web.DEFAULT_PORT,
-            host: str = FlextWebConstants.Web.DEFAULT_HOST,
+            port: int = FlextWebConstants.WebServer.DEFAULT_PORT,
+            host: str = FlextWebConstants.WebServer.DEFAULT_HOST,
         ) -> FlextResult[FlextWebModels.WebApp]:
             """Create new web application with comprehensive validation.
 
@@ -224,20 +224,20 @@ class FlextWebHandlers(FlextProcessors):
             self,
             name: str,
             host: str,
-        ) -> FlextResult[FlextTypes.Core.Headers]:
+        ) -> FlextResult[FlextTypes.StringDict]:
             """Sanitize inputs using MASSIVE FlextUtilities delegation."""
             try:
                 safe_name = FlextUtilities.TextProcessor.safe_string(name)
                 safe_host = FlextUtilities.TextProcessor.safe_string(host)
 
-                return FlextResult[FlextTypes.Core.Headers].ok(
+                return FlextResult[FlextTypes.StringDict].ok(
                     {
                         "name": safe_name,
                         "host": safe_host,
                     },
                 )
             except Exception as e:
-                return FlextResult[FlextTypes.Core.Headers].fail(
+                return FlextResult[FlextTypes.StringDict].fail(
                     f"Input sanitization failed: {e}",
                 )
 
@@ -246,9 +246,9 @@ class FlextWebHandlers(FlextProcessors):
             name: str,
             port: int,
             host: str,
-        ) -> FlextResult[FlextTypes.Core.Headers]:
+        ) -> FlextResult[FlextTypes.StringDict]:
             """Validate all app inputs - simplified to rely on Pydantic model validation."""
-            return FlextResult[FlextTypes.Core.Headers].ok(
+            return FlextResult[FlextTypes.StringDict].ok(
                 {
                     "name": name,
                     "port": str(port),
@@ -467,7 +467,7 @@ class FlextWebHandlers(FlextProcessors):
 
         def format_success(
             self,
-            data: dict[str, object],
+            data: FlextTypes.Dict,
             message: str = "Success",
             status_code: int = 200,
         ) -> FlextWebTypes.Core.WebResponse:
@@ -513,7 +513,7 @@ class FlextWebHandlers(FlextProcessors):
 
         def create_success_response(
             self,
-            data: FlextTypes.Core.Dict | FlextTypes.Core.List | None = None,
+            data: FlextTypes.Dict | FlextTypes.List | None = None,
             message: str = "Success",
             status_code: int | None = None,
         ) -> ResponseReturnValue:
@@ -530,7 +530,7 @@ class FlextWebHandlers(FlextProcessors):
             """
             # Convert data to dict if needed for protocol compliance
             if data is None:
-                formatted_data = {}
+                formatted_data: FlextTypes.Dict = {}
             elif isinstance(data, list):
                 formatted_data = {"items": data}
             else:
@@ -546,7 +546,7 @@ class FlextWebHandlers(FlextProcessors):
             self,
             message: str,
             status_code: int | None = None,
-            errors: str | FlextTypes.Core.Dict | None = None,
+            errors: str | FlextTypes.Dict | None = None,
         ) -> ResponseReturnValue:
             """Create error JSON response using protocol method.
 
@@ -592,7 +592,7 @@ class FlextWebHandlers(FlextProcessors):
             if result.is_success:
                 result_data = result.value
                 if isinstance(result_data, (dict, list)):
-                    data = (
+                    data: FlextTypes.Dict = (
                         result_data
                         if isinstance(result_data, dict)
                         else {"items": result_data}
@@ -612,14 +612,14 @@ class FlextWebHandlers(FlextProcessors):
     # =========================================================================
 
     @staticmethod
-    def handle_health_check() -> FlextResult[FlextTypes.Core.Dict]:
+    def handle_health_check() -> FlextResult[FlextTypes.Dict]:
         """Handle health check requests with system status.
 
         Returns:
             FlextResult containing health status information.
 
         """
-        return FlextResult[FlextTypes.Core.Dict].ok(
+        return FlextResult[FlextTypes.Dict].ok(
             {
                 "status": "healthy",
                 "service": "flext - web",
@@ -634,14 +634,14 @@ class FlextWebHandlers(FlextProcessors):
         )
 
     @classmethod
-    def handle_system_info(cls: object) -> FlextResult[FlextTypes.Core.Dict]:
+    def handle_system_info(cls: object) -> FlextResult[FlextTypes.Dict]:
         """Handle system information requests.
 
         Returns:
             FlextResult containing detailed system information.
 
         """
-        return FlextResult[FlextTypes.Core.Dict].ok(
+        return FlextResult[FlextTypes.Dict].ok(
             {
                 "service_name": "FLEXT Web Interface",
                 "service_type": "web_api",
@@ -669,8 +669,8 @@ class FlextWebHandlers(FlextProcessors):
     def handle_create_app(
         cls,
         name: str,
-        port: int = FlextWebConstants.Web.DEFAULT_PORT,
-        host: str = FlextWebConstants.Web.DEFAULT_HOST,
+        port: int = FlextWebConstants.WebServer.DEFAULT_PORT,
+        host: str = FlextWebConstants.WebServer.DEFAULT_HOST,
     ) -> FlextResult[FlextWebModels.WebApp]:
         """Handle application creation requests.
 
@@ -776,7 +776,7 @@ class FlextWebHandlers(FlextProcessors):
             name=app.name,
             host=app.host,
             port=app.port,
-            status=app.status.value,
+            status=app.status,
             is_running=bool(app.is_running),
         )
 

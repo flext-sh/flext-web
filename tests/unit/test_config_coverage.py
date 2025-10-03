@@ -9,7 +9,6 @@ from __future__ import annotations
 import os
 
 from flext_core import FlextTypes
-
 from flext_web import FlextWebConfig
 
 
@@ -83,10 +82,9 @@ class TestConfigFactoryMethods:
         os.environ["FLEXT_WEB_DEBUG"] = "false"
 
         try:
-            # Use settings to properly read environment variables
+            # Use FlextWebConfig to properly read environment variables
 
-            settings = FlextWebSettings()
-            result = settings.to_config()
+            result = FlextWebConfig.create_web_config()
 
             assert result.is_success, (
                 f"Config from env should succeed, got: {result.error}"
@@ -189,7 +187,7 @@ class TestConfigSystemMethods:
 
     def test_configure_web_configs_system_invalid_environment(self) -> None:
         """Test configure_web_configs_system with invalid environment."""
-        config_data: FlextTypes.Core.Dict = {"environment": "invalid-environment"}
+        config_data: FlextTypes.Dict = {"environment": "invalid-environment"}
 
         result = FlextWebConfig.configure_web_configs_system(config_data)
 
