@@ -162,7 +162,7 @@ class FlextWebServices:
                     id="mock_user",
                     username="mock@example.com",
                     email="mock@example.com",
-                    hashed_password="mock_hash",
+                    hashed_password="mock_hash",  # noqa: S106
                 )
                 return FlextResult[FlextAuthModels.User].ok(user)
 

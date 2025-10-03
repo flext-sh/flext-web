@@ -36,14 +36,20 @@ class FlextWebConfig(FlextConfig):
     - Protocol implementations for web service configuration
     """
 
-    # Extend base model_config with web-specific overrides
+    # Web-specific model configuration extending FlextConfig
     model_config = SettingsConfigDict(
-        # Inherit ALL FlextConfig features
-        **FlextConfig.model_config,
-        # Web-specific overrides
-        env_prefix="FLEXT_WEB_",  # Override env prefix for web
+        env_prefix="FLEXT_WEB_",  # Web-specific environment prefix
         extra="allow",  # Allow extra web-specific fields
-        # Enhanced schema metadata for web context
+        # Enhanced Pydantic 2.11+ features inherited from FlextConfig
+        validate_assignment=True,
+        str_strip_whitespace=True,
+        arbitrary_types_allowed=True,
+        validate_return=True,
+        cli_parse_args=False,
+        cli_avoid_json=True,
+        enable_decoding=True,
+        nested_model_default_partial_update=True,
+        # Web-specific schema metadata
         json_schema_extra={
             "title": "FLEXT Web Configuration",
             "description": "Enterprise web service configuration with FlextConfig 2.11+ features",
@@ -463,7 +469,7 @@ class FlextWebConfig(FlextConfig):
                 )
 
             # Port security validation
-            if self.host == "0.0.0.0" and self.port <= FlextWebConstants.WebSpecific.SYSTEM_PORTS_THRESHOLD:
+            if self.host == "0.0.0.0" and self.port <= FlextWebConstants.WebSpecific.SYSTEM_PORTS_THRESHOLD:  # noqa: S104
                 return FlextResult[None].fail(
                     f"Binding to all interfaces (0.0.0.0) with system port {self.port} is not allowed"
                 )

@@ -67,7 +67,7 @@ class TestWebApp:
         # Empty name should fail at construction time with Pydantic validation
         with pytest.raises(
             ValidationError,
-            match="String should have at least 1 character",
+            match="String should have at least 3 characters",
         ):
             FlextWebModels.WebApp(id="app_test-app", name="", port=8080)
 

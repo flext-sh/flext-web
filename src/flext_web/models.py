@@ -298,7 +298,7 @@ class FlextWebModels(FlextModels):
             """Model validator for web application configuration consistency."""
             # Validate port and host combination
             if (
-                self.host in {"0.0.0.0", "::"}
+                self.host in {"0.0.0.0", "::"}  # noqa: S104
                 and self.port <= FlextWebConstants.WebSpecific.PRIVILEGED_PORTS_MAX
             ):
                 if self.environment == "development":
