@@ -37,13 +37,15 @@ class FlextWebServices(FlextService[FlextWebConfig]):
     web interface patterns for the FLEXT ecosystem.
     """
 
+    # Backward compatibility: Nested WebService class (alias to main class)
+    WebService = FlextWebServices
+
     def __init__(
-        self, config: FlextWebTypes.Core.WebConfigDict | FlextWebConfig | None = None
+        self,
+        config: FlextWebTypes.Core.WebConfigDict | FlextWebConfig | None = None,
+        **data: object,
     ) -> None:
         """Initialize unified web service with flext-core integration."""
-        # Initialize flext-core service base
-        super().__init__(config or FlextWebConfig())
-
         # Convert config to FlextWebConfig if needed
         if isinstance(config, FlextWebConfig):
             self._config = config
@@ -51,6 +53,9 @@ class FlextWebServices(FlextService[FlextWebConfig]):
             self._config = FlextWebConfig(**config)
         else:
             self._config = FlextWebConfig()
+
+        # Initialize flext-core service base with remaining data
+        super().__init__(**data)
 
         # Flext-core integration
         self._container = FlextContainer.get_global()
@@ -76,6 +81,16 @@ class FlextWebServices(FlextService[FlextWebConfig]):
 
         self._logger.info("FlextWebServices initialized successfully")
 
+    def execute(self) -> FlextResult[FlextWebConfig]:
+        """Execute the web service operation (required by FlextService)."""
+        try:
+            self.run()
+            return FlextResult[FlextWebConfig].ok(self._config)
+        except Exception as e:
+            return FlextResult[FlextWebConfig].fail(
+                f"Failed to execute web service: {e}"
+            )
+
     @property
     def auth(self) -> FlextAuthQuickstart:
         """Lazy initialization of authentication service."""
@@ -97,21 +112,30 @@ class FlextWebServices(FlextService[FlextWebConfig]):
 
             def authenticate_user(
                 self, username: str, password: str
-            ) -> FlextResult[object]:
-                return FlextResult[object].ok({
-                    "user_id": "mock_user",
-                    "username": username,
-                })
+            ) -> FlextResult[FlextAuthModels.AuthToken]:
+                # Mock authentication - password is ignored for testing
+                _ = password  # Acknowledge parameter
+                # Create a mock auth token
+                from flext_auth.models import AuthToken
+                token = AuthToken(
+                    token="mock-jwt-token",
+                    user_id="mock_user",
+                    expires_at=FlextUtilities.Generators.generate_iso_timestamp(),
+                    token_type="bearer"
+                )
+                return FlextResult[FlextAuthModels.AuthToken].ok(token)
 
             def validate_token(self, token: str) -> FlextResult[FlextAuthModels.User]:  # noqa: ARG002
                 user = FlextAuthModels.User(
                     id="mock_user",
+                    user_id="mock_user",
                     username="mock@example.com",
                     email="mock@example.com",
-                    hashed_password="mock_hash",  # noqa: S106  # Mock password for testing
+                    password_hash="mock_hash",  # noqa: S106  # Mock password for testing
                     full_name="Mock User",
-                    failed_login_attempts=0,
-                    locked_until=None,
+                    is_active=True,
+                    roles=[],
+                    last_login=None,
                     created_at=FlextUtilities.Generators.generate_iso_timestamp(),
                     updated_at=FlextUtilities.Generators.generate_iso_timestamp(),
                 )
@@ -175,11 +199,8 @@ class FlextWebServices(FlextService[FlextWebConfig]):
                 }), 401
 
             auth_token = auth_result.value
-            token_result = self.auth.generate_jwt_token(user_id=auth_token.user_id)
-            if token_result.is_failure:
-                return jsonify({"error": "Token generation failed"}), 500
-
-            token = token_result.value.token
+            # The auth_token already contains the JWT token
+            token = auth_token.token
             response = jsonify({"success": True, "message": "Login successful"})
             response.set_cookie(
                 "session_token", token, httponly=True, secure=False, samesite="Lax"
@@ -413,6 +434,10 @@ class FlextWebServices(FlextService[FlextWebConfig]):
             )
 
 
+# Backward compatibility alias for the old nested class structure
+WebService = FlextWebServices
+
 __all__ = [
     "FlextWebServices",
+    "WebService",  # Backward compatibility
 ]
