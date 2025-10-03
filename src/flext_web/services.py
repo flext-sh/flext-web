@@ -11,6 +11,7 @@ from flask.typing import ResponseReturnValue
 from flext_api import FlextApiClient
 from flext_auth import FlextAuthModels
 from flext_auth.api import FlextAuthQuickstart
+from flext_auth.models import AuthToken
 
 from flext_core import (
     FlextConstants,
@@ -116,12 +117,11 @@ class FlextWebServices(FlextService[FlextWebConfig]):
                 # Mock authentication - password is ignored for testing
                 _ = password  # Acknowledge parameter
                 # Create a mock auth token
-                from flext_auth.models import AuthToken
                 token = AuthToken(
-                    token="mock-jwt-token",
-                    user_id="mock_user",
+                    token=FlextConstants.Security.MOCK_JWT_TOKEN,
+                    user_id=FlextConstants.Security.MOCK_USER_ID,
                     expires_at=FlextUtilities.Generators.generate_iso_timestamp(),
-                    token_type="bearer"
+                    token_type=FlextConstants.Security.BEARER_TOKEN_TYPE
                 )
                 return FlextResult[FlextAuthModels.AuthToken].ok(token)
 
@@ -434,10 +434,10 @@ class FlextWebServices(FlextService[FlextWebConfig]):
             )
 
 
-# Backward compatibility alias for the old nested class structure
+# Type alias for backward compatibility
 WebService = FlextWebServices
 
 __all__ = [
     "FlextWebServices",
-    "WebService",  # Backward compatibility
+    "WebService",  # Backward compatibility alias
 ]

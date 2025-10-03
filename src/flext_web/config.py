@@ -416,6 +416,47 @@ class FlextWebConfig(FlextConfig):
         except Exception as e:
             return FlextResult[FlextWebConfig].fail(f"Failed to create web config: {e}")
 
+    @classmethod
+    def create_development_config(cls) -> FlextResult[FlextWebConfig]:
+        """Create development-optimized web configuration."""
+        try:
+            config = cls(
+                debug=True,
+                development_mode=True,
+                web_environment="development",
+                host=FlextWebConstants.WebServer.DEFAULT_HOST,
+                port=FlextWebConstants.WebServer.DEFAULT_PORT,
+                secret_key=SecretStr(FlextWebConstants.WebSpecific.DEV_SECRET_KEY),
+            )
+            return FlextResult[FlextWebConfig].ok(config)
+        except Exception as e:
+            return FlextResult[FlextWebConfig].fail(f"Failed to create development config: {e}")
+
+    @classmethod
+    def create_for_environment(cls, environment: str) -> FlextWebConfig:
+        """Create web configuration optimized for specific environment."""
+        if environment == "development":
+            result = cls.create_development_config()
+            if result.is_failure:
+                error_msg = f"Failed to create development config: {result.error}"
+                raise ValueError(error_msg)
+            return result.unwrap()
+        if environment == "production":
+            # Production config with security defaults
+            return cls(
+                debug=False,
+                development_mode=False,
+                web_environment="production",
+                host=FlextWebConstants.WebSpecific.ALL_INTERFACES,
+                port=FlextWebConstants.WebServer.DEFAULT_PORT,
+                ssl_enabled=True,
+                session_cookie_secure=True,
+                enable_cors=False,
+                secret_key=SecretStr(FlextWebConstants.WebSpecific.DEV_SECRET_KEY),  # Should be overridden
+            )
+        # Default config
+        return cls()
+
     # Business rules validation
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate web configuration business rules using FlextConfig protocol.
