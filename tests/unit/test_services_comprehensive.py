@@ -11,8 +11,8 @@ from collections import UserDict
 from typing import Never
 
 import pytest
-
 from flext_core import FlextConstants, FlextResult, FlextTypes
+
 from flext_web import FlextWebConfig, FlextWebModels, FlextWebServices
 
 

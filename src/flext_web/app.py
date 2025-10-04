@@ -42,6 +42,7 @@ except ImportError:
     FastAPI = None
 
 from flext_core import FlextLogger, FlextResult, FlextService, FlextTypes
+
 from flext_web.models import FlextWebModels
 
 

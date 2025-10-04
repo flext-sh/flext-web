@@ -17,9 +17,9 @@ from collections.abc import Generator
 
 import pytest
 import requests
+from flext_core import FlextConstants
 from tests.port_manager import TestPortManager
 
-from flext_core import FlextConstants
 from flext_web import (
     FlextWebConfig,
     FlextWebServices,
@@ -35,7 +35,7 @@ class TestWebInterface:
     """
 
     @pytest.fixture
-    def real_web_service(self) -> Generator[FlextWebServices.WebService]:
+    def real_web_service(self) -> Generator[FlextWebServices]:
         """Create real running web service for dashboard testing."""
         # Allocate unique port to avoid conflicts
         port = TestPortManager.allocate_port()
@@ -45,7 +45,7 @@ class TestWebInterface:
             debug=True,
             secret_key="web-test-secret-key-32-characters-long!",
         )
-        service = FlextWebServices.WebService(config)
+        service = FlextWebServices(config)
 
         def run_service() -> None:
             service.app.run(
@@ -88,7 +88,7 @@ class TestWebInterface:
 
     def test_dashboard_route(
         self,
-        real_web_service: FlextWebServices.WebService,
+        real_web_service: FlextWebServices,
     ) -> None:
         """Test dashboard route using real HTTP requests."""
         assert real_web_service is not None

@@ -13,6 +13,12 @@ from enum import Enum
 from pathlib import Path
 from typing import Self, override
 
+from flext_core import (
+    FlextConstants,
+    FlextModels,
+    FlextResult,
+    FlextTypes,
+)
 from pydantic import (
     ConfigDict,
     Field,
@@ -23,12 +29,6 @@ from pydantic import (
     model_validator,
 )
 
-from flext_core import (
-    FlextConstants,
-    FlextModels,
-    FlextResult,
-    FlextTypes,
-)
 from flext_web.constants import FlextWebConstants
 from flext_web.typings import FlextWebTypes
 
@@ -298,7 +298,7 @@ class FlextWebModels(FlextModels):
             """Model validator for web application configuration consistency."""
             # Validate port and host combination
             if (
-                self.host in {"0.0.0.0", "::"}  # noqa: S104
+                self.host in {"0.0.0.0", "::"}
                 and self.port <= FlextWebConstants.WebSpecific.PRIVILEGED_PORTS_MAX
             ):
                 if self.environment == "development":

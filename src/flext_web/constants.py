@@ -43,10 +43,14 @@ class FlextWebConstants(FlextConstants):
     class WebSpecific:
         """Web-specific constants for development and security."""
 
+        # Default server configuration
+        DEFAULT_HOST: str = "localhost"
+        DEFAULT_PORT: int = 8080
+
         DEV_SECRET_KEY: str = "dev-secret-key-32-characters-long-for-development"
         DEV_ENVIRONMENT_KEY: str = "dev-environment-key-32-characters-long-for-testing"
         TEST_ENVIRONMENT_KEY: str = "test-environment-key-32-characters-long-for-tests"
-        ALL_INTERFACES: str = "0.0.0.0"  # noqa: S104
+        ALL_INTERFACES: str = "0.0.0.0"
         LOCALHOST_IP: str = "127.0.0.1"
         SYSTEM_PORTS_THRESHOLD: int = 1023
         PRIVILEGED_PORTS_MAX: int = 1023

@@ -12,9 +12,9 @@ from collections.abc import Generator
 
 import pytest
 import requests
+from flext_core import FlextConstants
 from tests.port_manager import TestPortManager
 
-from flext_core import FlextConstants
 from flext_web import FlextWebConfig, FlextWebServices
 
 # Type alias for readability

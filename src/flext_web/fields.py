@@ -9,10 +9,10 @@ from __future__ import annotations
 import re
 from typing import ClassVar, cast, override
 
+from flext_core import FlextConstants, FlextModels, FlextUtilities
 from pydantic import Field
 from pydantic.fields import FieldInfo
 
-from flext_core import FlextConstants, FlextModels, FlextUtilities
 from flext_web.constants import FlextWebConstants
 
 
@@ -110,29 +110,57 @@ class FlextWebFields(FlextModels):
             )
 
         @classmethod
-        def ok(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
+        def ok(
+            cls, description: str | None = None, **field_kwargs: object
+        ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 200 OK status field."""
-            return cls(FlextConstants.Http.HTTP_OK, **kwargs)
+            return cls(
+                FlextConstants.Http.HTTP_OK, description=description, **field_kwargs
+            )
 
         @classmethod
-        def created(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
+        def created(
+            cls, description: str | None = None, **field_kwargs: object
+        ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 201 Created status field."""
-            return cls(FlextConstants.Http.HTTP_CREATED, **kwargs)
+            return cls(
+                FlextConstants.Http.HTTP_CREATED,
+                description=description,
+                **field_kwargs,
+            )
 
         @classmethod
-        def bad_request(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
+        def bad_request(
+            cls, description: str | None = None, **field_kwargs: object
+        ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 400 Bad Request status field."""
-            return cls(FlextConstants.Http.HTTP_BAD_REQUEST, **kwargs)
+            return cls(
+                FlextConstants.Http.HTTP_BAD_REQUEST,
+                description=description,
+                **field_kwargs,
+            )
 
         @classmethod
-        def not_found(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
+        def not_found(
+            cls, description: str | None = None, **field_kwargs: object
+        ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 404 Not Found status field."""
-            return cls(FlextConstants.Http.HTTP_NOT_FOUND, **kwargs)
+            return cls(
+                FlextConstants.Http.HTTP_NOT_FOUND,
+                description=description,
+                **field_kwargs,
+            )
 
         @classmethod
-        def server_error(cls, **kwargs: object) -> FlextWebFields.HTTPStatusField:
+        def server_error(
+            cls, description: str | None = None, **field_kwargs: object
+        ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 500 Internal Server Error status field."""
-            return cls(FlextConstants.Http.HTTP_INTERNAL_SERVER_ERROR, **kwargs)
+            return cls(
+                FlextConstants.Http.HTTP_INTERNAL_SERVER_ERROR,
+                description=description,
+                **field_kwargs,
+            )
 
     # =========================================================================
     # WEB-SPECIFIC FIELD METHODS

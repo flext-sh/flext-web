@@ -10,7 +10,6 @@ from typing import override
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
-
 from flext_core import (
     FlextConstants,
     FlextLogger,
@@ -19,6 +18,7 @@ from flext_core import (
     FlextTypes,
     FlextUtilities,
 )
+
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes

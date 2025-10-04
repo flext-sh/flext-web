@@ -10,6 +10,7 @@ import argparse
 import sys
 
 from flext_core import FlextConstants, FlextLogger
+
 from flext_web.config import FlextWebConfig
 from flext_web.services import FlextWebServices
 
@@ -115,7 +116,7 @@ def main() -> None:
         )
         logger.info("📊 Debug: %s, Production: %s", debug, not config.debug)
 
-        service = FlextWebServices.WebService(config.__dict__)
+        service = FlextWebServices(config=config.__dict__)
         service.run()
     except KeyboardInterrupt:
         logger.info("🛑 Shutting down FlextWeb service")

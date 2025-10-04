@@ -12,9 +12,9 @@ from __future__ import annotations
 import re
 from urllib.parse import urlparse
 
+from flext_core import FlextResult, FlextUtilities, T
 from pydantic import ValidationError
 
-from flext_core import FlextResult, FlextUtilities, T
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes

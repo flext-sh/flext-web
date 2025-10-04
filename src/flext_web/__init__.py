@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from typing import Final
 
+from flext_web.api import FlextWeb
 from flext_web.app import FlextWebApp, create_fastapi_app
 from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
@@ -28,6 +29,7 @@ __version_info__: tuple[int | str, ...] = VERSION.version_info
 __all__ = [
     "PROJECT_VERSION",
     "VERSION",
+    "FlextWeb",
     "FlextWebApp",
     "FlextWebConfig",
     "FlextWebConstants",
