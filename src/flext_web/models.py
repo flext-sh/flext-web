@@ -353,13 +353,13 @@ class FlextWebModels(FlextModels):
             if isinstance(v, str):
                 valid_statuses = [
                     "stopped",
-                "starting",
-                "running",
-                "stopping",
-                "error",
-                "maintenance",
-                "deploying",
-            ]
+                    "starting",
+                    "running",
+                    "stopping",
+                    "error",
+                    "maintenance",
+                    "deploying",
+                ]
             if v not in valid_statuses:
                 msg = f"Invalid status: {v}. Valid statuses: {valid_statuses}"
                 raise ValueError(msg)
