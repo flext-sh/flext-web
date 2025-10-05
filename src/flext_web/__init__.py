@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Final
 
 from flext_web.api import FlextWeb
-from flext_web.app import FlextWebApp, create_fastapi_app
+from flext_web.app import FlextWebApp
 from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.exceptions import FlextWebExceptions
@@ -16,7 +16,7 @@ from flext_web.fields import FlextWebFields
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels
 from flext_web.protocols import FlextWebProtocols
-from flext_web.services import FlextWebServices
+from flext_web.services import FlextWebServices, WebService
 from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
 from flext_web.version import VERSION, FlextWebVersion
@@ -42,7 +42,7 @@ __all__ = [
     "FlextWebTypes",
     "FlextWebUtilities",
     "FlextWebVersion",
+    "WebService",
     "__version__",
     "__version_info__",
-    "create_fastapi_app",
 ]

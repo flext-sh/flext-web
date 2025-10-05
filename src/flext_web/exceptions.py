@@ -31,6 +31,57 @@ class FlextWebExceptions(FlextExceptions):
         Accepts arbitrary keyword details and stores them as context using helpers.
         """
 
+        @staticmethod
+        def _extract_common_kwargs(
+            kwargs: dict[str, object],
+        ) -> tuple[dict[str, object], str | None, str | None]:
+            """Extract common parameters from kwargs.
+
+            Args:
+                kwargs: Keyword arguments
+
+            Returns:
+                Tuple of (base_context, correlation_id, error_code)
+
+            """
+            # Extract known parameters
+            base_context = kwargs.get("context", {})
+            correlation_id = kwargs.get("correlation_id")
+            error_code = kwargs.get("error_code")
+
+            # Remove extracted parameters from kwargs to avoid duplication
+            filtered_kwargs = {
+                k: v
+                for k, v in kwargs.items()
+                if k not in {"context", "correlation_id", "error_code"}
+            }
+
+            # Merge filtered kwargs into base_context if it's a dict
+            if isinstance(base_context, dict):
+                base_context.update(filtered_kwargs)
+            else:
+                base_context = filtered_kwargs
+
+            return base_context, correlation_id, error_code
+
+        @staticmethod
+        def _build_context(
+            base_context: dict[str, object], **additional_fields: object
+        ) -> dict[str, object]:
+            """Build complete context dictionary.
+
+            Args:
+                base_context: Base context dictionary
+                **additional_fields: Additional fields to include
+
+            Returns:
+                Complete context dictionary
+
+            """
+            context = dict(base_context)
+            context.update(additional_fields)
+            return context
+
         @override
         def __init__(
             self,

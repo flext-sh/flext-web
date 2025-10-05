@@ -28,8 +28,6 @@ class FlextWebVersion:
 
 
 VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
-__version__: Final[str] = VERSION.version
-__version_info__: Final[tuple[int | str, ...]] = VERSION.version_info
 
 for _name in tuple(_metadata):
     if _name not in {"__version__", "__version_info__"}:

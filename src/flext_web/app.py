@@ -201,34 +201,6 @@ class FlextWebApp(FlextService[object]):
         return FlextResult[object].ok(app)
 
 
-def create_fastapi_app(config: FlextWebModels.AppConfig) -> FlextResult[object]:
-    """Create FastAPI application (public API function).
-
-    This is the recommended way to create FastAPI applications in the FLEXT
-    ecosystem. It delegates to FlextWebApp.create_fastapi_app() for the
-    actual implementation.
-
-    Args:
-        config: Application configuration
-
-    Returns:
-        FlextResult with FastAPI application or error
-
-    Example:
-        >>> from flext_web import create_fastapi_app
-        >>> from flext_web.models import FlextWebModels
-        >>>
-        >>> config = FlextWebModels.AppConfig(title="My API", version="1.0.0")
-        >>> result = create_fastapi_app(config)
-        >>> if result.is_success:
-        ...     app = result.unwrap()
-        ...     # Use with uvicorn: uvicorn main:app --reload
-
-    """
-    return FlextWebApp.create_fastapi_app(config)
-
-
 __all__ = [
     "FlextWebApp",
-    "create_fastapi_app",
 ]

@@ -190,7 +190,7 @@ class FlextWebTypes(FlextTypes):
     # =========================================================================
 
     @dataclass
-    class AppData(UserDict):
+    class AppData(UserDict[str, object]):
         """Application data structure for API responses."""
 
         id: str

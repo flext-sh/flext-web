@@ -244,7 +244,7 @@ class FlextWebModels(FlextModels):
             le=FlextWebConstants.WebServer.MAX_PORT,
             description="Port number for the web application",
         )
-        status: str = Field(
+        status: WebAppStatus = Field(
             default="stopped",
             description="Current status of the web application",
         )
@@ -259,6 +259,10 @@ class FlextWebModels(FlextModels):
         health_check_url: str | None = Field(
             default=None,
             description="Health check endpoint URL",
+        )
+        debug_mode: bool = Field(
+            default=False,
+            description="Debug mode flag",
         )
         metrics: FlextTypes.Dict = Field(
             default_factory=dict,
@@ -310,7 +314,7 @@ class FlextWebModels(FlextModels):
 
             # Validate environment-specific requirements
             if self.environment == "production":
-                if self.debug_mode if hasattr(self, "debug_mode") else False:
+                if self.debug_mode:
                     msg = "Debug mode must be disabled in production environment"
                     raise ValueError(msg)
 
@@ -339,10 +343,16 @@ class FlextWebModels(FlextModels):
 
         @field_validator("status")
         @classmethod
-        def validate_status(cls, v: str) -> str:
+        def validate_status(cls, v) -> WebAppStatus:
             """Validate status field with enhanced error handling."""
-            valid_statuses = [
-                "stopped",
+            # Handle enum values directly
+            if isinstance(v, WebAppStatus):
+                return v
+
+            # Handle string values
+            if isinstance(v, str):
+                valid_statuses = [
+                    "stopped",
                 "starting",
                 "running",
                 "stopping",

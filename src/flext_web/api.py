@@ -18,7 +18,7 @@ from flext_web.app import FlextWebApp
 from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
-from flext_web.services import FlextWebServices
+from flext_web.services import WebService
 
 
 class FlextWeb(FlextService[object]):
@@ -95,10 +95,10 @@ class FlextWeb(FlextService[object]):
     @classmethod
     def create_web_service(
         cls, config: FlextTypes.Dict | None = None
-    ) -> FlextResult[FlextWebServices]:
+    ) -> FlextResult[WebService]:
         """Create unified web service instance.
 
-        This method creates a FlextWebServices instance with proper
+        This method creates a WebService instance with proper
         flext-core integration and configuration.
 
         Args:
@@ -116,7 +116,7 @@ class FlextWeb(FlextService[object]):
             ...     service.initialize_routes()
 
         """
-        return FlextWebServices.create_web_service(config)
+        return WebService.create_web_service(config)
 
     @staticmethod
     def create_web_config(
@@ -167,8 +167,8 @@ class FlextWeb(FlextService[object]):
 
         # Create config with Pydantic validation - let it raise and catch
         try:
-            config = FlextWebConfig(**config_data)
-            return FlextResult[FlextWebConfig].ok(config)
+            web_config = FlextWebConfig(**config_data)
+            return FlextResult[FlextWebConfig].ok(web_config)
         except Exception as e:
             # Log the error and return failure result
             logger = FlextLogger(__name__)

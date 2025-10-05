@@ -11,7 +11,14 @@ import warnings
 from pathlib import Path
 from typing import Self
 
-from flext_core import FlextConfig, FlextConstants, FlextModels, FlextResult, FlextTypes
+from flext_core import (
+    FlextConfig,
+    FlextConstants,
+    FlextLogger,
+    FlextModels,
+    FlextResult,
+    FlextTypes,
+)
 from pydantic import Field, SecretStr, computed_field, field_validator, model_validator
 from pydantic_settings import SettingsConfigDict
 
@@ -418,7 +425,7 @@ class FlextWebConfig(FlextConfig):
 
         # Create config with Pydantic validation - let exceptions be handled explicitly
         try:
-            config = cls(**overrides)
+            config: FlextWebConfig = cls(**overrides)  # Type annotation for clarity
             return FlextResult[FlextWebConfig].ok(config)
         except Exception as e:
             # Log validation failure and return result
@@ -431,7 +438,7 @@ class FlextWebConfig(FlextConfig):
         """Create development-optimized web configuration."""
         # Create config with predefined development settings - Pydantic handles validation
         try:
-            config = cls(
+            config: FlextWebConfig = cls(
                 debug=True,
                 development_mode=True,
                 web_environment="development",
@@ -461,7 +468,7 @@ class FlextWebConfig(FlextConfig):
             return result.unwrap()
         if environment == "production":
             # Production config with security defaults
-            return cls(
+            config: FlextWebConfig = cls(
                 debug=False,
                 development_mode=False,
                 web_environment="production",
@@ -474,8 +481,13 @@ class FlextWebConfig(FlextConfig):
                     FlextWebConstants.WebSpecific.DEV_SECRET_KEY
                 ),  # Should be overridden
             )
-        # Default config
-        return cls()
+            return config
+        # Default config - use explicit FlextWebConfig parameters
+        default_config: FlextWebConfig = cls(
+            host=FlextWebConstants.WebServer.DEFAULT_HOST,
+            port=FlextWebConstants.WebServer.DEFAULT_PORT,
+        )
+        return default_config
 
     # Business rules validation
     def validate_business_rules(self) -> FlextResult[None]:
