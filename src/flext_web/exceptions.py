@@ -123,7 +123,7 @@ class FlextWebExceptions(FlextExceptions):
                 message,
                 error_code=error_code or "WEB_ERROR",
                 correlation_id=correlation_id,
-                **context,  # type: ignore[arg-type]
+                **context,
             )
 
     class WebValidationError(WebError):
@@ -171,7 +171,7 @@ class FlextWebExceptions(FlextExceptions):
                 full_message,
                 error_code=error_code or "WEB_VALIDATION_ERROR",
                 correlation_id=correlation_id,
-                **context,  # type: ignore[arg-type]
+                **context,
             )
 
     class WebConfigurationError(WebError):
@@ -438,7 +438,7 @@ class FlextWebExceptions(FlextExceptions):
                 message,
                 error_code=error_code or "WEB_SESSION_ERROR",
                 correlation_id=correlation_id,
-                **context,  # type: ignore[arg-type]
+                **context,
             )
 
     class WebMiddlewareError(WebError):

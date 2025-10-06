@@ -436,7 +436,7 @@ class FlextWebConfig(FlextConfig):
         # Create config with Pydantic validation - let exceptions be handled explicitly
         try:
             # Pydantic will validate the types at runtime, so we suppress type checking here
-            config = cls(**overrides)  # type: ignore[arg-type]
+            config = cls(**overrides)
             # Ensure it's properly typed as FlextWebConfig
             if not isinstance(config, cls):
                 return FlextResult[FlextWebConfig].fail(
@@ -507,13 +507,13 @@ class FlextWebConfig(FlextConfig):
                 secret_key=SecretStr(
                     FlextWebConstants.WebSpecific.DEV_SECRET_KEY
                 ),  # Should be overridden
-                **kwargs,  # type: ignore[arg-type]
+                **kwargs,
             )
         # Default config - use explicit FlextWebConfig parameters
         return cls(
             host=FlextWebConstants.WebServer.DEFAULT_HOST,
             port=FlextWebConstants.WebServer.DEFAULT_PORT,
-            **kwargs,  # type: ignore[arg-type]
+            **kwargs,
         )
 
     # Business rules validation

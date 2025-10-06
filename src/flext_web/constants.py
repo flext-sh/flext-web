@@ -56,7 +56,7 @@ class FlextWebConstants(FlextConstants):
         TEST_ENVIRONMENT_KEY: str = "test-environment-key-32-characters-long-for-tests"
 
         # Network Configuration
-        ALL_INTERFACES: str = "0.0.0.0"  # noqa: S104
+        ALL_INTERFACES: str = "0.0.0.0"
         LOCALHOST_IP: str = "127.0.0.1"
         SYSTEM_PORTS_THRESHOLD: int = 1023
         PRIVILEGED_PORTS_MAX: int = 1023

@@ -162,7 +162,7 @@ class FlextWebModels(FlextModels):
             description="Port number for the web application",
         )
         status: FlextWebModels.WebAppStatus = Field(
-            default="stopped",  # type: ignore[assignment]
+            default="stopped",
             description="Current status of the web application",
         )
         version: int = Field(
@@ -985,20 +985,20 @@ class FlextWebModels(FlextModels):
             if not isinstance(query_params, dict):
                 query_params = {}
             # Convert to proper type for FlextTypes.Dict
-            query_params = dict(query_params.items())  # type: ignore[arg-type]
+            query_params = dict(query_params.items())
 
             body = kwargs.get("body")
             # Convert body to proper type for WebRequest
             if body is not None and not isinstance(body, (str, dict)):
-                body = str(body)  # type: ignore[assignment]
+                body = str(body)
             elif isinstance(body, dict):
                 # Convert dict[str, str] to dict[str, object]
-                body = dict(body.items())  # type: ignore[assignment]
+                body = dict(body.items())
             timeout_raw = kwargs.get("timeout", 30)
             timeout = 30.0
             if timeout_raw is not None:
                 try:
-                    timeout = float(timeout_raw)  # type: ignore[arg-type]
+                    timeout = float(timeout_raw)
                 except (ValueError, TypeError):
                     timeout = 30.0
 
@@ -1006,8 +1006,8 @@ class FlextWebModels(FlextModels):
                 method=method,
                 url=url,
                 headers=headers,
-                query_params=query_params,  # type: ignore[arg-type]
-                body=body,  # type: ignore[arg-type]
+                query_params=query_params,
+                body=body,
                 timeout=timeout,
             )
             return FlextResult[FlextWebModels.WebRequest].ok(request)
@@ -1033,15 +1033,15 @@ class FlextWebModels(FlextModels):
             body = kwargs.get("body")
             # Convert body to proper type for WebResponse
             if body is not None and not isinstance(body, (str, dict)):
-                body = str(body)  # type: ignore[assignment]
+                body = str(body)
             elif isinstance(body, dict):
                 # Convert dict[str, str] to dict[str, object]
-                body = dict(body.items())  # type: ignore[assignment]
+                body = dict(body.items())
             elapsed_time_raw = kwargs.get("elapsed_time", 0.0)
             elapsed_time = 0.0
             if elapsed_time_raw is not None:
                 try:
-                    elapsed_time = float(elapsed_time_raw)  # type: ignore[arg-type]
+                    elapsed_time = float(elapsed_time_raw)
                 except (ValueError, TypeError):
                     elapsed_time = 0.0
 
@@ -1049,7 +1049,7 @@ class FlextWebModels(FlextModels):
                 request_id=request_id,
                 status_code=status_code,
                 headers=headers,
-                body=body,  # type: ignore[arg-type]
+                body=body,
                 elapsed_time=elapsed_time,
             )
             return FlextResult[FlextWebModels.WebResponse].ok(response)

@@ -255,7 +255,7 @@ class FlextWeb:
         try:
             # Pydantic will validate the types at runtime
             # Use type: ignore to suppress type checker warnings since Pydantic handles validation
-            FlextWebConfig(**config)  # type: ignore[arg-type]
+            FlextWebConfig(**config)
             return FlextResult[bool].ok(True)
         except Exception as e:
             # Log validation failure and return result
