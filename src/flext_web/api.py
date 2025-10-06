@@ -10,18 +10,16 @@ from flext_core import (
     FlextContainer,
     FlextLogger,
     FlextResult,
-    FlextService,
-    FlextTypes,
 )
 
 from flext_web.app import FlextWebApp
 from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
-from flext_web.services import WebService
+from flext_web.services import FlextWebService
 
 
-class FlextWeb(FlextService[object]):
+class FlextWeb:
     """Unified facade for FLEXT web services and applications.
 
     This is the main entry point for web functionality in the FLEXT ecosystem,
@@ -51,14 +49,8 @@ class FlextWeb(FlextService[object]):
 
     """
 
-    def __init__(self, **data: object) -> None:
-        """Initialize unified web facade with flext-core integration.
-
-        Args:
-            **data: Pydantic initialization data (FlextService requirement)
-
-        """
-        super().__init__(**data)
+    def __init__(self) -> None:
+        """Initialize unified web facade with flext-core integration."""
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
 
@@ -94,8 +86,8 @@ class FlextWeb(FlextService[object]):
 
     @classmethod
     def create_web_service(
-        cls, config: FlextTypes.Dict | None = None
-    ) -> FlextResult[WebService]:
+        cls, config: dict[str, object] | None = None
+    ) -> FlextResult[FlextWebService]:
         """Create unified web service instance.
 
         This method creates a WebService instance with proper
@@ -116,7 +108,7 @@ class FlextWeb(FlextService[object]):
             ...     service.initialize_routes()
 
         """
-        return WebService.create_web_service(config)
+        return FlextWebService.create_web_service(config)
 
     @staticmethod
     def create_web_config(
@@ -162,8 +154,35 @@ class FlextWeb(FlextService[object]):
             "host": host or FlextWebConstants.WebSpecific.DEFAULT_HOST,
             "port": port or FlextWebConstants.WebSpecific.DEFAULT_PORT,
             "debug": debug if debug is not None else False,
-            **kwargs,
         }
+
+        # Add kwargs if they are valid config fields
+        valid_config_fields = {
+            "host",
+            "port",
+            "debug",
+            "development_mode",
+            "web_environment",
+            "secret_key",
+            "app_name",
+            "version",
+            "max_content_length",
+            "request_timeout",
+            "enable_cors",
+            "cors_origins",
+            "ssl_enabled",
+            "ssl_cert_path",
+            "ssl_key_path",
+            "session_cookie_secure",
+            "session_cookie_httponly",
+            "session_cookie_samesite",
+            "log_level",
+            "log_format",
+        }
+
+        config_data.update({
+            key: value for key, value in kwargs.items() if key in valid_config_fields
+        })
 
         # Create config with Pydantic validation - let it raise and catch
         try:
@@ -178,7 +197,7 @@ class FlextWeb(FlextService[object]):
             )
 
     @staticmethod
-    def get_service_status() -> FlextResult[FlextTypes.Dict]:
+    def get_service_status() -> FlextResult[dict[str, object]]:
         """Get current status of web services.
 
         Returns:
@@ -197,17 +216,17 @@ class FlextWeb(FlextService[object]):
         logger = FlextLogger(__name__)
 
         # Check if web services are registered
-        services_status: FlextTypes.Dict = {
+        services_status: dict[str, object] = {
             "web_services_available": True,
             "fastapi_support": True,
             "container_initialized": container is not None,
         }
 
         logger.info("Web service status retrieved", **services_status)
-        return FlextResult[FlextTypes.Dict].ok(services_status)
+        return FlextResult[dict[str, object]].ok(services_status)
 
     @staticmethod
-    def validate_web_config(config: FlextTypes.Dict) -> FlextResult[bool]:
+    def validate_web_config(config: dict[str, object]) -> FlextResult[bool]:
         """Validate web configuration data.
 
         Args:
@@ -234,7 +253,9 @@ class FlextWeb(FlextService[object]):
 
         # Try to create config to validate - Pydantic will handle validation
         try:
-            FlextWebConfig(**config)
+            # Pydantic will validate the types at runtime
+            # Use type: ignore to suppress type checker warnings since Pydantic handles validation
+            FlextWebConfig(**config)  # type: ignore[arg-type]
             return FlextResult[bool].ok(True)
         except Exception as e:
             # Log validation failure and return result

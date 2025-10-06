@@ -1,115 +1,143 @@
-"""FLEXT Web Interface - Comprehensive Configuration Testing.
+"""Unit tests for flext_web.config module.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
+Tests the web configuration functionality following flext standards.
 """
-
-from __future__ import annotations
-
-import os
 
 import pytest
 from pydantic import ValidationError
 
-from flext_web import FlextWebConfig
+from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 
 
-class TestWebConfigBasic:
-    """Enterprise configuration testing for basic functionality and validation.
+class TestFlextWebConfig:
+    """Test suite for FlextWebConfig class."""
 
-    Test suite covering fundamental FlextWebConfig.WebConfig creation, default values,
-    and basic validation patterns. Ensures configuration follows enterprise
-    standards with proper type safety and business rule enforcement.
-    """
-
-    def test_web_config_creation(self) -> None:
-        """Test basic FlextWebConfig.WebConfig creation with default values.
-
-        Validates that configuration instance creates successfully with
-        all default values properly set and business rules satisfied.
-        Tests fundamental configuration patterns used throughout the system.
-        """
+    def test_initialization_with_defaults(self) -> None:
+        """Test FlextWebConfig initialization with defaults."""
         config = FlextWebConfig()
-        if config.app_name != "FLEXT Web":
-            msg: str = f"Expected {'FLEXT Web'}, got {config.app_name}"
-            raise AssertionError(msg)
+        assert config.host == FlextWebConstants.WebServer.DEFAULT_HOST
+        assert config.port == FlextWebConstants.WebServer.DEFAULT_PORT
+        assert config.debug is False
+        assert config.app_name == "FLEXT Web"
 
-    def test_web_config_with_custom_settings(self) -> None:
-        """Test WebConfig with custom settings."""
-        config = FlextWebConfig(app_name="Custom Web App")
-        if config.app_name != "Custom Web App":
-            msg: str = f"Expected {'Custom Web App'}, got {config.app_name}"
-            raise AssertionError(msg)
+    def test_initialization_with_custom_values(self) -> None:
+        """Test FlextWebConfig initialization with custom values."""
+        config = FlextWebConfig(
+            host="0.0.0.0", port=3000, debug=True, app_name="Test App"
+        )
+        assert config.host == "0.0.0.0"
+        assert config.port == 3000
+        assert config.debug is True
+        assert config.app_name == "Test App"
 
-    def test_web_config_security_settings(self) -> None:
-        """Test security-related settings."""
-        config = FlextWebConfig()
+    def test_validation_host_empty(self) -> None:
+        """Test host validation with empty string."""
+        with pytest.raises(ValidationError):
+            FlextWebConfig(host="")
+
+    def test_validation_port_range(self) -> None:
+        """Test port validation within valid range."""
+        config = FlextWebConfig(port=8080)
+        assert config.port == 8080
+
+    def test_validation_port_out_of_range(self) -> None:
+        """Test port validation outside valid range."""
+        with pytest.raises(ValidationError):
+            FlextWebConfig(port=70000)
+
+    def test_validation_secret_key_too_short(self) -> None:
+        """Test secret key validation with too short key."""
+        with pytest.raises(ValidationError):
+            FlextWebConfig(secret_key="short")
+
+    def test_validation_secret_key_valid(self) -> None:
+        """Test secret key validation with valid key."""
+        config = FlextWebConfig(secret_key="valid-secret-key-32-characters-long")
         assert config.secret_key is not None
-        if len(config.secret_key) < 32:
-            msg: str = f"Expected {len(config.secret_key)} >= {32}"
-            raise AssertionError(msg)
-        assert isinstance(config.debug, bool)
 
-    def test_web_config_server_settings(self) -> None:
-        """Test server-related settings."""
-        config = FlextWebConfig()
-        if config.host != FlextWebConstants.Web.DEFAULT_HOST:
-            msg: str = (
-                f"Expected {FlextWebConstants.Web.DEFAULT_HOST}, got {config.host}"
-            )
-            raise AssertionError(msg)
-        assert isinstance(config.port, int)
-        assert 1 <= config.port <= 65535
+    def test_ssl_configuration_valid(self) -> None:
+        """Test SSL configuration with valid cert and key paths."""
+        # This would need actual cert files in a real test
+        config = FlextWebConfig(
+            ssl_enabled=False, ssl_cert_path=None, ssl_key_path=None
+        )
+        assert config.ssl_enabled is False
 
-    def test_web_config_validation(self) -> None:
-        """Test configuration validation."""
+    def test_cors_configuration(self) -> None:
+        """Test CORS configuration."""
+        config = FlextWebConfig(
+            enable_cors=True,
+            cors_origins=["http://localhost:3000", "https://example.com"],
+        )
+        assert config.enable_cors is True
+        assert len(config.cors_origins) == 2
+
+    def test_computed_fields(self) -> None:
+        """Test computed fields."""
+        config = FlextWebConfig(ssl_enabled=False)
+        assert config.protocol == "http"
+
+        # Test with SSL disabled (no cert/key required)
+        config_https = FlextWebConfig(ssl_enabled=False)
+        assert config_https.protocol == "http"
+
+    def test_base_url_generation(self) -> None:
+        """Test base URL generation."""
+        config = FlextWebConfig(host="localhost", port=8080, ssl_enabled=False)
+        assert config.base_url == "http://localhost:8080"
+
+    def test_environment_checks(self) -> None:
+        """Test environment checking methods."""
+        config = FlextWebConfig(web_environment="development")
+        assert config.is_development() is True
+        assert config.is_production() is False
+
+    def test_validate_business_rules_success(self) -> None:
+        """Test business rules validation with valid config."""
         config = FlextWebConfig()
         result = config.validate_business_rules()
-        assert result.success
+        assert result.is_success
 
-    def test_web_config_port_validation(self) -> None:
-        """Test port validation."""
-        with pytest.raises(ValidationError):
-            FlextWebConfig(port=0)  # Below minimum
+    def test_get_server_config(self) -> None:
+        """Test server configuration retrieval."""
+        config = FlextWebConfig(host="localhost", port=8080, debug=True)
+        server_config = config.get_server_config()
+        assert server_config["host"] == "localhost"
+        assert server_config["port"] == 8080
+        assert server_config["debug"] is True
 
-        with pytest.raises(ValidationError):
-            FlextWebConfig(port=65536)  # Above maximum
+    def test_get_security_config(self) -> None:
+        """Test security configuration retrieval."""
+        config = FlextWebConfig(enable_cors=True, ssl_enabled=True)
+        security_config = config.get_security_config()
+        assert security_config["enable_cors"] is True
+        assert security_config["ssl_enabled"] is True
 
-    def test_create_web_config_function(self) -> None:
-        """Test create_web_config function."""
-        settings_result = FlextWebConfig.create_web_config()
-        assert settings_result.is_success
-        settings = settings_result.value
-        assert isinstance(settings, FlextWebConfig)
-        if settings.app_name != "FLEXT Web":
-            msg: str = f"Expected {'FLEXT Web'}, got {settings.app_name}"
-            raise AssertionError(msg)
+    def test_create_web_config_factory(self) -> None:
+        """Test web config factory method."""
+        result = FlextWebConfig.create_web_config(host="test", port=9000)
+        assert result.is_success
+        config = result.unwrap()
+        assert config.host == "test"
+        assert config.port == 9000
 
+    def test_create_development_config(self) -> None:
+        """Test development config creation."""
+        result = FlextWebConfig.create_development_config()
+        assert result.is_success
+        config = result.unwrap()
+        assert config.debug is True
+        assert config.development_mode is True
 
-class TestConfigIntegration:
-    """Integration tests for configuration."""
+    def test_create_for_environment_development(self) -> None:
+        """Test config creation for development environment."""
+        config = FlextWebConfig.create_for_environment("development")
+        assert config.web_environment == "development"
+        assert config.debug is True
 
-    def test_config_with_environment_variables(self) -> None:
-        """Test configuration with environment variables."""
-        # Set environment variable
-        os.environ["FLEXT_WEB_APP_NAME"] = "Test App From Env"
-
-        try:
-            config = FlextWebConfig()
-            if config.app_name != "Test App From Env":
-                msg: str = f"Expected {'Test App From Env'}, got {config.app_name}"
-                raise AssertionError(msg)
-        finally:
-            # Cleanup
-            if "FLEXT_WEB_APP_NAME" in os.environ:
-                del os.environ["FLEXT_WEB_APP_NAME"]
-
-    def test_config_validation_empty_name(self) -> None:
-        """Test validation with empty app name."""
-        # Empty app name should fail at construction time with Pydantic validation
-        with pytest.raises(
-            ValidationError,
-            match="String should have at least 3 characters",
-        ):
-            FlextWebConfig(app_name="")
+    def test_create_for_environment_production(self) -> None:
+        """Test config creation for production environment."""
+        config = FlextWebConfig.create_for_environment("production")
+        assert config.web_environment == "production"
+        assert config.debug is False

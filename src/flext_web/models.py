@@ -22,9 +22,7 @@ from flext_core import (
 from pydantic import (
     ConfigDict,
     Field,
-    FieldSerializationInfo,
     computed_field,
-    field_serializer,
     field_validator,
     model_validator,
 )
@@ -78,73 +76,6 @@ class FlextWebModels(FlextModels):
         },
     )
 
-    @computed_field
-    @property
-    def active_web_models_count(self) -> int:
-        """Computed field returning the number of active web model types."""
-        # Count active web models based on nested classes
-        web_model_classes = [
-            self.WebApp,
-            self.WebRequest,
-            self.WebResponse,
-            self.WebAppConfig,
-            self.WebAppStatus,
-            self._BaseWebModel,
-        ]
-        return len([cls for cls in web_model_classes if cls])
-
-    @computed_field
-    @property
-    def web_model_summary(self) -> FlextTypes.Dict:
-        """Computed field providing comprehensive web model summary."""
-        return {
-            "model_system": "FLEXT Web Models",
-            "version": "2.11.0",
-            "active_models": self.active_web_models_count,
-            "supported_operations": [
-                "web_application_management",
-                "http_request_processing",
-                "http_response_handling",
-                "web_configuration_management",
-                "security_validation",
-            ],
-            "framework_integrations": ["FastAPI", "Flask", "Django", "Starlette"],
-            "validation_features": [
-                "HTTP method validation",
-                "URL format validation",
-                "Security headers validation",
-                "CORS configuration validation",
-                "SSL certificate validation",
-            ],
-        }
-
-    @model_validator(mode="after")
-    def validate_web_consistency(self) -> Self:
-        """Model validator ensuring web model consistency and security."""
-        # Ensure security configurations are properly set
-        if hasattr(self, "WebAppConfig"):
-            # Web-specific validation logic can be added here
-            pass
-
-        return self
-
-    @field_serializer("*", when_used="json")
-    def serialize_with_web_metadata(
-        self, value: object, _info: FieldSerializationInfo
-    ) -> object:
-        """Field serializer adding web processing metadata and security context."""
-        if isinstance(value, dict):
-            return {
-                **value,
-                "_web_metadata": {
-                    "processed_at": datetime.now(UTC).isoformat(),
-                    "model_type": "FlextWebModels",
-                    "security_validated": True,
-                    "web_framework_compatible": True,
-                },
-            }
-        return value
-
     # Enhanced base models with Pydantic 2.11 features
     class _BaseWebModel(FlextModels.ArbitraryTypesModel):
         """Base web model with enhanced Pydantic 2.11 configuration."""
@@ -171,7 +102,6 @@ class FlextWebModels(FlextModels):
         )
 
         @computed_field
-        @property
         def model_metadata(self) -> FlextTypes.Dict:
             """Computed field providing base web model metadata."""
             return {
@@ -180,19 +110,6 @@ class FlextWebModels(FlextModels):
                 "pydantic_version": "2.11+",
                 "created_at": datetime.now(UTC).isoformat(),
             }
-
-        @field_serializer("*", when_used="json")
-        def mask_sensitive_web_data(
-            self, value: object, _info: FieldSerializationInfo
-        ) -> object:
-            """Field serializer for masking sensitive web data."""
-            # Mask sensitive web information like secrets, tokens, etc.
-            if isinstance(value, str) and any(
-                keyword in str(_info.field_name).lower()
-                for keyword in ["secret", "key", "token", "password", "auth"]
-            ):
-                return "***MASKED***"
-            return value
 
     class WebAppStatus(Enum):
         """Enhanced web application status enumeration."""
@@ -244,16 +161,16 @@ class FlextWebModels(FlextModels):
             le=FlextWebConstants.WebServer.MAX_PORT,
             description="Port number for the web application",
         )
-        status: WebAppStatus = Field(
-            default="stopped",
+        status: FlextWebModels.WebAppStatus = Field(
+            default="stopped",  # type: ignore[assignment]
             description="Current status of the web application",
         )
         version: int = Field(
-            default=FlextConstants.Performance.DEFAULT_VERSION,
+            default=1,
             description="Application version",
         )
         environment: str = Field(
-            default=FlextConstants.Defaults.ENVIRONMENT,
+            default="development",
             description="Deployment environment",
         )
         health_check_url: str | None = Field(
@@ -269,40 +186,12 @@ class FlextWebModels(FlextModels):
             description="Application metrics",
         )
 
-        @computed_field
-        @property
-        def web_app_summary(self) -> FlextTypes.Dict:
-            """Computed field providing web application summary."""
-            return {
-                "application_info": {
-                    "name": self.name,
-                    "status": self.status.value
-                    if hasattr(self.status, "value")
-                    else str(self.status),
-                    "environment": self.environment,
-                    "version": self.version,
-                },
-                "network_info": {
-                    "host": self.host,
-                    "port": self.port,
-                    "url": self.url,
-                    "protocol": "https" if self.port in {443, 8443} else "http",
-                },
-                "operational_info": {
-                    "is_running": self.is_running,
-                    "is_healthy": self.is_healthy,
-                    "can_start": self.can_start,
-                    "can_stop": self.can_stop,
-                    "can_restart": self.can_restart,
-                },
-            }
-
         @model_validator(mode="after")
         def validate_web_app_configuration(self) -> Self:
             """Model validator for web application configuration consistency."""
             # Validate port and host combination
             if (
-                self.host in {"0.0.0.0", "::"}
+                self.host in {FlextWebConstants.WebSpecific.ALL_INTERFACES, "::"}
                 and self.port <= FlextWebConstants.WebSpecific.PRIVILEGED_PORTS_MAX
             ):
                 if self.environment == "development":
@@ -324,46 +213,29 @@ class FlextWebModels(FlextModels):
 
             return self
 
-        @field_serializer("metrics", when_used="json")
-        def serialize_metrics_with_metadata(
-            self, value: FlextTypes.Dict
-        ) -> FlextTypes.Dict:
-            """Field serializer for metrics with processing metadata."""
-            return {
-                **value,
-                "_metrics_metadata": {
-                    "collected_at": datetime.now(UTC).isoformat(),
-                    "application": self.name,
-                    "environment": self.environment,
-                    "status": self.status.value
-                    if hasattr(self.status, "value")
-                    else str(self.status),
-                },
-            }
-
         @field_validator("status")
         @classmethod
-        def validate_status(cls, v) -> WebAppStatus:
+        def validate_status(cls, v: object) -> FlextWebModels.WebAppStatus:
             """Validate status field with enhanced error handling."""
             # Handle enum values directly
-            if isinstance(v, WebAppStatus):
+            if isinstance(v, FlextWebModels.WebAppStatus):
                 return v
 
             # Handle string values
             if isinstance(v, str):
-                valid_statuses = [
-                    "stopped",
-                    "starting",
-                    "running",
-                    "stopping",
-                    "error",
-                    "maintenance",
-                    "deploying",
-                ]
-            if v not in valid_statuses:
-                msg = f"Invalid status: {v}. Valid statuses: {valid_statuses}"
-                raise ValueError(msg)
-            return v
+                # Use the actual enum
+                try:
+                    return FlextWebModels.WebAppStatus(v)
+                except ValueError as e:
+                    valid_values = [
+                        status.value for status in FlextWebModels.WebAppStatus
+                    ]
+                    msg = f"Invalid status: {v}. Valid values: {valid_values}"
+                    raise ValueError(msg) from e
+
+            type_name = type(v).__name__
+            msg = f"Invalid status type: {type_name}. Must be str or FlextWebModels.WebAppStatus"
+            raise ValueError(msg)
 
         @field_validator("name")
         @classmethod
@@ -455,13 +327,12 @@ class FlextWebModels(FlextModels):
         @computed_field
         def is_running(self) -> bool:
             """Check if app is running."""
-            return str(self.status) == "running"
+            return self.status == FlextWebModels.WebAppStatus.RUNNING
 
         @computed_field
         def is_healthy(self) -> bool:
-            """Check if app is healthy (running and not in error state)."""
-            status_str = str(self.status)
-            return status_str == "running" and status_str != "error"
+            """Check if app is healthy (running state)."""
+            return self.status == FlextWebModels.WebAppStatus.RUNNING
 
         @computed_field
         def url(self) -> str:
@@ -477,18 +348,20 @@ class FlextWebModels(FlextModels):
         @computed_field
         def can_start(self) -> bool:
             """Check if app can be started."""
-            return str(self.status) == "stopped"
+            return self.status == FlextWebModels.WebAppStatus.STOPPED
 
         @computed_field
         def can_stop(self) -> bool:
             """Check if app can be stopped."""
-            return str(self.status) == "running"
+            return self.status == FlextWebModels.WebAppStatus.RUNNING
 
         @computed_field
         def can_restart(self) -> bool:
             """Check if app can be restarted."""
-            status_str = str(self.status)
-            return status_str in {"running", "stopped"}
+            return self.status in {
+                FlextWebModels.WebAppStatus.RUNNING,
+                FlextWebModels.WebAppStatus.STOPPED,
+            }
 
         def validate_business_rules(self) -> FlextResult[None]:
             """Enhanced business rules validation."""
@@ -534,35 +407,37 @@ class FlextWebModels(FlextModels):
 
         def start(self) -> FlextResult[FlextWebModels.WebApp]:
             """Start application with enhanced state management."""
-            current_status = str(self.status)
-            if current_status == "running":
+            if self.status == FlextWebModels.WebAppStatus.RUNNING:
                 return FlextResult[FlextWebModels.WebApp].fail("App already running")
-            if current_status not in {"stopped", "error"}:
+            if self.status not in {
+                FlextWebModels.WebAppStatus.STOPPED,
+                FlextWebModels.WebAppStatus.ERROR,
+            }:
                 return FlextResult[FlextWebModels.WebApp].fail(
-                    f"App cannot be started from status: {current_status}"
+                    f"App cannot be started from status: {self.status}"
                 )
 
-            # Update status through string value
-            self.status = "starting"
+            # Update status through enum value
+            self.status = FlextWebModels.WebAppStatus.STARTING
             self.update_timestamp()
 
             # Simulate startup process
-            self.status = "running"
+            self.status = FlextWebModels.WebAppStatus.RUNNING
             self.update_timestamp()
 
             return FlextResult[FlextWebModels.WebApp].ok(self)
 
         def stop(self) -> FlextResult[FlextWebModels.WebApp]:
             """Stop application with enhanced state management."""
-            if str(self.status) != "running":
+            if self.status != FlextWebModels.WebAppStatus.RUNNING:
                 return FlextResult[FlextWebModels.WebApp].fail("App not running")
 
-            # Update status through string value
-            self.status = "stopping"
+            # Update status through enum value
+            self.status = FlextWebModels.WebAppStatus.STOPPING
             self.update_timestamp()
 
             # Simulate shutdown process
-            self.status = "stopped"
+            self.status = FlextWebModels.WebAppStatus.STOPPED
             self.update_timestamp()
 
             return FlextResult[FlextWebModels.WebApp].ok(self)
@@ -590,7 +465,7 @@ class FlextWebModels(FlextModels):
         def get_health_status(self) -> FlextTypes.Dict:
             """Get comprehensive health status."""
             return {
-                "status": str(self.status),
+                "status": self.status.value,
                 "is_running": self.is_running,
                 "is_healthy": self.is_healthy,
                 "url": self.url,
@@ -610,7 +485,7 @@ class FlextWebModels(FlextModels):
                 "name": self.name,
                 "host": self.host,
                 "port": self.port,
-                "status": str(self.status),
+                "status": self.status.value,
                 "version": self.version,
                 "environment": self.environment,
                 "health_check_url": self.health_check_url,
@@ -622,7 +497,7 @@ class FlextWebModels(FlextModels):
         @override
         def __str__(self) -> str:
             """String representation of the WebApp."""
-            return f"{self.name} ({self.host}:{self.port}) [{self.status}]"
+            return f"{self.name} ({self.host}:{self.port}) [{self.status.value}]"
 
         @override
         def __repr__(self) -> str:
@@ -690,27 +565,6 @@ class FlextWebModels(FlextModels):
             description="Request timestamp",
         )
 
-        @computed_field
-        @property
-        def request_summary(self) -> FlextTypes.Dict:
-            """Computed field providing comprehensive request summary."""
-            return {
-                "request_info": {
-                    "id": self.request_id,
-                    "method": self.method,
-                    "url": self.url,
-                    "timestamp": self.timestamp.isoformat(),
-                },
-                "client_info": {"ip": self.client_ip, "user_agent": self.user_agent},
-                "request_properties": {
-                    "is_safe_method": self.is_safe_method,
-                    "is_idempotent": self.is_idempotent,
-                    "has_body": bool(self.body),
-                    "header_count": len(self.headers),
-                    "param_count": len(self.query_params),
-                },
-            }
-
         @model_validator(mode="after")
         def validate_request_consistency_server_specific(self) -> Self:
             """SERVER-SPECIFIC model validator for additional web server requirements."""
@@ -723,30 +577,12 @@ class FlextWebModels(FlextModels):
 
             return self
 
-        @field_serializer("headers", when_used="json")
-        def serialize_headers_securely(
-            self, value: FlextTypes.StringDict
-        ) -> FlextTypes.StringDict:
-            """SERVER-SPECIFIC field serializer for masking sensitive headers."""
-            masked_headers = {}
-            sensitive_headers = ["authorization", "cookie", "x-api-key", "x-auth-token"]
-
-            for key, val in value.items():
-                if key.lower() in sensitive_headers:
-                    masked_headers[key] = "***MASKED***"
-                else:
-                    masked_headers[key] = val
-
-            return masked_headers
-
         @computed_field
-        @property
         def is_safe_method(self) -> bool:
             """Check if HTTP method is safe (GET, HEAD, OPTIONS) - SERVER SPECIFIC."""
             return self.method.upper() in {"GET", "HEAD", "OPTIONS"}
 
         @computed_field
-        @property
         def is_idempotent(self) -> bool:
             """Check if HTTP method is idempotent - SERVER SPECIFIC."""
             return self.method.upper() in {"GET", "HEAD", "PUT", "DELETE", "OPTIONS"}
@@ -799,31 +635,6 @@ class FlextWebModels(FlextModels):
             description="Response timestamp",
         )
 
-        @computed_field
-        @property
-        def response_summary(self) -> FlextTypes.Dict:
-            """Computed field providing comprehensive response summary."""
-            return {
-                "response_info": {
-                    "id": self.response_id,
-                    "request_id": self.request_id,
-                    "status_code": self.status_code,
-                    "timestamp": self.timestamp.isoformat(),
-                },
-                "performance_info": {
-                    "processing_time_ms": self.processing_time_ms,
-                    "processing_time_seconds": self.processing_time_seconds,
-                    "content_length": self.content_length,
-                    "content_type": self.content_type,
-                },
-                "status_properties": {
-                    "is_success": self.is_success,
-                    "is_client_error": self.is_client_error,
-                    "is_server_error": self.is_server_error,
-                    "status_category": self._get_status_category(),
-                },
-            }
-
         @model_validator(mode="after")
         def validate_response_consistency(self) -> Self:
             """Model validator for response consistency."""
@@ -849,21 +660,6 @@ class FlextWebModels(FlextModels):
                 raise ValueError(msg)
 
             return self
-
-        @field_serializer("body", when_used="json")
-        def serialize_response_body_securely(self, value: str | None) -> str | None:
-            """Field serializer for secure response body handling."""
-            if not value:
-                return value
-
-            # Limit body size in serialization for security
-            max_body_size = 1000  # 1KB limit for serialization
-            if len(value) > max_body_size:
-                return (
-                    f"{value[:max_body_size]}... [TRUNCATED - {len(value)} total chars]"
-                )
-
-            return value
 
         def _get_status_category(self) -> str:
             """Get HTTP status code category - SERVER SPECIFIC."""
@@ -902,7 +698,6 @@ class FlextWebModels(FlextModels):
         # SERVER-SPECIFIC computed field (processing_time_seconds)
         # Inherited from base: is_success, is_client_error, is_server_error, validate_status_code
         @computed_field
-        @property
         def processing_time_seconds(self) -> float:
             """Get processing time in seconds - SERVER SPECIFIC."""
             return self.processing_time_ms / 1000.0
@@ -968,37 +763,6 @@ class FlextWebModels(FlextModels):
             description="SSL private key path",
         )
 
-        @computed_field
-        @property
-        def config_summary(self) -> FlextTypes.Dict:
-            """Computed field providing comprehensive configuration summary."""
-            return {
-                "application_config": {
-                    "name": self.app_name,
-                    "debug_mode": self.debug,
-                    "protocol": self.protocol,
-                    "base_url": self.base_url,
-                },
-                "network_config": {
-                    "host": self.host,
-                    "port": self.port,
-                    "ssl_enabled": self.ssl_enabled,
-                    "request_timeout": self.request_timeout,
-                },
-                "security_config": {
-                    "cors_enabled": self.enable_cors,
-                    "cors_origins_count": len(self.cors_origins),
-                    "secret_key_length": len(self.secret_key) if self.secret_key else 0,
-                    "ssl_configured": bool(self.ssl_cert_path and self.ssl_key_path),
-                },
-                "limits_config": {
-                    "max_content_length": self.max_content_length,
-                    "max_content_length_mb": round(
-                        self.max_content_length / (1024 * 1024), 2
-                    ),
-                },
-            }
-
         @model_validator(mode="after")
         def validate_web_app_config_consistency(self) -> Self:
             """Model validator for web application configuration consistency."""
@@ -1028,12 +792,6 @@ class FlextWebModels(FlextModels):
                 raise ValueError(msg)
 
             return self
-
-        @field_serializer("secret_key", when_used="json")
-        def serialize_secret_key_securely(self, _value: str) -> str:
-            """Field serializer for secure secret key handling."""
-            # Never expose actual secret key in serialization
-            return "***MASKED***"
 
         @field_validator("cors_origins")
         @classmethod
@@ -1136,24 +894,6 @@ class FlextWebModels(FlextModels):
             description="Middleware instances (e.g., from flext-auth)",
         )
 
-        @computed_field
-        @property
-        def config_summary(self) -> FlextTypes.Dict:
-            """Computed field providing configuration summary."""
-            return {
-                "application": {
-                    "title": self.title,
-                    "version": self.version,
-                    "description": self.description,
-                },
-                "documentation": {
-                    "docs_url": self.docs_url,
-                    "redoc_url": self.redoc_url,
-                    "openapi_url": self.openapi_url,
-                },
-                "middleware_count": len(self.middlewares),
-            }
-
     @classmethod
     def create_web_app(
         cls,
@@ -1186,12 +926,22 @@ class FlextWebModels(FlextModels):
                     f"Port validation failed: expected int, got {type(port_value)}"
                 )
 
+            # Convert status to enum
+            status_str = str(app_data["status"])
+            status = FlextWebModels.WebAppStatus(status_str)
+
+            # Convert health_check_url properly
+            health_check_url = app_data.get("health_check_url")
+            health_check_url_str = (
+                str(health_check_url) if health_check_url is not None else None
+            )
+
             app = FlextWebModels.WebApp(
                 id=str(app_data["id"]),
                 name=str(app_data["name"]),
                 host=str(app_data["host"]),
                 port=port_value,
-                status=app_data["status"],
+                status=status,
                 version=int(
                     str(
                         app_data.get(
@@ -1202,7 +952,7 @@ class FlextWebModels(FlextModels):
                 environment=str(
                     app_data.get("environment", FlextConstants.Defaults.ENVIRONMENT)
                 ),
-                health_check_url=app_data.get("health_check_url"),
+                health_check_url=health_check_url_str,
             )
 
             # Validate business rules
@@ -1226,13 +976,39 @@ class FlextWebModels(FlextModels):
     ) -> FlextResult[FlextWebModels.WebRequest]:
         """Create web request with validation."""
         try:
+            # Extract and type-cast parameters
+            headers = kwargs.get("headers", {})
+            if not isinstance(headers, dict):
+                headers = {}
+
+            query_params = kwargs.get("query_params", {})
+            if not isinstance(query_params, dict):
+                query_params = {}
+            # Convert to proper type for FlextTypes.Dict
+            query_params = dict(query_params.items())  # type: ignore[arg-type]
+
+            body = kwargs.get("body")
+            # Convert body to proper type for WebRequest
+            if body is not None and not isinstance(body, (str, dict)):
+                body = str(body)  # type: ignore[assignment]
+            elif isinstance(body, dict):
+                # Convert dict[str, str] to dict[str, object]
+                body = dict(body.items())  # type: ignore[assignment]
+            timeout_raw = kwargs.get("timeout", 30)
+            timeout = 30.0
+            if timeout_raw is not None:
+                try:
+                    timeout = float(timeout_raw)  # type: ignore[arg-type]
+                except (ValueError, TypeError):
+                    timeout = 30.0
+
             request = FlextWebModels.WebRequest(
                 method=method,
                 url=url,
-                headers=kwargs.get("headers", {}),
-                query_params=kwargs.get("query_params", {}),
-                body=kwargs.get("body"),
-                timeout=kwargs.get("timeout", 30),
+                headers=headers,
+                query_params=query_params,  # type: ignore[arg-type]
+                body=body,  # type: ignore[arg-type]
+                timeout=timeout,
             )
             return FlextResult[FlextWebModels.WebRequest].ok(request)
         except Exception as e:
@@ -1249,12 +1025,32 @@ class FlextWebModels(FlextModels):
     ) -> FlextResult[FlextWebModels.WebResponse]:
         """Create web response with validation."""
         try:
+            # Extract and type-cast parameters
+            headers = kwargs.get("headers", {})
+            if not isinstance(headers, dict):
+                headers = {}
+
+            body = kwargs.get("body")
+            # Convert body to proper type for WebResponse
+            if body is not None and not isinstance(body, (str, dict)):
+                body = str(body)  # type: ignore[assignment]
+            elif isinstance(body, dict):
+                # Convert dict[str, str] to dict[str, object]
+                body = dict(body.items())  # type: ignore[assignment]
+            elapsed_time_raw = kwargs.get("elapsed_time", 0.0)
+            elapsed_time = 0.0
+            if elapsed_time_raw is not None:
+                try:
+                    elapsed_time = float(elapsed_time_raw)  # type: ignore[arg-type]
+                except (ValueError, TypeError):
+                    elapsed_time = 0.0
+
             response = FlextWebModels.WebResponse(
                 request_id=request_id,
                 status_code=status_code,
-                headers=kwargs.get("headers", {}),
-                body=kwargs.get("body"),
-                response_time=kwargs.get("response_time", 0.0),
+                headers=headers,
+                body=body,  # type: ignore[arg-type]
+                elapsed_time=elapsed_time,
             )
             return FlextResult[FlextWebModels.WebResponse].ok(response)
         except Exception as e:

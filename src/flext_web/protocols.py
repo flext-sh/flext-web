@@ -246,7 +246,7 @@ class FlextWebProtocols:
 
         @runtime_checkable
         class AppRepositoryInterface(
-            FlextProtocols.Domain.Repository[FlextWebModels.WebApp],
+            FlextProtocols.Domain.Repository,
             Protocol,
         ):
             """Application repository protocol extending flext-core Repository patterns.

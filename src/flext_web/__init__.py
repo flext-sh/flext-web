@@ -16,7 +16,7 @@ from flext_web.fields import FlextWebFields
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels
 from flext_web.protocols import FlextWebProtocols
-from flext_web.services import FlextWebServices, WebService
+from flext_web.services import FlextWebService
 from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
 from flext_web.version import VERSION, FlextWebVersion
@@ -38,11 +38,10 @@ __all__ = [
     "FlextWebHandlers",
     "FlextWebModels",
     "FlextWebProtocols",
-    "FlextWebServices",
+    "FlextWebService",
     "FlextWebTypes",
     "FlextWebUtilities",
     "FlextWebVersion",
-    "WebService",
     "__version__",
     "__version_info__",
 ]

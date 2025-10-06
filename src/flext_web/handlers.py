@@ -189,29 +189,31 @@ class FlextWebHandlers(FlextProcessors):
             # Log create operation
             self.logger.info("Create app command")
 
-            # MASSIVE USAGE: Railway-oriented programming with FlextResult composition
-            result = (
-                # Step 1: Sanitize inputs using FlextUtilities
-                self._sanitize_inputs(name, host)
-                # Step 2: Validate all inputs (chained validation)
-                .flat_map(
-                    lambda inputs: self._validate_app_inputs(
-                        inputs["name"],
-                        port,
-                        inputs["host"],
-                    ),
-                )
-                # Step 3: Create domain entity
-                .flat_map(
-                    lambda validated: self._create_app_entity(
-                        validated["name"],
-                        int(validated["port"]),
-                        validated["host"],
-                    ),
-                )
-                # Step 4: Validate business rules
-                .flat_map(self._validate_and_return_app)
+            # Step 1: Sanitize inputs using FlextUtilities
+            sanitize_result = self._sanitize_inputs(name, host)
+            if sanitize_result.is_failure:
+                return FlextResult[FlextWebModels.WebApp].fail(sanitize_result.error)
+
+            # Step 2: Validate all inputs
+            validate_result = self._validate_app_inputs(
+                sanitize_result.value["name"],
+                port,
+                sanitize_result.value["host"],
             )
+            if validate_result.is_failure:
+                return FlextResult[FlextWebModels.WebApp].fail(validate_result.error)
+
+            # Step 3: Create domain entity
+            create_result = self._create_app_entity(
+                str(validate_result.value["name"]),
+                int(str(validate_result.value["port"])),
+                str(validate_result.value["host"]),
+            )
+            if create_result.is_failure:
+                return create_result
+
+            # Step 4: Validate business rules
+            result = self._validate_and_return_app(create_result.value)
 
             # Register app if created successfully
             if result.is_success:
@@ -248,13 +250,12 @@ class FlextWebHandlers(FlextProcessors):
             host: str,
         ) -> FlextResult[FlextTypes.StringDict]:
             """Validate all app inputs - simplified to rely on Pydantic model validation."""
-            return FlextResult[FlextTypes.StringDict].ok(
-                {
-                    "name": name,
-                    "port": str(port),
-                    "host": host,
-                },
-            )
+            validated_data: FlextTypes.StringDict = {
+                "name": name,
+                "port": str(port),
+                "host": host,
+            }
+            return FlextResult[FlextTypes.StringDict].ok(validated_data)
 
         def _create_app_entity(
             self,
@@ -776,7 +777,7 @@ class FlextWebHandlers(FlextProcessors):
             name=app.name,
             host=app.host,
             port=app.port,
-            status=app.status,
+            status=app.status.value,
             is_running=bool(app.is_running),
         )
 

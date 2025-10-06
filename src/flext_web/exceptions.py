@@ -45,9 +45,18 @@ class FlextWebExceptions(FlextExceptions):
 
             """
             # Extract known parameters
-            base_context = kwargs.get("context", {})
+            base_context_raw = kwargs.get("context", {})
+            base_context = (
+                base_context_raw if isinstance(base_context_raw, dict) else {}
+            )
             correlation_id = kwargs.get("correlation_id")
             error_code = kwargs.get("error_code")
+
+            # Ensure proper types for return
+            if correlation_id is not None and not isinstance(correlation_id, str):
+                correlation_id = str(correlation_id)
+            if error_code is not None and not isinstance(error_code, str):
+                error_code = str(error_code)
 
             # Remove extracted parameters from kwargs to avoid duplication
             filtered_kwargs = {
@@ -112,9 +121,9 @@ class FlextWebExceptions(FlextExceptions):
             # Call parent with complete error information
             super().__init__(
                 message,
-                code=error_code or "WEB_ERROR",
-                context=context,
+                error_code=error_code or "WEB_ERROR",
                 correlation_id=correlation_id,
+                **context,  # type: ignore[arg-type]
             )
 
     class WebValidationError(WebError):
@@ -160,9 +169,9 @@ class FlextWebExceptions(FlextExceptions):
             # Call parent with complete error information
             super().__init__(
                 full_message,
-                code=error_code or "WEB_VALIDATION_ERROR",
-                context=context,
+                error_code=error_code or "WEB_VALIDATION_ERROR",
                 correlation_id=correlation_id,
+                **context,  # type: ignore[arg-type]
             )
 
     class WebConfigurationError(WebError):
@@ -188,8 +197,8 @@ class FlextWebExceptions(FlextExceptions):
             # Call parent with complete error information
             super().__init__(
                 message,
-                code=error_code or "WEB_CONFIG_ERROR",
-                context=context,
+                error_code=error_code or "WEB_CONFIG_ERROR",
+                context=str(context),
                 correlation_id=correlation_id,
             )
 
@@ -216,8 +225,8 @@ class FlextWebExceptions(FlextExceptions):
             # Call parent with complete error information
             super().__init__(
                 message,
-                code=error_code or "WEB_CONNECTION_ERROR",
-                context=context,
+                error_code=error_code or "WEB_CONNECTION_ERROR",
+                context=str(context),
                 correlation_id=correlation_id,
             )
 
@@ -244,8 +253,8 @@ class FlextWebExceptions(FlextExceptions):
             # Call parent with complete error information
             super().__init__(
                 message,
-                code=error_code or "WEB_PROCESSING_ERROR",
-                context=context,
+                error_code=error_code or "WEB_PROCESSING_ERROR",
+                context=str(context),
                 correlation_id=correlation_id,
             )
 
@@ -273,7 +282,7 @@ class FlextWebExceptions(FlextExceptions):
             super().__init__(
                 message,
                 code=error_code or "WEB_AUTH_ERROR",
-                context=context,
+                context=str(context),
                 correlation_id=correlation_id,
             )
 
@@ -301,7 +310,7 @@ class FlextWebExceptions(FlextExceptions):
             super().__init__(
                 message,
                 code=error_code or "WEB_TIMEOUT_ERROR",
-                context=context,
+                context=str(context),
                 correlation_id=correlation_id,
             )
 
@@ -342,7 +351,7 @@ class FlextWebExceptions(FlextExceptions):
             super().__init__(
                 message,
                 code=error_code or "WEB_TEMPLATE_ERROR",
-                context=context,
+                context=str(context),
                 correlation_id=correlation_id,
             )
 
@@ -387,7 +396,7 @@ class FlextWebExceptions(FlextExceptions):
             super().__init__(
                 message,
                 code=error_code or "WEB_ROUTING_ERROR",
-                context=context,
+                context=str(context),
                 correlation_id=correlation_id,
             )
 
@@ -427,9 +436,9 @@ class FlextWebExceptions(FlextExceptions):
             # Call parent with complete error information
             super().__init__(
                 message,
-                code=error_code or "WEB_SESSION_ERROR",
-                context=context,
+                error_code=error_code or "WEB_SESSION_ERROR",
                 correlation_id=correlation_id,
+                **context,  # type: ignore[arg-type]
             )
 
     class WebMiddlewareError(WebError):
@@ -466,7 +475,7 @@ class FlextWebExceptions(FlextExceptions):
             super().__init__(
                 message,
                 code=error_code or "WEB_MIDDLEWARE_ERROR",
-                context=context,
+                context=str(context),
                 correlation_id=correlation_id,
             )
 

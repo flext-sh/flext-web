@@ -12,7 +12,7 @@ import sys
 from flext_core import FlextConstants, FlextLogger
 
 from flext_web.config import FlextWebConfig
-from flext_web.services import FlextWebServices
+from flext_web.services import FlextWebService
 
 logger = FlextLogger(__name__)
 
@@ -116,8 +116,8 @@ def main() -> None:
         )
         logger.info("📊 Debug: %s, Production: %s", debug, not config.debug)
 
-        service = FlextWebServices(config=config.__dict__)
-        service.run()
+        service = FlextWebService(config=config)
+        service.start_service(host=host, port=port, debug=debug)
     except KeyboardInterrupt:
         logger.info("🛑 Shutting down FlextWeb service")
     except (RuntimeError, ValueError, TypeError):

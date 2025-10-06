@@ -1,259 +1,185 @@
-#!/usr/bin/env python3
-"""Comprehensive tests for FLEXT Web Interface exception hierarchy.
+"""Unit tests for flext_web.exceptions module.
 
-Tests all exception classes, their inheritance relationships, message handling,
-error codes, and integration with flext-core patterns.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT.
+Tests the web exceptions functionality following flext standards.
 """
 
-from __future__ import annotations
-
-import pytest
-
-from flext_web import FlextWebExceptions
-
-# Use nested classes from FlextWebExceptions
-FlextWebError = FlextWebExceptions.WebError
-FlextWebValidationError = FlextWebExceptions.WebValidationError
-FlextWebConfigurationError = FlextWebExceptions.WebConfigurationError
-FlextWebConnectionError = FlextWebExceptions.WebConnectionError
-FlextWebProcessingError = FlextWebExceptions.WebProcessingError
-FlextWebAuthenticationError = FlextWebExceptions.WebAuthenticationError
-FlextWebTimeoutError = FlextWebExceptions.WebTimeoutError
-FlextWebTemplateError = FlextWebExceptions.WebTemplateError
-FlextWebRoutingError = FlextWebExceptions.WebRoutingError
-FlextWebSessionError = FlextWebExceptions.WebSessionError
-FlextWebMiddlewareError = FlextWebExceptions.WebMiddlewareError
+from flext_web.exceptions import FlextWebExceptions
 
 
-class TestFlextWebErrorBase:
-    """Test base FlextWebError functionality."""
+class TestFlextWebExceptions:
+    """Test suite for FlextWebExceptions class."""
 
-    def test_flext_web_error_creation(self) -> None:
-        """Test basic FlextWebError creation with message."""
-        error = FlextWebError("Test error message")
-        assert "Test error message" in str(error)
-        assert error.message == "Test error message"
+    def test_web_error_initialization(self) -> None:
+        """Test WebError initialization."""
+        error = FlextWebExceptions.WebError("Test error message")
+        assert str(error) == "Test error message"
+        assert error.error_code == "WEB_ERROR"
 
-    def test_flext_web_error_with_route(self) -> None:
-        """Test FlextWebError creation with route context."""
-        error = FlextWebError("Test error", "/api/v1/test")
-        assert error.message == "Test error"
-        assert hasattr(error, "error_code")
+    def test_web_error_with_route(self) -> None:
+        """Test WebError initialization with route."""
+        error = FlextWebExceptions.WebError("Test error message", route="/api/test")
+        assert str(error) == "Test error message"
+        assert error.error_code == "WEB_ERROR"
 
-    def test_flext_web_error_with_kwargs(self) -> None:
-        """Test FlextWebError creation with additional context."""
-        error = FlextWebError("Validation failed", context="test_context")
-        assert error.message == "Validation failed"
-
-    def test_flext_web_error_repr(self) -> None:
-        """Test FlextWebError string representation."""
-        error = FlextWebError("Test message")
-        assert "Test message" in str(error)
-
-    def test_flext_web_error_dict_conversion(self) -> None:
-        """Test FlextWebError dict conversion."""
-        error = FlextWebError("Test error", "/api/test")
-
-        # FlextExceptions from flext-core doesn't have to_dict method
-        # We test the attributes directly
-        assert error.message == "Test error"
-        assert hasattr(error, "error_code")
-        assert hasattr(error, "code")
-
-
-class TestValidationErrors:
-    """Test validation-related exception classes."""
-
-    def test_validation_error(self) -> None:
-        """Test FlextWebValidationError functionality."""
-        error = FlextWebValidationError("Invalid input", field="name", value="invalid")
-        assert isinstance(error, Exception)
-        assert "Invalid input" in error.message
-
-    def test_configuration_error(self) -> None:
-        """Test FlextWebConfigurationError functionality."""
-        error = FlextWebConfigurationError("Invalid config")
-        assert isinstance(error, Exception)
-        assert "Invalid config" in error.message
-
-    def test_authentication_error(self) -> None:
-        """Test FlextWebAuthenticationError functionality."""
-        error = FlextWebAuthenticationError("Auth failed")
-        assert isinstance(error, Exception)
-        assert "Auth failed" in error.message
-
-
-class TestConnectionAndProcessingErrors:
-    """Test connection and processing exception classes."""
-
-    def test_connection_error(self) -> None:
-        """Test FlextWebConnectionError functionality."""
-        error = FlextWebConnectionError("Connection failed")
-        assert isinstance(error, Exception)
-        assert "Connection failed" in error.message
-
-    def test_processing_error(self) -> None:
-        """Test FlextWebProcessingError functionality."""
-        error = FlextWebProcessingError("Processing failed")
-        assert isinstance(error, Exception)
-        assert "Processing failed" in error.message
-
-    def test_timeout_error(self) -> None:
-        """Test FlextWebTimeoutError functionality."""
-        error = FlextWebTimeoutError("Operation timeout")
-        assert isinstance(error, Exception)
-        assert "Operation timeout" in error.message
-
-
-class TestWebSpecificErrors:
-    """Test web-specific exception classes."""
-
-    def test_template_error(self) -> None:
-        """Test FlextWebTemplateError functionality."""
-        error = FlextWebTemplateError("Template rendering failed")
-        assert isinstance(error, FlextWebError)
-        assert "Template rendering failed" in error.message
-
-    def test_routing_error(self) -> None:
-        """Test FlextWebRoutingError functionality."""
-        error = FlextWebRoutingError("Route not found")
-        assert isinstance(error, FlextWebError)
-        assert "Route not found" in error.message
-
-    def test_session_error(self) -> None:
-        """Test FlextWebSessionError functionality."""
-        error = FlextWebSessionError("Session expired")
-        assert isinstance(error, FlextWebError)
-        assert "Session expired" in error.message
-
-    def test_middleware_error(self) -> None:
-        """Test FlextWebMiddlewareError functionality."""
-        error = FlextWebMiddlewareError("Middleware failed")
-        assert isinstance(error, FlextWebError)
-        assert "Middleware failed" in error.message
-
-
-class TestExceptionHierarchy:
-    """Test exception inheritance hierarchy and relationships."""
-
-    def test_base_exception_inheritance(self) -> None:
-        """Test that all exceptions inherit from Exception and proper base classes."""
-        # FlextWebError inherits from FlextExceptions
-        assert isinstance(FlextWebError("test"), Exception)
-
-        # Check specific inheritance patterns
-        assert isinstance(FlextWebValidationError("test"), Exception)
-        assert isinstance(FlextWebAuthenticationError("test"), Exception)
-        assert isinstance(FlextWebConfigurationError("test"), Exception)
-        assert isinstance(FlextWebConnectionError("test"), Exception)
-        assert isinstance(FlextWebProcessingError("test"), Exception)
-        assert isinstance(FlextWebTimeoutError("test"), Exception)
-
-        # Web-specific errors inherit from FlextWebError
-        web_specific_errors: list[FlextWebError] = [
-            FlextWebTemplateError("test"),
-            FlextWebRoutingError("test"),
-            FlextWebSessionError("test"),
-            FlextWebMiddlewareError("test"),
-        ]
-
-        for exception in web_specific_errors:
-            assert isinstance(exception, FlextWebError)
-            assert isinstance(exception, Exception)
-
-    def test_web_specific_error_hierarchy(self) -> None:
-        """Test that web-specific errors inherit directly from WebError."""
-        web_specific_errors: list[FlextWebError] = [
-            FlextWebTemplateError("test"),
-            FlextWebRoutingError("test"),
-            FlextWebSessionError("test"),
-            FlextWebMiddlewareError("test"),
-        ]
-
-        for error in web_specific_errors:
-            # These should inherit directly from WebError (FlextWebError is an alias)
-            assert isinstance(error, FlextWebError)
-            assert type(error).__bases__[0].__name__ == "WebError"
-
-
-class TestExceptionUtilities:
-    """Test exception utility methods and features."""
-
-    def test_exception_chaining(self) -> None:
-        """Test exception chaining functionality."""
-        original = ValueError("Original error")
-
-        try:
-            raise original
-        except ValueError as e:
-            chained = FlextWebProcessingError("Processing failed")
-            chained.__cause__ = e
-
-            assert chained.__cause__ is original
-            assert str(chained.__cause__) == "Original error"
-
-    def test_error_context_preservation(self) -> None:
-        """Test that error context is preserved."""
-        details = {"request_id": "123", "user_id": "user456", "operation": "create_app"}
-
-        error = FlextWebProcessingError("App creation failed", **details)
-
-        # FlextExceptions from flext-core doesn't have to_dict method
-        # We test the basic properties directly
-        assert "App creation failed" in error.message
-        assert hasattr(error, "context")
-        assert hasattr(error, "error_code")
-
-    def test_multiple_exception_handling(self) -> None:
-        """Test handling multiple related exceptions."""
-        errors: list[Exception] = []
-
-        # Simulate multiple validation errors
-        errors.extend(
-            (
-                FlextWebValidationError("Name required"),
-                FlextWebValidationError("Port invalid"),
-                FlextWebValidationError("Host invalid"),
-            ),
+    def test_web_error_with_context(self) -> None:
+        """Test WebError initialization with context."""
+        error = FlextWebExceptions.WebError(
+            "Test error message", context={"key": "value"}, correlation_id="test-123"
         )
+        assert str(error) == "Test error message"
+        assert error.error_code == "WEB_ERROR"
 
-        assert len(errors) == 3
-        assert all(isinstance(e, FlextWebValidationError) for e in errors)
-        assert all(isinstance(e, Exception) for e in errors)
+    def test_web_validation_error_initialization(self) -> None:
+        """Test WebValidationError initialization."""
+        error = FlextWebExceptions.WebValidationError("Validation failed")
+        assert "Validation failed" in str(error)
+        assert error.error_code == "WEB_VALIDATION_ERROR"
 
-    def test_error_serialization(self) -> None:
-        """Test error serialization for API responses."""
-        error = FlextWebProcessingError("Application startup failed")
+    def test_web_validation_error_with_field(self) -> None:
+        """Test WebValidationError with field information."""
+        error = FlextWebExceptions.WebValidationError(
+            "Invalid value", field="email", value="invalid-email"
+        )
+        assert "Invalid value" in str(error)
+        assert "field: email" in str(error)
+        assert "[value: invalid-email]" in str(error)
 
-        # Test basic exception properties
-        assert "Application startup failed" in str(error)
-        assert hasattr(error, "code")
+    def test_web_configuration_error_initialization(self) -> None:
+        """Test WebConfigurationError initialization."""
+        error = FlextWebExceptions.WebConfigurationError("Config error")
+        assert str(error) == "Config error"
+        assert error.error_code == "WEB_CONFIG_ERROR"
+
+    def test_web_connection_error_initialization(self) -> None:
+        """Test WebConnectionError initialization."""
+        error = FlextWebExceptions.WebConnectionError("Connection failed")
+        assert str(error) == "Connection failed"
+        assert error.error_code == "WEB_CONNECTION_ERROR"
+
+    def test_web_processing_error_initialization(self) -> None:
+        """Test WebProcessingError initialization."""
+        error = FlextWebExceptions.WebProcessingError("Processing failed")
+        assert str(error) == "Processing failed"
+        assert error.error_code == "WEB_PROCESSING_ERROR"
+
+    def test_web_authentication_error_initialization(self) -> None:
+        """Test WebAuthenticationError initialization."""
+        error = FlextWebExceptions.WebAuthenticationError("Auth failed")
+        assert str(error) == "Auth failed"
+        assert error.error_code == "WEB_AUTH_ERROR"
+
+    def test_web_timeout_error_initialization(self) -> None:
+        """Test WebTimeoutError initialization."""
+        error = FlextWebExceptions.WebTimeoutError("Timeout occurred")
+        assert str(error) == "Timeout occurred"
+        assert error.error_code == "WEB_TIMEOUT_ERROR"
+
+    def test_web_template_error_initialization(self) -> None:
+        """Test WebTemplateError initialization."""
+        error = FlextWebExceptions.WebTemplateError("Template error")
+        assert str(error) == "Template error"
+        assert error.error_code == "WEB_TEMPLATE_ERROR"
+
+    def test_web_template_error_with_template_name(self) -> None:
+        """Test WebTemplateError with template name."""
+        error = FlextWebExceptions.WebTemplateError(
+            "Template not found", template_name="index.html"
+        )
+        assert "Template not found" in str(error)
+        assert error.template_name == "index.html"
+
+    def test_web_routing_error_initialization(self) -> None:
+        """Test WebRoutingError initialization."""
+        error = FlextWebExceptions.WebRoutingError("Routing error")
+        assert str(error) == "Routing error"
+        assert error.error_code == "WEB_ROUTING_ERROR"
+
+    def test_web_routing_error_with_endpoint(self) -> None:
+        """Test WebRoutingError with endpoint information."""
+        error = FlextWebExceptions.WebRoutingError(
+            "Route not found", endpoint="/api/test", method="GET"
+        )
+        assert "Route not found" in str(error)
+        assert error.endpoint == "/api/test"
+        assert error.method == "GET"
+
+    def test_web_session_error_initialization(self) -> None:
+        """Test WebSessionError initialization."""
+        error = FlextWebExceptions.WebSessionError("Session error")
+        assert str(error) == "Session error"
+        assert error.error_code == "WEB_SESSION_ERROR"
+
+    def test_web_session_error_with_session_id(self) -> None:
+        """Test WebSessionError with session ID."""
+        error = FlextWebExceptions.WebSessionError(
+            "Session expired", session_id="sess-123"
+        )
+        assert "Session expired" in str(error)
+        assert error.session_id == "sess-123"
+
+    def test_web_middleware_error_initialization(self) -> None:
+        """Test WebMiddlewareError initialization."""
+        error = FlextWebExceptions.WebMiddlewareError("Middleware error")
+        assert str(error) == "Middleware error"
+        assert error.error_code == "WEB_MIDDLEWARE_ERROR"
+
+    def test_web_middleware_error_with_middleware_name(self) -> None:
+        """Test WebMiddlewareError with middleware name."""
+        error = FlextWebExceptions.WebMiddlewareError(
+            "Middleware failed", middleware_name="auth_middleware"
+        )
+        assert "Middleware failed" in str(error)
+
+    def test_exception_inheritance(self) -> None:
+        """Test that all exceptions inherit from the base WebError."""
+        error_classes = [
+            FlextWebExceptions.WebValidationError,
+            FlextWebExceptions.WebConfigurationError,
+            FlextWebExceptions.WebConnectionError,
+            FlextWebExceptions.WebProcessingError,
+            FlextWebExceptions.WebAuthenticationError,
+            FlextWebExceptions.WebTimeoutError,
+            FlextWebExceptions.WebTemplateError,
+            FlextWebExceptions.WebRoutingError,
+            FlextWebExceptions.WebSessionError,
+            FlextWebExceptions.WebMiddlewareError,
+        ]
+
+        for error_class in error_classes:
+            error = error_class("Test message")
+            assert isinstance(error, FlextWebExceptions.WebError)
+
+    def test_error_codes_are_unique(self) -> None:
+        """Test that all error codes are unique."""
+        error_classes = [
+            FlextWebExceptions.WebError,
+            FlextWebExceptions.WebValidationError,
+            FlextWebExceptions.WebConfigurationError,
+            FlextWebExceptions.WebConnectionError,
+            FlextWebExceptions.WebProcessingError,
+            FlextWebExceptions.WebAuthenticationError,
+            FlextWebExceptions.WebTimeoutError,
+            FlextWebExceptions.WebTemplateError,
+            FlextWebExceptions.WebRoutingError,
+            FlextWebExceptions.WebSessionError,
+            FlextWebExceptions.WebMiddlewareError,
+        ]
+
+        error_codes = []
+        for error_class in error_classes:
+            error = error_class("Test message")
+            error_codes.append(error.error_code)
+
+        # All error codes should be unique
+        assert len(error_codes) == len(set(error_codes))
+
+    def test_error_context_handling(self) -> None:
+        """Test error context handling."""
+        error = FlextWebExceptions.WebError(
+            "Test error",
+            context={"user_id": "123", "action": "create"},
+            correlation_id="corr-456",
+        )
+        assert error.correlation_id == "corr-456"
+        # Context should be stored in the error
         assert hasattr(error, "context")
-
-    def test_route_context_handling(self) -> None:
-        """Test route context in routing errors."""
-        error = FlextWebRoutingError("Route not found", "/api/v1/nonexistent")
-
-        assert "Route not found" in error.message
-        assert isinstance(error, FlextWebError)
-
-    def test_template_error_context(self) -> None:
-        """Test template error with rendering context."""
-        error = FlextWebTemplateError("Template variable not found")
-
-        assert "Template variable not found" in error.message
-        assert isinstance(error, FlextWebError)
-
-    def test_session_error_context(self) -> None:
-        """Test session error with session context."""
-        error = FlextWebSessionError("Session validation failed")
-
-        assert "Session validation failed" in error.message
-        assert isinstance(error, FlextWebError)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])

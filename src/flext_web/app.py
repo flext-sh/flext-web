@@ -41,12 +41,12 @@ try:
 except ImportError:
     FastAPI = None
 
-from flext_core import FlextLogger, FlextResult, FlextService, FlextTypes
+from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_web.models import FlextWebModels
 
 
-class FlextWebApp(FlextService[object]):
+class FlextWebApp:
     """FastAPI application factory service.
 
     Provides enterprise-grade FastAPI application creation with:

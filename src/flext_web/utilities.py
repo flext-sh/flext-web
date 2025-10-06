@@ -10,14 +10,17 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import re
+from typing import TypeVar
 from urllib.parse import urlparse
 
-from flext_core import FlextResult, FlextUtilities, T
+from flext_core import FlextResult, FlextUtilities
 from pydantic import ValidationError
 
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
+
+T = TypeVar("T")
 
 
 class FlextWebUtilities(FlextUtilities):
@@ -41,7 +44,10 @@ class FlextWebUtilities(FlextUtilities):
         """Generate web application ID using flext-core utilities."""
         clean_name = FlextWebUtilities._slugify(name)
         base_id = FlextUtilities.Generators.generate_entity_id()
-        return f"app_{clean_name}_{base_id.split('_')[1]}"
+        # Handle different base_id formats
+        if "_" in base_id:
+            return f"app_{clean_name}_{base_id.split('_')[1]}"
+        return f"app_{clean_name}_{base_id}"
 
     @staticmethod
     def format_app_id(name: str) -> str:
@@ -205,7 +211,9 @@ class FlextWebUtilities(FlextUtilities):
         }
 
     @staticmethod
-    def handle_flext_result(result: FlextResult[T]) -> FlextWebTypes.Core.ResponseDict:
+    def handle_flext_result(
+        result: FlextResult[object],
+    ) -> FlextWebTypes.Core.ResponseDict:
         """Convert FlextResult to API response.
 
         Returns:
