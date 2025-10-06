@@ -15,7 +15,7 @@ class TestFlextWeb:
         web = FlextWeb()
         assert web is not None
         assert hasattr(web, "_container")
-        assert hasattr(web, "_logger")
+        assert hasattr(web, "logger")
 
     def test_create_fastapi_app_success(self) -> None:
         """Test successful FastAPI app creation."""

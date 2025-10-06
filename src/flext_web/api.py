@@ -52,7 +52,7 @@ class FlextWeb:
     def __init__(self) -> None:
         """Initialize unified web facade with flext-core integration."""
         self._container = FlextContainer.get_global()
-        self._logger = FlextLogger(__name__)
+        self.logger = FlextLogger(__name__)
 
     @staticmethod
     def create_fastapi_app(config: FlextWebModels.AppConfig) -> FlextResult[object]:
