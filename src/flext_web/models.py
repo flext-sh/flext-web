@@ -661,40 +661,6 @@ class FlextWebModels(FlextModels):
 
             return self
 
-        def _get_status_category(self) -> str:
-            """Get HTTP status code category - SERVER SPECIFIC."""
-            if (
-                FlextConstants.Http.HTTP_INFORMATIONAL_MIN
-                <= self.status_code
-                <= FlextConstants.Http.HTTP_INFORMATIONAL_MAX
-            ):
-                return "informational"
-            if (
-                FlextConstants.Http.HTTP_SUCCESS_MIN
-                <= self.status_code
-                <= FlextConstants.Http.HTTP_SUCCESS_MAX
-            ):
-                return "success"
-            if (
-                FlextConstants.Http.HTTP_REDIRECTION_MIN
-                <= self.status_code
-                <= FlextConstants.Http.HTTP_REDIRECTION_MAX
-            ):
-                return "redirection"
-            if (
-                FlextConstants.Http.HTTP_CLIENT_ERROR_MIN
-                <= self.status_code
-                <= FlextConstants.Http.HTTP_CLIENT_ERROR_MAX
-            ):
-                return "client_error"
-            if (
-                FlextConstants.Http.HTTP_SERVER_ERROR_MIN
-                <= self.status_code
-                <= FlextConstants.Http.HTTP_SERVER_ERROR_MAX
-            ):
-                return "server_error"
-            return "unknown"
-
         # SERVER-SPECIFIC computed field (processing_time_seconds)
         # Inherited from base: is_success, is_client_error, is_server_error, validate_status_code
         @computed_field
