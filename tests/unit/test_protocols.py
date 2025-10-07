@@ -272,13 +272,13 @@ class TestFlextWebProtocols:
 
         # Protocols should be usable with isinstance checks
         class MockAppManager:
-            def create_app(self, name, port, host):
+            def create_app(self, name: str, port: int, host: str):
                 return FlextWebModels.WebApp(name=name, host=host, port=port)
 
-            def start_app(self, app_id):
+            def start_app(self, app_id: str):
                 return FlextWebModels.WebApp(name="test", host="localhost", port=8080)
 
-            def stop_app(self, app_id):
+            def stop_app(self, app_id: str):
                 return FlextWebModels.WebApp(name="test", host="localhost", port=8080)
 
             def list_apps(self):
@@ -307,24 +307,24 @@ class TestFlextWebProtocols:
         """Test that protocols can be used for validation."""
 
         # Protocols should be usable for type checking
-        def validate_app_manager(obj):
+        def validate_app_manager(obj: object):
             return hasattr(obj, "create_app") and hasattr(obj, "start_app")
 
         class ValidAppManager:
-            def create_app(self, name, port, host) -> None:
+            def create_app(self, name: str, port: int, host: str) -> None:
                 pass
 
-            def start_app(self, app_id) -> None:
+            def start_app(self, app_id: str) -> None:
                 pass
 
-            def stop_app(self, app_id) -> None:
+            def stop_app(self, app_id: str) -> None:
                 pass
 
             def list_apps(self) -> None:
                 pass
 
         class InvalidAppManager:
-            def create_app(self, name, port, host) -> None:
+            def create_app(self, name: str, port: int, host: str) -> None:
                 pass
 
             # Missing other methods
