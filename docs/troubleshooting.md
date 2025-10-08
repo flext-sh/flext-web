@@ -10,7 +10,7 @@
 from flext_web import FlextWebServices
 # ImportError: cannot import name 'FlextWebConfig' from partially initialized module
 # 'flext_web.config' (most likely due to a circular import)
-# (/home/marlonsc/flext/flext-web/src/flext_web/config.py)
+# (..flext-web/src/flext_web/config.py)
 ```
 
 **Root Cause**: Circular dependency chain:
@@ -26,7 +26,7 @@ from flext_web import FlextWebServices
 
 ```bash
 # Confirm the issue exists
-cd /home/marlonsc/flext/flext-web
+cd ..flext-web
 python -c "from flext_web import FlextWebServices"
 # Expected: ImportError with circular import message
 ```

@@ -24,7 +24,6 @@
     ]
     description = "FLEXT Web - Modern Web Interface for FLEXT Platform"
     keywords = [
-        "",
         "enterprise",
         "flask",
         "flext",

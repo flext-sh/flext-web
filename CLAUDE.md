@@ -2,7 +2,7 @@
 
 **Enterprise-Grade Web Interface Quality Assurance & Refactoring Guidelines**
 **Version**: 2.1.0 | **Authority**: WORKSPACE | **Updated**: 2025-01-08
-**Environment**: `/home/marlonsc/flext/.venv/bin/python` (No PYTHONPATH required)
+**Environment**: `../.venv/bin/python` (No PYTHONPATH required)
 **Based on**: flext-core 0.9.9 with 75%+ test coverage (PROVEN FOUNDATION)
 **Project Context**: Flask-based web interface and REST API foundation for FLEXT ecosystem
 
@@ -491,12 +491,12 @@ class FlaskWebCliService:
 # comprehensive_web_quality_assessment.sh - Complete Flask web interface quality measurement
 
 echo "=== FLEXT-WEB COMPREHENSIVE QUALITY ASSESSMENT ==="
-echo "Environment: /home/marlonsc/flext/.venv/bin/python"
+echo "Environment: ../.venv/bin/python"
 echo "Project: Flask-based web interface and REST API foundation"
 echo "Timestamp: $(date)"
 
 # Change to project directory
-cd /home/marlonsc/flext/flext-web || exit 1
+cd ../flext-web || exit 1
 
 # Step 1: Code Quality Assessment (Ruff Analysis)
 echo ""
@@ -505,53 +505,53 @@ echo "=================================================="
 
 # Critical Flask/web-specific issues first
 echo "Critical Flask/Web Issues:"
-/home/marlonsc/flext/.venv/bin/ruff check . --select F --format=github
-/home/marlonsc/flext/.venv/bin/ruff check . --select E9 --format=github
+../.venv/bin/ruff check . --select F --format=github
+../.venv/bin/ruff check . --select E9 --format=github
 
 echo ""
 echo "Flask Import Issues:"
-/home/marlonsc/flext/.venv/bin/ruff check . --select I --format=github
-/home/marlonsc/flext/.venv/bin/ruff check . --select F401 --format=github
+../.venv/bin/ruff check . --select I --format=github
+../.venv/bin/ruff check . --select F401 --format=github
 
 echo ""
 echo "Flask/Web Type Safety Issues:"
-/home/marlonsc/flext/.venv/bin/ruff check . --select ANN --format=github
+../.venv/bin/ruff check . --select ANN --format=github
 
 echo ""
 echo "Flask Security Issues:"
-/home/marlonsc/flext/.venv/bin/ruff check . --select S --format=github
+../.venv/bin/ruff check . --select S --format=github
 
 echo ""
 echo "Overall Flask/Web Ruff Statistics:"
-/home/marlonsc/flext/.venv/bin/ruff check . --statistics
+../.venv/bin/ruff check . --statistics
 
 # Step 2: Type Safety Assessment (MyPy Analysis)
 echo ""
 echo "🎯 MYPY TYPE SAFETY ANALYSIS (Flask Strict Mode)"
 echo "================================================"
-/home/marlonsc/flext/.venv/bin/mypy src/ --strict --show-error-codes --no-error-summary
+../.venv/bin/mypy src/ --strict --show-error-codes --no-error-summary
 
 # Step 3: Advanced Type Analysis (PyRight)
 echo ""
 echo "🔬 PYRIGHT ADVANCED TYPE ANALYSIS (Flask Web Patterns)"
 echo "======================================================"
-/home/marlonsc/flext/.venv/bin/pyright src/ --stats
+../.venv/bin/pyright src/ --stats
 
 # Step 4: Flask Test Coverage Analysis
 echo ""
 echo "🧪 PYTEST FLASK WEB COVERAGE ANALYSIS"
 echo "===================================="
-/home/marlonsc/flext/.venv/bin/pytest tests/ --cov=src --cov-report=term-missing --tb=no
+../.venv/bin/pytest tests/ --cov=src --cov-report=term-missing --tb=no
 
 echo ""
 echo "Flask Web Test Execution Summary:"
-/home/marlonsc/flext/.venv/bin/pytest tests/ --tb=no -q
+../.venv/bin/pytest tests/ --tb=no -q
 
 # Step 5: Flask Web Integration Test
 echo ""
 echo "🌐 FLASK WEB INTEGRATION TEST"
 echo "============================="
-/home/marlonsc/flext/.venv/bin/python -c "
+../.venv/bin/python -c "
 import sys
 sys.path.insert(0, 'src')
 
@@ -750,20 +750,20 @@ class TestUnifiedFlextWebServiceComplete:
 
 ```bash
 # Identify high-priority Flask web issues first
-/home/marlonsc/flext/.venv/bin/ruff check . --select F  # Pyflakes errors (critical)
-/home/marlonsc/flext/.venv/bin/ruff check . --select E9 # Syntax errors (critical)
-/home/marlonsc/flext/.venv/bin/ruff check . --select F821 # Undefined name (critical)
+../.venv/bin/ruff check . --select F  # Pyflakes errors (critical)
+../.venv/bin/ruff check . --select E9 # Syntax errors (critical)
+../.venv/bin/ruff check . --select F821 # Undefined name (critical)
 
 # Address Flask import issues
-/home/marlonsc/flext/.venv/bin/ruff check . --select I    # Import sorting
-/home/marlonsc/flext/.venv/bin/ruff check . --select F401 # Unused imports
+../.venv/bin/ruff check . --select I    # Import sorting
+../.venv/bin/ruff check . --select F401 # Unused imports
 
 # Apply auto-fixes where safe for Flask
-/home/marlonsc/flext/.venv/bin/ruff check . --fix-only --select I,F401,E,W
+../.venv/bin/ruff check . --fix-only --select I,F401,E,W
 
 # Manual fixes for complex Flask issues
-/home/marlonsc/flext/.venv/bin/ruff check . --select PLR2004  # Magic values
-/home/marlonsc/flext/.venv/bin/ruff check . --select C901     # Complex functions
+../.venv/bin/ruff check . --select PLR2004  # Magic values
+../.venv/bin/ruff check . --select C901     # Complex functions
 ```
 
 **FLASK-SPECIFIC RESOLUTION PATTERNS**:
@@ -959,7 +959,7 @@ class TestFlextWebServiceComprehensive:
 ### Before Starting object Flask Web Work
 
 - [ ] Read all Flask web documentation: `CLAUDE.md`, `FLEXT_REFACTORING_PROMPT.md`, project `README.md`
-- [ ] Verify virtual environment: `/home/marlonsc/flext/.venv/bin/python` (VERIFIED WORKING)
+- [ ] Verify virtual environment: `../.venv/bin/python` (VERIFIED WORKING)
 - [ ] Run baseline Flask web quality assessment using exact commands provided
 - [ ] Plan incremental Flask web improvements (never wholesale rewrites)
 - [ ] Establish measurable Flask web success criteria from current baseline
@@ -1001,21 +1001,21 @@ class TestFlextWebServiceComprehensive:
 echo "=== FLEXT-WEB ECOSYSTEM FINAL VALIDATION ==="
 
 # Change to Flask web project directory
-cd /home/marlonsc/flext/flext-web || exit 1
+cd ../flext-web || exit 1
 
 # Flask Web Quality Gates
 echo "🔧 Flask Web Quality Gates"
 echo "========================="
-/home/marlonsc/flext/.venv/bin/ruff check . --statistics
-/home/marlonsc/flext/.venv/bin/mypy src/ --strict --show-error-codes
-/home/marlonsc/flext/.venv/bin/pyright src/ --stats
-/home/marlonsc/flext/.venv/bin/pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=95
+../.venv/bin/ruff check . --statistics
+../.venv/bin/mypy src/ --strict --show-error-codes
+../.venv/bin/pyright src/ --stats
+../.venv/bin/pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=95
 
 # Flask Web Functional Validation
 echo ""
 echo "🌐 Flask Web Functional Validation"
 echo "=================================="
-/home/marlonsc/flext/.venv/bin/python -c "
+../.venv/bin/python -c "
 import sys
 sys.path.insert(0, 'src')
 
