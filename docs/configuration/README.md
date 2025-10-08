@@ -148,12 +148,8 @@ class FlextWebConfig(BaseSettings, FlextConfig):
         """Validate configuration"""
         # Implementation includes business rules and security validation
         if not self.debug and "change-in-production" in self.secret_key:
-            return FlextResult[None].fail("Secret key must be changed in production")
+            return FlextResult[None].fail("Secret key must be changed")
         return FlextResult[None].ok(None)
-
-    def is_production(self) -> bool:
-        """Check if running in production mode"""
-        return not self.debug
 
     def get_server_url(self) -> str:
         """Get complete server URL"""
@@ -168,7 +164,6 @@ from flext_web import get_web_settings, reset_web_settings
 # Get configuration (singleton pattern)
 config = get_web_settings()
 print(f"Server URL: {config.get_server_url()}")
-print(f"Production mode: {config.is_production()}")
 
 # Reset configuration (useful for testing)
 reset_web_settings()
@@ -337,7 +332,6 @@ config = get_web_settings()
 print(f"App Name: {config.app_name}")
 print(f"Server URL: {config.get_server_url()}")
 print(f"Debug Mode: {config.debug}")
-print(f"Production: {config.is_production()}")
 
 # View all settings (excluding secrets)
 config_dict = config.dict()

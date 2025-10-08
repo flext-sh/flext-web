@@ -144,7 +144,6 @@ from flext_web import FlextWebConfig, get_web_settings
 # Get validated configuration
 config = get_web_settings()
 print(f"Server URL: {config.get_server_url()}")
-print(f"Production mode: {config.is_production()}")
 ```
 
 ### Infrastructure Layer

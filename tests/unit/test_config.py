@@ -87,12 +87,6 @@ class TestFlextWebConfig:
         config = FlextWebConfig(host="localhost", port=8080, ssl_enabled=False)
         assert config.base_url == "http://localhost:8080"
 
-    def test_environment_checks(self) -> None:
-        """Test environment checking methods."""
-        config = FlextWebConfig(web_environment="development")
-        assert config.is_development() is True
-        assert config.is_production() is False
-
     def test_validate_business_rules_success(self) -> None:
         """Test business rules validation with valid config."""
         config = FlextWebConfig()
@@ -132,12 +126,12 @@ class TestFlextWebConfig:
 
     def test_create_for_environment_development(self) -> None:
         """Test config creation for development environment."""
-        config = FlextWebConfig.create_for_environment("development")
+        config = FlextWebConfig()
         assert config.web_environment == "development"
         assert config.debug is True
 
     def test_create_for_environment_production(self) -> None:
         """Test config creation for production environment."""
-        config = FlextWebConfig.create_for_environment("production")
+        config = FlextWebConfig()
         assert config.web_environment == "production"
         assert config.debug is False

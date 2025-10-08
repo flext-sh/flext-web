@@ -50,10 +50,8 @@ class FlextWebConstants(FlextConstants):
         DEFAULT_HOST: str = "localhost"
         DEFAULT_PORT: int = 8080
 
-        # Development Keys (32+ characters for security)
-        DEV_SECRET_KEY: str = "dev-secret-key-32-characters-long-for-development"
-        DEV_ENVIRONMENT_KEY: str = "dev-environment-key-32-characters-long-for-testing"
-        TEST_ENVIRONMENT_KEY: str = "test-environment-key-32-characters-long-for-tests"
+        # Default Keys (32+ characters for security)
+        DEFAULT_SECRET_KEY: str = "default-secret-key-32-characters-long-for-security"
 
         # Network Configuration
         ALL_INTERFACES: str = "0.0.0.0"
@@ -62,16 +60,11 @@ class FlextWebConstants(FlextConstants):
         PRIVILEGED_PORTS_MAX: int = 1023
 
     # =============================================================================
-    # WEB ENVIRONMENT TYPES - Literal types for environment validation
+    # WEB TYPES - Type definitions for web applications
     # =============================================================================
 
-    class WebEnvironment:
-        """Web environment type definitions."""
-
-        # Environment Types
-        type EnvironmentType = Literal[
-            "development", "testing", "staging", "production"
-        ]
+    class WebTypes:
+        """Web type definitions."""
 
         # Web Application Types
         type WebAppType = Literal[

@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import os
 import warnings
 from pathlib import Path
 from typing import ClassVar, Self
@@ -83,18 +82,8 @@ class FlextWebConfig(FlextConfig):
         description="Enable debug mode",
     )
 
-    development_mode: bool = Field(
-        default=False,
-        description="Enable development mode with additional features",
-    )
-
-    web_environment: str = Field(
-        default="development",
-        description="Web environment setting (development, testing, production)",
-    )
-
     secret_key: SecretStr | None = Field(
-        default=SecretStr(FlextWebConstants.WebSpecific.DEV_SECRET_KEY),
+        default=SecretStr(FlextWebConstants.WebSpecific.DEFAULT_SECRET_KEY),
         min_length=32,
         description="Flask secret key for sessions",
     )
@@ -207,13 +196,8 @@ class FlextWebConfig(FlextConfig):
         }:
             return host
 
-        # Security validation for production
+        # Security validation - restrict 0.0.0.0 for security
         if host == FlextWebConstants.WebSpecific.ALL_INTERFACES:
-            # Only allow 0.0.0.0 in development mode
-            # Check development mode via environment variable to avoid recursion
-            if cls._is_development_env():
-                return host
-            # In production, use localhost instead
             return FlextWebConstants.WebSpecific.LOCALHOST_IP
 
         # Use flext-core validation
@@ -240,12 +224,9 @@ class FlextWebConfig(FlextConfig):
             msg = "Secret key must be at least 32 characters long"
             raise ValueError(msg)
 
-        # Check for default development key in production-like environments
-        if (
-            secret_value == FlextWebConstants.WebSpecific.DEV_SECRET_KEY
-            and not cls._is_development_env()
-        ):
-            msg = "Must change default secret key for production"
+        # Check for default key
+        if secret_value == FlextWebConstants.WebSpecific.DEFAULT_SECRET_KEY:
+            msg = "Must change default secret key"
             raise ValueError(msg)
 
         # Additional security checks
@@ -376,31 +357,6 @@ class FlextWebConfig(FlextConfig):
         """Get base URL for web service."""
         return f"{self.protocol}://{self.host}:{self.port}"
 
-    def is_development(self) -> bool:
-        """Check if running in development mode."""
-        # Check web_environment field first, then fall back to other checks
-        if self.web_environment == "production":
-            return False
-        if self.web_environment == "development":
-            return True
-        return self.debug or self._is_development_env()
-
-    def is_production(self) -> bool:
-        """Check if running in production mode."""
-        # Check web_environment field first, then fall back to other checks
-        if self.web_environment == "production":
-            return True
-        if self.web_environment == "development":
-            return False
-        return not (self.debug or self._is_development_env())
-
-    @classmethod
-    def _is_development_env(cls) -> bool:
-        """Check if running in development environment."""
-        # Use environment variable directly to avoid circular dependency
-        web_env = os.getenv("FLEXT_WEB_WEB_ENVIRONMENT", "development").lower()
-        return web_env in {"development", "dev", "local"}
-
     def get_server_config(self) -> FlextTypes.Dict:
         """Get server configuration."""
         return {
@@ -449,73 +405,6 @@ class FlextWebConfig(FlextConfig):
             logger.warning("Web config creation failed", error=str(e))
             return FlextResult[FlextWebConfig].fail(f"Failed to create web config: {e}")
 
-    @classmethod
-    def create_development_config(cls) -> FlextResult[FlextWebConfig]:
-        """Create development-optimized web configuration."""
-        # Create config with predefined development settings - Pydantic handles validation
-        try:
-            config = cls(
-                debug=True,
-                development_mode=True,
-                web_environment="development",
-                host=FlextWebConstants.WebServer.DEFAULT_HOST,
-                port=FlextWebConstants.WebServer.DEFAULT_PORT,
-                secret_key=SecretStr(FlextWebConstants.WebSpecific.DEV_SECRET_KEY),
-            )
-            # Ensure it's properly typed as FlextWebConfig
-            if not isinstance(config, cls):
-                return FlextResult[FlextWebConfig].fail(
-                    f"Failed to create proper {cls.__name__} instance"
-                )
-            return FlextResult[FlextWebConfig].ok(config)
-        except Exception as e:
-            # Log and return failure result
-            logger = FlextLogger(__name__)
-            logger.warning("Development config creation failed", error=str(e))
-            return FlextResult[FlextWebConfig].fail(
-                f"Failed to create development config: {e}"
-            )
-
-    @classmethod
-    def create_for_environment(
-        cls, environment: str, **kwargs: object
-    ) -> FlextWebConfig:
-        """Create web configuration optimized for specific environment."""
-        if environment == "development":
-            result = cls.create_development_config()
-            if result.is_failure:
-                error_msg = f"Failed to create development config: {result.error}"
-                raise ValueError(error_msg)
-            config = result.unwrap()
-            # Apply additional kwargs
-            if kwargs:
-                for key, value in kwargs.items():
-                    if hasattr(config, key):
-                        setattr(config, key, value)
-            return config
-        if environment == "production":
-            # Production config with security defaults
-            return cls(
-                debug=False,
-                development_mode=False,
-                web_environment="production",
-                host=FlextWebConstants.WebSpecific.ALL_INTERFACES,
-                port=FlextWebConstants.WebServer.DEFAULT_PORT,
-                ssl_enabled=False,  # Disable SSL for testing - should be enabled in real production
-                session_cookie_secure=False,  # Disable secure cookies when SSL is disabled
-                enable_cors=False,
-                secret_key=SecretStr(
-                    FlextWebConstants.WebSpecific.DEV_SECRET_KEY
-                ),  # Should be overridden
-                **kwargs,
-            )
-        # Default config - use explicit FlextWebConfig parameters
-        return cls(
-            host=FlextWebConstants.WebServer.DEFAULT_HOST,
-            port=FlextWebConstants.WebServer.DEFAULT_PORT,
-            **kwargs,
-        )
-
     # Business rules validation
     def validate_business_rules(self) -> FlextResult[None]:
         """Validate web configuration business rules.
@@ -539,20 +428,13 @@ class FlextWebConfig(FlextConfig):
         if self.enable_cors and not self.cors_origins:
             return FlextResult[None].fail("CORS origins required when CORS is enabled")
 
-        # Environment-specific validation
-        if self.web_environment == "production":
-            if self.debug:
-                return FlextResult[None].fail(
-                    "Debug mode should not be enabled in production web environment"
-                )
-            if not self.secret_key:
-                return FlextResult[None].fail(
-                    "Secret key required for production web environment"
-                )
-            if self.enable_cors and "*" in self.cors_origins:
-                return FlextResult[None].fail(
-                    "Wildcard CORS origins not allowed in production"
-                )
+        # Security validation
+        if self.debug and not self.secret_key:
+            return FlextResult[None].fail(
+                "Secret key required when debug mode is enabled"
+            )
+        if self.enable_cors and "*" in self.cors_origins:
+            return FlextResult[None].fail("Wildcard CORS origins not recommended")
 
         # Session security validation
         if self.ssl_enabled and not self.session_cookie_secure:
@@ -604,8 +486,6 @@ class FlextWebConfig(FlextConfig):
                 "log_format": self.log_format,
                 "base_url": str(self.base_url),
                 "protocol": str(self.protocol),
-                "is_development": self.is_development(),
-                "is_production": self.is_production(),
                 "cache_config": {},  # Placeholder for future cache configuration
                 "security_config": self.get_security_config(),
             }

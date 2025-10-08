@@ -282,8 +282,8 @@ def demo_application_lifecycle() -> None:
     list_applications()
 
     # Start applications and check results
-    start_result1 = start_application(app1["id"])
-    start_result2 = start_application(app2["id"])
+    start_result1 = start_application(str(app1["id"]))  # type: ignore[index]
+    start_result2 = start_application(str(app2["id"]))  # type: ignore[index]
 
     if start_result1:
         print(f"✅ Application {app1['name']} started successfully")
@@ -297,7 +297,7 @@ def demo_application_lifecycle() -> None:
 
     # Check individual status with proper error handling
     for app_data in [app1, app2]:
-        app_id: str = app_data["id"]
+        app_id: str = str(app_data["id"])
         status: FlextWebTypes.AppData | None = get_application_status(app_id)
         if status:
             "🟢" if status.get("is_running") else "🔴"
@@ -305,8 +305,8 @@ def demo_application_lifecycle() -> None:
     list_applications()
 
     # Stop applications
-    stop_result1 = stop_application(app1["id"])
-    stop_result2 = stop_application(app2["id"])
+    stop_result1 = stop_application(str(app1["id"]))  # type: ignore[index]
+    stop_result2 = stop_application(str(app2["id"]))  # type: ignore[index]
 
     if stop_result1:
         print(f"✅ Application {app1['name']} stopped successfully")

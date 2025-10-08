@@ -149,13 +149,6 @@ class EnterpriseWebConfig(FlextWebConfig):
         if not result.success:
             return result
 
-        # Enterprise-specific validations
-        if self.is_production():
-            if 'localhost' in self.host:
-                return FlextResult[None].fail("Production cannot bind to localhost")
-            if self.debug:
-                return FlextResult[None].fail("Debug mode not allowed in production")
-
         return FlextResult[None].ok(None)
 
 def deploy_enterprise_service():

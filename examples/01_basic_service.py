@@ -5,7 +5,7 @@ Simple example demonstrating how to start the FLEXT Web Interface service
 with default configuration for development purposes using the refactored API.
 """
 
-from flext_web import FlextWebConfig, FlextWebServices
+from flext_web import FlextWebConfig, FlextWebService
 
 
 def main() -> None:
@@ -18,7 +18,7 @@ def main() -> None:
     config = config_result.value
 
     # Create service using the refactored factory function
-    service_result = FlextWebServices.create_web_service(config.model_dump())
+    service_result = FlextWebService.create_web_service(config.model_dump())
     if service_result.is_failure:
         print(f"Service creation failed: {service_result.error}")
         return
@@ -26,10 +26,11 @@ def main() -> None:
 
     try:
         # Start service with configuration already set during service creation
-        service.run()
+        service.start_service("127.0.0.1", 8000, debug=True)
     except KeyboardInterrupt:
         return
-    except Exception:
+    except Exception as e:
+        print(f"Service error: {e}")
         raise
 
 
