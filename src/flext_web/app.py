@@ -19,9 +19,9 @@ Integration Pattern:
     app = create_fastapi_app(config)
 
     # With authentication
-    from flext_auth import OAuth2AuthProvider, WebAuthMiddleware
+    from flext_auth import FlextAuthOAuth2Provider, WebAuthMiddleware
 
-    auth_provider = OAuth2AuthProvider(...)
+    auth_provider = FlextAuthOAuth2Provider(...)
     auth_middleware = WebAuthMiddleware(provider=auth_provider)
 
     config = FlextWebModels.AppConfig(
@@ -36,11 +36,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-try:
-    from fastapi import FastAPI
-except ImportError:
-    FastAPI = None
-
+from fastapi import FastAPI
 from flext_core import FlextLogger, FlextResult, FlextTypes
 
 from flext_web.models import FlextWebModels
@@ -96,11 +92,6 @@ class FlextWebApp:
                 FlextResult with FastAPI application or error
 
             """
-            if FastAPI is None:
-                return FlextResult[object].fail(
-                    "FastAPI is required for FlextWeb application creation"
-                )
-
             try:
                 app = FastAPI(
                     title=title or "FlextWeb FastAPI",
@@ -138,10 +129,10 @@ class FlextWebApp:
         Example:
             >>> from flext_web import FlextWebApp
             >>> from flext_web.models import FlextWebModels
-            >>> from flext_auth import JwtAuthProvider, WebAuthMiddleware
+            >>> from flext_auth import FlextAuthJwtProvider, WebAuthMiddleware
             >>>
             >>> # Create with authentication
-            >>> auth = WebAuthMiddleware(JwtAuthProvider(secret="key"))
+            >>> auth = WebAuthMiddleware(FlextAuthJwtProvider(secret="key"))
             >>> config = FlextWebModels.AppConfig(
             ...     title="Secure API", version="1.0.0", middlewares=[auth]
             ... )

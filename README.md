@@ -159,9 +159,9 @@ if result.is_success:
     # uvicorn.run(app, host="0.0.0.0", port=8000)
 
 # With authentication middleware
-from flext_auth import OAuth2AuthProvider, WebAuthMiddleware
+from flext_auth import FlextAuthOAuth2Provider, WebAuthMiddleware
 
-auth_provider = OAuth2AuthProvider(
+auth_provider = FlextAuthOAuth2Provider(
     client_id="your-client-id",
     client_secret="your-client-secret",
     authorization_url="https://auth.example.com/oauth/authorize",

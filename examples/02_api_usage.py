@@ -282,8 +282,8 @@ def demo_application_lifecycle() -> None:
     list_applications()
 
     # Start applications and check results
-    start_result1 = start_application(str(app1["id"]))  # type: ignore[index]
-    start_result2 = start_application(str(app2["id"]))  # type: ignore[index]
+    start_result1 = start_application(str(app1["id"]))
+    start_result2 = start_application(str(app2["id"]))
 
     if start_result1:
         print(f"✅ Application {app1['name']} started successfully")
@@ -305,8 +305,8 @@ def demo_application_lifecycle() -> None:
     list_applications()
 
     # Stop applications
-    stop_result1 = stop_application(str(app1["id"]))  # type: ignore[index]
-    stop_result2 = stop_application(str(app2["id"]))  # type: ignore[index]
+    stop_result1 = stop_application(str(app1["id"]))
+    stop_result2 = stop_application(str(app2["id"]))
 
     if stop_result1:
         print(f"✅ Application {app1['name']} stopped successfully")

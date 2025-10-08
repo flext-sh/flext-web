@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import json
 import re
 import uuid
 from datetime import UTC, datetime
@@ -168,10 +169,6 @@ class FlextWebModels(FlextModels):
         version: int = Field(
             default=1,
             description="Application version",
-        )
-        environment: str = Field(
-            default="development",
-            description="Deployment environment",
         )
         health_check_url: str | None = Field(
             default=None,
@@ -649,8 +646,6 @@ class FlextWebModels(FlextModels):
                     self.content_length = len(self.body.encode("utf-8"))
                 elif isinstance(self.body, dict):
                     # For dict bodies, calculate length as if JSON serialized
-                    import json
-
                     self.content_length = len(json.dumps(self.body).encode("utf-8"))
                 else:
                     # For other types, convert to string
