@@ -5,6 +5,8 @@ SPDX-License-Identifier: MIT.
 
 from __future__ import annotations
 
+from flext_web.__version__ import __version__, __version_info__
+
 from typing import Final
 
 from flext_web.api import FlextWeb
@@ -19,16 +21,8 @@ from flext_web.protocols import FlextWebProtocols
 from flext_web.services import FlextWebService
 from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
-from flext_web.version import VERSION, FlextWebVersion
-
-PROJECT_VERSION: Final[FlextWebVersion] = VERSION
-
-__version__: str = VERSION.version
-__version_info__: tuple[int | str, ...] = VERSION.version_info
 
 __all__ = [
-    "PROJECT_VERSION",
-    "VERSION",
     "FlextWeb",
     "FlextWebApp",
     "FlextWebConfig",
@@ -41,7 +35,6 @@ __all__ = [
     "FlextWebService",
     "FlextWebTypes",
     "FlextWebUtilities",
-    "FlextWebVersion",
     "__version__",
     "__version_info__",
 ]
