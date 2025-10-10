@@ -6,18 +6,13 @@ SPDX-License-Identifier: MIT.
 from __future__ import annotations
 
 from flext_web.__version__ import __version__, __version_info__
-
-from typing import Final
-
 from flext_web.api import FlextWeb
 from flext_web.app import FlextWebApp
 from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
-from flext_web.exceptions import FlextWebExceptions
 from flext_web.fields import FlextWebFields
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels
-from flext_web.protocols import FlextWebProtocols
 from flext_web.services import FlextWebService
 from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
@@ -27,11 +22,9 @@ __all__ = [
     "FlextWebApp",
     "FlextWebConfig",
     "FlextWebConstants",
-    "FlextWebExceptions",
     "FlextWebFields",
     "FlextWebHandlers",
     "FlextWebModels",
-    "FlextWebProtocols",
     "FlextWebService",
     "FlextWebTypes",
     "FlextWebUtilities",
