@@ -16,7 +16,7 @@ try:
         FlextRegistry,
     )
 
-    from flext_web import WebService
+    from flext_web import FlextWebService
 
     container = FlextContainer.get_global()
 
@@ -30,7 +30,7 @@ try:
 
     registry = FlextRegistry(dispatcher=dispatcher)
 
-    result = WebService.create_web_service()
+    result = FlextWebService.create_web_service()
 
 
 except Exception:

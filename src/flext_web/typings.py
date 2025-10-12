@@ -282,7 +282,7 @@ class FlextWebTypes:
         """
 
         # Web-specific project types extending the generic ones
-        type WebProjectType = FlextWebConstants.WebTypes.WebAppType
+        type WebProjectType = FlextWebConstants.WebEnvironment.WebAppType
 
         # Web-specific project configurations
         type WebProjectConfig = dict[str, FlextCore.Types.ConfigValue | object]

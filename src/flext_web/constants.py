@@ -52,6 +52,9 @@ class FlextWebConstants(FlextCore.Constants):
 
         # Default Keys (32+ characters for security)
         DEFAULT_SECRET_KEY: str = "default-secret-key-32-characters-long-for-security"
+        DEV_SECRET_KEY: str = "dev-secret-key-32-characters-long-for-dev-environment"
+        DEV_ENVIRONMENT_KEY: str = "dev-environment-key-32-characters-long-for-dev"
+        TEST_ENVIRONMENT_KEY: str = "test-environment-key-32-characters-long-for-test"
 
         # Network Configuration
         # Note: Binding to all interfaces (0.0.0.0) is legitimate for web servers
@@ -65,8 +68,16 @@ class FlextWebConstants(FlextCore.Constants):
     # WEB TYPES - Type definitions for web applications
     # =============================================================================
 
-    class WebTypes:
-        """Web type definitions."""
+    class WebEnvironment:
+        """Web environment type definitions."""
+
+        # Environment Types
+        type EnvironmentType = Literal[
+            "development",
+            "staging",
+            "production",
+            "testing",
+        ]
 
         # Web Application Types
         type WebAppType = Literal[
