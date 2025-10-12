@@ -8,11 +8,11 @@ from __future__ import annotations
 
 from typing import ClassVar, Literal
 
-from flext_core import FlextConstants
+from flext_core import FlextCore
 
 
-class FlextWebConstants(FlextConstants):
-    """Enhanced web domain-specific constants extending FlextConstants.
+class FlextWebConstants(FlextCore.Constants):
+    """Enhanced web domain-specific constants extending FlextCore.Constants.
 
     Contains comprehensive constants for FLEXT web applications with
     enhanced organization, validation limits, and security considerations.
@@ -54,7 +54,9 @@ class FlextWebConstants(FlextConstants):
         DEFAULT_SECRET_KEY: str = "default-secret-key-32-characters-long-for-security"
 
         # Network Configuration
-        ALL_INTERFACES: str = "0.0.0.0"
+        # Note: Binding to all interfaces (0.0.0.0) is legitimate for web servers
+        # that need to accept connections from any network interface
+        ALL_INTERFACES: str = "0.0.0.0"  # noqa: S104
         LOCALHOST_IP: str = "127.0.0.1"
         SYSTEM_PORTS_THRESHOLD: int = 1023
         PRIVILEGED_PORTS_MAX: int = 1023
@@ -103,9 +105,16 @@ class FlextWebConstants(FlextConstants):
         """Web security constants and validation rules."""
 
         # CORS Configuration
-        CORS_DEFAULT_ORIGINS: ClassVar[list[str]] = ["*"]
-        CORS_SAFE_METHODS: ClassVar[list[str]] = ["GET", "HEAD", "OPTIONS"]
-        CORS_SAFE_HEADERS: ClassVar[list[str]] = ["Content-Type", "Authorization"]
+        CORS_DEFAULT_ORIGINS: ClassVar[FlextCore.Types.StringList] = ["*"]
+        CORS_SAFE_METHODS: ClassVar[FlextCore.Types.StringList] = [
+            "GET",
+            "HEAD",
+            "OPTIONS",
+        ]
+        CORS_SAFE_HEADERS: ClassVar[FlextCore.Types.StringList] = [
+            "Content-Type",
+            "Authorization",
+        ]
 
         # Session Security
         SESSION_COOKIE_SECURE_DEFAULT: bool = False

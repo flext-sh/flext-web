@@ -37,7 +37,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from fastapi import FastAPI
-from flext_core import FlextLogger, FlextResult, FlextTypes
+from flext_core import FlextCore
 
 from flext_web.models import FlextWebModels
 
@@ -77,7 +77,7 @@ class FlextWebApp:
             docs_url: str | None = None,
             redoc_url: str | None = None,
             openapi_url: str | None = None,
-        ) -> FlextResult[object]:
+        ) -> FlextCore.Result[object]:
             """Create FastAPI application instance.
 
             Args:
@@ -89,7 +89,7 @@ class FlextWebApp:
                 openapi_url: OpenAPI JSON URL (default: /openapi.json)
 
             Returns:
-                FlextResult with FastAPI application or error
+                FlextCore.Result with FastAPI application or error
 
             """
             try:
@@ -102,15 +102,17 @@ class FlextWebApp:
                     openapi_url=openapi_url or "/openapi.json",
                 )
 
-                return FlextResult[object].ok(app)
+                return FlextCore.Result[object].ok(app)
 
             except Exception as e:
-                return FlextResult[object].fail(
+                return FlextCore.Result[object].fail(
                     f"Failed to create FastAPI application: {e}"
                 )
 
     @staticmethod
-    def create_fastapi_app(config: FlextWebModels.AppConfig) -> FlextResult[object]:
+    def create_fastapi_app(
+        config: FlextWebModels.AppConfig,
+    ) -> FlextCore.Result[object]:
         """Create FastAPI application with flext-core integration.
 
         This is the main entry point for creating FastAPI applications in the
@@ -124,7 +126,7 @@ class FlextWebApp:
             config: Application configuration with title, version, middlewares, etc.
 
         Returns:
-            FlextResult with configured FastAPI application or error
+            FlextCore.Result with configured FastAPI application or error
 
         Example:
             >>> from flext_web import FlextWebApp
@@ -139,7 +141,7 @@ class FlextWebApp:
             >>> result = FlextWebApp.create_fastapi_app(config)
 
         """
-        logger = FlextLogger(__name__)
+        logger = FlextCore.Logger(__name__)
 
         logger.info(
             "Creating FastAPI application",
@@ -165,7 +167,7 @@ class FlextWebApp:
         # Add health check endpoint
         if hasattr(app, "get") and hasattr(app, "add_api_route"):
 
-            def health_check() -> FlextTypes.StringDict:
+            def health_check() -> FlextCore.Types.StringDict:
                 """Health check endpoint."""
                 return {"status": "healthy", "service": "flext-web"}
 
@@ -189,7 +191,7 @@ class FlextWebApp:
 
         logger.info("FastAPI application created successfully")
 
-        return FlextResult[object].ok(app)
+        return FlextCore.Result[object].ok(app)
 
 
 __all__ = [

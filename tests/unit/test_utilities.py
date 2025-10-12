@@ -10,11 +10,10 @@ class TestFlextWebUtilities:
     """Test suite for FlextWebUtilities unified class."""
 
     def test_utilities_inheritance(self) -> None:
-        """Test that FlextWebUtilities inherits from FlextUtilities."""
-        # Should have access to base FlextUtilities
+        """Test that FlextWebUtilities inherits from FlextCore.Utilities."""
+        # Should have access to base FlextCore.Utilities
         assert hasattr(FlextWebUtilities, "Generators")
         assert hasattr(FlextWebUtilities, "TextProcessor")
-        assert hasattr(FlextWebUtilities, "Validators")
 
     def test_slugify_method(self) -> None:
         """Test _slugify method."""
@@ -59,58 +58,6 @@ class TestFlextWebUtilities:
         # Test with special characters
         result = FlextWebUtilities.format_app_id("Test@App#Name!")
         assert result == "app_testappname"
-
-    def test_validate_app_name(self) -> None:
-        """Test validate_app_name method."""
-        # Test valid app names
-        assert FlextWebUtilities.validate_app_name("test-app") is True
-        assert FlextWebUtilities.validate_app_name("my_service") is True
-        assert FlextWebUtilities.validate_app_name("api-server") is True
-
-        # Test invalid app names
-        assert FlextWebUtilities.validate_app_name(None) is False
-        assert FlextWebUtilities.validate_app_name("") is False
-        assert FlextWebUtilities.validate_app_name("   ") is False
-
-    def test_validate_port_range(self) -> None:
-        """Test validate_port_range method."""
-        # Test valid ports
-        assert FlextWebUtilities.validate_port_range(1024) is True
-        assert FlextWebUtilities.validate_port_range(3000) is True
-        assert FlextWebUtilities.validate_port_range(8080) is True
-        assert FlextWebUtilities.validate_port_range(65535) is True
-
-        # Test invalid ports
-        assert FlextWebUtilities.validate_port_range(0) is False
-        assert FlextWebUtilities.validate_port_range(1023) is False
-        assert FlextWebUtilities.validate_port_range(65536) is False
-
-    def test_validate_url(self) -> None:
-        """Test validate_url method."""
-        # Test valid URLs
-        assert FlextWebUtilities.validate_url("https://example.com") is True
-        assert FlextWebUtilities.validate_url("http://localhost:8080") is True
-        assert FlextWebUtilities.validate_url("https://api.example.com/v1") is True
-
-        # Test invalid URLs
-        assert FlextWebUtilities.validate_url("") is False
-        assert FlextWebUtilities.validate_url("not-a-url") is False
-        assert FlextWebUtilities.validate_url("ftp://example.com") is False
-        assert FlextWebUtilities.validate_url("example.com") is False
-
-    def test_validate_host_format(self) -> None:
-        """Test validate_host_format method."""
-        # Test valid hosts
-        assert FlextWebUtilities.validate_host_format("localhost") is True
-        assert FlextWebUtilities.validate_host_format("127.0.0.1") is True
-        assert FlextWebUtilities.validate_host_format("0.0.0.0") is True
-        assert FlextWebUtilities.validate_host_format("example.com") is True
-        assert FlextWebUtilities.validate_host_format("api.example.com") is True
-
-        # Test invalid hosts
-        assert FlextWebUtilities.validate_host_format("") is False
-        assert FlextWebUtilities.validate_host_format("   ") is False
-        assert FlextWebUtilities.validate_host_format("invalid@host") is False
 
     def test_sanitize_request_data(self) -> None:
         """Test sanitize_request_data method."""
@@ -193,10 +140,10 @@ class TestFlextWebUtilities:
 
     def test_handle_flext_result(self) -> None:
         """Test handle_flext_result method."""
-        from flext_core import FlextResult
+        from flext_core import FlextCore
 
         # Test with success result
-        success_result = FlextResult[str].ok("Success data")
+        success_result = FlextCore.Result[str].ok("Success data")
         result = FlextWebUtilities.handle_flext_result(success_result)
 
         assert isinstance(result, dict)
@@ -205,7 +152,7 @@ class TestFlextWebUtilities:
         assert result["data"] == "Success data"
 
         # Test with failure result
-        failure_result = FlextResult[str].fail("Error message")
+        failure_result = FlextCore.Result[str].fail("Error message")
         result = FlextWebUtilities.handle_flext_result(failure_result)
 
         assert isinstance(result, dict)
@@ -250,69 +197,23 @@ class TestFlextWebUtilities:
         assert result.is_failure
         assert "Invalid host" in result.error
 
-    def test_utilities_integration_patterns(self) -> None:
-        """Test FlextWebUtilities integration patterns."""
-        # All methods should return appropriate types
-        methods_to_test = [
-            lambda: FlextWebUtilities.validate_app_name("test"),
-            lambda: FlextWebUtilities.validate_port_range(8080),
-            lambda: FlextWebUtilities.validate_url("https://example.com"),
-            lambda: FlextWebUtilities.validate_host_format("localhost"),
-        ]
-
-        for method in methods_to_test:
-            result = method()
-            assert isinstance(result, bool)
-
-    def test_utilities_error_handling(self) -> None:
-        """Test FlextWebUtilities error handling."""
-        # Test with None inputs
-        assert FlextWebUtilities.validate_app_name(None) is False
-        assert FlextWebUtilities.validate_url(None) is False
-        assert FlextWebUtilities.validate_host_format(None) is False
-
     def test_utilities_logging_integration(self) -> None:
         """Test FlextWebUtilities logging integration."""
-        # Should have access to FlextUtilities logging
+        # Should have access to FlextCore.Utilities logging
         assert hasattr(FlextWebUtilities, "Generators")
         assert hasattr(FlextWebUtilities.Generators, "generate_iso_timestamp")
-
-    def test_utilities_type_consistency(self) -> None:
-        """Test FlextWebUtilities type consistency."""
-        # All methods should return consistent types
-        assert isinstance(FlextWebUtilities.format_app_id("test"), str)
-        assert isinstance(FlextWebUtilities.generate_app_id("test"), str)
-        assert isinstance(FlextWebUtilities.validate_app_name("test"), bool)
-        assert isinstance(FlextWebUtilities.validate_port_range(8080), bool)
-        assert isinstance(FlextWebUtilities.validate_url("https://example.com"), bool)
-        assert isinstance(FlextWebUtilities.validate_host_format("localhost"), bool)
 
     def test_utilities_edge_cases(self) -> None:
         """Test FlextWebUtilities edge cases."""
         # Test empty string handling
-        assert FlextWebUtilities.validate_app_name("") is False
         assert FlextWebUtilities.format_app_id("") == "app_default"
 
         # Test whitespace handling
-        assert FlextWebUtilities.validate_app_name("   ") is False
         assert FlextWebUtilities.format_app_id("   ") == "app_default"
 
         # Test special character handling
         result = FlextWebUtilities.format_app_id("Test@App#Name!")
         assert result == "app_testappname"
-
-    def test_utilities_performance(self) -> None:
-        """Test FlextWebUtilities performance."""
-        # Test that methods complete quickly
-        import time
-
-        start_time = time.time()
-        for _ in range(100):
-            FlextWebUtilities.validate_app_name("test-app")
-        end_time = time.time()
-
-        # Should complete quickly (less than 1 second for 100 iterations)
-        assert end_time - start_time < 1.0
 
     def test_utilities_consistency(self) -> None:
         """Test FlextWebUtilities consistency."""

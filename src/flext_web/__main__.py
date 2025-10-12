@@ -9,12 +9,12 @@ from __future__ import annotations
 import argparse
 import sys
 
-from flext_core import FlextConstants, FlextLogger
+from flext_core import FlextCore
 
 from flext_web.config import FlextWebConfig
 from flext_web.services import FlextWebService
 
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -101,7 +101,7 @@ def main() -> None:
         debug = config.debug
 
     # Validate port
-    max_port_number = FlextConstants.Network.MAX_PORT
+    max_port_number = FlextCore.Constants.Network.MAX_PORT
     if not (1 <= port <= max_port_number):
         logger.error("Port must be between 1 and 65535")
         sys.exit(1)

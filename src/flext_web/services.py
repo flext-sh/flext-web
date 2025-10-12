@@ -6,18 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import (
-    FlextBus,
-    FlextConstants,
-    FlextContainer,
-    FlextDispatcher,
-    FlextLogger,
-    FlextProcessors,
-    FlextRegistry,
-    FlextResult,
-    FlextTypes,
-    FlextUtilities,
-)
+from flext_core import FlextCore
 from pydantic import SecretStr, ValidationError
 
 from flext_web.config import FlextWebConfig
@@ -32,10 +21,10 @@ class FlextWebService:
     WebServiceInterface protocol while providing comprehensive web functionality.
 
     **PROTOCOL COMPLIANCE**: Implements FlextWebProtocols.Web.WebServiceInterface,
-    extending FlextProtocols.Domain.Service with web-specific lifecycle operations.
+    extending FlextCore.Protocols.Domain.Service with web-specific lifecycle operations.
 
     **FLEXT-CORE INTEGRATION**: Uses complete flext-core API surface including
-    FlextBus, FlextDispatcher, FlextProcessors, FlextRegistry, and more.
+    FlextCore.Bus, FlextCore.Dispatcher, FlextCore.Processors, FlextCore.Registry, and more.
 
     **MODULE-ONLY-ONE-CLASS COMPLIANCE**: This is the ONLY top-level class in this module.
     """
@@ -50,33 +39,35 @@ class FlextWebService:
 
         def __init__(self) -> None:
             """Initialize mock authentication service."""
-            self._users: dict[str, dict[str, object]] = {}
+            self._users: dict[str, FlextCore.Types.Dict] = {}
             self._tokens: dict[str, str] = {}
 
         def authenticate_user(
             self, username: str, password: str
-        ) -> FlextResult[FlextTypes.Dict]:
+        ) -> FlextCore.Result[FlextCore.Types.Dict]:
             """Mock user authentication."""
             if username in self._users:
                 user = self._users[username]
                 if user.get("password") == password:
-                    token = f"mock_token_{username}_{FlextUtilities.Generators.generate_uuid()}"
+                    token = f"mock_token_{username}_{FlextCore.Utilities.Generators.generate_uuid()}"
                     self._tokens[token] = username
-                    return FlextResult[FlextTypes.Dict].ok({
+                    return FlextCore.Result[FlextCore.Types.Dict].ok({
                         "token": token,
                         "user_id": user.get("id"),
                         "username": username,
                     })
-            return FlextResult[FlextTypes.Dict].fail("Invalid credentials")
+            return FlextCore.Result[FlextCore.Types.Dict].fail("Invalid credentials")
 
         def register_user(
             self, username: str, email: str, password: str
-        ) -> FlextResult[FlextTypes.Dict]:
+        ) -> FlextCore.Result[FlextCore.Types.Dict]:
             """Mock user registration."""
             if username in self._users:
-                return FlextResult[FlextTypes.Dict].fail("User already exists")
+                return FlextCore.Result[FlextCore.Types.Dict].fail(
+                    "User already exists"
+                )
 
-            user_id = f"user_{FlextUtilities.Generators.generate_uuid()}"
+            user_id = f"user_{FlextCore.Utilities.Generators.generate_uuid()}"
             self._users[username] = {
                 "id": user_id,
                 "username": username,
@@ -84,7 +75,7 @@ class FlextWebService:
                 "password": password,  # In real auth, this would be hashed
             }
 
-            return FlextResult[FlextTypes.Dict].ok({
+            return FlextCore.Result[FlextCore.Types.Dict].ok({
                 "id": user_id,
                 "username": username,
                 "email": email,
@@ -98,13 +89,15 @@ class FlextWebService:
 
         """
         # Complete flext-core integration (MANDATORY usage of all available exports)
-        self._container = FlextContainer.get_global()
-        self._web_logger: FlextLogger = FlextLogger(__name__)
-        self._web_bus: FlextBus = FlextBus()
-        self._dispatcher: FlextDispatcher = FlextDispatcher()
-        # CQRS functionality provided by FlextBus, FlextDispatcher, and FlextHandlers
-        self._processors: FlextProcessors = FlextProcessors()
-        self._registry: FlextRegistry = FlextRegistry(dispatcher=self._dispatcher)
+        self._container = FlextCore.Container.get_global()
+        self._web_logger: FlextCore.Logger = FlextCore.Logger(__name__)
+        self._web_bus: FlextCore.Bus = FlextCore.Bus()
+        self._dispatcher: FlextCore.Dispatcher = FlextCore.Dispatcher()
+        # CQRS functionality provided by FlextCore.Bus, FlextCore.Dispatcher, and FlextCore.Handlers
+        self._processors: FlextCore.Processors = FlextCore.Processors()
+        self._registry: FlextCore.Registry = FlextCore.Registry(
+            dispatcher=self._dispatcher
+        )
 
         # Web service components using unified patterns
         self.apps: dict[str, FlextWebModels.WebApp] = {}
@@ -187,7 +180,7 @@ class FlextWebService:
 
         # Start service using flext-core bus and registry
         self._service_running = True
-        # Note: FlextBus.publish method may not exist, using alternative approach
+        # Note: FlextCore.Bus.publish method may not exist, using alternative approach
         # self._web_bus.publish(
         #     "web_service.started", {"host": host, "port": port, "debug": debug}
         # )
@@ -212,7 +205,7 @@ class FlextWebService:
 
         # Stop service using flext-core bus
         self._service_running = False
-        # Note: FlextBus.publish method may not exist, using alternative approach
+        # Note: FlextCore.Bus.publish method may not exist, using alternative approach
         # self._web_bus.publish("web_service.stopped", {})
 
         self._web_logger.info("Web service stopped gracefully via protocol")
@@ -233,37 +226,41 @@ class FlextWebService:
                 raise RuntimeError(error_msg) from e
         return self._auth
 
-    def login(self, request_data: dict[str, object]) -> FlextResult[FlextTypes.Dict]:
-        """User login with unified FlextResult error handling."""
+    def login(
+        self, request_data: FlextCore.Types.Dict
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
+        """User login with unified FlextCore.Result error handling."""
         username = request_data.get("username")
         password = request_data.get("password")
 
         if not isinstance(username, str) or not isinstance(password, str):
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 "Username and password must be strings"
             )
 
         auth_result = self.auth.authenticate_user(username=username, password=password)
         if auth_result.is_failure:
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 f"Authentication failed: {auth_result.error}"
             )
 
         auth_token = auth_result.value
-        return FlextResult[FlextTypes.Dict].ok({
+        return FlextCore.Result[FlextCore.Types.Dict].ok({
             "success": True,
             "message": "Login successful",
             "token": auth_token.get("token", ""),
         })
 
-    def logout(self) -> FlextResult[FlextTypes.Dict]:
+    def logout(self) -> FlextCore.Result[FlextCore.Types.Dict]:
         """User logout with unified error handling."""
-        return FlextResult[FlextTypes.Dict].ok({
+        return FlextCore.Result[FlextCore.Types.Dict].ok({
             "success": True,
             "message": "Logout successful",
         })
 
-    def register(self, request_data: dict[str, object]) -> FlextResult[FlextTypes.Dict]:
+    def register(
+        self, request_data: FlextCore.Types.Dict
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """User registration with unified error handling."""
         username = request_data.get("username")
         email = request_data.get("email")
@@ -274,7 +271,7 @@ class FlextWebService:
             or not isinstance(email, str)
             or not isinstance(password, str)
         ):
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 "Username, email, and password must be strings"
             )
 
@@ -282,12 +279,12 @@ class FlextWebService:
             username=username, email=email, password=password
         )
         if register_result.is_failure:
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 f"Registration failed: {register_result.error}"
             )
 
         user = register_result.value
-        return FlextResult[FlextTypes.Dict].ok({
+        return FlextCore.Result[FlextCore.Types.Dict].ok({
             "success": True,
             "message": "Registration successful",
             "user": {
@@ -299,31 +296,31 @@ class FlextWebService:
 
     # WEB ENDPOINTS (using unified patterns)
 
-    def health_check(self) -> FlextResult[FlextTypes.Dict]:
+    def health_check(self) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Health check with unified error handling."""
-        return FlextResult[FlextTypes.Dict].ok({
+        return FlextCore.Result[FlextCore.Types.Dict].ok({
             "status": "healthy",
             "service": "flext-web",
-            "version": FlextConstants.Core.VERSION,
-            "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+            "version": FlextCore.Constants.VERSION,
+            "timestamp": FlextCore.Utilities.Generators.generate_iso_timestamp(),
         })
 
-    def dashboard(self) -> FlextResult[FlextTypes.Dict]:
+    def dashboard(self) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Web dashboard data with unified error handling."""
         apps_data = list(self.apps.values())
         app_count = len(apps_data)
         running_count = sum(1 for app in apps_data if bool(app.is_running))
 
-        return FlextResult[FlextTypes.Dict].ok({
+        return FlextCore.Result[FlextCore.Types.Dict].ok({
             "total_applications": app_count,
             "running_applications": running_count,
             "service_status": "operational",
-            "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+            "timestamp": FlextCore.Utilities.Generators.generate_iso_timestamp(),
         })
 
     # API ENDPOINTS (using unified patterns)
 
-    def list_apps(self) -> FlextResult[FlextTypes.Dict]:
+    def list_apps(self) -> FlextCore.Result[FlextCore.Types.Dict]:
         """List all applications with unified error handling."""
         apps_list = [
             {
@@ -337,33 +334,35 @@ class FlextWebService:
             for app in self.apps.values()
         ]
 
-        return FlextResult[FlextTypes.Dict].ok({"apps": apps_list})
+        return FlextCore.Result[FlextCore.Types.Dict].ok({"apps": apps_list})
 
     def create_app(
-        self, request_data: dict[str, object]
-    ) -> FlextResult[FlextTypes.Dict]:
+        self, request_data: FlextCore.Types.Dict
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Create new application with unified error handling."""
         name = request_data.get("name")
         host = request_data.get("host", "localhost")
         port = request_data.get("port", 8080)
 
         if not isinstance(name, str):
-            return FlextResult[FlextTypes.Dict].fail("Name must be a string")
+            return FlextCore.Result[FlextCore.Types.Dict].fail("Name must be a string")
         if not isinstance(host, str):
-            return FlextResult[FlextTypes.Dict].fail("Host must be a string")
+            return FlextCore.Result[FlextCore.Types.Dict].fail("Host must be a string")
         if not isinstance(port, int):
-            return FlextResult[FlextTypes.Dict].fail("Port must be an integer")
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
+                "Port must be an integer"
+            )
 
         create_result = self.app_handler.create(name, port, host)
         if create_result.is_failure:
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 create_result.error or "Failed to create application"
             )
 
         app = create_result.unwrap()
         self.apps[app.id] = app
 
-        return FlextResult[FlextTypes.Dict].ok({
+        return FlextCore.Result[FlextCore.Types.Dict].ok({
             "id": app.id,
             "name": app.name,
             "host": app.host,
@@ -371,13 +370,13 @@ class FlextWebService:
             "status": app.status,
         })
 
-    def get_app(self, app_id: str) -> FlextResult[FlextTypes.Dict]:
+    def get_app(self, app_id: str) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Get application by ID with unified error handling."""
         if app_id not in self.apps:
-            return FlextResult[FlextTypes.Dict].fail("Application not found")
+            return FlextCore.Result[FlextCore.Types.Dict].fail("Application not found")
 
         app = self.apps[app_id]
-        return FlextResult[FlextTypes.Dict].ok({
+        return FlextCore.Result[FlextCore.Types.Dict].ok({
             "id": app.id,
             "name": app.name,
             "host": app.host,
@@ -386,43 +385,43 @@ class FlextWebService:
             "is_running": app.is_running,
         })
 
-    def start_app(self, app_id: str) -> FlextResult[FlextTypes.Dict]:
+    def start_app(self, app_id: str) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Start application with unified error handling."""
         if app_id not in self.apps:
-            return FlextResult[FlextTypes.Dict].fail("Application not found")
+            return FlextCore.Result[FlextCore.Types.Dict].fail("Application not found")
 
         app = self.apps[app_id]
         start_result = self.app_handler.start(app)
         if start_result.is_failure:
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 start_result.error or "Failed to start application"
             )
 
         updated_app = start_result.unwrap()
         self.apps[app_id] = updated_app
 
-        return FlextResult[FlextTypes.Dict].ok({
+        return FlextCore.Result[FlextCore.Types.Dict].ok({
             "id": updated_app.id,
             "name": updated_app.name,
             "status": updated_app.status,
         })
 
-    def stop_app(self, app_id: str) -> FlextResult[FlextTypes.Dict]:
+    def stop_app(self, app_id: str) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Stop application with unified error handling."""
         if app_id not in self.apps:
-            return FlextResult[FlextTypes.Dict].fail("Application not found")
+            return FlextCore.Result[FlextCore.Types.Dict].fail("Application not found")
 
         app = self.apps[app_id]
         stop_result = self.app_handler.stop(app)
         if stop_result.is_failure:
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 stop_result.error or "Failed to stop application"
             )
 
         updated_app = stop_result.unwrap()
         self.apps[app_id] = updated_app
 
-        return FlextResult[FlextTypes.Dict].ok({
+        return FlextCore.Result[FlextCore.Types.Dict].ok({
             "id": updated_app.id,
             "name": updated_app.name,
             "status": updated_app.status,
@@ -432,15 +431,15 @@ class FlextWebService:
 
     @classmethod
     def create_web_service(
-        cls, config: dict[str, object] | None = None
-    ) -> FlextResult[FlextWebService]:
+        cls, config: FlextCore.Types.Dict | None = None
+    ) -> FlextCore.Result[FlextWebService]:
         """Create web service instance with unified patterns.
 
         This maintains ABI compatibility with existing FlextWebServices.create_web_service().
         """
         # Input validation
         if config is not None and not isinstance(config, dict):
-            return FlextResult[FlextWebService].fail(
+            return FlextCore.Result[FlextWebService].fail(
                 "Config must be a dictionary or None"
             )
 
@@ -504,33 +503,33 @@ class FlextWebService:
                 elif isinstance(config, FlextWebConfig):
                     web_config = config
             service = cls(config=web_config)
-            return FlextResult[FlextWebService].ok(service)
+            return FlextCore.Result[FlextWebService].ok(service)
         except Exception as e:
             # Explicit error handling with unified patterns
             error_msg = f"Web service creation failed: {e}"
-            return FlextResult[FlextWebService].fail(error_msg)
+            return FlextCore.Result[FlextWebService].fail(error_msg)
 
     # UNIFIED WEB APPLICATION CREATION
     def create_web_application(
-        self, web_config: dict[str, object]
-    ) -> FlextResult[FlextTypes.Dict]:
+        self, web_config: FlextCore.Types.Dict
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Create web application with proper error handling.
 
         Args:
             web_config: Web application configuration dictionary
 
         Returns:
-            FlextResult with web application info or error
+            FlextCore.Result with web application info or error
 
         """
         # Input validation for web config - NO fallbacks, fail fast with clear errors
         if not web_config:
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 "Web configuration cannot be empty"
             )
 
         if not isinstance(web_config, dict):
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 f"Expected dict for web config, got {type(web_config)}"
             )
 
@@ -583,7 +582,7 @@ class FlextWebService:
         try:
             validation_result = FlextWebConfig(**valid_config)
         except ValidationError as e:
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 f"Web config validation failed: {e}"
             )
 
@@ -597,7 +596,7 @@ class FlextWebService:
         }
 
         self._web_logger.info("Web application created", app_info=app_info)
-        return FlextResult[FlextTypes.Dict].ok(app_info)
+        return FlextCore.Result[dict].ok(app_info)
 
 
 __all__ = [

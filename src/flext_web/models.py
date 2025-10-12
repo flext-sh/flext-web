@@ -14,12 +14,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Self, override
 
-from flext_core import (
-    FlextConstants,
-    FlextModels,
-    FlextResult,
-    FlextTypes,
-)
+from flext_core import FlextCore
 from pydantic import (
     ConfigDict,
     Field,
@@ -32,10 +27,10 @@ from flext_web.constants import FlextWebConstants
 from flext_web.typings import FlextWebTypes
 
 
-class FlextWebModels(FlextModels):
-    """Enhanced FLEXT web model system with FlextMixins integration.
+class FlextWebModels(FlextCore.Models):
+    """Enhanced FLEXT web model system with FlextCore.Mixins integration.
 
-    Inherits from FlextModels to avoid duplication and ensure consistency
+    Inherits from FlextCore.Models to avoid duplication and ensure consistency
     with enhanced Pydantic 2.11 features and comprehensive validation.
     """
 
@@ -78,7 +73,7 @@ class FlextWebModels(FlextModels):
     )
 
     # Enhanced base models with Pydantic 2.11 features
-    class _BaseWebModel(FlextModels.ArbitraryTypesModel):
+    class _BaseWebModel(FlextCore.Models.ArbitraryTypesModel):
         """Base web model with enhanced Pydantic 2.11 configuration."""
 
         model_config = ConfigDict(
@@ -103,7 +98,7 @@ class FlextWebModels(FlextModels):
         )
 
         @computed_field
-        def model_metadata(self) -> FlextTypes.Dict:
+        def model_metadata(self) -> FlextCore.Types.Dict:
             """Computed field providing base web model metadata."""
             return {
                 "model_class": self.__class__.__name__,
@@ -123,7 +118,7 @@ class FlextWebModels(FlextModels):
         MAINTENANCE = "maintenance"
         DEPLOYING = "deploying"
 
-    class WebApp(FlextModels.Entity):
+    class WebApp(FlextCore.Models.Entity):
         """Enhanced web application domain entity with comprehensive validation."""
 
         model_config = ConfigDict(
@@ -178,9 +173,13 @@ class FlextWebModels(FlextModels):
             default=False,
             description="Debug mode flag",
         )
-        metrics: FlextTypes.Dict = Field(
+        metrics: FlextCore.Types.Dict = Field(
             default_factory=dict,
             description="Application metrics",
+        )
+        environment: str = Field(
+            default="development",
+            description="Deployment environment",
         )
 
         @model_validator(mode="after")
@@ -231,7 +230,7 @@ class FlextWebModels(FlextModels):
                     raise ValueError(msg) from e
 
             type_name = type(v).__name__
-            msg = f"Invalid status type: {type_name}. Must be str or FlextWebModels.WebAppStatus"
+            msg = f"Invalid status type: {type_name}. Must be str or WebAppStatus"
             raise ValueError(msg)
 
         @field_validator("name")
@@ -281,7 +280,7 @@ class FlextWebModels(FlextModels):
                 raise ValueError(msg)
 
             # Use flext-core validation utilities
-            result = FlextModels.Validation.validate_hostname(host)
+            result = FlextCore.Models.Validation.validate_hostname(host)
             if result.is_failure:
                 raise ValueError(result.error)
 
@@ -315,7 +314,7 @@ class FlextWebModels(FlextModels):
                 return None
 
             # Basic URL validation
-            result = FlextModels.Validation.validate_url(url)
+            result = FlextCore.Models.Validation.validate_url(url)
             if result.is_failure:
                 raise ValueError(result.error)
 
@@ -336,8 +335,8 @@ class FlextWebModels(FlextModels):
             """Get app URL with proper protocol detection."""
             # Standard HTTPS ports
             https_ports = {
-                FlextConstants.Http.HTTPS_PORT,
-                FlextConstants.Http.HTTPS_ALT_PORT,
+                FlextCore.Constants.Http.HTTPS_PORT,
+                FlextCore.Constants.Http.HTTPS_ALT_PORT,
             }
             protocol = "https" if self.port in https_ports else "http"
             return f"{protocol}://{self.host}:{self.port}"
@@ -360,18 +359,18 @@ class FlextWebModels(FlextModels):
                 FlextWebModels.WebAppStatus.STOPPED,
             }
 
-        def validate_business_rules(self) -> FlextResult[None]:
+        def validate_business_rules(self) -> FlextCore.Result[None]:
             """Enhanced business rules validation."""
             try:
                 # Validate name field
                 name = (self.name or "").strip()
                 if not name:
-                    return FlextResult[None].fail("Application name is required")
+                    return FlextCore.Result[None].fail("Application name is required")
 
                 # Validate host field
                 host = (self.host or "").strip()
                 if not host:
-                    return FlextResult[None].fail("Host address is required")
+                    return FlextCore.Result[None].fail("Host address is required")
 
                 # Validate port range
                 if not (
@@ -379,38 +378,42 @@ class FlextWebModels(FlextModels):
                     <= self.port
                     <= FlextWebConstants.WebServer.MAX_PORT
                 ):
-                    return FlextResult[None].fail(f"Port out of range: {self.port}")
+                    return FlextCore.Result[None].fail(
+                        f"Port out of range: {self.port}"
+                    )
 
                 # Validate environment
                 valid_environments = ["development", "staging", "production", "test"]
                 if self.environment not in valid_environments:
-                    return FlextResult[None].fail(
+                    return FlextCore.Result[None].fail(
                         f"Invalid environment: {self.environment}. Valid: {valid_environments}"
                     )
 
                 # Validate health check URL if provided
                 if self.health_check_url:
-                    url_result = FlextModels.Validation.validate_url(
+                    url_result = FlextCore.Models.Validation.validate_url(
                         self.health_check_url
                     )
                     if url_result.is_failure:
-                        return FlextResult[None].fail(
+                        return FlextCore.Result[None].fail(
                             f"Invalid health check URL: {url_result.error}"
                         )
 
-                return FlextResult[None].ok(None)
+                return FlextCore.Result[None].ok(None)
             except Exception as e:
-                return FlextResult[None].fail(f"Validation failed: {e}")
+                return FlextCore.Result[None].fail(f"Validation failed: {e}")
 
-        def start(self) -> FlextResult[FlextWebModels.WebApp]:
+        def start(self) -> FlextCore.Result[FlextWebModels.WebApp]:
             """Start application with enhanced state management."""
             if self.status == FlextWebModels.WebAppStatus.RUNNING:
-                return FlextResult[FlextWebModels.WebApp].fail("App already running")
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
+                    "App already running"
+                )
             if self.status not in {
                 FlextWebModels.WebAppStatus.STOPPED,
                 FlextWebModels.WebAppStatus.ERROR,
             }:
-                return FlextResult[FlextWebModels.WebApp].fail(
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
                     f"App cannot be started from status: {self.status}"
                 )
 
@@ -422,12 +425,12 @@ class FlextWebModels(FlextModels):
             self.status = FlextWebModels.WebAppStatus.RUNNING
             self.update_timestamp()
 
-            return FlextResult[FlextWebModels.WebApp].ok(self)
+            return FlextCore.Result[FlextWebModels.WebApp].ok(self)
 
-        def stop(self) -> FlextResult[FlextWebModels.WebApp]:
+        def stop(self) -> FlextCore.Result[FlextWebModels.WebApp]:
             """Stop application with enhanced state management."""
             if self.status != FlextWebModels.WebAppStatus.RUNNING:
-                return FlextResult[FlextWebModels.WebApp].fail("App not running")
+                return FlextCore.Result[FlextWebModels.WebApp].fail("App not running")
 
             # Update status through enum value
             self.status = FlextWebModels.WebAppStatus.STOPPING
@@ -437,12 +440,12 @@ class FlextWebModels(FlextModels):
             self.status = FlextWebModels.WebAppStatus.STOPPED
             self.update_timestamp()
 
-            return FlextResult[FlextWebModels.WebApp].ok(self)
+            return FlextCore.Result[FlextWebModels.WebApp].ok(self)
 
-        def restart(self) -> FlextResult[FlextWebModels.WebApp]:
+        def restart(self) -> FlextCore.Result[FlextWebModels.WebApp]:
             """Restart application."""
             if not self.can_restart:
-                return FlextResult[FlextWebModels.WebApp].fail(
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
                     f"App cannot be restarted from status: {self.status}"
                 )
 
@@ -454,12 +457,12 @@ class FlextWebModels(FlextModels):
             # Start again
             return self.start()
 
-        def update_metrics(self, metrics: FlextTypes.Dict) -> None:
+        def update_metrics(self, metrics: FlextCore.Types.Dict) -> None:
             """Update application metrics."""
             self.metrics.update(metrics)
             self.update_timestamp()
 
-        def get_health_status(self) -> FlextTypes.Dict:
+        def get_health_status(self) -> FlextCore.Types.Dict:
             """Get comprehensive health status."""
             return {
                 "status": self.status.value,
@@ -475,7 +478,7 @@ class FlextWebModels(FlextModels):
                 "metrics": self.metrics,
             }
 
-        def to_dict(self) -> FlextTypes.Dict:
+        def to_dict(self) -> FlextCore.Types.Dict:
             """Convert to dictionary with enhanced serialization."""
             return {
                 "id": self.id,
@@ -518,7 +521,7 @@ class FlextWebModels(FlextModels):
                 }
 
     # Enhanced Web Request Models
-    class WebRequest(FlextModels.HttpRequest):
+    class WebRequest(FlextCore.Models.HttpRequest):
         """Enhanced web request model extending flext-core HttpRequest base.
 
         Inherits from flext-core:
@@ -545,7 +548,7 @@ class FlextWebModels(FlextModels):
             default_factory=lambda: str(uuid.uuid4()),
             description="Unique request identifier",
         )
-        query_params: FlextTypes.Dict = Field(
+        query_params: FlextCore.Types.Dict = Field(
             default_factory=dict,
             description="Query parameters",
         )
@@ -584,7 +587,7 @@ class FlextWebModels(FlextModels):
             """Check if HTTP method is idempotent - SERVER SPECIFIC."""
             return self.method.upper() in {"GET", "HEAD", "PUT", "DELETE", "OPTIONS"}
 
-    class WebResponse(FlextModels.HttpResponse):
+    class WebResponse(FlextCore.Models.HttpResponse):
         """Enhanced web response model extending flext-core HttpResponse base.
 
         Inherits from flext-core:
@@ -691,15 +694,15 @@ class FlextWebModels(FlextModels):
         )
         secret_key: str = Field(
             description="Secret key for sessions",
-            min_length=FlextConstants.Validation.MIN_SECRET_KEY_LENGTH,
+            min_length=FlextCore.Constants.Validation.MIN_SECRET_KEY_LENGTH,
         )
         max_content_length: int = Field(
-            default=FlextConstants.Limits.MAX_FILE_SIZE,
+            default=FlextCore.Constants.Limits.MAX_FILE_SIZE,
             gt=0,
             description="Maximum content length",
         )
         request_timeout: int = Field(
-            default=FlextConstants.Network.DEFAULT_TIMEOUT,
+            default=FlextCore.Constants.Network.DEFAULT_TIMEOUT,
             gt=0,
             description="Request timeout in seconds",
         )
@@ -707,7 +710,7 @@ class FlextWebModels(FlextModels):
             default=False,
             description="Enable CORS",
         )
-        cors_origins: FlextTypes.StringList = Field(
+        cors_origins: FlextCore.Types.StringList = Field(
             default_factory=list,
             description="CORS allowed origins",
         )
@@ -757,18 +760,18 @@ class FlextWebModels(FlextModels):
         @field_validator("cors_origins")
         @classmethod
         def validate_cors_origins(
-            cls, v: FlextTypes.StringList
-        ) -> FlextTypes.StringList:
+            cls, v: FlextCore.Types.StringList
+        ) -> FlextCore.Types.StringList:
             """Validate CORS origins with comprehensive URL validation."""
             if not v:
                 return []
 
-            validated_origins: FlextTypes.StringList = []
+            validated_origins: FlextCore.Types.StringList = []
             for origin in v:
                 if origin == "*":
                     validated_origins.append(origin)
                 else:
-                    result = FlextModels.Validation.validate_url(origin)
+                    result = FlextCore.Models.Validation.validate_url(origin)
                     if result.is_failure:
                         error_msg = f"Invalid CORS origin: {origin}"
                         raise ValueError(error_msg)
@@ -850,7 +853,7 @@ class FlextWebModels(FlextModels):
             default="/openapi.json",
             description="OpenAPI JSON URL",
         )
-        middlewares: FlextTypes.List = Field(
+        middlewares: FlextCore.Types.List = Field(
             default_factory=list,
             description="Middleware instances (e.g., from flext-auth)",
         )
@@ -859,10 +862,10 @@ class FlextWebModels(FlextModels):
     def create_web_app(
         cls,
         data: FlextWebTypes.AppData,
-    ) -> FlextResult[FlextWebModels.WebApp]:
+    ) -> FlextCore.Result[FlextWebModels.WebApp]:
         """Enhanced web application creation with comprehensive validation."""
         try:
-            app_data: FlextTypes.Dict = dict(data)
+            app_data: FlextCore.Types.Dict = dict(data)
 
             # Ensure required fields
             if "id" not in app_data:
@@ -876,14 +879,14 @@ class FlextWebModels(FlextModels):
             if isinstance(port, str) and port.isdigit():
                 app_data["port"] = int(port)
             elif not isinstance(port, int):
-                return FlextResult[FlextWebModels.WebApp].fail(
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
                     f"Invalid port type: {type(port)}"
                 )
 
             # Create app with validated data
             port_value = app_data["port"]
             if not isinstance(port_value, int):
-                return FlextResult[FlextWebModels.WebApp].fail(
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
                     f"Port validation failed: expected int, got {type(port_value)}"
                 )
 
@@ -906,35 +909,35 @@ class FlextWebModels(FlextModels):
                 version=int(
                     str(
                         app_data.get(
-                            "version", FlextConstants.Performance.DEFAULT_VERSION
+                            "version", FlextCore.Constants.Performance.DEFAULT_VERSION
                         )
                     )
                 ),
-                environment=str(
-                    app_data.get("environment", FlextConstants.Defaults.ENVIRONMENT)
-                ),
+                environment=str(app_data.get("environment", "development")),
                 health_check_url=health_check_url_str,
             )
 
             # Validate business rules
             validation_result = app.validate_business_rules()
             if validation_result.is_failure:
-                return FlextResult[FlextWebModels.WebApp].fail(
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
                     validation_result.error or "Validation failed"
                 )
 
-            return FlextResult[FlextWebModels.WebApp].ok(app)
+            return FlextCore.Result[FlextWebModels.WebApp].ok(app)
 
         except Exception as e:
-            return FlextResult[FlextWebModels.WebApp].fail(f"App creation failed: {e}")
+            return FlextCore.Result[FlextWebModels.WebApp].fail(
+                f"App creation failed: {e}"
+            )
 
     @classmethod
     def create_web_request(
         cls,
         method: str,
         url: str,
-        **kwargs: str | int | FlextTypes.StringDict | None,
-    ) -> FlextResult[FlextWebModels.WebRequest]:
+        **kwargs: str | int | FlextCore.Types.StringDict | None,
+    ) -> FlextCore.Result[FlextWebModels.WebRequest]:
         """Create web request with validation."""
         try:
             # Extract and type-cast parameters
@@ -945,7 +948,7 @@ class FlextWebModels(FlextModels):
             query_params = kwargs.get("query_params", {})
             if not isinstance(query_params, dict):
                 query_params = {}
-            # Convert to proper type for FlextTypes.Dict
+            # Convert to proper type for FlextCore.Types.Dict
             query_params = dict(query_params.items())
 
             body = kwargs.get("body")
@@ -953,15 +956,16 @@ class FlextWebModels(FlextModels):
             if body is not None and not isinstance(body, (str, dict)):
                 body = str(body)
             elif isinstance(body, dict):
-                # Convert dict[str, str] to dict[str, object]
+                # Convert dict[str, str] to FlextCore.Types.Dict
                 body = dict(body.items())
             timeout_raw = kwargs.get("timeout", 30)
             timeout = 30.0
-            if timeout_raw is not None:
+            if timeout_raw is not None and isinstance(timeout_raw, (int, float, str)):
                 try:
                     timeout = float(timeout_raw)
                 except (ValueError, TypeError):
                     timeout = 30.0
+                # For other types (like dict), keep default timeout
 
             request = FlextWebModels.WebRequest(
                 method=method,
@@ -971,9 +975,9 @@ class FlextWebModels(FlextModels):
                 body=body,
                 timeout=timeout,
             )
-            return FlextResult[FlextWebModels.WebRequest].ok(request)
+            return FlextCore.Result[FlextWebModels.WebRequest].ok(request)
         except Exception as e:
-            return FlextResult[FlextWebModels.WebRequest].fail(
+            return FlextCore.Result[FlextWebModels.WebRequest].fail(
                 f"Failed to create web request: {e}"
             )
 
@@ -982,8 +986,8 @@ class FlextWebModels(FlextModels):
         cls,
         request_id: str,
         status_code: int,
-        **kwargs: str | int | FlextTypes.StringDict | None,
-    ) -> FlextResult[FlextWebModels.WebResponse]:
+        **kwargs: str | int | FlextCore.Types.StringDict | None,
+    ) -> FlextCore.Result[FlextWebModels.WebResponse]:
         """Create web response with validation."""
         try:
             # Extract and type-cast parameters
@@ -996,11 +1000,13 @@ class FlextWebModels(FlextModels):
             if body is not None and not isinstance(body, (str, dict)):
                 body = str(body)
             elif isinstance(body, dict):
-                # Convert dict[str, str] to dict[str, object]
+                # Convert dict[str, str] to FlextCore.Types.Dict
                 body = dict(body.items())
             elapsed_time_raw = kwargs.get("elapsed_time", 0.0)
             elapsed_time = 0.0
-            if elapsed_time_raw is not None:
+            if elapsed_time_raw is not None and isinstance(
+                elapsed_time_raw, (int, float, str)
+            ):
                 try:
                     elapsed_time = float(elapsed_time_raw)
                 except (ValueError, TypeError):
@@ -1013,9 +1019,9 @@ class FlextWebModels(FlextModels):
                 body=body,
                 elapsed_time=elapsed_time,
             )
-            return FlextResult[FlextWebModels.WebResponse].ok(response)
+            return FlextCore.Result[FlextWebModels.WebResponse].ok(response)
         except Exception as e:
-            return FlextResult[FlextWebModels.WebResponse].fail(
+            return FlextCore.Result[FlextWebModels.WebResponse].fail(
                 f"Failed to create web response: {e}"
             )
 

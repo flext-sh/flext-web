@@ -375,32 +375,32 @@ repos:
 
 ```python
 # src/flext_web/domain/entities.py (target)
-from flext_core import FlextModels.Entity, FlextResult
+from flext_core import FlextCore
 
-class FlextWebApp(FlextModels.Entity):
+class FlextWebApp(FlextCore.Models.Entity):
     """Domain entity with business rules"""
 
-    def start(self) -> FlextResult['FlextWebApp']:
+    def start(self) -> FlextCore.Result['FlextWebApp']:
         """Business logic for starting application"""
         if self.status == FlextWebAppStatus.RUNNING:
-            return FlextResult[None].fail("Application already running")
+            return FlextCore.Result[None].fail("Application already running")
         # Business validation here
-        return FlextResult[None].ok(self.model_copy(update={"status": FlextWebAppStatus.RUNNING}))
+        return FlextCore.Result[None].ok(self.model_copy(update={"status": FlextWebAppStatus.RUNNING}))
 ```
 
 #### Application Layer Development
 
 ```python
 # src/flext_web/application/handlers.py (target)
-from flext_core import FlextProcessors, FlextResult
+from flext_core import FlextCore
 
-class FlextWebAppHandler(FlextProcessors.Handler):
+class FlextWebAppHandler(FlextCore.Processors.Handler):
     """CQRS command handlers"""
 
     def __init__(self, repository: FlextWebAppRepository):
         self.repository = repository
 
-    def create_app(self, command: CreateAppCommand) -> FlextResult[FlextWebApp]:
+    def create_app(self, command: CreateAppCommand) -> FlextCore.Result[FlextWebApp]:
         """Handle create app command"""
         app = FlextWebApp(
             id=f"app_{command.name}",
@@ -455,23 +455,23 @@ def create_app():
 ```python
 # Using flext-core patterns
 from flext_core import (
-    FlextResult,      # Railway-oriented programming
-    FlextModels.Entity,      # Domain entity base class
-    FlextConfig,      # Configuration management
-    FlextProcessors,    # CQRS handlers
-    FlextLogger        # Structured logging
+    FlextCore.Result,      # Railway-oriented programming
+    FlextCore.Models.Entity,      # Domain entity base class
+    FlextCore.Config,      # Configuration management
+    FlextCore.Processors,    # CQRS handlers
+    FlextCore.Logger        # Structured logging
 )
 
-# Example: Error handling with FlextResult
-def create_application(name: str, port: int) -> FlextResult[FlextWebApp]:
+# Example: Error handling with FlextCore.Result
+def create_application(name: str, port: int) -> FlextCore.Result[FlextWebApp]:
     """Create application with proper error handling"""
     try:
         # Validation
         if not name:
-            return FlextResult[None].fail("Application name is required")
+            return FlextCore.Result[None].fail("Application name is required")
 
         if not (1 <= port <= 65535):
-            return FlextResult[None].fail("Port must be between 1 and 65535")
+            return FlextCore.Result[None].fail("Port must be between 1 and 65535")
 
         # Create entity
         app = FlextWebApp(id=f"app_{name}", name=name, port=port)
@@ -482,10 +482,10 @@ def create_application(name: str, port: int) -> FlextResult[FlextWebApp]:
             return validation
 
         # Success
-        return FlextResult[None].ok(app)
+        return FlextCore.Result[None].ok(app)
 
     except Exception as e:
-        return FlextResult[None].fail(f"Unexpected error: {e}")
+        return FlextCore.Result[None].fail(f"Unexpected error: {e}")
 ```
 
 ## 🔍 Debugging
@@ -520,9 +520,9 @@ pytest tests/test_name.py --cov=src --pdb
 
 ```python
 # Current logging (via flext-core)
-from flext_core import FlextLogger
+from flext_core import FlextCore
 
-logger = FlextLogger(__name__)
+logger = FlextCore.Logger(__name__)
 
 # Usage in code
 logger.info("Application created", extra={"app_id": app.id})

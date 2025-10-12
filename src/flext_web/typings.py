@@ -1,11 +1,11 @@
 """FLEXT Web Types - Domain-specific web type definitions extending flext-core.
 
-This module provides web-specific type definitions extending FlextTypes.
+This module provides web-specific type definitions extending FlextCore.Types.
 Follows FLEXT standards:
 - Domain-specific complex types only
 - No simple aliases to primitive types
 - Python 3.13+ syntax
-- Extends FlextTypes properly
+- Extends FlextCore.Types properly
 - Single unified class per module pattern
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -18,13 +18,13 @@ from collections import UserDict
 from dataclasses import dataclass
 
 from flask import Response
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextCore
 
 from flext_web.constants import FlextWebConstants
 
 
 class FlextWebTypes:
-    """Web-specific type definitions extending FlextTypes.
+    """Web-specific type definitions extending FlextCore.Types.
 
     Domain-specific type system for web/HTTP operations.
     Contains ONLY complex web-specific types, no simple aliases.
@@ -33,22 +33,22 @@ class FlextWebTypes:
     """
 
     # =========================================================================
-    # CORE WEB TYPES - Commonly used type aliases extending FlextTypes
+    # CORE WEB TYPES - Commonly used type aliases extending FlextCore.Types
     # =========================================================================
 
     class Core:
-        """Core Web types extending FlextTypes.
+        """Core Web types extending FlextCore.Types.
 
-        Replaces generic FlextTypes.Dict with semantic web types.
+        Replaces generic FlextCore.Types.Dict with semantic web types.
         """
 
         type WebResponse = (
             tuple[str, int]
-            | tuple[str, int, FlextTypes.StringDict]
+            | tuple[str, int, FlextCore.Types.StringDict]
             | tuple[Response, int]
             | str
         )
-        type JsonResponse = FlextTypes.JsonValue
+        type JsonResponse = FlextCore.Types.JsonValue
 
         # Response type definitions (class attributes for runtime access)
         SuccessResponse = dict
@@ -63,30 +63,32 @@ class FlextWebTypes:
         RequestContext = dict
 
         # Configuration and settings types (extends flext-core ConfigDict)
-        type ExtendedConfigDict = dict[str, FlextTypes.ConfigValue | FlextTypes.Dict]
-        type WebConfigDict = FlextTypes.Dict
-        type AppConfigDict = FlextTypes.Dict
-        type ServiceConfigDict = FlextTypes.Dict
-        type ServerConfigDict = FlextTypes.Dict
+        type ExtendedConfigDict = dict[
+            str, FlextCore.Types.ConfigValue | FlextCore.Types.Dict
+        ]
+        type WebConfigDict = FlextCore.Types.Dict
+        type AppConfigDict = FlextCore.Types.Dict
+        type ServiceConfigDict = FlextCore.Types.Dict
+        type ServerConfigDict = FlextCore.Types.Dict
 
         # Data processing types
-        type DataDict = FlextTypes.Dict
-        type RequestDict = FlextTypes.Dict
-        type ResponseDict = FlextTypes.Dict
-        type ValidationDict = FlextTypes.Dict
-        type RoutingDict = FlextTypes.Dict
+        type DataDict = FlextCore.Types.Dict
+        type RequestDict = FlextCore.Types.Dict
+        type ResponseDict = FlextCore.Types.Dict
+        type ValidationDict = FlextCore.Types.Dict
+        type RoutingDict = FlextCore.Types.Dict
 
         # Template and structured response types
-        type TemplateDict = dict[str, str | FlextTypes.Dict]
-        type EndpointDict = FlextTypes.Dict
-        type MiddlewareDict = FlextTypes.Dict
-        type SecurityDict = FlextTypes.Dict
+        type TemplateDict = dict[str, str | FlextCore.Types.Dict]
+        type EndpointDict = FlextCore.Types.Dict
+        type MiddlewareDict = FlextCore.Types.Dict
+        type SecurityDict = FlextCore.Types.Dict
 
         # Operation and context types
-        type OperationDict = FlextTypes.Dict
-        type ContextDict = FlextTypes.Dict
-        type SettingsDict = FlextTypes.Dict
-        type MetricsDict = FlextTypes.Dict
+        type OperationDict = FlextCore.Types.Dict
+        type ContextDict = FlextCore.Types.Dict
+        type SettingsDict = FlextCore.Types.Dict
+        type MetricsDict = FlextCore.Types.Dict
 
     # =========================================================================
     # WEB APPLICATION TYPES - Complex web application types
@@ -96,18 +98,22 @@ class FlextWebTypes:
         """Web application complex types."""
 
         type ApplicationConfiguration = dict[
-            str, FlextTypes.ConfigValue | FlextTypes.Dict
+            str, FlextCore.Types.ConfigValue | FlextCore.Types.Dict
         ]
         type ApplicationMetadata = dict[
-            str, str | int | bool | dict[str, FlextTypes.JsonValue]
+            str, str | int | bool | dict[str, FlextCore.Types.JsonValue]
         ]
-        type ApplicationLifecycle = dict[str, str | bool | FlextTypes.Dict]
+        type ApplicationLifecycle = dict[str, str | bool | FlextCore.Types.Dict]
         type ApplicationSecurity = dict[
-            str, bool | str | FlextTypes.StringList | dict[str, FlextTypes.ConfigValue]
+            str,
+            bool
+            | str
+            | FlextCore.Types.StringList
+            | dict[str, FlextCore.Types.ConfigValue],
         ]
-        type ApplicationMiddleware = list[dict[str, FlextTypes.JsonValue]]
+        type ApplicationMiddleware = list[dict[str, FlextCore.Types.JsonValue]]
         type ApplicationRouting = dict[
-            str, FlextTypes.StringList | dict[str, FlextTypes.JsonValue]
+            str, FlextCore.Types.StringList | dict[str, FlextCore.Types.JsonValue]
         ]
 
     # =========================================================================
@@ -117,15 +123,19 @@ class FlextWebTypes:
     class RequestResponse:
         """HTTP request and response complex types."""
 
-        type RequestConfiguration = dict[str, FlextTypes.JsonValue | FlextTypes.Dict]
-        type RequestHeaders = dict[str, str | FlextTypes.StringList]
-        type RequestParameters = dict[
-            str, FlextTypes.JsonValue | list[FlextTypes.JsonValue]
+        type RequestConfiguration = dict[
+            str, FlextCore.Types.JsonValue | FlextCore.Types.Dict
         ]
-        type RequestBody = dict[str, FlextTypes.JsonValue] | str | bytes
-        type ResponseConfiguration = dict[str, FlextTypes.JsonValue | FlextTypes.Dict]
-        type ResponseHeaders = dict[str, str | FlextTypes.StringList]
-        type ResponseBody = dict[str, FlextTypes.JsonValue] | str | bytes
+        type RequestHeaders = dict[str, str | FlextCore.Types.StringList]
+        type RequestParameters = dict[
+            str, FlextCore.Types.JsonValue | list[FlextCore.Types.JsonValue]
+        ]
+        type RequestBody = dict[str, FlextCore.Types.JsonValue] | str | bytes
+        type ResponseConfiguration = dict[
+            str, FlextCore.Types.JsonValue | FlextCore.Types.Dict
+        ]
+        type ResponseHeaders = dict[str, str | FlextCore.Types.StringList]
+        type ResponseBody = dict[str, FlextCore.Types.JsonValue] | str | bytes
 
     # =========================================================================
     # WEB SERVICE TYPES - Complex web service types
@@ -134,16 +144,20 @@ class FlextWebTypes:
     class WebService:
         """Web service complex types."""
 
-        type ServiceConfiguration = dict[str, FlextTypes.ConfigValue | FlextTypes.Dict]
+        type ServiceConfiguration = dict[
+            str, FlextCore.Types.ConfigValue | FlextCore.Types.Dict
+        ]
         type ServiceRegistration = dict[
-            str, str | bool | dict[str, FlextTypes.JsonValue]
+            str, str | bool | dict[str, FlextCore.Types.JsonValue]
         ]
         type ServiceDiscovery = dict[
-            str, FlextTypes.StringList | dict[str, FlextTypes.JsonValue]
+            str, FlextCore.Types.StringList | dict[str, FlextCore.Types.JsonValue]
         ]
-        type ServiceHealth = dict[str, bool | int | str | FlextTypes.Dict]
-        type ServiceMetrics = dict[str, int | float | dict[str, FlextTypes.JsonValue]]
-        type ServiceDeployment = dict[str, str | dict[str, FlextTypes.ConfigValue]]
+        type ServiceHealth = dict[str, bool | int | str | FlextCore.Types.Dict]
+        type ServiceMetrics = dict[
+            str, int | float | dict[str, FlextCore.Types.JsonValue]
+        ]
+        type ServiceDeployment = dict[str, str | dict[str, FlextCore.Types.ConfigValue]]
 
     # =========================================================================
     # WEB SECURITY TYPES - Complex security types
@@ -153,17 +167,25 @@ class FlextWebTypes:
         """Web security complex types."""
 
         type SecurityConfiguration = dict[
-            str, bool | str | FlextTypes.StringList | dict[str, FlextTypes.ConfigValue]
+            str,
+            bool
+            | str
+            | FlextCore.Types.StringList
+            | dict[str, FlextCore.Types.ConfigValue],
         ]
-        type AuthenticationConfig = dict[str, str | dict[str, FlextTypes.JsonValue]]
+        type AuthenticationConfig = dict[
+            str, str | dict[str, FlextCore.Types.JsonValue]
+        ]
         type AuthorizationPolicy = dict[
-            str, FlextTypes.StringList | dict[str, bool | object]
+            str, FlextCore.Types.StringList | dict[str, bool | object]
         ]
         type CorsConfiguration = dict[
-            str, bool | FlextTypes.StringList | FlextTypes.StringDict
+            str, bool | FlextCore.Types.StringList | FlextCore.Types.StringDict
         ]
-        type CsrfProtection = dict[str, bool | str | dict[str, FlextTypes.ConfigValue]]
-        type SecurityHeaders = dict[str, str | bool | FlextTypes.StringDict]
+        type CsrfProtection = dict[
+            str, bool | str | dict[str, FlextCore.Types.ConfigValue]
+        ]
+        type SecurityHeaders = dict[str, str | bool | FlextCore.Types.StringDict]
 
     # =========================================================================
     # API ENDPOINT TYPES - Complex API management types
@@ -173,17 +195,25 @@ class FlextWebTypes:
         """API endpoint complex types."""
 
         type EndpointConfiguration = dict[
-            str, str | bool | FlextTypes.StringList | dict[str, FlextTypes.JsonValue]
+            str,
+            str
+            | bool
+            | FlextCore.Types.StringList
+            | dict[str, FlextCore.Types.JsonValue],
         ]
         type EndpointValidation = dict[
-            str, bool | FlextTypes.StringList | FlextTypes.Dict
+            str, bool | FlextCore.Types.StringList | FlextCore.Types.Dict
         ]
-        type EndpointDocumentation = dict[str, str | dict[str, FlextTypes.JsonValue]]
+        type EndpointDocumentation = dict[
+            str, str | dict[str, FlextCore.Types.JsonValue]
+        ]
         type RouteConfiguration = dict[
-            str, str | FlextTypes.StringList | FlextTypes.Dict
+            str, str | FlextCore.Types.StringList | FlextCore.Types.Dict
         ]
-        type ApiVersioning = dict[str, str | int | dict[str, FlextTypes.ConfigValue]]
-        type RateLimiting = dict[str, int | dict[str, FlextTypes.JsonValue]]
+        type ApiVersioning = dict[
+            str, str | int | dict[str, FlextCore.Types.ConfigValue]
+        ]
+        type RateLimiting = dict[str, int | dict[str, FlextCore.Types.JsonValue]]
 
     # =========================================================================
     # WEB DATA STRUCTURES - Dataclasses for web operations
@@ -235,30 +265,32 @@ class FlextWebTypes:
 
         method: str
         path: str
-        headers: FlextTypes.StringDict
-        query_params: FlextTypes.StringDict
+        headers: FlextCore.Types.StringDict
+        query_params: FlextCore.Types.StringDict
         body: str | bytes | None = None
         client_ip: str | None = None
 
     # =========================================================================
-    # WEB PROJECT TYPES - Domain-specific project types extending FlextTypes
+    # WEB PROJECT TYPES - Domain-specific project types extending FlextCore.Types
     # =========================================================================
 
-    class Project(FlextTypes.Project):
-        """Web-specific project types extending FlextTypes.Project.
+    class Project(FlextCore.Types.Project):
+        """Web-specific project types extending FlextCore.Types.Project.
 
-        Adds web-specific project types while inheriting generic types from FlextTypes.
+        Adds web-specific project types while inheriting generic types from FlextCore.Types.
         Follows domain separation principle: Web domain owns web-specific types.
         """
 
         # Web-specific project types extending the generic ones
-        type WebProjectType = FlextWebConstants.WebEnvironment.WebAppType
+        type WebProjectType = FlextWebConstants.WebTypes.WebAppType
 
         # Web-specific project configurations
-        type WebProjectConfig = dict[str, FlextTypes.ConfigValue | object]
-        type FlaskProjectConfig = dict[str, str | int | bool | FlextTypes.StringList]
-        type ApiProjectConfig = dict[str, bool | str | FlextTypes.Dict]
-        type SecurityProjectConfig = dict[str, FlextTypes.ConfigValue | object]
+        type WebProjectConfig = dict[str, FlextCore.Types.ConfigValue | object]
+        type FlaskProjectConfig = dict[
+            str, str | int | bool | FlextCore.Types.StringList
+        ]
+        type ApiProjectConfig = dict[str, bool | str | FlextCore.Types.Dict]
+        type SecurityProjectConfig = dict[str, FlextCore.Types.ConfigValue | object]
 
     # =========================================================================
     # CONFIGURATION METHODS - Type system configuration and validation
@@ -267,47 +299,47 @@ class FlextWebTypes:
     @classmethod
     def configure_web_types_system(
         cls,
-        config: FlextTypes.Dict,
-    ) -> FlextResult[FlextTypes.Dict]:
+        config: FlextCore.Types.Dict,
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Configure web types system.
 
         Args:
             config: Configuration dictionary for web types system
 
         Returns:
-            FlextResult[FlextTypes.Dict]: Configuration result
+            FlextCore.Result[FlextCore.Types.Dict]: Configuration result
 
         """
         try:
-            validated_config: FlextTypes.Dict = dict(config)
+            validated_config: FlextCore.Types.Dict = dict(config)
             validated_config.setdefault("enable_strict_typing", True)
             validated_config.setdefault("enable_runtime_validation", True)
-            return FlextResult[FlextTypes.Dict].ok(validated_config)
+            return FlextCore.Result[FlextCore.Types.Dict].ok(validated_config)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 f"Failed to configure web types system: {e}",
             )
 
     @classmethod
     def get_web_types_system_config(
         cls,
-    ) -> FlextResult[FlextTypes.Dict]:
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Get current web types system configuration.
 
         Returns:
-            FlextResult[FlextTypes.Dict]: Current configuration
+            FlextCore.Result[FlextCore.Types.Dict]: Current configuration
 
         """
         try:
-            config: FlextTypes.Dict = {
+            config: FlextCore.Types.Dict = {
                 "enable_strict_typing": True,
                 "enable_runtime_validation": True,
                 "total_type_definitions": 50,
                 "factory_methods": 2,
             }
-            return FlextResult[FlextTypes.Dict].ok(config)
+            return FlextCore.Result[FlextCore.Types.Dict].ok(config)
         except Exception as e:
-            return FlextResult[FlextTypes.Dict].fail(
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
                 f"Failed to get web types system config: {e}",
             )
 
@@ -315,24 +347,24 @@ class FlextWebTypes:
     def create_app_data(
         cls,
         **kwargs: object,
-    ) -> FlextTypes.Dict:
+    ) -> FlextCore.Types.Dict:
         """Create app data dictionary.
 
         Args:
             **kwargs: Application data fields
 
         Returns:
-            FlextTypes.Dict: Application data dictionary
+            FlextCore.Types.Dict: Application data dictionary
 
         """
         return dict(kwargs)
 
     @classmethod
-    def create_config_data(cls) -> FlextTypes.Dict:
+    def create_config_data(cls) -> FlextCore.Types.Dict:
         """Create config data dictionary.
 
         Returns:
-            FlextTypes.Dict: Empty configuration dictionary
+            FlextCore.Types.Dict: Empty configuration dictionary
 
         """
         return {}
@@ -342,9 +374,9 @@ class FlextWebTypes:
         cls,
         method: str = "GET",
         path: str = "/",
-        headers: FlextTypes.StringDict | None = None,
-        data: FlextTypes.Dict | None = None,
-    ) -> FlextTypes.Dict:
+        headers: FlextCore.Types.StringDict | None = None,
+        data: FlextCore.Types.Dict | None = None,
+    ) -> FlextCore.Types.Dict:
         """Create request context dictionary.
 
         Args:
@@ -354,7 +386,7 @@ class FlextWebTypes:
             data: Request data
 
         Returns:
-            FlextTypes.Dict: Request context dictionary
+            FlextCore.Types.Dict: Request context dictionary
 
         """
         return {
@@ -365,36 +397,42 @@ class FlextWebTypes:
         }
 
     @classmethod
-    def validate_app_data(cls, data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
+    def validate_app_data(
+        cls, data: FlextCore.Types.Dict
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Validate app data.
 
         Args:
             data: Application data to validate
 
         Returns:
-            FlextResult[FlextTypes.Dict]: Validation result
+            FlextCore.Result[FlextCore.Types.Dict]: Validation result
 
         """
         if not isinstance(data, dict):
-            return FlextResult[FlextTypes.Dict].fail("App data must be a dictionary")
-        return FlextResult[FlextTypes.Dict].ok(data)
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
+                "App data must be a dictionary"
+            )
+        return FlextCore.Result[FlextCore.Types.Dict].ok(data)
 
     @classmethod
     def validate_config_data(
-        cls, data: FlextTypes.Dict | str
-    ) -> FlextResult[FlextTypes.Dict]:
+        cls, data: FlextCore.Types.Dict | str
+    ) -> FlextCore.Result[FlextCore.Types.Dict]:
         """Validate config data.
 
         Args:
             data: Configuration data to validate
 
         Returns:
-            FlextResult[FlextTypes.Dict]: Validation result
+            FlextCore.Result[FlextCore.Types.Dict]: Validation result
 
         """
         if isinstance(data, str):
-            return FlextResult[FlextTypes.Dict].fail("Config data must be a dictionary")
-        return FlextResult[FlextTypes.Dict].ok(data)
+            return FlextCore.Result[FlextCore.Types.Dict].fail(
+                "Config data must be a dictionary"
+            )
+        return FlextCore.Result[FlextCore.Types.Dict].ok(data)
 
 
 __all__ = [

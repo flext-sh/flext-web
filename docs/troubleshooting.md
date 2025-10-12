@@ -67,12 +67,12 @@ def get_config():
 
 ### Option 3: Dependency Injection
 
-Use flext-core's FlextContainer to manage the dependencies:
+Use flext-core's FlextCore.Container to manage the dependencies:
 
 ```python
 # Register components with container instead of direct imports
-from flext_core import FlextContainer
-container = FlextContainer.get_global()
+from flext_core import FlextCore
+container = FlextCore.Container.get_global()
 # Register and retrieve components through container
 ```
 

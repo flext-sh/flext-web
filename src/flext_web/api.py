@@ -6,11 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import (
-    FlextContainer,
-    FlextLogger,
-    FlextResult,
-)
+from flext_core import FlextCore
 
 from flext_web.app import FlextWebApp
 from flext_web.config import FlextWebConfig
@@ -51,11 +47,13 @@ class FlextWeb:
 
     def __init__(self) -> None:
         """Initialize unified web facade with flext-core integration."""
-        self._container = FlextContainer.get_global()
-        self.logger = FlextLogger(__name__)
+        self._container = FlextCore.Container.get_global()
+        self.logger = FlextCore.Logger(__name__)
 
     @staticmethod
-    def create_fastapi_app(config: FlextWebModels.AppConfig) -> FlextResult[object]:
+    def create_fastapi_app(
+        config: FlextWebModels.AppConfig,
+    ) -> FlextCore.Result[object]:
         """Create FastAPI application with full web integration.
 
         This is the recommended way to create FastAPI applications in the FLEXT
@@ -66,7 +64,7 @@ class FlextWeb:
             config: Application configuration with title, version, middlewares, etc.
 
         Returns:
-            FlextResult with configured FastAPI application or error
+            FlextCore.Result with configured FastAPI application or error
 
         Example:
             >>> from flext_web import FlextWeb
@@ -86,8 +84,8 @@ class FlextWeb:
 
     @classmethod
     def create_web_service(
-        cls, config: dict[str, object] | None = None
-    ) -> FlextResult[FlextWebService]:
+        cls, config: FlextCore.Types.Dict | None = None
+    ) -> FlextCore.Result[FlextWebService]:
         """Create unified web service instance.
 
         This method creates a WebService instance with proper
@@ -97,7 +95,7 @@ class FlextWeb:
             config: Optional configuration dict for the web service
 
         Returns:
-            FlextResult with configured web service or error
+            FlextCore.Result with configured web service or error
 
         Example:
             >>> from flext_web import FlextWeb
@@ -117,7 +115,7 @@ class FlextWeb:
         *,
         debug: bool | None = None,
         **kwargs: object,
-    ) -> FlextResult[FlextWebConfig]:
+    ) -> FlextCore.Result[FlextWebConfig]:
         """Create web configuration with sensible defaults.
 
         Args:
@@ -127,7 +125,7 @@ class FlextWeb:
             **kwargs: Additional configuration options
 
         Returns:
-            FlextResult with configured FlextWebConfig or error
+            FlextCore.Result with configured FlextWebConfig or error
 
         Example:
             >>> from flext_web import FlextWeb
@@ -141,13 +139,13 @@ class FlextWeb:
         """
         # Input validation - fail fast with clear error
         if host is not None and not isinstance(host, str):
-            return FlextResult[FlextWebConfig].fail("Host must be a string")
+            return FlextCore.Result[FlextWebConfig].fail("Host must be a string")
 
         if port is not None and not isinstance(port, int):
-            return FlextResult[FlextWebConfig].fail("Port must be an integer")
+            return FlextCore.Result[FlextWebConfig].fail("Port must be an integer")
 
         if debug is not None and not isinstance(debug, bool):
-            return FlextResult[FlextWebConfig].fail("Debug must be a boolean")
+            return FlextCore.Result[FlextWebConfig].fail("Debug must be a boolean")
 
         # Use defaults from constants if not provided
         config_data = {
@@ -181,27 +179,29 @@ class FlextWeb:
         }
 
         config_data.update({
-            key: value for key, value in kwargs.items() if key in valid_config_fields
+            key: value
+            for key, value in kwargs.items()
+            if key in valid_config_fields and isinstance(value, (str, int, bool))
         })
 
         # Create config with Pydantic validation - let it raise and catch
         try:
             web_config = FlextWebConfig(**config_data)
-            return FlextResult[FlextWebConfig].ok(web_config)
+            return FlextCore.Result[FlextWebConfig].ok(web_config)
         except Exception as e:
             # Log the error and return failure result
-            logger = FlextLogger(__name__)
+            logger = FlextCore.Logger(__name__)
             logger.warning("Failed to create web configuration", error=str(e))
-            return FlextResult[FlextWebConfig].fail(
+            return FlextCore.Result[FlextWebConfig].fail(
                 f"Configuration creation failed: {e}"
             )
 
     @staticmethod
-    def get_service_status() -> FlextResult[dict[str, object]]:
+    def get_service_status() -> FlextCore.Result[FlextCore.Types.Dict]:
         """Get current status of web services.
 
         Returns:
-            FlextResult with service status information or error
+            FlextCore.Result with service status information or error
 
         Example:
             >>> from flext_web import FlextWeb
@@ -212,28 +212,28 @@ class FlextWeb:
 
         """
         # Get status from container/registry - no try/except needed for simple operations
-        container = FlextContainer.get_global()
-        logger = FlextLogger(__name__)
+        container = FlextCore.Container.get_global()
+        logger = FlextCore.Logger(__name__)
 
         # Check if web services are registered
-        services_status: dict[str, object] = {
+        services_status: FlextCore.Types.Dict = {
             "web_services_available": True,
             "fastapi_support": True,
             "container_initialized": container is not None,
         }
 
         logger.info("Web service status retrieved", **services_status)
-        return FlextResult[dict[str, object]].ok(services_status)
+        return FlextCore.Result[FlextCore.Types.Dict].ok(services_status)
 
     @staticmethod
-    def validate_web_config(config: dict[str, object]) -> FlextResult[bool]:
+    def validate_web_config(config: FlextCore.Types.Dict) -> FlextCore.Result[bool]:
         """Validate web configuration data.
 
         Args:
             config: Configuration dict to validate
 
         Returns:
-            FlextResult with validation result or error
+            FlextCore.Result with validation result or error
 
         Example:
             >>> from flext_web import FlextWeb
@@ -246,22 +246,22 @@ class FlextWeb:
         """
         # Input validation
         if not isinstance(config, dict):
-            return FlextResult[bool].fail("Configuration must be a dictionary")
+            return FlextCore.Result[bool].fail("Configuration must be a dictionary")
 
         if not config:
-            return FlextResult[bool].fail("Configuration cannot be empty")
+            return FlextCore.Result[bool].fail("Configuration cannot be empty")
 
         # Try to create config to validate - Pydantic will handle validation
         try:
             # Pydantic will validate the types at runtime
             # Use type: ignore to suppress type checker warnings since Pydantic handles validation
             FlextWebConfig(**config)
-            return FlextResult[bool].ok(True)
+            return FlextCore.Result[bool].ok(True)
         except Exception as e:
             # Log validation failure and return result
-            logger = FlextLogger(__name__)
+            logger = FlextCore.Logger(__name__)
             logger.warning("Web configuration validation failed", error=str(e))
-            return FlextResult[bool].fail(f"Invalid configuration: {e}")
+            return FlextCore.Result[bool].fail(f"Invalid configuration: {e}")
 
 
 __all__ = [

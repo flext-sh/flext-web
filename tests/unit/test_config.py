@@ -101,13 +101,6 @@ class TestFlextWebConfig:
         assert server_config["port"] == 8080
         assert server_config["debug"] is True
 
-    def test_get_security_config(self) -> None:
-        """Test security configuration retrieval."""
-        config = FlextWebConfig(enable_cors=True, ssl_enabled=True)
-        security_config = config.get_security_config()
-        assert security_config["enable_cors"] is True
-        assert security_config["ssl_enabled"] is True
-
     def test_create_web_config_factory(self) -> None:
         """Test web config factory method."""
         result = FlextWebConfig.create_web_config(host="test", port=9000)
@@ -115,23 +108,3 @@ class TestFlextWebConfig:
         config = result.unwrap()
         assert config.host == "test"
         assert config.port == 9000
-
-    def test_create_development_config(self) -> None:
-        """Test development config creation."""
-        result = FlextWebConfig.create_development_config()
-        assert result.is_success
-        config = result.unwrap()
-        assert config.debug is True
-        assert config.development_mode is True
-
-    def test_create_for_environment_development(self) -> None:
-        """Test config creation for development environment."""
-        config = FlextWebConfig()
-        assert config.web_environment == "development"
-        assert config.debug is True
-
-    def test_create_for_environment_production(self) -> None:
-        """Test config creation for production environment."""
-        config = FlextWebConfig()
-        assert config.web_environment == "production"
-        assert config.debug is False
