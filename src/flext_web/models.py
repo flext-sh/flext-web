@@ -400,9 +400,11 @@ class FlextWebModels(FlextCore.Models):
         def start(self) -> FlextCore.Result[FlextWebModels.WebApp]:
             """Start application with enhanced state management."""
             if self.status == "running":
-                return FlextCore.Result[WebApp].fail("App already running")
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
+                    "App already running"
+                )
             if self.status not in {"stopped", "error"}:
-                return FlextCore.Result[WebApp].fail(
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
                     f"App cannot be started from status: {self.status}"
                 )
 
@@ -414,12 +416,12 @@ class FlextWebModels(FlextCore.Models):
             self.status = "running"
             self.update_timestamp()
 
-            return FlextCore.Result[WebApp].ok(self)
+            return FlextCore.Result[FlextWebModels.WebApp].ok(self)
 
-        def stop(self) -> FlextCore.Result[WebApp]:
+        def stop(self) -> FlextCore.Result[FlextWebModels.WebApp]:
             """Stop application with enhanced state management."""
             if self.status != "running":
-                return FlextCore.Result[WebApp].fail("App not running")
+                return FlextCore.Result[FlextWebModels.WebApp].fail("App not running")
 
             # Update status through string value
             self.status = "stopping"
@@ -429,12 +431,12 @@ class FlextWebModels(FlextCore.Models):
             self.status = "stopped"
             self.update_timestamp()
 
-            return FlextCore.Result[WebApp].ok(self)
+            return FlextCore.Result[FlextWebModels.WebApp].ok(self)
 
-        def restart(self) -> FlextCore.Result[WebApp]:
+        def restart(self) -> FlextCore.Result[FlextWebModels.WebApp]:
             """Restart application."""
             if not self.can_restart:
-                return FlextCore.Result[WebApp].fail(
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
                     f"App cannot be restarted from status: {self.status}"
                 )
 
@@ -539,7 +541,7 @@ class FlextWebModels(FlextCore.Models):
             ...     status_code=200,
             ...     headers={"Content-Type": "application/json"},
             ...     body={"result": "success"},
-            ...     elapsed_time=0.123
+            ...     elapsed_time=0.123,
             ... )
             >>> response.is_success
             True
@@ -586,7 +588,7 @@ class FlextWebModels(FlextCore.Models):
             ),
         ] = None
 
-        @computed_field  # type: ignore[prop-decorator]
+        @computed_field
         @property
         def is_success(self) -> bool:
             """Check if response indicates success (2xx status codes).
@@ -601,9 +603,13 @@ class FlextWebModels(FlextCore.Models):
                 False
 
             """
-            return 200 <= self.status_code <= 299
+            return (
+                FlextWebConstants.HttpStatus.OK
+                <= self.status_code
+                <= FlextWebConstants.HttpStatus.SUCCESS_MAX
+            )
 
-        @computed_field  # type: ignore[prop-decorator]
+        @computed_field
         @property
         def is_client_error(self) -> bool:
             """Check if response indicates client error (4xx status codes).
@@ -616,9 +622,13 @@ class FlextWebModels(FlextCore.Models):
                 True
 
             """
-            return 400 <= self.status_code <= 499
+            return (
+                FlextWebConstants.HttpStatus.BAD_REQUEST
+                <= self.status_code
+                <= FlextWebConstants.HttpStatus.CLIENT_ERROR_MAX
+            )
 
-        @computed_field  # type: ignore[prop-decorator]
+        @computed_field
         @property
         def is_server_error(self) -> bool:
             """Check if response indicates server error (5xx status codes).
@@ -631,9 +641,13 @@ class FlextWebModels(FlextCore.Models):
                 True
 
             """
-            return 500 <= self.status_code <= 599
+            return (
+                FlextWebConstants.HttpStatus.INTERNAL_SERVER_ERROR
+                <= self.status_code
+                <= FlextWebConstants.HttpStatus.SERVER_ERROR_MAX
+            )
 
-        @computed_field  # type: ignore[prop-decorator]
+        @computed_field
         @property
         def is_redirect(self) -> bool:
             """Check if response indicates redirect (3xx status codes).
@@ -646,9 +660,13 @@ class FlextWebModels(FlextCore.Models):
                 True
 
             """
-            return 300 <= self.status_code <= 399
+            return (
+                FlextWebConstants.HttpStatus.MULTIPLE_CHOICES
+                <= self.status_code
+                <= FlextWebConstants.HttpStatus.REDIRECTION_MAX
+            )
 
-        @computed_field  # type: ignore[prop-decorator]
+        @computed_field
         @property
         def is_informational(self) -> bool:
             """Check if response is informational (1xx status codes).
@@ -661,14 +679,26 @@ class FlextWebModels(FlextCore.Models):
                 True
 
             """
-            return 100 <= self.status_code <= 199
+            return (
+                FlextWebConstants.HttpStatus.CONTINUE
+                <= self.status_code
+                <= FlextWebConstants.HttpStatus.INFORMATIONAL_MAX
+            )
 
         @field_validator("status_code")
         @classmethod
         def validate_status_code(cls, v: int) -> int:
             """Validate HTTP status code is in valid range."""
-            if not (100 <= v <= 599):
-                msg = f"Invalid HTTP status code: {v}. Must be between 100 and 599"
+            if not (
+                FlextWebConstants.HttpStatus.CONTINUE
+                <= v
+                <= FlextWebConstants.HttpStatus.SERVER_ERROR_MAX
+            ):
+                msg = (
+                    f"Invalid HTTP status code: {v}. Must be between "
+                    f"{FlextWebConstants.HttpStatus.CONTINUE} and "
+                    f"{FlextWebConstants.HttpStatus.SERVER_ERROR_MAX}"
+                )
                 raise ValueError(msg)
             return v
 
@@ -676,7 +706,10 @@ class FlextWebModels(FlextCore.Models):
         def validate_response_consistency(self) -> Self:
             """Cross-field validation for HTTP response consistency."""
             # 204 No Content should not have a body
-            if self.status_code == 204 and self.body is not None:
+            if (
+                self.status_code == FlextWebConstants.HttpStatus.NO_CONTENT
+                and self.body is not None
+            ):
                 msg = "HTTP 204 No Content responses should not have a body"
                 raise ValueError(msg)
 
@@ -737,7 +770,10 @@ class FlextWebModels(FlextCore.Models):
                 default_factory=dict,
                 description="HTTP request headers - key-value pairs",
                 examples=[
-                    {"Authorization": "Bearer token123", "Content-Type": "application/json"},
+                    {
+                        "Authorization": "Bearer token123",
+                        "Content-Type": "application/json",
+                    },
                     {"User-Agent": "FlextClient/1.0", "Accept": "application/json"},
                 ],
             ),
@@ -818,14 +854,19 @@ class FlextWebModels(FlextCore.Models):
 
             # Validate absolute URLs with Pydantic 2 direct validation
             from urllib.parse import urlparse
+
             parsed = urlparse(v.strip())
             if not parsed.scheme or not parsed.netloc:
                 error_msg = "URL must have scheme and domain"
-                raise FlextCore.Exceptions.ValidationError(error_msg, field="url", value=v)
+                raise FlextCore.Exceptions.ValidationError(
+                    error_msg, field="url", value=v
+                )
 
             if parsed.scheme not in {"http", "https"}:
                 error_msg = "URL must start with http:// or https://"
-                raise FlextCore.Exceptions.ValidationError(error_msg, field="url", value=v)
+                raise FlextCore.Exceptions.ValidationError(
+                    error_msg, field="url", value=v
+                )
 
             return v.strip()
 
@@ -1206,7 +1247,7 @@ class FlextWebModels(FlextCore.Models):
     def create_web_app(
         cls,
         data: FlextWebTypes.AppData,
-    ) -> FlextCore.Result[WebApp]:
+    ) -> FlextCore.Result[FlextWebModels.WebApp]:
         """Enhanced web application creation with comprehensive validation."""
         try:
             app_data: FlextCore.Types.Dict = dict(data)
@@ -1223,12 +1264,14 @@ class FlextWebModels(FlextCore.Models):
             if isinstance(port, str) and port.isdigit():
                 app_data["port"] = int(port)
             elif not isinstance(port, int):
-                return FlextCore.Result[WebApp].fail(f"Invalid port type: {type(port)}")
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
+                    f"Invalid port type: {type(port)}"
+                )
 
             # Create app with validated data
             port_value = app_data["port"]
             if not isinstance(port_value, int):
-                return FlextCore.Result[WebApp].fail(
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
                     f"Port validation failed: expected int, got {type(port_value)}"
                 )
 
@@ -1261,14 +1304,16 @@ class FlextWebModels(FlextCore.Models):
             # Validate business rules
             validation_result = app.validate_business_rules()
             if validation_result.is_failure:
-                return FlextCore.Result[WebApp].fail(
+                return FlextCore.Result[FlextWebModels.WebApp].fail(
                     validation_result.error or "Validation failed"
                 )
 
-            return FlextCore.Result[WebApp].ok(app)
+            return FlextCore.Result[FlextWebModels.WebApp].ok(app)
 
         except Exception as e:
-            return FlextCore.Result[WebApp].fail(f"App creation failed: {e}")
+            return FlextCore.Result[FlextWebModels.WebApp].fail(
+                f"App creation failed: {e}"
+            )
 
     @classmethod
     def create_web_request(
@@ -1276,7 +1321,7 @@ class FlextWebModels(FlextCore.Models):
         method: str,
         url: str,
         **kwargs: str | int | FlextCore.Types.StringDict | None,
-    ) -> FlextCore.Result[WebRequest]:
+    ) -> FlextCore.Result[FlextWebModels.WebRequest]:
         """Create web request with validation."""
         try:
             # Extract and type-cast parameters
@@ -1314,9 +1359,9 @@ class FlextWebModels(FlextCore.Models):
                 body=body,
                 timeout=timeout,
             )
-            return FlextCore.Result[WebRequest].ok(request)
+            return FlextCore.Result[FlextWebModels.WebRequest].ok(request)
         except Exception as e:
-            return FlextCore.Result[WebRequest].fail(
+            return FlextCore.Result[FlextWebModels.WebRequest].fail(
                 f"Failed to create web request: {e}"
             )
 
@@ -1326,7 +1371,7 @@ class FlextWebModels(FlextCore.Models):
         request_id: str,
         status_code: int,
         **kwargs: str | int | FlextCore.Types.StringDict | None,
-    ) -> FlextCore.Result[WebResponse]:
+    ) -> FlextCore.Result[FlextWebModels.WebResponse]:
         """Create web response with validation."""
         try:
             # Extract and type-cast parameters
@@ -1358,9 +1403,9 @@ class FlextWebModels(FlextCore.Models):
                 body=body,
                 elapsed_time=elapsed_time,
             )
-            return FlextCore.Result[WebResponse].ok(response)
+            return FlextCore.Result[FlextWebModels.WebResponse].ok(response)
         except Exception as e:
-            return FlextCore.Result[WebResponse].fail(
+            return FlextCore.Result[FlextWebModels.WebResponse].fail(
                 f"Failed to create web response: {e}"
             )
 
@@ -1377,4 +1422,5 @@ try:
 except Exception as e:
     # If rebuild fails, models can still be used
     import warnings
+
     warnings.warn(f"Model rebuild failed: {e}", stacklevel=2)
