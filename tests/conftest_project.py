@@ -28,7 +28,7 @@ from tests.port_manager import TestPortManager
 def setup_test_environment() -> Generator[None]:
     """Set up test environment with real configuration."""
     # Save original environment
-    original_env = dict(os.environ)
+    original_env = dict[str, object](os.environ)
 
     # Set test environment variables
     os.environ["FLEXT_ENV"] = "test"

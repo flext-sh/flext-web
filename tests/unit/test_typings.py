@@ -285,7 +285,7 @@ class TestFlextWebTypes:
 
     def test_validate_config_data(self) -> None:
         """Test validate_config_data method."""
-        # Test with valid dict data
+        # Test with valid dict[str, object] data
         data = {"key": "value"}
         result = FlextWebTypes.validate_config_data(data)
 

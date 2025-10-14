@@ -231,7 +231,7 @@ class FlextWebTypes:
         is_running: bool
 
         def __post_init__(self) -> None:
-            """Initialize dict with dataclass fields."""
+            """Initialize dict[str, object] with dataclass fields."""
             super().__init__(
                 id=self.id,
                 name=self.name,
@@ -311,7 +311,7 @@ class FlextWebTypes:
 
         """
         try:
-            validated_config: FlextCore.Types.Dict = dict(config)
+            validated_config: FlextCore.Types.Dict = dict[str, object](config)
             validated_config.setdefault("enable_strict_typing", True)
             validated_config.setdefault("enable_runtime_validation", True)
             return FlextCore.Result[FlextCore.Types.Dict].ok(validated_config)
@@ -357,7 +357,7 @@ class FlextWebTypes:
             FlextCore.Types.Dict: Application data dictionary
 
         """
-        return dict(kwargs)
+        return dict[str, object](kwargs)
 
     @classmethod
     def create_config_data(cls) -> FlextCore.Types.Dict:

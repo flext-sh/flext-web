@@ -445,7 +445,7 @@ class FlextWebService:
 
         # Create service instance - let exceptions bubble up and handle explicitly
         try:
-            # Convert dict config to FlextWebConfig if needed
+            # Convert dict[str, object] config to FlextWebConfig if needed
             web_config = None
             if config is not None:
                 if isinstance(config, dict):
@@ -530,7 +530,7 @@ class FlextWebService:
 
         if not isinstance(web_config, dict):
             return FlextCore.Result[FlextCore.Types.Dict].fail(
-                f"Expected dict for web config, got {type(web_config)}"
+                f"Expected dict[str, object] for web config, got {type(web_config)}"
             )
 
         # Filter config to only include valid FlextWebConfig fields and cast types

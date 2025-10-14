@@ -59,7 +59,7 @@ class FlextWebExceptions(FlextCore.Exceptions):
             self,
             message: str,
             request_id: str | None = None,
-            validation_errors: dict | None = None,
+            validation_errors: dict[str, object] | None = None,
         ) -> None:
             """Initialize web request error with request context."""
             super().__init__(message)

@@ -92,7 +92,7 @@ class FlextWeb:
         flext-core integration and configuration.
 
         Args:
-            config: Optional configuration dict for the web service
+            config: Optional configuration dict[str, object] for the web service
 
         Returns:
             FlextCore.Result with configured web service or error
@@ -230,7 +230,7 @@ class FlextWeb:
         """Validate web configuration data.
 
         Args:
-            config: Configuration dict to validate
+            config: Configuration dict[str, object] to validate
 
         Returns:
             FlextCore.Result with validation result or error

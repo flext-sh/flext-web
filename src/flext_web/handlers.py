@@ -526,7 +526,7 @@ class FlextWebHandlers(FlextCore.Processors):
                 Flask JSON response with success format
 
             """
-            # Convert data to dict if needed for protocol compliance
+            # Convert data to dict[str, object] if needed for protocol compliance
             if data is None:
                 formatted_data: FlextCore.Types.Dict = {}
             elif isinstance(data, list):

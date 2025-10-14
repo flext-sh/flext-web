@@ -1033,7 +1033,7 @@ class FlextWebModels(FlextCore.Models):
                 if isinstance(self.body, str):
                     self.content_length = len(self.body.encode("utf-8"))
                 elif isinstance(self.body, dict):
-                    # For dict bodies, calculate length as if JSON serialized
+                    # For dict[str, object] bodies, calculate length as if JSON serialized
                     self.content_length = len(json.dumps(self.body).encode("utf-8"))
                 else:
                     # For other types, convert to string
@@ -1250,7 +1250,7 @@ class FlextWebModels(FlextCore.Models):
     ) -> FlextCore.Result[FlextWebModels.WebApp]:
         """Enhanced web application creation with comprehensive validation."""
         try:
-            app_data: FlextCore.Types.Dict = dict(data)
+            app_data: FlextCore.Types.Dict = dict[str, object](data)
 
             # Ensure required fields
             if "id" not in app_data:
@@ -1333,7 +1333,7 @@ class FlextWebModels(FlextCore.Models):
             if not isinstance(query_params, dict):
                 query_params = {}
             # Convert to proper type for dict[str, object]
-            query_params = dict(query_params.items())
+            query_params = dict[str, object](query_params.items())
 
             body = kwargs.get("body")
             # Convert body to proper type for WebRequest
@@ -1341,7 +1341,7 @@ class FlextWebModels(FlextCore.Models):
                 body = str(body)
             elif isinstance(body, dict):
                 # Convert to dict[str, object] for WebRequest compatibility
-                body = dict(body.items())
+                body = dict[str, object](body.items())
             timeout_raw = kwargs.get("timeout", 30)
             timeout = 30.0
             if timeout_raw is not None and isinstance(timeout_raw, (int, float, str)):
@@ -1385,7 +1385,7 @@ class FlextWebModels(FlextCore.Models):
                 body = str(body)
             elif isinstance(body, dict):
                 # Convert to dict[str, object] for WebResponse compatibility
-                body = dict(body.items())
+                body = dict[str, object](body.items())
             elapsed_time_raw = kwargs.get("elapsed_time", 0.0)
             elapsed_time = 0.0
             if elapsed_time_raw is not None and isinstance(

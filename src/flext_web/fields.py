@@ -68,7 +68,7 @@ class FlextWebFields(FlextCore.Models):
 
         def create_field(self) -> FieldInfo:
             """Create Pydantic field for HTTP status."""
-            kwargs = dict(self.field_kwargs)
+            kwargs = dict[str, object](self.field_kwargs)
 
             # Set default values
             kwargs.setdefault("default", self.status_code)
@@ -185,7 +185,7 @@ class FlextWebFields(FlextCore.Models):
         # MASSIVE USAGE: FlextCore.Utilities.TextProcessor.safe_string for default validation
         safe_default = FlextCore.Utilities.TextProcessor.safe_string(default)
 
-        field_kwargs = dict(kwargs)
+        field_kwargs = dict[str, object](kwargs)
         field_kwargs.setdefault("default", safe_default)
         field_kwargs.setdefault("description", "Host address (IP or hostname)")
         field_kwargs.setdefault("pattern", cls.HOST_PATTERN.pattern)
@@ -219,7 +219,7 @@ class FlextWebFields(FlextCore.Models):
             Configured Pydantic field for port numbers
 
         """
-        field_kwargs = dict(kwargs)
+        field_kwargs = dict[str, object](kwargs)
         field_kwargs.setdefault("default", default)
         field_kwargs.setdefault("description", "Port number (1-65535)")
         field_kwargs.setdefault("ge", FlextWebConstants.WebServer.MIN_PORT)
@@ -257,7 +257,7 @@ class FlextWebFields(FlextCore.Models):
             Configured Pydantic field for URLs
 
         """
-        field_kwargs = dict(kwargs)
+        field_kwargs = dict[str, object](kwargs)
         field_kwargs.setdefault("description", "Valid HTTP/HTTPS URL")
         field_kwargs.setdefault("pattern", cls.URL_PATTERN.pattern)
         # Simplified Field creation for URL field
@@ -277,7 +277,7 @@ class FlextWebFields(FlextCore.Models):
             Configured Pydantic field for application names
 
         """
-        field_kwargs = dict(kwargs)
+        field_kwargs = dict[str, object](kwargs)
         # MASSIVE USAGE: FlextCore.Utilities.TextProcessor.safe_string for description
         safe_description = FlextCore.Utilities.TextProcessor.safe_string(
             "Application name"
@@ -327,7 +327,7 @@ class FlextWebFields(FlextCore.Models):
             Configured Pydantic field for secret keys
 
         """
-        field_kwargs = dict(kwargs)
+        field_kwargs = dict[str, object](kwargs)
         field_kwargs.setdefault(
             "description",
             "Secret key for cryptographic operations",
