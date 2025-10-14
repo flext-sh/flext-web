@@ -1332,7 +1332,7 @@ class FlextWebModels(FlextCore.Models):
             query_params = kwargs.get("query_params", {})
             if not isinstance(query_params, dict):
                 query_params = {}
-            # Convert to proper type for FlextCore.Types.Dict
+            # Convert to proper type for dict[str, object]
             query_params = dict(query_params.items())
 
             body = kwargs.get("body")
@@ -1340,7 +1340,7 @@ class FlextWebModels(FlextCore.Models):
             if body is not None and not isinstance(body, (str, dict)):
                 body = str(body)
             elif isinstance(body, dict):
-                # Convert dict[str, str] to FlextCore.Types.Dict
+                # Convert to dict[str, object] for WebRequest compatibility
                 body = dict(body.items())
             timeout_raw = kwargs.get("timeout", 30)
             timeout = 30.0
@@ -1384,7 +1384,7 @@ class FlextWebModels(FlextCore.Models):
             if body is not None and not isinstance(body, (str, dict)):
                 body = str(body)
             elif isinstance(body, dict):
-                # Convert dict[str, str] to FlextCore.Types.Dict
+                # Convert to dict[str, object] for WebResponse compatibility
                 body = dict(body.items())
             elapsed_time_raw = kwargs.get("elapsed_time", 0.0)
             elapsed_time = 0.0
@@ -1411,16 +1411,3 @@ class FlextWebModels(FlextCore.Models):
 
 
 __all__ = ["FlextWebModels"]
-
-# Rebuild models for Pydantic v2 forward references
-# Note: Rebuild in correct order - base classes first, then derived classes
-try:
-    FlextWebModels.HttpRequest.model_rebuild()
-    FlextWebModels.HttpResponse.model_rebuild()
-    FlextWebModels.WebRequest.model_rebuild()
-    FlextWebModels.WebResponse.model_rebuild()
-except Exception as e:
-    # If rebuild fails, models can still be used
-    import warnings
-
-    warnings.warn(f"Model rebuild failed: {e}", stacklevel=2)
