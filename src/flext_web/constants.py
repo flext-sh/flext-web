@@ -59,7 +59,7 @@ class FlextWebConstants(FlextConstants):
         # Network Configuration
         # Note: Binding to all interfaces (0.0.0.0) is legitimate for web servers
         # that need to accept connections from any network interface
-        ALL_INTERFACES: str = "0.0.0.0"  # noqa: S104
+        ALL_INTERFACES: str = "0.0.0.0"
         LOCALHOST_IP: str = "127.0.0.1"
         SYSTEM_PORTS_THRESHOLD: int = 1023
         PRIVILEGED_PORTS_MAX: int = 1023

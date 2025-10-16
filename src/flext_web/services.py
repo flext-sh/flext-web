@@ -62,13 +62,11 @@ class FlextWebService:
                 if user.get("password") == password:
                     token = f"mock_token_{username}_{FlextUtilities.Generators.generate_uuid()}"
                     self._tokens[token] = username
-                    return FlextResult[FlextTypes.Dict].ok(
-                        {
-                            "token": token,
-                            "user_id": user.get("id"),
-                            "username": username,
-                        }
-                    )
+                    return FlextResult[FlextTypes.Dict].ok({
+                        "token": token,
+                        "user_id": user.get("id"),
+                        "username": username,
+                    })
             return FlextResult[FlextTypes.Dict].fail("Invalid credentials")
 
         def register_user(
@@ -86,13 +84,11 @@ class FlextWebService:
                 "password": password,  # In real auth, this would be hashed
             }
 
-            return FlextResult[FlextTypes.Dict].ok(
-                {
-                    "id": user_id,
-                    "username": username,
-                    "email": email,
-                }
-            )
+            return FlextResult[FlextTypes.Dict].ok({
+                "id": user_id,
+                "username": username,
+                "email": email,
+            })
 
     def __init__(self, config: FlextWebConfig | None = None) -> None:
         """Initialize unified web service with maximum flext-core integration.
@@ -254,22 +250,18 @@ class FlextWebService:
             )
 
         auth_token = auth_result.value
-        return FlextResult[FlextTypes.Dict].ok(
-            {
-                "success": True,
-                "message": "Login successful",
-                "token": auth_token.get("token", ""),
-            }
-        )
+        return FlextResult[FlextTypes.Dict].ok({
+            "success": True,
+            "message": "Login successful",
+            "token": auth_token.get("token", ""),
+        })
 
     def logout(self) -> FlextResult[FlextTypes.Dict]:
         """User logout with unified error handling."""
-        return FlextResult[FlextTypes.Dict].ok(
-            {
-                "success": True,
-                "message": "Logout successful",
-            }
-        )
+        return FlextResult[FlextTypes.Dict].ok({
+            "success": True,
+            "message": "Logout successful",
+        })
 
     def register(self, request_data: FlextTypes.Dict) -> FlextResult[FlextTypes.Dict]:
         """User registration with unified error handling."""
@@ -295,30 +287,26 @@ class FlextWebService:
             )
 
         user = register_result.value
-        return FlextResult[FlextTypes.Dict].ok(
-            {
-                "success": True,
-                "message": "Registration successful",
-                "user": {
-                    "id": user.get("id", ""),
-                    "username": user.get("username", ""),
-                    "email": user.get("email", ""),
-                },
-            }
-        )
+        return FlextResult[FlextTypes.Dict].ok({
+            "success": True,
+            "message": "Registration successful",
+            "user": {
+                "id": user.get("id", ""),
+                "username": user.get("username", ""),
+                "email": user.get("email", ""),
+            },
+        })
 
     # WEB ENDPOINTS (using unified patterns)
 
     def health_check(self) -> FlextResult[FlextTypes.Dict]:
         """Health check with unified error handling."""
-        return FlextResult[FlextTypes.Dict].ok(
-            {
-                "status": "healthy",
-                "service": "flext-web",
-                "version": FlextConstants.VERSION,
-                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
-            }
-        )
+        return FlextResult[FlextTypes.Dict].ok({
+            "status": "healthy",
+            "service": "flext-web",
+            "version": FlextConstants.VERSION,
+            "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+        })
 
     def dashboard(self) -> FlextResult[FlextTypes.Dict]:
         """Web dashboard data with unified error handling."""
@@ -326,14 +314,12 @@ class FlextWebService:
         app_count = len(apps_data)
         running_count = sum(1 for app in apps_data if bool(app.is_running))
 
-        return FlextResult[FlextTypes.Dict].ok(
-            {
-                "total_applications": app_count,
-                "running_applications": running_count,
-                "service_status": "operational",
-                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
-            }
-        )
+        return FlextResult[FlextTypes.Dict].ok({
+            "total_applications": app_count,
+            "running_applications": running_count,
+            "service_status": "operational",
+            "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+        })
 
     # API ENDPOINTS (using unified patterns)
 
@@ -375,15 +361,13 @@ class FlextWebService:
         app = create_result.unwrap()
         self.apps[app.id] = app
 
-        return FlextResult[FlextTypes.Dict].ok(
-            {
-                "id": app.id,
-                "name": app.name,
-                "host": app.host,
-                "port": app.port,
-                "status": app.status,
-            }
-        )
+        return FlextResult[FlextTypes.Dict].ok({
+            "id": app.id,
+            "name": app.name,
+            "host": app.host,
+            "port": app.port,
+            "status": app.status,
+        })
 
     def get_app(self, app_id: str) -> FlextResult[FlextTypes.Dict]:
         """Get application by ID with unified error handling."""
@@ -391,16 +375,14 @@ class FlextWebService:
             return FlextResult[FlextTypes.Dict].fail("Application not found")
 
         app = self.apps[app_id]
-        return FlextResult[FlextTypes.Dict].ok(
-            {
-                "id": app.id,
-                "name": app.name,
-                "host": app.host,
-                "port": app.port,
-                "status": app.status,
-                "is_running": app.is_running,
-            }
-        )
+        return FlextResult[FlextTypes.Dict].ok({
+            "id": app.id,
+            "name": app.name,
+            "host": app.host,
+            "port": app.port,
+            "status": app.status,
+            "is_running": app.is_running,
+        })
 
     def start_app(self, app_id: str) -> FlextResult[FlextTypes.Dict]:
         """Start application with unified error handling."""
@@ -417,13 +399,11 @@ class FlextWebService:
         updated_app = start_result.unwrap()
         self.apps[app_id] = updated_app
 
-        return FlextResult[FlextTypes.Dict].ok(
-            {
-                "id": updated_app.id,
-                "name": updated_app.name,
-                "status": updated_app.status,
-            }
-        )
+        return FlextResult[FlextTypes.Dict].ok({
+            "id": updated_app.id,
+            "name": updated_app.name,
+            "status": updated_app.status,
+        })
 
     def stop_app(self, app_id: str) -> FlextResult[FlextTypes.Dict]:
         """Stop application with unified error handling."""
@@ -440,13 +420,11 @@ class FlextWebService:
         updated_app = stop_result.unwrap()
         self.apps[app_id] = updated_app
 
-        return FlextResult[FlextTypes.Dict].ok(
-            {
-                "id": updated_app.id,
-                "name": updated_app.name,
-                "status": updated_app.status,
-            }
-        )
+        return FlextResult[FlextTypes.Dict].ok({
+            "id": updated_app.id,
+            "name": updated_app.name,
+            "status": updated_app.status,
+        })
 
     # UNIFIED WEB SERVICE CREATION PATTERNS
 

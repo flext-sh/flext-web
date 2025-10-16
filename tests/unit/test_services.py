@@ -66,22 +66,18 @@ class TestFlextWebService:
         """Test successful login."""
         service = FlextWebService()
         # First register a user
-        register_result = service.register(
-            {
-                "username": "testuser",
-                "email": "test@example.com",
-                "password": "password123",
-            }
-        )
+        register_result = service.register({
+            "username": "testuser",
+            "email": "test@example.com",
+            "password": "password123",
+        })
         assert register_result.is_success
 
         # Then login
-        login_result = service.login(
-            {
-                "username": "testuser",
-                "password": "password123",
-            }
-        )
+        login_result = service.login({
+            "username": "testuser",
+            "password": "password123",
+        })
         assert login_result.is_success
         login_data = login_result.unwrap()
         assert "success" in login_data
@@ -90,24 +86,20 @@ class TestFlextWebService:
     def test_login_invalid_credentials(self) -> None:
         """Test login with invalid credentials."""
         service = FlextWebService()
-        login_result = service.login(
-            {
-                "username": "nonexistent",
-                "password": "wrongpassword",
-            }
-        )
+        login_result = service.login({
+            "username": "nonexistent",
+            "password": "wrongpassword",
+        })
         assert login_result.is_failure
         assert "Authentication failed" in login_result.error
 
     def test_login_invalid_input(self) -> None:
         """Test login with invalid input types."""
         service = FlextWebService()
-        login_result = service.login(
-            {
-                "username": 123,  # Invalid type
-                "password": "password",
-            }
-        )
+        login_result = service.login({
+            "username": 123,  # Invalid type
+            "password": "password",
+        })
         assert login_result.is_failure
         assert "must be strings" in login_result.error
 
@@ -122,13 +114,11 @@ class TestFlextWebService:
     def test_register_success(self) -> None:
         """Test successful user registration."""
         service = FlextWebService()
-        register_result = service.register(
-            {
-                "username": "newuser",
-                "email": "newuser@example.com",
-                "password": "password123",
-            }
-        )
+        register_result = service.register({
+            "username": "newuser",
+            "email": "newuser@example.com",
+            "password": "password123",
+        })
         assert register_result.is_success
         user_data = register_result.unwrap()
         assert user_data["success"] is True
@@ -138,35 +128,29 @@ class TestFlextWebService:
         """Test registration with duplicate username."""
         service = FlextWebService()
         # Register first user
-        service.register(
-            {
-                "username": "duplicate",
-                "email": "user1@example.com",
-                "password": "password123",
-            }
-        )
+        service.register({
+            "username": "duplicate",
+            "email": "user1@example.com",
+            "password": "password123",
+        })
 
         # Try to register with same username
-        register_result = service.register(
-            {
-                "username": "duplicate",
-                "email": "user2@example.com",
-                "password": "password456",
-            }
-        )
+        register_result = service.register({
+            "username": "duplicate",
+            "email": "user2@example.com",
+            "password": "password456",
+        })
         assert register_result.is_failure
         assert "Registration failed" in register_result.error
 
     def test_register_invalid_input(self) -> None:
         """Test registration with invalid input types."""
         service = FlextWebService()
-        register_result = service.register(
-            {
-                "username": 123,  # Invalid type
-                "email": "test@example.com",
-                "password": "password",
-            }
-        )
+        register_result = service.register({
+            "username": 123,  # Invalid type
+            "email": "test@example.com",
+            "password": "password",
+        })
         assert register_result.is_failure
         assert "must be strings" in register_result.error
 
@@ -201,13 +185,11 @@ class TestFlextWebService:
     def test_create_app_success(self) -> None:
         """Test successful app creation."""
         service = FlextWebService()
-        create_result = service.create_app(
-            {
-                "name": "test-app",
-                "host": "localhost",
-                "port": 8080,
-            }
-        )
+        create_result = service.create_app({
+            "name": "test-app",
+            "host": "localhost",
+            "port": 8080,
+        })
         assert create_result.is_success
         app_data = create_result.unwrap()
         assert app_data["name"] == "test-app"
@@ -217,13 +199,11 @@ class TestFlextWebService:
     def test_create_app_invalid_input(self) -> None:
         """Test app creation with invalid input."""
         service = FlextWebService()
-        create_result = service.create_app(
-            {
-                "name": 123,  # Invalid type
-                "host": "localhost",
-                "port": 8080,
-            }
-        )
+        create_result = service.create_app({
+            "name": 123,  # Invalid type
+            "host": "localhost",
+            "port": 8080,
+        })
         assert create_result.is_failure
         assert "must be a string" in create_result.error
 
@@ -231,13 +211,11 @@ class TestFlextWebService:
         """Test successful app retrieval."""
         service = FlextWebService()
         # First create an app
-        create_result = service.create_app(
-            {
-                "name": "test-app",
-                "host": "localhost",
-                "port": 8080,
-            }
-        )
+        create_result = service.create_app({
+            "name": "test-app",
+            "host": "localhost",
+            "port": 8080,
+        })
         assert create_result.is_success
         app_data = create_result.unwrap()
         app_id = app_data["id"]
@@ -259,13 +237,11 @@ class TestFlextWebService:
         """Test successful app start."""
         service = FlextWebService()
         # First create an app
-        create_result = service.create_app(
-            {
-                "name": "test-app",
-                "host": "localhost",
-                "port": 8080,
-            }
-        )
+        create_result = service.create_app({
+            "name": "test-app",
+            "host": "localhost",
+            "port": 8080,
+        })
         assert create_result.is_success
         app_data = create_result.unwrap()
         app_id = app_data["id"]
@@ -280,13 +256,11 @@ class TestFlextWebService:
         """Test successful app stop."""
         service = FlextWebService()
         # First create and start an app
-        create_result = service.create_app(
-            {
-                "name": "test-app",
-                "host": "localhost",
-                "port": 8080,
-            }
-        )
+        create_result = service.create_app({
+            "name": "test-app",
+            "host": "localhost",
+            "port": 8080,
+        })
         assert create_result.is_success
         app_data = create_result.unwrap()
         app_id = app_data["id"]

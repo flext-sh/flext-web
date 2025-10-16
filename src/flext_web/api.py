@@ -179,13 +179,11 @@ class FlextWeb:
             "log_format",
         }
 
-        config_data.update(
-            {
-                key: value
-                for key, value in kwargs.items()
-                if key in valid_config_fields and isinstance(value, (str, int, bool))
-            }
-        )
+        config_data.update({
+            key: value
+            for key, value in kwargs.items()
+            if key in valid_config_fields and isinstance(value, (str, int, bool))
+        })
 
         # Create config with Pydantic validation - let it raise and catch
         try:
