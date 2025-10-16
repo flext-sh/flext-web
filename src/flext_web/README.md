@@ -62,7 +62,7 @@ Rich domain entity implementing application lifecycle management with state mach
 - State management (STOPPED, STARTING, RUNNING, STOPPING, ERROR)
 - Business rule validation using flext-core patterns
 - State transition validation with error handling
-- Integration with FlextCore.Result for railway-oriented programming
+- Integration with FlextResult for railway-oriented programming
 
 **Usage**:
 
@@ -199,19 +199,38 @@ python -m flext_web --no-debug --host 0.0.0.0 --port 8080
 
 The module extensively uses flext-core foundation patterns for consistency across the FLEXT ecosystem:
 
-- **FlextCore.Result**: Railway-oriented programming for error handling
-- **FlextCore.Models.Entity**: Domain entity base class with validation
-- **FlextCore.Config**: Configuration management with validation
-- **FlextCore.Processors**: CQRS command handler patterns
+- **FlextResult**: Railway-oriented programming for error handling
+- **FlextModels.Entity**: Domain entity base class with validation
+- **FlextConfig**: Configuration management with validation
+- **FlextProcessors**: CQRS command handler patterns
 
 ### Error Handling
 
-All operations use FlextCore.Result for consistent error handling:
+All operations use FlextResult for consistent error handling:
 
 ```python
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 
-def process_request(data: dict) -> FlextCore.Result[FlextWebApp]:
+def process_request(data: dict) -> FlextResult[FlextWebApp]:
     return (
         validate_input(data)
         .flat_map(create_application)
@@ -253,7 +272,7 @@ def process_request(data: dict) -> FlextCore.Result[FlextWebApp]:
 - **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
 - **Test Coverage**: 90%+ coverage required for all code
 - **Documentation**: Comprehensive docstrings for all public APIs
-- **Error Handling**: FlextCore.Result patterns for all operations
+- **Error Handling**: FlextResult patterns for all operations
 - **Validation**: Domain rule validation for all entities
 
 ### Testing Approach

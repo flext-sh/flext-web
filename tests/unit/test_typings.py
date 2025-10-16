@@ -10,8 +10,8 @@ class TestFlextWebTypes:
     """Test suite for FlextWebTypes unified class."""
 
     def test_typings_inheritance(self) -> None:
-        """Test that FlextWebTypes inherits from FlextCore.Types."""
-        # Should have access to base FlextCore.Types
+        """Test that FlextWebTypes inherits from FlextTypes."""
+        # Should have access to base FlextTypes
         assert hasattr(FlextWebTypes, "Dict")
         assert hasattr(FlextWebTypes, "List")
         assert hasattr(FlextWebTypes, "StringDict")
@@ -344,7 +344,7 @@ class TestFlextWebTypes:
         assert hasattr(FlextWebTypes.RequestResponse, "RequestConfiguration")
 
     def test_inheritance_chain(self) -> None:
-        """Test that FlextWebTypes properly inherits from FlextCore.Types."""
+        """Test that FlextWebTypes properly inherits from FlextTypes."""
         # Should have access to base types
         assert hasattr(FlextWebTypes, "Dict")
         assert hasattr(FlextWebTypes, "List")

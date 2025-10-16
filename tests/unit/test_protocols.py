@@ -11,8 +11,8 @@ class TestFlextWebProtocols:
     """Test suite for FlextWebProtocols unified class."""
 
     def test_protocols_inheritance(self) -> None:
-        """Test that FlextWebProtocols inherits from FlextCore.Protocols."""
-        # Should have access to base FlextCore.Protocols
+        """Test that FlextWebProtocols inherits from FlextProtocols."""
+        # Should have access to base FlextProtocols
         assert hasattr(FlextWebProtocols, "Foundation")
         assert hasattr(FlextWebProtocols, "Domain")
         assert hasattr(FlextWebProtocols, "Application")
@@ -181,19 +181,19 @@ class TestFlextWebProtocols:
         # Test AppManagerProtocol methods
         protocol = FlextWebProtocols.Web.AppManagerProtocol
 
-        # create_app should take name, port, host and return FlextCore.Result[WebApp]
+        # create_app should take name, port, host and return FlextResult[WebApp]
         create_app_method = protocol.__dict__["create_app"]
         assert callable(create_app_method)
 
-        # start_app should take app_id and return FlextCore.Result[WebApp]
+        # start_app should take app_id and return FlextResult[WebApp]
         start_app_method = protocol.__dict__["start_app"]
         assert callable(start_app_method)
 
-        # stop_app should take app_id and return FlextCore.Result[WebApp]
+        # stop_app should take app_id and return FlextResult[WebApp]
         stop_app_method = protocol.__dict__["stop_app"]
         assert callable(stop_app_method)
 
-        # list_apps should return FlextCore.Result[list[WebApp]]
+        # list_apps should return FlextResult[list[WebApp]]
         list_apps_method = protocol.__dict__["list_apps"]
         assert callable(list_apps_method)
 

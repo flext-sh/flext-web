@@ -3,6 +3,8 @@
 Tests the unified FlextWebUtilities class following flext standards.
 """
 
+from flext_core import FlextResult
+
 from flext_web.utilities import FlextWebUtilities
 
 
@@ -10,8 +12,8 @@ class TestFlextWebUtilities:
     """Test suite for FlextWebUtilities unified class."""
 
     def test_utilities_inheritance(self) -> None:
-        """Test that FlextWebUtilities inherits from FlextCore.Utilities."""
-        # Should have access to base FlextCore.Utilities
+        """Test that FlextWebUtilities inherits from FlextUtilities."""
+        # Should have access to base FlextUtilities
         assert hasattr(FlextWebUtilities, "Generators")
         assert hasattr(FlextWebUtilities, "TextProcessor")
 
@@ -140,10 +142,8 @@ class TestFlextWebUtilities:
 
     def test_handle_flext_result(self) -> None:
         """Test handle_flext_result method."""
-        from flext_core import FlextCore
-
         # Test with success result
-        success_result = FlextCore.Result[str].ok("Success data")
+        success_result = FlextResult[str].ok("Success data")
         result = FlextWebUtilities.handle_flext_result(success_result)
 
         assert isinstance(result, dict)
@@ -152,7 +152,7 @@ class TestFlextWebUtilities:
         assert result["data"] == "Success data"
 
         # Test with failure result
-        failure_result = FlextCore.Result[str].fail("Error message")
+        failure_result = FlextResult[str].fail("Error message")
         result = FlextWebUtilities.handle_flext_result(failure_result)
 
         assert isinstance(result, dict)
@@ -199,7 +199,7 @@ class TestFlextWebUtilities:
 
     def test_utilities_logging_integration(self) -> None:
         """Test FlextWebUtilities logging integration."""
-        # Should have access to FlextCore.Utilities logging
+        # Should have access to FlextUtilities logging
         assert hasattr(FlextWebUtilities, "Generators")
         assert hasattr(FlextWebUtilities.Generators, "generate_iso_timestamp")
 

@@ -16,7 +16,7 @@ class TestFlextWebApp:
         """Test FlextWebApp initialization."""
         app = FlextWebApp()
 
-        # Should inherit from FlextCore.Service
+        # Should inherit from FlextService
         assert hasattr(app, "execute")
         assert callable(app.execute)
 
@@ -182,10 +182,10 @@ class TestFlextWebApp:
             )
 
     def test_app_inheritance(self) -> None:
-        """Test FlextWebApp inheritance from FlextCore.Service."""
+        """Test FlextWebApp inheritance from FlextService."""
         app = FlextWebApp()
 
-        # Should have FlextCore.Service methods
+        # Should have FlextService methods
         assert hasattr(app, "execute")
         assert callable(app.execute)
 
@@ -209,7 +209,7 @@ class TestFlextWebApp:
 
     def test_app_integration_patterns(self) -> None:
         """Test FlextWebApp integration patterns."""
-        # All methods should return FlextCore.Result
+        # All methods should return FlextResult
         config = FlextWebModels.AppConfig(title="Test API", version="1.0.0")
 
         with patch("flext_web.app.FastAPI") as mock_fastapi:
@@ -234,7 +234,7 @@ class TestFlextWebApp:
             mock_app.add_api_route = Mock()
             mock_fastapi.return_value = mock_app
 
-            with patch("flext_web.app.FlextCore.Logger") as mock_logger:
+            with patch("flext_web.app.FlextLogger") as mock_logger:
                 result = FlextWebApp.create_fastapi_app(config)
 
                 assert result.is_success

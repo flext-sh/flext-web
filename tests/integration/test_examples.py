@@ -11,11 +11,11 @@ import time
 from pathlib import Path
 
 import requests
-from flext_core import FlextCore
+from flext_core import FlextLogger
 from flext_tests import FlextTestDocker
 
 # Configure logging
-logger = FlextCore.Logger(__name__)
+logger = FlextLogger(__name__)
 
 
 class ExamplesFullFunctionalityTest:

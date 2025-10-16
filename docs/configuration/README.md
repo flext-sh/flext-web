@@ -21,7 +21,7 @@ FLEXT Web Interface uses **Pydantic Settings** with **flext-core configuration p
 
 ```python
 # Configuration hierarchy
-FlextWebConfig(BaseSettings, FlextCore.Config)
+FlextWebConfig(BaseSettings, FlextConfig)
 ├── Server Settings (host, port, debug)
 ├── Security Settings (secret_key, cors)
 ├── Integration Settings (flexcore_url, flext_service_url)
@@ -118,10 +118,29 @@ FLEXT_ENVIRONMENT=production
 
 ```python
 from pydantic_settings import BaseSettings
-from flext_core import FlextCore
+from flext_core import FlextBus
+from flext_core import FlextConfig
+from flext_core import FlextConstants
+from flext_core import FlextContainer
+from flext_core import FlextContext
+from flext_core import FlextDecorators
+from flext_core import FlextDispatcher
+from flext_core import FlextExceptions
+from flext_core import FlextHandlers
+from flext_core import FlextLogger
+from flext_core import FlextMixins
+from flext_core import FlextModels
+from flext_core import FlextProcessors
+from flext_core import FlextProtocols
+from flext_core import FlextRegistry
+from flext_core import FlextResult
+from flext_core import FlextRuntime
+from flext_core import FlextService
+from flext_core import FlextTypes
+from flext_core import FlextUtilities
 from pydantic import Field
 
-class FlextWebConfig(BaseSettings, FlextCore.Config):
+class FlextWebConfig(BaseSettings, FlextConfig):
     """Web configuration using flext-core patterns"""
 
     model_config = {
@@ -144,12 +163,12 @@ class FlextWebConfig(BaseSettings, FlextCore.Config):
         description="Secret key for cryptographic operations"
     )
 
-    def validate_config(self) -> FlextCore.Result[None]:
+    def validate_config(self) -> FlextResult[None]:
         """Validate configuration"""
         # Implementation includes business rules and security validation
         if not self.debug and "change-in-production" in self.secret_key:
-            return FlextCore.Result[None].fail("Secret key must be changed")
-        return FlextCore.Result[None].ok(None)
+            return FlextResult[None].fail("Secret key must be changed")
+        return FlextResult[None].ok(None)
 
     def get_server_url(self) -> str:
         """Get complete server URL"""
@@ -227,27 +246,27 @@ aws ssm put-parameter \
 The configuration includes several security validation rules:
 
 ```python
-def validate_config(self) -> FlextCore.Result[None]:
+def validate_config(self) -> FlextResult[None]:
     """Security validation rules"""
 
     # Production secret key validation
     if not self.debug and "change-in-production" in self.secret_key:
-        return FlextCore.Result[None].fail("Secret key must be changed in production")
+        return FlextResult[None].fail("Secret key must be changed in production")
 
     # Secret key length validation
     if len(self.secret_key) < 32:
-        return FlextCore.Result[None].fail("Secret key must be at least 32 characters")
+        return FlextResult[None].fail("Secret key must be at least 32 characters")
 
     # Port range validation
     if not (1 <= self.port <= 65535):
-        return FlextCore.Result[None].fail("Port must be between 1 and 65535")
+        return FlextResult[None].fail("Port must be between 1 and 65535")
 
     # Host validation for production
     if not self.debug and self.host == "0.0.0.0":
         # Log warning for production binding to all interfaces
         logger.warning("Production service binding to all interfaces")
 
-    return FlextCore.Result[None].ok(None)
+    return FlextResult[None].ok(None)
 ```
 
 ## 🏗️ Environment-Specific Configuration

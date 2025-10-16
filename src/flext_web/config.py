@@ -11,7 +11,14 @@ import warnings
 from pathlib import Path
 from typing import Self
 
-from flext_core import FlextCore
+from flext_core import (
+    FlextConfig,
+    FlextConstants,
+    FlextLogger,
+    FlextModels,
+    FlextResult,
+    FlextTypes,
+)
 from pydantic import (
     Field,
     SecretStr,
@@ -24,10 +31,10 @@ from pydantic_settings import SettingsConfigDict
 from flext_web.constants import FlextWebConstants
 
 
-class FlextWebConfig(FlextCore.Config):
-    """Enhanced Pydantic 2.11 Settings class for flext-web extending FlextCore.Config.
+class FlextWebConfig(FlextConfig):
+    """Enhanced Pydantic 2.11 Settings class for flext-web extending FlextConfig.
 
-    Leverages all FlextCore.Config advanced features:
+    Leverages all FlextConfig advanced features:
     - Protocol inheritance (Infrastructure.Configurable, etc.)
     - Enhanced Pydantic 2.11+ features (validate_return, arbitrary_types, etc.)
     - Advanced serialization (ser_json_timedelta, ser_json_bytes)
@@ -35,7 +42,7 @@ class FlextWebConfig(FlextCore.Config):
     - Web-specific configuration extending core patterns
 
     **NEW FEATURES INTEGRATION**:
-    - Inherits all FlextCore.Config Pydantic 2.11+ enhancements
+    - Inherits all FlextConfig Pydantic 2.11+ enhancements
     - Web-specific field extensions with proper defaults
     - Enhanced validation using FlextWebConstants
     - Computed fields for web-specific derived configuration
@@ -48,7 +55,6 @@ class FlextWebConfig(FlextCore.Config):
         str_strip_whitespace=True,
         arbitrary_types_allowed=True,
         validate_return=True,
-        extra="forbid",
         frozen=False,
         json_schema_extra={
             "title": "FLEXT Web Configuration",
@@ -72,11 +78,6 @@ class FlextWebConfig(FlextCore.Config):
         description="Port number for web service",
     )
 
-    debug: bool = Field(
-        default=False,
-        description="Enable debug mode",
-    )
-
     secret_key: SecretStr | None = Field(
         default=SecretStr(FlextWebConstants.WebSpecific.DEFAULT_SECRET_KEY),
         min_length=32,
@@ -91,19 +92,19 @@ class FlextWebConfig(FlextCore.Config):
     )
 
     version: str = Field(
-        default=FlextCore.Constants.VERSION,
+        default=FlextConstants.VERSION,
         description="Application version",
     )
 
     # Advanced web settings
     max_content_length: int = Field(
-        default=FlextCore.Constants.Logging.MAX_FILE_SIZE,  # 16MB
+        default=FlextConstants.Logging.MAX_FILE_SIZE,  # 16MB
         gt=0,
         description="Maximum request content length in bytes",
     )
 
     request_timeout: int = Field(
-        default=FlextCore.Constants.Network.DEFAULT_TIMEOUT,
+        default=FlextConstants.Network.DEFAULT_TIMEOUT,
         gt=0,
         le=600,
         description="Request timeout in seconds",
@@ -114,7 +115,7 @@ class FlextWebConfig(FlextCore.Config):
         description="Enable CORS support",
     )
 
-    cors_origins: FlextCore.Types.StringList = Field(
+    cors_origins: FlextTypes.StringList = Field(
         default_factory=list,
         description="CORS allowed origins",
     )
@@ -152,11 +153,6 @@ class FlextWebConfig(FlextCore.Config):
     )
 
     # Logging configuration
-    log_level: str = Field(
-        default="INFO",
-        description="Logging level",
-    )
-
     log_format: str = Field(
         default="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         description="Log message format",
@@ -196,7 +192,7 @@ class FlextWebConfig(FlextCore.Config):
             return FlextWebConstants.WebSpecific.LOCALHOST_IP
 
         # Use flext-core validation
-        result = FlextCore.Models.Validation.validate_hostname(host)
+        result = FlextModels.Validation.validate_hostname(host)
         if result.is_failure:
             raise ValueError(result.error)
 
@@ -253,20 +249,18 @@ class FlextWebConfig(FlextCore.Config):
 
     @field_validator("cors_origins")
     @classmethod
-    def validate_cors_origins(
-        cls, v: FlextCore.Types.StringList
-    ) -> FlextCore.Types.StringList:
+    def validate_cors_origins(cls, v: FlextTypes.StringList) -> FlextTypes.StringList:
         """Validate CORS origins with comprehensive URL validation."""
         if not v:
             return []
 
-        validated_origins: FlextCore.Types.StringList = []
+        validated_origins: FlextTypes.StringList = []
         for origin in v:
             if origin == "*":
                 validated_origins.append(origin)
             else:
                 # Validate URL format
-                result = FlextCore.Models.Validation.validate_url(origin)
+                result = FlextModels.Validation.validate_url(origin)
                 if result.is_failure:
                     msg = f"Invalid CORS origin: {origin}"
                     raise ValueError(msg)
@@ -354,7 +348,7 @@ class FlextWebConfig(FlextCore.Config):
         """Get base URL for web service."""
         return f"{self.protocol}://{self.host}:{self.port}"
 
-    def get_server_config(self) -> FlextCore.Types.Dict:
+    def get_server_config(self) -> FlextTypes.Dict:
         """Get server configuration."""
         return {
             "host": self.host,
@@ -365,7 +359,7 @@ class FlextWebConfig(FlextCore.Config):
             "ssl_enabled": self.ssl_enabled,
         }
 
-    def get_security_config(self) -> FlextCore.Types.Dict:
+    def get_security_config(self) -> FlextTypes.Dict:
         """Get security configuration."""
         return {
             "session_cookie_secure": self.session_cookie_secure,
@@ -378,11 +372,11 @@ class FlextWebConfig(FlextCore.Config):
 
     # Factory methods for compatibility (simplified from the wrapper)
     @classmethod
-    def create_web_config(cls, **overrides: object) -> FlextCore.Result[FlextWebConfig]:
+    def create_web_config(cls, **overrides: object) -> FlextResult[FlextWebConfig]:
         """Create web configuration instance with optional overrides."""
         # Input validation - fail fast for invalid overrides
         if not overrides:
-            return FlextCore.Result[FlextWebConfig].fail(
+            return FlextResult[FlextWebConfig].fail(
                 "Overrides dictionary cannot be empty"
             )
 
@@ -392,20 +386,18 @@ class FlextWebConfig(FlextCore.Config):
             config = cls(**overrides)
             # Ensure it's properly typed as FlextWebConfig
             if not isinstance(config, cls):
-                return FlextCore.Result[FlextWebConfig].fail(
+                return FlextResult[FlextWebConfig].fail(
                     f"Failed to create proper {cls.__name__} instance"
                 )
-            return FlextCore.Result[FlextWebConfig].ok(config)
+            return FlextResult[FlextWebConfig].ok(config)
         except Exception as e:
             # Log validation failure and return result
-            logger = FlextCore.Logger(__name__)
+            logger = FlextLogger(__name__)
             logger.warning("Web config creation failed", error=str(e))
-            return FlextCore.Result[FlextWebConfig].fail(
-                f"Failed to create web config: {e}"
-            )
+            return FlextResult[FlextWebConfig].fail(f"Failed to create web config: {e}")
 
     # Business rules validation
-    def validate_business_rules(self) -> FlextCore.Result[None]:
+    def validate_business_rules(self) -> FlextResult[None]:
         """Validate web configuration business rules.
 
         Validates web-specific business rules for configuration consistency.
@@ -415,31 +407,29 @@ class FlextWebConfig(FlextCore.Config):
         # SSL configuration validation
         if self.ssl_enabled:
             if not self.ssl_cert_path:
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "SSL certificate path required when SSL is enabled"
                 )
             if not self.ssl_key_path:
-                return FlextCore.Result[None].fail(
+                return FlextResult[None].fail(
                     "SSL private key path required when SSL is enabled"
                 )
 
         # CORS configuration validation
         if self.enable_cors and not self.cors_origins:
-            return FlextCore.Result[None].fail(
-                "CORS origins required when CORS is enabled"
-            )
+            return FlextResult[None].fail("CORS origins required when CORS is enabled")
 
         # Security validation
         if self.debug and not self.secret_key:
-            return FlextCore.Result[None].fail(
+            return FlextResult[None].fail(
                 "Secret key required when debug mode is enabled"
             )
         if self.enable_cors and "*" in self.cors_origins:
-            return FlextCore.Result[None].fail("Wildcard CORS origins not recommended")
+            return FlextResult[None].fail("Wildcard CORS origins not recommended")
 
         # Session security validation
         if self.ssl_enabled and not self.session_cookie_secure:
-            return FlextCore.Result[None].fail(
+            return FlextResult[None].fail(
                 "Session cookies must be secure when SSL is enabled"
             )
 
@@ -448,16 +438,16 @@ class FlextWebConfig(FlextCore.Config):
             self.host == FlextWebConstants.WebSpecific.ALL_INTERFACES
             and self.port <= FlextWebConstants.WebSpecific.SYSTEM_PORTS_THRESHOLD
         ):
-            return FlextCore.Result[None].fail(
+            return FlextResult[None].fail(
                 f"Binding to all interfaces (0.0.0.0) with system port {self.port} is not allowed"
             )
 
-        return FlextCore.Result[None].ok(None)
+        return FlextResult[None].ok(None)
 
     # Web-specific project identification (extends base project fields)
     project_name: str = Field(
         default="flext-web",
-        description="Web project name (overrides base FlextCore.Config)",
+        description="Web project name (overrides base FlextConfig)",
     )
 
 

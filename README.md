@@ -26,7 +26,7 @@ flext-web provides **Web UI/Dashboard layer** for FLEXT ecosystem projects, focu
 - **flext-web** → Web UI layer (Flask dashboards, HTML rendering, sessions)
 - **flext-api** → HTTP client layer (FlextApiClient for backend communication)
 - **flext-auth** → Authentication layer (JWT, OAuth2, 10 providers + middleware)
-- **flext-core** → Foundation patterns (FlextCore.Result, FlextCore.Container, FlextCore.Models)
+- **flext-core** → Foundation patterns (FlextResult, FlextContainer, FlextModels)
 
 **Phase 2 Status**: FastAPI application factory (FlextWebApp) migrated to flext-web ✅. Full server implementation (FlextWebServer) pending middleware/plugin migration.
 
@@ -37,7 +37,7 @@ flext-web provides **Web UI/Dashboard layer** for FLEXT ecosystem projects, focu
 - JWT-based authentication with 10 provider support
 - WebAuthMiddleware integration for Flask session management
 - Endpoints: `/auth/login`, `/auth/logout`, `/auth/register`
-- User management with FlextCore.Result error handling
+- User management with FlextResult error handling
 
 ✅ **flext-api Integration Complete**:
 
@@ -47,10 +47,10 @@ flext-web provides **Web UI/Dashboard layer** for FLEXT ecosystem projects, focu
 
 ✅ **flext-core Foundation**:
 
-- FlextCore.Result[T] for railway-oriented error handling
-- FlextCore.Logger for structured logging
-- FlextCore.Container for dependency injection
-- FlextCore.Models.Entity for domain modeling
+- FlextResult[T] for railway-oriented error handling
+- FlextLogger for structured logging
+- FlextContainer for dependency injection
+- FlextModels.Entity for domain modeling
 
 ### Phase 2 Progress: FastAPI Migration
 
@@ -83,7 +83,7 @@ flext-web provides **Web UI/Dashboard layer** for FLEXT ecosystem projects, focu
 - **4,441 lines** across **15 Python files**
 - **Clean Architecture** with domain, application, and infrastructure layers
 - **CQRS Pattern** implemented in handlers (691 lines)
-- **Domain Modeling** using FlextCore.Models.Entity patterns (279 lines)
+- **Domain Modeling** using FlextModels.Entity patterns (279 lines)
 - **Configuration System** comprehensive but needs enhancement (774 lines)
 
 **Current Gaps**:
@@ -231,7 +231,7 @@ def protected_dashboard():
     Integration demonstration:
     - Uses flext-auth for JWT authentication
     - Uses FlextApiClient for backend communication
-    - FlextCore.Result error handling throughout
+    - FlextResult error handling throughout
     """
     # Authentication handled by FlextWebService middleware
     # API calls available through fetch_apps_from_api() method
@@ -265,9 +265,9 @@ def protected_dashboard():
 
 Built on flext-core patterns:
 
-- **FlextCore.Result[T]** - Railway-oriented error handling
-- **FlextCore.Models.Entity** - Domain modeling
-- **FlextCore.Container** - Dependency injection
+- **FlextResult[T]** - Railway-oriented error handling
+- **FlextModels.Entity** - Domain modeling
+- **FlextContainer** - Dependency injection
 - **Clean Architecture** - Layer separation
 
 ### Web-Specific Components
@@ -340,7 +340,7 @@ models = FlextWebModels()
 ### Phase 1: Foundation (Priority 1)
 
 - Fix direct Flask imports through abstraction
-- Complete FlextCore.Result integration
+- Complete FlextResult integration
 - Implement single class per module pattern
 - Achieve zero type errors
 

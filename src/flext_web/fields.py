@@ -10,18 +10,18 @@ from __future__ import annotations
 import re
 from typing import ClassVar, cast, override
 
-from flext_core import FlextCore
+from flext_core import FlextConstants, FlextModels, FlextUtilities
 from pydantic import Field
 from pydantic.fields import FieldInfo
 
 from flext_web.constants import FlextWebConstants
 
 
-class FlextWebFields(FlextCore.Models):
+class FlextWebFields(FlextModels):
     """Consolidated web field system extending flext-core patterns.
 
     This class serves as the single point of access for all web-specific
-    field definitions, validators, and serializers while extending FlextCore.Models
+    field definitions, validators, and serializers while extending FlextModels
     from flext-core for proper architectural inheritance.
 
     All field functionality is accessible through this single class following the
@@ -73,8 +73,8 @@ class FlextWebFields(FlextCore.Models):
 
             # Set default values
             kwargs.setdefault("default", self.status_code)
-            kwargs.setdefault("ge", FlextCore.Constants.Http.HTTP_OK)  # 200 como base
-            kwargs.setdefault("le", FlextCore.Constants.Http.HTTP_STATUS_MAX)  # 599
+            kwargs.setdefault("ge", FlextConstants.Http.HTTP_OK)  # 200 como base
+            kwargs.setdefault("le", FlextConstants.Http.HTTP_STATUS_MAX)  # 599
 
             if self.description:
                 kwargs.setdefault(
@@ -89,10 +89,10 @@ class FlextWebFields(FlextCore.Models):
                 "description",
                 f"HTTP {self.status_code}: {self.description or 'Status'}",
             )
-            ge_val = cast("int", kwargs.get("ge", FlextCore.Constants.Http.HTTP_OK))
+            ge_val = cast("int", kwargs.get("ge", FlextConstants.Http.HTTP_OK))
             le_val = cast(
                 "int",
-                kwargs.get("le", FlextCore.Constants.Http.HTTP_STATUS_MAX),
+                kwargs.get("le", FlextConstants.Http.HTTP_STATUS_MAX),
             )
 
             if isinstance(field_description, str):
@@ -116,7 +116,7 @@ class FlextWebFields(FlextCore.Models):
         ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 200 OK status field."""
             return cls(
-                FlextCore.Constants.Http.HTTP_OK,
+                FlextConstants.Http.HTTP_OK,
                 description=description,
                 **field_kwargs,
             )
@@ -127,7 +127,7 @@ class FlextWebFields(FlextCore.Models):
         ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 201 Created status field."""
             return cls(
-                FlextCore.Constants.Http.HTTP_CREATED,
+                FlextConstants.Http.HTTP_CREATED,
                 description=description,
                 **field_kwargs,
             )
@@ -138,7 +138,7 @@ class FlextWebFields(FlextCore.Models):
         ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 400 Bad Request status field."""
             return cls(
-                FlextCore.Constants.Http.HTTP_BAD_REQUEST,
+                FlextConstants.Http.HTTP_BAD_REQUEST,
                 description=description,
                 **field_kwargs,
             )
@@ -149,7 +149,7 @@ class FlextWebFields(FlextCore.Models):
         ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 404 Not Found status field."""
             return cls(
-                FlextCore.Constants.Http.HTTP_NOT_FOUND,
+                FlextConstants.Http.HTTP_NOT_FOUND,
                 description=description,
                 **field_kwargs,
             )
@@ -160,7 +160,7 @@ class FlextWebFields(FlextCore.Models):
         ) -> FlextWebFields.HTTPStatusField:
             """Create HTTP 500 Internal Server Error status field."""
             return cls(
-                FlextCore.Constants.Http.HTTP_INTERNAL_SERVER_ERROR,
+                FlextConstants.Http.HTTP_INTERNAL_SERVER_ERROR,
                 description=description,
                 **field_kwargs,
             )
@@ -173,7 +173,7 @@ class FlextWebFields(FlextCore.Models):
     def host_field(
         cls, default: str = FlextWebConstants.WebServer.DEFAULT_HOST, **kwargs: object
     ) -> FieldInfo:
-        """Create host address field with MASSIVE FlextCore.Utilities validation.
+        """Create host address field with MASSIVE FlextUtilities validation.
 
         Args:
             default: Default host value
@@ -183,16 +183,14 @@ class FlextWebFields(FlextCore.Models):
             Configured Pydantic field for host addresses
 
         """
-        # MASSIVE USAGE: FlextCore.Utilities.TextProcessor.safe_string for default validation
-        safe_default = FlextCore.Utilities.TextProcessor.safe_string(default)
+        # MASSIVE USAGE: FlextUtilities.TextProcessor.safe_string for default validation
+        safe_default = FlextUtilities.TextProcessor.safe_string(default)
 
         field_kwargs = dict[str, object](kwargs)
         field_kwargs.setdefault("default", safe_default)
         field_kwargs.setdefault("description", "Host address (IP or hostname)")
         field_kwargs.setdefault("pattern", cls.HOST_PATTERN.pattern)
-        field_kwargs.setdefault(
-            "max_length", FlextCore.Constants.Limits.MAX_STRING_LENGTH
-        )
+        field_kwargs.setdefault("max_length", FlextConstants.Limits.MAX_STRING_LENGTH)
 
         # Simplified Field creation for host field with proper default
         field_description = kwargs.get("description", "Host field")
@@ -269,7 +267,7 @@ class FlextWebFields(FlextCore.Models):
 
     @classmethod
     def app_name_field(cls, **kwargs: object) -> FieldInfo:
-        """Create application name field with MASSIVE FlextCore.Utilities validation.
+        """Create application name field with MASSIVE FlextUtilities validation.
 
         Args:
             **kwargs: Additional Pydantic field kwargs
@@ -279,10 +277,8 @@ class FlextWebFields(FlextCore.Models):
 
         """
         field_kwargs = dict[str, object](kwargs)
-        # MASSIVE USAGE: FlextCore.Utilities.TextProcessor.safe_string for description
-        safe_description = FlextCore.Utilities.TextProcessor.safe_string(
-            "Application name"
-        )
+        # MASSIVE USAGE: FlextUtilities.TextProcessor.safe_string for description
+        safe_description = FlextUtilities.TextProcessor.safe_string("Application name")
         field_kwargs.setdefault("description", safe_description)
         field_kwargs.setdefault(
             "min_length", FlextWebConstants.WebServer.MIN_APP_NAME_LENGTH
@@ -335,7 +331,7 @@ class FlextWebFields(FlextCore.Models):
         )
         field_kwargs.setdefault(
             "min_length",
-            FlextCore.Constants.Validation.MIN_SECRET_KEY_LENGTH,
+            FlextConstants.Validation.MIN_SECRET_KEY_LENGTH,
         )
 
         # Hide secret key values in repr and str

@@ -99,7 +99,7 @@ src/flext_web/
 #### **Class Documentation**
 
 ```python
-class FlextWebApp(FlextCore.Models.Entity):
+class FlextWebApp(FlextModels.Entity):
     """Web application domain entity with lifecycle management capabilities.
 
     Rich domain entity representing a web application within the FLEXT ecosystem.
@@ -113,7 +113,7 @@ class FlextWebApp(FlextCore.Models.Entity):
 #### **Method Documentation**
 
 ```python
-def start(self) -> FlextCore.Result[FlextWebApp]:
+def start(self) -> FlextResult[FlextWebApp]:
     """Start application with state transition validation.
 
     [Detailed business rules, pre/post conditions, examples]:
@@ -145,7 +145,7 @@ def create_service(config: FlextWebConfig | None = None) -> FlextWebService:
 - **Clean Architecture**: Clear layer separation and dependency inversion
 - **Domain-Driven Design**: Rich domain models with business logic encapsulation
 - **CQRS**: Command Query Responsibility Segregation patterns
-- **Railway-Oriented Programming**: FlextCore.Result patterns for error handling
+- **Railway-Oriented Programming**: FlextResult patterns for error handling
 - **Enterprise Patterns**: Professional documentation and code organization
 
 ## Development Workflow
@@ -171,10 +171,10 @@ make security                  # Security scanning
 
 ### **FLEXT Core Integration**
 
-- **FlextCore.Result**: Railway-oriented programming for all operations
-- **FlextCore.Models.Entity**: Domain entity base classes with validation
-- **FlextCore.Config**: Configuration management with environment integration
-- **FlextCore.Processors**: CQRS command handler patterns
+- **FlextResult**: Railway-oriented programming for all operations
+- **FlextModels.Entity**: Domain entity base classes with validation
+- **FlextConfig**: Configuration management with environment integration
+- **FlextProcessors**: CQRS command handler patterns
 
 ### **Ecosystem Integration**
 

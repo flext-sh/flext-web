@@ -1,7 +1,7 @@
 """FlextWeb-specific utilities extending flext-core patterns.
 
 Minimal implementation providing ONLY web-domain-specific utilities not available
-in flext-core. Delegates all generic operations to FlextCore.Utilities.
+in flext-core. Delegates all generic operations to FlextUtilities.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -13,7 +13,7 @@ from __future__ import annotations
 import re
 from typing import TypeVar
 
-from flext_core import FlextCore
+from flext_core import FlextResult, FlextUtilities
 from pydantic import ValidationError
 
 from flext_web.constants import FlextWebConstants
@@ -23,12 +23,12 @@ from flext_web.typings import FlextWebTypes
 T = TypeVar("T")
 
 
-class FlextWebUtilities(FlextCore.Utilities):
+class FlextWebUtilities(FlextUtilities):
     """Web-specific utilities delegating to flext-core.
 
-    Inherits from FlextCore.Utilities to avoid duplication and ensure consistency.
-    Provides only web-domain-specific functionality not available in FlextCore.Utilities.
-    All generic operations delegate to FlextCore.Utilities from flext-core.
+    Inherits from FlextUtilities to avoid duplication and ensure consistency.
+    Provides only web-domain-specific functionality not available in FlextUtilities.
+    All generic operations delegate to FlextUtilities from flext-core.
     """
 
     @staticmethod
@@ -43,7 +43,7 @@ class FlextWebUtilities(FlextCore.Utilities):
     def generate_app_id(name: str) -> str:
         """Generate web application ID using flext-core utilities."""
         clean_name = FlextWebUtilities._slugify(name)
-        base_id = FlextCore.Utilities.Generators.generate_entity_id()
+        base_id = FlextUtilities.Generators.generate_entity_id()
         # Handle different base_id formats
         if "_" in base_id:
             return f"app_{clean_name}_{base_id.split('_')[1]}"
@@ -57,7 +57,7 @@ class FlextWebUtilities(FlextCore.Utilities):
             str: Description of return value.
 
         """
-        clean_name = FlextCore.Utilities.TextProcessor.safe_string(name).strip()
+        clean_name = FlextUtilities.TextProcessor.safe_string(name).strip()
         slugified = FlextWebUtilities._slugify(clean_name)
         return f"app_{slugified}" if slugified else "app_default"
 
@@ -73,10 +73,10 @@ class FlextWebUtilities(FlextCore.Utilities):
         """
         sanitized: FlextWebTypes.Core.RequestDict = {}
         for key, value in data.items():
-            safe_key = FlextCore.Utilities.TextProcessor.safe_string(key)
+            safe_key = FlextUtilities.TextProcessor.safe_string(key)
             if isinstance(value, str):
                 # More aggressive sanitization for string values
-                safe_value = FlextCore.Utilities.TextProcessor.safe_string(value)
+                safe_value = FlextUtilities.TextProcessor.safe_string(value)
                 # Remove special characters that could be problematic
                 safe_value = re.sub(r"[^\w\s\-]", "", safe_value).strip()
                 sanitized[safe_key] = safe_value
@@ -99,7 +99,7 @@ class FlextWebUtilities(FlextCore.Utilities):
             "success": "True",
             "message": message,
             "data": data,
-            "timestamp": FlextCore.Utilities.Generators.generate_iso_timestamp(),
+            "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
         }
 
     @staticmethod
@@ -118,7 +118,7 @@ class FlextWebUtilities(FlextCore.Utilities):
             "message": message,
             "data": None,
             "status_code": status_code,
-            "timestamp": FlextCore.Utilities.Generators.generate_iso_timestamp(),
+            "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
         }
 
     @staticmethod
@@ -138,14 +138,14 @@ class FlextWebUtilities(FlextCore.Utilities):
             "success": success,
             "message": message,
             "data": data,
-            "timestamp": FlextCore.Utilities.Generators.generate_iso_timestamp(),
+            "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
         }
 
     @staticmethod
     def handle_flext_result(
-        result: FlextCore.Result[object],
+        result: FlextResult[object],
     ) -> FlextWebTypes.Core.ResponseDict:
-        """Convert FlextCore.Result to API response.
+        """Convert FlextResult to API response.
 
         Returns:
             FlextWebTypes.Core.ResponseDict: API response data dictionary.
@@ -169,11 +169,11 @@ class FlextWebUtilities(FlextCore.Utilities):
         name: str,
         port: int = FlextWebConstants.WebServer.DEFAULT_PORT,
         host: str = FlextWebConstants.WebServer.DEFAULT_HOST,
-    ) -> FlextCore.Result[FlextWebTypes.Core.ResponseDict]:
+    ) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
         """Create web application data with Pydantic validation.
 
         Returns:
-            FlextCore.Result[FlextWebTypes.Core.ResponseDict]: Web application data result.
+            FlextResult[FlextWebTypes.Core.ResponseDict]: Web application data result.
 
         """
         # Import at runtime to avoid circular imports
@@ -192,10 +192,10 @@ class FlextWebUtilities(FlextCore.Utilities):
                 "name": app.name,
                 "port": app.port,
                 "host": app.host,
-                "created_at": FlextCore.Utilities.Generators.generate_iso_timestamp(),
+                "created_at": FlextUtilities.Generators.generate_iso_timestamp(),
             }
 
-            return FlextCore.Result[FlextWebTypes.Core.ResponseDict].ok(app_data)
+            return FlextResult[FlextWebTypes.Core.ResponseDict].ok(app_data)
         except ValidationError as e:
             # Extract meaningful error messages for compatibility
             error_msg = ""
@@ -210,9 +210,9 @@ class FlextWebUtilities(FlextCore.Utilities):
                 else:
                     error_msg = f"Validation error: {error['msg']}"
                 break  # Use first error
-            return FlextCore.Result[FlextWebTypes.Core.ResponseDict].fail(error_msg)
+            return FlextResult[FlextWebTypes.Core.ResponseDict].fail(error_msg)
         except ValueError as e:
-            return FlextCore.Result[FlextWebTypes.Core.ResponseDict].fail(str(e))
+            return FlextResult[FlextWebTypes.Core.ResponseDict].fail(str(e))
 
 
 __all__ = [

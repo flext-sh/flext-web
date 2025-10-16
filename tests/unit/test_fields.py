@@ -3,7 +3,7 @@
 Tests the web fields functionality following flext standards.
 """
 
-from flext_core import FlextCore
+from flext_core import FlextConstants
 
 from flext_web.constants import FlextWebConstants
 from flext_web.fields import FlextWebFields
@@ -59,31 +59,31 @@ class TestFlextWebFields:
     def test_http_status_field_ok(self) -> None:
         """Test HTTP 200 OK status field creation."""
         field = FlextWebFields.HTTPStatusField.ok("Success")
-        assert field.status_code == FlextCore.Constants.Http.HTTP_OK
+        assert field.status_code == FlextConstants.Http.HTTP_OK
         assert field.description == "Success"
 
     def test_http_status_field_created(self) -> None:
         """Test HTTP 201 Created status field creation."""
         field = FlextWebFields.HTTPStatusField.created("Resource created")
-        assert field.status_code == FlextCore.Constants.Http.HTTP_CREATED
+        assert field.status_code == FlextConstants.Http.HTTP_CREATED
         assert field.description == "Resource created"
 
     def test_http_status_field_bad_request(self) -> None:
         """Test HTTP 400 Bad Request status field creation."""
         field = FlextWebFields.HTTPStatusField.bad_request("Invalid request")
-        assert field.status_code == FlextCore.Constants.Http.HTTP_BAD_REQUEST
+        assert field.status_code == FlextConstants.Http.HTTP_BAD_REQUEST
         assert field.description == "Invalid request"
 
     def test_http_status_field_not_found(self) -> None:
         """Test HTTP 404 Not Found status field creation."""
         field = FlextWebFields.HTTPStatusField.not_found("Resource not found")
-        assert field.status_code == FlextCore.Constants.Http.HTTP_NOT_FOUND
+        assert field.status_code == FlextConstants.Http.HTTP_NOT_FOUND
         assert field.description == "Resource not found"
 
     def test_http_status_field_server_error(self) -> None:
         """Test HTTP 500 Internal Server Error status field creation."""
         field = FlextWebFields.HTTPStatusField.server_error("Internal error")
-        assert field.status_code == FlextCore.Constants.Http.HTTP_INTERNAL_SERVER_ERROR
+        assert field.status_code == FlextConstants.Http.HTTP_INTERNAL_SERVER_ERROR
         assert field.description == "Internal error"
 
     def test_http_status_field_create_field(self) -> None:

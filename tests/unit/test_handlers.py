@@ -3,7 +3,7 @@
 Tests the web handlers functionality following flext standards.
 """
 
-from flext_core import FlextCore
+from flext_core import FlextConstants, FlextResult
 
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels
@@ -26,7 +26,7 @@ class TestFlextWebHandlers:
         assert handler is not None
         assert hasattr(handler, "success_status")
         assert hasattr(handler, "error_status")
-        assert handler.success_status == FlextCore.Constants.Http.HTTP_OK
+        assert handler.success_status == FlextConstants.Http.HTTP_OK
 
     def test_web_response_handler_with_custom_status(self) -> None:
         """Test WebResponseHandler with custom status codes."""
@@ -127,19 +127,15 @@ class TestFlextWebHandlers:
 
     def test_web_response_handler_handle_result_success(self) -> None:
         """Test handling successful result."""
-        from flext_core import FlextCore
-
         handler = FlextWebHandlers.WebResponseHandler()
-        result = FlextCore.Result[str].ok("Success data")
+        result = FlextResult[str].ok("Success data")
         response = handler.handle_result(result, "Operation successful")
         assert response is not None
 
     def test_web_response_handler_handle_result_failure(self) -> None:
         """Test handling failed result."""
-        from flext_core import FlextCore
-
         handler = FlextWebHandlers.WebResponseHandler()
-        result = FlextCore.Result[str].fail("Error message")
+        result = FlextResult[str].fail("Error message")
         response = handler.handle_result(result, "Operation failed")
         assert response is not None
 

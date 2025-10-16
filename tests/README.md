@@ -54,11 +54,11 @@ tests/
 
 ### Testing Patterns
 
-#### FlextCore.Result Testing
+#### FlextResult Testing
 
 ```python
 def test_successful_operation():
-    """Test successful operation returns FlextCore.Result[None].ok()"""
+    """Test successful operation returns FlextResult[None].ok()"""
     result = handler.create_app("test-app", 3000)
 
     assert result.success
@@ -66,7 +66,7 @@ def test_successful_operation():
     assert result.error is None
 
 def test_failure_operation():
-    """Test failure operation returns FlextCore.Result[None].fail()"""
+    """Test failure operation returns FlextResult[None].fail()"""
     result = handler.create_app("", 0)  # Invalid input
 
     assert result.is_failure

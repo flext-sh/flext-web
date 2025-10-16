@@ -18,7 +18,7 @@ from collections.abc import Generator
 
 import pytest
 from flask import Flask
-from flext_core import FlextCore
+from flext_core import FlextTypes
 
 from flext_web import FlextWebConfig, FlextWebService
 from flext_web.constants import FlextWebConstants
@@ -145,7 +145,7 @@ def invalid_app_data() -> dict[str, str | int]:
 
 # Configuration for real environment tests
 @pytest.fixture
-def production_config() -> FlextCore.Types.StringDict:
+def production_config() -> FlextTypes.StringDict:
     """Production-like configuration for testing."""
     return {
         "FLEXT_WEB_HOST": FlextWebConstants.WebSpecific.ALL_INTERFACES,

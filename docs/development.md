@@ -51,7 +51,7 @@ make test-web      # Web-specific functionality tests
 
 **flext-web design** follows patterns from:
 
-- **flext-core**: Foundation patterns (FlextCore.Result, FlextCore.Models, Clean Architecture)
+- **flext-core**: Foundation patterns (FlextResult, FlextModels, Clean Architecture)
 - **FLEXT workspace**: Overall architecture guidance (see ../docs/architecture)
 
 **flext-web specific concerns**:
@@ -61,7 +61,7 @@ make test-web      # Web-specific functionality tests
 - HTTP request/response handling
 - Web-specific domain models
 
-**Not duplicated here**: flext-core already documents FlextCore.Result, FlextCore.Container, domain modeling, and Clean Architecture patterns.
+**Not duplicated here**: flext-core already documents FlextResult, FlextContainer, domain modeling, and Clean Architecture patterns.
 
 ## Code Organization
 
@@ -84,13 +84,13 @@ src/flext_web/
 
 - **Fix Direct Flask Imports**: Abstract Flask through flext-web interfaces
 - **Single Class Pattern**: Refactor services.py nested classes
-- **Enhanced flext-core Integration**: Complete FlextCore.Result usage
+- **Enhanced flext-core Integration**: Complete FlextResult usage
 - **Type Safety**: Achieve zero MyPy errors in strict mode
 
 ### Priority 2: Web Framework Enhancement
 
 - **HTTP Interface**: Create framework-agnostic request/response handling
-- **Error Handling**: Standardize FlextCore.Result patterns
+- **Error Handling**: Standardize FlextResult patterns
 - **Middleware System**: Request/response pipeline
 - **Configuration**: Environment-based configuration management
 
@@ -120,9 +120,9 @@ src/flext_web/
 
 **flext-core integration patterns**:
 
-- Use FlextCore.Result[T] for all operations returning values
-- Use FlextCore.Models.Entity for domain entities (WebApp, etc.)
-- Use FlextCore.Container for dependency injection
+- Use FlextResult[T] for all operations returning values
+- Use FlextModels.Entity for domain entities (WebApp, etc.)
+- Use FlextContainer for dependency injection
 - Follow Clean Architecture layer separation
 
 **Web-specific patterns**:
@@ -147,7 +147,7 @@ src/flext_web/
 ## Getting Help
 
 **Architecture reference**: ../docs/architecture (Clean Architecture patterns)
-**Foundation patterns**: ../flext-core/README.md (FlextCore.Result, domain modeling)
+**Foundation patterns**: ../flext-core/README.md (FlextResult, domain modeling)
 **Development roadmap**: See TODO.md for priorities and implementation plan
 
 **Current status**: Foundation functional, architectural improvements in progress.

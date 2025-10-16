@@ -7,14 +7,14 @@ for application lifecycle management using the refactored architecture.
 This example shows:
 - Health check using WebHandlers
 - Application lifecycle management
-- Error handling with FlextCore.Result patterns
+- Error handling with FlextResult patterns
 - Usage of new type aliases for better type safety
 """
 
 from typing import cast
 
 import requests
-from flext_core import FlextCore
+from flext_core import FlextResult, FlextTypes
 
 from flext_web import FlextWebTypes
 
@@ -121,19 +121,19 @@ def _extract_apps_from_response(
 def _execute_app_operation(
     method: str,
     endpoint: str,
-    json_data: FlextCore.Types.Dict | None = None,
+    json_data: FlextTypes.Dict | None = None,
 ) -> FlextWebTypes.AppData | None:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
-    Reduces from 9 returns to single monadic chain using FlextCore.Result from flext-core.
+    Reduces from 9 returns to single monadic chain using FlextResult from flext-core.
     Leverages existing framework instead of recreating functionality.
     """
 
-    def _make_http_request() -> FlextCore.Result[requests.Response]:
-        """Make HTTP request using FlextCore.Result for error handling."""
+    def _make_http_request() -> FlextResult[requests.Response]:
+        """Make HTTP request using FlextResult for error handling."""
         try:
             request_func = getattr(requests, method.lower())
-            kwargs: FlextCore.Types.Dict = {
+            kwargs: FlextTypes.Dict = {
                 "url": f"{ExampleConstants.BASE_URL}{endpoint}",
                 "timeout": 5,
             }
@@ -142,25 +142,23 @@ def _execute_app_operation(
 
             response = request_func(**kwargs)
             return (
-                FlextCore.Result[requests.Response].ok(response)
+                FlextResult[requests.Response].ok(response)
                 if response.status_code == ExampleConstants.HTTP_OK
-                else FlextCore.Result[requests.Response].fail(
-                    f"HTTP {response.status_code}"
-                )
+                else FlextResult[requests.Response].fail(f"HTTP {response.status_code}")
             )
         except requests.RequestException as e:
-            return FlextCore.Result[requests.Response].fail(f"Request failed: {e}")
+            return FlextResult[requests.Response].fail(f"Request failed: {e}")
 
     # Use existing flext-core monadic chain
     result = (
         _make_http_request()
         .flat_map(
-            lambda resp: FlextCore.Result[FlextCore.Types.Dict].ok(resp.json())
+            lambda resp: FlextResult[FlextTypes.Dict].ok(resp.json())
             if resp.status_code == ExampleConstants.HTTP_OK
-            else FlextCore.Result[FlextCore.Types.Dict].fail("Invalid response"),
+            else FlextResult[FlextTypes.Dict].fail("Invalid response"),
         )
         .flat_map(
-            lambda json_data: FlextCore.Result[FlextWebTypes.AppData].ok(
+            lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
                 cast("FlextWebTypes.AppData", json_data["data"]),
             )
             if all(
@@ -169,11 +167,11 @@ def _execute_app_operation(
                     isinstance(data := json_data.get("data"), dict),
                     data
                     and {"id", "name"}.issubset(
-                        cast("FlextCore.Types.Dict", data).keys(),
+                        cast("FlextTypes.Dict", data).keys(),
                     ),
                 ],
             )
-            else FlextCore.Result[FlextWebTypes.AppData].fail("Invalid app data"),
+            else FlextResult[FlextWebTypes.AppData].fail("Invalid app data"),
         )
     )
 
@@ -187,7 +185,7 @@ def _execute_list_operation(
     """Advanced Monad Composition using flext-core - eliminates 7 returns with Kleisli composition."""
     # Pure functional Kleisli composition using flext-core patterns
     return (
-        FlextCore.Result.safe_call(
+        FlextResult.safe_call(
             lambda: requests.get(f"{ExampleConstants.BASE_URL}{endpoint}", timeout=5),
         )
         .filter(
@@ -195,9 +193,9 @@ def _execute_list_operation(
             "HTTP request failed",
         )
         .flat_map(
-            lambda r: FlextCore.Result.safe_call(r.json)
+            lambda r: FlextResult.safe_call(r.json)
             if hasattr(r, "json")
-            else FlextCore.Result[FlextCore.Types.Dict].fail("Invalid response object"),
+            else FlextResult[FlextTypes.Dict].fail("Invalid response object"),
         )
         .map(lambda d: _extract_apps_from_response(d, data_key))
         .unwrap_or([])
@@ -266,7 +264,7 @@ def demo_application_lifecycle() -> None:
     """Demonstrate complete application lifecycle using the refactored API.
 
     Shows the full workflow:
-    1. Health check using standardized FlextCore.Result responses
+    1. Health check using standardized FlextResult responses
     2. Application creation with WebFields validation
     3. Lifecycle management via FlextWebAppHandler
     4. Status monitoring through FlextWebApp entities

@@ -11,7 +11,14 @@ from typing import override
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
-from flext_core import FlextCore
+from flext_core import (
+    FlextConstants,
+    FlextLogger,
+    FlextProcessors,
+    FlextResult,
+    FlextTypes,
+    FlextUtilities,
+)
 
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
@@ -19,12 +26,12 @@ from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
 
 
-class FlextWebHandlers(FlextCore.Processors):
+class FlextWebHandlers(FlextProcessors):
     """Consolidated web handler system extending flext-core patterns.
 
     This class serves as the single point of access for all web-specific
     handlers, command processors, and response formatters while extending
-    FlextCore.Processors from flext-core for proper architectural inheritance.
+    FlextProcessors from flext-core for proper architectural inheritance.
 
     All handler functionality is accessible through this single class following the
     "one class per module" architectural requirement.
@@ -65,7 +72,7 @@ class FlextWebHandlers(FlextCore.Processors):
           - stop: Stop running application with graceful shutdown
 
         Integration:
-          - Uses FlextCore.Result for consistent error handling
+          - Uses FlextResult for consistent error handling
           - Validates all operations through domain entity rules
           - Compatible with repository patterns for persistence
           - Supports monitoring and observability integration
@@ -74,12 +81,12 @@ class FlextWebHandlers(FlextCore.Processors):
           Basic handler usage:
 
           >>> handler = FlextWebHandlers.WebAppHandler()
-          >>> result: FlextCore.Result[object] = handler.create(
+          >>> result: FlextResult[object] = handler.create(
           ...     "web-service", 3000, "localhost"
           ... )
           >>> if result.success:
           ...     app = result.value
-          ...     start_result: FlextCore.Result[object] = handler.start(app)
+          ...     start_result: FlextResult[object] = handler.start(app)
           ...     if start_result.success:
           ...         print(f"Started {start_result.value.name}")
 
@@ -87,8 +94,8 @@ class FlextWebHandlers(FlextCore.Processors):
 
         @override
         def __init__(self) -> None:
-            """Initialize WebApp handler with FlextCore.Mixins functionality."""
-            self.logger = FlextCore.Logger(__name__)
+            """Initialize WebApp handler with FlextMixins functionality."""
+            self.logger = FlextLogger(__name__)
             self._apps_registry: dict[str, FlextWebModels.WebApp] = {}
 
             # Initialize handler state
@@ -104,14 +111,14 @@ class FlextWebHandlers(FlextCore.Processors):
             name: str,
             port: int,
             host: str,
-        ) -> FlextCore.Result[FlextWebModels.WebApp]:
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Create a new application - implements AppManagerProtocol."""
             return self.create(name, port, host)
 
-        def start_app(self, app_id: str) -> FlextCore.Result[FlextWebModels.WebApp]:
+        def start_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Start an application - implements AppManagerProtocol."""
             if app_id not in self._apps_registry:
-                return FlextCore.Result[FlextWebModels.WebApp].fail(
+                return FlextResult[FlextWebModels.WebApp].fail(
                     f"Application {app_id} not found"
                 )
 
@@ -125,10 +132,10 @@ class FlextWebHandlers(FlextCore.Processors):
 
             return start_result
 
-        def stop_app(self, app_id: str) -> FlextCore.Result[FlextWebModels.WebApp]:
+        def stop_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
             """Stop an application - implements AppManagerProtocol."""
             if app_id not in self._apps_registry:
-                return FlextCore.Result[FlextWebModels.WebApp].fail(
+                return FlextResult[FlextWebModels.WebApp].fail(
                     f"Application {app_id} not found"
                 )
 
@@ -142,13 +149,13 @@ class FlextWebHandlers(FlextCore.Processors):
 
             return stop_result
 
-        def list_apps(self) -> FlextCore.Result[list[FlextWebModels.WebApp]]:
+        def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
             """List all applications - implements AppManagerProtocol."""
             try:
                 apps_list = list(self._apps_registry.values())
-                return FlextCore.Result[list[FlextWebModels.WebApp]].ok(apps_list)
+                return FlextResult[list[FlextWebModels.WebApp]].ok(apps_list)
             except Exception as e:
-                return FlextCore.Result[list[FlextWebModels.WebApp]].fail(
+                return FlextResult[list[FlextWebModels.WebApp]].fail(
                     f"List apps failed: {e}"
                 )
 
@@ -161,7 +168,7 @@ class FlextWebHandlers(FlextCore.Processors):
             name: str,
             port: int = FlextWebConstants.WebServer.DEFAULT_PORT,
             host: str = FlextWebConstants.WebServer.DEFAULT_HOST,
-        ) -> FlextCore.Result[FlextWebModels.WebApp]:
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Create new web application with comprehensive validation.
 
             Creates a new WebApp domain entity with the specified parameters,
@@ -175,7 +182,7 @@ class FlextWebHandlers(FlextCore.Processors):
                 host: Network host address for application binding
 
             Returns:
-                FlextCore.Result[WebApp]: Success contains newly created application
+                FlextResult[WebApp]: Success contains newly created application
                 entity with generated ID and timestamp information, failure contains
                 detailed error message explaining validation failure.
 
@@ -183,12 +190,10 @@ class FlextWebHandlers(FlextCore.Processors):
             # Log create operation
             self.logger.info("Create app command")
 
-            # Step 1: Sanitize inputs using FlextCore.Utilities
+            # Step 1: Sanitize inputs using FlextUtilities
             sanitize_result = self._sanitize_inputs(name, host)
             if sanitize_result.is_failure:
-                return FlextCore.Result[FlextWebModels.WebApp].fail(
-                    sanitize_result.error
-                )
+                return FlextResult[FlextWebModels.WebApp].fail(sanitize_result.error)
 
             # Step 2: Validate all inputs
             validate_result = self._validate_app_inputs(
@@ -197,9 +202,7 @@ class FlextWebHandlers(FlextCore.Processors):
                 sanitize_result.value["host"],
             )
             if validate_result.is_failure:
-                return FlextCore.Result[FlextWebModels.WebApp].fail(
-                    validate_result.error
-                )
+                return FlextResult[FlextWebModels.WebApp].fail(validate_result.error)
 
             # Step 3: Create domain entity
             create_result = self._create_app_entity(
@@ -224,20 +227,20 @@ class FlextWebHandlers(FlextCore.Processors):
             self,
             name: str,
             host: str,
-        ) -> FlextCore.Result[FlextCore.Types.StringDict]:
-            """Sanitize inputs using MASSIVE FlextCore.Utilities delegation."""
+        ) -> FlextResult[FlextTypes.StringDict]:
+            """Sanitize inputs using MASSIVE FlextUtilities delegation."""
             try:
-                safe_name = FlextCore.Utilities.TextProcessor.safe_string(name)
-                safe_host = FlextCore.Utilities.TextProcessor.safe_string(host)
+                safe_name = FlextUtilities.TextProcessor.safe_string(name)
+                safe_host = FlextUtilities.TextProcessor.safe_string(host)
 
-                return FlextCore.Result[FlextCore.Types.StringDict].ok(
+                return FlextResult[FlextTypes.StringDict].ok(
                     {
                         "name": safe_name,
                         "host": safe_host,
                     },
                 )
             except Exception as e:
-                return FlextCore.Result[FlextCore.Types.StringDict].fail(
+                return FlextResult[FlextTypes.StringDict].fail(
                     f"Input sanitization failed: {e}",
                 )
 
@@ -246,51 +249,51 @@ class FlextWebHandlers(FlextCore.Processors):
             name: str,
             port: int,
             host: str,
-        ) -> FlextCore.Result[FlextCore.Types.StringDict]:
+        ) -> FlextResult[FlextTypes.StringDict]:
             """Validate all app inputs - simplified to rely on Pydantic model validation."""
-            validated_data: FlextCore.Types.StringDict = {
+            validated_data: FlextTypes.StringDict = {
                 "name": name,
                 "port": str(port),
                 "host": host,
             }
-            return FlextCore.Result[FlextCore.Types.StringDict].ok(validated_data)
+            return FlextResult[FlextTypes.StringDict].ok(validated_data)
 
         def _create_app_entity(
             self,
             name: str,
             port: int,
             host: str,
-        ) -> FlextCore.Result[FlextWebModels.WebApp]:
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Create app entity using FlextWebUtilities for ID generation."""
             try:
                 app_id = FlextWebUtilities.format_app_id(name)
                 app = FlextWebModels.WebApp(
                     id=app_id, name=name, port=port, host=host, domain_events=[]
                 )
-                return FlextCore.Result[FlextWebModels.WebApp].ok(app)
+                return FlextResult[FlextWebModels.WebApp].ok(app)
             except Exception as e:
-                return FlextCore.Result[FlextWebModels.WebApp].fail(
+                return FlextResult[FlextWebModels.WebApp].fail(
                     f"Entity creation failed: {e}",
                 )
 
         def _validate_and_return_app(
             self,
             app: FlextWebModels.WebApp,
-        ) -> FlextCore.Result[FlextWebModels.WebApp]:
-            """Validate business rules and return app using FlextCore.Result."""
+        ) -> FlextResult[FlextWebModels.WebApp]:
+            """Validate business rules and return app using FlextResult."""
             validation = app.validate_business_rules()
             if validation.is_failure:
-                return FlextCore.Result[FlextWebModels.WebApp].fail(
+                return FlextResult[FlextWebModels.WebApp].fail(
                     f"Domain validation failed: {validation.error}",
                 )
-            return FlextCore.Result[FlextWebModels.WebApp].ok(app)
+            return FlextResult[FlextWebModels.WebApp].ok(app)
 
         def _execute_app_lifecycle_operation(
             self,
             app: FlextWebModels.WebApp,
             operation_name: str,
             domain_method: str,
-        ) -> FlextCore.Result[FlextWebModels.WebApp]:
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Template Method pattern for app lifecycle operations (start/stop).
 
             Args:
@@ -299,7 +302,7 @@ class FlextWebHandlers(FlextCore.Processors):
                 domain_method: Domain method name to call ("start"/"stop")
 
             Returns:
-                FlextCore.Result with updated app or error
+                FlextResult with updated app or error
 
             """
             # Step 1: Log operation start
@@ -309,13 +312,13 @@ class FlextWebHandlers(FlextCore.Processors):
             validation = app.validate_business_rules()
             if validation.is_failure:
                 self.logger.warning(f"{operation_name}_validation_failed")
-                return FlextCore.Result[FlextWebModels.WebApp].fail(
+                return FlextResult[FlextWebModels.WebApp].fail(
                     validation.error or "Validation failed",
                 )
 
             # Step 3: Delegate to domain entity for state transition
             domain_method_func = getattr(app, domain_method)
-            result: FlextCore.Result[FlextWebModels.WebApp] = domain_method_func()
+            result: FlextResult[FlextWebModels.WebApp] = domain_method_func()
 
             # Step 4: Log success if applicable and update registry
             if result.is_success:
@@ -328,7 +331,7 @@ class FlextWebHandlers(FlextCore.Processors):
         def start(
             self,
             app: FlextWebModels.WebApp,
-        ) -> FlextCore.Result[FlextWebModels.WebApp]:
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Start web application with validation and state management.
 
             Initiates the startup process for a web application, performing
@@ -339,7 +342,7 @@ class FlextWebHandlers(FlextCore.Processors):
                 app: WebApp entity to start, must be in valid state for starting
 
             Returns:
-                FlextCore.Result[WebApp]: Success contains updated application entity
+                FlextResult[WebApp]: Success contains updated application entity
                 with RUNNING status, failure contains error message explaining why
                 the application cannot be started.
 
@@ -364,7 +367,7 @@ class FlextWebHandlers(FlextCore.Processors):
                 ...     name="service",
                 ...     status=FlextWebModels.WebAppStatus.STOPPED,
                 ... )
-                >>> result: FlextCore.Result[object] = handler.start(app)
+                >>> result: FlextResult[object] = handler.start(app)
                 >>> if result.success:
                 ...     running_app = result.value
                 ...     print(
@@ -379,7 +382,7 @@ class FlextWebHandlers(FlextCore.Processors):
         def stop(
             self,
             app: FlextWebModels.WebApp,
-        ) -> FlextCore.Result[FlextWebModels.WebApp]:
+        ) -> FlextResult[FlextWebModels.WebApp]:
             """Stop web application with graceful shutdown and validation.
 
             Initiates the shutdown process for a running web application, performing
@@ -390,7 +393,7 @@ class FlextWebHandlers(FlextCore.Processors):
                 app: WebApp entity to stop, must be in valid state for stopping
 
             Returns:
-                FlextCore.Result[WebApp]: Success contains updated application entity
+                FlextResult[WebApp]: Success contains updated application entity
                 with STOPPED status, failure contains error message explaining why
                 the application cannot be stopped.
 
@@ -416,7 +419,7 @@ class FlextWebHandlers(FlextCore.Processors):
                 ...     name="service",
                 ...     status=FlextWebModels.WebAppStatus.RUNNING,
                 ... )
-                >>> result: FlextCore.Result[object] = handler.stop(app)
+                >>> result: FlextResult[object] = handler.stop(app)
                 >>> if result.success:
                 ...     stopped_app = result.value
                 ...     print(
@@ -442,8 +445,8 @@ class FlextWebHandlers(FlextCore.Processors):
         @override
         def __init__(
             self,
-            success_status: int = FlextCore.Constants.Http.HTTP_OK,
-            error_status: int = FlextCore.Constants.Http.HTTP_INTERNAL_SERVER_ERROR,
+            success_status: int = FlextConstants.Http.HTTP_OK,
+            error_status: int = FlextConstants.Http.HTTP_INTERNAL_SERVER_ERROR,
         ) -> None:
             """Initialize response handler with default status codes.
 
@@ -454,7 +457,7 @@ class FlextWebHandlers(FlextCore.Processors):
             """
             self.success_status = success_status
             self.error_status = error_status
-            self.logger = FlextCore.Logger(__name__)
+            self.logger = FlextLogger(__name__)
 
             # Initialize response handler state
             self._initialized = True
@@ -466,12 +469,12 @@ class FlextWebHandlers(FlextCore.Processors):
 
         def format_success(
             self,
-            data: FlextCore.Types.Dict,
+            data: FlextTypes.Dict,
             message: str = "Success",
             status_code: int = 200,
         ) -> FlextWebTypes.Core.WebResponse:
             """Format success response - implements ResponseFormatterProtocol."""
-            safe_message = FlextCore.Utilities.TextProcessor.safe_string(message)
+            safe_message = FlextUtilities.TextProcessor.safe_string(message)
 
             response_data = {
                 "success": True,
@@ -490,7 +493,7 @@ class FlextWebHandlers(FlextCore.Processors):
             details: str | None = None,
         ) -> FlextWebTypes.Core.WebResponse:
             """Format error response - implements ResponseFormatterProtocol."""
-            safe_message = FlextCore.Utilities.TextProcessor.safe_string(
+            safe_message = FlextUtilities.TextProcessor.safe_string(
                 message or "Unknown error",
             )
 
@@ -512,7 +515,7 @@ class FlextWebHandlers(FlextCore.Processors):
 
         def create_success_response(
             self,
-            data: FlextCore.Types.Dict | FlextCore.Types.List | None = None,
+            data: FlextTypes.Dict | FlextTypes.List | None = None,
             message: str = "Success",
             status_code: int | None = None,
         ) -> ResponseReturnValue:
@@ -529,7 +532,7 @@ class FlextWebHandlers(FlextCore.Processors):
             """
             # Convert data to dict[str, object] if needed for protocol compliance
             if data is None:
-                formatted_data: FlextCore.Types.Dict = {}
+                formatted_data: FlextTypes.Dict = {}
             elif isinstance(data, list):
                 formatted_data = {"items": data}
             else:
@@ -545,7 +548,7 @@ class FlextWebHandlers(FlextCore.Processors):
             self,
             message: str,
             status_code: int | None = None,
-            errors: str | FlextCore.Types.Dict | None = None,
+            errors: str | FlextTypes.Dict | None = None,
         ) -> ResponseReturnValue:
             """Create error JSON response using protocol method.
 
@@ -573,14 +576,14 @@ class FlextWebHandlers(FlextCore.Processors):
 
         def handle_result(
             self,
-            result: FlextCore.Result[object],
+            result: FlextResult[object],
             success_message: str = "Operation completed",
             error_message: str = "Operation failed",
         ) -> ResponseReturnValue:
-            """Handle FlextCore.Result and convert to appropriate response.
+            """Handle FlextResult and convert to appropriate response.
 
             Args:
-                result: FlextCore.Result to process
+                result: FlextResult to process
                 success_message: Message for successful results
                 error_message: Message for failed results
 
@@ -591,7 +594,7 @@ class FlextWebHandlers(FlextCore.Processors):
             if result.is_success:
                 result_data = result.value
                 if isinstance(result_data, (dict, list)):
-                    data: FlextCore.Types.Dict = (
+                    data: FlextTypes.Dict = (
                         result_data
                         if isinstance(result_data, dict)
                         else {"items": result_data}
@@ -603,7 +606,7 @@ class FlextWebHandlers(FlextCore.Processors):
 
             return self.format_error(
                 message=f"{error_message}: {result.error}",
-                status_code=FlextCore.Constants.Http.HTTP_BAD_REQUEST,  # Bad request for business logic errors
+                status_code=FlextConstants.Http.HTTP_BAD_REQUEST,  # Bad request for business logic errors
             )
 
     # =========================================================================
@@ -611,19 +614,19 @@ class FlextWebHandlers(FlextCore.Processors):
     # =========================================================================
 
     @staticmethod
-    def handle_health_check() -> FlextCore.Result[FlextCore.Types.Dict]:
+    def handle_health_check() -> FlextResult[FlextTypes.Dict]:
         """Handle health check requests with system status.
 
         Returns:
-            FlextCore.Result containing health status information.
+            FlextResult containing health status information.
 
         """
-        return FlextCore.Result[FlextCore.Types.Dict].ok(
+        return FlextResult[FlextTypes.Dict].ok(
             {
                 "status": "healthy",
                 "service": "flext - web",
                 "version": "0.9.0",
-                "timestamp": FlextCore.Utilities.Generators.generate_iso_timestamp(),
+                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
                 "components": {
                     "web_service": "operational",
                     "configuration": "loaded",
@@ -633,14 +636,14 @@ class FlextWebHandlers(FlextCore.Processors):
         )
 
     @classmethod
-    def handle_system_info(cls: object) -> FlextCore.Result[FlextCore.Types.Dict]:
+    def handle_system_info(cls: object) -> FlextResult[FlextTypes.Dict]:
         """Handle system information requests.
 
         Returns:
-            FlextCore.Result containing detailed system information.
+            FlextResult containing detailed system information.
 
         """
-        return FlextCore.Result[FlextCore.Types.Dict].ok(
+        return FlextResult[FlextTypes.Dict].ok(
             {
                 "service_name": "FLEXT Web Interface",
                 "service_type": "web_api",
@@ -670,7 +673,7 @@ class FlextWebHandlers(FlextCore.Processors):
         name: str,
         port: int = FlextWebConstants.WebServer.DEFAULT_PORT,
         host: str = FlextWebConstants.WebServer.DEFAULT_HOST,
-    ) -> FlextCore.Result[FlextWebModels.WebApp]:
+    ) -> FlextResult[FlextWebModels.WebApp]:
         """Handle application creation requests.
 
         Args:
@@ -680,7 +683,7 @@ class FlextWebHandlers(FlextCore.Processors):
             **kwargs: Additional application parameters
 
         Returns:
-            FlextCore.Result containing created application or error
+            FlextResult containing created application or error
 
         """
         try:
@@ -689,17 +692,17 @@ class FlextWebHandlers(FlextCore.Processors):
             app = FlextWebModels.WebApp(
                 id=app_id, name=name, port=port, host=host, domain_events=[]
             )
-            validation_result: FlextCore.Result[None] = app.validate_business_rules()
+            validation_result: FlextResult[None] = app.validate_business_rules()
 
             if validation_result.is_failure:
-                return FlextCore.Result[FlextWebModels.WebApp].fail(
+                return FlextResult[FlextWebModels.WebApp].fail(
                     f"Application validation failed: {validation_result.error}",
                 )
 
-            return FlextCore.Result[FlextWebModels.WebApp].ok(app)
+            return FlextResult[FlextWebModels.WebApp].ok(app)
 
         except Exception as e:
-            return FlextCore.Result[FlextWebModels.WebApp].fail(
+            return FlextResult[FlextWebModels.WebApp].fail(
                 f"Failed to create application: {e}",
             )
 
@@ -707,14 +710,14 @@ class FlextWebHandlers(FlextCore.Processors):
     def handle_start_app(
         cls,
         app: FlextWebModels.WebApp,
-    ) -> FlextCore.Result[FlextWebModels.WebApp]:
+    ) -> FlextResult[FlextWebModels.WebApp]:
         """Handle application start requests.
 
         Args:
             app: Application to start
 
         Returns:
-            FlextCore.Result containing updated application or error
+            FlextResult containing updated application or error
 
         """
         handler = FlextWebHandlers.WebAppHandler()
@@ -724,14 +727,14 @@ class FlextWebHandlers(FlextCore.Processors):
     def handle_stop_app(
         cls,
         app: FlextWebModels.WebApp,
-    ) -> FlextCore.Result[FlextWebModels.WebApp]:
+    ) -> FlextResult[FlextWebModels.WebApp]:
         """Handle application stop requests.
 
         Args:
             app: Application to stop
 
         Returns:
-            FlextCore.Result containing updated application or error
+            FlextResult containing updated application or error
 
         """
         handler = FlextWebHandlers.WebAppHandler()
@@ -744,8 +747,8 @@ class FlextWebHandlers(FlextCore.Processors):
     @classmethod
     def create_response_handler(
         cls,
-        success_status: int = FlextCore.Constants.Http.HTTP_OK,
-        error_status: int = FlextCore.Constants.Http.HTTP_INTERNAL_SERVER_ERROR,
+        success_status: int = FlextConstants.Http.HTTP_OK,
+        error_status: int = FlextConstants.Http.HTTP_INTERNAL_SERVER_ERROR,
     ) -> WebResponseHandler:
         """Create response handler instance.
 
@@ -775,7 +778,7 @@ class FlextWebHandlers(FlextCore.Processors):
             name=app.name,
             host=app.host,
             port=app.port,
-            status=app.status.value,
+            status=app.status,
             is_running=bool(app.is_running),
         )
 
@@ -792,7 +795,7 @@ class FlextWebHandlers(FlextCore.Processors):
             service="flext-web",
             version="0.9.0",
             applications=0,  # This would be populated by the service
-            timestamp=FlextCore.Utilities.Generators.generate_iso_timestamp(),
+            timestamp=FlextUtilities.Generators.generate_iso_timestamp(),
             service_id="handler-health",
             created_at=None,
         )
@@ -806,7 +809,7 @@ class FlextWebHandlers(FlextCore.Processors):
         cls,
         error: Exception,
         context: str = "validation",
-    ) -> FlextCore.Result[None]:
+    ) -> FlextResult[None]:
         """Handle validation errors with context.
 
         Args:
@@ -814,18 +817,18 @@ class FlextWebHandlers(FlextCore.Processors):
             context: Error context description
 
         Returns:
-            FlextCore.Result with formatted error message
+            FlextResult with formatted error message
 
         """
         error_message = f"{context.title()} error: {error}"
-        return FlextCore.Result[None].fail(error_message)
+        return FlextResult[None].fail(error_message)
 
     @classmethod
     def handle_processing_error(
         cls,
         error: Exception,
         operation: str = "operation",
-    ) -> FlextCore.Result[None]:
+    ) -> FlextResult[None]:
         """Handle processing errors with context.
 
         Args:
@@ -833,11 +836,11 @@ class FlextWebHandlers(FlextCore.Processors):
             operation: Operation description
 
         Returns:
-            FlextCore.Result with formatted error message
+            FlextResult with formatted error message
 
         """
         error_message = f"{operation.title()} failed: {error}"
-        return FlextCore.Result[None].fail(error_message)
+        return FlextResult[None].fail(error_message)
 
     # =========================================================================
     # HANDLER FACTORY METHODS - Removed unnecessary wrapper methods
