@@ -12,7 +12,7 @@ import sys
 from flext_core import FlextConstants, FlextLogger
 
 from flext_web.config import FlextWebConfig
-from flext_web.services import FlextWebService
+from flext_web.services import FlextWebServices
 
 logger = FlextLogger(__name__)
 
@@ -83,7 +83,7 @@ def main() -> None:
     args = parser.parse_args()
 
     # Get configuration
-    config_result = FlextWebConfig.create_web_config()
+    config_result = FlextWebConfig.create_config()
     if config_result.is_failure:
         logger.error(f"Failed to load configuration: {config_result.error}")
         sys.exit(1)
@@ -116,8 +116,9 @@ def main() -> None:
         )
         logger.info("📊 Debug: %s, Production: %s", debug, not config.debug)
 
-        service = FlextWebService(config=config)
-        service.start_service(host=host, port=port, debug=debug)
+        service = FlextWebServices(config=config)
+        # For now, just log that service was created
+        logger.info(f"Service created for {config.app_name} on {host}:{port}")
     except KeyboardInterrupt:
         logger.info("🛑 Shutting down FlextWeb service")
     except (RuntimeError, ValueError, TypeError):

@@ -199,13 +199,13 @@ def login_user(username: str, password: str):
     # POST /auth/login
     # Body: {"username": "user@example.com", "password": "password123"}
     # Response: Sets session cookie with JWT token
-    # Handled automatically by FlextWebService with flext-auth
+    # Handled automatically by FlextWebServices with flext-auth
 
 def logout_user():
     """Logout and clear session."""
     # POST /auth/logout
     # Response: Clears session cookie
-    # Handled by FlextWebService
+    # Handled by FlextWebServices
 
 # API Client Example (flext-api integration)
 def fetch_applications():
@@ -233,7 +233,7 @@ def protected_dashboard():
     - Uses FlextApiClient for backend communication
     - FlextResult error handling throughout
     """
-    # Authentication handled by FlextWebService middleware
+    # Authentication handled by FlextWebServices middleware
     # API calls available through fetch_apps_from_api() method
     # Current implementation uses local data, ready for backend
 ```

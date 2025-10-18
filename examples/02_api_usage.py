@@ -14,7 +14,7 @@ This example shows:
 from typing import cast
 
 import requests
-from flext_core import FlextResult, FlextTypes
+from flext_core import FlextResult
 
 from flext_web import FlextWebTypes
 
@@ -121,7 +121,7 @@ def _extract_apps_from_response(
 def _execute_app_operation(
     method: str,
     endpoint: str,
-    json_data: FlextTypes.Dict | None = None,
+    json_data: dict[str, object] | None = None,
 ) -> FlextWebTypes.AppData | None:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
@@ -133,7 +133,7 @@ def _execute_app_operation(
         """Make HTTP request using FlextResult for error handling."""
         try:
             request_func = getattr(requests, method.lower())
-            kwargs: FlextTypes.Dict = {
+            kwargs: dict[str, object] = {
                 "url": f"{ExampleConstants.BASE_URL}{endpoint}",
                 "timeout": 5,
             }
@@ -153,9 +153,9 @@ def _execute_app_operation(
     result = (
         _make_http_request()
         .flat_map(
-            lambda resp: FlextResult[FlextTypes.Dict].ok(resp.json())
+            lambda resp: FlextResult[dict[str, object]].ok(resp.json())
             if resp.status_code == ExampleConstants.HTTP_OK
-            else FlextResult[FlextTypes.Dict].fail("Invalid response"),
+            else FlextResult[dict[str, object]].fail("Invalid response"),
         )
         .flat_map(
             lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
@@ -167,7 +167,7 @@ def _execute_app_operation(
                     isinstance(data := json_data.get("data"), dict),
                     data
                     and {"id", "name"}.issubset(
-                        cast("FlextTypes.Dict", data).keys(),
+                        cast("dict[str, object]", data).keys(),
                     ),
                 ],
             )
@@ -195,7 +195,7 @@ def _execute_list_operation(
         .flat_map(
             lambda r: FlextResult.safe_call(r.json)
             if hasattr(r, "json")
-            else FlextResult[FlextTypes.Dict].fail("Invalid response object"),
+            else FlextResult[dict[str, object]].fail("Invalid response object"),
         )
         .map(lambda d: _extract_apps_from_response(d, data_key))
         .unwrap_or([])
@@ -251,7 +251,7 @@ def stop_application(app_id: str) -> FlextWebTypes.AppData | None:
 
 
 def list_applications() -> list[FlextWebTypes.AppData]:
-    """List all applications using FlextWebService.apps storage.
+    """List all applications using FlextWebServices.apps storage.
 
     Returns:
         List of FlextWebApp entities with current status information.

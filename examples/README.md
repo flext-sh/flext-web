@@ -102,12 +102,12 @@ if __name__ == "__main__":
 ```python
 # examples/flask_integration.py
 from flask import Flask, request, jsonify
-from flext_web import FlextWebService, FlextWebConfig
+from flext_web import FlextWebServices, FlextWebConfig
 
 # Create custom Flask app with FLEXT Web integration
 app = Flask(__name__)
 config = FlextWebConfig(host='localhost', port=5000)
-flext_service = FlextWebService(config)
+flext_service = FlextWebServices(config)
 
 # Add custom routes
 @app.route('/custom/status')

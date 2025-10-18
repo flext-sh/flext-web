@@ -42,7 +42,7 @@ src/
 - `FlextWebAppStatus`: State machine enumeration with transition rules
 - `FlextWebConfig`: Environment-based configuration with validation
 - `FlextWebAppHandler`: CQRS command handlers with business logic
-- `FlextWebService`: Flask integration with complete API endpoints
+- `FlextWebServices`: Flask integration with complete API endpoints
 - Factory functions: Service creation and configuration management
 
 #### **CLI Entry Point (`__main__.py`)**
@@ -123,7 +123,7 @@ def start(self) -> FlextResult[FlextWebApp]:
 #### **Factory Function Documentation**
 
 ```python
-def create_service(config: FlextWebConfig | None = None) -> FlextWebService:
+def create_service(config: FlextWebConfig | None = None) -> FlextWebServices:
     """Create configured FLEXT Web Service instance with comprehensive initialization.
 
     [Complete configuration handling, deployment patterns, examples]:

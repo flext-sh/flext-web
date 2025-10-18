@@ -18,9 +18,8 @@ from collections.abc import Generator
 
 import pytest
 from flask import Flask
-from flext_core import FlextTypes
 
-from flext_web import FlextWebConfig, FlextWebService
+from flext_web import FlextWebConfig, FlextWebServices
 from flext_web.constants import FlextWebConstants
 from tests.port_manager import TestPortManager
 
@@ -60,9 +59,9 @@ def real_config() -> FlextWebConfig:
 @pytest.fixture
 def real_service(
     real_config: FlextWebConfig,
-) -> Generator[FlextWebService]:
-    """Create real FlextWebService instance with clean state."""
-    service_result = FlextWebService.create_web_service(real_config.model_dump())
+) -> Generator[FlextWebServices]:
+    """Create real FlextWebServices instance with clean state."""
+    service_result = FlextWebServices.create_web_service(real_config.model_dump())
     assert service_result.is_success, f"Service creation failed: {service_result.error}"
     service = service_result.value
     yield service
@@ -73,7 +72,7 @@ def real_service(
 @pytest.fixture
 def real_app(real_config: FlextWebConfig) -> Flask:
     """Create real Flask app."""
-    service_result = FlextWebService.create_web_service(real_config.model_dump())
+    service_result = FlextWebServices.create_web_service(real_config.model_dump())
     assert service_result.is_success, f"Service creation failed: {service_result.error}"
     return service_result.value.app
 
@@ -81,7 +80,7 @@ def real_app(real_config: FlextWebConfig) -> Flask:
 @pytest.fixture
 def running_service(
     real_config: FlextWebConfig,
-) -> Generator[FlextWebService]:
+) -> Generator[FlextWebServices]:
     """Start real service in background thread with clean state."""
     # Allocate unique port to avoid conflicts
     test_port = TestPortManager.allocate_port()
@@ -95,7 +94,7 @@ def running_service(
         },
     )
 
-    service = FlextWebService(test_config.model_dump())
+    service = FlextWebServices(test_config.model_dump())
 
     # Start service in background thread
     def run_service() -> None:
@@ -145,7 +144,7 @@ def invalid_app_data() -> dict[str, str | int]:
 
 # Configuration for real environment tests
 @pytest.fixture
-def production_config() -> FlextTypes.StringDict:
+def production_config() -> dict[str, str]:
     """Production-like configuration for testing."""
     return {
         "FLEXT_WEB_HOST": FlextWebConstants.WebSpecific.ALL_INTERFACES,

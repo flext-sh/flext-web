@@ -26,7 +26,7 @@ class TestFlextWebHandlers:
         assert handler is not None
         assert hasattr(handler, "success_status")
         assert hasattr(handler, "error_status")
-        assert handler.success_status == FlextConstants.Http.HTTP_OK
+        assert handler.success_status == FlextConstants.FlextWeb.HTTP_OK
 
     def test_web_response_handler_with_custom_status(self) -> None:
         """Test WebResponseHandler with custom status codes."""

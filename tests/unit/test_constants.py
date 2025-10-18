@@ -36,7 +36,7 @@ class TestFlextWebConstants:
         # Test that the types are properly defined
         assert hasattr(FlextWebConstants.WebEnvironment, "EnvironmentType")
         assert hasattr(FlextWebConstants.WebEnvironment, "WebAppType")
-        assert hasattr(FlextWebConstants.WebEnvironment, "HttpMethod")
+        assert hasattr(FlextWebConstants.WebEnvironment, "FlextWebMethod")
         assert hasattr(FlextWebConstants.WebEnvironment, "WebStatus")
 
     def test_web_security_constants(self) -> None:
@@ -88,7 +88,7 @@ class TestFlextWebConstants:
         web_app_type = FlextWebConstants.WebEnvironment.WebAppType
         assert web_app_type is not None
 
-        http_method = FlextWebConstants.WebEnvironment.HttpMethod
+        http_method = FlextWebConstants.WebEnvironment.FlextWebMethod
         assert http_method is not None
 
         web_status = FlextWebConstants.WebEnvironment.WebStatus

@@ -4,15 +4,15 @@ Tests the web services functionality following flext standards.
 """
 
 from flext_web.config import FlextWebConfig
-from flext_web.services import FlextWebService
+from flext_web.services import FlextWebServices
 
 
 class TestFlextWebService:
-    """Test suite for FlextWebService class."""
+    """Test suite for FlextWebServices class."""
 
     def test_initialization_without_config(self) -> None:
-        """Test FlextWebService initialization without config."""
-        service = FlextWebService()
+        """Test FlextWebServices initialization without config."""
+        service = FlextWebServices()
         assert service is not None
         assert hasattr(service, "_container")
         assert hasattr(service, "_web_logger")
@@ -24,47 +24,47 @@ class TestFlextWebService:
         assert hasattr(service, "app_handler")
 
     def test_initialization_with_config(self) -> None:
-        """Test FlextWebService initialization with config."""
+        """Test FlextWebServices initialization with config."""
         config = FlextWebConfig(host="localhost", port=8080)
-        service = FlextWebService(config=config)
+        service = FlextWebServices(config=config)
         assert service is not None
         assert service._web_config == config
 
     def test_initialize_routes(self) -> None:
         """Test routes initialization."""
-        service = FlextWebService()
+        service = FlextWebServices()
         service.initialize_routes()
         assert service._routes_initialized is True
 
     def test_configure_middleware(self) -> None:
         """Test middleware configuration."""
-        service = FlextWebService()
+        service = FlextWebServices()
         service.configure_middleware()
         assert service._middleware_configured is True
 
     def test_start_service(self) -> None:
         """Test service start."""
-        service = FlextWebService()
+        service = FlextWebServices()
         service.start_service("localhost", 8080, debug=True)
         assert service._service_running is True
 
     def test_stop_service(self) -> None:
         """Test service stop."""
-        service = FlextWebService()
+        service = FlextWebServices()
         service._service_running = True
         service.stop_service()
         assert service._service_running is False
 
     def test_auth_property_lazy_initialization(self) -> None:
         """Test auth property lazy initialization."""
-        service = FlextWebService()
+        service = FlextWebServices()
         auth = service.auth
         assert auth is not None
-        assert isinstance(auth, FlextWebService.MockAuth)
+        assert isinstance(auth, FlextWebServices.MockAuth)
 
     def test_login_success(self) -> None:
         """Test successful login."""
-        service = FlextWebService()
+        service = FlextWebServices()
         # First register a user
         register_result = service.register({
             "username": "testuser",
@@ -85,7 +85,7 @@ class TestFlextWebService:
 
     def test_login_invalid_credentials(self) -> None:
         """Test login with invalid credentials."""
-        service = FlextWebService()
+        service = FlextWebServices()
         login_result = service.login({
             "username": "nonexistent",
             "password": "wrongpassword",
@@ -95,7 +95,7 @@ class TestFlextWebService:
 
     def test_login_invalid_input(self) -> None:
         """Test login with invalid input types."""
-        service = FlextWebService()
+        service = FlextWebServices()
         login_result = service.login({
             "username": 123,  # Invalid type
             "password": "password",
@@ -105,7 +105,7 @@ class TestFlextWebService:
 
     def test_logout(self) -> None:
         """Test logout functionality."""
-        service = FlextWebService()
+        service = FlextWebServices()
         logout_result = service.logout()
         assert logout_result.is_success
         logout_data = logout_result.unwrap()
@@ -113,7 +113,7 @@ class TestFlextWebService:
 
     def test_register_success(self) -> None:
         """Test successful user registration."""
-        service = FlextWebService()
+        service = FlextWebServices()
         register_result = service.register({
             "username": "newuser",
             "email": "newuser@example.com",
@@ -126,7 +126,7 @@ class TestFlextWebService:
 
     def test_register_duplicate_user(self) -> None:
         """Test registration with duplicate username."""
-        service = FlextWebService()
+        service = FlextWebServices()
         # Register first user
         service.register({
             "username": "duplicate",
@@ -145,7 +145,7 @@ class TestFlextWebService:
 
     def test_register_invalid_input(self) -> None:
         """Test registration with invalid input types."""
-        service = FlextWebService()
+        service = FlextWebServices()
         register_result = service.register({
             "username": 123,  # Invalid type
             "email": "test@example.com",
@@ -156,7 +156,7 @@ class TestFlextWebService:
 
     def test_health_check(self) -> None:
         """Test health check functionality."""
-        service = FlextWebService()
+        service = FlextWebServices()
         health_result = service.health_check()
         assert health_result.is_success
         health_data = health_result.unwrap()
@@ -165,7 +165,7 @@ class TestFlextWebService:
 
     def test_dashboard(self) -> None:
         """Test dashboard functionality."""
-        service = FlextWebService()
+        service = FlextWebServices()
         dashboard_result = service.dashboard()
         assert dashboard_result.is_success
         dashboard_data = dashboard_result.unwrap()
@@ -175,7 +175,7 @@ class TestFlextWebService:
 
     def test_list_apps(self) -> None:
         """Test list apps functionality."""
-        service = FlextWebService()
+        service = FlextWebServices()
         list_result = service.list_apps()
         assert list_result.is_success
         apps_data = list_result.unwrap()
@@ -184,7 +184,7 @@ class TestFlextWebService:
 
     def test_create_app_success(self) -> None:
         """Test successful app creation."""
-        service = FlextWebService()
+        service = FlextWebServices()
         create_result = service.create_app({
             "name": "test-app",
             "host": "localhost",
@@ -198,7 +198,7 @@ class TestFlextWebService:
 
     def test_create_app_invalid_input(self) -> None:
         """Test app creation with invalid input."""
-        service = FlextWebService()
+        service = FlextWebServices()
         create_result = service.create_app({
             "name": 123,  # Invalid type
             "host": "localhost",
@@ -209,7 +209,7 @@ class TestFlextWebService:
 
     def test_get_app_success(self) -> None:
         """Test successful app retrieval."""
-        service = FlextWebService()
+        service = FlextWebServices()
         # First create an app
         create_result = service.create_app({
             "name": "test-app",
@@ -228,14 +228,14 @@ class TestFlextWebService:
 
     def test_get_app_not_found(self) -> None:
         """Test app retrieval with non-existent app."""
-        service = FlextWebService()
+        service = FlextWebServices()
         get_result = service.get_app("nonexistent-id")
         assert get_result.is_failure
         assert "not found" in get_result.error
 
     def test_start_app_success(self) -> None:
         """Test successful app start."""
-        service = FlextWebService()
+        service = FlextWebServices()
         # First create an app
         create_result = service.create_app({
             "name": "test-app",
@@ -254,7 +254,7 @@ class TestFlextWebService:
 
     def test_stop_app_success(self) -> None:
         """Test successful app stop."""
-        service = FlextWebService()
+        service = FlextWebServices()
         # First create and start an app
         create_result = service.create_app({
             "name": "test-app",
@@ -275,28 +275,28 @@ class TestFlextWebService:
 
     def test_create_web_service_class_method(self) -> None:
         """Test create_web_service class method."""
-        result = FlextWebService.create_web_service()
+        result = FlextWebServices.create_web_service()
         assert result.is_success
         service = result.unwrap()
-        assert isinstance(service, FlextWebService)
+        assert isinstance(service, FlextWebServices)
 
     def test_create_web_service_with_config(self) -> None:
         """Test create_web_service with config."""
         config = {"host": "localhost", "port": 8080}
-        result = FlextWebService.create_web_service(config)
+        result = FlextWebServices.create_web_service(config)
         assert result.is_success
         service = result.unwrap()
-        assert isinstance(service, FlextWebService)
+        assert isinstance(service, FlextWebServices)
 
     def test_create_web_service_invalid_config(self) -> None:
         """Test create_web_service with invalid config type."""
-        result = FlextWebService.create_web_service("invalid_config")
+        result = FlextWebServices.create_web_service("invalid_config")
         assert result.is_failure
         assert "must be a dictionary" in result.error
 
     def test_create_web_application(self) -> None:
         """Test create_web_application method."""
-        service = FlextWebService()
+        service = FlextWebServices()
         web_config = {"name": "test-app", "host": "localhost", "port": 8080}
         result = service.create_web_application(web_config)
         assert result.is_success
@@ -307,28 +307,28 @@ class TestFlextWebService:
 
     def test_create_web_application_empty_config(self) -> None:
         """Test create_web_application with empty config."""
-        service = FlextWebService()
+        service = FlextWebServices()
         result = service.create_web_application({})
         assert result.is_failure
         assert "cannot be empty" in result.error
 
     def test_create_web_application_invalid_config_type(self) -> None:
         """Test create_web_application with invalid config type."""
-        service = FlextWebService()
+        service = FlextWebServices()
         result = service.create_web_application("invalid_config")
         assert result.is_failure
         assert "Expected dict" in result.error
 
     def test_mock_auth_initialization(self) -> None:
         """Test MockAuth initialization."""
-        auth = FlextWebService.MockAuth()
+        auth = FlextWebServices.MockAuth()
         assert auth is not None
         assert hasattr(auth, "_users")
         assert hasattr(auth, "_tokens")
 
     def test_mock_auth_authenticate_user_success(self) -> None:
         """Test MockAuth successful user authentication."""
-        auth = FlextWebService.MockAuth()
+        auth = FlextWebServices.MockAuth()
         # First register a user
         auth.register_user("testuser", "test@example.com", "password123")
 
@@ -342,14 +342,14 @@ class TestFlextWebService:
 
     def test_mock_auth_authenticate_user_invalid_credentials(self) -> None:
         """Test MockAuth authentication with invalid credentials."""
-        auth = FlextWebService.MockAuth()
+        auth = FlextWebServices.MockAuth()
         result = auth.authenticate_user("nonexistent", "wrongpassword")
         assert result.is_failure
         assert "Invalid credentials" in result.error
 
     def test_mock_auth_register_user_success(self) -> None:
         """Test MockAuth successful user registration."""
-        auth = FlextWebService.MockAuth()
+        auth = FlextWebServices.MockAuth()
         result = auth.register_user("newuser", "newuser@example.com", "password123")
         assert result.is_success
         user_data = result.unwrap()
@@ -358,7 +358,7 @@ class TestFlextWebService:
 
     def test_mock_auth_register_user_duplicate(self) -> None:
         """Test MockAuth registration with duplicate username."""
-        auth = FlextWebService.MockAuth()
+        auth = FlextWebServices.MockAuth()
         # Register first user
         auth.register_user("duplicate", "user1@example.com", "password123")
 

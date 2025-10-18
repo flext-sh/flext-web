@@ -167,8 +167,8 @@ class FlextWebUtilities(FlextUtilities):
     def create_web_app_data(
         cls,
         name: str,
-        port: int = FlextWebConstants.WebServer.DEFAULT_PORT,
-        host: str = FlextWebConstants.WebServer.DEFAULT_HOST,
+        port: int = FlextWebConstants.DEFAULT_PORT,
+        host: str = FlextWebConstants.DEFAULT_HOST,
     ) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
         """Create web application data with Pydantic validation.
 

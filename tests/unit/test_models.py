@@ -15,13 +15,13 @@ class TestFlextWebModels:
 
     def test_web_app_status_enum(self) -> None:
         """Test WebAppStatus enum values."""
-        assert FlextWebModels.WebAppStatus.STOPPED == "stopped"
-        assert FlextWebModels.WebAppStatus.STARTING == "starting"
-        assert FlextWebModels.WebAppStatus.RUNNING == "running"
-        assert FlextWebModels.WebAppStatus.STOPPING == "stopping"
-        assert FlextWebModels.WebAppStatus.ERROR == "error"
-        assert FlextWebModels.WebAppStatus.MAINTENANCE == "maintenance"
-        assert FlextWebModels.WebAppStatus.DEPLOYING == "deploying"
+        assert FlextWebModels.WebAppStatus.STOPPED.value == "stopped"
+        assert FlextWebModels.WebAppStatus.STARTING.value == "starting"
+        assert FlextWebModels.WebAppStatus.RUNNING.value == "running"
+        assert FlextWebModels.WebAppStatus.STOPPING.value == "stopping"
+        assert FlextWebModels.WebAppStatus.ERROR.value == "error"
+        assert FlextWebModels.WebAppStatus.MAINTENANCE.value == "maintenance"
+        assert FlextWebModels.WebAppStatus.DEPLOYING.value == "deploying"
 
     def test_web_app_initialization_with_defaults(self) -> None:
         """Test WebApp initialization with defaults."""
@@ -30,7 +30,7 @@ class TestFlextWebModels:
         assert app.name == "test-app"
         assert app.host == FlextWebConstants.WebServer.DEFAULT_HOST
         assert app.port == FlextWebConstants.WebServer.DEFAULT_PORT
-        assert app.status == FlextWebModels.WebAppStatus.STOPPED
+        assert app.status == "stopped"
         assert app.version == 1
         assert app.environment == "development"
         assert app.debug_mode is False
@@ -42,14 +42,14 @@ class TestFlextWebModels:
             name="test-app",
             host="0.0.0.0",
             port=3000,
-            status=FlextWebModels.WebAppStatus.RUNNING,
+            status="running",
             version=2,
             environment="production",
             debug_mode=True,
         )
         assert app.host == "0.0.0.0"
         assert app.port == 3000
-        assert app.status == FlextWebModels.WebAppStatus.RUNNING
+        assert app.status == "running"
         assert app.version == 2
         assert app.environment == "production"
         assert app.debug_mode is True
@@ -105,7 +105,7 @@ class TestFlextWebModels:
         """Test WebApp status validation."""
         # Valid status
         app = FlextWebModels.WebApp(id="test-id", name="test-app", status="running")
-        assert app.status == FlextWebModels.WebAppStatus.RUNNING
+        assert app.status == "running"
 
         # Invalid status
         with pytest.raises(ValidationError):
@@ -113,9 +113,7 @@ class TestFlextWebModels:
 
     def test_web_app_computed_fields(self) -> None:
         """Test WebApp computed fields."""
-        app = FlextWebModels.WebApp(
-            id="test-id", name="test-app", status=FlextWebModels.WebAppStatus.RUNNING
-        )
+        app = FlextWebModels.WebApp(id="test-id", name="test-app", status="running")
         assert app.is_running is True
         assert app.is_healthy is True
         assert app.can_start is False
@@ -145,51 +143,41 @@ class TestFlextWebModels:
 
     def test_web_app_start_success(self) -> None:
         """Test WebApp start operation."""
-        app = FlextWebModels.WebApp(
-            id="test-id", name="test-app", status=FlextWebModels.WebAppStatus.STOPPED
-        )
+        app = FlextWebModels.WebApp(id="test-id", name="test-app", status="stopped")
         result = app.start()
         assert result.is_success
         started_app = result.unwrap()
-        assert started_app.status == FlextWebModels.WebAppStatus.RUNNING
+        assert started_app.status == "running"
 
     def test_web_app_start_already_running(self) -> None:
         """Test WebApp start when already running."""
-        app = FlextWebModels.WebApp(
-            id="test-id", name="test-app", status=FlextWebModels.WebAppStatus.RUNNING
-        )
+        app = FlextWebModels.WebApp(id="test-id", name="test-app", status="running")
         result = app.start()
         assert result.is_failure
         assert "already running" in result.error
 
     def test_web_app_stop_success(self) -> None:
         """Test WebApp stop operation."""
-        app = FlextWebModels.WebApp(
-            id="test-id", name="test-app", status=FlextWebModels.WebAppStatus.RUNNING
-        )
+        app = FlextWebModels.WebApp(id="test-id", name="test-app", status="running")
         result = app.stop()
         assert result.is_success
         stopped_app = result.unwrap()
-        assert stopped_app.status == FlextWebModels.WebAppStatus.STOPPED
+        assert stopped_app.status == "stopped"
 
     def test_web_app_stop_not_running(self) -> None:
         """Test WebApp stop when not running."""
-        app = FlextWebModels.WebApp(
-            id="test-id", name="test-app", status=FlextWebModels.WebAppStatus.STOPPED
-        )
+        app = FlextWebModels.WebApp(id="test-id", name="test-app", status="stopped")
         result = app.stop()
         assert result.is_failure
         assert "not running" in result.error
 
     def test_web_app_restart_success(self) -> None:
         """Test WebApp restart operation."""
-        app = FlextWebModels.WebApp(
-            id="test-id", name="test-app", status=FlextWebModels.WebAppStatus.RUNNING
-        )
+        app = FlextWebModels.WebApp(id="test-id", name="test-app", status="running")
         result = app.restart()
         assert result.is_success
         restarted_app = result.unwrap()
-        assert restarted_app.status == FlextWebModels.WebAppStatus.RUNNING
+        assert restarted_app.status == "running"
 
     def test_web_app_metrics_update(self) -> None:
         """Test WebApp metrics update."""
@@ -204,9 +192,7 @@ class TestFlextWebModels:
 
     def test_web_app_health_status(self) -> None:
         """Test WebApp health status."""
-        app = FlextWebModels.WebApp(
-            id="test-id", name="test-app", status=FlextWebModels.WebAppStatus.RUNNING
-        )
+        app = FlextWebModels.WebApp(id="test-id", name="test-app", status="running")
         health = app.get_health_status()
         assert "status" in health
         assert "is_running" in health
@@ -232,7 +218,7 @@ class TestFlextWebModels:
             name="test-app",
             host="localhost",
             port=8080,
-            status=FlextWebModels.WebAppStatus.RUNNING,
+            status="running",
         )
         assert "test-app" in str(app)
         assert "localhost:8080" in str(app)
