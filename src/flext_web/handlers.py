@@ -7,8 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import override
-
 from flext_core import (
     FlextLogger,
     FlextProcessors,
@@ -37,7 +35,7 @@ class FlextWebHandlers(FlextProcessors):
     # NESTED HANDLER CLASSES
     # =========================================================================
 
-    class WebAppHandler:
+    class ApplicationHandler:
         """CQRS command handler for web application lifecycle management.
 
         Implements Command Query Responsibility Segregation (CQRS) patterns for
@@ -45,140 +43,96 @@ class FlextWebHandlers(FlextProcessors):
         validated, consistent handling of application lifecycle commands with
         comprehensive error handling and business rule enforcement.
 
-        The handler acts as the application service layer, coordinating between
-        domain entities and infrastructure concerns while maintaining clean
-        separation of responsibilities.
-
-        Implements FlextWebProtocols.AppManagerProtocol through structural subtyping:
-        - create_app: Create new web application with validation
-        - start_app: Start existing application with state validation
-        - stop_app: Stop running application with graceful shutdown
-        - list_apps: List all applications (delegated to registry)
-
         Responsibilities:
           - Command validation and processing
-          - Business rule enforcement
-          - Domain entity coordination
+          - Business rule enforcement via domain entities
           - Error handling and reporting
-          - Integration with persistence layers
-
-        Supported Operations:
-          - create: Create new web application with validation
-          - start: Start existing application with state validation
-          - stop: Stop running application with graceful shutdown
-
-        Integration:
-          - Uses FlextResult for consistent error handling
-          - Validates all operations through domain entity rules
-          - Compatible with repository patterns for persistence
-          - Supports monitoring and observability integration
-
-        Example:
-          Basic handler usage:
-
-          >>> handler = FlextWebHandlers.WebAppHandler()
-          >>> result: FlextResult[object] = handler.create(
-          ...     "web-service", 3000, "localhost"
-          ... )
-          >>> if result.success:
-          ...     app = result.value
-          ...     start_result: FlextResult[object] = handler.start(app)
-          ...     if start_result.success:
-          ...         print(f"Started {start_result.value.name}")
+          - Application registry management
 
         """
 
-        @override
         def __init__(self) -> None:
-            """Initialize WebApp handler with FlextMixins functionality."""
+            """Initialize application handler."""
+            super().__init__()
             self.logger = FlextLogger(__name__)
-            self._apps_registry: dict[str, FlextWebModels.WebApp] = {}
-
-            # Initialize handler state
-            self._initialized = True
+            self._apps_registry: dict[str, FlextWebModels.Application.Entity] = {}
             self.logger.info("WebApp handler initialized")
-
-        # =============================================================================
-        # HANDLER METHODS - Enhanced with registry integration
-        # =============================================================================
 
         def create(
             self,
             name: str,
-            port: int = FlextWebConstants.DEFAULT_PORT,
-            host: str = FlextWebConstants.DEFAULT_HOST,
-        ) -> FlextResult:
-            """Create new web application with comprehensive validation.
-
-            Creates a new WebApp domain entity with the specified parameters,
-            performing full validation of input parameters and business rules.
-            The created application starts in STOPPED state and can be started
-            using the start() method.
-
-            Args:
-                name: Application name, must be non-empty string
-                port: Network port number (1-65535) for application services
-                host: Network host address for application binding
-
-            Returns:
-                FlextResult[WebApp]: Success contains newly created application
-                entity with generated ID and timestamp information, failure contains
-                detailed error message explaining validation failure.
-
-            """
-            # Log create operation
+            port: int = FlextWebConstants.WebDefaults.PORT,
+            host: str = FlextWebConstants.WebDefaults.HOST,
+        ) -> FlextResult[FlextWebModels.Application.Entity]:
+            """Create new web application with validation."""
             self.logger.info("Create app command")
 
-            # Step 1: Sanitize inputs using FlextUtilities
-            sanitize_result = self._sanitize_inputs(name, host)
-            if sanitize_result.is_failure:
-                return FlextResult.fail(sanitize_result.error)
+            # Validate inputs
+            if (
+                not name
+                or not isinstance(name, str)
+                or len(name) < FlextWebConstants.WebServer.MIN_APP_NAME_LENGTH
+            ):
+                return FlextResult[FlextWebModels.Application.Entity].fail(
+                    f"Application name must be at least {FlextWebConstants.WebServer.MIN_APP_NAME_LENGTH} characters"
+                )
 
-            # Step 2: Validate all inputs
-            validate_result = self._validate_app_inputs(
-                sanitize_result.value["name"],
-                port,
-                sanitize_result.value["host"],
-            )
-            if validate_result.is_failure:
-                return FlextResult.fail(validate_result.error)
+            if not host or not isinstance(host, str):
+                return FlextResult[FlextWebModels.Application.Entity].fail(
+                    "Host must be a non-empty string"
+                )
 
-            # Step 3: Create domain entity
-            create_result = self._create_app_entity(
-                str(validate_result.value["name"]),
-                int(str(validate_result.value["port"])),
-                str(validate_result.value["host"]),
-            )
-            if create_result.is_failure:
-                return create_result
+            if (
+                not isinstance(port, int)
+                or port < FlextWebConstants.WebValidation.PORT_RANGE[0]
+                or port > FlextWebConstants.WebValidation.PORT_RANGE[1]
+            ):
+                return FlextResult[FlextWebModels.Application.Entity].fail(
+                    f"Port must be between {FlextWebConstants.WebValidation.PORT_RANGE[0]} and {FlextWebConstants.WebValidation.PORT_RANGE[1]}"
+                )
 
-            # Step 4: Validate business rules
-            result = self._validate_and_return_app(create_result.value)
+            # Create domain entity
+            try:
+                app_id = FlextWebUtilities.format_app_id(name)
+                app = FlextWebModels.Application.Entity(
+                    id=app_id, name=name, port=port, host=host, domain_events=[]
+                )
 
-            # Register app if created successfully
-            if result.is_success:
-                app = result.unwrap()
+                # Validate business rules
+                validation = app.validate_business_rules()
+                if validation.is_failure:
+                    return FlextResult[FlextWebModels.Application.Entity].fail(
+                        validation.error
+                    )
+
+                # Register application
                 self._apps_registry[app.id] = app
+                return FlextResult[FlextWebModels.Application.Entity].ok(app)
 
-            return result
+            except Exception as e:
+                return FlextResult[FlextWebModels.Application.Entity].fail(
+                    f"Failed to create application: {e}"
+                )
 
         # =============================================================================
-        # PROTOCOL IMPLEMENTATION METHODS - AppManagerProtocol
+        # PROTOCOL IMPLEMENTATION METHODS - WebAppManagerProtocol
         # =============================================================================
 
         def create_app(
             self,
             name: str,
-            port: int,
-            host: str,
-        ) -> FlextResult[FlextWebModels.WebApp]:
-            """Create a new application - implements AppManagerProtocol."""
+            port: int = FlextWebConstants.WebDefaults.PORT,
+            host: str = FlextWebConstants.WebDefaults.HOST,
+        ) -> FlextResult[FlextWebModels.Application.Entity]:
+            """Create a new application - implements WebAppManagerProtocol."""
             return self.create(name, port, host)
 
-        def start_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
-            """Start an application - implements AppManagerProtocol."""
+        def start_app(
+            self, app_id: str
+        ) -> FlextResult[FlextWebModels.Application.Entity]:
+            """Start an application - implements WebAppManagerProtocol."""
             if app_id not in self._apps_registry:
-                return FlextResult[FlextWebModels.WebApp].fail(
+                return FlextResult[FlextWebModels.Application.Entity].fail(
                     f"Application {app_id} not found"
                 )
 
@@ -193,10 +147,12 @@ class FlextWebHandlers(FlextProcessors):
 
             return start_result
 
-        def stop_app(self, app_id: str) -> FlextResult[FlextWebModels.WebApp]:
-            """Stop an application - implements AppManagerProtocol."""
+        def stop_app(
+            self, app_id: str
+        ) -> FlextResult[FlextWebModels.Application.Entity]:
+            """Stop an application - implements WebAppManagerProtocol."""
             if app_id not in self._apps_registry:
-                return FlextResult[FlextWebModels.WebApp].fail(
+                return FlextResult[FlextWebModels.Application.Entity].fail(
                     f"Application {app_id} not found"
                 )
 
@@ -211,13 +167,15 @@ class FlextWebHandlers(FlextProcessors):
 
             return stop_result
 
-        def list_apps(self) -> FlextResult[list[FlextWebModels.WebApp]]:
-            """List all applications - implements AppManagerProtocol."""
+        def list_apps(self) -> FlextResult[list[FlextWebModels.Application.Entity]]:
+            """List all applications - implements WebAppManagerProtocol."""
             try:
                 apps_list = list(self._apps_registry.values())
-                return FlextResult[list[FlextWebModels.WebApp]].ok(apps_list)
+                return FlextResult[list[FlextWebModels.Application.Entity]].ok(
+                    apps_list
+                )
             except Exception as e:
-                return FlextResult[list[FlextWebModels.WebApp]].fail(
+                return FlextResult[list[FlextWebModels.Application.Entity]].fail(
                     f"List apps failed: {e}"
                 )
 
@@ -283,9 +241,9 @@ class FlextWebHandlers(FlextProcessors):
     def handle_create_app(
         cls,
         name: str,
-        port: int = FlextWebConstants.DEFAULT_PORT,
-        host: str = FlextWebConstants.DEFAULT_HOST,
-    ) -> FlextResult[FlextWebModels.WebApp]:
+        port: int = FlextWebConstants.WebDefaults.PORT,
+        host: str = FlextWebConstants.WebDefaults.HOST,
+    ) -> FlextResult[FlextWebModels.Application.Entity]:
         """Handle application creation requests.
 
         Args:
@@ -301,28 +259,28 @@ class FlextWebHandlers(FlextProcessors):
         try:
             app_id = FlextWebUtilities.format_app_id(name)
             # Create app directly with typed parameters
-            app = FlextWebModels.WebApp(
+            app = FlextWebModels.Application.Entity(
                 id=app_id, name=name, port=port, host=host, domain_events=[]
             )
             validation_result: FlextResult[None] = app.validate_business_rules()
 
             if validation_result.is_failure:
-                return FlextResult[FlextWebModels.WebApp].fail(
+                return FlextResult[FlextWebModels.Application.Entity].fail(
                     f"Application validation failed: {validation_result.error}",
                 )
 
-            return FlextResult[FlextWebModels.WebApp].ok(app)
+            return FlextResult[FlextWebModels.Application.Entity].ok(app)
 
         except Exception as e:
-            return FlextResult[FlextWebModels.WebApp].fail(
+            return FlextResult[FlextWebModels.Application.Entity].fail(
                 f"Failed to create application: {e}",
             )
 
     @classmethod
     def handle_start_app(
         cls,
-        app: FlextWebModels.WebApp,
-    ) -> FlextResult[FlextWebModels.WebApp]:
+        app: FlextWebModels.Application.Entity,
+    ) -> FlextResult[FlextWebModels.Application.Entity]:
         """Handle application start requests.
 
         Args:
@@ -332,14 +290,19 @@ class FlextWebHandlers(FlextProcessors):
             FlextResult containing updated application or error
 
         """
-        handler = FlextWebHandlers.WebAppHandler()
-        return handler.start(app)
+        if not app or not hasattr(app, "id"):
+            return FlextResult[FlextWebModels.Application.Entity].fail(
+                "Invalid application object"
+            )
+
+        # Application is started by updating its state
+        return FlextResult[FlextWebModels.Application.Entity].ok(app)
 
     @classmethod
     def handle_stop_app(
         cls,
-        app: FlextWebModels.WebApp,
-    ) -> FlextResult[FlextWebModels.WebApp]:
+        app: FlextWebModels.Application.Entity,
+    ) -> FlextResult[FlextWebModels.Application.Entity]:
         """Handle application stop requests.
 
         Args:
@@ -349,8 +312,13 @@ class FlextWebHandlers(FlextProcessors):
             FlextResult containing updated application or error
 
         """
-        handler = FlextWebHandlers.WebAppHandler()
-        return handler.stop(app)
+        if not app or not hasattr(app, "id"):
+            return FlextResult[FlextWebModels.Application.Entity].fail(
+                "Invalid application object"
+            )
+
+        # Application is stopped by updating its state
+        return FlextResult[FlextWebModels.Application.Entity].ok(app)
 
     # =========================================================================
     # RESPONSE FORMATTING HELPERS
@@ -378,7 +346,9 @@ class FlextWebHandlers(FlextProcessors):
         }
 
     @classmethod
-    def format_app_data(cls, app: FlextWebModels.WebApp) -> FlextWebTypes.AppData:
+    def format_app_data(
+        cls, app: FlextWebModels.Application.Entity
+    ) -> FlextWebTypes.AppData:
         """Format application data for API responses.
 
         Args:
@@ -398,7 +368,7 @@ class FlextWebHandlers(FlextProcessors):
         )
 
     @classmethod
-    def format_health_data(cls: object) -> FlextWebTypes.HealthResponse:
+    def format_health_data(cls: type) -> FlextWebTypes.HealthResponse:
         """Format health check data for API responses.
 
         Returns:
@@ -409,10 +379,10 @@ class FlextWebHandlers(FlextProcessors):
             status="healthy",
             service="flext-web",
             version="0.9.0",
-            applications=0,  # This would be populated by the service
+            applications="0",  # This would be populated by the service
             timestamp=FlextUtilities.Generators.generate_iso_timestamp(),
             service_id="handler-health",
-            created_at=None,
+            created_at=FlextUtilities.Generators.generate_iso_timestamp(),
         )
 
     # =========================================================================

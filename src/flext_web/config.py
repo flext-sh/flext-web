@@ -1,6 +1,6 @@
-"""Generic HTTP Configuration - Domain-agnostic HTTP config using Python 3.13+.
+"""HTTP Configuration - Domain-agnostic HTTP configuration.
 
-Domain-agnostic HTTP configuration using flext-core patterns directly.
+Uses Pydantic 2 with flext-core patterns and FlextWebConstants.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -9,58 +9,84 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
-from flext_core import FlextConfig, FlextResult
-from pydantic import BaseModel, Field, computed_field
+from flext_core.result import FlextResult
+from pydantic import BaseModel, ConfigDict, Field, computed_field
+
+from flext_web.constants import FlextWebConstants
 
 
 class FlextWebConfig(BaseModel):
-    """Generic HTTP configuration using flext-core patterns."""
+    """HTTP server configuration.
 
-    # Core HTTP configuration fields
-    host: str = Field(default="localhost", min_length=1, max_length=255)
-    port: int = Field(default=8080, ge=1, le=65535)
-    app_name: str = Field(default="HTTP API", min_length=1, max_length=255)
-    version: str = Field(default="1.0.0")
-    max_content_length: int = Field(default=16777216, gt=0)
-    request_timeout: int = Field(default=30, gt=0, le=600)
-    enable_cors: bool = Field(default=False)
-    cors_origins: list[str] = Field(default_factory=list)
-    ssl_enabled: bool = Field(default=False)
-    ssl_cert_path: Path | None = Field(default=None)
-    ssl_key_path: Path | None = Field(default=None)
+    Pydantic 2 model with computed properties for derived values.
+    Domain-agnostic configuration for any HTTP-based service.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    host: str = Field(
+        default=FlextWebConstants.WebDefaults.HOST,
+        min_length=1,
+        max_length=255,
+        description="Web server host address",
+    )
+    port: int = Field(
+        default=FlextWebConstants.WebDefaults.PORT,
+        ge=FlextWebConstants.WebValidation.PORT_RANGE[0],
+        le=FlextWebConstants.WebValidation.PORT_RANGE[1],
+        description="Web server port number",
+    )
+    app_name: str = Field(
+        default=FlextWebConstants.WebDefaults.APP_NAME,
+        min_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[0],
+        max_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[1],
+        description="Web application name",
+    )
+    version: str = Field(default="1.0.0", description="Application version")
+    debug_mode: bool = Field(default=False, alias="debug", description="Debug mode")
+    ssl_enabled: bool = Field(default=False, description="Enable SSL/TLS")
+    ssl_cert_path: Path | None = Field(default=None, description="SSL certificate path")
+    ssl_key_path: Path | None = Field(default=None, description="SSL key path")
+    secret_key: str | None = Field(
+        default=None, min_length=32, description="Secret key"
+    )
+    testing: bool = Field(default=False, description="Testing mode")
 
     @computed_field
-    @property
+    def debug(self) -> bool:
+        """Debug property for compatibility."""
+        return self.debug_mode
+
+    @computed_field
     def protocol(self) -> str:
-        """Get the protocol (http/https)."""
+        """Protocol: https if SSL enabled, http otherwise."""
         return "https" if self.ssl_enabled else "http"
 
     @computed_field
-    @property
     def base_url(self) -> str:
-        """Get the base URL."""
+        """Base URL from protocol, host, and port."""
         return f"{self.protocol}://{self.host}:{self.port}"
 
-    def get_server_config(self) -> dict[str, Any]:
-        """Get server-related configuration."""
-        return {
-            "host": self.host,
-            "port": self.port,
-            "protocol": self.protocol,
-            "base_url": self.base_url,
-            "ssl_enabled": self.ssl_enabled,
-        }
+    @computed_field
+    def server_address(self) -> tuple[str, int]:
+        """Server address as (host, port) tuple."""
+        return (self.host, self.port)
 
     @classmethod
-    def create_config(cls, **overrides: Any) -> FlextResult[FlextWebConfig]:
-        """Generic configuration factory."""
+    def create_web_config(cls) -> FlextResult[FlextWebConfig]:
+        """Create default web configuration.
+
+        Returns:
+            FlextResult[FlextWebConfig]: Success contains default config,
+                                        failure contains error message
+
+        """
         try:
-            config = cls(**overrides)
+            config = cls()
             return FlextResult.ok(config)
         except Exception as e:
-            return FlextResult.fail(f"Configuration creation failed: {e}")
+            return FlextResult.fail(f"Failed to create web config: {e}")
 
 
 __all__ = ["FlextWebConfig"]

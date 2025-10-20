@@ -11,7 +11,16 @@ class TestFlextWebVersion:
 
     def test_version_initialization(self) -> None:
         """Test FlextWebVersion initialization."""
-        version = FlextWebVersion("1.0.0", (1, 0, 0))
+        version = FlextWebVersion(
+            version="1.0.0",
+            version_info=(1, 0, 0),
+            title="FLEXT Web",
+            description="Generic HTTP Service",
+            author="FLEXT Team",
+            author_email="flext@example.com",
+            license_type="MIT",
+            url="https://github.com/flext/flext-web",
+        )
 
         assert version.version == "1.0.0"
         assert version.version_info == (1, 0, 0)

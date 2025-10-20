@@ -12,6 +12,7 @@ from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels
+from flext_web.protocols import FlextWebProtocols
 from flext_web.services import FlextWebServices
 from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
@@ -22,8 +23,8 @@ __all__ = [
     "FlextWebConfig",
     "FlextWebConstants",
     "FlextWebHandlers",
-    "FlextWebHttpMessage",
     "FlextWebModels",
+    "FlextWebProtocols",
     "FlextWebServices",
     "FlextWebTypes",
     "FlextWebUtilities",

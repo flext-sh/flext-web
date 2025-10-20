@@ -167,8 +167,8 @@ class FlextWebUtilities(FlextUtilities):
     def create_web_app_data(
         cls,
         name: str,
-        port: int = FlextWebConstants.DEFAULT_PORT,
-        host: str = FlextWebConstants.DEFAULT_HOST,
+        port: int = FlextWebConstants.WebDefaults.PORT,
+        host: str = FlextWebConstants.WebDefaults.HOST,
     ) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
         """Create web application data with Pydantic validation.
 
@@ -180,7 +180,7 @@ class FlextWebUtilities(FlextUtilities):
 
         try:
             # Let Pydantic handle all validation through field validators
-            app = FlextWebModels.WebApp(
+            app = FlextWebModels.Application.Entity(
                 id=cls.format_app_id(name),
                 name=name,
                 port=port,

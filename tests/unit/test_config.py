@@ -16,9 +16,9 @@ class TestFlextWebConfig:
     def test_initialization_with_defaults(self) -> None:
         """Test FlextWebConfig initialization with defaults."""
         config = FlextWebConfig()
-        assert config.host == FlextWebConstants.WebServer.DEFAULT_HOST
-        assert config.port == FlextWebConstants.WebServer.DEFAULT_PORT
-        assert config.debug is False
+        assert config.host == FlextWebConstants.WebDefaults.HOST
+        assert config.port == FlextWebConstants.WebDefaults.PORT
+        assert config.debug_mode is False
         assert config.app_name == "FLEXT Web"
 
     def test_initialization_with_custom_values(self) -> None:
@@ -28,7 +28,7 @@ class TestFlextWebConfig:
         )
         assert config.host == "0.0.0.0"
         assert config.port == 3000
-        assert config.debug is True
+        assert config.debug_mode is True
         assert config.app_name == "Test App"
 
     def test_validation_host_empty(self) -> None:
@@ -64,15 +64,6 @@ class TestFlextWebConfig:
         )
         assert config.ssl_enabled is False
 
-    def test_cors_configuration(self) -> None:
-        """Test CORS configuration."""
-        config = FlextWebConfig(
-            enable_cors=True,
-            cors_origins=["http://localhost:3000", "https://example.com"],
-        )
-        assert config.enable_cors is True
-        assert len(config.cors_origins) == 2
-
     def test_computed_fields(self) -> None:
         """Test computed fields."""
         config = FlextWebConfig(ssl_enabled=False)
@@ -87,24 +78,22 @@ class TestFlextWebConfig:
         config = FlextWebConfig(host="localhost", port=8080, ssl_enabled=False)
         assert config.base_url == "http://localhost:8080"
 
-    def test_validate_business_rules_success(self) -> None:
-        """Test business rules validation with valid config."""
+    def test_validate_config_success(self) -> None:
+        """Test config validation with Pydantic."""
         config = FlextWebConfig()
-        result = config.validate_business_rules()
-        assert result.is_success
+        assert config.host is not None
+        assert config.port is not None
 
-    def test_get_server_config(self) -> None:
-        """Test server configuration retrieval."""
-        config = FlextWebConfig(host="localhost", port=8080, debug=True)
-        server_config = config.get_server_config()
-        assert server_config["host"] == "localhost"
-        assert server_config["port"] == 8080
-        assert server_config["debug"] is True
+    def test_to_dict_method(self) -> None:
+        """Test config to dict conversion using Pydantic model_dump."""
+        config = FlextWebConfig(host="localhost", port=8080)
+        config_dict = config.model_dump()
+        assert config_dict["host"] == "localhost"
+        assert config_dict["port"] == 8080
+        assert "debug_mode" in config_dict
 
     def test_create_web_config_factory(self) -> None:
-        """Test web config factory method."""
-        result = FlextWebConfig.create_web_config(host="test", port=9000)
-        assert result.is_success
-        config = result.unwrap()
+        """Test web config direct instantiation with Pydantic."""
+        config = FlextWebConfig(host="test", port=9000)
         assert config.host == "test"
         assert config.port == 9000

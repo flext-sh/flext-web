@@ -1,36 +1,37 @@
-"""Project metadata for flext web."""
+"""DEPRECATED: Use flext_web.__version__ instead.
+
+This module is deprecated and maintained only for backward compatibility.
+All code should import from flext_web.__version__ directly.
+
+For version metadata, use:
+    from flext_web import __version__, __version_info__, VERSION, FlextWebVersion
+"""
 
 from __future__ import annotations
 
-from importlib.metadata import metadata
-from typing import Final
-
-_metadata = metadata("flext-web")
-
-__version__: Final[str] = _metadata["Version"]
-__version_info__: Final[tuple[int | str, ...]] = tuple(
-    int(part) if part.isdigit() else part for part in __version__.split(".")
+# Re-export from canonical location for backward compatibility
+from flext_web.__version__ import (
+    VERSION,
+    FlextWebVersion,
+    __author__,
+    __author_email__,
+    __description__,
+    __license__,
+    __title__,
+    __url__,
+    __version__,
+    __version_info__,
 )
 
-
-class FlextWebVersion:
-    """Structured metadata for the flext web distribution."""
-
-    def __init__(self, version: str, version_info: tuple[int | str, ...]) -> None:
-        """Initialize version metadata."""
-        self.version = version
-        self.version_info = version_info
-
-    @classmethod
-    def current(cls) -> FlextWebVersion:
-        """Return canonical metadata loaded from pyproject.toml."""
-        return cls(__version__, __version_info__)
-
-
-VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
-
-for _name in tuple(_metadata):
-    if _name not in {"__version__", "__version_info__"}:
-        globals().pop(_name, None)
-
-__all__ = ["VERSION", "FlextWebVersion", "__version__", "__version_info__"]
+__all__ = [
+    "VERSION",
+    "FlextWebVersion",
+    "__author__",
+    "__author_email__",
+    "__description__",
+    "__license__",
+    "__title__",
+    "__url__",
+    "__version__",
+    "__version_info__",
+]

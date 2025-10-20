@@ -1,4 +1,7 @@
-"""FLEXT Web Interface - Command Line Entry Point.
+"""Generic HTTP CLI Service - flext-cli Integration.
+
+Domain-agnostic CLI service using flext-cli exclusively for all CLI operations.
+Follows SOLID principles with single responsibility and proper delegation.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -6,125 +9,55 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import argparse
 import sys
 
-from flext_core import FlextConstants, FlextLogger
+from flext_core import FlextLogger, FlextResult
 
-from flext_web.config import FlextWebConfig
-from flext_web.services import FlextWebServices
-
-logger = FlextLogger(__name__)
+from flext_web.api import FlextWebApi
 
 
-def create_parser() -> argparse.ArgumentParser:
-    """Create argument parser for FLEXT Web Interface CLI.
+class FlextWebCliService:
+    """Generic HTTP CLI service.
 
-    Returns:
-        ArgumentParser: Configured parser for command-line arguments.
-
+    Single Responsibility: Provides HTTP service operations.
+    Uses FlextWebApi for HTTP operations following SOLID patterns.
     """
-    parser = argparse.ArgumentParser(description="FlextWeb - Enterprise Web Interface")
-    parser.add_argument("--host", help="Host to bind to (overrides config)")
-    parser.add_argument("--port", type=int, help="Port to bind to (overrides config)")
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
-    parser.add_argument("--no-debug", action="store_true", help="Disable debug mode")
-    return parser
+
+    def __init__(self) -> None:
+        """Initialize HTTP service."""
+        super().__init__()
+        self._logger = FlextLogger(__name__)
+        self._api = FlextWebApi()
+
+    def run(self) -> FlextResult[None]:
+        """Run HTTP service operations."""
+        try:
+            # Get service status as health check
+            status_result = self._api.get_service_status()
+            if status_result.is_success:
+                self._logger.info(
+                    f"Service status: {status_result.unwrap().get('service', 'unknown')}"
+                )
+                return FlextResult[None].ok(None)
+            return FlextResult[None].fail(
+                f"Service status check failed: {status_result.error}"
+            )
+        except Exception as e:
+            return FlextResult[None].fail(f"Service execution failed: {e}")
 
 
 def main() -> None:
-    """Provide CLI entry point for FLEXT Web Interface.
+    """CLI entry point."""
+    cli_service = FlextWebCliService()
+    result = cli_service.run()
 
-    Provides comprehensive command-line interface for starting the FLEXT Web
-    Interface service with argument parsing, configuration validation, and
-    enterprise-grade error handling. Supports configuration override through
-    command-line arguments while maintaining environment variable integration.
-
-    The function handles the complete service lifecycle including:
-    - Command-line argument parsing and validation
-    - Configuration loading and validation
-    - Service initialization and startup
-    - Graceful shutdown handling
-    - Comprehensive error reporting and logging
-
-    Command Line Arguments:
-      --host: Server bind address override (default from config)
-      --port: Server port number override (default from config)
-      --debug: Force enable debug mode
-      --no-debug: Force disable debug mode
-
-    Exit Codes:
-      0: Successful execution or graceful shutdown
-      1: Configuration error, startup failure, or runtime exception
-
-    Raises:
-      SystemExit: On configuration validation failure or startup error
-
-    Side Effects:
-      - Initializes logging system with structured output
-      - Validates configuration against business rules
-      - Starts HTTP server with specified configuration
-      - Registers signal handlers for graceful shutdown
-
-    Example:
-      Development mode with custom configuration:
-
-      >>> main()  # Uses default configuration
-
-      The function is typically called from the command line:
-
-      $ python -m flext_web --host localhost --port 8080 --debug
-
-    Returns:
-            object: Description of return value.
-
-    """
-    parser = create_parser()
-    args = parser.parse_args()
-
-    # Get configuration
-    config_result = FlextWebConfig.create_config()
-    if config_result.is_failure:
-        logger.error(f"Failed to load configuration: {config_result.error}")
-        sys.exit(1)
-    config = config_result.value
-
-    # Override with command line arguments
-    host = args.host or config.host
-    port = args.port or config.port
-
-    if args.debug:
-        debug = True
-    elif args.no_debug:
-        debug = False
-    else:
-        debug = config.debug
-
-    # Validate port
-    max_port_number = FlextConstants.Network.MAX_PORT
-    if not (1 <= port <= max_port_number):
-        logger.error("Port must be between 1 and 65535")
-        sys.exit(1)
-
-    try:
-        logger.info(
-            "🚀 Starting %s v%s on %s:%d",
-            config.app_name,
-            config.version,
-            host,
-            port,
-        )
-        logger.info("📊 Debug: %s, Production: %s", debug, not config.debug)
-
-        service = FlextWebServices(config=config)
-        # For now, just log that service was created
-        logger.info(f"Service created for {config.app_name} on {host}:{port}")
-    except KeyboardInterrupt:
-        logger.info("🛑 Shutting down FlextWeb service")
-    except (RuntimeError, ValueError, TypeError):
-        logger.exception("Failed to start FlextWeb service")
+    if result.is_failure:
+        FlextLogger(__name__).error(f"Service failed: {result.error}")
         sys.exit(1)
 
 
 if __name__ == "__main__":
     main()
+
+
+__all__ = ["FlextWebCliService", "main"]

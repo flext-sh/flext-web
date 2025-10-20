@@ -13,57 +13,135 @@ from collections.abc import Callable
 from typing import Any
 
 from fastapi import FastAPI
-from flext_core import FlextContainer, FlextLogger, FlextResult, FlextUtilities
-from pydantic import BaseModel, Field
+from flask import Flask
+from flext_core import (
+    FlextContainer,
+    FlextLogger,
+    FlextResult,
+    FlextService,
+    FlextUtilities,
+)
 
 from flext_web.config import FlextWebConfig
-from flext_web.constants import FlextWebConstants
+from flext_web.models import FlextWebModels
 
 
-class FlextWebApp:
-    """Generic FastAPI application factory using flext-core patterns and SOLID principles.
+class FlextWebApp(FlextService[dict[str, object]]):
+    """Generic web application coordinator using flext-core patterns and SOLID principles.
 
-    Single Responsibility: Only handles FastAPI application creation and configuration.
+    Single Responsibility: Coordinates web application creation and configuration.
+    Delegates specific framework operations to specialized factory classes.
     Uses flext-web config models for type-safe configuration management.
     Delegates to flext-core for logging, container management, and error handling.
     """
 
     def __init__(self) -> None:
         """Initialize with flext-core container and logger."""
+        super().__init__()
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
 
-    # =========================================================================
-    # FASTAPI CONFIGURATION MODELS - Pydantic Integration
-    # =========================================================================
+    def execute(self) -> FlextResult[dict[str, object]]:
+        """Execute the web application service.
 
-    class FastAPIConfig(BaseModel):
-        """Pydantic model for FastAPI application configuration."""
+        Main domain operation for the web application service.
+        Creates and returns application metadata.
 
-        title: str = Field(default="HTTP API", min_length=1, max_length=100)
-        version: str = Field(default="1.0.0", pattern=r"^\d+\.\d+\.\d+$")
-        description: str = Field(default="Generic HTTP API", max_length=500)
-        docs_url: str | None = Field(default="/docs")
-        redoc_url: str | None = Field(default="/redoc")
-        openapi_url: str | None = Field(default="/openapi.json")
-        root_path: str = Field(default="")
+        Returns:
+            FlextResult[dict[str, object]]: Success contains app metadata,
+                                            failure contains error message
 
-        @classmethod
-        def from_web_config(cls, config: FlextWebConfig) -> FlextWebApp.FastAPIConfig:
-            """Create FastAPI config from FlextWebConfig."""
-            return cls(
-                title=config.app_name,
-                version=config.version,
-                description=f"{config.app_name} - HTTP API Service",
-            )
+        """
+        try:
+            app_info: dict[str, object] = {
+                "service": "flext-web-app",
+                "type": "fastapi_application_factory",
+                "capabilities": [
+                    "configure_middleware",
+                    "configure_routes",
+                    "create_fastapi_app",
+                ],
+                "status": "initialized",
+                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+            }
+
+            self._logger.info("FlextWebApp service executed successfully")
+            return FlextResult.ok(app_info)
+
+        except Exception as e:
+            self._logger.exception("FlextWebApp service execution failed")
+            return FlextResult.fail(f"Service execution failed: {e}")
 
     # =========================================================================
     # FASTAPI APPLICATION FACTORY - Single Responsibility
     # =========================================================================
 
+    class FastAPIFactory:
+        """FastAPI application factory with flext-core integration.
+
+        Single Responsibility: Creates FastAPI applications with proper configuration.
+        Uses Pydantic models for validation and flext-core patterns for error handling.
+        """
+
+        @staticmethod
+        def create_instance(
+            title: str = "FastAPI",
+            version: str = "1.0.0",
+            description: str = "FlextWeb FastAPI Application",
+            docs_url: str | None = "/docs",
+            redoc_url: str | None = "/redoc",
+            openapi_url: str | None = "/openapi.json",
+        ) -> FlextResult[FastAPI]:
+            """Create FastAPI application instance with validated configuration.
+
+            Args:
+                title: Application title
+                version: Application version
+                description: Application description
+                docs_url: Swagger UI docs URL
+                redoc_url: ReDoc URL
+                openapi_url: OpenAPI schema URL
+
+            Returns:
+                FlextResult[FastAPI]: Success contains configured FastAPI app,
+                                   failure contains detailed error message
+
+            """
+            logger = FlextLogger(__name__)
+
+            try:
+                # Validate FastAPI is available
+                if FastAPI is None:
+                    return FlextResult.fail("FastAPI is required but not available")
+
+                # Create FastAPI application
+                app = FastAPI(
+                    title=title,
+                    version=version,
+                    description=description,
+                    docs_url=docs_url,
+                    redoc_url=redoc_url,
+                    openapi_url=openapi_url,
+                )
+
+                logger.info(f"FastAPI application '{title}' v{version} created")
+                return FlextResult.ok(app)
+
+            except Exception as e:
+                logger.exception("FastAPI creation failed")
+                return FlextResult.fail(f"Failed to create FastAPI application: {e}")
+
     @classmethod
     def create_fastapi_app(
-        cls, config: FlextWebConfig | dict[str, Any] | None = None
+        cls,
+        config: FlextWebModels.FastAPI.FastAPIAppConfig
+        | FlextWebConfig
+        | dict[str, Any]
+        | None = None,
+        title: str | None = None,
+        docs_url: str | None = None,
+        redoc_url: str | None = None,
+        openapi_url: str | None = None,
     ) -> FlextResult[FastAPI]:
         """Create FastAPI app with flext-core integration and Pydantic validation.
 
@@ -72,7 +150,11 @@ class FlextWebApp:
         Delegates logging and error handling to flext-core patterns.
 
         Args:
-            config: Configuration object (FlextWebConfig or compatible)
+            config: FastAPI configuration object, dict, or None for defaults
+            title: Application title (overrides config.title)
+            docs_url: Swagger UI docs URL
+            redoc_url: ReDoc URL
+            openapi_url: OpenAPI schema URL
 
         Returns:
             FlextResult[FastAPI]: Success contains configured FastAPI app,
@@ -83,66 +165,56 @@ class FlextWebApp:
 
         try:
             # Convert config to Pydantic model for validation
-            if isinstance(config, FlextWebConfig):
-                fastapi_config = cls.FastAPIConfig.from_web_config(config)
-            elif isinstance(config, dict):
-                # Handle dict config objects
-                fastapi_config = cls.FastAPIConfig(
-                    title=config.get(
-                        "app_name", "HTTP API"
-                    ),
-                    version=config.get(
-                        "version", "1.0.0"
-                    ),
-                    description=config.get("description", "Generic HTTP API"),
+            if config is None:
+                fastapi_config = FlextWebModels.FastAPI.FastAPIAppConfig()
+            elif isinstance(config, FlextWebModels.FastAPI.FastAPIAppConfig):
+                fastapi_config = config
+            elif isinstance(config, FlextWebConfig):
+                # Convert FlextWebConfig to FastAPIAppConfig
+                fastapi_config = FlextWebModels.FastAPI.FastAPIAppConfig(
+                    title=config.app_name,
+                    version=config.version,
+                    description=f"Web service for {config.app_name}",
+                    debug=config.debug_mode,
+                    testing=config.testing,
+                    docs_url="/docs" if config.debug_mode else None,
+                    redoc_url="/redoc" if config.debug_mode else None,
+                    openapi_url="/openapi.json" if config.debug_mode else None,
                 )
-            elif config is None:
-                # Use default configuration
-                fastapi_config = cls.FastAPIConfig()
             else:
-                # Handle generic config objects with getattr
-                fastapi_config = cls.FastAPIConfig(
-                    title=getattr(
-                        config,
-                        "app_name",
-                        FlextWebConstants.WebSpecific.DEFAULT_APP_NAME,
-                    ),
-                    version=getattr(
-                        config, "version", FlextWebConstants.WebSpecific.DEFAULT_VERSION
-                    ),
-                    description=getattr(config, "description", "Generic HTTP API"),
-                )
+                try:
+                    fastapi_config = (
+                        FlextWebModels.FastAPI.FastAPIAppConfig.model_validate(config)
+                    )
+                except Exception as validation_error:
+                    return FlextResult.fail(
+                        f"FastAPI configuration validation failed: {validation_error}"
+                    )
 
-            # Create FastAPI application with validated config
-            app = FastAPI(
-                title=fastapi_config.title,
+            # Use factory to create FastAPI application with custom parameters
+            factory_result = cls.FastAPIFactory.create_instance(
+                title=title or fastapi_config.title,
                 version=fastapi_config.version,
                 description=fastapi_config.description,
-                docs_url=fastapi_config.docs_url,
-                redoc_url=fastapi_config.redoc_url,
-                openapi_url=fastapi_config.openapi_url,
-                root_path=fastapi_config.root_path,
+                docs_url=docs_url or fastapi_config.docs_url,
+                redoc_url=redoc_url or fastapi_config.redoc_url,
+                openapi_url=openapi_url or fastapi_config.openapi_url,
             )
+
+            if factory_result.is_failure:
+                return factory_result
+
+            app = factory_result.value
 
             # Add health endpoint using flext-core patterns
-            app.add_api_route(
-                "/health",
-                cls._create_health_handler(),
-                methods=["GET"],
-                tags=["Health"],
-                summary="Service health check",
-                description="Returns service health status and metadata",
-            )
+            @app.get("/health")
+            def health_check() -> dict[str, str]:
+                return cls.HealthHandler.create_handler()()
 
             # Add info endpoint for API metadata
-            app.add_api_route(
-                "/info",
-                cls._create_info_handler(fastapi_config),
-                methods=["GET"],
-                tags=["Info"],
-                summary="API information",
-                description="Returns API metadata and configuration",
-            )
+            @app.get("/info")
+            def info_endpoint() -> dict[str, str]:
+                return cls.InfoHandler.create_handler(fastapi_config)()
 
             logger.info(
                 f"FastAPI application '{fastapi_config.title}' v{fastapi_config.version} created"
@@ -153,38 +225,102 @@ class FlextWebApp:
             logger.exception("FastAPI creation failed")
             return FlextResult.fail(f"FastAPI creation failed: {e}")
 
+    @classmethod
+    def create_flask_app(
+        cls,
+        config: FlextWebConfig | dict[str, Any] | None = None,
+    ) -> FlextResult[Flask]:
+        """Create Flask app with flext-core integration and configuration.
+
+        Single Responsibility: Creates and configures Flask application only.
+        Uses Pydantic models for configuration validation and type safety.
+        Delegates logging and error handling to flext-core patterns.
+
+        Args:
+            config: Flask configuration object or dict
+
+        Returns:
+            FlextResult[Flask]: Success contains configured Flask app,
+                               failure contains detailed error message
+
+
+        """
+        logger = FlextLogger(__name__)
+
+        try:
+            # Handle configuration - support both Pydantic model and dict
+            if isinstance(config, dict):
+                flask_config = FlextWebConfig.model_validate(config)
+            elif isinstance(config, FlextWebConfig):
+                flask_config = config
+            else:
+                # Use default configuration
+                flask_config = FlextWebConfig()
+
+            # Create Flask application
+            app = Flask(flask_config.app_name)
+
+            # Configure Flask app
+            app.config["SECRET_KEY"] = flask_config.secret_key
+            app.config["DEBUG"] = flask_config.debug
+            app.config["TESTING"] = flask_config.testing
+
+            # Add basic health route
+            @app.route("/health")
+            def health_check() -> dict[str, str]:
+                return {
+                    "status": "healthy",
+                    "service": "flext-web-flask",
+                    "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+                }
+
+            logger.info(f"Flask application '{flask_config.app_name}' created")
+            return FlextResult.ok(app)
+
+        except Exception as e:
+            logger.exception("Flask creation failed")
+            return FlextResult.fail(f"Flask creation failed: {e}")
+
     # =========================================================================
-    # HEALTH AND INFO HANDLERS - Focused Responsibilities
+    # HEALTH AND INFO HANDLERS - Single Responsibility Principle
     # =========================================================================
 
-    @staticmethod
-    def _create_health_handler() -> Callable[[], dict[str, Any]]:
-        """Create health check handler function."""
+    class HealthHandler:
+        """Health check handler with single responsibility for system health monitoring."""
 
-        def health_check() -> dict[str, Any]:
-            return {
-                "status": "healthy",
-                "service": "flext-web",
-                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
-            }
+        @staticmethod
+        def create_handler() -> Callable[[], dict[str, str]]:
+            """Create FastAPI health check handler function."""
 
-        return health_check
+            def health_check() -> dict[str, str]:
+                return {
+                    "status": "healthy",
+                    "service": "flext-web",
+                    "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+                }
 
-    @staticmethod
-    def _create_info_handler(config: FastAPIConfig) -> Callable[[], dict[str, Any]]:
-        """Create API info handler function."""
+            return health_check
 
-        def api_info() -> dict[str, Any]:
-            return {
-                "title": config.title,
-                "version": config.version,
-                "description": config.description,
-                "service": "flext-web",
-                "docs_url": config.docs_url,
-                "redoc_url": config.redoc_url,
-            }
+    class InfoHandler:
+        """Application info handler with single responsibility for metadata exposure."""
 
-        return api_info
+        @staticmethod
+        def create_handler(
+            config: FlextWebModels.FastAPI.FastAPIAppConfig,
+        ) -> Callable[[], dict[str, Any]]:
+            """Create FastAPI info handler function."""
+
+            def info_handler() -> dict[str, Any]:
+                return {
+                    "service": "flext-web",
+                    "title": config.title,
+                    "version": config.version,
+                    "description": config.description,
+                    "debug": config.debug,
+                    "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+                }
+
+            return info_handler
 
     # =========================================================================
     # APPLICATION MANAGEMENT - SOLID Extension Points

@@ -23,6 +23,7 @@ class ExamplesFullFunctionalityTest:
 
     def __init__(self) -> None:
         """Initialize the instance."""
+        super().__init__()
         self.container_id: str | None = None
         self.service_url = (
             "http://localhost:8093"  # Port específica para evitar conflitos
@@ -33,7 +34,7 @@ class ExamplesFullFunctionalityTest:
         """Inicia o serviço em Docker para teste completo usando FlextTestDocker."""
         # Build container using FlextTestDocker
         build_result = self.docker_manager.build_image(
-            tag="flext-web-full-test", dockerfile="Dockerfile", path=".", timeout=120
+            path=".", tag="flext-web-full-test", dockerfile="Dockerfile"
         )
 
         if build_result.is_failure:
@@ -55,7 +56,6 @@ class ExamplesFullFunctionalityTest:
             environment=environment,
             detach=True,
             remove=True,
-            timeout=30,
         )
 
         if run_result.is_failure:

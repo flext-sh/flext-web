@@ -24,7 +24,6 @@ from flext_core import FlextContainer, FlextLogger, FlextResult, FlextUtilities
 
 from flext_web.app import FlextWebApp
 from flext_web.config import FlextWebConfig
-from flext_web.constants import FlextWebConstants
 from flext_web.services import FlextWebServices
 
 
@@ -45,6 +44,7 @@ class FlextWebApi:
 
     def __init__(self) -> None:
         """Initialize with flext-core container and logging."""
+        super().__init__()
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
 
@@ -56,9 +56,9 @@ class FlextWebApi:
     def create_fastapi_app(
         cls, config: FlextWebConfig | dict[str, Any] | None = None
     ) -> FlextResult[Any]:
-        """Create FastAPI application with comprehensive validation.
+        """Create FastAPI web application with comprehensive validation.
 
-        Single Responsibility: Creates and configures FastAPI applications only.
+        Single Responsibility: Creates and configures FastAPI web applications.
         Delegates to FlextWebApp for actual app creation while providing facade-level
         validation and error handling.
 
@@ -66,8 +66,8 @@ class FlextWebApi:
             config: Application configuration (FlextWebConfig, dict, or None)
 
         Returns:
-            FlextResult[Any]: Success contains configured FastAPI app,
-                            failure contains detailed error message
+            FlextResult[Any]: Success contains configured Flask app,
+                              failure contains detailed error message
 
         """
         logger = FlextLogger(__name__)
@@ -92,10 +92,10 @@ class FlextWebApi:
     # =========================================================================
 
     @classmethod
-    def create_http_service(  # type: ignore[misc]
+    def create_http_service(
         cls,
         config: FlextWebConfig | dict[str, Any] | None = None,
-        **service_overrides: Any,  # type: ignore[misc]
+        **service_overrides: object,
     ) -> FlextResult[FlextWebServices]:
         """Create HTTP service with validation and dependency injection.
 
@@ -142,13 +142,13 @@ class FlextWebApi:
     # =========================================================================
 
     @classmethod
-    def create_http_config(  # type: ignore[misc]
+    def create_http_config(
         cls,
         host: str | None = None,
         port: int | None = None,
         *,
         debug: bool | None = None,
-        **kwargs: Any,  # type: ignore[misc]
+        **kwargs: object,
     ) -> FlextResult[FlextWebConfig]:
         """Create HTTP configuration with defaults and validation.
 
@@ -278,7 +278,10 @@ class FlextWebApi:
         return FlextResult.ok({
             "application_management": ["create_fastapi_app"],
             "service_management": ["create_http_service"],
-            "configuration_management": ["create_http_config", "validate_http_config"],
+            "configuration_management": [
+                "create_http_config",
+                "validate_http_config",
+            ],
             "monitoring": ["get_service_status", "get_api_capabilities"],
             "supported_frameworks": ["fastapi"],
             "supported_patterns": ["solid", "facade", "dependency_injection"],

@@ -3,10 +3,9 @@
 Tests the web fields functionality following flext standards.
 """
 
-from flext_core import FlextConstants
-
+from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
-from flext_web.fields import FlextWebModels
+from flext_web.models import FlextWebModels
 
 
 class TestFlextWebFields:
@@ -14,158 +13,145 @@ class TestFlextWebFields:
 
     def test_host_field_creation(self) -> None:
         """Test host field creation."""
-        field = FlextWebModels.host_field()
-        assert field is not None
-        assert hasattr(field, "default")
-        assert field.default == FlextWebConstants.WebServer.DEFAULT_HOST
+        config = FlextWebConfig(host="localhost")
+        assert config.host == "localhost"
 
     def test_host_field_with_custom_default(self) -> None:
         """Test host field creation with custom default."""
-        field = FlextWebModels.host_field(default="0.0.0.0")
-        assert field.default == "0.0.0.0"
+        config = FlextWebConfig(host="0.0.0.0")
+        assert config.host == "0.0.0.0"
 
     def test_port_field_creation(self) -> None:
         """Test port field creation."""
-        field = FlextWebModels.port_field()
-        assert field is not None
-        assert hasattr(field, "default")
-        assert field.default == FlextWebConstants.WebServer.DEFAULT_PORT
+        config = FlextWebConfig(port=8080)
+        assert config.port == 8080
 
     def test_port_field_with_custom_default(self) -> None:
         """Test port field creation with custom default."""
-        field = FlextWebModels.port_field(default=3000)
-        assert field.default == 3000
+        config = FlextWebConfig(port=3000)
+        assert config.port == 3000
 
     def test_url_field_creation(self) -> None:
         """Test URL field creation."""
-        field = FlextWebModels.url_field()
-        assert field is not None
+        request = FlextWebModels.Web.Request(url="http://localhost:8080")
+        assert request.url == "http://localhost:8080"
 
     def test_app_name_field_creation(self) -> None:
         """Test app name field creation."""
-        field = FlextWebModels.app_name_field()
-        assert field is not None
+        config = FlextWebConfig(app_name="Test App")
+        assert config.app_name == "Test App"
 
     def test_secret_key_field_creation(self) -> None:
         """Test secret key field creation."""
-        field = FlextWebModels.secret_key_field()
-        assert field is not None
+        config = FlextWebConfig(secret_key="valid-secret-key-32-characters-long")
+        assert config.secret_key is not None
 
     def test_http_status_field_creation(self) -> None:
         """Test HTTP status field creation."""
-        field = FlextWebModels.http_status_field(200, "OK")
-        assert field is not None
+        response = FlextWebModels.Web.Response(status_code=200, request_id="test-123")
+        assert response.status_code == 200
+        assert response.is_success is True
 
     def test_http_status_field_ok(self) -> None:
         """Test HTTP 200 OK status field creation."""
-        field = FlextWebModels.HTTPStatusField.ok("Success")
-        assert field.status_code == FlextConstants.FlextWeb.HTTP_OK
-        assert field.description == "Success"
+        response = FlextWebModels.Web.Response(status_code=200, request_id="test-123")
+        assert response.status_code == 200
+        assert response.is_success is True
 
     def test_http_status_field_created(self) -> None:
         """Test HTTP 201 Created status field creation."""
-        field = FlextWebModels.HTTPStatusField.created("Resource created")
-        assert field.status_code == FlextConstants.FlextWeb.HTTP_CREATED
-        assert field.description == "Resource created"
+        response = FlextWebModels.Web.Response(status_code=201, request_id="test-123")
+        assert response.status_code == 201
+        assert response.is_success is True
 
     def test_http_status_field_bad_request(self) -> None:
         """Test HTTP 400 Bad Request status field creation."""
-        field = FlextWebModels.HTTPStatusField.bad_request("Invalid request")
-        assert field.status_code == FlextConstants.FlextWeb.HTTP_BAD_REQUEST
-        assert field.description == "Invalid request"
+        response = FlextWebModels.Web.Response(status_code=400, request_id="test-123")
+        assert response.status_code == 400
+        assert response.is_error is True
 
     def test_http_status_field_not_found(self) -> None:
         """Test HTTP 404 Not Found status field creation."""
-        field = FlextWebModels.HTTPStatusField.not_found("Resource not found")
-        assert field.status_code == FlextConstants.FlextWeb.HTTP_NOT_FOUND
-        assert field.description == "Resource not found"
+        response = FlextWebModels.Web.Response(status_code=404, request_id="test-123")
+        assert response.status_code == 404
+        assert response.is_error is True
 
     def test_http_status_field_server_error(self) -> None:
         """Test HTTP 500 Internal Server Error status field creation."""
-        field = FlextWebModels.HTTPStatusField.server_error("Internal error")
-        assert field.status_code == FlextConstants.FlextWeb.HTTP_INTERNAL_SERVER_ERROR
-        assert field.description == "Internal error"
+        response = FlextWebModels.Web.Response(status_code=500, request_id="test-123")
+        assert response.status_code == 500
+        assert response.is_error is True
 
     def test_http_status_field_create_field(self) -> None:
         """Test HTTP status field creation."""
-        status_field = FlextWebModels.HTTPStatusField(200, "OK")
-        field = status_field.create_field()
-        assert field is not None
-        assert field.default == 200
-
-    def test_host_pattern_compilation(self) -> None:
-        """Test host pattern compilation."""
-        pattern = FlextWebModels.HOST_PATTERN
-        assert pattern is not None
-
-        # Test valid hosts
-        assert pattern.match("localhost") is not None
-        assert pattern.match("127.0.0.1") is not None
-        assert pattern.match("example.com") is not None
-        assert pattern.match("192.168.1.1") is not None
-
-    def test_url_pattern_compilation(self) -> None:
-        """Test URL pattern compilation."""
-        pattern = FlextWebModels.URL_PATTERN
-        assert pattern is not None
-
-        # Test valid URLs
-        assert pattern.match("http://example.com") is not None
-        assert pattern.match("https://example.com") is not None
-        assert pattern.match("http://localhost:8080") is not None
-        assert pattern.match("https://api.example.com/v1") is not None
+        response = FlextWebModels.Web.Response(status_code=200, request_id="test-123")
+        assert response.status_code == 200
+        assert response.is_success is True
 
     def test_field_constraints(self) -> None:
         """Test field constraints are properly set."""
-        # Test port field constraints
-        port_field = FlextWebModels.port_field()
-        # The field should have proper constraints set
-        assert port_field is not None
+        # Test that Pydantic models have proper field constraints
+        # Create a test model instance to check constraints
+        test_model = FlextWebModels.Web.Request(
+            url="http://localhost:8080", method="GET"
+        )
+        assert test_model.url == "http://localhost:8080"
+        assert test_model.method == "GET"
 
     def test_field_descriptions(self) -> None:
         """Test field descriptions are properly set."""
-        host_field = FlextWebModels.host_field()
-        port_field = FlextWebModels.port_field()
-        url_field = FlextWebModels.url_field()
+        # Test that Pydantic models have proper field definitions
+        # Create test model instances to check field behavior
+        host_model = FlextWebModels.Web.Request(url="http://localhost:8080")
+        port_model = FlextWebModels.Web.Request(url="http://localhost:3000")
 
-        # All fields should be created successfully
-        assert host_field is not None
-        assert port_field is not None
-        assert url_field is not None
+        # Models should be created successfully
+        assert host_model is not None
+        assert port_model is not None
 
     def test_http_status_field_with_kwargs(self) -> None:
         """Test HTTP status field with additional kwargs."""
-        field = FlextWebModels.http_status_field(200, "OK", ge=200, le=299)
-        assert field is not None
+        # Test that Pydantic models handle status codes properly
+        response_model = FlextWebModels.Web.Response(
+            status_code=200, request_id="test-123"
+        )
+        assert response_model.status_code == 200
+        assert response_model.is_success is True
 
     def test_field_creation_with_kwargs(self) -> None:
         """Test field creation with additional kwargs."""
-        host_field = FlextWebModels.host_field(description="Custom host field")
-        port_field = FlextWebModels.port_field(description="Custom port field")
+        # Test that Pydantic models handle custom parameters
+        request_model = FlextWebModels.Web.Request(
+            url="http://localhost:8080",
+            method="POST",
+            headers={"Content-Type": "application/json"},
+        )
 
-        assert host_field is not None
-        assert port_field is not None
+        assert request_model.url == "http://localhost:8080"
+        assert request_model.method == "POST"
+        assert request_model.headers["Content-Type"] == "application/json"
 
     def test_http_status_field_factory_methods(self) -> None:
         """Test all HTTP status field factory methods."""
-        # Test all factory methods exist and work
-        methods = ["ok", "created", "bad_request", "not_found", "server_error"]
+        # Test that Pydantic models handle different status codes
+        status_codes = [200, 201, 400, 404, 500]
 
-        for method_name in methods:
-            method = getattr(FlextWebModels.HTTPStatusField, method_name)
-            field = method("Test description")
-            assert field is not None
-            assert isinstance(field, FlextWebModels.HTTPStatusField)
+        for status_code in status_codes:
+            response_model = FlextWebModels.Web.Response(
+                status_code=status_code, request_id="test-123"
+            )
+            assert response_model.status_code == status_code
+            assert isinstance(response_model, FlextWebModels.Web.Response)
 
     def test_field_validation_integration(self) -> None:
         """Test field validation integration."""
-        # Test that fields can be used in Pydantic models
+        # Test that Pydantic models work with default values
         from pydantic import BaseModel
 
         class TestModel(BaseModel):
-            host: str = FlextWebModels.host_field().default
-            port: int = FlextWebModels.port_field().default
+            host: str = FlextWebConstants.WebDefaults.HOST
+            port: int = FlextWebConstants.WebDefaults.PORT
 
         model = TestModel()
-        assert model.host == FlextWebConstants.WebServer.DEFAULT_HOST
-        assert model.port == FlextWebConstants.WebServer.DEFAULT_PORT
+        assert model.host == FlextWebConstants.WebDefaults.HOST
+        assert model.port == FlextWebConstants.WebDefaults.PORT
