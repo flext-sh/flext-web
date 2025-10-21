@@ -5,21 +5,21 @@ definitions that establish interface contracts for the flext-web project,
 extending FlextProtocols with web-specific protocol definitions.
 
 ARCHITECTURE:
-    Layer 0: Web foundation protocols (used within flext-web)
-    Layer 1: Web domain protocols (web services, web repositories)
-    Layer 2: Web application protocols (web handlers, web commands)
-    Layer 3: Web infrastructure protocols (web connections, web logging)
+ Layer 0: Web foundation protocols (used within flext-web)
+ Layer 1: Web domain protocols (web services, web repositories)
+ Layer 2: Web application protocols (web handlers, web commands)
+ Layer 3: Web infrastructure protocols (web connections, web logging)
 
 PROTOCOL INHERITANCE:
-    Protocols use inheritance to reduce duplication and create logical hierarchies.
-    Example: WebAppManagerProtocol extends FlextProtocols.Service
+ Protocols use inheritance to reduce duplication and create logical hierarchies.
+ Example: WebAppManagerProtocol extends FlextProtocols.Service
 
 USAGE IN WEB PROJECT:
-    Web services extend FlextWebProtocols with web-specific protocols:
+ Web services extend FlextWebProtocols with web-specific protocols:
 
-    >>> class WebAppService(FlextWebProtocols.WebAppManagerProtocol):
-    ...     # Web-specific extensions
-    ...     pass
+ >>> class WebAppService(FlextWebProtocols.WebAppManagerProtocol):
+... # Web-specific extensions
+... pass
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -49,9 +49,7 @@ class FlextWebProtocols(FlextProtocols):
     Key Distinction: These are WEB PROTOCOL DEFINITIONS, not implementations.
     Actual implementations live in their respective web service layers.
 
-    ============================================================================
     STRUCTURAL TYPING (DUCK TYPING) - CORE DESIGN PRINCIPLE
-    ============================================================================
 
     All FlextWebProtocols are @runtime_checkable, which means:
 
@@ -77,11 +75,9 @@ class FlextWebProtocols(FlextProtocols):
             pass
 
     service = WebApplicationService()
-    # ✅ isinstance(service, FlextWebProtocols.WebAppManagerProtocol) → True (duck typing!)
+    # isinstance(service, FlextWebProtocols.WebAppManagerProtocol) → True (duck typing!)
 
-    ============================================================================
     PROTOCOL HIERARCHY (4 LAYERS)
-    ============================================================================
 
     **Layer 0: Web Foundation Protocols** (Core web building blocks)
     - WebAppManagerProtocol - Web application lifecycle management
@@ -100,9 +96,7 @@ class FlextWebProtocols(FlextProtocols):
     - WebConnectionProtocol - Web external system connection
     - WebLoggerProtocol - Web logging interface
 
-    ============================================================================
     CORE PRINCIPLES (4 FUNDAMENTAL RULES)
-    ============================================================================
 
     **1. Web protocols extend FlextProtocols with web-specific interfaces**
     - No unnecessary protocols for other projects
@@ -124,9 +118,7 @@ class FlextWebProtocols(FlextProtocols):
     - Used for runtime type checking and validation in web components
     - Enables duck typing without metaclass conflicts
 
-    ============================================================================
     EXTENSION PATTERN - HOW WEB PROJECTS USE FLEXTPROTOCOLS
-    ============================================================================
 
     Web projects extend FlextWebProtocols with domain-specific protocols:
 
@@ -148,35 +140,31 @@ class FlextWebProtocols(FlextProtocols):
                     '''Handle API request.'''
                     ...
 
-    ============================================================================
     INTEGRATION POINTS WITH FLEXT WEB ARCHITECTURE
-    ============================================================================
 
-    **FlextResult Integration**:
+    FlextResult Integration:
     - All result-returning methods defined with FlextResult[T] return type
     - Enables railway pattern error handling throughout web ecosystem
     - Type-safe success/failure composition
 
-    **FlextService Integration**:
+    FlextService Integration:
     - Base web service implementation follows Service protocol
     - Methods: execute(), validate_business_rules(), get_service_info()
     - Type-safe web service lifecycle management
 
-    **FlextModels Integration**:
+    FlextModels Integration:
     - Web models satisfy HasModelDump, HasModelFields, ModelProtocol
     - Pydantic v2 integration through model_dump, model_fields, validate
     - Type-safe web domain model implementation
 
-    ============================================================================
     PRODUCTION-READY CHARACTERISTICS
-    ============================================================================
 
-    ✅ Type Safety: @runtime_checkable protocols work with mypy/pyright strict
-    ✅ Extensibility: Web projects extend with domain-specific protocols
-    ✅ Integration: All web implementations follow protocol definitions
-    ✅ No Breaking Changes: Protocol additions backward compatible
-    ✅ Documentation: Each protocol documents use cases and extensions
-    ✅ Performance: isinstance() checks optimized for runtime use
+    Type Safety: @runtime_checkable protocols work with mypy/pyright strict
+    Extensibility: Web projects extend with domain-specific protocols
+    Integration: All web implementations follow protocol definitions
+    No Breaking Changes: Protocol additions backward compatible
+    Documentation: Each protocol documents use cases and extensions
+    Performance: isinstance() checks optimized for runtime use
 
     CORE PRINCIPLES:
         1. Web protocols extend FlextProtocols with web-specific interfaces
@@ -233,10 +221,10 @@ class FlextWebProtocols(FlextProtocols):
             """Start a web application.
 
             Args:
-                app_id: Unique identifier of the application to start
+            app_id: Unique identifier of the application to start
 
             Returns:
-                FlextResult containing start operation result or error details
+            FlextResult containing start operation result or error details
 
             """
             # Protocol implementation placeholder - parameter is part of interface contract
@@ -247,10 +235,10 @@ class FlextWebProtocols(FlextProtocols):
             """Stop a running web application.
 
             Args:
-                app_id: Unique identifier of the application to stop
+            app_id: Unique identifier of the application to stop
 
             Returns:
-                FlextResult containing stop operation result or error details
+            FlextResult containing stop operation result or error details
 
             """
             # Protocol implementation placeholder - parameter is part of interface contract
@@ -261,7 +249,7 @@ class FlextWebProtocols(FlextProtocols):
             """List all web applications.
 
             Returns:
-                FlextResult containing list of application data or error details
+            FlextResult containing list of application data or error details
 
             """
             # Protocol implementation placeholder
@@ -281,10 +269,10 @@ class FlextWebProtocols(FlextProtocols):
             """Format successful response data.
 
             Args:
-                data: Response data to format
+            data: Response data to format
 
             Returns:
-                Formatted response dictionary
+            Formatted response dictionary
 
             """
             # Protocol implementation placeholder
@@ -294,10 +282,10 @@ class FlextWebProtocols(FlextProtocols):
             """Format error response data.
 
             Args:
-                error: Exception to format as error response
+            error: Exception to format as error response
 
             Returns:
-                Formatted error response dictionary
+            Formatted error response dictionary
 
             """
             # Protocol implementation placeholder
@@ -307,10 +295,10 @@ class FlextWebProtocols(FlextProtocols):
             """Create a JSON response.
 
             Args:
-                data: Response data to serialize as JSON
+            data: Response data to serialize as JSON
 
             Returns:
-                JSON response representation
+            JSON response representation
 
             """
             # Protocol implementation placeholder
@@ -320,10 +308,10 @@ class FlextWebProtocols(FlextProtocols):
             """Extract data from web request.
 
             Args:
-                request: Web request data
+            request: Web request data
 
             Returns:
-                Extracted request data dictionary
+            Extracted request data dictionary
 
             """
             # Protocol implementation placeholder
@@ -344,10 +332,10 @@ class FlextWebProtocols(FlextProtocols):
             """Create a JSON response.
 
             Args:
-                data: Response data to serialize as JSON
+            data: Response data to serialize as JSON
 
             Returns:
-                JSON response representation
+            JSON response representation
 
             """
             # Protocol implementation placeholder
@@ -357,10 +345,10 @@ class FlextWebProtocols(FlextProtocols):
             """Extract data from web request.
 
             Args:
-                request: Web request data
+            request: Web request data
 
             Returns:
-                Extracted request data dictionary
+            Extracted request data dictionary
 
             """
             # Protocol implementation placeholder
@@ -371,10 +359,10 @@ class FlextWebProtocols(FlextProtocols):
             """Check if request contains JSON data.
 
             Args:
-                request: Web request to check
+            request: Web request to check
 
             Returns:
-                True if request is JSON, False otherwise
+            True if request is JSON, False otherwise
 
             """
             # Protocol implementation placeholder
@@ -401,7 +389,7 @@ class FlextWebProtocols(FlextProtocols):
             """Initialize web service routes.
 
             Returns:
-                FlextResult[None]: Success if routes initialized, failure with error details
+            FlextResult[None]: Success if routes initialized, failure with error details
 
             """
             # Protocol implementation placeholder
@@ -411,7 +399,7 @@ class FlextWebProtocols(FlextProtocols):
             """Configure web service middleware.
 
             Returns:
-                FlextResult[None]: Success if middleware configured, failure with error details
+            FlextResult[None]: Success if middleware configured, failure with error details
 
             """
             # Protocol implementation placeholder
@@ -421,7 +409,7 @@ class FlextWebProtocols(FlextProtocols):
             """Start the web service.
 
             Returns:
-                FlextResult[None]: Success if service started, failure with error details
+            FlextResult[None]: Success if service started, failure with error details
 
             """
             # Protocol implementation placeholder
@@ -431,7 +419,7 @@ class FlextWebProtocols(FlextProtocols):
             """Stop the web service.
 
             Returns:
-                FlextResult[None]: Success if service stopped, failure with error details
+            FlextResult[None]: Success if service stopped, failure with error details
 
             """
             # Protocol implementation placeholder
@@ -452,10 +440,10 @@ class FlextWebProtocols(FlextProtocols):
             """Find entities by criteria.
 
             Args:
-                criteria: Search criteria dictionary
+            criteria: Search criteria dictionary
 
             Returns:
-                FlextResult containing list of matching entities or error details
+            FlextResult containing list of matching entities or error details
 
             """
             # Protocol implementation placeholder - parameter is part of interface contract
@@ -484,10 +472,10 @@ class FlextWebProtocols(FlextProtocols):
             """Handle web request and return response.
 
             Args:
-                request: Web request data
+            request: Web request data
 
             Returns:
-                FlextResult containing response data or error details
+            FlextResult containing response data or error details
 
             """
             # Protocol implementation placeholder - parameter is part of interface contract
@@ -512,7 +500,7 @@ class FlextWebProtocols(FlextProtocols):
             """Get the web service endpoint URL.
 
             Returns:
-                Web service endpoint URL string
+            Web service endpoint URL string
 
             """
             # Protocol implementation placeholder
@@ -533,8 +521,8 @@ class FlextWebProtocols(FlextProtocols):
             """Log web request with context.
 
             Args:
-                request: Web request data to log
-                context: Additional logging context
+            request: Web request data to log
+            context: Additional logging context
 
             """
 
@@ -544,8 +532,8 @@ class FlextWebProtocols(FlextProtocols):
             """Log web response with context.
 
             Args:
-                response: Web response data to log
-                context: Additional logging context
+            response: Web response data to log
+            context: Additional logging context
 
             """
 
@@ -568,11 +556,11 @@ class FlextWebProtocols(FlextProtocols):
             """Render template with context data.
 
             Args:
-                template_name: Name of the template to render
-                context: Template context data
+            template_name: Name of the template to render
+            context: Template context data
 
             Returns:
-                FlextResult containing rendered template string or error details
+            FlextResult containing rendered template string or error details
 
             """
             # Protocol implementation placeholder - parameters are part of interface contract
@@ -583,10 +571,10 @@ class FlextWebProtocols(FlextProtocols):
             """Render dashboard template with data.
 
             Args:
-                data: Dashboard data to render
+            data: Dashboard data to render
 
             Returns:
-                FlextResult containing rendered dashboard HTML or error details
+            FlextResult containing rendered dashboard HTML or error details
 
             """
             # Protocol implementation placeholder - parameter is part of interface contract
@@ -606,10 +594,10 @@ class FlextWebProtocols(FlextProtocols):
             """Load template engine configuration.
 
             Args:
-                config: Template engine configuration
+            config: Template engine configuration
 
             Returns:
-                FlextResult[None]: Success if config loaded, failure with error details
+            FlextResult[None]: Success if config loaded, failure with error details
 
             """
             # Protocol implementation placeholder - parameter is part of interface contract
@@ -620,7 +608,7 @@ class FlextWebProtocols(FlextProtocols):
             """Get current template engine configuration.
 
             Returns:
-                FlextResult containing configuration data or error details
+            FlextResult containing configuration data or error details
 
             """
             # Protocol implementation placeholder
@@ -632,10 +620,10 @@ class FlextWebProtocols(FlextProtocols):
             """Validate template engine configuration.
 
             Args:
-                config: Configuration to validate
+            config: Configuration to validate
 
             Returns:
-                FlextResult[None]: Success if valid, failure with error details
+            FlextResult[None]: Success if valid, failure with error details
 
             """
             # Protocol implementation placeholder - parameter is part of interface contract
@@ -646,11 +634,11 @@ class FlextWebProtocols(FlextProtocols):
             """Render template string with context.
 
             Args:
-                template: Template string to render
-                context: Template context data
+            template: Template string to render
+            context: Template context data
 
             Returns:
-                FlextResult containing rendered template or error details
+            FlextResult containing rendered template or error details
 
             """
             # Protocol implementation placeholder - parameters are part of interface contract
@@ -661,8 +649,8 @@ class FlextWebProtocols(FlextProtocols):
             """Add template filter function.
 
             Args:
-                name: Filter name identifier
-                filter_func: Filter function implementation
+            name: Filter name identifier
+            filter_func: Filter function implementation
 
             """
 
@@ -670,8 +658,8 @@ class FlextWebProtocols(FlextProtocols):
             """Add template global variable.
 
             Args:
-                name: Global variable name
-                value: Global variable value
+            name: Global variable name
+            value: Global variable value
 
             """
 
@@ -695,8 +683,8 @@ class FlextWebProtocols(FlextProtocols):
             """Record web request metrics.
 
             Args:
-                request: Web request data
-                response_time: Request response time in seconds
+            request: Web request data
+            response_time: Request response time in seconds
 
             """
 
@@ -704,7 +692,7 @@ class FlextWebProtocols(FlextProtocols):
             """Get web application health status.
 
             Returns:
-                Health status information dictionary
+            Health status information dictionary
 
             """
             # Protocol implementation placeholder
@@ -714,7 +702,7 @@ class FlextWebProtocols(FlextProtocols):
             """Get web application metrics.
 
             Returns:
-                Web metrics data dictionary
+            Web metrics data dictionary
 
             """
             # Protocol implementation placeholder

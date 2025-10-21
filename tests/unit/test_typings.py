@@ -117,7 +117,10 @@ class TestFlextWebTypes:
 
         assert result.is_failure
         assert result.error is not None
-        assert ("Invalid configuration keys" in result.error or "invalid" in result.error.lower())
+        assert (
+            "Invalid configuration keys" in result.error
+            or "invalid" in result.error.lower()
+        )
 
     def test_get_web_types_system_config(self) -> None:
         """Test get_web_types_system_config method."""

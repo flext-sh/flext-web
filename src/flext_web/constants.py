@@ -1,11 +1,11 @@
 """FLEXT Web Constants - Web application constants following standardization plan.
 
 **Standardization Compliance:**
-- ✅ Layer 0 purity: Only constants, no functions or behavior
-- ✅ Direct FlextConstants inheritance: Clean dependency chain
-- ✅ Composition pattern: CoreErrors, CoreNetwork, etc. for easy access
-- ✅ Nested namespace organization: Logical constant grouping
-- ✅ HTTP protocol specialization: Status codes, methods, headers
+- Layer 0 purity: Only constants, no functions or behavior
+- Direct FlextConstants inheritance: Clean dependency chain
+- Composition pattern: CoreErrors, CoreNetwork, etc. for easy access
+- Nested namespace organization: Logical constant grouping
+- HTTP protocol specialization: Status codes, methods, headers
 
 **Domain Coverage:**
 - Web server configuration, environment management
@@ -13,8 +13,8 @@
 - Application lifecycle, validation constraints
 - Web-specific timeouts, limits, and defaults
 
-**Architecture Layer**: Layer 0 (Pure Constants)
-**Organization**: Nested namespaces for logical grouping and discoverability
+Architecture Layer: Layer 0 (Pure Constants)
+Organization: Nested namespaces for logical grouping and discoverability
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -38,19 +38,19 @@ class FlextWebConstants(FlextConstants):
     **Usage Examples:**
 
     1. Access default values:
-        >>> from flext_web.constants import FlextWebConstants
-        >>> host = FlextWebConstants.Defaults.HOST
-        >>> port = FlextWebConstants.Defaults.PORT
+    >>> from flext_web.constants import FlextWebConstants
+    >>> host = FlextWebConstants.Defaults.HOST
+    >>> port = FlextWebConstants.Defaults.PORT
 
     2. Access validation constraints:
-        >>> port_range = FlextWebConstants.WebValidation.PORT_RANGE
+    >>> port_range = FlextWebConstants.WebValidation.PORT_RANGE
 
     3. Access HTTP status codes:
-        >>> ok_status = FlextWebConstants.Http.STATUS_OK
+    >>> ok_status = FlextWebConstants.Http.STATUS_OK
 
     4. Core composition access:
-        >>> error = FlextWebConstants.CoreErrors.VALIDATION_ERROR
-        >>> timeout = FlextWebConstants.CoreNetwork.DEFAULT_TIMEOUT
+    >>> error = FlextWebConstants.CoreErrors.VALIDATION_ERROR
+    >>> timeout = FlextWebConstants.CoreNetwork.DEFAULT_TIMEOUT
     """
 
     # =========================================================================
@@ -153,7 +153,7 @@ class FlextWebConstants(FlextConstants):
         )
         """Test environment configuration key."""
 
-        ALL_INTERFACES: Final[str] = "0.0.0.0"  # noqa: S104
+        ALL_INTERFACES: Final[str] = "0.0.0.0"
         """Listen on all network interfaces."""
 
         LOCALHOST_IP: Final[str] = "127.0.0.1"
@@ -305,7 +305,7 @@ class FlextWebConstants(FlextConstants):
         class HttpStatus:
             """HTTP status code constants and classification.
 
-            Provides comprehensive HTTP status code mapping and helper methods
+            Provides complete HTTP status code mapping and helper methods
             for status classification following RFC 7231.
             """
 
@@ -369,10 +369,10 @@ class FlextWebConstants(FlextConstants):
                 """Get HTTP status code by name.
 
                 Args:
-                    name: Status code name (e.g., 'OK', 'NOT_FOUND')
+                name: Status code name (e.g., 'OK', 'NOT_FOUND')
 
                 Returns:
-                    HTTP status code or 500 if not found
+                HTTP status code or 500 if not found
 
                 """
                 return cls.STATUS_CODES.get(name.upper(), 500)
@@ -382,10 +382,10 @@ class FlextWebConstants(FlextConstants):
                 """Check if HTTP status code indicates success.
 
                 Args:
-                    code: HTTP status code
+                code: HTTP status code
 
                 Returns:
-                    True if code is in 2xx range (200-299)
+                True if code is in 2xx range (200-299)
 
                 """
                 return cls.RANGES["SUCCESS"][0] <= code <= cls.RANGES["SUCCESS"][1]
@@ -395,10 +395,10 @@ class FlextWebConstants(FlextConstants):
                 """Check if HTTP status code indicates error.
 
                 Args:
-                    code: HTTP status code
+                code: HTTP status code
 
                 Returns:
-                    True if code is >= 400 (4xx or 5xx)
+                True if code is >= 400 (4xx or 5xx)
 
                 """
                 return code >= cls.RANGES["CLIENT_ERROR"][0]

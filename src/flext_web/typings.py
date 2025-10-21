@@ -134,10 +134,10 @@ class FlextWebTypes(FlextTypes):
         """Configure web types system to use Pydantic models.
 
         Args:
-            config: Configuration dictionary for web types system
+        config: Configuration dictionary for web types system
 
         Returns:
-            FlextResult[dict[str, object]]: Configuration result
+        FlextResult[dict[str, object]]: Configuration result
 
         """
         try:
@@ -180,7 +180,7 @@ class FlextWebTypes(FlextTypes):
         """Get current web types system configuration.
 
         Returns:
-            FlextResult[dict[str, object]]: Current configuration
+        FlextResult[dict[str, object]]: Current configuration
 
         """
         try:

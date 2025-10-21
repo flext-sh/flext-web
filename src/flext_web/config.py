@@ -78,8 +78,8 @@ class FlextWebConfig(BaseModel):
         """Create default web configuration.
 
         Returns:
-            FlextResult[FlextWebConfig]: Success contains default config,
-                                        failure contains error message
+        FlextResult[FlextWebConfig]: Success contains default config,
+        failure contains error message
 
         """
         try:

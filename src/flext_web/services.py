@@ -23,7 +23,7 @@ from flext_core import (
 from flext_web.config import FlextWebConfig
 
 # Test authentication configuration
-_TEST_PASSWORD = "password123"  # noqa: S105
+_TEST_PASSWORD = "password123"
 
 
 class FlextWebServices(FlextService[dict[str, Any]]):
@@ -295,7 +295,7 @@ class FlextWebServices(FlextService[dict[str, Any]]):
         """Execute web service orchestration (FlextService requirement).
 
         Returns:
-            FlextResult[dict[str, Any]]: Service execution result with capabilities
+        FlextResult[dict[str, Any]]: Service execution result with capabilities
 
         """
         try:

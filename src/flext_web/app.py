@@ -48,8 +48,8 @@ class FlextWebApp(FlextService[dict[str, object]]):
         Creates and returns application metadata.
 
         Returns:
-            FlextResult[dict[str, object]]: Success contains app metadata,
-                                            failure contains error message
+        FlextResult[dict[str, object]]: Success contains app metadata,
+        failure contains error message
 
         """
         try:
@@ -95,16 +95,16 @@ class FlextWebApp(FlextService[dict[str, object]]):
             """Create FastAPI application instance with validated configuration.
 
             Args:
-                title: Application title
-                version: Application version
-                description: Application description
-                docs_url: Swagger UI docs URL
-                redoc_url: ReDoc URL
-                openapi_url: OpenAPI schema URL
+            title: Application title
+            version: Application version
+            description: Application description
+            docs_url: Swagger UI docs URL
+            redoc_url: ReDoc URL
+            openapi_url: OpenAPI schema URL
 
             Returns:
-                FlextResult[FastAPI]: Success contains configured FastAPI app,
-                                   failure contains detailed error message
+            FlextResult[FastAPI]: Success contains configured FastAPI app,
+            failure contains detailed error message
 
             """
             logger = FlextLogger(__name__)
@@ -150,15 +150,15 @@ class FlextWebApp(FlextService[dict[str, object]]):
         Delegates logging and error handling to flext-core patterns.
 
         Args:
-            config: FastAPI configuration object, dict, or None for defaults
-            title: Application title (overrides config.title)
-            docs_url: Swagger UI docs URL
-            redoc_url: ReDoc URL
-            openapi_url: OpenAPI schema URL
+        config: FastAPI configuration object, dict, or None for defaults
+        title: Application title (overrides config.title)
+        docs_url: Swagger UI docs URL
+        redoc_url: ReDoc URL
+        openapi_url: OpenAPI schema URL
 
         Returns:
-            FlextResult[FastAPI]: Success contains configured FastAPI app,
-                                failure contains detailed error message
+        FlextResult[FastAPI]: Success contains configured FastAPI app,
+        failure contains detailed error message
 
         """
         logger = FlextLogger(__name__)
@@ -237,11 +237,11 @@ class FlextWebApp(FlextService[dict[str, object]]):
         Delegates logging and error handling to flext-core patterns.
 
         Args:
-            config: Flask configuration object or dict
+        config: Flask configuration object or dict
 
         Returns:
-            FlextResult[Flask]: Success contains configured Flask app,
-                               failure contains detailed error message
+        FlextResult[Flask]: Success contains configured Flask app,
+        failure contains detailed error message
 
 
         """

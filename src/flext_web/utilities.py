@@ -54,7 +54,7 @@ class FlextWebUtilities(FlextUtilities):
         """Format application name to valid ID.
 
         Returns:
-            str: Description of return value.
+        str: Description of return value.
 
         """
         clean_name = FlextUtilities.TextProcessor.safe_string(name).strip()
@@ -68,7 +68,7 @@ class FlextWebUtilities(FlextUtilities):
         """Sanitize web request data.
 
         Returns:
-            FlextWebTypes.Core.RequestDict: Sanitized request data dictionary.
+        FlextWebTypes.Core.RequestDict: Sanitized request data dictionary.
 
         """
         sanitized: FlextWebTypes.Core.RequestDict = {}
@@ -92,7 +92,7 @@ class FlextWebUtilities(FlextUtilities):
         """Create success response structure.
 
         Returns:
-            FlextWebTypes.Core.ResponseDict: Success response data dictionary.
+        FlextWebTypes.Core.ResponseDict: Success response data dictionary.
 
         """
         return {
@@ -110,7 +110,7 @@ class FlextWebUtilities(FlextUtilities):
         """Create error response structure.
 
         Returns:
-            FlextWebTypes.Core.ResponseDict: Error response data dictionary.
+        FlextWebTypes.Core.ResponseDict: Error response data dictionary.
 
         """
         return {
@@ -131,7 +131,7 @@ class FlextWebUtilities(FlextUtilities):
         """Create API response structure.
 
         Returns:
-            FlextWebTypes.Core.ResponseDict: API response data dictionary.
+        FlextWebTypes.Core.ResponseDict: API response data dictionary.
 
         """
         return {
@@ -148,7 +148,7 @@ class FlextWebUtilities(FlextUtilities):
         """Convert FlextResult to API response.
 
         Returns:
-            FlextWebTypes.Core.ResponseDict: API response data dictionary.
+        FlextWebTypes.Core.ResponseDict: API response data dictionary.
 
         """
         if result.is_success:
@@ -173,7 +173,7 @@ class FlextWebUtilities(FlextUtilities):
         """Create web application data with Pydantic validation.
 
         Returns:
-            FlextResult[FlextWebTypes.Core.ResponseDict]: Web application data result.
+        FlextResult[FlextWebTypes.Core.ResponseDict]: Web application data result.
 
         """
         # Import at runtime to avoid circular imports

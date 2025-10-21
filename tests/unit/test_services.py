@@ -293,4 +293,7 @@ class TestFlextWebService:
         """Test create_web_service with invalid config dict (extra fields)."""
         result = FlextWebServices.create_web_service({"invalid": "config"})
         assert result.is_failure
-        assert result.error is not None and ("Extra inputs are not permitted" in result.error or "extra" in result.error.lower())
+        assert result.error is not None and (
+            "Extra inputs are not permitted" in result.error
+            or "extra" in result.error.lower()
+        )

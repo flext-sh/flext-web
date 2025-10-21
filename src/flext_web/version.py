@@ -4,7 +4,7 @@ This module is deprecated and maintained only for backward compatibility.
 All code should import from flext_web.__version__ directly.
 
 For version metadata, use:
-    from flext_web import __version__, __version_info__, VERSION, FlextWebVersion
+ from flext_web import __version__, __version_info__, VERSION, FlextWebVersion
 """
 
 from __future__ import annotations
