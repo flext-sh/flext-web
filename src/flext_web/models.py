@@ -62,7 +62,7 @@ class FlextWebModels:
     # =========================================================================
 
     class Http(BaseModel):
-         """HTTP protocol models for generic web communication (Layer 2: Domain).
+        """HTTP protocol models for generic web communication (Layer 2: Domain).
 
         Contains immutable value objects for HTTP message representation
         following RFC standards. All models validate against HTTP constraints.
@@ -95,15 +95,15 @@ class FlextWebModels:
         class Request(Message):
             """HTTP request model with complete validation.
 
- Represents a complete HTTP request following HTTP specifications
- with full validation of URL, method, and timeout parameters.
+            Represents a complete HTTP request following HTTP specifications
+            with full validation of URL, method, and timeout parameters.
 
- Attributes:
- url: Request URL with length validation
- method: HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)
- timeout: Request timeout in seconds (0-300)
+            Attributes:
+            url: Request URL with length validation
+            method: HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)
+            timeout: Request timeout in seconds (0-300)
 
- """
+            """
 
             url: str = Field(
                 min_length=1,
@@ -121,33 +121,33 @@ class FlextWebModels:
             def has_body(self) -> bool:
                 """Check if HTTP request has a message body.
 
- Returns:
- True if body is not None, False otherwise
+                Returns:
+                True if body is not None, False otherwise
 
- """
+                """
                 return self.body is not None
 
             @property
             def is_secure(self) -> bool:
                 """Check if HTTP request uses HTTPS protocol.
 
- Returns:
- True if URL starts with 'https://', False otherwise
+                Returns:
+                True if URL starts with 'https://', False otherwise
 
- """
+                """
                 return self.url.startswith("https://")
 
         class Response(Message):
             """HTTP response model with status validation.
 
- Represents a complete HTTP response with status code validation
- and response-specific properties.
+            Represents a complete HTTP response with status code validation
+            and response-specific properties.
 
- Attributes:
- status_code: HTTP status code (100-599)
- elapsed_time: Time taken to process response in seconds
+            Attributes:
+            status_code: HTTP status code (100-599)
+            elapsed_time: Time taken to process response in seconds
 
- """
+            """
 
             status_code: int = Field(ge=100, le=599, description="HTTP status code")
             elapsed_time: float | None = Field(

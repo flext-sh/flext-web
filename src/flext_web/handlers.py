@@ -31,12 +31,12 @@ class FlextWebHandlers(FlextProcessors):
     "one class per module" architectural requirement.
     """
 
- # =========================================================================
- # NESTED HANDLER CLASSES
- # =========================================================================
+    # =========================================================================
+    # NESTED HANDLER CLASSES
+    # =========================================================================
 
- class ApplicationHandler:
- """CQRS command handler for web application lifecycle management.
+    class ApplicationHandler:
+        """CQRS command handler for web application lifecycle management.
 
         Implements Command Query Responsibility Segregation (CQRS) patterns for
         web application operations using flext-core handler patterns. Provides
@@ -51,8 +51,8 @@ class FlextWebHandlers(FlextProcessors):
 
         """
 
- def __init__(self) -> None:
- """Initialize application handler."""
+        def __init__(self) -> None:
+            """Initialize application handler."""
             super().__init__()
             self.logger = FlextLogger(__name__)
             self._apps_registry: dict[str, FlextWebModels.Application.Entity] = {}
@@ -187,10 +187,10 @@ class FlextWebHandlers(FlextProcessors):
     def handle_health_check() -> FlextResult[dict[str, object]]:
         """Handle health check requests with system status.
 
- Returns:
- FlextResult containing health status information.
+        Returns:
+        FlextResult containing health status information.
 
- """
+        """
         return FlextResult[dict[str, object]].ok(
             {
                 "status": "healthy",
@@ -209,10 +209,10 @@ class FlextWebHandlers(FlextProcessors):
     def handle_system_info(cls: object) -> FlextResult[dict[str, object]]:
         """Handle system information requests.
 
- Returns:
- FlextResult containing detailed system information.
+        Returns:
+        FlextResult containing detailed system information.
 
- """
+        """
         return FlextResult[dict[str, object]].ok(
             {
                 "service_name": "FLEXT Web Interface",
@@ -246,16 +246,16 @@ class FlextWebHandlers(FlextProcessors):
     ) -> FlextResult[FlextWebModels.Application.Entity]:
         """Handle application creation requests.
 
- Args:
- name: Application name
- port: Application port
- host: Application host
- **kwargs: Additional application parameters
+        Args:
+        name: Application name
+        port: Application port
+        host: Application host
+        **kwargs: Additional application parameters
 
- Returns:
- FlextResult containing created application or error
+        Returns:
+        FlextResult containing created application or error
 
- """
+        """
         try:
             app_id = FlextWebUtilities.format_app_id(name)
             # Create app directly with typed parameters
@@ -283,13 +283,13 @@ class FlextWebHandlers(FlextProcessors):
     ) -> FlextResult[FlextWebModels.Application.Entity]:
         """Handle application start requests.
 
- Args:
- app: Application to start
+        Args:
+        app: Application to start
 
- Returns:
- FlextResult containing updated application or error
+        Returns:
+        FlextResult containing updated application or error
 
- """
+        """
         if not app or not hasattr(app, "id"):
             return FlextResult[FlextWebModels.Application.Entity].fail(
                 "Invalid application object"
@@ -305,13 +305,13 @@ class FlextWebHandlers(FlextProcessors):
     ) -> FlextResult[FlextWebModels.Application.Entity]:
         """Handle application stop requests.
 
- Args:
- app: Application to stop
+        Args:
+        app: Application to stop
 
- Returns:
- FlextResult containing updated application or error
+        Returns:
+        FlextResult containing updated application or error
 
- """
+        """
         if not app or not hasattr(app, "id"):
             return FlextResult[FlextWebModels.Application.Entity].fail(
                 "Invalid application object"
@@ -332,14 +332,14 @@ class FlextWebHandlers(FlextProcessors):
     ) -> dict[str, object]:
         """Create response handler configuration.
 
- Args:
- success_status: Default success HTTP status
- error_status: Default error HTTP status
+        Args:
+        success_status: Default success HTTP status
+        error_status: Default error HTTP status
 
- Returns:
- Response handler configuration dictionary
+        Returns:
+        Response handler configuration dictionary
 
- """
+        """
         return {
             "success_status": success_status,
             "error_status": error_status,
@@ -351,13 +351,13 @@ class FlextWebHandlers(FlextProcessors):
     ) -> FlextWebTypes.AppData:
         """Format application data for API responses.
 
- Args:
- app: Application to format
+        Args:
+        app: Application to format
 
- Returns:
- Formatted application data dictionary
+        Returns:
+        Formatted application data dictionary
 
- """
+        """
         return FlextWebTypes.AppData(
             id=str(app.id),
             name=app.name,
@@ -371,10 +371,10 @@ class FlextWebHandlers(FlextProcessors):
     def format_health_data(cls: type) -> FlextWebTypes.HealthResponse:
         """Format health check data for API responses.
 
- Returns:
- Formatted health data dictionary
+        Returns:
+        Formatted health data dictionary
 
- """
+        """
         return FlextWebTypes.HealthResponse(
             status="healthy",
             service="flext-web",
@@ -397,14 +397,14 @@ class FlextWebHandlers(FlextProcessors):
     ) -> FlextResult[None]:
         """Handle validation errors with context.
 
- Args:
- error: Validation exception
- context: Error context description
+        Args:
+        error: Validation exception
+        context: Error context description
 
- Returns:
- FlextResult with formatted error message
+        Returns:
+        FlextResult with formatted error message
 
- """
+        """
         error_message = f"{context.title()} error: {error}"
         return FlextResult[None].fail(error_message)
 
@@ -416,14 +416,14 @@ class FlextWebHandlers(FlextProcessors):
     ) -> FlextResult[None]:
         """Handle processing errors with context.
 
- Args:
- error: Processing exception
- operation: Operation description
+        Args:
+        error: Processing exception
+        operation: Operation description
 
- Returns:
- FlextResult with formatted error message
+        Returns:
+        FlextResult with formatted error message
 
- """
+        """
         error_message = f"{operation.title()} failed: {error}"
         return FlextResult[None].fail(error_message)
 

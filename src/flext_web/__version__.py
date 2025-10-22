@@ -24,7 +24,7 @@ __description__: Final[str] = _metadata["Summary"]
 __author__: Final[str] = _metadata["Author"]
 __author_email__: Final[str] = _metadata["Author-Email"]
 __license__: Final[str] = _metadata["License"]
-__url__: Final[str] = _metadata["Home-Page"]
+__url__: Final[str] = _metadata.get("Home-Page", "")
 
 
 class FlextWebVersion:
@@ -40,18 +40,18 @@ class FlextWebVersion:
 
     """
 
- def __init__(
- self,
- version: str,
- version_info: tuple[int | str,...],
- title: str,
- description: str,
- author: str,
- author_email: str,
- license_type: str,
- url: str,
- ) -> None:
- """Initialize version metadata.
+    def __init__(
+        self,
+        version: str,
+        version_info: tuple[int | str, ...],
+        title: str,
+        description: str,
+        author: str,
+        author_email: str,
+        license_type: str,
+        url: str,
+    ) -> None:
+        """Initialize version metadata.
 
         Args:
             version: Package version string
@@ -64,19 +64,19 @@ class FlextWebVersion:
             url: Package URL
 
         """
- super().__init__()
- self.version = version
- self.version_info = version_info
- self.title = title
- self.description = description
- self.author = author
- self.author_email = author_email
- self.license = license_type
- self.url = url
+        super().__init__()
+        self.version = version
+        self.version_info = version_info
+        self.title = title
+        self.description = description
+        self.author = author
+        self.author_email = author_email
+        self.license = license_type
+        self.url = url
 
- @classmethod
- def current(cls) -> FlextWebVersion:
- """Return current package metadata from pyproject.toml.
+    @classmethod
+    def current(cls) -> FlextWebVersion:
+        """Return current package metadata from pyproject.toml.
 
         Returns:
             FlextWebVersion: Current package metadata

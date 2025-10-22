@@ -42,21 +42,21 @@ class FlextWebApi:
     - Error handling: Complete error handling with flext-core patterns
     """
 
- def __init__(self) -> None:
- """Initialize with flext-core container and logging."""
- super().__init__()
- self._container = FlextContainer.get_global()
- self._logger = FlextLogger(__name__)
+    def __init__(self) -> None:
+        """Initialize with flext-core container and logging."""
+        super().__init__()
+        self._container = FlextContainer.get_global()
+        self._logger = FlextLogger(__name__)
 
- # =========================================================================
- # APPLICATION MANAGEMENT - Single Responsibility: App Lifecycle
- # =========================================================================
+    # =========================================================================
+    # APPLICATION MANAGEMENT - Single Responsibility: App Lifecycle
+    # =========================================================================
 
- @classmethod
- def create_fastapi_app(
- cls, config: FlextWebConfig | dict[str, Any] | None = None
- ) -> FlextResult[Any]:
- """Create FastAPI web application with complete validation.
+    @classmethod
+    def create_fastapi_app(
+        cls, config: FlextWebConfig | dict[str, Any] | None = None
+    ) -> FlextResult[Any]:
+        """Create FastAPI web application with complete validation.
 
         Single Responsibility: Creates and configures FastAPI web applications.
         Delegates to FlextWebApp for actual app creation while providing facade-level
@@ -99,19 +99,19 @@ class FlextWebApi:
     ) -> FlextResult[FlextWebServices]:
         """Create HTTP service with validation and dependency injection.
 
- Single Responsibility: Creates and configures HTTP services only.
- Uses dependency injection pattern for flexible service composition.
- Delegates to FlextWebServices for actual service creation.
+        Single Responsibility: Creates and configures HTTP services only.
+        Uses dependency injection pattern for flexible service composition.
+        Delegates to FlextWebServices for actual service creation.
 
- Args:
- config: Service configuration
- **service_overrides: Override specific service implementations
+        Args:
+        config: Service configuration
+        **service_overrides: Override specific service implementations
 
- Returns:
- FlextResult[FlextWebServices]: Success contains configured service,
- failure contains detailed error message
+        Returns:
+        FlextResult[FlextWebServices]: Success contains configured service,
+        failure contains detailed error message
 
- """
+        """
         logger = FlextLogger(__name__)
 
         try:
@@ -152,21 +152,21 @@ class FlextWebApi:
     ) -> FlextResult[FlextWebConfig]:
         """Create HTTP configuration with defaults and validation.
 
- Single Responsibility: Creates and validates HTTP configurations only.
- Uses flext-web constants for secure defaults and complete validation.
- Provides flexible configuration creation with sensible defaults.
+        Single Responsibility: Creates and validates HTTP configurations only.
+        Uses flext-web constants for secure defaults and complete validation.
+        Provides flexible configuration creation with sensible defaults.
 
- Args:
- host: Server host (defaults to localhost)
- port: Server port (defaults to 8080)
- debug: Debug mode flag
- **kwargs: Additional configuration parameters
+        Args:
+        host: Server host (defaults to localhost)
+        port: Server port (defaults to 8080)
+        debug: Debug mode flag
+        **kwargs: Additional configuration parameters
 
- Returns:
- FlextResult[FlextWebConfig]: Success contains validated config,
- failure contains validation error
+        Returns:
+        FlextResult[FlextWebConfig]: Success contains validated config,
+        failure contains validation error
 
- """
+        """
         logger = FlextLogger(__name__)
 
         try:
@@ -200,15 +200,15 @@ class FlextWebApi:
     def get_service_status(cls) -> FlextResult[dict[str, Any]]:
         """Get complete HTTP service status information.
 
- Single Responsibility: Provides system status and health information only.
- Uses flext-core container for system state and provides complete
- status reporting for monitoring and debugging.
+        Single Responsibility: Provides system status and health information only.
+        Uses flext-core container for system state and provides complete
+        status reporting for monitoring and debugging.
 
- Returns:
- FlextResult[dict[str, Any]]: Success contains detailed status info,
- failure contains error message
+        Returns:
+        FlextResult[dict[str, Any]]: Success contains detailed status info,
+        failure contains error message
 
- """
+        """
         logger = FlextLogger(__name__)
 
         try:
@@ -234,17 +234,17 @@ class FlextWebApi:
     def validate_http_config(cls, config: dict[str, Any]) -> FlextResult[bool]:
         """Validate HTTP configuration for correctness and security.
 
- Single Responsibility: Validates HTTP configurations only.
- Uses Pydantic models for complete validation and provides
- detailed error messages for configuration issues.
+        Single Responsibility: Validates HTTP configurations only.
+        Uses Pydantic models for complete validation and provides
+        detailed error messages for configuration issues.
 
- Args:
- config: Configuration dictionary to validate
+        Args:
+        config: Configuration dictionary to validate
 
- Returns:
- FlextResult[bool]: Success contains True if valid, failure contains error
+        Returns:
+        FlextResult[bool]: Success contains True if valid, failure contains error
 
- """
+        """
         logger = FlextLogger(__name__)
 
         try:
@@ -271,10 +271,10 @@ class FlextWebApi:
     def get_api_capabilities(cls) -> FlextResult[dict[str, Any]]:
         """Get API facade capabilities and supported operations.
 
- Returns:
- FlextResult[dict[str, Any]]: Success contains capabilities info
+        Returns:
+        FlextResult[dict[str, Any]]: Success contains capabilities info
 
- """
+        """
         return FlextResult.ok({
             "application_management": ["create_fastapi_app"],
             "service_management": ["create_http_service"],
