@@ -18,14 +18,15 @@
         "Typing :: Typed",
     ]
     dependencies = [
-        "fastapi (>=0.100.0)",
+        "fastapi (>=0.119.0)",
         "flask (>=3.0.0)",
         "flext-core @ file:///home/marlonsc/flext/flext-core",
-        "pydantic (>=2.11.7)",
-        "pydantic-settings (>=2.10.1)",
+        "pydantic (>=2.12.3)",
+        "pydantic-settings (>=2.11.0)",
         "pytest (>=8.0.0)",
         "requests (>=2.31.0)",
-        "uvicorn (>=0.20.0)",
+        "uvicorn (>=0.38.0)",
+        "pydantic-core (>=2.41.4)",
     ]
     description = "FLEXT Web - Modern Web Interface for FLEXT Platform"
     keywords = [
