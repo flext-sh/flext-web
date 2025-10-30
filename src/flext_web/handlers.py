@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from flext_core import (
     FlextLogger,
-    FlextProcessors,
     FlextResult,
+    FlextService,
     FlextUtilities,
 )
 
@@ -20,12 +20,12 @@ from flext_web.typings import FlextWebTypes
 from flext_web.utilities import FlextWebUtilities
 
 
-class FlextWebHandlers(FlextProcessors):
+class FlextWebHandlers(FlextService):
     """Consolidated web handler system extending flext-core patterns.
 
     This class serves as the single point of access for all web-specific
     handlers, command processors, and response formatters while extending
-    FlextProcessors from flext-core for proper architectural inheritance.
+    FlextService from flext-core for proper architectural inheritance.
 
     All handler functionality is accessible through this single class following the
     "one class per module" architectural requirement.

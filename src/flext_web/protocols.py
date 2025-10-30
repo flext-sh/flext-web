@@ -30,8 +30,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any, Protocol, runtime_checkable
 
-from flext_core import FlextResult
-from flext_core.protocols import FlextProtocols
+from flext_core import FlextProtocols, FlextResult
 
 
 class FlextWebProtocols(FlextProtocols):

@@ -3,6 +3,8 @@
 Tests the unified FlextWebProtocols class following flext standards.
 """
 
+from flext_core import FlextProtocols
+
 from flext_web.protocols import FlextWebProtocols
 
 
@@ -12,8 +14,6 @@ class TestFlextWebProtocols:
     def test_protocols_inheritance(self) -> None:
         """Test that FlextWebProtocols inherits from FlextProtocols."""
         # Should inherit from FlextProtocols
-        from flext_core.protocols import FlextProtocols
-
         assert issubclass(FlextWebProtocols, FlextProtocols)
 
         # Should have web-specific protocols directly available
