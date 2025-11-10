@@ -3,6 +3,8 @@
 Tests the web constants functionality following flext standards.
 """
 
+from collections.abc import Mapping
+
 from flext_web.constants import FlextWebConstants
 
 
@@ -41,11 +43,11 @@ class TestFlextWebConstants:
 
     def test_web_security_constants(self) -> None:
         """Test web security constants."""
-        assert isinstance(FlextWebConstants.WebSecurity.CORS_DEFAULT_ORIGINS, list)
+        assert isinstance(FlextWebConstants.WebSecurity.CORS_DEFAULT_ORIGINS, tuple)
         assert "*" in FlextWebConstants.WebSecurity.CORS_DEFAULT_ORIGINS
-        assert isinstance(FlextWebConstants.WebSecurity.CORS_SAFE_METHODS, list)
+        assert isinstance(FlextWebConstants.WebSecurity.CORS_SAFE_METHODS, tuple)
         assert "GET" in FlextWebConstants.WebSecurity.CORS_SAFE_METHODS
-        assert isinstance(FlextWebConstants.WebSecurity.CORS_SAFE_HEADERS, list)
+        assert isinstance(FlextWebConstants.WebSecurity.CORS_SAFE_HEADERS, tuple)
         assert "Content-Type" in FlextWebConstants.WebSecurity.CORS_SAFE_HEADERS
         assert FlextWebConstants.WebSecurity.SESSION_COOKIE_SECURE_DEFAULT is False
         assert FlextWebConstants.WebSecurity.SESSION_COOKIE_HTTPONLY_DEFAULT is True
@@ -89,7 +91,7 @@ class TestFlextWebConstants:
         assert isinstance(FlextWebConstants.MIN_SECRET_KEY_LENGTH, int)
         assert isinstance(FlextWebConstants.WebDefaults.SECRET_KEY, str)
         assert isinstance(FlextWebConstants.SSL_PORTS, tuple)
-        assert isinstance(FlextWebConstants.SESSION_DEFAULTS, dict)
+        assert isinstance(FlextWebConstants.SESSION_DEFAULTS, Mapping)
 
     def test_validation_constants_types(self) -> None:
         """Test that validation constants have correct types."""
