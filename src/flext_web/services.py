@@ -45,7 +45,10 @@ class FlextWebServices(FlextService[dict[str, Any]]):
                 return FlextResult.fail("Invalid credentials format")
 
             # For testing purposes, only allow specific valid credentials
-            if username == FlextConstants.Test.NONEXISTENT_USERNAME or password != FlextConstants.Test.DEFAULT_PASSWORD:
+            if (
+                username == FlextConstants.Test.NONEXISTENT_USERNAME
+                or password != FlextConstants.Test.DEFAULT_PASSWORD
+            ):
                 return FlextResult.fail("Authentication failed")
 
             return FlextResult.ok({
