@@ -43,15 +43,26 @@ class FlextWebConfig(BaseModel):
         max_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[1],
         description="Web application name",
     )
-    version: str = Field(default="1.0.0", description="Application version")
-    debug_mode: bool = Field(default=False, alias="debug", description="Debug mode")
+    version: str = Field(
+        default=FlextWebConstants.WebDefaults.VERSION_STRING,
+        description="Application version",
+    )
+    debug_mode: bool = Field(
+        default=FlextWebConstants.WebDefaults.DEBUG_MODE,
+        alias="debug",
+        description="Debug mode",
+    )
     ssl_enabled: bool = Field(default=False, description="Enable SSL/TLS")
     ssl_cert_path: Path | None = Field(default=None, description="SSL certificate path")
     ssl_key_path: Path | None = Field(default=None, description="SSL key path")
-    secret_key: str | None = Field(
-        default=None, min_length=32, description="Secret key"
+    secret_key: str = Field(
+        default=FlextWebConstants.WebDefaults.SECRET_KEY,
+        min_length=FlextWebConstants.WebSecurity.MIN_SECRET_KEY_LENGTH,
+        description="Secret key for session management",
     )
-    testing: bool = Field(default=False, description="Testing mode")
+    testing: bool = Field(
+        default=False, description="Testing mode"
+    )  # Testing mode is False by default, not in Constants as it's runtime-specific
 
     @computed_field
     def debug(self) -> bool:

@@ -193,11 +193,18 @@ class FlextWebServices(FlextService[bool]):
             return FlextResult.ok(metrics_response)
 
     def __init__(self, config: FlextWebConfig | None = None) -> None:
-        """Initialize with config."""
+        """Initialize with config.
+
+        Args:
+            config: Service configuration model or None for defaults.
+                   If None, uses FlextWebConfig() with Constants defaults.
+
+        """
         super().__init__()
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
-        self._config = config
+        # Use Pydantic defaults if None - Models use Constants in initialization
+        self._config = config if config is not None else FlextWebConfig()
         self._entity_service: FlextWebServices.Entity | None = None
 
         # HTTP server state management
@@ -546,14 +553,18 @@ class FlextWebServices(FlextService[bool]):
         """Create service instance with explicit validation.
 
         Args:
-            config: Service configuration model or None for defaults
+            config: Service configuration model or None for defaults.
+                   If None, uses FlextWebConfig() with Constants defaults.
 
         Returns:
             FlextResult[FlextWebServices]: Success contains service instance,
                                           failure contains error message
 
         """
-        return FlextResult.ok(cls(config=config))
+        # Use Pydantic defaults if None - Models use Constants in initialization
+        # FlextWebConfig uses Constants defaults, so None creates config with defaults
+        service_config = config if config is not None else FlextWebConfig()
+        return FlextResult.ok(cls(config=service_config))
 
 
 __all__ = ["FlextWebServices"]

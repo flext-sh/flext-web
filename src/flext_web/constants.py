@@ -26,6 +26,8 @@ class FlextWebConstants(FlextConstants):
         APP_NAME: Final[str] = "FLEXT Web"
         ENVIRONMENT: Final[str] = "development"
         DEBUG_MODE: Final[bool] = False
+        VERSION_STRING: Final[str] = "1.0.0"
+        VERSION_INT: Final[int] = 1
         SECRET_KEY: Final[str] = "default-secret-key-32-characters-long-for-security"
         DEV_SECRET_KEY: Final[str] = "dev-secret-key-32-characters-long-for-development"
         TEST_SECRET_KEY: Final[str] = "test-secret-key-32-characters-long-for-tests"
@@ -76,7 +78,10 @@ class FlextWebConstants(FlextConstants):
     class WebValidation:
         """Validation constants for configuration and HTTP payloads."""
 
-        PORT_RANGE: Final[tuple[int, int]] = (1, 65535)  # Allow system ports for SSL (443, 8443)
+        PORT_RANGE: Final[tuple[int, int]] = (
+            1,
+            65535,
+        )  # Allow system ports for SSL (443, 8443)
         NAME_LENGTH_RANGE: Final[tuple[int, int]] = (3, 100)
         MIN_SECRET_KEY_LENGTH: Final[int] = 32
         MAX_CONTENT_LENGTH_DEFAULT: Final[int] = 16 * 1024 * 1024
@@ -121,13 +126,15 @@ class FlextWebConstants(FlextConstants):
         HEADER_CONTENT_TYPE: Final[str] = "content-type"
         HEADER_CONTENT_LENGTH: Final[str] = "content-length"
 
+        # HTTP Default Timeout
+        DEFAULT_TIMEOUT_SECONDS: Final[float] = 30.0
+
         METHODS: ClassVar[tuple[str, ...]] = tuple(method.value for method in Method)
         SAFE_METHODS: ClassVar[tuple[str, ...]] = (
             Method.GET.value,
             Method.HEAD.value,
             Method.OPTIONS.value,
         )
-        DEFAULT_TIMEOUT_SECONDS: Final[float] = 30.0
 
         class StatusCode(IntEnum):
             """Enumeration of canonical HTTP status codes."""
@@ -209,6 +216,14 @@ class FlextWebConstants(FlextConstants):
         SESSION_COOKIE_SECURE_DEFAULT: Final[bool] = False
         SESSION_COOKIE_HTTPONLY_DEFAULT: Final[bool] = True
         SESSION_COOKIE_SAMESITE_DEFAULT: Final[str] = "Lax"
+
+    class WebApi:
+        """Web API documentation and endpoint constants."""
+
+        DOCS_URL: Final[str] = "/docs"
+        REDOC_URL: Final[str] = "/redoc"
+        OPENAPI_URL: Final[str] = "/openapi.json"
+        DEFAULT_DESCRIPTION: Final[str] = "Generic HTTP Service"
 
     class WebEnvironment:
         """Enumerations for environments, application types and status."""

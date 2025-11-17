@@ -83,11 +83,11 @@ class FlextWebModels:
 
             """
 
-            headers: dict[str, str] | None = Field(
-                default=None, description="HTTP headers for message"
+            headers: dict[str, str] = Field(
+                default_factory=dict, description="HTTP headers for message"
             )
             body: str | dict[str, Any] | None = Field(
-                default=None, description="Message body content"
+                default=None, description="Message body content (optional for GET/HEAD)"
             )
             timestamp: datetime = Field(
                 default_factory=lambda: datetime.now(UTC),
@@ -117,7 +117,10 @@ class FlextWebModels:
                 description="HTTP method",
             )
             timeout: float = Field(
-                default=30.0, ge=0.0, le=300.0, description="Request timeout in seconds"
+                default=FlextWebConstants.Http.DEFAULT_TIMEOUT_SECONDS,
+                ge=0.0,
+                le=300.0,
+                description="Request timeout in seconds",
             )
 
             @property
@@ -219,13 +222,16 @@ class FlextWebModels:
                 description="HTTP method",
             )
             timeout: float = Field(
-                default=30.0, ge=0.0, le=300.0, description="Request timeout in seconds"
+                default=FlextWebConstants.Http.DEFAULT_TIMEOUT_SECONDS,
+                ge=0.0,
+                le=300.0,
+                description="Request timeout in seconds",
             )
-            headers: dict[str, str] | None = Field(
-                default=None, description="HTTP headers"
+            headers: dict[str, str] = Field(
+                default_factory=dict, description="HTTP headers"
             )
             body: str | dict[str, Any] | None = Field(
-                default=None, description="Request body content"
+                default=None, description="Request body content (optional for GET/HEAD)"
             )
             timestamp: datetime = Field(
                 default_factory=lambda: datetime.now(UTC),
@@ -235,13 +241,11 @@ class FlextWebModels:
                 default_factory=lambda: str(uuid.uuid4()),
                 description="Unique request identifier",
             )
-            query_params: dict[str, Any] | None = Field(
-                default=None, description="Query string parameters"
+            query_params: dict[str, Any] = Field(
+                default_factory=dict, description="Query string parameters"
             )
-            client_ip: str | None = Field(default=None, description="Client IP address")
-            user_agent: str | None = Field(
-                default=None, description="Client user agent"
-            )
+            client_ip: str = Field(default="", description="Client IP address")
+            user_agent: str = Field(default="", description="Client user agent")
 
             @property
             def has_body(self) -> bool:
@@ -294,16 +298,17 @@ class FlextWebModels:
                 default_factory=lambda: datetime.now(UTC),
                 description="Response timestamp",
             )
-            elapsed_time: float | None = Field(
-                default=None, ge=0.0, description="Response elapsed time in seconds"
+            elapsed_time: float = Field(
+                default=0.0, ge=0.0, description="Response elapsed time in seconds"
             )
             response_id: str = Field(
                 default_factory=lambda: str(uuid.uuid4()),
                 description="Unique response identifier",
             )
             request_id: str = Field(description="Associated request identifier")
-            content_type: str | None = Field(
-                default=None, description="Response content type"
+            content_type: str = Field(
+                default=FlextWebConstants.Http.CONTENT_TYPE_JSON,
+                description="Response content type",
             )
             content_length: int = Field(
                 default=0, ge=0, description="Response body length in bytes"
@@ -445,9 +450,13 @@ class FlextWebModels:
                 description="Deployment environment",
             )
             debug_mode: bool = Field(
-                default=False, description="Debug mode enabled flag"
+                default=FlextWebConstants.WebDefaults.DEBUG_MODE,
+                description="Debug mode enabled flag",
             )
-            version: int = Field(default=1, description="Application version")
+            version: int = Field(
+                default=FlextWebConstants.WebDefaults.VERSION_INT,
+                description="Application version",
+            )
             metrics: dict[str, Any] = Field(
                 default_factory=dict, description="Application metrics"
             )
@@ -540,7 +549,12 @@ class FlextWebModels:
                         "already running"
                     )
                 self.status = running_status
-                self.add_domain_event("ApplicationStarted")
+                # add_domain_event returns FlextResult[bool] - internal operation always succeeds
+                event_result = self.add_domain_event("ApplicationStarted")
+                if event_result.is_failure:
+                    return FlextResult[FlextWebModels.Application.Entity].fail(
+                        f"Failed to add domain event: {event_result.error}"
+                    )
                 return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
             def stop(self) -> FlextResult[FlextWebModels.Application.Entity]:
@@ -552,7 +566,12 @@ class FlextWebModels:
                         "not running"
                     )
                 self.status = stopped_status
-                self.add_domain_event("ApplicationStopped")
+                # add_domain_event returns FlextResult[bool] - internal operation always succeeds
+                event_result = self.add_domain_event("ApplicationStopped")
+                if event_result.is_failure:
+                    return FlextResult[FlextWebModels.Application.Entity].fail(
+                        f"Failed to add domain event: {event_result.error}"
+                    )
                 return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
             def restart(self) -> FlextResult[FlextWebModels.Application.Entity]:
@@ -564,15 +583,38 @@ class FlextWebModels:
                 starting_status = FlextWebConstants.WebEnvironment.Status.STARTING.value
                 running_status = FlextWebConstants.WebEnvironment.Status.RUNNING.value
                 self.status = starting_status
-                self.add_domain_event("ApplicationRestarting")
+                # add_domain_event returns FlextResult[bool] - internal operation always succeeds
+                restart_event_result = self.add_domain_event("ApplicationRestarting")
+                if restart_event_result.is_failure:
+                    return FlextResult[FlextWebModels.Application.Entity].fail(
+                        f"Failed to add domain event: {restart_event_result.error}"
+                    )
                 self.status = running_status
-                self.add_domain_event("ApplicationStarted")
+                start_event_result = self.add_domain_event("ApplicationStarted")
+                if start_event_result.is_failure:
+                    return FlextResult[FlextWebModels.Application.Entity].fail(
+                        f"Failed to add domain event: {start_event_result.error}"
+                    )
                 return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
-            def update_metrics(self, new_metrics: dict[str, Any]) -> None:
-                """Update application metrics."""
+            def update_metrics(self, new_metrics: dict[str, Any]) -> FlextResult[bool]:
+                """Update application metrics.
+
+                Returns:
+                    FlextResult[bool]: Success contains True if metrics updated,
+                                     failure contains error message
+
+                """
+                if not isinstance(new_metrics, dict):
+                    return FlextResult[bool].fail("Metrics must be a dictionary")
                 self.metrics.update(new_metrics)
-                self.add_domain_event("MetricsUpdated")
+                # add_domain_event returns FlextResult[bool] - internal operation always succeeds
+                event_result = self.add_domain_event("MetricsUpdated")
+                if event_result.is_failure:
+                    return FlextResult[bool].fail(
+                        f"Failed to add domain event: {event_result.error}"
+                    )
+                return FlextResult[bool].ok(True)
 
             def get_health_status(self) -> dict[str, Any]:
                 """Get comprehensive health status."""
@@ -589,9 +631,20 @@ class FlextWebModels:
                 """Return string representation of the application."""
                 return f"{self.name} ({self.url}) - {self.status}"
 
-            def add_domain_event(self, event: str) -> None:
-                """Add domain event for event sourcing."""
+            def add_domain_event(self, event: str) -> FlextResult[bool]:
+                """Add domain event for event sourcing.
+
+                Returns:
+                    FlextResult[bool]: Success contains True if event added,
+                                     failure contains error message
+
+                """
+                if not isinstance(event, str):
+                    return FlextResult[bool].fail("Event must be a string")
+                if len(event) == 0:
+                    return FlextResult[bool].fail("Event cannot be empty")
                 self.domain_events.append(event)
+                return FlextResult[bool].ok(True)
 
             @classmethod
             def format_id_from_name(cls, name: str) -> str:
@@ -618,10 +671,14 @@ class FlextWebModels:
             """Application entity configuration (Value Object).
 
             Represents configuration settings for application entities.
+            Uses Constants for defaults - Config has priority when provided.
             """
 
             app_name: str = Field(
-                min_length=1, max_length=100, description="Application name"
+                default=FlextWebConstants.WebDefaults.APP_NAME,
+                min_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[0],
+                max_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[1],
+                description="Application name",
             )
             host: str = Field(
                 default=FlextWebConstants.WebDefaults.HOST,
@@ -635,8 +692,15 @@ class FlextWebModels:
                 le=FlextWebConstants.WebValidation.PORT_RANGE[1],
                 description="Application port number",
             )
-            debug: bool = Field(default=False, description="Debug mode flag")
-            secret_key: str = Field(min_length=32, description="Application secret key")
+            debug: bool = Field(
+                default=FlextWebConstants.WebDefaults.DEBUG_MODE,
+                description="Debug mode flag",
+            )
+            secret_key: str = Field(
+                default=FlextWebConstants.WebDefaults.SECRET_KEY,
+                min_length=FlextWebConstants.WebSecurity.MIN_SECRET_KEY_LENGTH,
+                description="Application secret key",
+            )
 
     # =========================================================================
     # SERVICE REQUEST/RESPONSE MODELS - Replace dict[str, object] types
@@ -656,8 +720,8 @@ class FlextWebModels:
 
             username: str = Field(min_length=1, description="Username")
             email: str = Field(min_length=1, description="Email address")
-            password: str | None = Field(
-                default=None, description="Password (optional)"
+            password: str = Field(
+                default="", description="Password (empty string if not provided)"
             )
 
         class AppData(BaseModel):
@@ -754,9 +818,11 @@ class FlextWebModels:
             description="HTTP method",
         )
         url: str = Field(min_length=1, max_length=2048, description="Request URL")
-        headers: dict[str, str] | None = Field(default=None, description="HTTP headers")
+        headers: dict[str, str] = Field(
+            default_factory=dict, description="HTTP headers"
+        )
         body: str | dict[str, Any] | None = Field(
-            default=None, description="Request body"
+            default=None, description="Request body (optional for GET/HEAD)"
         )
         request_id: str = Field(
             default_factory=lambda: str(uuid.uuid4()),
@@ -772,11 +838,11 @@ class FlextWebModels:
 
         request_id: str = Field(description="Associated request identifier")
         status_code: int = Field(ge=100, le=599, description="HTTP status code")
-        headers: dict[str, str] | None = Field(
-            default=None, description="HTTP response headers"
+        headers: dict[str, str] = Field(
+            default_factory=dict, description="HTTP response headers"
         )
         body: str | dict[str, Any] | None = Field(
-            default=None, description="Response body"
+            default=None, description="Response body (optional for 204 No Content)"
         )
         response_id: str = Field(
             default_factory=lambda: str(uuid.uuid4()),
@@ -797,9 +863,15 @@ class FlextWebModels:
         description: str = Field(
             min_length=1, max_length=500, description="Application description"
         )
-        docs_url: str = Field(default="/docs", description="Documentation URL")
-        redoc_url: str = Field(default="/redoc", description="ReDoc URL")
-        openapi_url: str = Field(default="/openapi.json", description="OpenAPI URL")
+        docs_url: str = Field(
+            default=FlextWebConstants.WebApi.DOCS_URL, description="Documentation URL"
+        )
+        redoc_url: str = Field(
+            default=FlextWebConstants.WebApi.REDOC_URL, description="ReDoc URL"
+        )
+        openapi_url: str = Field(
+            default=FlextWebConstants.WebApi.OPENAPI_URL, description="OpenAPI URL"
+        )
 
     # =========================================================================
     # FACTORY METHODS (Creation patterns)
@@ -877,11 +949,12 @@ class FlextWebModels:
             )
 
         try:
-            # Pass None directly - Pydantic field accepts None, no fallback needed
+            # Use empty dict if None - headers field requires dict
+            request_headers = headers if headers is not None else {}
             request = cls.WebRequest(
                 method=method,
                 url=url,
-                headers=headers,  # Can be None, field accepts None
+                headers=request_headers,
                 body=body,
             )
             return FlextResult[FlextWebModels.WebRequest].ok(request)
@@ -923,11 +996,12 @@ class FlextWebModels:
             )
 
         try:
-            # Pass None directly - Pydantic field accepts None, no fallback needed
+            # Use empty dict if None - headers field requires dict
+            response_headers = headers if headers is not None else {}
             response = cls.WebResponse(
                 request_id=request_id,
                 status_code=status_code,
-                headers=headers,  # Can be None, field accepts None
+                headers=response_headers,
                 body=body,
             )
             return FlextResult[FlextWebModels.WebResponse].ok(response)
@@ -971,9 +1045,12 @@ class FlextWebModels:
                 max_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[1],
                 description="FastAPI application title",
             )
-            version: str = Field(default="1.0.0", description="Application version")
+            version: str = Field(
+                default=FlextWebConstants.WebDefaults.VERSION_STRING,
+                description="Application version",
+            )
             description: str = Field(
-                default="Generic HTTP Service",
+                default=FlextWebConstants.WebApi.DEFAULT_DESCRIPTION,
                 min_length=1,
                 max_length=500,
                 description="Application description",
@@ -983,12 +1060,15 @@ class FlextWebModels:
             middlewares: list[Any] = Field(
                 default_factory=list, description="List of middleware objects"
             )
-            docs_url: str | None = Field(
-                default="/docs", description="Documentation URL"
+            docs_url: str = Field(
+                default=FlextWebConstants.WebApi.DOCS_URL,
+                description="Documentation URL",
             )
-            redoc_url: str | None = Field(default="/redoc", description="ReDoc URL")
-            openapi_url: str | None = Field(
-                default="/openapi.json", description="OpenAPI URL"
+            redoc_url: str = Field(
+                default=FlextWebConstants.WebApi.REDOC_URL, description="ReDoc URL"
+            )
+            openapi_url: str = Field(
+                default=FlextWebConstants.WebApi.OPENAPI_URL, description="OpenAPI URL"
             )
 
 

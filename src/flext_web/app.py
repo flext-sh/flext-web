@@ -71,11 +71,11 @@ class FlextWebApp(FlextService[bool]):
         @staticmethod
         def create_instance(
             title: str = "FastAPI",
-            version: str = "1.0.0",
+            version: str = FlextWebConstants.WebDefaults.VERSION_STRING,
             description: str = "FlextWeb FastAPI Application",
-            docs_url: str | None = "/docs",
-            redoc_url: str | None = "/redoc",
-            openapi_url: str | None = "/openapi.json",
+            docs_url: str = FlextWebConstants.WebApi.DOCS_URL,
+            redoc_url: str = FlextWebConstants.WebApi.REDOC_URL,
+            openapi_url: str = FlextWebConstants.WebApi.OPENAPI_URL,
         ) -> FlextResult[FastAPI]:
             """Create FastAPI application instance with validated configuration.
 
@@ -141,12 +141,11 @@ class FlextWebApp(FlextService[bool]):
         failure contains detailed error message
 
         """
-        # Create config with Pydantic defaults if None - no fallback operator
-        # Use Pydantic model defaults directly
-        if config is None:
-            fastapi_config = FlextWebModels.FastAPI.FastAPIAppConfig()
-        else:
-            fastapi_config = config
+        # Use Pydantic defaults if None - Models use Constants in initialization
+        # FastAPIAppConfig uses Constants defaults, so None creates config with defaults
+        fastapi_config = (
+            config if config is not None else FlextWebModels.FastAPI.FastAPIAppConfig()
+        )
 
         # Use config values - optional parameters override if provided
         # No fallback operators - explicit checks only
@@ -217,9 +216,9 @@ class FlextWebApp(FlextService[bool]):
         """
         logger = FlextLogger(__name__)
 
-        # Create config with Pydantic defaults if None - no fallback operator
-        # Use Pydantic model defaults directly
-        flask_config = FlextWebConfig() if config is None else config
+        # Use Pydantic defaults if None - Models use Constants in initialization
+        # FlextWebConfig uses Constants defaults, so None creates config with defaults
+        flask_config = config if config is not None else FlextWebConfig()
 
         # Create Flask application
         app = Flask(flask_config.app_name)

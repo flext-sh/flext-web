@@ -97,3 +97,25 @@ class TestFlextWebConfig:
         config = FlextWebConfig(host="test", port=9000)
         assert config.host == "test"
         assert config.port == 9000
+
+    def test_create_web_config_class_method(self) -> None:
+        """Test create_web_config class method."""
+        result = FlextWebConfig.create_web_config()
+        assert result.is_success
+        config = result.value
+        assert isinstance(config, FlextWebConfig)
+        assert config.host == FlextWebConstants.WebDefaults.HOST
+        assert config.port == FlextWebConstants.WebDefaults.PORT
+
+    def test_create_web_config_exception_handling(self) -> None:
+        """Test create_web_config exception handling (lines 99-100)."""
+        from unittest.mock import patch
+
+        # Patch __init__ to raise an exception
+        with patch.object(
+            FlextWebConfig, "__init__", side_effect=Exception("Config creation failed")
+        ):
+            result = FlextWebConfig.create_web_config()
+            assert result.is_failure
+            assert "Failed to create web config" in result.error
+            assert "Config creation failed" in result.error

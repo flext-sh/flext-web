@@ -86,12 +86,117 @@ class TestFlextWebHandlers:
         assert handler._apps_registry[app.id] == app
 
     def test_protocol_implementation(self) -> None:
-        """Test protocol implementation."""
+        """Test protocol implementation - REAL execution."""
         handler = FlextWebHandlers.ApplicationHandler()
 
-        # Test WebAppManagerProtocol methods
+        # Test WebAppManagerProtocol methods - REAL execution
         result = handler.create_app("test", 8080, "localhost")
         assert result.is_success
 
         result = handler.list_apps()
         assert result.is_success
+
+    def test_application_handler_create_validation_errors(self) -> None:
+        """Test ApplicationHandler.create with validation errors - REAL validation."""
+        handler = FlextWebHandlers.ApplicationHandler()
+
+        # Test invalid name type
+        result = handler.create(123, 8080, "localhost")  # type: ignore[arg-type]
+        assert result.is_failure
+        assert "must be a string" in result.error
+
+        # Test name too short
+        result = handler.create("ab", 8080, "localhost")
+        assert result.is_failure
+        assert "at least" in result.error
+
+        # Test invalid host type
+        result = handler.create("test-app", 8080, 123)  # type: ignore[arg-type]
+        assert result.is_failure
+        assert "must be a string" in result.error
+
+        # Test empty host
+        result = handler.create("test-app", 8080, "")
+        assert result.is_failure
+        assert "cannot be empty" in result.error
+
+        # Test invalid port type
+        result = handler.create("test-app", "8080", "localhost")  # type: ignore[arg-type]
+        assert result.is_failure
+        assert "must be an integer" in result.error
+
+        # Test port too low
+        result = handler.create("test-app", 0, "localhost")
+        assert result.is_failure
+        assert "at least" in result.error
+
+        # Test port too high
+        result = handler.create("test-app", 70000, "localhost")
+        assert result.is_failure
+        assert "at most" in result.error
+
+    def test_application_handler_start_app_not_found(self) -> None:
+        """Test ApplicationHandler.start_app with non-existent app - REAL validation."""
+        handler = FlextWebHandlers.ApplicationHandler()
+
+        result = handler.start_app("nonexistent-id")
+        assert result.is_failure
+        assert "not found" in result.error
+
+    def test_application_handler_stop_app_not_found(self) -> None:
+        """Test ApplicationHandler.stop_app with non-existent app - REAL validation."""
+        handler = FlextWebHandlers.ApplicationHandler()
+
+        result = handler.stop_app("nonexistent-id")
+        assert result.is_failure
+        assert "not found" in result.error
+
+    def test_application_handler_start_stop_cycle(self) -> None:
+        """Test ApplicationHandler start/stop cycle - REAL execution."""
+        handler = FlextWebHandlers.ApplicationHandler()
+
+        # Create app
+        create_result = handler.create("test-app", 8080, "localhost")
+        assert create_result.is_success
+        app = create_result.unwrap()
+        app_id = app.id
+
+        # Start app
+        start_result = handler.start_app(app_id)
+        assert start_result.is_success
+        started_app = start_result.unwrap()
+        assert started_app.status == "running"
+
+        # Stop app
+        stop_result = handler.stop_app(app_id)
+        assert stop_result.is_success
+        stopped_app = stop_result.unwrap()
+        assert stopped_app.status == "stopped"
+
+    def test_handle_start_app_invalid_type(self) -> None:
+        """Test handle_start_app with invalid entity type - REAL validation."""
+        # Pass non-Entity object
+        result = FlextWebHandlers.handle_start_app("not-an-entity")  # type: ignore[arg-type]
+        assert result.is_failure
+        assert "Invalid application entity type" in result.error
+
+    def test_handle_stop_app_invalid_type(self) -> None:
+        """Test handle_stop_app with invalid entity type - REAL validation."""
+        # Pass non-Entity object
+        result = FlextWebHandlers.handle_stop_app("not-an-entity")  # type: ignore[arg-type]
+        assert result.is_failure
+        assert "Invalid application entity type" in result.error
+
+    def test_handlers_execute(self) -> None:
+        """Test FlextWebHandlers.execute - REAL execution."""
+        handlers = FlextWebHandlers()
+        result = handlers.execute()
+        assert result.is_success
+        assert result.unwrap() is True
+
+    def test_handlers_validate_business_rules(self) -> None:
+        """Test FlextWebHandlers.validate_business_rules - REAL execution."""
+        handlers = FlextWebHandlers()
+        result = handlers.validate_business_rules()
+        assert result.is_success
+        assert result.unwrap() is True

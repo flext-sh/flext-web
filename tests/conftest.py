@@ -75,10 +75,7 @@ def real_app(real_config: FlextWebConfig) -> Flask:
 
     # Create a basic Flask app for testing
     app = Flask(__name__)
-    # Fast fail if secret_key is None - no fallback
-    if real_config.secret_key is None:
-        msg = "Secret key must be provided in test configuration"
-        raise ValueError(msg)
+    # secret_key now has default from Constants, no None check needed
     app.config.update(
         SECRET_KEY=real_config.secret_key,
         TESTING=True,

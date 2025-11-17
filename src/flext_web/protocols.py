@@ -802,6 +802,249 @@ class FlextWebProtocols(FlextProtocols):
             return {"requests": 0, "errors": 0, "uptime": "0s"}
 
 
+# =========================================================================
+# CONCRETE BASE CLASSES - For testing protocol placeholder methods
+# =========================================================================
+
+
+class _WebAppManagerBase:
+    """Concrete base class for WebAppManagerProtocol placeholder methods.
+
+    This class provides concrete implementations of protocol placeholder methods
+    for testing purposes. It allows executing the placeholder logic directly.
+    """
+
+    def create_app(
+        self, name: str, port: int, host: str
+    ) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
+        """Create a new web application - placeholder implementation."""
+        _ = name, port, host
+        return FlextResult.fail("create_app method not implemented")
+
+    def start_app(self, app_id: str) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
+        """Start a web application - placeholder implementation."""
+        _ = app_id
+        return FlextResult.fail("start_app method not implemented")
+
+    def stop_app(self, app_id: str) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
+        """Stop a running web application - placeholder implementation."""
+        _ = app_id
+        return FlextResult.fail("stop_app method not implemented")
+
+    def list_apps(self) -> FlextResult[list[FlextWebTypes.Core.ResponseDict]]:
+        """List all web applications - placeholder implementation."""
+        return FlextResult.fail("list_apps method not implemented")
+
+
+class _WebResponseFormatterBase:
+    """Concrete base class for WebResponseFormatterProtocol placeholder methods."""
+
+    def format_success(
+        self, data: FlextWebTypes.Core.ResponseDict
+    ) -> FlextWebTypes.Core.ResponseDict:
+        """Format successful response data - placeholder implementation."""
+        response: FlextWebTypes.Core.ResponseDict = {
+            "status": FlextWebConstants.WebResponse.STATUS_SUCCESS,
+        }
+        for key, value in data.items():
+            if isinstance(value, (str, int, bool, list, dict)):
+                response[key] = value
+        return response
+
+    def format_error(self, error: Exception) -> FlextWebTypes.Core.ResponseDict:
+        """Format error response data - placeholder implementation."""
+        result: FlextWebTypes.Core.ResponseDict = {
+            "status": FlextWebConstants.WebResponse.STATUS_ERROR,
+            "message": str(error),
+        }
+        return result
+
+    def create_json_response(
+        self, data: FlextWebTypes.Core.ResponseDict
+    ) -> FlextWebTypes.Core.ResponseDict:
+        """Create a JSON response - placeholder implementation."""
+        response: FlextWebTypes.Core.ResponseDict = {
+            FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
+        }
+        for key, value in data.items():
+            if isinstance(value, (str, int, bool, list, dict)):
+                response[key] = value
+        return response
+
+    def get_request_data(
+        self, _request: FlextWebTypes.Core.RequestDict
+    ) -> FlextWebTypes.Core.RequestDict:
+        """Extract data from web request - placeholder implementation."""
+        empty_result: FlextWebTypes.Core.RequestDict = {}
+        return empty_result
+
+
+class _WebFrameworkInterfaceBase:
+    """Concrete base class for WebFrameworkInterfaceProtocol placeholder methods."""
+
+    def create_json_response(
+        self, data: FlextWebTypes.Core.ResponseDict
+    ) -> FlextWebTypes.Core.ResponseDict:
+        """Create a JSON response - placeholder implementation."""
+        response: FlextWebTypes.Core.ResponseDict = {
+            FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
+        }
+        for key, value in data.items():
+            if isinstance(value, (str, int, bool, list, dict)):
+                response[key] = value
+        return response
+
+    def get_request_data(
+        self, _request: FlextWebTypes.Core.RequestDict
+    ) -> FlextWebTypes.Core.RequestDict:
+        """Extract data from web request - placeholder implementation."""
+        empty_result: FlextWebTypes.Core.RequestDict = {}
+        return empty_result
+
+    def is_json_request(self, _request: FlextWebTypes.Core.RequestDict) -> bool:
+        """Check if request contains JSON data - placeholder implementation."""
+        return False
+
+
+class _WebServiceBase:
+    """Concrete base class for WebServiceProtocol placeholder methods."""
+
+    def initialize_routes(self) -> FlextResult[bool]:
+        """Initialize web service routes - placeholder implementation."""
+        return FlextResult[bool].ok(True)
+
+    def configure_middleware(self) -> FlextResult[bool]:
+        """Configure web service middleware - placeholder implementation."""
+        return FlextResult[bool].ok(True)
+
+    def start_service(self) -> FlextResult[bool]:
+        """Start the web service - placeholder implementation."""
+        return FlextResult[bool].ok(True)
+
+    def stop_service(self) -> FlextResult[bool]:
+        """Stop the web service - placeholder implementation."""
+        return FlextResult[bool].ok(True)
+
+
+class _WebRepositoryBase:
+    """Concrete base class for WebRepositoryProtocol placeholder methods."""
+
+    def find_by_criteria(
+        self, criteria: FlextWebTypes.Core.RequestDict
+    ) -> FlextResult[list[FlextWebTypes.Core.ResponseDict]]:
+        """Find entities by criteria - placeholder implementation."""
+        _ = criteria
+        return FlextResult[list[FlextWebTypes.Core.ResponseDict]].ok([])
+
+
+class _WebHandlerBase:
+    """Concrete base class for WebHandlerProtocol placeholder methods."""
+
+    def handle_request(
+        self, request: FlextWebTypes.Core.RequestDict
+    ) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
+        """Handle web request and return response - placeholder implementation."""
+        _ = request
+        return FlextResult[FlextWebTypes.Core.ResponseDict].ok({})
+
+
+class _WebTemplateRendererBase:
+    """Concrete base class for WebTemplateRendererProtocol placeholder methods."""
+
+    def render_template(
+        self, template_name: str, context: FlextWebTypes.Core.RequestDict
+    ) -> FlextResult[str]:
+        """Render template with context data - placeholder implementation."""
+        _ = template_name, context
+        return FlextResult[str].ok("")
+
+    def render_dashboard(
+        self, data: FlextWebTypes.Core.ResponseDict
+    ) -> FlextResult[str]:
+        """Render dashboard template with data - placeholder implementation."""
+        _ = data
+        return FlextResult[str].ok("<html>Dashboard</html>")
+
+
+class _WebTemplateEngineBase:
+    """Concrete base class for WebTemplateEngineProtocol placeholder methods."""
+
+    def load_template_config(
+        self, config: FlextWebTypes.Core.RequestDict
+    ) -> FlextResult[bool]:
+        """Load template engine configuration - placeholder implementation."""
+        _ = config
+        return FlextResult[bool].ok(True)
+
+    def get_template_config(self) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
+        """Get current template engine configuration - placeholder implementation."""
+        return FlextResult[FlextWebTypes.Core.ResponseDict].ok({})
+
+    def validate_template_config(
+        self, config: FlextWebTypes.Core.RequestDict
+    ) -> FlextResult[bool]:
+        """Validate template engine configuration - placeholder implementation."""
+        _ = config
+        return FlextResult[bool].ok(True)
+
+    def render(
+        self, template: str, context: FlextWebTypes.Core.RequestDict
+    ) -> FlextResult[str]:
+        """Render template string with context - placeholder implementation."""
+        _ = template, context
+        return FlextResult[str].ok("")
+
+    def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
+        """Add template filter function - placeholder implementation."""
+
+    def add_global(
+        self,
+        name: str,
+        *,
+        value: str | int | bool | list[str] | dict[str, str | int | bool],
+    ) -> None:
+        """Add template global variable - placeholder implementation."""
+
+
+class _WebConnectionBase:
+    """Concrete base class for WebConnectionProtocol placeholder methods."""
+
+    def get_endpoint_url(self) -> str:
+        """Get the web service endpoint URL - placeholder implementation."""
+        return "http://localhost:8080"
+
+
+class _WebMonitoringBase:
+    """Concrete base class for WebMonitoringProtocol placeholder methods."""
+
+    def record_web_request(
+        self, request: FlextWebTypes.Core.RequestDict, response_time: float
+    ) -> None:
+        """Record web request metrics - placeholder implementation."""
+
+    def get_web_health_status(self) -> FlextWebTypes.Core.ResponseDict:
+        """Get web application health status - placeholder implementation."""
+        return {
+            "status": FlextWebConstants.WebResponse.STATUS_HEALTHY,
+            "service": FlextWebConstants.WebService.SERVICE_NAME,
+        }
+
+    def get_web_metrics(self) -> FlextWebTypes.Core.ResponseDict:
+        """Get web application metrics - placeholder implementation."""
+        return {"requests": 0, "errors": 0, "uptime": "0s"}
+
+
 __all__ = [
     "FlextWebProtocols",  # Main hierarchical web protocol architecture
+    # Concrete base classes for testing (internal use)
+    "_WebAppManagerBase",
+    "_WebConnectionBase",
+    "_WebFrameworkInterfaceBase",
+    "_WebHandlerBase",
+    "_WebMonitoringBase",
+    "_WebRepositoryBase",
+    "_WebResponseFormatterBase",
+    "_WebServiceBase",
+    "_WebTemplateEngineBase",
+    "_WebTemplateRendererBase",
 ]

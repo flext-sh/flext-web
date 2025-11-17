@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Protocol, TypeAlias, runtime_checkable
+from typing import Any, Protocol, TypeAlias, runtime_checkable
 
 from flext_core import FlextResult, FlextTypes
 
@@ -161,11 +161,12 @@ class FlextWebTypes(FlextTypes):
             # Pydantic will validate at runtime, this ensures type checker understands
             match method_upper:
                 case "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS":
-                    # Pass None directly - Pydantic field accepts None, no fallback needed
+                    # Use empty dict if None - headers field requires dict
+                    request_headers = headers if headers is not None else {}
                     request = FlextWebModels.Http.Request(
                         url=url,
                         method=method_upper,  # Type narrowed by match/case
-                        headers=headers,  # Can be None, field accepts None
+                        headers=request_headers,
                         body=body,
                         timeout=timeout,
                     )
@@ -207,10 +208,11 @@ class FlextWebTypes(FlextTypes):
             )
 
         try:
-            # Pass None directly - Pydantic field accepts None, no fallback needed
+            # Use empty dict if None - headers field requires dict
+            response_headers = headers if headers is not None else {}
             response = FlextWebModels.Http.Response(
                 status_code=status_code,
-                headers=headers,  # Can be None, field accepts None
+                headers=response_headers,
                 body=body,
                 elapsed_time=elapsed_time,
             )
@@ -228,9 +230,9 @@ class FlextWebTypes(FlextTypes):
         headers: dict[str, str] | None = None,
         body: str | dict[str, str] | None = None,
         timeout: float = FlextWebConstants.Http.DEFAULT_TIMEOUT_SECONDS,
-        query_params: dict[str, str] | None = None,
-        client_ip: str | None = None,
-        user_agent: str | None = None,
+        query_params: dict[str, Any] | None = None,
+        client_ip: str = "",
+        user_agent: str = "",
     ) -> FlextResult[FlextWebModels.Web.Request]:
         """Create web request model instance with proper validation.
 
@@ -280,14 +282,18 @@ class FlextWebTypes(FlextTypes):
             # Pydantic will validate at runtime, this ensures type checker understands
             match method_upper:
                 case "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS":
-                    # Pass None directly - Pydantic fields accept None, no fallback needed
+                    # Use defaults if None - fields require specific types
+                    request_headers = headers if headers is not None else {}
+                    request_query_params = (
+                        query_params if query_params is not None else {}
+                    )
                     request = FlextWebModels.Web.Request(
                         url=url,
                         method=method_upper,  # Type narrowed by match/case
-                        headers=headers,  # Can be None, field accepts None
+                        headers=request_headers,
                         body=body,
                         timeout=timeout,
-                        query_params=query_params,  # Can be None, field accepts None
+                        query_params=request_query_params,
                         client_ip=client_ip,
                         user_agent=user_agent,
                     )
@@ -308,8 +314,8 @@ class FlextWebTypes(FlextTypes):
         request_id: str,
         headers: dict[str, str] | None = None,
         body: str | dict[str, str] | None = None,
-        elapsed_time: float | None = None,
-        content_type: str | None = None,
+        elapsed_time: float = 0.0,
+        content_type: str = FlextWebConstants.Http.CONTENT_TYPE_JSON,
         content_length: int = 0,
         processing_time_ms: float = 0.0,
     ) -> FlextResult[FlextWebModels.Web.Response]:
@@ -337,15 +343,12 @@ class FlextWebTypes(FlextTypes):
             )
 
         try:
-            # Headers field in Web.Response doesn't accept None - use empty dict
-            # No fallback operator - explicit conversion
-            response_headers: dict[str, str] = {}
-            if headers is not None:
-                response_headers = headers
+            # Use defaults if None - fields require specific types
+            response_headers = headers if headers is not None else {}
             response = FlextWebModels.Web.Response(
                 status_code=status_code,
                 request_id=request_id,
-                headers=response_headers,  # Explicit dict, no None
+                headers=response_headers,
                 body=body,
                 elapsed_time=elapsed_time,
                 content_type=content_type,
@@ -367,8 +370,8 @@ class FlextWebTypes(FlextTypes):
         status: str = FlextWebConstants.WebEnvironment.Status.STOPPED.value,
         environment: str = FlextWebConstants.WebEnvironment.Name.DEVELOPMENT.value,
         *,
-        debug_mode: bool = False,
-        version: int = 1,
+        debug_mode: bool = FlextWebConstants.WebDefaults.DEBUG_MODE,
+        version: int = FlextWebConstants.WebDefaults.VERSION_INT,
     ) -> FlextResult[FlextWebModels.Application.Entity]:
         """Create application model instance."""
         try:

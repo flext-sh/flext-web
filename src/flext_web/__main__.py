@@ -39,9 +39,7 @@ class FlextWebCliService:
 
         """
         # Use monadic pattern for status check with side-effect logging
-        return self._api.get_service_status().map(
-            lambda status_data: self._log_status_and_return(status_data)
-        )
+        return self._api.get_service_status().map(self._log_status_and_return)
 
     def _log_status_and_return(
         self, status_data: FlextWebModels.Service.ServiceResponse
@@ -58,26 +56,26 @@ class FlextWebCliService:
         self._logger.info(f"Service status: {status_data.service}")
         return True
 
+    @staticmethod
+    def main() -> None:
+        """CLI entry point - static method following flext-core patterns."""
+        logger = FlextLogger(__name__)
+        cli_service = FlextWebCliService()
 
-def main() -> None:
-    """CLI entry point."""
-    logger = FlextLogger(__name__)
-    cli_service = FlextWebCliService()
+        # Use monadic pattern - handle failure and exit
+        result = cli_service.run()
 
-    # Use monadic pattern - handle failure and exit
-    result = cli_service.run()
+        # Process result - fast fail on error, no fallback
+        if result.is_failure:
+            logger.error(f"Service failed: {result.error}")
+            sys.exit(1)
 
-    # Process result - fast fail on error, no fallback
-    if result.is_failure:
-        logger.error(f"Service failed: {result.error}")
-        sys.exit(1)
-
-    # Success - exit normally
-    sys.exit(0)
+        # Success - exit normally
+        sys.exit(0)
 
 
 if __name__ == "__main__":
-    main()
+    FlextWebCliService.main()
 
 
-__all__ = ["FlextWebCliService", "main"]
+__all__ = ["FlextWebCliService"]

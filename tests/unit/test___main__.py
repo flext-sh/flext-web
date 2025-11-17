@@ -61,8 +61,8 @@ class TestFlextWebCliService:
             assert result.is_failure
             assert "Service unavailable" in result.error
 
-    def test_log_and_return_status(self) -> None:
-        """Test _log_and_return_status method."""
+    def test_log_status_and_return(self) -> None:
+        """Test _log_status_and_return method."""
         cli_service = __main__.FlextWebCliService()
 
         # Use real ServiceResponse structure
@@ -74,7 +74,7 @@ class TestFlextWebCliService:
         )
 
         # Should return True and not raise exception
-        result = cli_service._log_and_return_status(mock_status)
+        result = cli_service._log_status_and_return(mock_status)
         assert result is True  # Should return True for successful status check
 
 
@@ -99,7 +99,7 @@ class TestMainFunction:
                 mock_status
             ),
         ):
-            __main__.main()
+            __main__.FlextWebCliService.main()
             # Should exit with code 0 on success
             mock_exit.assert_called_once_with(0)
 
@@ -117,9 +117,27 @@ class TestMainFunction:
             ),
             patch("flext_web.__main__.sys.exit") as mock_exit,
         ):
-            __main__.main()
+            __main__.FlextWebCliService.main()
             # Should exit with code 1 on failure
             # sys.exit(1) should be called
             assert call(1) in mock_exit.call_args_list, (
                 "sys.exit(1) should have been called"
             )
+
+    def test_main_module_execution(self) -> None:
+        """Test __main__ module execution (line 78)."""
+        # Test that the module can be executed
+        # This covers the if __name__ == "__main__" line
+        import subprocess
+        import sys
+
+        # Execute the module directly
+        result = subprocess.run(
+            [sys.executable, "-m", "flext_web.__main__"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        # Should exit (either 0 or 1 depending on service status)
+        assert result.returncode in {0, 1}
