@@ -25,13 +25,15 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from enum import Enum
-from typing import Any, Literal
+from typing import Any
 
 from flext_core import FlextResult
-from pydantic import BaseModel, Field, computed_field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from flext_web.constants import FlextWebConstants
+
+# HttpMethodLiteral - import from constants for centralized definition
+HttpMethodLiteral = FlextWebConstants.HttpMethodLiteral
 
 
 class FlextWebModels:
@@ -81,8 +83,8 @@ class FlextWebModels:
 
             """
 
-            headers: dict[str, str] = Field(
-                default_factory=dict, description="HTTP headers for message"
+            headers: dict[str, str] | None = Field(
+                default=None, description="HTTP headers for message"
             )
             body: str | dict[str, Any] | None = Field(
                 default=None, description="Message body content"
@@ -110,9 +112,10 @@ class FlextWebModels:
                 max_length=FlextWebConstants.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: Literal[
-                "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
-            ] = Field(default="GET", description="HTTP method")
+            method: HttpMethodLiteral = Field(
+                default="GET",  # Use string literal, validated against HttpMethodLiteral
+                description="HTTP method",
+            )
             timeout: float = Field(
                 default=30.0, ge=0.0, le=300.0, description="Request timeout in seconds"
             )
@@ -162,11 +165,8 @@ class FlextWebModels:
                     True if status code is 200-299, False otherwise
 
                 """
-                return (
-                    FlextWebConstants.Http.HttpStatus.SUCCESS_MIN
-                    <= self.status_code
-                    <= FlextWebConstants.Http.HttpStatus.SUCCESS_MAX
-                )
+                success_min, success_max = FlextWebConstants.Http.SUCCESS_RANGE
+                return success_min <= self.status_code <= success_max
 
             @property
             def is_error(self) -> bool:
@@ -176,7 +176,7 @@ class FlextWebModels:
                     True if status code >= 400, False otherwise
 
                 """
-                return self.status_code >= FlextWebConstants.Http.HttpStatus.ERROR_MIN
+                return self.status_code >= FlextWebConstants.Http.ERROR_MIN
 
     # =========================================================================
     # WEB APPLICATION MODELS (Entities - with identity)
@@ -214,14 +214,15 @@ class FlextWebModels:
                 max_length=FlextWebConstants.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: Literal[
-                "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
-            ] = Field(default="GET", description="HTTP method")
+            method: HttpMethodLiteral = Field(
+                default="GET",  # Use string literal, validated against HttpMethodLiteral
+                description="HTTP method",
+            )
             timeout: float = Field(
                 default=30.0, ge=0.0, le=300.0, description="Request timeout in seconds"
             )
-            headers: dict[str, str] = Field(
-                default_factory=dict, description="HTTP headers"
+            headers: dict[str, str] | None = Field(
+                default=None, description="HTTP headers"
             )
             body: str | dict[str, Any] | None = Field(
                 default=None, description="Request body content"
@@ -234,8 +235,8 @@ class FlextWebModels:
                 default_factory=lambda: str(uuid.uuid4()),
                 description="Unique request identifier",
             )
-            query_params: dict[str, Any] = Field(
-                default_factory=dict, description="Query string parameters"
+            query_params: dict[str, Any] | None = Field(
+                default=None, description="Query string parameters"
             )
             client_ip: str | None = Field(default=None, description="Client IP address")
             user_agent: str | None = Field(
@@ -319,11 +320,8 @@ class FlextWebModels:
                     True if status code is 200-299, False otherwise
 
                 """
-                return (
-                    FlextWebConstants.Http.HttpStatus.SUCCESS_MIN
-                    <= self.status_code
-                    <= FlextWebConstants.Http.HttpStatus.SUCCESS_MAX
-                )
+                success_min, success_max = FlextWebConstants.Http.SUCCESS_RANGE
+                return success_min <= self.status_code <= success_max
 
             @property
             def is_error(self) -> bool:
@@ -333,7 +331,7 @@ class FlextWebModels:
                     True if status code >= 400, False otherwise
 
                 """
-                return self.status_code >= FlextWebConstants.Http.HttpStatus.ERROR_MIN
+                return self.status_code >= FlextWebConstants.Http.ERROR_MIN
 
             @property
             def processing_time_seconds(self) -> float:
@@ -356,19 +354,8 @@ class FlextWebModels:
         status tracking, and event sourcing support.
         """
 
-        class EntityStatus(Enum):
-            """Application status enumeration for state management.
-
-            Defines all possible application states and lifecycle transitions.
-            """
-
-            STOPPED = "stopped"
-            STARTING = "starting"
-            RUNNING = "running"
-            STOPPING = "stopping"
-            ERROR = "error"
-            MAINTENANCE = "maintenance"
-            DEPLOYING = "deploying"
+        # EntityStatus removed - use FlextWebConstants.WebEnvironment.Status instead
+        # All status values are now centralized in constants.py
 
         class Entity(BaseModel):
             """Application entity with identity and lifecycle (Aggregate Root).
@@ -412,23 +399,14 @@ class FlextWebModels:
                     msg = f"Name must be at most {max_length} characters"
                     raise ValueError(msg)
 
-                # Check for reserved names
-                reserved_names = {"REDACTED_LDAP_BIND_PASSWORD", "root", "api", "system", "config", "health"}
-                if v.lower() in reserved_names:
+                # Check for reserved names - use constants
+                reserved_names_set = set(FlextWebConstants.WebSecurity.RESERVED_NAMES)
+                if v.lower() in reserved_names_set:
                     msg = f"Name '{v}' is reserved and cannot be used"
                     raise ValueError(msg)
 
-                # Security validation - check for dangerous patterns
-                dangerous_patterns = [
-                    "<script",
-                    "javascript:",
-                    "data:text/html",
-                    "'; DROP TABLE",
-                    "--",
-                    "/*",
-                    "*/",
-                ]
-                for pattern in dangerous_patterns:
+                # Security validation - check for dangerous patterns from constants
+                for pattern in FlextWebConstants.WebSecurity.DANGEROUS_PATTERNS:
                     if pattern.lower() in v.lower():
                         msg = f"Name contains dangerous pattern: {pattern}"
                         raise ValueError(msg)
@@ -436,38 +414,35 @@ class FlextWebModels:
                 return v
 
             host: str = Field(
-                default="localhost",
+                default=FlextWebConstants.WebDefaults.HOST,
                 min_length=1,
                 max_length=255,
                 description="Application host address",
             )
             port: int = Field(
-                default=8080, ge=1, le=65535, description="Application port number"
+                default=FlextWebConstants.WebDefaults.PORT,
+                ge=FlextWebConstants.WebValidation.PORT_RANGE[0],
+                le=FlextWebConstants.WebValidation.PORT_RANGE[1],
+                description="Application port number",
             )
             status: str = Field(
-                default="stopped", description="Current application status"
+                default=FlextWebConstants.WebEnvironment.Status.STOPPED.value,
+                description="Current application status",
             )
 
             @field_validator("status")
             @classmethod
             def validate_status(cls, v: str) -> str:
-                """Validate application status against allowed values."""
-                valid_statuses = {
-                    "stopped",
-                    "starting",
-                    "running",
-                    "stopping",
-                    "error",
-                    "maintenance",
-                    "deploying",
-                }
+                """Validate application status against allowed values from constants."""
+                valid_statuses = set(FlextWebConstants.WebEnvironment.STATUSES)
                 if v not in valid_statuses:
                     msg = f"Invalid status '{v}'. Must be one of: {sorted(valid_statuses)}"
                     raise ValueError(msg)
                 return v
 
             environment: str = Field(
-                default="development", description="Deployment environment"
+                default=FlextWebConstants.WebEnvironment.Name.DEVELOPMENT.value,
+                description="Deployment environment",
             )
             debug_mode: bool = Field(
                 default=False, description="Debug mode enabled flag"
@@ -480,86 +455,119 @@ class FlextWebModels:
                 default_factory=list, description="Domain events for event sourcing"
             )
 
-            @computed_field
             @property
             def is_running(self) -> bool:
                 """Check if application is currently running."""
-                return self.status == "running"
+                return (
+                    self.status == FlextWebConstants.WebEnvironment.Status.RUNNING.value
+                )
 
-            @computed_field
             @property
             def is_healthy(self) -> bool:
                 """Check if application is healthy and operational."""
-                return self.status in {"running", "maintenance"}
+                running = FlextWebConstants.WebEnvironment.Status.RUNNING.value
+                maintenance = FlextWebConstants.WebEnvironment.Status.MAINTENANCE.value
+                return self.status in {running, maintenance}
 
-            @computed_field
             @property
             def can_start(self) -> bool:
                 """Check if application can be started."""
-                return self.status == "stopped"
+                return (
+                    self.status == FlextWebConstants.WebEnvironment.Status.STOPPED.value
+                )
 
-            @computed_field
             @property
             def can_stop(self) -> bool:
                 """Check if application can be stopped."""
-                return self.status == "running"
+                return (
+                    self.status == FlextWebConstants.WebEnvironment.Status.RUNNING.value
+                )
 
-            @computed_field
             @property
             def can_restart(self) -> bool:
                 """Check if application can be restarted."""
-                return self.status in {"running", "stopped", "error"}
+                running = FlextWebConstants.WebEnvironment.Status.RUNNING.value
+                stopped = FlextWebConstants.WebEnvironment.Status.STOPPED.value
+                error = FlextWebConstants.WebEnvironment.Status.ERROR.value
+                return self.status in {running, stopped, error}
 
             @property
             def url(self) -> str:
                 """Get the full URL for the application."""
-                protocol = "https" if self.port in {443, 8443} else "http"
+                ssl_ports = FlextWebConstants.WebSecurity.SSL_PORTS
+                protocol = (
+                    FlextWebConstants.WebDefaults.HTTPS_PROTOCOL
+                    if self.port in ssl_ports
+                    else FlextWebConstants.WebDefaults.HTTP_PROTOCOL
+                )
                 return f"{protocol}://{self.host}:{self.port}"
 
-            def validate_business_rules(self) -> FlextResult[None]:
-                """Validate application business rules (Aggregate validation)."""
-                if (
-                    not self.name
-                    or len(self.name)
-                    < FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[0]
-                ):
-                    return FlextResult[None].fail(
-                        f"App name must be at least {FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[0]} characters"
-                    )
-                if (
-                    self.port < FlextWebConstants.WebValidation.PORT_RANGE[0]
-                    or self.port > FlextWebConstants.WebValidation.PORT_RANGE[1]
-                ):
-                    return FlextResult[None].fail(
-                        f"Port must be between {FlextWebConstants.WebValidation.PORT_RANGE[0]} and {FlextWebConstants.WebValidation.PORT_RANGE[1]}"
-                    )
-                return FlextResult[None].ok(None)
+            def validate_business_rules(self) -> FlextResult[bool]:
+                """Validate application business rules (Aggregate validation).
 
-            def start(self) -> FlextResult[Any]:
+                Fast-fail validation - no fallbacks, explicit checks only.
+
+                Returns:
+                    FlextResult[bool]: Success contains True if valid, failure with error message
+
+                """
+                min_name_length = FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[0]
+                if not self.name:
+                    return FlextResult[bool].fail(
+                        f"App name must be at least {min_name_length} characters"
+                    )
+                if len(self.name) < min_name_length:
+                    return FlextResult[bool].fail(
+                        f"App name must be at least {min_name_length} characters"
+                    )
+                min_port = FlextWebConstants.WebValidation.PORT_RANGE[0]
+                max_port = FlextWebConstants.WebValidation.PORT_RANGE[1]
+                if self.port < min_port:
+                    return FlextResult[bool].fail(
+                        f"Port must be between {min_port} and {max_port}"
+                    )
+                if self.port > max_port:
+                    return FlextResult[bool].fail(
+                        f"Port must be between {min_port} and {max_port}"
+                    )
+                return FlextResult[bool].ok(True)
+
+            def start(self) -> FlextResult[FlextWebModels.Application.Entity]:
                 """Start the application (state transition command)."""
-                if self.status == "running":
-                    return FlextResult.fail("already running")
-                self.status = "running"
+                running_status = FlextWebConstants.WebEnvironment.Status.RUNNING.value
+                if self.status == running_status:
+                    return FlextResult[FlextWebModels.Application.Entity].fail(
+                        "already running"
+                    )
+                self.status = running_status
                 self.add_domain_event("ApplicationStarted")
-                return FlextResult.ok(self)
+                return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
-            def stop(self) -> FlextResult[Any]:
+            def stop(self) -> FlextResult[FlextWebModels.Application.Entity]:
                 """Stop the application (state transition command)."""
-                if self.status != "running":
-                    return FlextResult.fail("not running")
-                self.status = "stopped"
+                running_status = FlextWebConstants.WebEnvironment.Status.RUNNING.value
+                stopped_status = FlextWebConstants.WebEnvironment.Status.STOPPED.value
+                if self.status != running_status:
+                    return FlextResult[FlextWebModels.Application.Entity].fail(
+                        "not running"
+                    )
+                self.status = stopped_status
                 self.add_domain_event("ApplicationStopped")
-                return FlextResult.ok(self)
+                return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
-            def restart(self) -> FlextResult[Any]:
+            def restart(self) -> FlextResult[FlextWebModels.Application.Entity]:
                 """Restart the application (state transition command)."""
                 if not self.can_restart:
-                    return FlextResult.fail("Cannot restart in current state")
-                self.status = "starting"
+                    return FlextResult[FlextWebModels.Application.Entity].fail(
+                        "Cannot restart in current state"
+                    )
+                starting_status = FlextWebConstants.WebEnvironment.Status.STARTING.value
+                running_status = FlextWebConstants.WebEnvironment.Status.RUNNING.value
+                self.status = starting_status
                 self.add_domain_event("ApplicationRestarting")
-                self.status = "running"
+                self.status = running_status
                 self.add_domain_event("ApplicationStarted")
-                return FlextResult.ok(self)
+                return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
             def update_metrics(self, new_metrics: dict[str, Any]) -> None:
                 """Update application metrics."""
@@ -577,10 +585,6 @@ class FlextWebModels:
                     "environment": self.environment,
                 }
 
-            def to_dict(self) -> dict[str, Any]:
-                """Convert entity to dictionary representation."""
-                return self.model_dump()
-
             def __str__(self) -> str:
                 """Return string representation of the application."""
                 return f"{self.name} ({self.url}) - {self.status}"
@@ -588,6 +592,27 @@ class FlextWebModels:
             def add_domain_event(self, event: str) -> None:
                 """Add domain event for event sourcing."""
                 self.domain_events.append(event)
+
+            @classmethod
+            def format_id_from_name(cls, name: str) -> str:
+                """Format application ID from name using web utilities.
+
+                This method uses FlextWebUtilities.format_app_id directly,
+                ensuring consistent ID formatting across the codebase.
+
+                Args:
+                    name: Application name to format
+
+                Returns:
+                    Formatted application ID
+
+                Raises:
+                    ValueError: If name cannot be formatted to valid ID
+
+                """
+                from flext_web.utilities import FlextWebUtilities
+
+                return FlextWebUtilities.format_app_id(name)
 
         class EntityConfig(BaseModel):
             """Application entity configuration (Value Object).
@@ -599,16 +624,123 @@ class FlextWebModels:
                 min_length=1, max_length=100, description="Application name"
             )
             host: str = Field(
-                default="localhost",
+                default=FlextWebConstants.WebDefaults.HOST,
                 min_length=1,
                 max_length=255,
                 description="Application host address",
             )
             port: int = Field(
-                default=8080, ge=1, le=65535, description="Application port number"
+                default=FlextWebConstants.WebDefaults.PORT,
+                ge=FlextWebConstants.WebValidation.PORT_RANGE[0],
+                le=FlextWebConstants.WebValidation.PORT_RANGE[1],
+                description="Application port number",
             )
             debug: bool = Field(default=False, description="Debug mode flag")
             secret_key: str = Field(min_length=32, description="Application secret key")
+
+    # =========================================================================
+    # SERVICE REQUEST/RESPONSE MODELS - Replace dict[str, object] types
+    # =========================================================================
+
+    class Service(BaseModel):
+        """Service layer request/response models replacing generic dict types."""
+
+        class Credentials(BaseModel):
+            """Authentication credentials model."""
+
+            username: str = Field(min_length=1, description="Username")
+            password: str = Field(min_length=1, description="Password")
+
+        class UserData(BaseModel):
+            """User registration data model."""
+
+            username: str = Field(min_length=1, description="Username")
+            email: str = Field(min_length=1, description="Email address")
+            password: str | None = Field(
+                default=None, description="Password (optional)"
+            )
+
+        class AppData(BaseModel):
+            """Application creation data model."""
+
+            name: str = Field(
+                min_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[0],
+                max_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[1],
+                description="Application name",
+            )
+            host: str = Field(
+                min_length=1, max_length=255, description="Application host"
+            )
+            port: int = Field(
+                ge=FlextWebConstants.WebValidation.PORT_RANGE[0],
+                le=FlextWebConstants.WebValidation.PORT_RANGE[1],
+                description="Application port",
+            )
+
+        class EntityData(BaseModel):
+            """Generic entity data model."""
+
+            data: dict[str, Any] = Field(
+                default_factory=dict, description="Entity data dictionary"
+            )
+
+        class AuthResponse(BaseModel):
+            """Authentication response model."""
+
+            token: str = Field(description="Authentication token")
+            user_id: str = Field(description="User identifier")
+            authenticated: bool = Field(description="Authentication status")
+
+        class UserResponse(BaseModel):
+            """User registration response model."""
+
+            id: str = Field(description="User identifier")
+            username: str = Field(description="Username")
+            email: str = Field(description="Email address")
+            created: bool = Field(description="Creation status")
+
+        class AppResponse(BaseModel):
+            """Application response model."""
+
+            id: str = Field(description="Application identifier")
+            name: str = Field(description="Application name")
+            host: str = Field(description="Application host")
+            port: int = Field(description="Application port")
+            status: str = Field(description="Application status")
+            created_at: str = Field(description="Creation timestamp")
+
+        class HealthResponse(BaseModel):
+            """Health check response model."""
+
+            status: str = Field(description="Health status")
+            service: str = Field(description="Service name")
+            timestamp: str = Field(description="Timestamp")
+
+        class MetricsResponse(BaseModel):
+            """Metrics response model."""
+
+            service_status: str = Field(description="Service status")
+            components: list[str] = Field(description="Service components")
+
+        class DashboardResponse(BaseModel):
+            """Dashboard response model."""
+
+            total_applications: int = Field(description="Total applications")
+            running_applications: int = Field(description="Running applications")
+            service_status: str = Field(description="Service status")
+            routes_initialized: bool = Field(description="Routes initialization status")
+            middleware_configured: bool = Field(
+                description="Middleware configuration status"
+            )
+            timestamp: str = Field(description="Timestamp")
+
+        class ServiceResponse(BaseModel):
+            """Generic service response model."""
+
+            service: str = Field(description="Service name")
+            capabilities: list[str] = Field(description="Service capabilities")
+            status: str = Field(description="Service status")
+            config: bool = Field(description="Configuration status")
 
     # =========================================================================
     # WEB REQUEST/RESPONSE MODELS (Value Objects)
@@ -617,13 +749,12 @@ class FlextWebModels:
     class WebRequest(BaseModel):
         """Web request model with complete tracking."""
 
-        method: Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"] = (
-            Field(default="GET", description="HTTP method")
+        method: HttpMethodLiteral = Field(
+            default="GET",  # Use string literal, validated against HttpMethodLiteral
+            description="HTTP method",
         )
         url: str = Field(min_length=1, max_length=2048, description="Request URL")
-        headers: dict[str, str] = Field(
-            default_factory=dict, description="HTTP headers"
-        )
+        headers: dict[str, str] | None = Field(default=None, description="HTTP headers")
         body: str | dict[str, Any] | None = Field(
             default=None, description="Request body"
         )
@@ -641,8 +772,8 @@ class FlextWebModels:
 
         request_id: str = Field(description="Associated request identifier")
         status_code: int = Field(ge=100, le=599, description="HTTP status code")
-        headers: dict[str, str] = Field(
-            default_factory=dict, description="HTTP response headers"
+        headers: dict[str, str] | None = Field(
+            default=None, description="HTTP response headers"
         )
         body: str | dict[str, Any] | None = Field(
             default=None, description="Response body"
@@ -676,34 +807,91 @@ class FlextWebModels:
 
     @classmethod
     def create_web_app(
-        cls, app_data: dict[str, Any]
+        cls,
+        name: str,
+        host: str = FlextWebConstants.WebDefaults.HOST,
+        port: int = FlextWebConstants.WebDefaults.PORT,
+        **kwargs: Any,
     ) -> FlextResult[FlextWebModels.Application.Entity]:
-        """Create a web application from data dictionary."""
+        """Create a web application from direct parameters.
+
+        No dict conversion - use direct parameters for type safety.
+        Pydantic validation will handle errors automatically.
+
+        Args:
+            name: Application name
+            host: Application host
+            port: Application port
+            **kwargs: Additional entity parameters
+
+        Returns:
+            FlextResult[Application.Entity]: Success contains entity,
+                                           failure contains validation error
+
+        """
+        from pydantic import ValidationError
+
         try:
-            entity = cls.Application.Entity(**app_data)
+            entity = cls.Application.Entity(
+                name=name,
+                host=host,
+                port=port,
+                **kwargs,
+            )
             return FlextResult.ok(entity)
-        except Exception as e:
-            return FlextResult.fail(f"Failed to create web app: {e}")
+        except ValidationError as e:
+            error_msg = (
+                f"Validation failed: {e.errors()[0]['msg']}" if e.errors() else str(e)
+            )
+            return FlextResult.fail(error_msg)
+        except ValueError as e:
+            return FlextResult.fail(str(e))
 
     @classmethod
     def create_web_request(
         cls,
-        method: Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+        method: HttpMethodLiteral,
         url: str,
         headers: dict[str, str] | None = None,
         body: str | dict[str, Any] | None = None,
     ) -> FlextResult[WebRequest]:
-        """Create a web request model."""
+        """Create a web request model.
+
+        Args:
+            method: HTTP method
+            url: Request URL
+            headers: Request headers (defaults to empty dict)
+            body: Request body
+
+        Returns:
+            FlextResult[WebRequest]: Success contains request model,
+                                    failure contains validation error
+
+        """
+        from pydantic import ValidationError
+
+        # Validate headers type - fast fail, no fallback
+        if headers is not None and not isinstance(headers, dict):
+            return FlextResult[FlextWebModels.WebRequest].fail(
+                "Headers must be a dictionary or None"
+            )
+
         try:
+            # Pass None directly - Pydantic field accepts None, no fallback needed
             request = cls.WebRequest(
                 method=method,
                 url=url,
-                headers=headers or {},
+                headers=headers,  # Can be None, field accepts None
                 body=body,
             )
-            return FlextResult.ok(request)
-        except Exception as e:
-            return FlextResult.fail(f"Failed to create web request: {e}")
+            return FlextResult[FlextWebModels.WebRequest].ok(request)
+        except ValidationError as e:
+            error_msg = (
+                f"Validation failed: {e.errors()[0]['msg']}" if e.errors() else str(e)
+            )
+            return FlextResult.fail(error_msg)
+        except ValueError as e:
+            return FlextResult.fail(str(e))
 
     @classmethod
     def create_web_response(
@@ -713,17 +901,43 @@ class FlextWebModels:
         headers: dict[str, str] | None = None,
         body: str | dict[str, Any] | None = None,
     ) -> FlextResult[WebResponse]:
-        """Create a web response model."""
+        """Create a web response model.
+
+        Args:
+            request_id: Associated request identifier
+            status_code: HTTP status code
+            headers: Response headers (defaults to empty dict)
+            body: Response body
+
+        Returns:
+            FlextResult[WebResponse]: Success contains response model,
+                                     failure contains validation error
+
+        """
+        from pydantic import ValidationError
+
+        # Validate headers type - fast fail, no fallback
+        if headers is not None and not isinstance(headers, dict):
+            return FlextResult[FlextWebModels.WebResponse].fail(
+                "Headers must be a dictionary or None"
+            )
+
         try:
+            # Pass None directly - Pydantic field accepts None, no fallback needed
             response = cls.WebResponse(
                 request_id=request_id,
                 status_code=status_code,
-                headers=headers or {},
+                headers=headers,  # Can be None, field accepts None
                 body=body,
             )
-            return FlextResult.ok(response)
-        except Exception as e:
-            return FlextResult.fail(f"Failed to create web response: {e}")
+            return FlextResult[FlextWebModels.WebResponse].ok(response)
+        except ValidationError as e:
+            error_msg = (
+                f"Validation failed: {e.errors()[0]['msg']}" if e.errors() else str(e)
+            )
+            return FlextResult.fail(error_msg)
+        except ValueError as e:
+            return FlextResult.fail(str(e))
 
     class FastAPI:
         """FastAPI framework-specific models for configuration conversion.

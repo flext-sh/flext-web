@@ -47,11 +47,19 @@ def check_service_health() -> bool:
         response = requests.get(f"{ExampleConstants.BASE_URL}/health", timeout=5)
         if response.status_code == ExampleConstants.HTTP_OK:
             result = response.json()
-            # Check the standardized response format
-            if result.get("success", False):
-                data = result.get("data")
-                if isinstance(data, dict):
-                    return data.get("status") == "healthy"
+            # Fast fail - no fallback, validate structure explicitly
+            if not isinstance(result, dict):
+                return False
+            if "success" not in result or result["success"] is not True:
+                return False
+            if "data" not in result:
+                return False
+            data = result["data"]
+            if not isinstance(data, dict):
+                return False
+            if "status" not in data:
+                return False
+            return data["status"] == "healthy"
         return False
     except requests.RequestException:
         return False
@@ -61,7 +69,7 @@ def create_application(
     name: str,
     port: int,
     host: str = "localhost",
-) -> FlextWebTypes.AppData | None:
+) -> FlextWebTypes.AppData:
     """Create a new application using WebHandlers.
 
     Args:
@@ -70,28 +78,53 @@ def create_application(
         host: Host address (default: localhost)
 
     Returns:
-        Application data from FlextWebApp model or None if failed.
+        Application data from FlextWebApp model.
+
+    Raises:
+        ValueError: If application creation fails.
 
     """
     request_data: dict[str, str | int] = {"name": name, "port": port, "host": host}
 
-    try:
-        response = requests.post(
-            f"{ExampleConstants.BASE_URL}{ExampleConstants.APPS_BASE}",
-            json=request_data,
-            timeout=5,
+    # Use FlextResult for error handling - fast fail, no fallback
+    result = (
+        FlextResult.safe_call(
+            lambda: requests.post(
+                f"{ExampleConstants.BASE_URL}{ExampleConstants.APPS_BASE}",
+                json=request_data,
+                timeout=5,
+            )
         )
-        if response.status_code == ExampleConstants.HTTP_OK:
-            result = response.json()
-            if result.get("success"):
-                data = result.get("data")
+        .filter(
+            lambda r: r.status_code == ExampleConstants.HTTP_OK,
+            "HTTP request failed",
+        )
+        .flat_map(
+            lambda r: FlextResult.safe_call(r.json)
+            if hasattr(r, "json")
+            else FlextResult[dict[str, object]].fail("Invalid response object"),
+        )
+        .flat_map(
+            lambda json_data: (
+                FlextResult[FlextWebTypes.AppData].ok(
+                    cast("FlextWebTypes.AppData", json_data["data"])
+                )
+                if (
+                    json_data.get("success")
+                    and isinstance(data := json_data.get("data"), dict)
+                    and "id" in data
+                    and "name" in data
+                )
+                else FlextResult[FlextWebTypes.AppData].fail("Invalid application data")
+            )
+        )
+    )
 
-                if isinstance(data, dict) and "id" in data and "name" in data:
-                    return cast("FlextWebTypes.AppData", data)
-                return None
-        return None
-    except requests.RequestException:
-        return None
+    # Fast fail - no fallback to None
+    if result.is_failure:
+        error_msg = f"Application creation failed: {result.error}"
+        raise ValueError(error_msg)
+    return result.unwrap()
 
 
 def _extract_apps_from_response(
@@ -99,14 +132,19 @@ def _extract_apps_from_response(
     data_key: str,
 ) -> list[FlextWebTypes.AppData]:
     """Extract apps list from response data with proper type checking."""
+    # Fast fail - no fallback, validate structure explicitly
     if not isinstance(response_data, dict):
         return []
-
-    data_section = response_data.get("data")
+    if "data" not in response_data:
+        return []
+    data_section = response_data["data"]
     if not isinstance(data_section, dict):
         return []
 
-    apps_list = data_section.get(data_key)
+    # Fast fail - no fallback, validate structure explicitly
+    if data_key not in data_section:
+        return []
+    apps_list = data_section[data_key]
     if not isinstance(apps_list, list):
         return []
 
@@ -122,7 +160,7 @@ def _execute_app_operation(
     method: str,
     endpoint: str,
     json_data: dict[str, object] | None = None,
-) -> FlextWebTypes.AppData | None:
+) -> FlextWebTypes.AppData:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
     Reduces from 9 returns to single monadic chain using FlextResult from flext-core.
@@ -161,21 +199,24 @@ def _execute_app_operation(
             lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
                 cast("FlextWebTypes.AppData", json_data["data"]),
             )
-            if all(
-                [
-                    json_data.get("success"),
-                    isinstance(data := json_data.get("data"), dict),
-                    data
-                    and {"id", "name"}.issubset(
-                        cast("dict[str, object]", data).keys(),
-                    ),
-                ],
+            if (
+                isinstance(json_data, dict)
+                and "success" in json_data
+                and json_data["success"] is True
+                and "data" in json_data
+                and isinstance(data := json_data["data"], dict)
+                and "id" in data
+                and "name" in data
             )
             else FlextResult[FlextWebTypes.AppData].fail("Invalid app data"),
         )
     )
 
-    return result.value if result.is_success else None
+    # Fast fail - no fallback to None
+    if result.is_failure:
+        error_msg = f"Operation failed: {result.error}"
+        raise ValueError(error_msg)
+    return result.unwrap()
 
 
 def _execute_list_operation(
@@ -184,7 +225,7 @@ def _execute_list_operation(
 ) -> list[FlextWebTypes.AppData]:
     """Advanced Monad Composition using flext-core - eliminates 7 returns with Kleisli composition."""
     # Pure functional Kleisli composition using flext-core patterns
-    return (
+    result = (
         FlextResult.safe_call(
             lambda: requests.get(f"{ExampleConstants.BASE_URL}{endpoint}", timeout=5),
         )
@@ -198,11 +239,16 @@ def _execute_list_operation(
             else FlextResult[dict[str, object]].fail("Invalid response object"),
         )
         .map(lambda d: _extract_apps_from_response(d, data_key))
-        .unwrap_or([])
     )
 
+    # Fast fail - no fallback to empty list
+    if result.is_failure:
+        error_msg = f"List operation failed: {result.error}"
+        raise ValueError(error_msg)
+    return result.unwrap()
 
-def start_application(app_id: str) -> FlextWebTypes.AppData | None:
+
+def start_application(app_id: str) -> FlextWebTypes.AppData:
     """Start an application using FlextWebAppHandler.start().
 
     Args:
@@ -218,7 +264,7 @@ def start_application(app_id: str) -> FlextWebTypes.AppData | None:
     )
 
 
-def get_application_status(app_id: str) -> FlextWebTypes.AppData | None:
+def get_application_status(app_id: str) -> FlextWebTypes.AppData:
     """Get application status using FlextWebApp entity.
 
     Args:
@@ -234,7 +280,7 @@ def get_application_status(app_id: str) -> FlextWebTypes.AppData | None:
     )
 
 
-def stop_application(app_id: str) -> FlextWebTypes.AppData | None:
+def stop_application(app_id: str) -> FlextWebTypes.AppData:
     """Stop an application using FlextWebAppHandler.stop().
 
     Args:
@@ -272,51 +318,48 @@ def demo_application_lifecycle() -> None:
     if not check_service_health():
         return
 
-    # Create applications with different configurations
-    app1 = create_application("web-service", 3000)
-    app2 = create_application("api-gateway", 4000, "127.0.0.1")
-
-    if not app1 or not app2:
+    # Create applications with different configurations - fast fail on error
+    try:
+        app1 = create_application("web-service", 3000)
+        app2 = create_application("api-gateway", 4000, "127.0.0.1")
+    except ValueError as e:
+        print(f"Application creation failed: {e}")
         return
 
     list_applications()
 
-    # Start applications and check results
-    start_result1 = start_application(str(app1["id"]))
-    start_result2 = start_application(str(app2["id"]))
+    # Start applications and check results - fast fail on error
+    try:
+        start_application(str(app1.id))
+        print(f"✅ Application {app1.name} started successfully")
+        start_application(str(app2.id))
+        print(f"✅ Application {app2.name} started successfully")
+    except ValueError as e:
+        print(f"Application start failed: {e}")
+        return
 
-    if start_result1:
-        print(f"✅ Application {app1['name']} started successfully")
-    else:
-        print(f"❌ Failed to start application {app1['name']}")
-
-    if start_result2:
-        print(f"✅ Application {app2['name']} started successfully")
-    else:
-        print(f"❌ Failed to start application {app2['name']}")
-
-    # Check individual status with proper error handling
-    for app_data in [app1, app2]:
-        app_id: str = str(app_data["id"])
-        status: FlextWebTypes.AppData | None = get_application_status(app_id)
-        if status:
-            "🟢" if status.get("is_running") else "🔴"
+    # Check individual status with proper error handling - fast fail on error
+    try:
+        for app_data in [app1, app2]:
+            app_id = str(app_data.id)
+            status = get_application_status(app_id)
+            status_icon = "🟢" if status.status == "running" else "🔴"
+            print(f"{status_icon} Application {app_data.name} status: {status.status}")
+    except ValueError as e:
+        print(f"Status check failed: {e}")
+        return
 
     list_applications()
 
-    # Stop applications
-    stop_result1 = stop_application(str(app1["id"]))
-    stop_result2 = stop_application(str(app2["id"]))
-
-    if stop_result1:
-        print(f"✅ Application {app1['name']} stopped successfully")
-    else:
-        print(f"❌ Failed to stop application {app1['name']}")
-
-    if stop_result2:
-        print(f"✅ Application {app2['name']} stopped successfully")
-    else:
-        print(f"❌ Failed to stop application {app2['name']}")
+    # Stop applications - fast fail on error
+    try:
+        stop_application(str(app1.id))
+        print(f"✅ Application {app1.name} stopped successfully")
+        stop_application(str(app2.id))
+        print(f"✅ Application {app2.name} stopped successfully")
+    except ValueError as e:
+        print(f"Application stop failed: {e}")
+        return
 
     list_applications()
 

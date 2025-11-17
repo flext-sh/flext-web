@@ -48,8 +48,11 @@ def setup_test_environment() -> Generator[None]:
 
 @pytest.fixture
 def real_config() -> FlextWebConfig:
-    """Create real test configuration."""
-    return FlextWebConfig()
+    """Create real test configuration with required secret key.
+
+    Fast fail if secret key cannot be provided - no fallback.
+    """
+    return FlextWebConfig(secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY)
 
 
 @pytest.fixture
@@ -57,7 +60,8 @@ def real_service(
     real_config: FlextWebConfig,
 ) -> FlextWebServices:
     """Create real FlextWebServices instance with clean state."""
-    service_result = FlextWebServices.create_service(real_config.model_dump())
+    # Pass config object directly - no dict conversion
+    service_result = FlextWebServices.create_service(real_config)
     assert service_result.is_success, f"Service creation failed: {service_result.error}"
     return service_result.unwrap()
     # Clean up service state after each test
@@ -71,8 +75,12 @@ def real_app(real_config: FlextWebConfig) -> Flask:
 
     # Create a basic Flask app for testing
     app = Flask(__name__)
+    # Fast fail if secret_key is None - no fallback
+    if real_config.secret_key is None:
+        msg = "Secret key must be provided in test configuration"
+        raise ValueError(msg)
     app.config.update(
-        SECRET_KEY=real_config.secret_key or "test-secret-key",
+        SECRET_KEY=real_config.secret_key,
         TESTING=True,
     )
     return app

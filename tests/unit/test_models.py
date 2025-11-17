@@ -14,16 +14,18 @@ class TestFlextWebModels:
     """Test suite for FlextWebModels class."""
 
     def test_web_app_status_enum(self) -> None:
-        """Test WebAppStatus enum values."""
-        assert FlextWebModels.Application.EntityStatus.STOPPED.value == "stopped"
-        assert FlextWebModels.Application.EntityStatus.STARTING.value == "starting"
-        assert FlextWebModels.Application.EntityStatus.RUNNING.value == "running"
-        assert FlextWebModels.Application.EntityStatus.STOPPING.value == "stopping"
-        assert FlextWebModels.Application.EntityStatus.ERROR.value == "error"
+        """Test WebAppStatus enum values from constants."""
+        from flext_web.constants import FlextWebConstants
+
+        assert FlextWebConstants.WebEnvironment.Status.STOPPED.value == "stopped"
+        assert FlextWebConstants.WebEnvironment.Status.STARTING.value == "starting"
+        assert FlextWebConstants.WebEnvironment.Status.RUNNING.value == "running"
+        assert FlextWebConstants.WebEnvironment.Status.STOPPING.value == "stopping"
+        assert FlextWebConstants.WebEnvironment.Status.ERROR.value == "error"
         assert (
-            FlextWebModels.Application.EntityStatus.MAINTENANCE.value == "maintenance"
+            FlextWebConstants.WebEnvironment.Status.MAINTENANCE.value == "maintenance"
         )
-        assert FlextWebModels.Application.EntityStatus.DEPLOYING.value == "deploying"
+        assert FlextWebConstants.WebEnvironment.Status.DEPLOYING.value == "deploying"
 
     def test_web_app_initialization_with_defaults(self) -> None:
         """Test WebApp initialization with defaults."""
@@ -227,7 +229,7 @@ class TestFlextWebModels:
         app = FlextWebModels.Application.Entity(
             id="test-id", name="test-app", host="localhost", port=8080
         )
-        app_dict = app.to_dict()
+        app_dict = app.model_dump()
         assert app_dict["id"] == "test-id"
         assert app_dict["name"] == "test-app"
         assert app_dict["host"] == "localhost"
@@ -305,8 +307,9 @@ class TestFlextWebModels:
 
     def test_create_web_app_factory(self) -> None:
         """Test create_web_app factory method."""
-        app_data = {"name": "test-app", "host": "localhost", "port": 8080}
-        result = FlextWebModels.create_web_app(app_data)
+        result = FlextWebModels.create_web_app(
+            name="test-app", host="localhost", port=8080
+        )
         assert result.is_success
         app = result.unwrap()
         assert app.name == "test-app"

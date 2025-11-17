@@ -17,8 +17,8 @@ def main() -> None:
         return
     config = config_result.value
 
-    # Create service using the refactored factory function
-    service_result = FlextWebServices.create_web_service(config.model_dump())
+    # Create service using the refactored factory function - pass config object directly
+    service_result = FlextWebServices.create_web_service(config)
     if service_result.is_failure:
         print(f"Service creation failed: {service_result.error}")
         return

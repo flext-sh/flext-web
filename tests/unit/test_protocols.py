@@ -153,10 +153,7 @@ class TestFlextWebProtocols:
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
 
-        # Should have required methods from FlextProtocols.Observability
-        assert hasattr(protocol, "record_metric")
-        assert hasattr(protocol, "log_event")
-        # Web-specific methods
+        # Should have web-specific methods (no fake methods)
         assert hasattr(protocol, "record_web_request")
         assert hasattr(protocol, "get_web_health_status")
         assert hasattr(protocol, "get_web_metrics")

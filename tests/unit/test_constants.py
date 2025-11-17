@@ -25,7 +25,7 @@ class TestFlextWebConstants:
         """Test web-specific constants."""
         assert FlextWebConstants.WebDefaults.HOST == "localhost"
         assert FlextWebConstants.WebDefaults.PORT == 8080
-        assert len(FlextWebConstants.WebSpecific.DEV_SECRET_KEY) >= 32
+        assert len(FlextWebConstants.WebDefaults.DEV_SECRET_KEY) >= 32
         assert len(FlextWebConstants.WebSpecific.DEV_ENVIRONMENT_KEY) >= 32
         assert len(FlextWebConstants.WebSpecific.TEST_ENVIRONMENT_KEY) >= 32
         assert FlextWebConstants.WebSpecific.ALL_INTERFACES == "0.0.0.0"
@@ -35,11 +35,11 @@ class TestFlextWebConstants:
 
     def test_web_environment_types(self) -> None:
         """Test web environment type definitions."""
-        # Test that the types are properly defined
-        assert hasattr(FlextWebConstants.WebEnvironment, "EnvironmentType")
-        assert hasattr(FlextWebConstants.WebEnvironment, "WebAppType")
-        assert hasattr(FlextWebConstants.WebEnvironment, "FlextWebMethod")
-        assert hasattr(FlextWebConstants.WebEnvironment, "WebStatus")
+        # Test that the types are properly defined at the top level
+        assert hasattr(FlextWebConstants, "EnvironmentType")
+        assert hasattr(FlextWebConstants, "ApplicationType")
+        assert hasattr(FlextWebConstants, "HttpMethod")
+        assert hasattr(FlextWebConstants, "ApplicationStatus")
 
     def test_web_security_constants(self) -> None:
         """Test web security constants."""

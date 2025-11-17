@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from enum import IntEnum, StrEnum
 from ipaddress import IPv4Address
 from types import MappingProxyType
-from typing import ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar, Final, Literal
 
 from flext_core import FlextConstants
 
@@ -30,6 +30,25 @@ class FlextWebConstants(FlextConstants):
         DEV_SECRET_KEY: Final[str] = "dev-secret-key-32-characters-long-for-development"
         TEST_SECRET_KEY: Final[str] = "test-secret-key-32-characters-long-for-tests"
         TIMEOUT_SECONDS: Final[float] = 30.0
+        HTTP_PROTOCOL: Final[str] = "http"
+        HTTPS_PROTOCOL: Final[str] = "https"
+
+    class WebResponse:
+        """Web response status constants."""
+
+        STATUS_SUCCESS: Final[str] = "success"
+        STATUS_ERROR: Final[str] = "error"
+        STATUS_OPERATIONAL: Final[str] = "operational"
+        STATUS_HEALTHY: Final[str] = "healthy"
+
+    class WebService:
+        """Web service name constants."""
+
+        SERVICE_NAME: Final[str] = "flext-web"
+        SERVICE_NAME_FLASK: Final[str] = "flext-web-flask"
+        SERVICE_NAME_API: Final[str] = "flext-web-api"
+        SERVICE_NAME_HANDLERS: Final[str] = "flext-web-handlers"
+        SERVICE_NAME_SERVICES: Final[str] = "flext-web-services"
 
     class WebServer:
         """Server boundaries and validation values."""
@@ -43,8 +62,6 @@ class FlextWebConstants(FlextConstants):
     class WebSpecific:
         """Deployment specific identifiers and network defaults."""
 
-        DEV_SECRET_KEY: Final[str] = "dev-secret-key-32-characters-long-for-development"
-        TEST_SECRET_KEY: Final[str] = "test-secret-key-32-characters-long-for-tests"
         DEV_ENVIRONMENT_KEY: Final[str] = (
             "dev-environment-key-32-characters-long-for-dev"
         )
@@ -59,7 +76,7 @@ class FlextWebConstants(FlextConstants):
     class WebValidation:
         """Validation constants for configuration and HTTP payloads."""
 
-        PORT_RANGE: Final[tuple[int, int]] = (1024, 65535)
+        PORT_RANGE: Final[tuple[int, int]] = (1, 65535)  # Allow system ports for SSL (443, 8443)
         NAME_LENGTH_RANGE: Final[tuple[int, int]] = (3, 100)
         MIN_SECRET_KEY_LENGTH: Final[int] = 32
         MAX_CONTENT_LENGTH_DEFAULT: Final[int] = 16 * 1024 * 1024
@@ -94,6 +111,15 @@ class FlextWebConstants(FlextConstants):
             PATCH = "PATCH"
             HEAD = "HEAD"
             OPTIONS = "OPTIONS"
+
+        # HTTP Content Types
+        CONTENT_TYPE_JSON: Final[str] = "application/json"
+        CONTENT_TYPE_TEXT: Final[str] = "text/plain"
+        CONTENT_TYPE_HTML: Final[str] = "text/html"
+
+        # HTTP Header Names
+        HEADER_CONTENT_TYPE: Final[str] = "content-type"
+        HEADER_CONTENT_LENGTH: Final[str] = "content-length"
 
         METHODS: ClassVar[tuple[str, ...]] = tuple(method.value for method in Method)
         SAFE_METHODS: ClassVar[tuple[str, ...]] = (
@@ -150,6 +176,23 @@ class FlextWebConstants(FlextConstants):
         """Security settings and safe defaults."""
 
         MIN_SECRET_KEY_LENGTH: Final[int] = 32
+        RESERVED_NAMES: ClassVar[tuple[str, ...]] = (
+            "REDACTED_LDAP_BIND_PASSWORD",
+            "root",
+            "api",
+            "system",
+            "config",
+            "health",
+        )
+        DANGEROUS_PATTERNS: ClassVar[tuple[str, ...]] = (
+            "<script",
+            "javascript:",
+            "data:text/html",
+            "'; DROP TABLE",
+            "--",
+            "/*",
+            "*/",
+        )
         CORS_DEFAULT_ORIGINS: ClassVar[tuple[str, ...]] = ("*",)
         CORS_SAFE_METHODS: ClassVar[tuple[str, ...]] = ("GET", "HEAD", "OPTIONS")
         CORS_SAFE_HEADERS: ClassVar[tuple[str, ...]] = (
@@ -206,48 +249,6 @@ class FlextWebConstants(FlextConstants):
             app.value for app in ApplicationType
         )
         STATUSES: ClassVar[tuple[str, ...]] = tuple(status.value for status in Status)
-        METHODS: ClassVar[tuple[str, ...]] = (
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "PATCH",
-            "HEAD",
-            "OPTIONS",
-        )
-        EnvironmentType: ClassVar[tuple[str, ...]] = ENVIRONMENTS
-        WebAppType: ClassVar[tuple[str, ...]] = APPLICATION_TYPES
-        FlextWebMethod: ClassVar[tuple[str, ...]] = METHODS
-        WebStatus: ClassVar[tuple[str, ...]] = STATUSES
-
-    class Application:
-        """Application level enumerations."""
-
-        ENVIRONMENTS: ClassVar[tuple[str, ...]] = (
-            "development",
-            "staging",
-            "production",
-            "testing",
-        )
-        APPLICATION_TYPES: ClassVar[tuple[str, ...]] = (
-            "application",
-            "service",
-            "api",
-            "microservice",
-            "webapp",
-            "spa",
-            "dashboard",
-            "REDACTED_LDAP_BIND_PASSWORD-panel",
-        )
-        STATUSES: ClassVar[tuple[str, ...]] = (
-            "stopped",
-            "starting",
-            "running",
-            "stopping",
-            "error",
-            "maintenance",
-            "deploying",
-        )
 
     PORT_RANGE: Final[tuple[int, int]] = WebValidation.PORT_RANGE
     NAME_LENGTH_RANGE: Final[tuple[int, int]] = WebValidation.NAME_LENGTH_RANGE
@@ -257,10 +258,81 @@ class FlextWebConstants(FlextConstants):
     URL_LENGTH_RANGE: Final[tuple[int, int]] = WebValidation.URL_LENGTH_RANGE
     SSL_PORTS: Final[tuple[int, int]] = WebSecurity.SSL_PORTS
     SESSION_DEFAULTS: ClassVar[Mapping[str, str | bool]] = WebSecurity.SESSION_DEFAULTS
-    EnvironmentType: ClassVar[tuple[str, ...]] = Application.ENVIRONMENTS
-    ApplicationType: ClassVar[tuple[str, ...]] = Application.APPLICATION_TYPES
+    EnvironmentType: ClassVar[tuple[str, ...]] = WebEnvironment.ENVIRONMENTS
+    ApplicationType: ClassVar[tuple[str, ...]] = WebEnvironment.APPLICATION_TYPES
     HttpMethod: ClassVar[tuple[str, ...]] = Http.METHODS
-    ApplicationStatus: ClassVar[tuple[str, ...]] = Application.STATUSES
+    ApplicationStatus: ClassVar[tuple[str, ...]] = WebEnvironment.STATUSES
+
+    # =========================================================================
+    # TYPE LITERALS - Centralized type definitions for type checking
+    # =========================================================================
+
+    # HTTP Method Literal - must match Http.Method enum values
+    if TYPE_CHECKING:
+        HttpMethodLiteral = Literal[
+            "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
+        ]
+    else:
+        # Runtime: validate against Http.Method enum
+        HttpMethodLiteral = Literal[
+            "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
+        ]
+
+    # Environment Name Literal - must match WebEnvironment.Name enum values
+    if TYPE_CHECKING:
+        EnvironmentNameLiteral = Literal[
+            "development", "staging", "production", "testing"
+        ]
+    else:
+        EnvironmentNameLiteral = Literal[
+            "development", "staging", "production", "testing"
+        ]
+
+    # Application Status Literal - must match WebEnvironment.Status enum values
+    if TYPE_CHECKING:
+        ApplicationStatusLiteral = Literal[
+            "stopped",
+            "starting",
+            "running",
+            "stopping",
+            "error",
+            "maintenance",
+            "deploying",
+        ]
+    else:
+        ApplicationStatusLiteral = Literal[
+            "stopped",
+            "starting",
+            "running",
+            "stopping",
+            "error",
+            "maintenance",
+            "deploying",
+        ]
+
+    # Application Type Literal - must match WebEnvironment.ApplicationType enum values
+    if TYPE_CHECKING:
+        ApplicationTypeLiteral = Literal[
+            "application",
+            "service",
+            "api",
+            "microservice",
+            "webapp",
+            "spa",
+            "dashboard",
+            "REDACTED_LDAP_BIND_PASSWORD-panel",
+        ]
+    else:
+        ApplicationTypeLiteral = Literal[
+            "application",
+            "service",
+            "api",
+            "microservice",
+            "webapp",
+            "spa",
+            "dashboard",
+            "REDACTED_LDAP_BIND_PASSWORD-panel",
+        ]
 
 
 __all__ = ["FlextWebConstants"]

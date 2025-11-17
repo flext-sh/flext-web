@@ -14,6 +14,7 @@ import sys
 from flext_core import FlextLogger, FlextResult
 
 from flext_web.api import FlextWebApi
+from flext_web.models import FlextWebModels
 
 
 class FlextWebCliService:
@@ -29,31 +30,50 @@ class FlextWebCliService:
         self._logger = FlextLogger(__name__)
         self._api = FlextWebApi()
 
-    def run(self) -> FlextResult[None]:
-        """Run HTTP service operations."""
-        try:
-            # Get service status as health check
-            status_result = self._api.get_service_status()
-            if status_result.is_success:
-                self._logger.info(
-                    f"Service status: {status_result.unwrap().get('service', 'unknown')}"
-                )
-                return FlextResult[None].ok(None)
-            return FlextResult[None].fail(
-                f"Service status check failed: {status_result.error}"
-            )
-        except Exception as e:
-            return FlextResult[None].fail(f"Service execution failed: {e}")
+    def run(self) -> FlextResult[bool]:
+        """Run HTTP service operations.
+
+        Returns:
+            FlextResult[bool]: Success contains True if service is operational,
+                             failure contains error message
+
+        """
+        # Use monadic pattern for status check with side-effect logging
+        return self._api.get_service_status().map(
+            lambda status_data: self._log_status_and_return(status_data)
+        )
+
+    def _log_status_and_return(
+        self, status_data: FlextWebModels.Service.ServiceResponse
+    ) -> bool:
+        """Log service status and return True for success - internal state management.
+
+        Args:
+            status_data: Service status response data
+
+        Returns:
+            bool: Always True when called (indicates successful status check)
+
+        """
+        self._logger.info(f"Service status: {status_data.service}")
+        return True
 
 
 def main() -> None:
     """CLI entry point."""
+    logger = FlextLogger(__name__)
     cli_service = FlextWebCliService()
+
+    # Use monadic pattern - handle failure and exit
     result = cli_service.run()
 
+    # Process result - fast fail on error, no fallback
     if result.is_failure:
-        FlextLogger(__name__).error(f"Service failed: {result.error}")
+        logger.error(f"Service failed: {result.error}")
         sys.exit(1)
+
+    # Success - exit normally
+    sys.exit(0)
 
 
 if __name__ == "__main__":

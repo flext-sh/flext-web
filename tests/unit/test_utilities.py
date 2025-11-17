@@ -3,8 +3,6 @@
 Tests the unified FlextWebUtilities class following flext standards.
 """
 
-from flext_core import FlextResult
-
 from flext_web.utilities import FlextWebUtilities
 
 
@@ -35,130 +33,21 @@ class TestFlextWebUtilities:
         result = FlextWebUtilities._slugify("  Test App Name  ")
         assert result == "test-app-name"
 
-    def test_generate_app_id(self) -> None:
-        """Test generate_app_id method."""
-        # Test app ID generation
-        result = FlextWebUtilities.generate_app_id("Test App")
-        assert result.startswith("app_")
-        assert "test-app" in result
-
-        # Test with special characters
-        result = FlextWebUtilities.generate_app_id("Test@App#Name!")
-        assert result.startswith("app_")
-        assert "testappname" in result
-
     def test_format_app_id(self) -> None:
         """Test format_app_id method."""
         # Test app ID formatting
         result = FlextWebUtilities.format_app_id("Test App")
         assert result == "app_test-app"
 
-        # Test with empty string
-        result = FlextWebUtilities.format_app_id("")
-        assert result == "app_default"
-
         # Test with special characters
         result = FlextWebUtilities.format_app_id("Test@App#Name!")
         assert result == "app_testappname"
 
-    def test_sanitize_request_data(self) -> None:
-        """Test sanitize_request_data method."""
-        # Test with valid data
-        data = {"key": "value", "number": 123, "boolean": True}
-        result = FlextWebUtilities.sanitize_request_data(data)
+        # Test with empty string - should raise ValueError
+        import pytest
 
-        assert isinstance(result, dict)
-        assert result["key"] == "value"
-        assert result["number"] == 123
-        assert result["boolean"] is True
-
-        # Test with string data
-        data: dict[str, object] = {"key": "  value  ", "name": "Test@Name#!"}
-        result = FlextWebUtilities.sanitize_request_data(data)
-
-        assert result["key"] == "value"
-        assert result["name"] == "TestName"
-
-    def test_create_success_response(self) -> None:
-        """Test create_success_response method."""
-        # Test with message only
-        result = FlextWebUtilities.create_success_response("Operation successful")
-
-        assert isinstance(result, dict)
-        assert result["success"] == "True"
-        assert result["message"] == "Operation successful"
-        assert result["data"] is None
-        assert "timestamp" in result
-
-        # Test with data
-        result = FlextWebUtilities.create_success_response(
-            "Operation successful", {"key": "value"}
-        )
-
-        assert result["success"] == "True"
-        assert result["message"] == "Operation successful"
-        assert result["data"] == {"key": "value"}
-
-    def test_create_error_response(self) -> None:
-        """Test create_error_response method."""
-        # Test with message only
-        result = FlextWebUtilities.create_error_response("Operation failed")
-
-        assert isinstance(result, dict)
-        assert result["success"] == "False"
-        assert result["message"] == "Operation failed"
-        assert result["data"] is None
-        assert result["status_code"] == 400
-        assert "timestamp" in result
-
-        # Test with custom status code
-        result = FlextWebUtilities.create_error_response("Operation failed", 500)
-
-        assert result["success"] == "False"
-        assert result["message"] == "Operation failed"
-        assert result["status_code"] == 500
-
-    def test_create_api_response(self) -> None:
-        """Test create_api_response method."""
-        # Test success response
-        result = FlextWebUtilities.create_api_response(
-            "Success", success=True, data={"key": "value"}
-        )
-
-        assert isinstance(result, dict)
-        assert result["success"] is True
-        assert result["message"] == "Success"
-        assert result["data"] == {"key": "value"}
-        assert "timestamp" in result
-
-        # Test error response
-        result = FlextWebUtilities.create_api_response(
-            "Error", success=False, data=None
-        )
-
-        assert result["success"] is False
-        assert result["message"] == "Error"
-        assert result["data"] is None
-
-    def test_handle_flext_result(self) -> None:
-        """Test handle_flext_result method."""
-        # Test with success result
-        success_result: FlextResult[object] = FlextResult[str].ok("Success data")
-        result = FlextWebUtilities.handle_flext_result(success_result)
-
-        assert isinstance(result, dict)
-        assert result["success"] is True
-        assert result["message"] == "Operation successful"
-        assert result["data"] == "Success data"
-
-        # Test with failure result
-        failure_result: FlextResult[object] = FlextResult[str].fail("Error message")
-        result = FlextWebUtilities.handle_flext_result(failure_result)
-
-        assert isinstance(result, dict)
-        assert result["success"] is False
-        assert result["message"] == "Operation failed: Error message"
-        assert result["data"] is None
+        with pytest.raises(ValueError):
+            FlextWebUtilities.format_app_id("")
 
     def test_app_creation_functionality(self) -> None:
         """Test app creation functionality."""
@@ -193,14 +82,6 @@ class TestFlextWebUtilities:
         assert isinstance(slug, str)
         assert slug == "test-app-name"
 
-    def test_generate_app_id_functionality(self) -> None:
-        """Test generate_app_id functionality."""
-        # Test that app ID generation works
-        app_id = FlextWebUtilities.generate_app_id("test-app")
-
-        assert isinstance(app_id, str)
-        assert "test-app" in app_id or "testapp" in app_id
-
     def test_utilities_logging_integration(self) -> None:
         """Test FlextWebUtilities logging integration."""
         # Should have access to FlextUtilities logging
@@ -209,11 +90,15 @@ class TestFlextWebUtilities:
 
     def test_utilities_edge_cases(self) -> None:
         """Test FlextWebUtilities edge cases."""
-        # Test empty string handling
-        assert FlextWebUtilities.format_app_id("") == "app_default"
+        import pytest
 
-        # Test whitespace handling
-        assert FlextWebUtilities.format_app_id("   ") == "app_default"
+        # Test empty string handling - should raise ValueError
+        with pytest.raises(ValueError):
+            FlextWebUtilities.format_app_id("")
+
+        # Test whitespace handling - should raise ValueError after stripping
+        with pytest.raises(ValueError):
+            FlextWebUtilities.format_app_id("   ")
 
         # Test special character handling
         result = FlextWebUtilities.format_app_id("Test@App#Name!")

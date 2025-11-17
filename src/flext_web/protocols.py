@@ -28,9 +28,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 from flext_core import FlextProtocols, FlextResult
+
+from flext_web.constants import FlextWebConstants
+from flext_web.typings import FlextWebTypes
 
 
 class FlextWebProtocols(FlextProtocols):
@@ -190,7 +193,9 @@ class FlextWebProtocols(FlextProtocols):
     # WEB FOUNDATION LAYER - Core web protocols used within flext-web
     # =========================================================================
 
-    class WebAppManagerProtocol(FlextProtocols.Service[Any], Protocol):
+    class WebAppManagerProtocol(
+        FlextProtocols.Service[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Protocol for web application lifecycle management.
 
         Extends FlextProtocols.Service with web-specific application management
@@ -200,7 +205,9 @@ class FlextWebProtocols(FlextProtocols):
         Used in: handlers.py (FlextWebHandlers.ApplicationHandler)
         """
 
-        def create_app(self, name: str, port: int, host: str) -> FlextResult[object]:
+        def create_app(
+            self, name: str, port: int, host: str
+        ) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
             """Create a new web application.
 
             Args:
@@ -216,7 +223,9 @@ class FlextWebProtocols(FlextProtocols):
             _ = name, port, host
             return FlextResult.fail("create_app method not implemented")
 
-        def start_app(self, app_id: str) -> FlextResult[object]:
+        def start_app(
+            self, app_id: str
+        ) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
             """Start a web application.
 
             Args:
@@ -230,7 +239,7 @@ class FlextWebProtocols(FlextProtocols):
             _ = app_id
             return FlextResult.fail("start_app method not implemented")
 
-        def stop_app(self, app_id: str) -> FlextResult[object]:
+        def stop_app(self, app_id: str) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
             """Stop a running web application.
 
             Args:
@@ -244,7 +253,7 @@ class FlextWebProtocols(FlextProtocols):
             _ = app_id
             return FlextResult.fail("stop_app method not implemented")
 
-        def list_apps(self) -> FlextResult[list[object]]:
+        def list_apps(self) -> FlextResult[list[FlextWebTypes.Core.ResponseDict]]:
             """List all web applications.
 
             Returns:
@@ -254,7 +263,9 @@ class FlextWebProtocols(FlextProtocols):
             # Protocol implementation placeholder
             return FlextResult.fail("list_apps method not implemented")
 
-    class WebResponseFormatterProtocol(FlextProtocols.Service[Any], Protocol):
+    class WebResponseFormatterProtocol(
+        FlextProtocols.Service[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Protocol for web response formatting.
 
         Extends FlextProtocols.Service with web-specific response formatting
@@ -264,7 +275,9 @@ class FlextWebProtocols(FlextProtocols):
         Used in: response formatters and API handlers
         """
 
-        def format_success(self, data: dict[str, object]) -> dict[str, object]:
+        def format_success(
+            self, data: FlextWebTypes.Core.ResponseDict
+        ) -> FlextWebTypes.Core.ResponseDict:
             """Format successful response data.
 
             Args:
@@ -275,9 +288,20 @@ class FlextWebProtocols(FlextProtocols):
 
             """
             # Protocol implementation placeholder
-            return {"status": "success", "data": data}
+            # Merge data into response with status
+            response: FlextWebTypes.Core.ResponseDict = {
+                "status": FlextWebConstants.WebResponse.STATUS_SUCCESS,
+            }
+            # Merge data fields into response - ResponseDict allows nested dicts
+            for key, value in data.items():
+                if isinstance(value, (str, int, bool, list)):
+                    response[key] = value
+                elif isinstance(value, dict):
+                    # Nested dict is allowed in ResponseDict definition
+                    response[key] = value
+            return response
 
-        def format_error(self, error: Exception) -> dict[str, object]:
+        def format_error(self, error: Exception) -> FlextWebTypes.Core.ResponseDict:
             """Format error response data.
 
             Args:
@@ -288,9 +312,15 @@ class FlextWebProtocols(FlextProtocols):
 
             """
             # Protocol implementation placeholder
-            return {"status": "error", "message": str(error)}
+            result: FlextWebTypes.Core.ResponseDict = {
+                "status": FlextWebConstants.WebResponse.STATUS_ERROR,
+                "message": str(error),
+            }
+            return result
 
-        def create_json_response(self, data: dict[str, object]) -> dict[str, object]:
+        def create_json_response(
+            self, data: FlextWebTypes.Core.ResponseDict
+        ) -> FlextWebTypes.Core.ResponseDict:
             """Create a JSON response.
 
             Args:
@@ -301,23 +331,39 @@ class FlextWebProtocols(FlextProtocols):
 
             """
             # Protocol implementation placeholder
-            return {"content-type": "application/json", "body": data}
+            # Build response with content type and merge data fields
+            response: FlextWebTypes.Core.ResponseDict = {
+                FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
+            }
+            # Merge data fields into response - ResponseDict allows nested dicts
+            for key, value in data.items():
+                if isinstance(value, (str, int, bool, list)):
+                    response[key] = value
+                elif isinstance(value, dict):
+                    # Nested dict is allowed in ResponseDict definition
+                    response[key] = value
+            return response
 
-        def get_request_data(self, request: dict[str, object]) -> dict[str, object]:
+        def get_request_data(
+            self, _request: FlextWebTypes.Core.RequestDict
+        ) -> FlextWebTypes.Core.RequestDict:
             """Extract data from web request.
 
             Args:
-            request: Web request data
+            _request: Web request data (unused in placeholder)
 
             Returns:
             Extracted request data dictionary
 
             """
-            # Protocol implementation placeholder
-            data = request.get("data", {})
-            return data if isinstance(data, dict) else {}
+            # Protocol implementation placeholder - RequestDict is TypeAlias for dict
+            # This is a placeholder implementation for the protocol definition
+            empty_result: FlextWebTypes.Core.RequestDict = {}
+            return empty_result
 
-    class WebFrameworkInterfaceProtocol(FlextProtocols.Service[Any], Protocol):
+    class WebFrameworkInterfaceProtocol(
+        FlextProtocols.Service[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Protocol for web framework integration.
 
         Extends FlextProtocols.Service with web framework integration operations.
@@ -327,7 +373,9 @@ class FlextWebProtocols(FlextProtocols):
         Used in: web framework adapters and integration layers
         """
 
-        def create_json_response(self, data: dict[str, object]) -> dict[str, object]:
+        def create_json_response(
+            self, data: FlextWebTypes.Core.ResponseDict
+        ) -> FlextWebTypes.Core.ResponseDict:
             """Create a JSON response.
 
             Args:
@@ -338,44 +386,57 @@ class FlextWebProtocols(FlextProtocols):
 
             """
             # Protocol implementation placeholder
-            return {"content-type": "application/json", "body": data}
+            # Build response with content type and merge data fields
+            response: FlextWebTypes.Core.ResponseDict = {
+                FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
+            }
+            # Merge data fields into response - ResponseDict allows nested dicts
+            for key, value in data.items():
+                if isinstance(value, (str, int, bool, list)):
+                    response[key] = value
+                elif isinstance(value, dict):
+                    # Nested dict is allowed in ResponseDict definition
+                    response[key] = value
+            return response
 
-        def get_request_data(self, request: dict[str, object]) -> dict[str, object]:
+        def get_request_data(
+            self, _request: FlextWebTypes.Core.RequestDict
+        ) -> FlextWebTypes.Core.RequestDict:
             """Extract data from web request.
 
             Args:
-            request: Web request data
+            _request: Web request data (unused in placeholder)
 
             Returns:
             Extracted request data dictionary
 
             """
-            # Protocol implementation placeholder
-            data = request.get("data", {})
-            return data if isinstance(data, dict) else {}
+            # Protocol implementation placeholder - RequestDict is TypeAlias for dict
+            # This is a placeholder implementation for the protocol definition
+            empty_result: FlextWebTypes.Core.RequestDict = {}
+            return empty_result
 
-        def is_json_request(self, request: dict[str, object]) -> bool:
+        def is_json_request(self, _request: FlextWebTypes.Core.RequestDict) -> bool:
             """Check if request contains JSON data.
 
             Args:
-            request: Web request to check
+            _request: Web request to check (unused in placeholder)
 
             Returns:
             True if request is JSON, False otherwise
 
             """
-            # Protocol implementation placeholder
-            headers = request.get("headers", {})
-            if isinstance(headers, dict):
-                content_type = headers.get("content-type", "")
-                return "content-type" in str(content_type).lower()
+            # Protocol implementation placeholder - RequestDict is a Protocol
+            # This is a placeholder implementation for the protocol definition
             return False
 
     # =========================================================================
     # WEB DOMAIN LAYER - Web service and repository protocols
     # =========================================================================
 
-    class WebServiceProtocol(FlextProtocols.Service[Any], Protocol):
+    class WebServiceProtocol(
+        FlextProtocols.Service[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Base web service protocol.
 
         Extends FlextProtocols.Service with web-specific service operations.
@@ -384,47 +445,49 @@ class FlextWebProtocols(FlextProtocols):
         Used in: web service implementations
         """
 
-        def initialize_routes(self) -> FlextResult[None]:
+        def initialize_routes(self) -> FlextResult[bool]:
             """Initialize web service routes.
 
             Returns:
-            FlextResult[None]: Success if routes initialized, failure with error details
+            FlextResult[bool]: Success contains True if routes initialized, failure with error details
 
             """
             # Protocol implementation placeholder
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(True)
 
-        def configure_middleware(self) -> FlextResult[None]:
+        def configure_middleware(self) -> FlextResult[bool]:
             """Configure web service middleware.
 
             Returns:
-            FlextResult[None]: Success if middleware configured, failure with error details
+            FlextResult[bool]: Success contains True if middleware configured, failure with error details
 
             """
             # Protocol implementation placeholder
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(True)
 
-        def start_service(self) -> FlextResult[None]:
+        def start_service(self) -> FlextResult[bool]:
             """Start the web service.
 
             Returns:
-            FlextResult[None]: Success if service started, failure with error details
+            FlextResult[bool]: Success contains True if service started, failure with error details
 
             """
             # Protocol implementation placeholder
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(True)
 
-        def stop_service(self) -> FlextResult[None]:
+        def stop_service(self) -> FlextResult[bool]:
             """Stop the web service.
 
             Returns:
-            FlextResult[None]: Success if service stopped, failure with error details
+            FlextResult[bool]: Success contains True if service stopped, failure with error details
 
             """
             # Protocol implementation placeholder
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(True)
 
-    class WebRepositoryProtocol(FlextProtocols.Repository[dict[str, object]], Protocol):
+    class WebRepositoryProtocol(
+        FlextProtocols.Repository[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Base web repository protocol for data access.
 
         Extends FlextProtocols.Repository with web-specific data access operations.
@@ -434,8 +497,8 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def find_by_criteria(
-            self, criteria: dict[str, object]
-        ) -> FlextResult[list[object]]:
+            self, criteria: FlextWebTypes.Core.RequestDict
+        ) -> FlextResult[list[FlextWebTypes.Core.ResponseDict]]:
             """Find entities by criteria.
 
             Args:
@@ -447,7 +510,7 @@ class FlextWebProtocols(FlextProtocols):
             """
             # Protocol implementation placeholder - parameter is part of interface contract
             _ = criteria
-            return FlextResult[list[object]].ok([])
+            return FlextResult[list[FlextWebTypes.Core.ResponseDict]].ok([])
 
     # =========================================================================
     # WEB APPLICATION LAYER - Web handler and command patterns
@@ -455,7 +518,10 @@ class FlextWebProtocols(FlextProtocols):
 
     @runtime_checkable
     class WebHandlerProtocol(
-        FlextProtocols.Handler[dict[str, object], dict[str, object]], Protocol
+        FlextProtocols.Handler[
+            FlextWebTypes.Core.RequestDict, FlextWebTypes.Core.ResponseDict
+        ],
+        Protocol,
     ):
         """Web handler protocol for request/response patterns.
 
@@ -466,8 +532,8 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def handle_request(
-            self, request: dict[str, object]
-        ) -> FlextResult[dict[str, object]]:
+            self, request: FlextWebTypes.Core.RequestDict
+        ) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
             """Handle web request and return response.
 
             Args:
@@ -479,17 +545,19 @@ class FlextWebProtocols(FlextProtocols):
             """
             # Protocol implementation placeholder - parameter is part of interface contract
             _ = request
-            return FlextResult[dict[str, object]].ok({})
+            return FlextResult[FlextWebTypes.Core.ResponseDict].ok({})
 
     # =========================================================================
     # WEB INFRASTRUCTURE LAYER - Web external integrations
     # =========================================================================
 
     @runtime_checkable
-    class WebConnectionProtocol(FlextProtocols.Connection, Protocol):
+    class WebConnectionProtocol(
+        FlextProtocols.Service[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Web connection protocol for external systems.
 
-        Extends FlextProtocols.Connection with web-specific connection operations.
+        Extends FlextProtocols.Service with web-specific connection operations.
         Provides standardized interface for web service connections.
 
         Used in: web service adapters and external integrations
@@ -505,17 +573,21 @@ class FlextWebProtocols(FlextProtocols):
             # Protocol implementation placeholder
             return "http://localhost:8080"
 
-    class WebLoggerProtocol(FlextProtocols.LoggerProtocol, Protocol):
+    class WebLoggerProtocol(
+        FlextProtocols.Service[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Web logging protocol.
 
-        Extends FlextProtocols.LoggerProtocol with web-specific logging operations.
+        Extends FlextProtocols.Service with web-specific logging operations.
         Provides standardized interface for web application logging.
 
         Used in: web logging implementations
         """
 
         def log_request(
-            self, request: dict[str, object], context: dict[str, object] | None = None
+            self,
+            request: FlextWebTypes.Core.RequestDict,
+            context: FlextWebTypes.Core.RequestDict | None = None,
         ) -> None:
             """Log web request with context.
 
@@ -526,7 +598,9 @@ class FlextWebProtocols(FlextProtocols):
             """
 
         def log_response(
-            self, response: dict[str, object], context: dict[str, object] | None = None
+            self,
+            response: FlextWebTypes.Core.ResponseDict,
+            context: FlextWebTypes.Core.ResponseDict | None = None,
         ) -> None:
             """Log web response with context.
 
@@ -540,7 +614,9 @@ class FlextWebProtocols(FlextProtocols):
     # WEB TEMPLATE LAYER - Template rendering protocols
     # =========================================================================
 
-    class WebTemplateRendererProtocol(FlextProtocols.Service[Any], Protocol):
+    class WebTemplateRendererProtocol(
+        FlextProtocols.Service[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Protocol for web template rendering.
 
         Extends FlextProtocols.Service with web template rendering operations.
@@ -550,7 +626,7 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def render_template(
-            self, template_name: str, context: dict[str, object]
+            self, template_name: str, context: FlextWebTypes.Core.RequestDict
         ) -> FlextResult[str]:
             """Render template with context data.
 
@@ -566,7 +642,9 @@ class FlextWebProtocols(FlextProtocols):
             _ = template_name, context
             return FlextResult[str].ok("")
 
-        def render_dashboard(self, data: dict[str, object]) -> FlextResult[str]:
+        def render_dashboard(
+            self, data: FlextWebTypes.Core.ResponseDict
+        ) -> FlextResult[str]:
             """Render dashboard template with data.
 
             Args:
@@ -580,7 +658,9 @@ class FlextWebProtocols(FlextProtocols):
             _ = data
             return FlextResult[str].ok("<html>Dashboard</html>")
 
-    class WebTemplateEngineProtocol(FlextProtocols.Service[Any], Protocol):
+    class WebTemplateEngineProtocol(
+        FlextProtocols.Service[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Protocol for web template engine operations.
 
         Extends FlextProtocols.Service with template engine management operations.
@@ -589,21 +669,23 @@ class FlextWebProtocols(FlextProtocols):
         Used in: web template engine implementations
         """
 
-        def load_template_config(self, config: dict[str, object]) -> FlextResult[None]:
+        def load_template_config(
+            self, config: FlextWebTypes.Core.RequestDict
+        ) -> FlextResult[bool]:
             """Load template engine configuration.
 
             Args:
             config: Template engine configuration
 
             Returns:
-            FlextResult[None]: Success if config loaded, failure with error details
+            FlextResult[bool]: Success contains True if config loaded, failure with error details
 
             """
             # Protocol implementation placeholder - parameter is part of interface contract
             _ = config
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(True)
 
-        def get_template_config(self) -> FlextResult[dict[str, object]]:
+        def get_template_config(self) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
             """Get current template engine configuration.
 
             Returns:
@@ -611,25 +693,27 @@ class FlextWebProtocols(FlextProtocols):
 
             """
             # Protocol implementation placeholder
-            return FlextResult[dict[str, object]].ok({})
+            return FlextResult[FlextWebTypes.Core.ResponseDict].ok({})
 
         def validate_template_config(
-            self, config: dict[str, object]
-        ) -> FlextResult[None]:
+            self, config: FlextWebTypes.Core.RequestDict
+        ) -> FlextResult[bool]:
             """Validate template engine configuration.
 
             Args:
             config: Configuration to validate
 
             Returns:
-            FlextResult[None]: Success if valid, failure with error details
+            FlextResult[bool]: Success contains True if valid, failure with error details
 
             """
             # Protocol implementation placeholder - parameter is part of interface contract
             _ = config
-            return FlextResult[None].ok(None)
+            return FlextResult[bool].ok(True)
 
-        def render(self, template: str, context: dict[str, object]) -> FlextResult[str]:
+        def render(
+            self, template: str, context: FlextWebTypes.Core.RequestDict
+        ) -> FlextResult[str]:
             """Render template string with context.
 
             Args:
@@ -653,7 +737,12 @@ class FlextWebProtocols(FlextProtocols):
 
             """
 
-        def add_global(self, name: str, value: object) -> None:
+        def add_global(
+            self,
+            name: str,
+            *,
+            value: str | int | bool | list[str] | dict[str, str | int | bool],
+        ) -> None:
             """Add template global variable.
 
             Args:
@@ -667,17 +756,19 @@ class FlextWebProtocols(FlextProtocols):
     # =========================================================================
 
     @runtime_checkable
-    class WebMonitoringProtocol(FlextProtocols.Observability, Protocol):
+    class WebMonitoringProtocol(
+        FlextProtocols.Service[FlextWebTypes.Core.ResponseDict], Protocol
+    ):
         """Web monitoring protocol for observability.
 
-        Extends FlextProtocols.Observability with web-specific monitoring operations.
+        Extends FlextProtocols.Service with web-specific monitoring operations.
         Provides interface for web application metrics and health monitoring.
 
         Used in: web monitoring and observability implementations
         """
 
         def record_web_request(
-            self, request: dict[str, object], response_time: float
+            self, request: FlextWebTypes.Core.RequestDict, response_time: float
         ) -> None:
             """Record web request metrics.
 
@@ -687,7 +778,7 @@ class FlextWebProtocols(FlextProtocols):
 
             """
 
-        def get_web_health_status(self) -> dict[str, object]:
+        def get_web_health_status(self) -> FlextWebTypes.Core.ResponseDict:
             """Get web application health status.
 
             Returns:
@@ -695,9 +786,12 @@ class FlextWebProtocols(FlextProtocols):
 
             """
             # Protocol implementation placeholder
-            return {"status": "healthy", "service": "flext-web"}
+            return {
+                "status": FlextWebConstants.WebResponse.STATUS_HEALTHY,
+                "service": FlextWebConstants.WebService.SERVICE_NAME,
+            }
 
-        def get_web_metrics(self) -> dict[str, object]:
+        def get_web_metrics(self) -> FlextWebTypes.Core.ResponseDict:
             """Get web application metrics.
 
             Returns:

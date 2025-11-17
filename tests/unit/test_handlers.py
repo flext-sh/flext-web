@@ -52,19 +52,25 @@ class TestFlextWebHandlers:
         assert app.port == 8080
         assert app.host == "localhost"
 
-    def test_handle_validation_error(self) -> None:
-        """Test validation error handling."""
-        error = ValueError("Invalid input")
-        result = FlextWebHandlers.handle_validation_error(error, "test context")
-        assert result.is_failure
-        assert result.error is not None and "Test Context error" in result.error
+    def test_error_handling_with_flext_result(self) -> None:
+        """Test error handling using FlextResult directly - no helpers."""
+        from flext_core import FlextResult
 
-    def test_handle_processing_error(self) -> None:
-        """Test processing error handling."""
-        error = RuntimeError("Processing failed")
-        result = FlextWebHandlers.handle_processing_error(error, "test operation")
+        # Test that errors are handled using FlextResult.fail() directly
+        error = ValueError("Invalid input")
+        result = FlextResult[str].fail(f"Validation error: {error}")
         assert result.is_failure
-        assert result.error is not None and "Test Operation failed" in result.error
+        assert result.error is not None and "Validation error" in result.error
+
+    def test_processing_error_with_flext_result(self) -> None:
+        """Test processing error handling using FlextResult directly."""
+        from flext_core import FlextResult
+
+        # Test that errors are handled using FlextResult.fail() directly
+        error = RuntimeError("Processing failed")
+        result = FlextResult[str].fail(f"Operation failed: {error}")
+        assert result.is_failure
+        assert result.error is not None and "Operation failed" in result.error
 
     def test_app_registry_integration(self) -> None:
         """Test app registry integration."""

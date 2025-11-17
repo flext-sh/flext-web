@@ -50,12 +50,18 @@ class TestFlextWebApp:
             )
 
     def test_factory_create_instance_fastapi_not_available(self) -> None:
-        """Test FastAPIFactory.create_instance when FastAPI is not available."""
-        with patch("flext_web.app.FastAPI", None):
+        """Test FastAPIFactory.create_instance when FastAPI raises exception."""
+        with patch("flext_web.app.FastAPI") as mock_fastapi:
+            mock_fastapi.side_effect = AttributeError(
+                "'NoneType' object is not callable"
+            )
             result = FlextWebApp.FastAPIFactory.create_instance()
 
             assert result.is_failure
-            assert result.error is not None and "FastAPI is required" in result.error
+            assert (
+                result.error is not None
+                and "Failed to create FastAPI application" in result.error
+            )
 
     def test_factory_create_instance_exception(self) -> None:
         """Test FastAPIFactory.create_instance with exception."""
@@ -108,11 +114,17 @@ class TestFlextWebApp:
             title="Test API", version="1.0.0"
         )
 
-        with patch("flext_web.app.FastAPI", None):
+        with patch("flext_web.app.FastAPI") as mock_fastapi:
+            mock_fastapi.side_effect = AttributeError(
+                "'NoneType' object is not callable"
+            )
             result = FlextWebApp.create_fastapi_app(config)
 
             assert result.is_failure
-            assert result.error is not None and "FastAPI is required" in result.error
+            assert (
+                result.error is not None
+                and "Failed to create FastAPI application" in result.error
+            )
 
     def test_create_fastapi_app_health_check_registration(self) -> None:
         """Test create_fastapi_app health check registration."""
@@ -208,10 +220,10 @@ class TestFlextWebApp:
 
     def test_app_error_handling(self) -> None:
         """Test FlextWebApp error handling."""
-        # Test with invalid config
-        result = FlextWebApp.create_fastapi_app({"invalid": "config"})
+        # Test with None config (should use defaults)
+        result = FlextWebApp.create_fastapi_app(None)
 
-        # Should handle gracefully (Pydantic will validate)
+        # Should handle gracefully with defaults
         assert result.is_success or result.is_failure
 
     def test_app_integration_patterns(self) -> None:
@@ -318,3 +330,143 @@ class TestFlextWebApp:
                 redoc_url="/custom-redoc",
                 openapi_url="/custom-openapi.json",
             )
+
+    def test_create_fastapi_app_with_override_title(self) -> None:
+        """Test create_fastapi_app with title override parameter."""
+        config = FlextWebModels.FastAPI.FastAPIAppConfig(
+            title="Config Title", version="1.0.0"
+        )
+
+        with patch("flext_web.app.FastAPI") as mock_fastapi:
+            mock_app = Mock()
+            mock_app.get = Mock()
+            mock_fastapi.return_value = mock_app
+
+            result = FlextWebApp.create_fastapi_app(config, title="Override Title")
+
+            assert result.is_success
+            mock_fastapi.assert_called_once_with(
+                title="Override Title",
+                version="1.0.0",
+                description="Generic HTTP Service",
+                docs_url="/docs",
+                redoc_url="/redoc",
+                openapi_url="/openapi.json",
+            )
+
+    def test_create_fastapi_app_with_override_urls(self) -> None:
+        """Test create_fastapi_app with URL override parameters."""
+        config = FlextWebModels.FastAPI.FastAPIAppConfig(
+            title="Test API", version="1.0.0"
+        )
+
+        with patch("flext_web.app.FastAPI") as mock_fastapi:
+            mock_app = Mock()
+            mock_app.get = Mock()
+            mock_fastapi.return_value = mock_app
+
+            result = FlextWebApp.create_fastapi_app(
+                config,
+                docs_url="/override-docs",
+                redoc_url="/override-redoc",
+                openapi_url="/override-openapi.json",
+            )
+
+            assert result.is_success
+            mock_fastapi.assert_called_once_with(
+                title="Test API",
+                version="1.0.0",
+                description="Generic HTTP Service",
+                docs_url="/override-docs",
+                redoc_url="/override-redoc",
+                openapi_url="/override-openapi.json",
+            )
+
+    def test_create_flask_app_success(self) -> None:
+        """Test create_flask_app with success."""
+        from flext_web.config import FlextWebConfig
+        from flext_web.constants import FlextWebConstants
+
+        config = FlextWebConfig(
+            secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY
+        )
+
+        result = FlextWebApp.create_flask_app(config)
+
+        assert result.is_success
+        assert result.value is not None
+        assert hasattr(result.value, "route")
+
+    def test_create_flask_app_with_none_config(self) -> None:
+        """Test create_flask_app with None config uses defaults."""
+        result = FlextWebApp.create_flask_app(None)
+
+        assert result.is_success
+        assert result.value is not None
+        assert hasattr(result.value, "route")
+
+    def test_configure_middleware(self) -> None:
+        """Test configure_middleware method."""
+        from fastapi import FastAPI
+
+        from flext_web.config import FlextWebConfig
+
+        app = FastAPI()
+        config = FlextWebConfig()
+
+        result = FlextWebApp.configure_middleware(app, config)
+
+        assert result.is_success
+        assert result.value is True
+
+    def test_configure_routes(self) -> None:
+        """Test configure_routes method."""
+        from fastapi import FastAPI
+
+        from flext_web.config import FlextWebConfig
+
+        app = FastAPI()
+        config = FlextWebConfig()
+
+        result = FlextWebApp.configure_routes(app, config)
+
+        assert result.is_success
+        assert result.value is True
+
+    def test_configure_error_handlers(self) -> None:
+        """Test configure_error_handlers method."""
+        from fastapi import FastAPI
+
+        app = FastAPI()
+
+        result = FlextWebApp.configure_error_handlers(app)
+
+        assert result.is_success
+        assert result.value is True
+
+    def test_health_handler_create_handler(self) -> None:
+        """Test HealthHandler.create_handler method."""
+        handler_func = FlextWebApp.HealthHandler.create_handler()
+
+        assert callable(handler_func)
+        result = handler_func()
+        assert "status" in result
+        assert "service" in result
+        assert "timestamp" in result
+
+    def test_info_handler_create_handler(self) -> None:
+        """Test InfoHandler.create_handler method."""
+        config = FlextWebModels.FastAPI.FastAPIAppConfig(
+            title="Test API", version="1.0.0", description="Test Description"
+        )
+
+        handler_func = FlextWebApp.InfoHandler.create_handler(config)
+
+        assert callable(handler_func)
+        result = handler_func()
+        assert "service" in result
+        assert "title" in result
+        assert "version" in result
+        assert "description" in result
+        assert "debug" in result
+        assert "timestamp" in result
