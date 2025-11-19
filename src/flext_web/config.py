@@ -10,20 +10,42 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from flext_core import FlextResult
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from flext_core import FlextConfig, FlextResult
+from pydantic import Field, computed_field
+from pydantic_settings import SettingsConfigDict
 
 from flext_web.constants import FlextWebConstants
 
 
-class FlextWebConfig(BaseModel):
-    """HTTP server configuration.
+@FlextConfig.auto_register("web")
+class FlextWebConfig(FlextConfig.AutoConfig):
+    """HTTP server configuration using AutoConfig pattern.
+
+    **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
+
+    This class uses FlextConfig.AutoConfig for automatic:
+    - Singleton pattern (thread-safe)
+    - Namespace registration (accessible via config.web)
+    - Environment variable loading from FLEXT_WEB_* variables
+    - .env file loading (production/development)
+    - Automatic type conversion and validation via Pydantic v2
 
     Pydantic 2 model with computed properties for derived values.
     Domain-agnostic configuration for any HTTP-based service.
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = SettingsConfigDict(
+        env_prefix="FLEXT_WEB_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="forbid",
+        validate_assignment=True,
+        str_strip_whitespace=True,
+        validate_default=True,
+        frozen=False,
+        strict=False,
+    )
 
     host: str = Field(
         default=FlextWebConstants.WebDefaults.HOST,
