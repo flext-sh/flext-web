@@ -213,7 +213,7 @@ class TestFlextWebTypes:
         result = FlextWebTypes.create_http_request(
             url="http://localhost:8080",
             method="GET",
-            headers="not_a_dict",  # type: ignore[arg-type]
+            headers="not_a_dict",
         )
         assert result.is_failure
         assert "Headers must be a dictionary" in result.error
@@ -239,7 +239,7 @@ class TestFlextWebTypes:
         """Test create_http_response with invalid headers type."""
         result = FlextWebTypes.create_http_response(
             status_code=200,
-            headers="not_a_dict",  # type: ignore[arg-type]
+            headers="not_a_dict",
         )
         assert result.is_failure
         assert "Headers must be a dictionary" in result.error
@@ -272,7 +272,7 @@ class TestFlextWebTypes:
         result = FlextWebTypes.create_web_request(
             url="http://localhost:8080",
             method="GET",
-            headers="not_a_dict",  # type: ignore[arg-type]
+            headers="not_a_dict",
         )
         assert result.is_failure
         assert "Headers must be a dictionary" in result.error
@@ -282,7 +282,7 @@ class TestFlextWebTypes:
         result = FlextWebTypes.create_web_request(
             url="http://localhost:8080",
             method="GET",
-            query_params="not_a_dict",  # type: ignore[arg-type]
+            query_params="not_a_dict",
         )
         assert result.is_failure
         assert "Query params must be a dictionary" in result.error
@@ -308,7 +308,7 @@ class TestFlextWebTypes:
         result = FlextWebTypes.create_web_response(
             status_code=200,
             request_id="test-123",
-            headers="not_a_dict",  # type: ignore[arg-type]
+            headers="not_a_dict",
         )
         assert result.is_failure
         assert "Headers must be a dictionary" in result.error

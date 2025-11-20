@@ -469,7 +469,7 @@ class TestFlextWebModels:
             port=8080,
         )
 
-        result = app.update_metrics("not_a_dict")  # type: ignore[arg-type]
+        result = app.update_metrics("not_a_dict")
         assert result.is_failure
         assert "Metrics must be a dictionary" in result.error
 
@@ -488,7 +488,7 @@ class TestFlextWebModels:
             port=8080,
         )
 
-        result = app.add_domain_event(123)  # type: ignore[arg-type]
+        result = app.add_domain_event(123)
         assert result.is_failure
         assert "Event must be a string" in result.error
 
@@ -510,7 +510,7 @@ class TestFlextWebModels:
         result = FlextWebModels.create_web_request(
             method="GET",
             url="http://localhost:8080",
-            headers="not_a_dict",  # type: ignore[arg-type]
+            headers="not_a_dict",
         )
         assert result.is_failure
         assert "Headers must be a dictionary" in result.error
@@ -520,7 +520,7 @@ class TestFlextWebModels:
         result = FlextWebModels.create_web_response(
             request_id="test-123",
             status_code=200,
-            headers="not_a_dict",  # type: ignore[arg-type]
+            headers="not_a_dict",
         )
         assert result.is_failure
         assert "Headers must be a dictionary" in result.error

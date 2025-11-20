@@ -123,7 +123,7 @@ class TestFlextWebService:
         # Try to create invalid credentials - should fail at model validation
         try:
             credentials = FlextWebModels.Service.Credentials(
-                username=123,  # type: ignore[arg-type]  # Invalid type
+                username=123,
                 password="password",
             )
             # If validation passes (shouldn't), test will fail
@@ -194,7 +194,7 @@ class TestFlextWebService:
         # Try to create invalid user data - should fail at model validation
         try:
             user_data = FlextWebModels.Service.UserData(
-                username=123,  # type: ignore[arg-type]  # Invalid type
+                username=123,
                 email="test@example.com",
             )
             # If validation passes (shouldn't), test will fail
@@ -266,7 +266,7 @@ class TestFlextWebService:
         # Try to create invalid app data - should fail at model validation
         try:
             app_data = FlextWebModels.Service.AppData(
-                name=123,  # type: ignore[arg-type]  # Invalid type
+                name=123,
                 host="localhost",
                 port=8080,
             )
@@ -310,7 +310,7 @@ class TestFlextWebService:
         """Test app retrieval with invalid ID."""
         service = FlextWebServices()
         # Test with non-string ID
-        get_result = service.get_app(123)  # type: ignore[arg-type]
+        get_result = service.get_app(123)
         assert get_result.is_failure
         assert get_result.error is not None and "must be a string" in get_result.error
 
@@ -345,7 +345,7 @@ class TestFlextWebService:
         """Test app start with invalid ID."""
         service = FlextWebServices()
         # Test with non-string ID
-        start_result = service.start_app(123)  # type: ignore[arg-type]
+        start_result = service.start_app(123)
         assert start_result.is_failure
         assert (
             start_result.error is not None and "must be a string" in start_result.error
@@ -391,7 +391,7 @@ class TestFlextWebService:
         """Test app stop with invalid ID."""
         service = FlextWebServices()
         # Test with non-string ID
-        stop_result = service.stop_app(123)  # type: ignore[arg-type]
+        stop_result = service.stop_app(123)
         assert stop_result.is_failure
         assert stop_result.error is not None and "must be a string" in stop_result.error
 
@@ -472,7 +472,7 @@ class TestFlextWebService:
         """Test entity retrieval with invalid ID."""
         service = FlextWebServices()
         # Test with non-string ID
-        get_result = service.get_entity(123)  # type: ignore[arg-type]
+        get_result = service.get_entity(123)
         assert get_result.is_failure
         assert get_result.error is not None and "must be a string" in get_result.error
 
