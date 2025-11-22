@@ -3,9 +3,24 @@
 Tests the unified FlextWebProtocols class following flext standards.
 """
 
-from flext_core import FlextProtocols
+from typing import cast
 
-from flext_web.protocols import FlextWebProtocols
+from flext_core import FlextProtocols, FlextResult
+
+from flext_web.constants import FlextWebConstants
+from flext_web.protocols import (
+    FlextWebProtocols,
+    _WebAppManagerBase,
+    _WebConnectionBase,
+    _WebFrameworkInterfaceBase,
+    _WebHandlerBase,
+    _WebMonitoringBase,
+    _WebRepositoryBase,
+    _WebServiceBase,
+    _WebTemplateEngineBase,
+    _WebTemplateRendererBase,
+)
+from flext_web.typings import FlextWebTypes
 
 
 class TestFlextWebProtocols:
@@ -335,7 +350,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_placeholder_methods_execution(self) -> None:
         """Test protocol placeholder methods by executing them directly."""
-        from flext_core import FlextResult
 
         # Test WebAppManagerProtocol placeholder methods
         # Create a real implementation that satisfies the protocol
@@ -391,9 +405,6 @@ class TestFlextWebProtocols:
 
     def test_response_formatter_protocol_methods(self) -> None:
         """Test WebResponseFormatterProtocol methods execution."""
-        from flext_core import FlextResult
-
-        from flext_web.constants import FlextWebConstants
 
         class RealResponseFormatter:
             def format_success(self, data: dict[str, object]) -> dict[str, object]:
@@ -453,7 +464,9 @@ class TestFlextWebProtocols:
         assert hasattr(formatter, "create_json_response")
 
         # Test format_success with nested dict
-        data_with_nested = {"key1": "value1", "nested": {"key2": "value2"}}
+        data_with_nested = cast(
+            "dict[str, object]", {"key1": "value1", "nested": {"key2": "value2"}}
+        )
         result = formatter.format_success(data_with_nested)
         assert result["status"] == FlextWebConstants.WebResponse.STATUS_SUCCESS
         assert result["key1"] == "value1"
@@ -475,9 +488,6 @@ class TestFlextWebProtocols:
 
     def test_web_framework_interface_protocol_methods(self) -> None:
         """Test WebFrameworkInterfaceProtocol methods execution."""
-        from flext_core import FlextResult
-
-        from flext_web.constants import FlextWebConstants
 
         class RealFrameworkInterface:
             def create_json_response(
@@ -522,7 +532,7 @@ class TestFlextWebProtocols:
         assert hasattr(framework, "is_json_request")
 
         # Test methods
-        data = {"test": "value", "nested": {"key": "value"}}
+        data = cast("dict[str, object]", {"test": "value", "nested": {"key": "value"}})
         json_response = framework.create_json_response(data)
         assert FlextWebConstants.Http.HEADER_CONTENT_TYPE in json_response
 
@@ -534,7 +544,6 @@ class TestFlextWebProtocols:
 
     def test_web_service_protocol_methods(self) -> None:
         """Test WebServiceProtocol methods execution."""
-        from flext_core import FlextResult
 
         class RealWebService:
             def initialize_routes(self) -> FlextResult[bool]:
@@ -578,7 +587,6 @@ class TestFlextWebProtocols:
 
     def test_web_repository_protocol_methods(self) -> None:
         """Test WebRepositoryProtocol methods execution."""
-        from flext_core import FlextResult
 
         class RealWebRepository:
             def find_by_criteria(
@@ -623,7 +631,6 @@ class TestFlextWebProtocols:
 
     def test_web_template_renderer_protocol_methods(self) -> None:
         """Test WebTemplateRendererProtocol methods execution."""
-        from flext_core import FlextResult
 
         class RealTemplateRenderer:
             def render_template(
@@ -663,7 +670,6 @@ class TestFlextWebProtocols:
 
     def test_web_template_engine_protocol_methods(self) -> None:
         """Test WebTemplateEngineProtocol methods execution."""
-        from flext_core import FlextResult
 
         class RealTemplateEngine:
             def load_template_config(
@@ -734,9 +740,6 @@ class TestFlextWebProtocols:
 
     def test_web_monitoring_protocol_methods(self) -> None:
         """Test WebMonitoringProtocol methods execution."""
-        from flext_core import FlextResult
-
-        from flext_web.constants import FlextWebConstants
 
         class RealWebMonitoring:
             def record_web_request(
@@ -781,34 +784,32 @@ class TestFlextWebProtocols:
 
     def test_protocol_placeholder_methods_direct_execution(self) -> None:
         """Test protocol placeholder methods by using concrete base classes."""
-        from flext_web.protocols import _WebAppManagerBase
-
         # Use concrete base class that implements protocol placeholder methods
         manager = _WebAppManagerBase()
 
         # Execute placeholder methods to cover lines 223-224, 239-240, 253-254, 264
         result = manager.create_app("test", 8080, "localhost")
         assert result.is_failure
+        assert result.error is not None
         assert "create_app method not implemented" in result.error
 
         result = manager.start_app("app-123")
         assert result.is_failure
+        assert result.error is not None
         assert "start_app method not implemented" in result.error
 
         result = manager.stop_app("app-123")
         assert result.is_failure
+        assert result.error is not None
         assert "stop_app method not implemented" in result.error
 
         result = manager.list_apps()
         assert result.is_failure
+        assert result.error is not None
         assert "list_apps method not implemented" in result.error
 
     def test_protocol_response_formatter_placeholder_methods(self) -> None:
         """Test WebResponseFormatterProtocol placeholder methods."""
-        from flext_core import FlextResult
-
-        from flext_web.constants import FlextWebConstants
-        from flext_web.typings import FlextWebTypes
 
         class ConcreteFormatter:
             """Concrete implementation using protocol placeholder logic."""
@@ -903,10 +904,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_framework_interface_placeholder_methods(self) -> None:
         """Test WebFrameworkInterfaceProtocol placeholder methods."""
-        from flext_web.constants import FlextWebConstants
-        from flext_web.protocols import _WebFrameworkInterfaceBase
-        from flext_web.typings import FlextWebTypes
-
         framework = _WebFrameworkInterfaceBase()
 
         # Test create_json_response to cover lines 390-400
@@ -930,8 +927,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_service_placeholder_methods(self) -> None:
         """Test WebServiceProtocol placeholder methods."""
-        from flext_web.protocols import _WebServiceBase
-
         service = _WebServiceBase()
 
         # Execute all placeholder methods to cover lines 456, 466, 476, 486
@@ -942,8 +937,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_repository_placeholder_methods(self) -> None:
         """Test WebRepositoryProtocol placeholder methods."""
-        from flext_web.protocols import _WebRepositoryBase
-
         repo = _WebRepositoryBase()
 
         # Execute placeholder method to cover lines 512-513
@@ -953,8 +946,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_handler_placeholder_methods(self) -> None:
         """Test WebHandlerProtocol placeholder methods."""
-        from flext_web.protocols import _WebHandlerBase
-
         handler = _WebHandlerBase()
 
         # Execute placeholder method to cover lines 547-548
@@ -964,8 +955,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_template_renderer_placeholder_methods(self) -> None:
         """Test WebTemplateRendererProtocol placeholder methods."""
-        from flext_web.protocols import _WebTemplateRendererBase
-
         renderer = _WebTemplateRendererBase()
 
         # Execute placeholder methods to cover lines 642-643, 658-659
@@ -979,8 +968,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_template_engine_placeholder_methods(self) -> None:
         """Test WebTemplateEngineProtocol placeholder methods."""
-        from flext_web.protocols import _WebTemplateEngineBase
-
         engine = _WebTemplateEngineBase()
 
         # Execute placeholder methods to cover lines 685-686, 696, 711-712, 728-729
@@ -995,8 +982,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_connection_placeholder_methods(self) -> None:
         """Test WebConnectionProtocol placeholder methods."""
-        from flext_web.protocols import _WebConnectionBase
-
         connection = _WebConnectionBase()
 
         # Execute placeholder method to cover line 574
@@ -1005,9 +990,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_monitoring_placeholder_methods(self) -> None:
         """Test WebMonitoringProtocol placeholder methods."""
-        from flext_web.constants import FlextWebConstants
-        from flext_web.protocols import _WebMonitoringBase
-
         monitoring = _WebMonitoringBase()
 
         # Execute placeholder methods to cover lines 789, 802

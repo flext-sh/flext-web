@@ -10,6 +10,7 @@ import sys
 import time
 from pathlib import Path
 
+import pytest
 import requests
 from flext_core import FlextLogger
 from flext_tests import FlextTestDocker
@@ -64,16 +65,19 @@ class ExamplesFullFunctionalityTest:
 
         self.container_id = "flext-full-test"
 
-        # Wait for service to be ready
-        for _i in range(30):  # 30 seconds timeout
+        # Wait for service to be ready (optimized: faster polling, shorter timeout)
+        for _i in range(10):  # 10 seconds timeout (reduced from 30)
             try:
-                response = requests.get(f"{self.service_url}/health", timeout=2)
+                response = requests.get(f"{self.service_url}/health", timeout=1)
                 if response.status_code == 200:
                     return True
             except Exception as exc:
                 # Log the transient failure but keep waiting
                 logger.debug("health check attempt failed: %s", exc)
-            time.sleep(1)
+            time.sleep(0.5)  # Faster polling
+
+        # If we get here, service didn't start - this is a real failure
+        pytest.fail(f"Service failed to start within 10 seconds on {self.service_url}")
 
         return False
 

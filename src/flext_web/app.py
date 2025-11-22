@@ -42,7 +42,7 @@ class FlextWebApp(FlextService[bool]):
         self._container = FlextContainer.get_global()
         self._logger = FlextLogger(__name__)
 
-    def execute(self) -> FlextResult[bool]:
+    def execute(self, **_kwargs: object) -> FlextResult[bool]:
         """Execute the web application service.
 
         Main domain operation for the web application service.

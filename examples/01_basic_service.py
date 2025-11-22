@@ -26,7 +26,7 @@ def main() -> None:
 
     try:
         # Start service with configuration already set during service creation
-        service.start_service("127.0.0.1", 8000, debug=True)
+        service.start_service("127.0.0.1", 8000, _debug=True)
     except KeyboardInterrupt:
         return
     except Exception as e:

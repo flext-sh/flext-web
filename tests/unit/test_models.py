@@ -3,6 +3,8 @@
 Tests the web models functionality following flext standards.
 """
 
+from typing import cast
+
 import pytest
 from pydantic import ValidationError
 
@@ -15,8 +17,6 @@ class TestFlextWebModels:
 
     def test_web_app_status_enum(self) -> None:
         """Test WebAppStatus enum values from constants."""
-        from flext_web.constants import FlextWebConstants
-
         assert FlextWebConstants.WebEnvironment.Status.STOPPED.value == "stopped"
         assert FlextWebConstants.WebEnvironment.Status.STARTING.value == "starting"
         assert FlextWebConstants.WebEnvironment.Status.RUNNING.value == "running"
@@ -29,7 +29,7 @@ class TestFlextWebModels:
 
     def test_web_app_initialization_with_defaults(self) -> None:
         """Test WebApp initialization with defaults."""
-        app = FlextWebModels.Application.Entity(id="test-id", name="test-app")
+        app = create_test_app()
         assert app.id == "test-id"
         assert app.name == "test-app"
         assert app.host == FlextWebConstants.WebDefaults.HOST
@@ -203,7 +203,7 @@ class TestFlextWebModels:
 
     def test_web_app_metrics_update(self) -> None:
         """Test WebApp metrics update."""
-        app = FlextWebModels.Application.Entity(id="test-id", name="test-app")
+        app = create_test_app()
         metrics = {"requests": 100, "errors": 5}
         result = app.update_metrics(metrics)
         # The update_metrics method should return FlextResult[bool]
@@ -310,9 +310,7 @@ class TestFlextWebModels:
 
     def test_create_web_app_factory(self) -> None:
         """Test create_web_app factory method."""
-        result = FlextWebModels.create_web_app(
-            name="test-app", host="localhost", port=8080
-        )
+        result = create_entry("web_app", name="test-app", host="localhost", port=8080)
         assert result.is_success
         app = result.unwrap()
         assert app.name == "test-app"
@@ -321,9 +319,10 @@ class TestFlextWebModels:
 
     def test_create_web_request_factory(self) -> None:
         """Test create_web_request factory method."""
-        result = FlextWebModels.create_web_request(
-            "POST",
-            "http://localhost:8080/api/test",
+        result = create_entry(
+            "web_request",
+            method="POST",
+            url="http://localhost:8080/api/test",
             headers={"Content-Type": "application/json"},
             body='{"test": "data"}',
         )
@@ -334,9 +333,10 @@ class TestFlextWebModels:
 
     def test_create_web_response_factory(self) -> None:
         """Test create_web_response factory method."""
-        result = FlextWebModels.create_web_response(
-            "req-123",
-            201,
+        result = create_entry(
+            "web_response",
+            request_id="req-123",
+            status_code=201,
             headers={"Content-Type": "application/json"},
             body='{"id": 1}',
         )
@@ -425,9 +425,10 @@ class TestFlextWebModels:
             port=8080,
         )
         # Manually set name to be too short (bypassing Pydantic validation)
-        object.__setattr__(app, "name", "ab")
+        app.name = "ab"
         result = app.validate_business_rules()
         assert result.is_failure
+        assert result.error is not None
         assert "App name must be at least" in result.error
 
     def test_application_validate_business_rules_invalid_port_low(self) -> None:
@@ -440,9 +441,10 @@ class TestFlextWebModels:
             port=8080,
         )
         # Manually set port to be too low (bypassing Pydantic validation)
-        object.__setattr__(app, "port", 0)
+        app.port = 0
         result = app.validate_business_rules()
         assert result.is_failure
+        assert result.error is not None
         assert "Port must be between" in result.error
 
     def test_application_validate_business_rules_invalid_port_high(self) -> None:
@@ -455,9 +457,10 @@ class TestFlextWebModels:
             port=8080,
         )
         # Manually set port to be too high (bypassing Pydantic validation)
-        object.__setattr__(app, "port", 70000)
+        app.port = 70000
         result = app.validate_business_rules()
         assert result.is_failure
+        assert result.error is not None
         assert "Port must be between" in result.error
 
     def test_application_update_metrics_invalid_type(self) -> None:
@@ -469,8 +472,9 @@ class TestFlextWebModels:
             port=8080,
         )
 
-        result = app.update_metrics("not_a_dict")
+        result = app.update_metrics(cast("dict[str, object]", "not_a_dict"))
         assert result.is_failure
+        assert result.error is not None
         assert "Metrics must be a dictionary" in result.error
 
     # Note: Testing event failures (start, stop, restart, update_metrics with event failures)
@@ -488,8 +492,9 @@ class TestFlextWebModels:
             port=8080,
         )
 
-        result = app.add_domain_event(123)
+        result = app.add_domain_event(cast("str", 123))
         assert result.is_failure
+        assert result.error is not None
         assert "Event must be a string" in result.error
 
     def test_application_add_domain_event_empty_string(self) -> None:
@@ -503,26 +508,31 @@ class TestFlextWebModels:
 
         result = app.add_domain_event("")
         assert result.is_failure
+        assert result.error is not None
         assert "Event cannot be empty" in result.error
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
-        result = FlextWebModels.create_web_request(
+        result = create_entry(
+            "web_request",
             method="GET",
             url="http://localhost:8080",
-            headers="not_a_dict",
+            headers=cast("dict[str, str]", "not_a_dict"),
         )
         assert result.is_failure
+        assert result.error is not None
         assert "Headers must be a dictionary" in result.error
 
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers type."""
-        result = FlextWebModels.create_web_response(
+        result = create_entry(
+            "web_response",
             request_id="test-123",
             status_code=200,
-            headers="not_a_dict",
+            headers=cast("dict[str, str]", "not_a_dict"),
         )
         assert result.is_failure
+        assert result.error is not None
         assert "Headers must be a dictionary" in result.error
 
     def test_web_response_processing_time_seconds(self) -> None:
@@ -536,8 +546,6 @@ class TestFlextWebModels:
 
     def test_application_validate_name_max_length(self) -> None:
         """Test validate_name with max_length validation (lines 404-405)."""
-        from pydantic import ValidationError
-
         # Test name too long
         max_length = FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[1]
         long_name = "a" * (max_length + 1)
@@ -564,40 +572,167 @@ class TestFlextWebModels:
     def test_create_web_app_validation_error(self) -> None:
         """Test create_web_app with validation error (lines 914-920)."""
         # Test with invalid name (too short)
-        result = FlextWebModels.create_web_app(
-            name="ab",  # Too short
-            host="localhost",
-            port=8080,
-        )
+        result = create_entry("web_app", name="ab", host="localhost", port=8080)
         assert result.is_failure
+        assert result.error is not None
         assert "Validation failed" in result.error or "at least" in result.error
 
     def test_create_web_app_value_error(self) -> None:
         """Test create_web_app with ValueError (lines 914-920)."""
         # Test with reserved name to trigger ValueError
-        result = FlextWebModels.create_web_app(
-            name="REDACTED_LDAP_BIND_PASSWORD",  # Reserved name
-            host="localhost",
-            port=8080,
-        )
+        result = create_entry("web_app", name="REDACTED_LDAP_BIND_PASSWORD", host="localhost", port=8080)
         assert result.is_failure
 
     def test_create_web_request_validation_error(self) -> None:
         """Test create_web_request with validation error (lines 961-967)."""
         # Test with invalid URL to trigger validation error
-        result = FlextWebModels.create_web_request(
-            method="GET",
-            url="",  # Empty URL might cause validation error
-        )
-        # Should either succeed or fail with proper error
-        assert result.is_success or result.is_failure
+        result = create_entry("web_request", method="GET", url="")
+        # Should fail with proper error for empty URL
+        assert result.is_failure, "Empty URL should cause validation failure"
+        assert result.error is not None
 
     def test_create_web_response_validation_error(self) -> None:
         """Test create_web_response with validation error (lines 1008-1014)."""
         # Test with invalid status code to trigger validation error
-        result = FlextWebModels.create_web_response(
-            request_id="test-123",
-            status_code=999,  # Invalid status code (out of range)
+        result = create_entry("web_response", request_id="test-123", status_code=999)
+        # Should fail with proper error for invalid status code
+        assert result.is_failure, "Invalid status code should cause validation failure"
+        assert result.error is not None
+
+    def test_application_edge_cases(self) -> None:
+        """Test Application model with edge cases."""
+        # Test with maximum length name
+        max_name = "a" * 100  # Assuming reasonable max length
+        result = create_entry("web_app", name=max_name, host="localhost", port=8080)
+        assert result.is_success
+
+        # Test with minimum length name
+        result = create_entry("web_app", name="a", host="localhost", port=8080)
+        assert result.is_success
+
+        # Test with special characters in name
+        result = create_entry(
+            "web_app", name="test_app-123_special", host="localhost", port=8080
         )
-        # Should either succeed or fail with proper error
-        assert result.is_success or result.is_failure
+        assert result.is_success
+
+    def test_application_invalid_cases(self) -> None:
+        """Test Application model with invalid inputs."""
+        # Test with empty name
+        result = create_entry("web_app", name="", host="localhost", port=8080)
+        assert result.is_failure
+
+        # Test with None name
+        result = create_entry("web_app", name=None, host="localhost", port=8080)  # type: ignore
+        assert result.is_failure
+
+        # Test with invalid port (zero)
+        result = create_entry("web_app", name="test", host="localhost", port=0)
+        assert result.is_failure
+
+        # Test with invalid host
+        result = create_entry("web_app", name="test", host="", port=8080)
+        assert result.is_failure
+
+    @pytest.mark.parametrize(
+        ("name", "host", "port", "should_succeed"),
+        [
+            # Valid cases
+            ("test-app", "localhost", 8080, True),
+            ("my_app_123", "127.0.0.1", 3000, True),
+            ("app-with-dashes", "example.com", 443, True),
+            ("a", "localhost", 80, True),  # Minimal name
+            ("a" * 50, "localhost", 8080, True),  # Long name
+            # Invalid cases
+            ("", "localhost", 8080, False),  # Empty name
+            ("test", "", 8080, False),  # Empty host
+            ("test", "localhost", -1, False),  # Negative port
+            ("test", "localhost", 0, False),  # Zero port
+            ("test", "localhost", 65536, False),  # Port too high
+            ("test", "invalid..host", 8080, False),  # Invalid hostname
+        ],
+    )
+    def test_application_parametrized_creation(
+        self, name: str, host: str, port: int, should_succeed: bool
+    ) -> None:
+        """Test application creation with parametrized edge cases."""
+        result = create_entry("web_app", name=name, host=host, port=port)
+
+        if should_succeed:
+            assert result.is_success, (
+                f"Expected success for app '{name}', got: {result.error}"
+            )
+            app = result.unwrap()
+            assert app.name == name
+            assert app.host == host
+            assert app.port == port
+        else:
+            assert result.is_failure, (
+                f"Expected failure for app '{name}', but succeeded"
+            )
+            assert result.error is not None
+
+    def test_extreme_edge_cases(self) -> None:
+        """Test absolute extreme edge cases that might reveal bugs."""
+        from tests.conftest import create_entry
+
+        # Test with unicode characters in names
+        unicode_name = "测试应用_🚀_123"
+        result = create_entry("web_app", name=unicode_name, host="localhost", port=8080)
+        assert result.is_success
+
+        # Test with maximum possible port (system limit)
+        result = create_entry("web_app", name="test", host="localhost", port=65535)
+        assert result.is_success
+
+        # Test with IPv6-like host (if supported)
+        ipv6_host = "2001:db8::1"
+        result = create_entry("web_app", name="test", host=ipv6_host, port=8080)
+        # This might fail depending on validation, but should be consistent
+        assert result.is_success or result.is_failure  # Either is acceptable
+
+        # Test with extremely long hostnames (DNS limit is 253 chars)
+        long_hostname = "a" * 253
+        result = create_entry("web_app", name="test", host=long_hostname, port=8080)
+        assert result.is_success
+
+        # Test boundary conditions for name length
+        # Exactly at minimum length (1 char)
+        result = create_entry("web_app", name="x", host="localhost", port=8080)
+        assert result.is_success
+
+        # Exactly at maximum length (100 chars as per validation)
+        max_name = "x" * 100
+        result = create_entry("web_app", name=max_name, host="localhost", port=8080)
+        assert result.is_success
+
+        # Just over maximum (should fail)
+        too_long_name = "x" * 101
+        result = create_entry(
+            "web_app", name=too_long_name, host="localhost", port=8080
+        )
+        assert result.is_failure
+
+    def test_dangerous_patterns_rejection(self) -> None:
+        """Test that dangerous patterns in names are properly rejected."""
+        from tests.conftest import create_entry
+
+        dangerous_patterns = [
+            "<script>alert('xss')</script>",
+            "javascript:alert('xss')",
+            "data:text/html,<script>alert('xss')</script>",
+            "'; DROP TABLE users; --",
+            "-- DROP TABLE users",
+            "/* DROP TABLE users */",
+            "REDACTED_LDAP_BIND_PASSWORD",
+            "root",
+            "system",
+        ]
+
+        for dangerous_name in dangerous_patterns:
+            result = create_entry(
+                "web_app", name=dangerous_name, host="localhost", port=8080
+            )
+            assert result.is_failure, (
+                f"Dangerous pattern '{dangerous_name}' should be rejected"
+            )

@@ -28,9 +28,10 @@ from datetime import UTC, datetime
 from typing import Any
 
 from flext_core import FlextResult
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from flext_web.constants import FlextWebConstants
+from flext_web.utilities import FlextWebUtilities
 
 # HttpMethodLiteral - import from constants for centralized definition
 HttpMethodLiteral = FlextWebConstants.HttpMethodLiteral
@@ -663,8 +664,7 @@ class FlextWebModels:
                     ValueError: If name cannot be formatted to valid ID
 
                 """
-                from flext_web.utilities import FlextWebUtilities
-
+                # Import at module level - FlextWebUtilities is used for ID formatting
                 return FlextWebUtilities.format_app_id(name)
 
         class EntityConfig(BaseModel):
@@ -901,8 +901,6 @@ class FlextWebModels:
                                            failure contains validation error
 
         """
-        from pydantic import ValidationError
-
         try:
             entity = cls.Application.Entity(
                 name=name,
@@ -940,8 +938,6 @@ class FlextWebModels:
                                     failure contains validation error
 
         """
-        from pydantic import ValidationError
-
         # Validate headers type - fast fail, no fallback
         if headers is not None and not isinstance(headers, dict):
             return FlextResult[FlextWebModels.WebRequest].fail(
@@ -987,8 +983,6 @@ class FlextWebModels:
                                      failure contains validation error
 
         """
-        from pydantic import ValidationError
-
         # Validate headers type - fast fail, no fallback
         if headers is not None and not isinstance(headers, dict):
             return FlextResult[FlextWebModels.WebResponse].fail(

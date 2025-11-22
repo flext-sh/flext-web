@@ -3,9 +3,17 @@
 Tests the main API facade functionality following flext standards.
 """
 
+from unittest.mock import patch
+
 import pytest
+from flext_core import FlextResult
+from pydantic import ValidationError
+from tests.conftest import create_test_result
 
 from flext_web.api import FlextWebApi
+from flext_web.config import FlextWebConfig
+from flext_web.constants import FlextWebConstants
+from flext_web.models import FlextWebModels
 
 
 class TestFlextWebApi:
@@ -27,8 +35,6 @@ class TestFlextWebApi:
 
     def test_create_fastapi_app_with_config(self) -> None:
         """Test FastAPI app creation with configuration."""
-        from flext_web.models import FlextWebModels
-
         config = FlextWebModels.FastAPI.FastAPIAppConfig(
             title="Test API", version="1.0.0"
         )
@@ -47,9 +53,6 @@ class TestFlextWebApi:
 
     def test_create_http_service_with_config(self) -> None:
         """Test HTTP service creation with configuration."""
-        from flext_web.config import FlextWebConfig
-        from flext_web.constants import FlextWebConstants
-
         config = FlextWebConfig(
             host="localhost",
             port=8080,
@@ -64,10 +67,6 @@ class TestFlextWebApi:
 
     def test_create_fastapi_app_with_invalid_config(self) -> None:
         """Test FastAPI app creation with invalid config - REAL validation."""
-        from pydantic import ValidationError
-
-        from flext_web.models import FlextWebModels
-
         # Test with invalid config - Pydantic validation should fail
         # FastAPIAppConfig requires valid title (min_length=1)
         try:
@@ -85,10 +84,6 @@ class TestFlextWebApi:
 
     def test_create_http_service_with_invalid_config(self) -> None:
         """Test HTTP service creation with invalid config - REAL validation."""
-        from pydantic import ValidationError
-
-        from flext_web.config import FlextWebConfig
-
         # Test with invalid config - Pydantic validation should fail
         try:
             # Config with invalid port should fail Pydantic validation
@@ -96,7 +91,9 @@ class TestFlextWebApi:
             # If validation passes (shouldn't), test will continue
             result = FlextWebApi.create_http_service(invalid_config)
             # Service creation should handle invalid config
-            assert result.is_success or result.is_failure
+            assert result.is_failure, (
+                "Invalid config should cause service creation to fail"
+            )
         except ValidationError:
             # Expected - Pydantic validation should fail fast
             pass
@@ -109,20 +106,120 @@ class TestFlextWebApi:
         assert config.host == "localhost"
         assert config.port == 8080
 
+    def test_create_http_config_with_none_debug(self) -> None:
+        """Test HTTP configuration creation with debug=None."""
+        result = FlextWebApi.create_http_config(host="localhost", port=8080, debug=None)
+        assert result.is_success
+
+    def test_create_http_config_edge_cases(self) -> None:
+        """Test HTTP configuration creation with edge cases."""
+        # Test with maximum port number
+        result = FlextWebApi.create_http_config(
+            host="localhost", port=65535, debug=True
+        )
+        assert result.is_success
+
+        # Test with minimum valid port number
+        result = FlextWebApi.create_http_config(host="localhost", port=1, debug=True)
+        assert result.is_success
+
+        # Test with very long host name
+        long_host = "a" * 253  # Maximum hostname length
+        result = FlextWebApi.create_http_config(host=long_host, port=8080, debug=True)
+        assert result.is_success
+
+    def test_create_http_config_invalid_cases(self) -> None:
+        """Test HTTP configuration creation with invalid inputs."""
+        # Test with invalid port (negative)
+        result = FlextWebApi.create_http_config(host="localhost", port=-1, debug=True)
+        assert result.is_failure
+
+        # Test with invalid port (too high)
+        result = FlextWebApi.create_http_config(
+            host="localhost", port=65536, debug=True
+        )
+        assert result.is_failure
+
+        # Test with invalid host (empty string)
+        result = FlextWebApi.create_http_config(host="", port=8080, debug=True)
+        assert result.is_failure
+
+        # Test with invalid host (None)
+        result = FlextWebApi.create_http_config(host=None, port=8080, debug=True)  # type: ignore[assignment]
+        assert result.is_failure
+
+        # Test with invalid host (contains invalid characters)
+        result = FlextWebApi.create_http_config(
+            host="invalid..host", port=8080, debug=True
+        )
+        assert result.is_failure
+
+    def test_http_config_result_consistency(self) -> None:
+        """Test that HTTP config results follow FlextResult patterns."""
+        # Test successful result structure
+        success_result = FlextWebApi.create_http_config(
+            host="localhost", port=8080, debug=True
+        )
+        assert success_result.is_success
+        assert success_result.value is not None
+        assert success_result.error is None
+
+        # Test failed result structure
+        fail_result = FlextWebApi.create_http_config(host="", port=8080, debug=True)
+        assert fail_result.is_failure
+        assert fail_result.value is None
+        assert fail_result.error is not None
+
+        # Test that results are consistent with flext_tests patterns
+        test_success = create_test_result(success=True, data="test")
+        test_failure = create_test_result(success=False, error="test error")
+
+        assert test_success.is_success and test_success.value == "test"
+        assert test_failure.is_failure and test_failure.error == "test error"
+
     def test_create_http_config_with_defaults(self) -> None:
         """Test HTTP configuration creation with defaults."""
         result = FlextWebApi.create_http_config()
         assert result.is_success
-        config = result.unwrap()
-        assert config is not None
-        assert config.host == "localhost"
-        assert config.port == 8080
+
+    @pytest.mark.parametrize(
+        ("host", "port", "debug", "should_succeed"),
+        [
+            # Valid cases
+            ("localhost", 8080, True, True),
+            ("127.0.0.1", 3000, False, True),
+            ("0.0.0.0", 80, True, True),
+            ("example.com", 443, False, True),
+            # Invalid cases
+            ("", 8080, True, False),  # Empty host
+            ("localhost", -1, True, False),  # Negative port
+            ("localhost", 0, True, False),  # Zero port
+            ("localhost", 65536, True, False),  # Port too high
+            ("invalid..host", 8080, True, False),  # Invalid hostname
+        ],
+    )
+    def test_http_config_parametrized(
+        self, host: str, port: int, debug: bool, should_succeed: bool
+    ) -> None:
+        """Test HTTP configuration creation with parametrized edge cases."""
+        result = FlextWebApi.create_http_config(host=host, port=port, debug=debug)
+
+        if should_succeed:
+            assert result.is_success, (
+                f"Expected success for {host}:{port}, got: {result.error}"
+            )
+            config = result.unwrap()
+            assert config.host == host
+            assert config.port == port
+            assert config.debug == debug
+        else:
+            assert result.is_failure, (
+                f"Expected failure for {host}:{port}, but succeeded"
+            )
+            assert result.error is not None
 
     def test_validate_http_config_success(self) -> None:
         """Test HTTP configuration validation."""
-        from flext_web.config import FlextWebConfig
-        from flext_web.constants import FlextWebConstants
-
         config = FlextWebConfig(
             host="localhost",
             port=8080,
@@ -136,18 +233,12 @@ class TestFlextWebApi:
 
     def test_validate_http_config_invalid(self) -> None:
         """Test HTTP configuration validation with invalid data."""
-        from pydantic import ValidationError
-
-        from flext_web.config import FlextWebConfig
-
         # Config with invalid port should fail Pydantic validation on creation
         with pytest.raises(ValidationError):  # Pydantic will raise ValidationError
             FlextWebConfig(port=-1)
 
     def test_get_service_status(self) -> None:
         """Test service status retrieval."""
-        from flext_web.models import FlextWebModels
-
         result = FlextWebApi.get_service_status()
         assert result.is_success
         status = result.unwrap()
@@ -169,20 +260,17 @@ class TestFlextWebApi:
 
     def test_create_fastapi_app_error_logging(self) -> None:
         """Test create_fastapi_app error logging (line 84)."""
-        from unittest.mock import patch
-
         # Create a config that will cause FastAPI creation to fail
         # We'll patch FastAPI to raise an exception
         with patch("flext_web.app.FastAPI", side_effect=Exception("Test error")):
             result = FlextWebApi.create_fastapi_app()
             # Should fail and log error (line 84)
             assert result.is_failure
+            assert result.error is not None
             assert "Failed to create FastAPI application" in result.error
 
     def test_create_http_service_error_logging(self) -> None:
         """Test create_http_service error logging (line 120)."""
-        from unittest.mock import patch
-
         # Patch FlextWebServices.create_service to return failure
         with patch(
             "flext_web.services.FlextWebServices.create_service",
@@ -191,4 +279,5 @@ class TestFlextWebApi:
             result = FlextWebApi.create_http_service()
             # Should fail and log error (line 120)
             assert result.is_failure
+            assert result.error is not None
             assert "Service creation failed" in result.error

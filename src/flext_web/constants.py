@@ -129,7 +129,7 @@ class FlextWebConstants(FlextConstants):
         # HTTP Default Timeout
         DEFAULT_TIMEOUT_SECONDS: Final[float] = 30.0
 
-        METHODS: ClassVar[tuple[str, ...]] = tuple(method.value for method in Method)
+        METHODS: ClassVar[tuple[str, ...]] = tuple(Method.__members__.values())
         SAFE_METHODS: ClassVar[tuple[str, ...]] = (
             Method.GET.value,
             Method.HEAD.value,
@@ -259,11 +259,11 @@ class FlextWebConstants(FlextConstants):
             MAINTENANCE = "maintenance"
             DEPLOYING = "deploying"
 
-        ENVIRONMENTS: ClassVar[tuple[str, ...]] = tuple(name.value for name in Name)
+        ENVIRONMENTS: ClassVar[tuple[str, ...]] = tuple(Name.__members__.values())
         APPLICATION_TYPES: ClassVar[tuple[str, ...]] = tuple(
-            app.value for app in ApplicationType
+            ApplicationType.__members__.values()
         )
-        STATUSES: ClassVar[tuple[str, ...]] = tuple(status.value for status in Status)
+        STATUSES: ClassVar[tuple[str, ...]] = tuple(Status.__members__.values())
 
     PORT_RANGE: Final[tuple[int, int]] = WebValidation.PORT_RANGE
     NAME_LENGTH_RANGE: Final[tuple[int, int]] = WebValidation.NAME_LENGTH_RANGE

@@ -3,7 +3,23 @@
 Tests the version management functionality following flext standards.
 """
 
+from flext_web.__version__ import (
+    __author__,
+    __author_email__,
+    __description__,
+    __license__,
+    __title__,
+    __url__,
+)
 from flext_web.version import VERSION, FlextWebVersion, __version__, __version_info__
+
+
+def assert_version_info() -> None:
+    """Helper to assert version info is valid."""
+    assert isinstance(__version__, str)
+    assert isinstance(__version_info__, tuple)
+    assert len(__version_info__) > 0
+    assert isinstance(VERSION, FlextWebVersion)
 
 
 class TestFlextWebVersion:
@@ -35,9 +51,7 @@ class TestFlextWebVersion:
 
     def test_version_globals(self) -> None:
         """Test global version variables."""
-        assert isinstance(__version__, str)
-        assert isinstance(__version_info__, tuple)
-        assert isinstance(VERSION, FlextWebVersion)
+        assert_version_info()
 
         # Verify consistency
         assert VERSION.version == __version__
@@ -51,3 +65,23 @@ class TestFlextWebVersion:
         # Check that version_info matches version string
         version_from_info = ".".join(str(part) for part in __version_info__)
         assert version_from_info == __version__
+
+    def test_metadata_constants(self) -> None:
+        """Test that metadata constants are properly defined."""
+        # Test that all metadata constants are strings
+        assert isinstance(__title__, str)
+        assert isinstance(__description__, str)
+        assert isinstance(__author__, str)
+        assert isinstance(__author_email__, str)
+        assert isinstance(__license__, str)
+        assert isinstance(__url__, str)
+
+        # Test that they are not empty
+        assert len(__title__) > 0
+        assert len(__description__) > 0
+        assert len(__author__) > 0
+        assert len(__license__) > 0
+
+        # Test reasonable URL format (optional)
+        if __url__:
+            assert "://" in __url__ or __url__.startswith("http")

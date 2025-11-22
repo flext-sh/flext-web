@@ -331,7 +331,7 @@ class FlextWebHandlers(FlextService[bool]):
     # FLEXTSERVICE REQUIRED METHODS
     # =========================================================================
 
-    def execute(self) -> FlextResult[bool]:
+    def execute(self, **_kwargs: object) -> FlextResult[bool]:
         """Execute web handler service (FlextService requirement).
 
         Returns:

@@ -3,6 +3,12 @@
 Tests the unified FlextWebUtilities class following flext standards.
 """
 
+from unittest.mock import patch
+
+import pytest
+from flext_core import FlextResult
+
+from flext_web.models import FlextWebModels
 from flext_web.utilities import FlextWebUtilities
 
 
@@ -44,15 +50,12 @@ class TestFlextWebUtilities:
         assert result == "app_testappname"
 
         # Test with empty string - should raise ValueError
-        import pytest
 
         with pytest.raises(ValueError):
             FlextWebUtilities.format_app_id("")
 
     def test_app_creation_functionality(self) -> None:
         """Test app creation functionality."""
-        from flext_web.models import FlextWebModels
-
         app = FlextWebModels.Application.Entity(
             name="test-app", host="localhost", port=8080
         )
@@ -66,8 +69,6 @@ class TestFlextWebUtilities:
         """Test validation error handling."""
         # Test that invalid app creation fails properly
         try:
-            from flext_web.models import FlextWebModels
-
             # This should fail validation
             FlextWebModels.Application.Entity(name="", host="localhost", port=8080)
             # If it doesn't fail, that's also acceptable for this test
@@ -90,8 +91,6 @@ class TestFlextWebUtilities:
 
     def test_utilities_edge_cases(self) -> None:
         """Test FlextWebUtilities edge cases."""
-        import pytest
-
         # Test empty string handling - should raise ValueError
         with pytest.raises(ValueError):
             FlextWebUtilities.format_app_id("")
@@ -118,11 +117,6 @@ class TestFlextWebUtilities:
 
     def test_format_app_id_safe_string_failure(self) -> None:
         """Test format_app_id when safe_string fails."""
-        from unittest.mock import patch
-
-        import pytest
-        from flext_core import FlextResult
-
         # Mock safe_string to return failure
         with patch(
             "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
@@ -133,11 +127,6 @@ class TestFlextWebUtilities:
 
     def test_format_app_id_empty_after_stripping(self) -> None:
         """Test format_app_id when name becomes empty after stripping."""
-        from unittest.mock import patch
-
-        import pytest
-        from flext_core import FlextResult
-
         # Mock safe_string to return empty string after stripping
         with patch(
             "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
@@ -148,11 +137,6 @@ class TestFlextWebUtilities:
 
     def test_format_app_id_slugify_empty(self) -> None:
         """Test format_app_id when slugify results in empty string."""
-        from unittest.mock import patch
-
-        import pytest
-        from flext_core import FlextResult
-
         # Mock safe_string to return valid string, but slugify returns empty
         with patch(
             "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",

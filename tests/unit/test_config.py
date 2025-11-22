@@ -3,6 +3,8 @@
 Tests the web configuration functionality following flext standards.
 """
 
+from unittest.mock import patch
+
 import pytest
 from pydantic import ValidationError
 
@@ -109,13 +111,12 @@ class TestFlextWebConfig:
 
     def test_create_web_config_exception_handling(self) -> None:
         """Test create_web_config exception handling (lines 99-100)."""
-        from unittest.mock import patch
-
         # Patch __init__ to raise an exception
         with patch.object(
             FlextWebConfig, "__init__", side_effect=Exception("Config creation failed")
         ):
             result = FlextWebConfig.create_web_config()
             assert result.is_failure
+            assert result.error is not None
             assert "Failed to create web config" in result.error
             assert "Config creation failed" in result.error
