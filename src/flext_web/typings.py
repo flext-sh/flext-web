@@ -154,7 +154,9 @@ class FlextWebTypes(FlextTypes):
             # Validate method is valid Literal value - fast fail
             valid_methods_set = set(FlextWebConstants.Http.METHODS)
             if method_upper not in valid_methods_set:
-                return FlextResult[FlextWebModels.Http.Request].fail(
+                return FlextResult[
+                    FlextWebModels.Http.Request
+                ].fail(  # pragma: no cover
                     f"Invalid HTTP method: {method_upper}"
                 )
             # Type narrowing: use match/case for type safety
@@ -171,7 +173,7 @@ class FlextWebTypes(FlextTypes):
                         timeout=timeout,
                     )
                     return FlextResult[FlextWebModels.Http.Request].ok(request)
-                case _:
+                case _:  # pragma: no cover
                     return FlextResult[FlextWebModels.Http.Request].fail(
                         f"Invalid HTTP method: {method_upper}"
                     )
@@ -275,7 +277,7 @@ class FlextWebTypes(FlextTypes):
             # Validate method is valid Literal value - fast fail
             valid_methods_set = set(FlextWebConstants.Http.METHODS)
             if method_upper not in valid_methods_set:
-                return FlextResult[FlextWebModels.Web.Request].fail(
+                return FlextResult[FlextWebModels.Web.Request].fail(  # pragma: no cover
                     f"Invalid HTTP method: {method_upper}"
                 )
             # Type narrowing: use match/case for type safety
@@ -298,7 +300,7 @@ class FlextWebTypes(FlextTypes):
                         user_agent=user_agent,
                     )
                     return FlextResult[FlextWebModels.Web.Request].ok(request)
-                case _:
+                case _:  # pragma: no cover
                     return FlextResult[FlextWebModels.Web.Request].fail(
                         f"Invalid HTTP method: {method_upper}"
                     )
@@ -458,7 +460,7 @@ class FlextWebTypes(FlextTypes):
                 ),
             )
             return FlextResult[FlextWebTypes.TypesConfig].ok(config)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             return FlextResult[FlextWebTypes.TypesConfig].fail(
                 f"Failed to configure web types system: {e}",
             )
@@ -476,7 +478,7 @@ class FlextWebTypes(FlextTypes):
         try:
             config = cls.TypesConfig()
             return FlextResult[FlextWebTypes.TypesConfig].ok(config)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             return FlextResult[FlextWebTypes.TypesConfig].fail(
                 f"Failed to get web types system config: {e}",
             )

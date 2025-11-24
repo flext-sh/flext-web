@@ -26,6 +26,7 @@ from flext_tests import (
     FlextTestDocker,
     FlextTestsFactories,
     FlextTestsMatchers,
+    FlextTestsUtilities,
 )
 
 from flext_web import FlextWebConfig, FlextWebModels, FlextWebServices, FlextWebTypes
@@ -59,7 +60,7 @@ def assert_result(
         assert_failure(result)
 
 
-def create_entry(entry_type: str, **kwargs: object) -> object:
+def create_entry(entry_type: str, **kwargs: Any) -> FlextResult[Any]:
     """Generalized entry creation function using flext-core patterns.
 
     This function replaces multiple specific create_* methods by providing
@@ -88,10 +89,11 @@ def create_entry(entry_type: str, **kwargs: object) -> object:
         return FlextWebTypes.create_web_response(**kwargs)
     if entry_type == "application":
         return FlextWebTypes.create_application(**kwargs)
-    raise ValueError(f"Unsupported entry type: {entry_type}")
+    msg = f"Unsupported entry type: {entry_type}"
+    raise ValueError(msg)
 
 
-def create_test_data(data_type: str, **kwargs: object) -> dict[str, Any]:
+def create_test_data(data_type: str, **kwargs: Any) -> dict[str, Any]:
     """Create test data using flext_tests factories.
 
     This function provides a standardized way to create test data,
@@ -142,10 +144,11 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, Any]:
             request_id="test-123",
             **kwargs,
         )
-    raise ValueError(f"Unsupported data type: {data_type}")
+    msg = f"Unsupported data type: {data_type}"
+    raise ValueError(msg)
 
 
-def create_test_app(**kwargs: object) -> FlextWebModels.Application.Entity:
+def create_test_app(**kwargs: Any) -> FlextWebModels.Application.Entity:
     """Create a test application entity using flext-core patterns.
 
     This function provides a standardized way to create test applications,
@@ -158,7 +161,7 @@ def create_test_app(**kwargs: object) -> FlextWebModels.Application.Entity:
         FlextWebModels.Application.Entity instance
 
     """
-    defaults = {
+    defaults: dict[str, Any] = {
         "id": "test-id",
         "name": "test-app",
         "host": "localhost",
@@ -169,7 +172,7 @@ def create_test_app(**kwargs: object) -> FlextWebModels.Application.Entity:
     return FlextWebModels.Application.Entity(**defaults)
 
 
-def create_test_result(*, success: bool = True, **kwargs: object) -> FlextResult[object]:
+def create_test_result(*, success: bool = True, **kwargs: Any) -> FlextResult[object]:
     """Create a test FlextResult using flext_tests utilities.
 
     This function provides a standardized way to create test results,
@@ -187,8 +190,8 @@ def create_test_result(*, success: bool = True, **kwargs: object) -> FlextResult
 
 
 def run_parameterized_test(
-    test_cases: list[tuple[object, ...]],
-    test_function: Callable[[object], FlextResult[object]],
+    test_cases: list[tuple[Any, ...]],
+    test_function: Callable[[Any], FlextResult[object]],
     expected_results: list[bool],
     test_name: str = "parameterized_test",
 ) -> None:
@@ -207,9 +210,15 @@ def run_parameterized_test(
         AssertionError: If any test case doesn't match expected result
 
     """
-    for i, (test_case, expected_success) in enumerate(zip(test_cases, expected_results, strict=True)):
+    for i, (test_case, expected_success) in enumerate(
+        zip(test_cases, expected_results, strict=True)
+    ):
         try:
-            result = test_function(*test_case) if isinstance(test_case, tuple) else test_function(test_case)
+            result = (
+                test_function(*test_case)
+                if isinstance(test_case, tuple)
+                else test_function(test_case)
+            )
 
             if expected_success:
                 assert_success(result, f"{test_name} case {i} should succeed")
@@ -222,8 +231,8 @@ def run_parameterized_test(
 
 def create_comprehensive_test_suite(
     entity_type: str,
-    valid_cases: list[dict[str, object]],
-    invalid_cases: list[dict[str, object]],
+    valid_cases: list[dict[str, Any]],
+    invalid_cases: list[dict[str, Any]],
     test_name_prefix: str = "comprehensive",
 ) -> None:
     """Create comprehensive test suite using flext_tests patterns.
@@ -406,7 +415,7 @@ def production_config() -> dict[str, str]:
 
 
 @pytest.fixture(scope="session")
-def docker_manager() -> FlextTestDocker:
+def docker_manager() -> Generator[FlextTestDocker]:
     """Provide FlextTestDocker instance for integration tests."""
     try:
         manager = FlextTestDocker(workspace_root=Path().absolute())

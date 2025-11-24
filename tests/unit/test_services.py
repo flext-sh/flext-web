@@ -280,7 +280,8 @@ class TestFlextWebService:
         service = FlextWebServices()
         get_result = service.get_app("nonexistent-id")
         assert get_result.is_failure
-        assert get_result.error is not None and "not found" in get_result.error
+        assert get_result.error is not None
+        assert "not found" in get_result.error
 
     def test_get_app_invalid_id(self) -> None:
         """Test app retrieval with invalid ID."""
@@ -288,12 +289,14 @@ class TestFlextWebService:
         # Test with non-string ID
         get_result = service.get_app(cast("str", 123))
         assert get_result.is_failure
-        assert get_result.error is not None and "must be a string" in get_result.error
+        assert get_result.error is not None
+        assert "must be a string" in get_result.error
 
         # Test with empty string
         get_result = service.get_app("")
         assert get_result.is_failure
-        assert get_result.error is not None and "cannot be empty" in get_result.error
+        assert get_result.error is not None
+        assert "cannot be empty" in get_result.error
 
     def test_start_app_success(self) -> None:
         """Test successful app start."""
@@ -321,21 +324,20 @@ class TestFlextWebService:
         # Test with non-string ID
         start_result = service.start_app(cast("str", 123))
         assert start_result.is_failure
-        assert (
-            start_result.error is not None and "must be a string" in start_result.error
-        )
+        assert start_result.error is not None
+        assert "must be a string" in start_result.error
 
         # Test with empty string
         start_result = service.start_app("")
         assert start_result.is_failure
-        assert (
-            start_result.error is not None and "cannot be empty" in start_result.error
-        )
+        assert start_result.error is not None
+        assert "cannot be empty" in start_result.error
 
         # Test with non-existent app
         start_result = service.start_app("nonexistent-id")
         assert start_result.is_failure
-        assert start_result.error is not None and "not found" in start_result.error
+        assert start_result.error is not None
+        assert "not found" in start_result.error
 
     def test_stop_app_success(self) -> None:
         """Test successful app stop."""
@@ -365,17 +367,20 @@ class TestFlextWebService:
         # Test with non-string ID
         stop_result = service.stop_app(cast("str", 123))
         assert stop_result.is_failure
-        assert stop_result.error is not None and "must be a string" in stop_result.error
+        assert stop_result.error is not None
+        assert "must be a string" in stop_result.error
 
         # Test with empty string
         stop_result = service.stop_app("")
         assert stop_result.is_failure
-        assert stop_result.error is not None and "cannot be empty" in stop_result.error
+        assert stop_result.error is not None
+        assert "cannot be empty" in stop_result.error
 
         # Test with non-existent app
         stop_result = service.stop_app("nonexistent-id")
         assert stop_result.is_failure
-        assert stop_result.error is not None and "not found" in stop_result.error
+        assert stop_result.error is not None
+        assert "not found" in stop_result.error
 
     def test_create_web_service_class_method(self) -> None:
         """Test create_web_service class method."""
@@ -429,7 +434,8 @@ class TestFlextWebService:
         service = FlextWebServices()
         get_result = service.get_entity("nonexistent-id")
         assert get_result.is_failure
-        assert get_result.error is not None and "not found" in get_result.error
+        assert get_result.error is not None
+        assert "not found" in get_result.error
 
     def test_get_entity_invalid_id(self) -> None:
         """Test entity retrieval with invalid ID."""
@@ -437,12 +443,14 @@ class TestFlextWebService:
         # Test with non-string ID
         get_result = service.get_entity(cast("str", 123))
         assert get_result.is_failure
-        assert get_result.error is not None and "must be a string" in get_result.error
+        assert get_result.error is not None
+        assert "must be a string" in get_result.error
 
         # Test with empty string
         get_result = service.get_entity("")
         assert get_result.is_failure
-        assert get_result.error is not None and "cannot be empty" in get_result.error
+        assert get_result.error is not None
+        assert "cannot be empty" in get_result.error
 
     def test_list_entities_success(self) -> None:
         """Test successful entity listing."""

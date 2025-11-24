@@ -118,33 +118,39 @@ class TestFlextWebUtilities:
     def test_format_app_id_safe_string_failure(self) -> None:
         """Test format_app_id when safe_string fails."""
         # Mock safe_string to return failure
-        with patch(
-            "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
-            return_value=FlextResult[str].fail("Invalid string"),
+        with (
+            patch(
+                "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
+                return_value=FlextResult[str].fail("Invalid string"),
+            ),
+            pytest.raises(ValueError, match="Invalid application name"),
         ):
-            with pytest.raises(ValueError, match="Invalid application name"):
-                FlextWebUtilities.format_app_id("test")
+            FlextWebUtilities.format_app_id("test")
 
     def test_format_app_id_empty_after_stripping(self) -> None:
         """Test format_app_id when name becomes empty after stripping."""
         # Mock safe_string to return empty string after stripping
-        with patch(
-            "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
-            return_value=FlextResult[str].ok("   "),
+        with (
+            patch(
+                "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
+                return_value=FlextResult[str].ok("   "),
+            ),
+            pytest.raises(ValueError, match="Application name cannot be empty"),
         ):
-            with pytest.raises(ValueError, match="Application name cannot be empty"):
-                FlextWebUtilities.format_app_id("test")
+            FlextWebUtilities.format_app_id("test")
 
     def test_format_app_id_slugify_empty(self) -> None:
         """Test format_app_id when slugify results in empty string."""
         # Mock safe_string to return valid string, but slugify returns empty
-        with patch(
-            "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
-            return_value=FlextResult[str].ok("test"),
-        ):
-            with patch(
+        with (
+            patch(
+                "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
+                return_value=FlextResult[str].ok("test"),
+            ),
+            patch(
                 "flext_web.utilities.FlextWebUtilities._slugify",
                 return_value="",
-            ):
-                with pytest.raises(ValueError, match="Cannot format application name"):
-                    FlextWebUtilities.format_app_id("test")
+            ),
+            pytest.raises(ValueError, match="Cannot format application name"),
+        ):
+            FlextWebUtilities.format_app_id("test")

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 from flext_core import FlextContainer, FlextLogger, FlextResult
+from pydantic import ValidationError
 
 from flext_web.app import FlextWebApp
 from flext_web.config import FlextWebConfig
@@ -165,8 +166,18 @@ class FlextWebApi:
         logger.debug(f"Creating HTTP config with data: {config_kwargs}")
 
         # Create and validate configuration - Pydantic will validate types at runtime
-        # Pydantic v2 validates types, so we can pass dict[str, object] safely
-        config = FlextWebConfig.model_validate(config_kwargs)
+        # Use regular constructor to avoid SettingsConfigDict issues
+        try:
+            # Only pass the fields that are provided, let Pydantic use defaults for others
+            config = FlextWebConfig(**config_kwargs)
+        except ValidationError as e:
+            error_msg = (
+                f"Configuration validation failed: {e.errors()[0]['msg']}"
+                if e.errors()
+                else str(e)
+            )
+            logger.exception(f"HTTP config creation failed: {error_msg}")
+            return FlextResult.fail(error_msg)
 
         logger.info(f"HTTP config created successfully: {config.host}:{config.port}")
         return FlextResult.ok(config)

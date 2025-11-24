@@ -322,8 +322,7 @@ def demo_application_lifecycle() -> None:
     try:
         app1 = create_application("web-service", 3000)
         app2 = create_application("api-gateway", 4000, "127.0.0.1")
-    except ValueError as e:
-        print(f"Application creation failed: {e}")
+    except ValueError:
         return
 
     list_applications()
@@ -331,22 +330,16 @@ def demo_application_lifecycle() -> None:
     # Start applications and check results - fast fail on error
     try:
         start_application(str(app1.id))
-        print(f"✅ Application {app1.name} started successfully")
         start_application(str(app2.id))
-        print(f"✅ Application {app2.name} started successfully")
-    except ValueError as e:
-        print(f"Application start failed: {e}")
+    except ValueError:
         return
 
     # Check individual status with proper error handling - fast fail on error
     try:
         for app_data in [app1, app2]:
             app_id = str(app_data.id)
-            status = get_application_status(app_id)
-            status_icon = "🟢" if status.status == "running" else "🔴"
-            print(f"{status_icon} Application {app_data.name} status: {status.status}")
-    except ValueError as e:
-        print(f"Status check failed: {e}")
+            get_application_status(app_id)
+    except ValueError:
         return
 
     list_applications()
@@ -354,11 +347,8 @@ def demo_application_lifecycle() -> None:
     # Stop applications - fast fail on error
     try:
         stop_application(str(app1.id))
-        print(f"✅ Application {app1.name} stopped successfully")
         stop_application(str(app2.id))
-        print(f"✅ Application {app2.name} stopped successfully")
-    except ValueError as e:
-        print(f"Application stop failed: {e}")
+    except ValueError:
         return
 
     list_applications()

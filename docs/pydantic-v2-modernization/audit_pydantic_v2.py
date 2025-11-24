@@ -278,8 +278,6 @@ def main() -> int:
     auditor = PydanticV2Auditor(args.project)
     result = auditor.audit()
 
-    print(result)
-
     # Return exit code based on status
     return 1 if result.status == "FAIL" else 0
 

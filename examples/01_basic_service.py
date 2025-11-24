@@ -13,14 +13,12 @@ def main() -> None:
     # Get default configuration using factory function
     config_result = FlextWebConfig.create_web_config()
     if config_result.is_failure:
-        print(f"Configuration creation failed: {config_result.error}")
         return
     config = config_result.value
 
     # Create service using the refactored factory function - pass config object directly
     service_result = FlextWebServices.create_web_service(config)
     if service_result.is_failure:
-        print(f"Service creation failed: {service_result.error}")
         return
     service = service_result.value
 
@@ -29,8 +27,7 @@ def main() -> None:
         service.start_service("127.0.0.1", 8000, _debug=True)
     except KeyboardInterrupt:
         return
-    except Exception as e:
-        print(f"Service error: {e}")
+    except Exception:
         raise
 
 

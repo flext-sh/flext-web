@@ -63,7 +63,8 @@ class TestFlextWebHandlers:
         error = ValueError("Invalid input")
         result = FlextResult[str].fail(f"Validation error: {error}")
         assert result.is_failure
-        assert result.error is not None and "Validation error" in result.error
+        assert result.error is not None
+        assert "Validation error" in result.error
 
     def test_processing_error_with_flext_result(self) -> None:
         """Test processing error handling using FlextResult directly."""
@@ -71,7 +72,8 @@ class TestFlextWebHandlers:
         error = RuntimeError("Processing failed")
         result = FlextResult[str].fail(f"Operation failed: {error}")
         assert result.is_failure
-        assert result.error is not None and "Operation failed" in result.error
+        assert result.error is not None
+        assert "Operation failed" in result.error
 
     def test_app_registry_integration(self) -> None:
         """Test app registry integration."""
@@ -216,3 +218,32 @@ class TestFlextWebHandlers:
         result = handlers.validate_business_rules()
         assert result.is_success
         assert result.unwrap() is True
+
+    def test_handle_start_app(self) -> None:
+        """Test handle_start_app with valid entity."""
+        # Create a valid app entity
+        app_result = FlextWebModels.create_web_app("test-app", "localhost", 8080)
+        assert app_result.is_success
+        app = app_result.unwrap()
+
+        # Handle start
+        result = FlextWebHandlers.handle_start_app(app)
+        assert result.is_success
+        started_app = result.unwrap()
+        assert started_app.is_running
+
+    def test_handle_stop_app(self) -> None:
+        """Test handle_stop_app with valid entity."""
+        # Create and start a valid app entity
+        app_result = FlextWebModels.create_web_app("test-app", "localhost", 8080)
+        assert app_result.is_success
+        app = app_result.unwrap()
+        start_result = app.start()
+        assert start_result.is_success
+        started_app = start_result.unwrap()
+
+        # Handle stop
+        result = FlextWebHandlers.handle_stop_app(started_app)
+        assert result.is_success
+        stopped_app = result.unwrap()
+        assert stopped_app.status == "stopped"
