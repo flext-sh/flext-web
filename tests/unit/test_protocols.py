@@ -634,7 +634,7 @@ class TestFlextWebProtocols:
 
         class RealTemplateRenderer:
             def render_template(
-                self, template_name: str, context: dict[str, object]
+                self, template_name: str, _context: dict[str, object]
             ) -> FlextResult[str]:
                 return FlextResult[str].ok("")
 
@@ -686,7 +686,7 @@ class TestFlextWebProtocols:
                 return FlextResult[bool].ok(True)
 
             def render(
-                self, template: str, context: dict[str, object]
+                self, template: str, _context: dict[str, object]
             ) -> FlextResult[str]:
                 return FlextResult[str].ok("")
 

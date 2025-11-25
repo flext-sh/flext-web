@@ -626,7 +626,7 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def render_template(
-            self, template_name: str, context: FlextWebTypes.Core.RequestDict
+            self, template_name: str, _context: FlextWebTypes.Core.RequestDict
         ) -> FlextResult[str]:
             """Render template with context data.
 
@@ -712,7 +712,7 @@ class FlextWebProtocols(FlextProtocols):
             return FlextResult[bool].ok(True)  # pragma: no cover
 
         def render(
-            self, template: str, context: FlextWebTypes.Core.RequestDict
+            self, template: str, _context: FlextWebTypes.Core.RequestDict
         ) -> FlextResult[str]:
             """Render template string with context.
 
@@ -952,7 +952,7 @@ class _WebTemplateRendererBase:
     """Concrete base class for WebTemplateRendererProtocol placeholder methods."""
 
     def render_template(
-        self, template_name: str, context: FlextWebTypes.Core.RequestDict
+        self, template_name: str, _context: FlextWebTypes.Core.RequestDict
     ) -> FlextResult[str]:
         """Render template with context data - placeholder implementation."""
         _ = template_name, context
@@ -988,7 +988,7 @@ class _WebTemplateEngineBase:
         return FlextResult[bool].ok(True)  # pragma: no cover
 
     def render(
-        self, template: str, context: FlextWebTypes.Core.RequestDict
+        self, template: str, _context: FlextWebTypes.Core.RequestDict
     ) -> FlextResult[str]:
         """Render template string with context - placeholder implementation."""
         _ = template, context
