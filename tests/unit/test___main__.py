@@ -5,6 +5,8 @@ Tests the CLI entry point functionality following flext standards.
 
 from __future__ import annotations
 
+import pytest
+
 from flext_web import __main__
 from flext_web.models import FlextWebModels
 
@@ -50,7 +52,6 @@ class TestMainFunction:
         # Test that the module can be executed
         # This covers the if __name__ == "__main__" line
         # Execute the main function directly
-        import pytest
 
         with pytest.raises(SystemExit) as exc_info:
             __main__.FlextWebCliService.main()

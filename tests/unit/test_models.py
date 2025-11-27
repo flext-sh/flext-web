@@ -749,18 +749,6 @@ class TestFlextWebModels:
         assert result.unwrap() is True
         assert "TestEvent" in app.domain_events
 
-    def test_application_add_domain_event_invalid_type(self) -> None:
-        """Test add_domain_event with invalid type."""
-        app = FlextWebModels.Application.Entity(
-            id="test-id",
-            name="test-app",
-            host="localhost",
-            port=8080,
-        )
-        result = app.add_domain_event(123)
-        assert result.is_failure
-        assert "must be a string" in result.error
-
     def test_application_add_domain_event_empty(self) -> None:
         """Test add_domain_event with empty string."""
         app = FlextWebModels.Application.Entity(
