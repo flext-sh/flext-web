@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from enum import IntEnum, StrEnum
 from ipaddress import IPv4Address
 from types import MappingProxyType
-from typing import TYPE_CHECKING, ClassVar, Final, Literal
+from typing import ClassVar, Final, Literal
 
 from flext_core import FlextConstants
 
@@ -279,43 +279,29 @@ class FlextWebConstants(FlextConstants):
     ApplicationStatus: ClassVar[tuple[str, ...]] = WebEnvironment.STATUSES
 
     # =========================================================================
-    # TYPE LITERALS - Centralized type definitions for type checking
+    # LITERAL TYPES - Type-safe annotations (Python 3.13+ best practices)
     # =========================================================================
 
-    # HTTP Method Literal - must match Http.Method enum values
-    if TYPE_CHECKING:
-        HttpMethodLiteral = Literal[
-            "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
-        ]
-    else:
-        # Runtime: validate against Http.Method enum
-        HttpMethodLiteral = Literal[
+    class Literals:
+        """Literal type aliases for type-safe annotations (Python 3.13+ best practices).
+
+        These type aliases provide strict type checking for common string values
+        used throughout the flext-web codebase. They correspond to StrEnum values
+        and constant values defined in other namespace classes.
+        """
+
+        # HTTP method literal (matches Http.Method StrEnum)
+        HttpMethodLiteral: type = Literal[
             "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
         ]
 
-    # Environment Name Literal - must match WebEnvironment.Name enum values
-    if TYPE_CHECKING:
-        EnvironmentNameLiteral = Literal[
-            "development", "staging", "production", "testing"
-        ]
-    else:
-        EnvironmentNameLiteral = Literal[
+        # Environment name literal (matches WebEnvironment.Name StrEnum)
+        EnvironmentNameLiteral: type = Literal[
             "development", "staging", "production", "testing"
         ]
 
-    # Application Status Literal - must match WebEnvironment.Status enum values
-    if TYPE_CHECKING:
-        ApplicationStatusLiteral = Literal[
-            "stopped",
-            "starting",
-            "running",
-            "stopping",
-            "error",
-            "maintenance",
-            "deploying",
-        ]
-    else:
-        ApplicationStatusLiteral = Literal[
+        # Application status literal (matches WebEnvironment.Status StrEnum)
+        ApplicationStatusLiteral: type = Literal[
             "stopped",
             "starting",
             "running",
@@ -325,9 +311,8 @@ class FlextWebConstants(FlextConstants):
             "deploying",
         ]
 
-    # Application Type Literal - must match WebEnvironment.ApplicationType enum values
-    if TYPE_CHECKING:
-        ApplicationTypeLiteral = Literal[
+        # Application type literal (matches WebEnvironment.ApplicationType StrEnum)
+        ApplicationTypeLiteral: type = Literal[
             "application",
             "service",
             "api",
@@ -337,17 +322,22 @@ class FlextWebConstants(FlextConstants):
             "dashboard",
             "REDACTED_LDAP_BIND_PASSWORD-panel",
         ]
-    else:
-        ApplicationTypeLiteral = Literal[
-            "application",
-            "service",
-            "api",
-            "microservice",
-            "webapp",
-            "spa",
-            "dashboard",
-            "REDACTED_LDAP_BIND_PASSWORD-panel",
+
+        # Response status literal (matches WebResponse constants)
+        ResponseStatusLiteral: type = Literal[
+            "success", "error", "operational", "healthy"
         ]
+
+        # Protocol literal (matches WebDefaults constants)
+        ProtocolLiteral: type = Literal["http", "https"]
+
+        # Content type literal (matches Http constants)
+        ContentTypeLiteral: type = Literal[
+            "application/json", "text/plain", "text/html"
+        ]
+
+        # Session cookie SameSite literal (matches WebSecurity constants)
+        SameSiteLiteral: type = Literal["Lax", "Strict", "None"]
 
 
 __all__ = ["FlextWebConstants"]

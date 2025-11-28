@@ -172,7 +172,9 @@ def create_test_app(**kwargs: object) -> FlextWebModels.Application.Entity:
     return FlextWebModels.Application.Entity(**defaults)
 
 
-def create_test_result(*, success: bool = True, **kwargs: object) -> FlextResult[object]:
+def create_test_result(
+    *, success: bool = True, **kwargs: object
+) -> FlextResult[object]:
     """Create a test FlextResult using flext_tests utilities.
 
     This function provides a standardized way to create test results,

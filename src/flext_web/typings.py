@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Any, Protocol, TypeAlias, runtime_checkable
+, Protocol, TypeAlias, runtime_checkable
 
 from flext_core import FlextResult, FlextTypes
 
@@ -18,11 +18,10 @@ from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 
 # Type aliases - import from constants for centralized definition
-HttpMethodLiteral = FlextWebConstants.HttpMethodLiteral
+# Literals are now in FlextWebConstants.Literals namespace
+# Use FlextWebConstants.Literals.HttpMethodLiteral directly
 HttpMethod = FlextWebConstants.Http.Method
-EnvironmentNameLiteral = FlextWebConstants.EnvironmentNameLiteral
-ApplicationStatusLiteral = FlextWebConstants.ApplicationStatusLiteral
-ApplicationTypeLiteral = FlextWebConstants.ApplicationTypeLiteral
+# Use FlextWebConstants.Literals.* directly
 
 
 @runtime_checkable
@@ -70,10 +69,10 @@ class FlextWebTypes(FlextTypes):
     ApplicationStatus = FlextWebConstants.WebEnvironment.Status
 
     # Application data types - use Pydantic model instead of dict
-    AppData: TypeAlias = FlextWebModels.Service.AppResponse
+    AppData: type = FlextWebModels.Service.AppResponse
 
     # Health response type - use Pydantic model instead of dict
-    HealthResponse: TypeAlias = FlextWebModels.Service.HealthResponse
+    HealthResponse: type = FlextWebModels.Service.HealthResponse
 
     # =========================================================================
     # TYPE ALIASES - Using Pydantic models and Protocols
@@ -83,11 +82,11 @@ class FlextWebTypes(FlextTypes):
     class Core:
         """Core type aliases for request/response data."""
 
-        ConfigValue: TypeAlias = str | int | bool | list[str]
-        RequestDict: TypeAlias = dict[
+        ConfigValue: type = str | int | bool | list[str]
+        RequestDict: type = dict[
             str, str | int | bool | list[str] | dict[str, str | int | bool]
         ]
-        ResponseDict: TypeAlias = dict[
+        ResponseDict: type = dict[
             str, str | int | bool | list[str] | dict[str, str | int | bool]
         ]
 
@@ -101,7 +100,7 @@ class FlextWebTypes(FlextTypes):
     class Data:
         """Data type definitions for FlextService compatibility."""
 
-        WebResponseDict: TypeAlias = dict[
+        WebResponseDict: type = dict[
             str, str | int | bool | list[str] | dict[str, str | int | bool]
         ]
 
@@ -117,7 +116,9 @@ class FlextWebTypes(FlextTypes):
     def create_http_request(
         cls,
         url: str,
-        method: str = FlextWebConstants.Http.Method.GET,
+        method: FlextWebConstants.Literals.HttpMethodLiteral | str = (
+            FlextWebConstants.Http.Method.GET
+        ),
         headers: dict[str, str] | None = None,
         body: str | dict[str, str] | None = None,
         timeout: float = FlextWebConstants.Http.DEFAULT_TIMEOUT_SECONDS,
@@ -228,11 +229,13 @@ class FlextWebTypes(FlextTypes):
     def create_web_request(
         cls,
         url: str,
-        method: str = FlextWebConstants.Http.Method.GET,
+        method: FlextWebConstants.Literals.HttpMethodLiteral | str = (
+            FlextWebConstants.Http.Method.GET
+        ),
         headers: dict[str, str] | None = None,
         body: str | dict[str, str] | None = None,
         timeout: float = FlextWebConstants.Http.DEFAULT_TIMEOUT_SECONDS,
-        query_params: dict[str, Any] | None = None,
+        query_params: dict[str, object] | None = None,
         client_ip: str = "",
         user_agent: str = "",
     ) -> FlextResult[FlextWebModels.Web.Request]:
@@ -317,7 +320,9 @@ class FlextWebTypes(FlextTypes):
         headers: dict[str, str] | None = None,
         body: str | dict[str, str] | None = None,
         elapsed_time: float = 0.0,
-        content_type: str = FlextWebConstants.Http.CONTENT_TYPE_JSON,
+        content_type: (
+            FlextWebConstants.Literals.ContentTypeLiteral | str
+        ) = FlextWebConstants.Http.CONTENT_TYPE_JSON,
         content_length: int = 0,
         processing_time_ms: float = 0.0,
     ) -> FlextResult[FlextWebModels.Web.Response]:
@@ -369,7 +374,9 @@ class FlextWebTypes(FlextTypes):
         name: str,
         host: str = "localhost",
         port: int = 8080,
-        status: str = FlextWebConstants.WebEnvironment.Status.STOPPED.value,
+        status: (
+            FlextWebConstants.Literals.ApplicationStatusLiteral | str
+        ) = FlextWebConstants.WebEnvironment.Status.STOPPED.value,
         environment: str = FlextWebConstants.WebEnvironment.Name.DEVELOPMENT.value,
         *,
         debug_mode: bool = FlextWebConstants.WebDefaults.DEBUG_MODE,

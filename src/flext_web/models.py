@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import Any
 
 from flext_core import FlextResult
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -33,8 +32,7 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from flext_web.constants import FlextWebConstants
 from flext_web.utilities import FlextWebUtilities
 
-# HttpMethodLiteral - import from constants for centralized definition
-HttpMethodLiteral = FlextWebConstants.HttpMethodLiteral
+# Literals are now in FlextWebConstants.Literals namespace
 
 
 class FlextWebModels:
@@ -87,7 +85,7 @@ class FlextWebModels:
             headers: dict[str, str] = Field(
                 default_factory=dict, description="HTTP headers for message"
             )
-            body: str | dict[str, Any] | None = Field(
+            body: str | dict[str, object] | None = Field(
                 default=None, description="Message body content (optional for GET/HEAD)"
             )
             timestamp: datetime = Field(
@@ -113,8 +111,8 @@ class FlextWebModels:
                 max_length=FlextWebConstants.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: HttpMethodLiteral = Field(
-                default="GET",  # Use string literal, validated against HttpMethodLiteral
+            method: FlextWebConstants.Literals.HttpMethodLiteral = Field(
+                default="GET",  # Use string literal, validated against FlextWebConstants.Literals.HttpMethodLiteral
                 description="HTTP method",
             )
             timeout: float = Field(
@@ -218,8 +216,8 @@ class FlextWebModels:
                 max_length=FlextWebConstants.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: HttpMethodLiteral = Field(
-                default="GET",  # Use string literal, validated against HttpMethodLiteral
+            method: FlextWebConstants.Literals.HttpMethodLiteral = Field(
+                default="GET",  # Use string literal, validated against FlextWebConstants.Literals.HttpMethodLiteral
                 description="HTTP method",
             )
             timeout: float = Field(
@@ -231,7 +229,7 @@ class FlextWebModels:
             headers: dict[str, str] = Field(
                 default_factory=dict, description="HTTP headers"
             )
-            body: str | dict[str, Any] | None = Field(
+            body: str | dict[str, object] | None = Field(
                 default=None, description="Request body content (optional for GET/HEAD)"
             )
             timestamp: datetime = Field(
@@ -242,7 +240,7 @@ class FlextWebModels:
                 default_factory=lambda: str(uuid.uuid4()),
                 description="Unique request identifier",
             )
-            query_params: dict[str, Any] = Field(
+            query_params: dict[str, object] = Field(
                 default_factory=dict, description="Query string parameters"
             )
             client_ip: str = Field(default="", description="Client IP address")
@@ -292,7 +290,7 @@ class FlextWebModels:
             headers: dict[str, str] = Field(
                 default_factory=dict, description="HTTP response headers"
             )
-            body: str | dict[str, Any] | None = Field(
+            body: str | dict[str, object] | None = Field(
                 default=None, description="Response body content"
             )
             timestamp: datetime = Field(
@@ -307,7 +305,7 @@ class FlextWebModels:
                 description="Unique response identifier",
             )
             request_id: str = Field(description="Associated request identifier")
-            content_type: str = Field(
+            content_type: FlextWebConstants.Literals.ContentTypeLiteral | str = Field(
                 default=FlextWebConstants.Http.CONTENT_TYPE_JSON,
                 description="Response content type",
             )
@@ -431,7 +429,7 @@ class FlextWebModels:
                 le=FlextWebConstants.WebValidation.PORT_RANGE[1],
                 description="Application port number",
             )
-            status: str = Field(
+            status: FlextWebConstants.Literals.ApplicationStatusLiteral | str = Field(
                 default=FlextWebConstants.WebEnvironment.Status.STOPPED.value,
                 description="Current application status",
             )
@@ -458,7 +456,7 @@ class FlextWebModels:
                 default=FlextWebConstants.WebDefaults.VERSION_INT,
                 description="Application version",
             )
-            metrics: dict[str, Any] = Field(
+            metrics: dict[str, object] = Field(
                 default_factory=dict, description="Application metrics"
             )
             domain_events: list[str] = Field(
@@ -602,7 +600,9 @@ class FlextWebModels:
                     )
                 return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
-            def update_metrics(self, new_metrics: dict[str, Any]) -> FlextResult[bool]:
+            def update_metrics(
+                self, new_metrics: dict[str, object]
+            ) -> FlextResult[bool]:
                 """Update application metrics.
 
                 Returns:
@@ -621,7 +621,7 @@ class FlextWebModels:
                     )
                 return FlextResult[bool].ok(True)
 
-            def get_health_status(self) -> dict[str, Any]:
+            def get_health_status(self) -> dict[str, object]:
                 """Get comprehensive health status."""
                 return {
                     "status": self.status,
@@ -748,7 +748,7 @@ class FlextWebModels:
         class EntityData(BaseModel):
             """Generic entity data model."""
 
-            data: dict[str, Any] = Field(
+            data: dict[str, object] = Field(
                 default_factory=dict, description="Entity data dictionary"
             )
 
@@ -817,15 +817,15 @@ class FlextWebModels:
     class WebRequest(BaseModel):
         """Web request model with complete tracking."""
 
-        method: HttpMethodLiteral = Field(
-            default="GET",  # Use string literal, validated against HttpMethodLiteral
+        method: FlextWebConstants.Literals.HttpMethodLiteral = Field(
+            default="GET",  # Use string literal, validated against FlextWebConstants.Literals.HttpMethodLiteral
             description="HTTP method",
         )
         url: str = Field(min_length=1, max_length=2048, description="Request URL")
         headers: dict[str, str] = Field(
             default_factory=dict, description="HTTP headers"
         )
-        body: str | dict[str, Any] | None = Field(
+        body: str | dict[str, object] | None = Field(
             default=None, description="Request body (optional for GET/HEAD)"
         )
         request_id: str = Field(
@@ -845,7 +845,7 @@ class FlextWebModels:
         headers: dict[str, str] = Field(
             default_factory=dict, description="HTTP response headers"
         )
-        body: str | dict[str, Any] | None = Field(
+        body: str | dict[str, object] | None = Field(
             default=None, description="Response body (optional for 204 No Content)"
         )
         response_id: str = Field(
@@ -926,10 +926,10 @@ class FlextWebModels:
     @classmethod
     def create_web_request(
         cls,
-        method: HttpMethodLiteral,
+        method: FlextWebConstants.Literals.HttpMethodLiteral,
         url: str,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, Any] | None = None,
+        body: str | dict[str, object] | None = None,
     ) -> FlextResult[WebRequest]:
         """Create a web request model.
 
@@ -976,7 +976,7 @@ class FlextWebModels:
         request_id: str,
         status_code: int,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, Any] | None = None,
+        body: str | dict[str, object] | None = None,
     ) -> FlextResult[WebResponse]:
         """Create a web response model.
 
