@@ -10,36 +10,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-, Protocol, TypeAlias, runtime_checkable
-
 from flext_core import FlextResult, FlextTypes
 
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 
-# Type aliases - import from constants for centralized definition
-# Literals are now in FlextWebConstants.Literals namespace
-# Use FlextWebConstants.Literals.HttpMethodLiteral directly
 HttpMethod = FlextWebConstants.Http.Method
-# Use FlextWebConstants.Literals.* directly
-
-
-@runtime_checkable
-class ConfigValueProtocol(Protocol):
-    """Protocol for configuration values."""
-
-    def __str__(self) -> str: ...
-    def __int__(self) -> int: ...
-    def __bool__(self) -> bool: ...
-
-
-@runtime_checkable
-class ResponseDataProtocol(Protocol):
-    """Protocol for response data structures."""
-
-    def get(
-        self, key: str, default: str | None = None
-    ) -> str | int | bool | list[str] | None: ...
 
 
 class FlextWebTypes(FlextTypes):
