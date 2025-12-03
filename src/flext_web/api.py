@@ -19,7 +19,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from fastapi import FastAPI
-from flext_core import FlextContainer, FlextLogger, FlextResult
+from flext_core import (
+    FlextContainer,
+    FlextLogger,
+    FlextResult,
+    FlextUtilities,
+)
 from pydantic import ValidationError
 
 from flext_web.app import FlextWebApp
@@ -28,6 +33,12 @@ from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.services import FlextWebServices
 from flext_web.typings import FlextWebTypes
+
+# Import aliases for simplified usage
+u = FlextUtilities
+c = FlextWebConstants
+m = FlextWebModels
+t = FlextWebTypes
 
 
 class FlextWebApi:
@@ -57,7 +68,7 @@ class FlextWebApi:
 
     @classmethod
     def create_fastapi_app(
-        cls, config: FlextWebModels.FastAPI.FastAPIAppConfig | None = None
+        cls, config: m.FastAPI.FastAPIAppConfig | None = None
     ) -> FlextResult[FastAPI]:
         """Create FastAPI web application with complete validation.
 
@@ -152,32 +163,34 @@ class FlextWebApi:
         """
         logger = FlextLogger(__name__)
 
-        # Build configuration using Pydantic defaults - no fallback operators
-        # Pydantic fields have defaults, so we can pass None and Pydantic will use defaults
-        # Use explicit type-safe construction with proper types
-        config_kwargs: dict[str, object] = {}
-        if host is not None:
-            config_kwargs["host"] = host
-        if port is not None:
-            config_kwargs["port"] = port
-        if debug is not None:
-            config_kwargs["debug"] = debug
+        # Build configuration using u code
+        # Use uild config dict from provided values
+        input_values = {"host": host, "port": port, "debug": debug}
+        provided_values = u.filter(
+            input_values,
+            lambda _k, v: v is not None,
+        )
+        config_kwargs: dict[str, object] = (
+            dict(provided_values) if isinstance(provided_values, dict) else {}
+        )
 
         logger.debug(f"Creating HTTP config with data: {config_kwargs}")
 
         # Create and validate configuration - Pydantic will validate types at runtime
-        # Use regular constructor to avoid SettingsConfigDict issues
+        # Use regular constructor - AutoConfig handles defaults automatically
         try:
             # Only pass the fields that are provided, let Pydantic use defaults for others
+            # AutoConfig will use defaults from Field() definitions
+            # Ensure secret_key is provided for AutoConfig compatibility
+            if "secret_key" not in config_kwargs:
+                config_kwargs["secret_key"] = c.WebDefaults.SECRET_KEY
             config = FlextWebConfig(**config_kwargs)
         except ValidationError as e:
-            error_msg = (
-                f"Configuration validation failed: {e.errors()[0]['msg']}"
-                if e.errors()
-                else str(e)
-            )
+            # Use u to extract error message - simplifies code
+            errors = e.errors()
+            error_msg = errors[0]["msg"] if errors else str(e)
             logger.exception(f"HTTP config creation failed: {error_msg}")
-            return FlextResult.fail(error_msg)
+            return FlextResult.fail(f"Configuration validation failed: {error_msg}")
 
         logger.info(f"HTTP config created successfully: {config.host}:{config.port}")
         return FlextResult.ok(config)
@@ -187,7 +200,7 @@ class FlextWebApi:
     # =========================================================================
 
     @classmethod
-    def get_service_status(cls) -> FlextResult[FlextWebModels.Service.ServiceResponse]:
+    def get_service_status(cls) -> FlextResult[m.Service.ServiceResponse]:
         """Get complete HTTP service status information.
 
         Single Responsibility: Provides system status and health information only.
@@ -203,15 +216,15 @@ class FlextWebApi:
 
         _container = FlextContainer.get_global()
 
-        status_info = FlextWebModels.Service.ServiceResponse(
-            service=FlextWebConstants.WebService.SERVICE_NAME_API,
+        status_info = m.Service.ServiceResponse(
+            service=c.WebService.SERVICE_NAME_API,
             capabilities=[
                 "http_services_available",
                 "fastapi_support",
                 "container_initialized",
                 "api_facade_ready",
             ],
-            status=FlextWebConstants.WebResponse.STATUS_OPERATIONAL,
+            status=c.WebResponse.STATUS_OPERATIONAL,
             config=True,
         )
 
@@ -245,7 +258,7 @@ class FlextWebApi:
     # =========================================================================
 
     @classmethod
-    def get_api_capabilities(cls) -> FlextResult[FlextWebTypes.Core.ResponseDict]:
+    def get_api_capabilities(cls) -> FlextResult[t.Core.ResponseDict]:
         """Get API facade capabilities and supported operations.
 
         Returns:

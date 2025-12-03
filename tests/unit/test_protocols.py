@@ -5,7 +5,7 @@ Tests the unified FlextWebProtocols class following flext standards.
 
 from typing import cast
 
-from flext_core import FlextProtocols, FlextResult
+from flext_core import FlextResult, p
 
 from flext_web.constants import FlextWebConstants
 from flext_web.protocols import (
@@ -27,9 +27,9 @@ class TestFlextWebProtocols:
     """Test suite for FlextWebProtocols unified class."""
 
     def test_protocols_inheritance(self) -> None:
-        """Test that FlextWebProtocols inherits from FlextProtocols."""
-        # Should inherit from FlextProtocols
-        assert issubclass(FlextWebProtocols, FlextProtocols)
+        """Test that FlextWebProtocols inherits from p."""
+        # Should inherit from p
+        assert issubclass(FlextWebProtocols, p)
 
         # Should have web-specific protocols directly available
         assert hasattr(FlextWebProtocols, "WebAppManagerProtocol")
@@ -122,7 +122,7 @@ class TestFlextWebProtocols:
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
 
-        # Should have required methods from FlextProtocols.Repository
+        # Should have required methods from p.Repository
         assert hasattr(protocol, "get_by_id")
         assert hasattr(protocol, "save")
         assert hasattr(protocol, "delete")
@@ -136,7 +136,7 @@ class TestFlextWebProtocols:
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
 
-        # Should have required methods from FlextProtocols.Handler
+        # Should have required methods from p.Handler
         assert hasattr(protocol, "handle")
         assert callable(protocol)
         assert hasattr(protocol, "can_handle")
@@ -378,7 +378,7 @@ class TestFlextWebProtocols:
             def list_apps(self) -> FlextResult[list[dict[str, object]]]:
                 return FlextResult[list[dict[str, object]]].ok([])
 
-            # Required by FlextProtocols.Service
+            # Required by p.Service
             def execute(
                 self, *args: object, **kwargs: object
             ) -> FlextResult[dict[str, object]]:
@@ -443,7 +443,7 @@ class TestFlextWebProtocols:
             ) -> dict[str, object]:
                 return {}
 
-            # Required by FlextProtocols.Service
+            # Required by p.Service
             def execute(
                 self, *args: object, **kwargs: object
             ) -> FlextResult[dict[str, object]]:
@@ -511,7 +511,7 @@ class TestFlextWebProtocols:
             def is_json_request(self, _request: dict[str, object]) -> bool:
                 return False
 
-            # Required by FlextProtocols.Service
+            # Required by p.Service
             def execute(
                 self, *args: object, **kwargs: object
             ) -> FlextResult[dict[str, object]]:
@@ -558,7 +558,7 @@ class TestFlextWebProtocols:
             def stop_service(self) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            # Required by FlextProtocols.Service
+            # Required by p.Service
             def execute(
                 self, *args: object, **kwargs: object
             ) -> FlextResult[dict[str, object]]:
@@ -594,7 +594,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[list[dict[str, object]]]:
                 return FlextResult[list[dict[str, object]]].ok([])
 
-            # Required by FlextProtocols.Repository
+            # Required by p.Repository
             def get_by_id(self, entity_id: str) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({"id": entity_id})
 
@@ -607,7 +607,7 @@ class TestFlextWebProtocols:
             def find_all(self) -> FlextResult[list[dict[str, object]]]:
                 return FlextResult[list[dict[str, object]]].ok([])
 
-            # Required by FlextProtocols.Service
+            # Required by p.Service
             def execute(
                 self, *args: object, **kwargs: object
             ) -> FlextResult[dict[str, object]]:
@@ -641,7 +641,7 @@ class TestFlextWebProtocols:
             def render_dashboard(self, data: dict[str, object]) -> FlextResult[str]:
                 return FlextResult[str].ok("<html>Dashboard</html>")
 
-            # Required by FlextProtocols.Service
+            # Required by p.Service
             def execute(
                 self, *args: object, **kwargs: object
             ) -> FlextResult[dict[str, object]]:
@@ -701,7 +701,7 @@ class TestFlextWebProtocols:
             ) -> None:
                 pass
 
-            # Required by FlextProtocols.Service
+            # Required by p.Service
             def execute(
                 self, *args: object, **kwargs: object
             ) -> FlextResult[dict[str, object]]:
@@ -756,7 +756,7 @@ class TestFlextWebProtocols:
             def get_web_metrics(self) -> dict[str, object]:
                 return {"requests": 0, "errors": 0, "uptime": "0s"}
 
-            # Required by FlextProtocols.Service
+            # Required by p.Service
             def execute(
                 self, *args: object, **kwargs: object
             ) -> FlextResult[dict[str, object]]:
@@ -853,7 +853,7 @@ class TestFlextWebProtocols:
                 empty_result: FlextWebTypes.Core.RequestDict = {}
                 return empty_result
 
-            # Required by FlextProtocols.Service
+            # Required by p.Service
             def execute(
                 self, *args: object, **kwargs: object
             ) -> FlextResult[dict[str, object]]:

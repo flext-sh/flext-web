@@ -16,8 +16,8 @@ class TestFlextWebUtilities:
     """Test suite for FlextWebUtilities unified class."""
 
     def test_utilities_inheritance(self) -> None:
-        """Test that FlextWebUtilities inherits from FlextUtilities."""
-        # Should have access to base FlextUtilities
+        """Test that FlextWebUtilities inherits from u."""
+        # Should have access to base u
         assert hasattr(FlextWebUtilities, "Generators")
         assert hasattr(FlextWebUtilities, "TextProcessor")
 
@@ -85,7 +85,7 @@ class TestFlextWebUtilities:
 
     def test_utilities_logging_integration(self) -> None:
         """Test FlextWebUtilities logging integration."""
-        # Should have access to FlextUtilities logging
+        # Should have access to u
         assert hasattr(FlextWebUtilities, "Generators")
         assert hasattr(FlextWebUtilities.Generators, "generate_iso_timestamp")
 
@@ -120,7 +120,7 @@ class TestFlextWebUtilities:
         # Mock safe_string to return failure
         with (
             patch(
-                "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
+                "flext_web.utilities.ur.safe_string",
                 return_value=FlextResult[str].fail("Invalid string"),
             ),
             pytest.raises(ValueError, match="Invalid application name"),
@@ -132,7 +132,7 @@ class TestFlextWebUtilities:
         # Mock safe_string to return empty string after stripping
         with (
             patch(
-                "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
+                "flext_web.utilities.ur.safe_string",
                 return_value=FlextResult[str].ok("   "),
             ),
             pytest.raises(ValueError, match="Application name cannot be empty"),
@@ -144,7 +144,7 @@ class TestFlextWebUtilities:
         # Mock safe_string to return valid string, but slugify returns empty
         with (
             patch(
-                "flext_web.utilities.FlextUtilities.TextProcessor.safe_string",
+                "flext_web.utilities.ur.safe_string",
                 return_value=FlextResult[str].ok("test"),
             ),
             patch(

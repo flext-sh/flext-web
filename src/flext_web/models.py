@@ -25,12 +25,17 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from typing import Any
 
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextUtilities
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from flext_web.constants import FlextWebConstants
 from flext_web.utilities import FlextWebUtilities
+
+# Import aliases for simplified usage
+u = FlextUtilities
+c = FlextWebConstants
 
 # Literals are now in FlextWebConstants.Literals namespace
 
@@ -646,7 +651,7 @@ class FlextWebModels:
                 """
                 if not isinstance(event, str):
                     return FlextResult[bool].fail("Event must be a string")
-                if len(event) == 0:
+                if not event or len(event) == 0:
                     return FlextResult[bool].fail("Event cannot be empty")
                 self.domain_events.append(event)
                 return FlextResult[bool].ok(True)
@@ -1074,6 +1079,8 @@ class FlextWebModels:
             openapi_url: str = Field(
                 default=FlextWebConstants.WebApi.OPENAPI_URL, description="OpenAPI URL"
             )
+
+        FastAPIAppConfig.model_rebuild()
 
 
 __all__ = ["FlextWebModels"]

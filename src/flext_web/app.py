@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import TypedDict
 
 from fastapi import FastAPI
 from flask import Flask
@@ -25,6 +26,23 @@ from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.typings import FlextWebTypes
+
+# Import aliases for simplified usage
+u = FlextUtilities
+c = FlextWebConstants
+m = FlextWebModels
+t = FlextWebTypes
+
+
+class _FastAPIConfig(TypedDict, total=False):
+    """FastAPI configuration dictionary."""
+
+    title: str
+    version: str
+    description: str
+    docs_url: str
+    redoc_url: str
+    openapi_url: str
 
 
 class FlextWebApp(FlextService[bool]):
@@ -70,22 +88,12 @@ class FlextWebApp(FlextService[bool]):
 
         @staticmethod
         def create_instance(
-            title: str = "FastAPI",
-            version: str = FlextWebConstants.WebDefaults.VERSION_STRING,
-            description: str = "FlextWeb FastAPI Application",
-            docs_url: str = FlextWebConstants.WebApi.DOCS_URL,
-            redoc_url: str = FlextWebConstants.WebApi.REDOC_URL,
-            openapi_url: str = FlextWebConstants.WebApi.OPENAPI_URL,
+            config: _FastAPIConfig | None = None,
         ) -> FlextResult[FastAPI]:
             """Create FastAPI application instance with validated configuration.
 
             Args:
-            title: Application title
-            version: Application version
-            description: Application description
-            docs_url: Swagger UI docs URL
-            redoc_url: ReDoc URL
-            openapi_url: OpenAPI schema URL
+            config: FastAPI configuration dictionary or None for defaults
 
             Returns:
             FlextResult[FastAPI]: Success contains configured FastAPI app,
@@ -94,16 +102,29 @@ class FlextWebApp(FlextService[bool]):
             """
             logger = FlextLogger(__name__)
 
+            # Use defaults if config is None
+            if config is None:
+                config = _FastAPIConfig(
+                    title="FastAPI",
+                    version=c.WebDefaults.VERSION_STRING,
+                    description="FlextWeb FastAPI Application",
+                    docs_url=c.WebApi.DOCS_URL,
+                    redoc_url=c.WebApi.REDOC_URL,
+                    openapi_url=c.WebApi.OPENAPI_URL,
+                )
+
             # Create FastAPI application - FastAPI constructor doesn't raise exceptions
             # Fast fail if FastAPI is not available - no fallback
             try:
                 app = FastAPI(
-                    title=title,
-                    version=version,
-                    description=description,
-                    docs_url=docs_url,
-                    redoc_url=redoc_url,
-                    openapi_url=openapi_url,
+                    title=config.get("title", "FastAPI"),
+                    version=config.get("version", c.WebDefaults.VERSION_STRING),
+                    description=config.get(
+                        "description", "FlextWeb FastAPI Application"
+                    ),
+                    docs_url=config.get("docs_url", c.WebApi.DOCS_URL),
+                    redoc_url=config.get("redoc_url", c.WebApi.REDOC_URL),
+                    openapi_url=config.get("openapi_url", c.WebApi.OPENAPI_URL),
                 )
             except Exception as e:
                 # Fast fail - no fallback, catch all exceptions for safety
@@ -111,17 +132,16 @@ class FlextWebApp(FlextService[bool]):
                 logger.exception("FastAPI creation failed")
                 return FlextResult[FastAPI].fail(error_msg)
 
+            title = config.get("title", "FastAPI")
+            version = config.get("version", c.WebDefaults.VERSION_STRING)
             logger.info(f"FastAPI application '{title}' v{version} created")
             return FlextResult.ok(app)
 
     @classmethod
     def create_fastapi_app(
         cls,
-        config: FlextWebModels.FastAPI.FastAPIAppConfig | None = None,
-        title: str | None = None,
-        docs_url: str | None = None,
-        redoc_url: str | None = None,
-        openapi_url: str | None = None,
+        config: m.FastAPI.FastAPIAppConfig | None = None,
+        factory_config: _FastAPIConfig | None = None,
     ) -> FlextResult[FastAPI]:
         """Create FastAPI app with flext-core integration and Pydantic validation.
 
@@ -131,10 +151,7 @@ class FlextWebApp(FlextService[bool]):
 
         Args:
         config: FastAPI configuration model or None for defaults
-        title: Application title (overrides config.title)
-        docs_url: Swagger UI docs URL
-        redoc_url: ReDoc URL
-        openapi_url: OpenAPI schema URL
+        factory_config: FastAPI factory configuration dictionary or None to use config
 
         Returns:
         FlextResult[FastAPI]: Success contains configured FastAPI app,
@@ -143,52 +160,38 @@ class FlextWebApp(FlextService[bool]):
         """
         # Use Pydantic defaults if None - Models use Constants in initialization
         # FastAPIAppConfig uses Constants defaults, so None creates config with defaults
-        fastapi_config = (
-            config if config is not None else FlextWebModels.FastAPI.FastAPIAppConfig()
+        fastapi_config = config if config is not None else m.FastAPI.FastAPIAppConfig()
+
+        # Use factory_config if provided, otherwise build from fastapi_config
+        if factory_config is None:
+            factory_config = _FastAPIConfig(
+                title=fastapi_config.title,
+                version=fastapi_config.version,
+                description=fastapi_config.description,
+                docs_url=fastapi_config.docs_url,
+                redoc_url=fastapi_config.redoc_url,
+                openapi_url=fastapi_config.openapi_url,
+            )
+
+        return cls.FastAPIFactory.create_instance(factory_config).map(
+            lambda app: cls._configure_fastapi_endpoints(app, fastapi_config)
         )
-
-        # Use config values - optional parameters override if provided
-        # No fallback operators - explicit checks only
-        factory_title = fastapi_config.title
-        if title is not None:
-            factory_title = title
-
-        factory_docs_url = fastapi_config.docs_url
-        if docs_url is not None:
-            factory_docs_url = docs_url
-
-        factory_redoc_url = fastapi_config.redoc_url
-        if redoc_url is not None:
-            factory_redoc_url = redoc_url
-
-        factory_openapi_url = fastapi_config.openapi_url
-        if openapi_url is not None:
-            factory_openapi_url = openapi_url
-
-        return cls.FastAPIFactory.create_instance(
-            title=factory_title,
-            version=fastapi_config.version,
-            description=fastapi_config.description,
-            docs_url=factory_docs_url,
-            redoc_url=factory_redoc_url,
-            openapi_url=factory_openapi_url,
-        ).map(lambda app: cls._configure_fastapi_endpoints(app, fastapi_config))
 
     @classmethod
     def _configure_fastapi_endpoints(
-        cls, app: FastAPI, config: FlextWebModels.FastAPI.FastAPIAppConfig
+        cls, app: FastAPI, config: m.FastAPI.FastAPIAppConfig
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
         # Add health endpoint using flext-core patterns
         @app.get("/health")
-        def health_check() -> FlextWebTypes.Core.ResponseDict:
+        def health_check() -> t.Core.ResponseDict:
             # Handler returns ResponseDict directly
             return cls.HealthHandler.create_handler()()
 
         # Add info endpoint for API metadata
         @app.get("/info")
-        def info_endpoint() -> FlextWebTypes.Core.ResponseDict:
+        def info_endpoint() -> t.Core.ResponseDict:
             return cls.InfoHandler.create_handler(config)()
 
         logger = FlextLogger(__name__)
@@ -232,9 +235,9 @@ class FlextWebApp(FlextService[bool]):
         @app.route("/health")
         def health_check() -> dict[str, str]:
             return {
-                "status": FlextWebConstants.WebResponse.STATUS_HEALTHY,
-                "service": FlextWebConstants.WebService.SERVICE_NAME_FLASK,
-                "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+                "status": c.WebResponse.STATUS_HEALTHY,
+                "service": c.WebService.SERVICE_NAME_FLASK,
+                "timestamp": u.Generators.generate_iso_timestamp(),
             }
 
         logger.info(f"Flask application '{flask_config.app_name}' created")
@@ -248,14 +251,14 @@ class FlextWebApp(FlextService[bool]):
         """Health check handler with single responsibility for system health monitoring."""
 
         @staticmethod
-        def create_handler() -> Callable[[], FlextWebTypes.Core.ResponseDict]:
+        def create_handler() -> Callable[[], t.Core.ResponseDict]:
             """Create FastAPI health check handler function."""
 
-            def health_check() -> FlextWebTypes.Core.ResponseDict:
+            def health_check() -> t.Core.ResponseDict:
                 return {
-                    "status": FlextWebConstants.WebResponse.STATUS_HEALTHY,
-                    "service": FlextWebConstants.WebService.SERVICE_NAME,
-                    "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+                    "status": c.WebResponse.STATUS_HEALTHY,
+                    "service": c.WebService.SERVICE_NAME,
+                    "timestamp": u.Generators.generate_iso_timestamp(),
                 }
 
             return health_check
@@ -265,18 +268,18 @@ class FlextWebApp(FlextService[bool]):
 
         @staticmethod
         def create_handler(
-            config: FlextWebModels.FastAPI.FastAPIAppConfig,
-        ) -> Callable[[], FlextWebTypes.Core.ResponseDict]:
+            config: m.FastAPI.FastAPIAppConfig,
+        ) -> Callable[[], t.Core.ResponseDict]:
             """Create FastAPI info handler function."""
 
-            def info_handler() -> FlextWebTypes.Core.ResponseDict:
+            def info_handler() -> t.Core.ResponseDict:
                 return {
-                    "service": FlextWebConstants.WebService.SERVICE_NAME,
+                    "service": c.WebService.SERVICE_NAME,
                     "title": config.title,
                     "version": config.version,
                     "description": config.description,
                     "debug": config.debug,
-                    "timestamp": FlextUtilities.Generators.generate_iso_timestamp(),
+                    "timestamp": u.Generators.generate_iso_timestamp(),
                 }
 
             return info_handler
@@ -342,7 +345,8 @@ class FlextWebApp(FlextService[bool]):
         _ = app  # Parameter reserved for future implementation
         return FlextResult[bool].ok(True)
 
-    def validate_business_rules(self) -> FlextResult[bool]:
+    @staticmethod
+    def validate_business_rules() -> FlextResult[bool]:
         """Validate business rules for web app service (FlextService requirement).
 
         Returns:
@@ -352,4 +356,7 @@ class FlextWebApp(FlextService[bool]):
         return FlextResult[bool].ok(True)
 
 
-__all__ = ["FlextWebApp"]
+__all__ = [
+    "FlextWebApp",
+    "_FastAPIConfig",
+]

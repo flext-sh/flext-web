@@ -10,6 +10,7 @@ from flext_web.__version__ import (
     __license__,
     __title__,
     __url__,
+    _VersionMetadata,
 )
 from flext_web.version import VERSION, FlextWebVersion, __version__, __version_info__
 
@@ -28,14 +29,16 @@ class TestFlextWebVersion:
     def test_version_initialization(self) -> None:
         """Test FlextWebVersion initialization."""
         version = FlextWebVersion(
-            version="1.0.0",
-            version_info=(1, 0, 0),
-            title="FLEXT Web",
-            description="Generic HTTP Service",
-            author="FLEXT Team",
-            author_email="flext@example.com",
-            license_type="MIT",
-            url="https://github.com/flext/flext-web",
+            _VersionMetadata(
+                version="1.0.0",
+                version_info=(1, 0, 0),
+                title="FLEXT Web",
+                description="Generic HTTP Service",
+                author="FLEXT Team",
+                author_email="flext@example.com",
+                license_type="MIT",
+                url="https://github.com/flext/flext-web",
+            )
         )
 
         assert version.version == "1.0.0"

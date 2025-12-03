@@ -10,15 +10,61 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextResult, FlextTypes
+from typing import TypedDict
+
+from flext_core import FlextResult, t
 
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 
+# Import aliases for simplified usage
+u = FlextUtilities
+t = t
+c = FlextWebConstants
+m = FlextWebModels
+
 HttpMethod = FlextWebConstants.Http.Method
 
 
-class FlextWebTypes(FlextTypes):
+class _WebRequestConfig(TypedDict, total=False):
+    """Web request configuration dictionary."""
+
+    url: str
+    method: FlextWebConstants.Literals.HttpMethodLiteral | str
+    headers: dict[str, str] | None
+    body: str | dict[str, str] | None
+    timeout: float
+    query_params: dict[str, object] | None
+    client_ip: str
+    user_agent: str
+
+
+class _WebResponseConfig(TypedDict, total=False):
+    """Web response configuration dictionary."""
+
+    status_code: int
+    request_id: str
+    headers: dict[str, str] | None
+    body: str | dict[str, str] | None
+    elapsed_time: float
+    content_type: FlextWebConstants.Literals.ContentTypeLiteral | str
+    content_length: int
+    processing_time_ms: float
+
+
+class _ApplicationConfig(TypedDict, total=False):
+    """Application configuration dictionary."""
+
+    name: str
+    host: str
+    port: int
+    status: FlextWebConstants.Literals.ApplicationStatusLiteral | str
+    environment: str
+    debug_mode: bool
+    version: int
+
+
+class FlextWebTypes(t):
     """Web-specific type definitions using FlextWebModels.
 
     Uses Pydantic 2 models from FlextWebModels for type safety.
@@ -203,78 +249,67 @@ class FlextWebTypes(FlextTypes):
 
     @classmethod
     def create_web_request(
-        cls,
-        url: str,
-        method: FlextWebConstants.Literals.HttpMethodLiteral | str = (
-            FlextWebConstants.Http.Method.GET
-        ),
-        headers: dict[str, str] | None = None,
-        body: str | dict[str, str] | None = None,
-        timeout: float = FlextWebConstants.Http.DEFAULT_TIMEOUT_SECONDS,
-        query_params: dict[str, object] | None = None,
-        client_ip: str = "",
-        user_agent: str = "",
+        cls, config: _WebRequestConfig
     ) -> FlextResult[FlextWebModels.Web.Request]:
         """Create web request model instance with proper validation.
 
         Args:
-            url: Request URL
-            method: HTTP method (must be valid from constants)
-            headers: Request headers (validated, no fallback)
-            body: Request body
-            timeout: Request timeout in seconds
-            query_params: Query parameters (validated, no fallback)
-            client_ip: Client IP address
-            user_agent: User agent string
+            config: Web request configuration dictionary
 
         Returns:
             FlextResult[Web.Request]: Success contains request model,
                                      failure contains validation error
 
         """
-        # Validate method against constants - fast fail, no fallback
+        # Extract values with defaults
+        url = config.get("url", "")
+        method = config.get("method", FlextWebConstants.Http.Method.GET)
+        headers = config.get("headers")
+        body = config.get("body")
+        timeout = config.get("timeout", FlextWebConstants.Http.DEFAULT_TIMEOUT_SECONDS)
+        query_params = config.get("query_params")
+        client_ip = config.get("client_ip", "")
+        user_agent = config.get("user_agent", "")
+
+        # Validate using uturns
+        validations = [
+            (url, "URL is required"),
+            (
+                isinstance(headers, dict) if headers is not None else True,
+                "Headers must be a dictionary or None",
+            ),
+            (
+                isinstance(query_params, dict) if query_params is not None else True,
+                "Query params must be a dictionary or None",
+            ),
+        ]
+
+        failed = u.find(validations, lambda v: not v[0])
+        if failed:
+            error_msg = (
+                str(failed[1]) if isinstance(failed[1], str) else "Validation failed"
+            )
+            return FlextResult[FlextWebModels.Web.Request].fail(error_msg)
+
+        # Validate method
         valid_methods = set(FlextWebConstants.Http.METHODS)
-        method_upper = method.upper()
+        method_upper = str(method).upper()
         if method_upper not in valid_methods:
             return FlextResult[FlextWebModels.Web.Request].fail(
                 f"Invalid HTTP method: {method}. Must be one of: {valid_methods}"
             )
 
-        # Validate headers - no fallback
-        if headers is not None and not isinstance(headers, dict):
-            return FlextResult[FlextWebModels.Web.Request].fail(
-                "Headers must be a dictionary or None"
-            )
-
-        # Validate query_params - no fallback
-        if query_params is not None and not isinstance(query_params, dict):
-            return FlextResult[FlextWebModels.Web.Request].fail(
-                "Query params must be a dictionary or None"
-            )
-
         try:
-            # Validate method is valid Literal value - fast fail
-            valid_methods_set = set(FlextWebConstants.Http.METHODS)
-            if method_upper not in valid_methods_set:
-                return FlextResult[FlextWebModels.Web.Request].fail(  # pragma: no cover
-                    f"Invalid HTTP method: {method_upper}"
-                )
             # Type narrowing: use match/case for type safety
-            # Pydantic will validate at runtime, this ensures type checker understands
             match method_upper:
                 case "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS":
-                    # Use defaults if None - fields require specific types
-                    request_headers = headers if headers is not None else {}
-                    request_query_params = (
-                        query_params if query_params is not None else {}
-                    )
                     request = FlextWebModels.Web.Request(
                         url=url,
-                        method=method_upper,  # Type narrowed by match/case
-                        headers=request_headers,
+                        method=method_upper,
+                        headers=headers if headers is not None else {},
                         body=body,
                         timeout=timeout,
-                        query_params=request_query_params,
+                        query_params=query_params if query_params is not None else {},
                         client_ip=client_ip,
                         user_agent=user_agent,
                     )
@@ -290,48 +325,41 @@ class FlextWebTypes(FlextTypes):
 
     @classmethod
     def create_web_response(
-        cls,
-        status_code: int,
-        request_id: str,
-        headers: dict[str, str] | None = None,
-        body: str | dict[str, str] | None = None,
-        elapsed_time: float = 0.0,
-        content_type: (
-            FlextWebConstants.Literals.ContentTypeLiteral | str
-        ) = FlextWebConstants.Http.CONTENT_TYPE_JSON,
-        content_length: int = 0,
-        processing_time_ms: float = 0.0,
+        cls, config: _WebResponseConfig
     ) -> FlextResult[FlextWebModels.Web.Response]:
         """Create web response model instance with proper validation.
 
         Args:
-            status_code: HTTP status code
-            request_id: Associated request identifier
-            headers: Response headers (validated, no fallback)
-            body: Response body
-            elapsed_time: Response processing time
-            content_type: Response content type
-            content_length: Response content length
-            processing_time_ms: Processing time in milliseconds
+            config: Web response configuration dictionary
 
         Returns:
             FlextResult[Web.Response]: Success contains response model,
                                       failure contains validation error
 
         """
-        # Validate headers - no fallback
+        # Extract values with defaults
+        status_code = config.get("status_code", 200)
+        request_id = config.get("request_id", "")
+        headers = config.get("headers")
+        body = config.get("body")
+        elapsed_time = config.get("elapsed_time", 0.0)
+        content_type = config.get(
+            "content_type", FlextWebConstants.Http.CONTENT_TYPE_JSON
+        )
+        content_length = config.get("content_length", 0)
+        processing_time_ms = config.get("processing_time_ms", 0.0)
+
+        # Validate headers
         if headers is not None and not isinstance(headers, dict):
             return FlextResult[FlextWebModels.Web.Response].fail(
                 "Headers must be a dictionary or None"
             )
 
         try:
-            # Use defaults if None - fields require specific types
-            response_headers = headers if headers is not None else {}
             response = FlextWebModels.Web.Response(
                 status_code=status_code,
                 request_id=request_id,
-                headers=response_headers,
+                headers=headers if headers is not None else {},
                 body=body,
                 elapsed_time=elapsed_time,
                 content_type=content_type,
@@ -346,19 +374,31 @@ class FlextWebTypes(FlextTypes):
 
     @classmethod
     def create_application(
-        cls,
-        name: str,
-        host: str = "localhost",
-        port: int = 8080,
-        status: (
-            FlextWebConstants.Literals.ApplicationStatusLiteral | str
-        ) = FlextWebConstants.WebEnvironment.Status.STOPPED.value,
-        environment: str = FlextWebConstants.WebEnvironment.Name.DEVELOPMENT.value,
-        *,
-        debug_mode: bool = FlextWebConstants.WebDefaults.DEBUG_MODE,
-        version: int = FlextWebConstants.WebDefaults.VERSION_INT,
+        cls, config: _ApplicationConfig
     ) -> FlextResult[FlextWebModels.Application.Entity]:
-        """Create application model instance."""
+        """Create application model instance.
+
+        Args:
+            config: Application configuration dictionary
+
+        Returns:
+            FlextResult[Application.Entity]: Success contains application entity,
+                                            failure contains error message
+
+        """
+        # Extract values with defaults
+        name = config.get("name", "")
+        host = config.get("host", "localhost")
+        port = config.get("port", 8080)
+        status = config.get(
+            "status", FlextWebConstants.WebEnvironment.Status.STOPPED.value
+        )
+        environment = config.get(
+            "environment", FlextWebConstants.WebEnvironment.Name.DEVELOPMENT.value
+        )
+        debug_mode = config.get("debug_mode", FlextWebConstants.WebDefaults.DEBUG_MODE)
+        version = config.get("version", FlextWebConstants.WebDefaults.VERSION_INT)
+
         try:
             entity = FlextWebModels.Application.Entity(
                 name=name,
@@ -467,14 +507,14 @@ class FlextWebTypes(FlextTypes):
             )
 
     # =========================================================================
-    # WEB PROJECT TYPES - Domain-specific project types extending FlextTypes
+    # WEB PROJECT TYPES - Domain-specific project types extending t
     # =========================================================================
 
-    class Project(FlextTypes):
-        """Web-specific project types extending FlextTypes.
+    class Project(t):
+        """Web-specific project types extending t.
 
         Adds web application-specific project types while inheriting
-        generic types from FlextTypes. Follows domain separation principle:
+        generic types from t. Follows domain separation principle:
         Web domain owns web application-specific types.
         """
 

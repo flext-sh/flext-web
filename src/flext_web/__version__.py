@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from importlib.metadata import metadata
-from typing import Final
+from typing import Final, TypedDict
 
 _metadata = metadata("flext-web")
 
@@ -27,6 +27,19 @@ __license__: Final[str] = _metadata["License"]
 __url__: Final[str] = _metadata.get("Home-Page", "")
 
 
+class _VersionMetadata(TypedDict):
+    """Version metadata dictionary for constructor."""
+
+    version: str
+    version_info: tuple[int | str, ...]
+    title: str
+    description: str
+    author: str
+    author_email: str
+    license_type: str
+    url: str
+
+
 class FlextWebVersion:
     """Structured package metadata following flext-core patterns.
 
@@ -40,39 +53,22 @@ class FlextWebVersion:
 
     """
 
-    def __init__(
-        self,
-        version: str,
-        version_info: tuple[int | str, ...],
-        title: str,
-        description: str,
-        author: str,
-        author_email: str,
-        license_type: str,
-        url: str,
-    ) -> None:
+    def __init__(self, metadata: _VersionMetadata) -> None:
         """Initialize version metadata.
 
         Args:
-            version: Package version string
-            version_info: Parsed version tuple
-            title: Package title
-            description: Package description
-            author: Package author name
-            author_email: Package author email
-            license_type: License identifier
-            url: Package URL
+            metadata: Version metadata dictionary
 
         """
         super().__init__()
-        self.version = version
-        self.version_info = version_info
-        self.title = title
-        self.description = description
-        self.author = author
-        self.author_email = author_email
-        self.license = license_type
-        self.url = url
+        self.version = metadata["version"]
+        self.version_info = metadata["version_info"]
+        self.title = metadata["title"]
+        self.description = metadata["description"]
+        self.author = metadata["author"]
+        self.author_email = metadata["author_email"]
+        self.license = metadata["license_type"]
+        self.url = metadata["url"]
 
     @classmethod
     def current(cls) -> FlextWebVersion:
@@ -83,14 +79,16 @@ class FlextWebVersion:
 
         """
         return cls(
-            version=__version__,
-            version_info=__version_info__,
-            title=__title__,
-            description=__description__,
-            author=__author__,
-            author_email=__author_email__,
-            license_type=__license__,
-            url=__url__,
+            _VersionMetadata(
+                version=__version__,
+                version_info=__version_info__,
+                title=__title__,
+                description=__description__,
+                author=__author__,
+                author_email=__author_email__,
+                license_type=__license__,
+                url=__url__,
+            )
         )
 
 
@@ -100,6 +98,7 @@ VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
 __all__ = [
     "VERSION",
     "FlextWebVersion",
+    "_VersionMetadata",
     "__author__",
     "__author_email__",
     "__description__",

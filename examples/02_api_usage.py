@@ -14,9 +14,12 @@ This example shows:
 from typing import cast
 
 import requests
-from flext_core import FlextResult
+from flext_core import FlextResult, u
 
 from flext_web import FlextWebTypes
+
+# Import uplified usage
+u = u
 
 
 class ExampleConstants:
@@ -45,22 +48,21 @@ def check_service_health() -> bool:
     """
     try:
         response = requests.get(f"{ExampleConstants.BASE_URL}/health", timeout=5)
-        if response.status_code == ExampleConstants.HTTP_OK:
-            result = response.json()
-            # Fast fail - no fallback, validate structure explicitly
-            if not isinstance(result, dict):
-                return False
-            if "success" not in result or result["success"] is not True:
-                return False
-            if "data" not in result:
-                return False
-            data = result["data"]
-            if not isinstance(data, dict):
-                return False
-            if "status" not in data:
-                return False
-            return data["status"] == "healthy"
-        return False
+        if response.status_code != ExampleConstants.HTTP_OK:
+            return False
+
+        result = response.json()
+        # Use ustructure - reduces returns
+        validations = [
+            isinstance(result, dict),
+            result.get("success") is True,
+            "data" in result,
+            isinstance(result.get("data"), dict),
+            result.get("data", {}).get("status") == "healthy",
+        ]
+
+        # All validations must pass
+        return all(validations)
     except requests.RequestException:
         return False
 
@@ -87,23 +89,33 @@ def create_application(
     request_data: dict[str, str | int] = {"name": name, "port": port, "host": host}
 
     # Use FlextResult for error handling - fast fail, no fallback
-    result = (
-        FlextResult.safe_call(
-            lambda: requests.post(
+    def _make_request() -> FlextResult[requests.Response]:
+        """Make HTTP request using FlextResult for error handling."""
+        try:
+            response = requests.post(
                 f"{ExampleConstants.BASE_URL}{ExampleConstants.APPS_BASE}",
                 json=request_data,
                 timeout=5,
             )
-        )
+            return FlextResult[requests.Response].ok(response)
+        except requests.RequestException as e:
+            return FlextResult[requests.Response].fail(f"Request failed: {e}")
+
+    def _parse_json(response: requests.Response) -> FlextResult[dict[str, object]]:
+        """Parse JSON response."""
+        try:
+            json_data = response.json()
+            return FlextResult[dict[str, object]].ok(json_data)
+        except Exception as e:
+            return FlextResult[dict[str, object]].fail(f"JSON parse failed: {e}")
+
+    result = (
+        _make_request()
         .filter(
             lambda r: r.status_code == ExampleConstants.HTTP_OK,
             "HTTP request failed",
         )
-        .flat_map(
-            lambda r: FlextResult.safe_call(r.json)
-            if hasattr(r, "json")
-            else FlextResult[dict[str, object]].fail("Invalid response object"),
-        )
+        .flat_map(_parse_json)
         .flat_map(
             lambda json_data: (
                 FlextResult[FlextWebTypes.AppData].ok(
@@ -187,14 +199,20 @@ def _execute_app_operation(
         except requests.RequestException as e:
             return FlextResult[requests.Response].fail(f"Request failed: {e}")
 
+    def _parse_json_response(
+        response: requests.Response,
+    ) -> FlextResult[dict[str, object]]:
+        """Parse JSON from response."""
+        try:
+            json_data = response.json()
+            return FlextResult[dict[str, object]].ok(json_data)
+        except Exception as e:
+            return FlextResult[dict[str, object]].fail(f"JSON parse failed: {e}")
+
     # Use existing flext-core monadic chain
     result = (
         _make_http_request()
-        .flat_map(
-            lambda resp: FlextResult[dict[str, object]].ok(resp.json())
-            if resp.status_code == ExampleConstants.HTTP_OK
-            else FlextResult[dict[str, object]].fail("Invalid response"),
-        )
+        .flat_map(_parse_json_response)
         .flat_map(
             lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
                 cast("FlextWebTypes.AppData", json_data["data"]),
@@ -224,20 +242,33 @@ def _execute_list_operation(
     data_key: str,
 ) -> list[FlextWebTypes.AppData]:
     """Advanced Monad Composition using flext-core - eliminates 7 returns with Kleisli composition."""
+
     # Pure functional Kleisli composition using flext-core patterns
+    def _make_get_request() -> FlextResult[requests.Response]:
+        """Make GET request."""
+        try:
+            response = requests.get(f"{ExampleConstants.BASE_URL}{endpoint}", timeout=5)
+            return FlextResult[requests.Response].ok(response)
+        except requests.RequestException as e:
+            return FlextResult[requests.Response].fail(f"Request failed: {e}")
+
+    def _parse_response_json(
+        response: requests.Response,
+    ) -> FlextResult[dict[str, object]]:
+        """Parse JSON from response."""
+        try:
+            json_data = response.json()
+            return FlextResult[dict[str, object]].ok(json_data)
+        except Exception as e:
+            return FlextResult[dict[str, object]].fail(f"JSON parse failed: {e}")
+
     result = (
-        FlextResult.safe_call(
-            lambda: requests.get(f"{ExampleConstants.BASE_URL}{endpoint}", timeout=5),
-        )
+        _make_get_request()
         .filter(
             lambda r: r.status_code == ExampleConstants.HTTP_OK,
             "HTTP request failed",
         )
-        .flat_map(
-            lambda r: FlextResult.safe_call(r.json)
-            if hasattr(r, "json")
-            else FlextResult[dict[str, object]].fail("Invalid response object"),
-        )
+        .flat_map(_parse_response_json)
         .map(lambda d: _extract_apps_from_response(d, data_key))
     )
 

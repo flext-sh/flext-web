@@ -6,7 +6,12 @@ Tests the unified FlextWebTypes class following flext standards.
 from typing import cast
 
 from flext_web.config import FlextWebConfig
-from flext_web.typings import FlextWebTypes
+from flext_web.typings import (
+    FlextWebTypes,
+    _ApplicationConfig,
+    _WebRequestConfig,
+    _WebResponseConfig,
+)
 
 
 class TestFlextWebTypes:
@@ -272,32 +277,35 @@ class TestFlextWebTypes:
 
     def test_create_web_request_invalid_method(self) -> None:
         """Test create_web_request with invalid HTTP method."""
-        result = FlextWebTypes.create_web_request(
-            url="http://localhost:8080",
-            method="INVALID_METHOD",
-        )
+        config: _WebRequestConfig = {
+            "url": "http://localhost:8080",
+            "method": "INVALID_METHOD",
+        }
+        result = FlextWebTypes.create_web_request(config)
         assert result.is_failure, "Operation should fail"
         assert result.error is not None
         assert "Invalid HTTP method" in result.error
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
-        result = FlextWebTypes.create_web_request(
-            url="http://localhost:8080",
-            method="GET",
-            headers=cast("dict[str, str]", "not_a_dict"),
-        )
+        config: _WebRequestConfig = {
+            "url": "http://localhost:8080",
+            "method": "GET",
+            "headers": cast("dict[str, str]", "not_a_dict"),
+        }
+        result = FlextWebTypes.create_web_request(config)
         assert result.is_failure, "Operation should fail"
         assert result.error is not None
         assert "Headers must be a dictionary" in result.error
 
     def test_create_web_request_invalid_query_params(self) -> None:
         """Test create_web_request with invalid query_params type."""
-        result = FlextWebTypes.create_web_request(
-            url="http://localhost:8080",
-            method="GET",
-            query_params=cast("dict[str, object]", "not_a_dict"),
-        )
+        config: _WebRequestConfig = {
+            "url": "http://localhost:8080",
+            "method": "GET",
+            "query_params": cast("dict[str, object]", "not_a_dict"),
+        }
+        result = FlextWebTypes.create_web_request(config)
         assert result.is_failure, "Operation should fail"
         assert result.error is not None
         assert "Query params must be a dictionary" in result.error
@@ -305,14 +313,15 @@ class TestFlextWebTypes:
     def test_create_web_request_exception_handling(self) -> None:
         """Test create_web_request exception handling."""
         # Test exception handling in web request creation
-        result = FlextWebTypes.create_web_request(
-            url="http://localhost:8080",
-            method="GET",
-            headers={},
-            body=None,
-            timeout=-1.0,  # This might cause validation error
-            query_params={},
-        )
+        config: _WebRequestConfig = {
+            "url": "http://localhost:8080",
+            "method": "GET",
+            "headers": {},
+            "body": None,
+            "timeout": -1.0,  # This might cause validation error
+            "query_params": {},
+        }
+        result = FlextWebTypes.create_web_request(config)
         # Should fail due to negative timeout
         assert result.is_failure, "Negative timeout should cause validation failure"
         assert result.error is not None
@@ -321,11 +330,12 @@ class TestFlextWebTypes:
 
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers type."""
-        result = FlextWebTypes.create_web_response(
-            status_code=200,
-            request_id="test-123",
-            headers=cast("dict[str, str]", "not_a_dict"),
-        )
+        config: _WebResponseConfig = {
+            "status_code": 200,
+            "request_id": "test-123",
+            "headers": cast("dict[str, str]", "not_a_dict"),
+        }
+        result = FlextWebTypes.create_web_response(config)
         assert result.is_failure, "Operation should fail"
         assert result.error is not None
         assert "Headers must be a dictionary" in result.error
@@ -333,13 +343,14 @@ class TestFlextWebTypes:
     def test_create_web_response_exception_handling(self) -> None:
         """Test create_web_response exception handling."""
         # Test exception handling in web response creation
-        result = FlextWebTypes.create_web_response(
-            status_code=200,
-            request_id="test-123",
-            headers={},
-            body=None,
-            elapsed_time=-1.0,  # This might cause validation error
-        )
+        config: _WebResponseConfig = {
+            "status_code": 200,
+            "request_id": "test-123",
+            "headers": {},
+            "body": None,
+            "elapsed_time": -1.0,  # This might cause validation error
+        }
+        result = FlextWebTypes.create_web_response(config)
         # Should fail due to negative elapsed_time
         assert result.is_failure, (
             "Negative elapsed_time should cause validation failure"
@@ -355,12 +366,13 @@ class TestFlextWebTypes:
         """Test create_application exception handling."""
         # Test exception handling in application creation
         # Using invalid status to trigger validation error
-        result = FlextWebTypes.create_application(
-            name="test-app",
-            host="localhost",
-            port=8080,
-            status="invalid_status",  # This should cause validation error
-        )
+        config: _ApplicationConfig = {
+            "name": "test-app",
+            "host": "localhost",
+            "port": 8080,
+            "status": "invalid_status",  # This should cause validation error
+        }
+        result = FlextWebTypes.create_application(config)
         # Should fail due to invalid status
         assert result.is_failure, "Invalid status should cause validation failure"
         assert result.error is not None
@@ -404,10 +416,11 @@ class TestFlextWebTypes:
         """Test create_web_request with all valid HTTP methods."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
-            result = FlextWebTypes.create_web_request(
-                url="http://localhost:8080",
-                method=method,
-            )
+            config: _WebRequestConfig = {
+                "url": "http://localhost:8080",
+                "method": method,
+            }
+            result = FlextWebTypes.create_web_request(config)
             assert result.is_success, f"Operation should succeed for method {method}"
             assert result.value.method == method
 
@@ -432,23 +445,25 @@ class TestFlextWebTypes:
 
     def test_create_web_request_with_none_values(self) -> None:
         """Test create_web_request with None headers and query_params."""
-        result = FlextWebTypes.create_web_request(
-            url="http://localhost:8080",
-            method="GET",
-            headers=None,
-            query_params=None,
-        )
+        config: _WebRequestConfig = {
+            "url": "http://localhost:8080",
+            "method": "GET",
+            "headers": None,
+            "query_params": None,
+        }
+        result = FlextWebTypes.create_web_request(config)
         assert result.is_success, "Operation should succeed"
         assert isinstance(result.value.headers, dict)
         assert isinstance(result.value.query_params, dict)
 
     def test_create_web_response_with_none_headers(self) -> None:
         """Test create_web_response with None headers."""
-        result = FlextWebTypes.create_web_response(
-            status_code=200,
-            request_id="test-123",
-            headers=None,
-        )
+        config: _WebResponseConfig = {
+            "status_code": 200,
+            "request_id": "test-123",
+            "headers": None,
+        }
+        result = FlextWebTypes.create_web_response(config)
         assert result.is_success, "Operation should succeed"
         assert isinstance(result.value.headers, dict)
 
@@ -496,30 +511,33 @@ class TestFlextWebTypes:
     def test_create_web_request_match_case_default(self) -> None:
         """Test create_web_request match/case default branch (line 301-302)."""
         # Test the default case in match/case
-        result = FlextWebTypes.create_web_request(
-            url="http://localhost:8080",
-            method="GET",
-        )
+        config: _WebRequestConfig = {
+            "url": "http://localhost:8080",
+            "method": "GET",
+        }
+        result = FlextWebTypes.create_web_request(config)
         assert result.is_success, "Operation should succeed"
 
     def test_create_web_request_duplicate_validation(self) -> None:
         """Test create_web_request duplicate validation path (line 278)."""
         # Test the duplicate validation that happens after first check
-        result = FlextWebTypes.create_web_request(
-            url="http://localhost:8080",
-            method="INVALID",
-        )
+        config: _WebRequestConfig = {
+            "url": "http://localhost:8080",
+            "method": "INVALID",
+        }
+        result = FlextWebTypes.create_web_request(config)
         assert result.is_failure, "Operation should fail"
 
     def test_create_application_exception_path(self) -> None:
         """Test create_application exception handling (line 388)."""
         # Test exception handling in create_application
         # This will test the exception catch block
-        result = FlextWebTypes.create_application(
-            name="test-app",
-            host="localhost",
-            port=8080,
-        )
+        config: _ApplicationConfig = {
+            "name": "test-app",
+            "host": "localhost",
+            "port": 8080,
+        }
+        result = FlextWebTypes.create_application(config)
         # Should succeed with default values
         assert result.is_success, "Configuration with defaults should succeed"
 

@@ -10,6 +10,9 @@ from typing import ClassVar, Final, Literal
 
 from flext_core import FlextConstants
 
+# Import alias for simplified usage
+c_base = FlextConstants
+
 
 class FlextWebConstants(FlextConstants):
     """Immutable project-specific constants organised by domain."""
