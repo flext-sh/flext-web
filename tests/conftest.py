@@ -279,7 +279,7 @@ def setup_test_environment() -> Generator[None]:
     # Set test environment variables
     os.environ["FLEXT_ENV"] = "test"
     os.environ["FLEXT_LOG_LEVEL"] = "info"  # Reduce noise
-    os.environ["FLEXT_WEB_DEBUG"] = "true"
+    os.environ["FLEXT_WEB_DEBUG_MODE"] = "true"
     os.environ["FLEXT_WEB_HOST"] = FlextWebConstants.WebDefaults.HOST
     os.environ["FLEXT_WEB_SECRET_KEY"] = FlextWebConstants.WebDefaults.TEST_SECRET_KEY
 

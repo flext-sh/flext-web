@@ -14,12 +14,9 @@ This example shows:
 from typing import cast
 
 import requests
-from flext_core import FlextResult, u
+from flext_core import FlextResult
 
 from flext_web import FlextWebTypes
-
-# Import uplified usage
-u = u
 
 
 class ExampleConstants:

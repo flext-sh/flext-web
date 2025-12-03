@@ -40,6 +40,11 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
     Uses monadic patterns with FlextResult for error handling.
     """
 
+    @classmethod
+    def _get_service_config_type(cls) -> type[FlextWebConfig]:
+        """Get the config type for this service class."""
+        return FlextWebConfig
+
     class Auth:
         """User authentication service."""
 
@@ -57,21 +62,23 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
                                          failure contains error message
 
             """
-            # For testing purposes, only allow specific valid credentials
-            # Use uvalidation
-            validations = [
-                (
-                    credentials.username != FlextConstants.Test.NONEXISTENT_USERNAME,
-                    "Authentication failed",
-                ),
-                (
-                    credentials.password == FlextConstants.Test.DEFAULT_PASSWORD,
-                    "Authentication failed",
-                ),
-            ]
-            failed = u.find(validations, lambda v: not v[0])
-            if failed:
-                return FlextResult.fail(failed[1])
+            # Use u.guard() for unified validation (DSL pattern)
+            username_validated = u.guard(
+                credentials.username,
+                lambda u: u != FlextConstants.Test.NONEXISTENT_USERNAME,
+                error_message="Authentication failed",
+                return_value=True,
+            )
+            if username_validated is None:
+                return FlextResult.fail("Authentication failed")
+            password_validated = u.guard(
+                credentials.password,
+                lambda p: p == FlextConstants.Test.DEFAULT_PASSWORD,
+                error_message="Authentication failed",
+                return_value=True,
+            )
+            if password_validated is None:
+                return FlextResult.fail("Authentication failed")
 
             auth_response = m.Service.AuthResponse(
                 token=f"token_{credentials.username}",
@@ -214,11 +221,19 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
                    If None, uses FlextWebConfig() with Constants defaults.
 
         """
+        # Use u.when() for conditional config creation (DSL pattern)
+        web_config = u.when(
+            condition=config is not None,
+            then_value=config,
+            else_value=FlextWebConfig(),
+        )
+        # Pass config to super().__init__() - FlextService will use _get_service_config_type()
+        # but we override _config after initialization to use the passed config
         super().__init__()
-        self._container = FlextContainer.get_global()
+        # Override _config with web config (FlextService creates default via _get_service_config_type)
+        object.__setattr__(self, "_config", web_config)
+        self._container = FlextContainer()
         self._logger = FlextLogger(__name__)
-        # Use Pydantic defaults if None - Models use Constants in initialization
-        self._config = config if config is not None else FlextWebConfig()
         self._entity_service: FlextWebServices.Entity | None = None
 
         # HTTP server state management
@@ -487,20 +502,23 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         self,
     ) -> FlextResult[m.Service.DashboardResponse]:
         """Dashboard info with explicit status calculation."""
-        total_apps = len(self._applications)
+        # Use u.count() for unified counting (DSL pattern)
+        apps_list = list(self._applications.values())
+        total_apps = u.count(apps_list)
         running_status = c.WebEnvironment.Status.RUNNING.value
         stopped_status = c.WebEnvironment.Status.STOPPED.value
-        running_apps = len(
-            u.filter(
-                self._applications.values(),
-                lambda app: app.status == running_status,
-            )
+        # Use u.count() + u.filter() for unified counting with predicate (DSL pattern)
+        running_apps_filtered = u.filter(
+            apps_list,
+            lambda app: app.status == running_status,
         )
+        running_apps = u.count(running_apps_filtered)
 
-        service_status = (
-            c.WebResponse.STATUS_OPERATIONAL
-            if self._service_running
-            else stopped_status
+        # Use u.when() for conditional status (DSL pattern)
+        service_status = u.when(
+            condition=self._service_running,
+            then_value=c.WebResponse.STATUS_OPERATIONAL,
+            else_value=stopped_status,
         )
 
         dashboard_response = m.Service.DashboardResponse(
@@ -548,12 +566,24 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
             FlextResult[bool]: Success contains True if valid, failure with error message
 
         """
-        # Validate service state - fast fail, no fallbacks
-        if self._service_running and not self._routes_initialized:
+        # Use u.guard() for unified validation (DSL pattern)
+        routes_validated = u.guard(
+            self._routes_initialized,
+            lambda r: not self._service_running or r,
+            error_message="Service cannot be running without initialized routes",
+            return_value=True,
+        )
+        if routes_validated is None:
             return FlextResult[bool].fail(
                 "Service cannot be running without initialized routes"
             )
-        if self._service_running and not self._middleware_configured:
+        middleware_validated = u.guard(
+            self._middleware_configured,
+            lambda m: not self._service_running or m,
+            error_message="Service cannot be running without configured middleware",
+            return_value=True,
+        )
+        if middleware_validated is None:
             return FlextResult[bool].fail(
                 "Service cannot be running without configured middleware"
             )
@@ -576,7 +606,12 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         """
         # Use Pydantic defaults if None - Models use Constants in initialization
         # FlextWebConfig uses Constants defaults, so None creates config with defaults
-        service_config = config if config is not None else FlextWebConfig()
+        # Use u.when() for conditional config creation (DSL pattern)
+        service_config = u.when(
+            condition=config is not None,
+            then_value=config,
+            else_value=FlextWebConfig(),
+        )
         return FlextResult.ok(cls(config=service_config))
 
 

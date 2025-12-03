@@ -6,7 +6,6 @@ Tests the unified FlextWebUtilities class following flext standards.
 from unittest.mock import patch
 
 import pytest
-from flext_core import FlextResult
 
 from flext_web.models import FlextWebModels
 from flext_web.utilities import FlextWebUtilities
@@ -117,11 +116,11 @@ class TestFlextWebUtilities:
 
     def test_format_app_id_safe_string_failure(self) -> None:
         """Test format_app_id when safe_string fails."""
-        # Mock safe_string to return failure
+        # Mock TextProcessor.safe_string to raise ValueError
         with (
             patch(
-                "flext_web.utilities.ur.safe_string",
-                return_value=FlextResult[str].fail("Invalid string"),
+                "flext_web.utilities.u.TextProcessor.safe_string",
+                side_effect=ValueError("Invalid string"),
             ),
             pytest.raises(ValueError, match="Invalid application name"),
         ):
@@ -129,11 +128,11 @@ class TestFlextWebUtilities:
 
     def test_format_app_id_empty_after_stripping(self) -> None:
         """Test format_app_id when name becomes empty after stripping."""
-        # Mock safe_string to return empty string after stripping
+        # Mock TextProcessor.safe_string to return empty string after stripping
         with (
             patch(
-                "flext_web.utilities.ur.safe_string",
-                return_value=FlextResult[str].ok("   "),
+                "flext_web.utilities.u.TextProcessor.safe_string",
+                return_value="   ",
             ),
             pytest.raises(ValueError, match="Application name cannot be empty"),
         ):
@@ -141,11 +140,11 @@ class TestFlextWebUtilities:
 
     def test_format_app_id_slugify_empty(self) -> None:
         """Test format_app_id when slugify results in empty string."""
-        # Mock safe_string to return valid string, but slugify returns empty
+        # Mock TextProcessor.safe_string to return valid string, but slugify returns empty
         with (
             patch(
-                "flext_web.utilities.ur.safe_string",
-                return_value=FlextResult[str].ok("test"),
+                "flext_web.utilities.u.TextProcessor.safe_string",
+                return_value="test",
             ),
             patch(
                 "flext_web.utilities.FlextWebUtilities._slugify",

@@ -306,7 +306,16 @@ class TestFlextWebApp:
             title="Config Title", version="1.0.0"
         )
 
-        result = FlextWebApp.create_fastapi_app(config, title="Override Title")
+        # Use factory_config to override title
+        factory_config: _FastAPIConfig = {
+            "title": "Override Title",
+            "version": config.version,
+            "description": config.description,
+            "docs_url": config.docs_url,
+            "redoc_url": config.redoc_url,
+            "openapi_url": config.openapi_url,
+        }
+        result = FlextWebApp.create_fastapi_app(config, factory_config)
 
         assert result.is_success
         app = result.unwrap()

@@ -59,7 +59,7 @@ class FlextWebApi:
     def __init__(self) -> None:
         """Initialize with flext-core container and logging."""
         super().__init__()
-        self._container = FlextContainer.get_global()
+        self._container = FlextContainer()
         self._logger = FlextLogger(__name__)
 
     # =========================================================================
@@ -214,7 +214,7 @@ class FlextWebApi:
         """
         logger = FlextLogger(__name__)
 
-        _container = FlextContainer.get_global()
+        _container = FlextContainer()
 
         status_info = m.Service.ServiceResponse(
             service=c.WebService.SERVICE_NAME_API,

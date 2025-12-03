@@ -599,7 +599,10 @@ class TestFlextWebService:
         assert result.is_success
         service = result.unwrap()
         assert isinstance(service, FlextWebServices)
-        assert service._config == config
+        # Config is cloned by FlextService, so compare attributes instead
+        assert service._config.host == config.host
+        assert service._config.port == config.port
+        assert service._config.secret_key == config.secret_key
 
     def test_entity_service_execute(self) -> None:
         """Test Entity service execute method."""

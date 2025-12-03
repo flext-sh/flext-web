@@ -57,7 +57,7 @@ class FlextWebApp(FlextService[bool]):
     def __init__(self) -> None:
         """Initialize with flext-core container and logger."""
         super().__init__()
-        self._container = FlextContainer.get_global()
+        self._container = FlextContainer()
         self._logger = FlextLogger(__name__)
 
     def execute(self, **_kwargs: object) -> FlextResult[bool]:
@@ -102,38 +102,44 @@ class FlextWebApp(FlextService[bool]):
             """
             logger = FlextLogger(__name__)
 
-            # Use defaults if config is None
-            if config is None:
-                config = _FastAPIConfig(
-                    title="FastAPI",
-                    version=c.WebDefaults.VERSION_STRING,
-                    description="FlextWeb FastAPI Application",
-                    docs_url=c.WebApi.DOCS_URL,
-                    redoc_url=c.WebApi.REDOC_URL,
-                    openapi_url=c.WebApi.OPENAPI_URL,
-                )
+            # Use u.when() for conditional config creation (DSL pattern)
+            default_config = _FastAPIConfig(
+                title="FastAPI",
+                version=c.WebDefaults.VERSION_STRING,
+                description="FlextWeb FastAPI Application",
+                docs_url=c.WebApi.DOCS_URL,
+                redoc_url=c.WebApi.REDOC_URL,
+                openapi_url=c.WebApi.OPENAPI_URL,
+            )
+            config_final = u.when(
+                condition=config is not None,
+                then_value=config,
+                else_value=default_config,
+            )
 
-            # Create FastAPI application - FastAPI constructor doesn't raise exceptions
-            # Fast fail if FastAPI is not available - no fallback
+            # Use u.get() for unified extraction with defaults (DSL pattern)
+            title = u.get(config_final, "title", default="FastAPI")
+            version = u.get(config_final, "version", default=c.WebDefaults.VERSION_STRING)
+            description = u.get(config_final, "description", default="FlextWeb FastAPI Application")
+            docs_url = u.get(config_final, "docs_url", default=c.WebApi.DOCS_URL)
+            redoc_url = u.get(config_final, "redoc_url", default=c.WebApi.REDOC_URL)
+            openapi_url = u.get(config_final, "openapi_url", default=c.WebApi.OPENAPI_URL)
+
+            # Use try/except for error handling with exception message
             try:
                 app = FastAPI(
-                    title=config.get("title", "FastAPI"),
-                    version=config.get("version", c.WebDefaults.VERSION_STRING),
-                    description=config.get(
-                        "description", "FlextWeb FastAPI Application"
-                    ),
-                    docs_url=config.get("docs_url", c.WebApi.DOCS_URL),
-                    redoc_url=config.get("redoc_url", c.WebApi.REDOC_URL),
-                    openapi_url=config.get("openapi_url", c.WebApi.OPENAPI_URL),
+                    title=title,
+                    version=version,
+                    description=description,
+                    docs_url=docs_url,
+                    redoc_url=redoc_url,
+                    openapi_url=openapi_url,
                 )
             except Exception as e:
-                # Fast fail - no fallback, catch all exceptions for safety
                 error_msg = f"Failed to create FastAPI application: {e}"
-                logger.exception("FastAPI creation failed")
+                logger.exception(error_msg)
                 return FlextResult[FastAPI].fail(error_msg)
 
-            title = config.get("title", "FastAPI")
-            version = config.get("version", c.WebDefaults.VERSION_STRING)
             logger.info(f"FastAPI application '{title}' v{version} created")
             return FlextResult.ok(app)
 
@@ -158,12 +164,20 @@ class FlextWebApp(FlextService[bool]):
         failure contains detailed error message
 
         """
-        # Use Pydantic defaults if None - Models use Constants in initialization
-        # FastAPIAppConfig uses Constants defaults, so None creates config with defaults
-        fastapi_config = config if config is not None else m.FastAPI.FastAPIAppConfig()
+        # Use u.when() for conditional config creation (DSL pattern)
+        fastapi_config = u.when(
+            condition=config is not None,
+            then_value=config,
+            else_value=m.FastAPI.FastAPIAppConfig(),
+        )
 
-        # Use factory_config if provided, otherwise build from fastapi_config
-        if factory_config is None:
+        # Use u.when() for conditional factory_config creation (DSL pattern)
+        factory_config_final = u.when(
+            condition=factory_config is not None,
+            then_value=factory_config,
+            else_value=None,
+        )
+        if factory_config_final is None:
             factory_config = _FastAPIConfig(
                 title=fastapi_config.title,
                 version=fastapi_config.version,
@@ -172,8 +186,9 @@ class FlextWebApp(FlextService[bool]):
                 redoc_url=fastapi_config.redoc_url,
                 openapi_url=fastapi_config.openapi_url,
             )
+            factory_config_final = factory_config
 
-        return cls.FastAPIFactory.create_instance(factory_config).map(
+        return cls.FastAPIFactory.create_instance(factory_config_final).map(
             lambda app: cls._configure_fastapi_endpoints(app, fastapi_config)
         )
 
@@ -219,9 +234,12 @@ class FlextWebApp(FlextService[bool]):
         """
         logger = FlextLogger(__name__)
 
-        # Use Pydantic defaults if None - Models use Constants in initialization
-        # FlextWebConfig uses Constants defaults, so None creates config with defaults
-        flask_config = config if config is not None else FlextWebConfig()
+        # Use u.when() for conditional config creation (DSL pattern)
+        flask_config = u.when(
+            condition=config is not None,
+            then_value=config,
+            else_value=FlextWebConfig(),
+        )
 
         # Create Flask application
         app = Flask(flask_config.app_name)

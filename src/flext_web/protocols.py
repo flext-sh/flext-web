@@ -530,6 +530,21 @@ class FlextWebProtocols(FlextProtocols):
         Used in: web request handlers and controllers
         """
 
+        def execute(
+            self,
+            command: t.FlexibleValue,
+        ) -> FlextResult[t.Core.ResponseDict]:
+            """Execute command (extends p.Handler pattern).
+
+            Args:
+                command: Command to execute
+
+            Returns:
+                FlextResult containing response data or error details
+
+            """
+            ...
+
         @staticmethod
         def handle_request(
             request: t.Core.RequestDict,
@@ -988,6 +1003,21 @@ class _WebTemplateEngineBase:
     ) -> FlextResult[str]:
         """Render template string with context."""
         return FlextWebProtocols.WebTemplateEngineProtocol.render(template, context)
+
+    def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:  # noqa: PLR6301
+        """Add template filter function."""
+        # Protocol implementation placeholder - parameters are part of interface contract
+        _ = name, filter_func
+
+    def add_global(  # noqa: PLR6301
+        self,
+        name: str,
+        *,
+        value: str | int | bool | list[str] | dict[str, str | int | bool],
+    ) -> None:
+        """Add template global variable."""
+        # Protocol implementation placeholder - parameters are part of interface contract
+        _ = name, value
 
 
 class _WebMonitoringBase:

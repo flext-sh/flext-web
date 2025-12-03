@@ -89,34 +89,62 @@ class FlextWebHandlers(FlextService[bool]):
             )
 
         @staticmethod
-        def _validate_create_inputs(
+        def _validate_create_inputs(  # noqa: PLR0911
             name: str, port: int, host: str
         ) -> FlextResult[str]:
             """Validate create inputs - consolidates all validations using u."""
             # Use u to process validations
-            validations = [
-                (isinstance(name, str), "Application name must be a string"),
-                (isinstance(host, str), "Host must be a string"),
-                (isinstance(port, int), "Port must be an integer"),
-                (
-                    len(name) >= c.WebServer.MIN_APP_NAME_LENGTH,
-                    f"Application name must be at least {c.WebServer.MIN_APP_NAME_LENGTH} characters",
-                ),
-                (len(host) > 0, "Host cannot be empty"),
-            ]
+            # Use u.guard() for unified validation (DSL pattern)
+            name_validated = u.guard(name, str, return_value=True)
+            if name_validated is None:
+                return FlextResult[str].fail("Application name must be a string")
+            host_validated = u.guard(host, str, return_value=True)
+            if host_validated is None:
+                return FlextResult[str].fail("Host must be a string")
+            port_validated = u.guard(port, int, return_value=True)
+            if port_validated is None:
+                return FlextResult[str].fail("Port must be an integer")
 
-            # Check port range
+            # Use u.guard() for length validation (DSL pattern)
+            name_length_validated = u.guard(
+                name_validated,
+                lambda n: len(n) >= c.WebServer.MIN_APP_NAME_LENGTH,
+                error_message=f"Application name must be at least {c.WebServer.MIN_APP_NAME_LENGTH} characters",
+                return_value=True,
+            )
+            if name_length_validated is None:
+                return FlextResult[str].fail(
+                    f"Application name must be at least {c.WebServer.MIN_APP_NAME_LENGTH} characters"
+                )
+            host_non_empty = u.guard(
+                host_validated,
+                lambda h: len(h) > 0,
+                error_message="Host cannot be empty",
+                return_value=True,
+            )
+            if host_non_empty is None:
+                return FlextResult[str].fail("Host cannot be empty")
+
+            # Use u.guard() for port range validation (DSL pattern)
             min_port = c.WebValidation.PORT_RANGE[0]
             max_port = c.WebValidation.PORT_RANGE[1]
-            validations.append((
-                min_port <= port <= max_port,
-                f"Port must be between {min_port} and {max_port}",
-            ))
-
-            # Find first failing validation using u
-            failed = u.find(validations, lambda v: not v[0])
-            if failed:
-                return FlextResult[str].fail(failed[1])
+            # Use u.guard() with separate checks for better error messages (DSL pattern)
+            port_min_validated = u.guard(
+                port_validated,
+                lambda p: p >= min_port,
+                error_message=f"Port must be at least {min_port}",
+                return_value=True,
+            )
+            if port_min_validated is None:
+                return FlextResult[str].fail(f"Port must be at least {min_port}")
+            port_max_validated = u.guard(
+                port_min_validated,
+                lambda p: p <= max_port,
+                error_message=f"Port must be at most {max_port}",
+                return_value=True,
+            )
+            if port_max_validated is None:
+                return FlextResult[str].fail(f"Port must be at most {max_port}")
 
             return FlextResult[str].ok("")
 

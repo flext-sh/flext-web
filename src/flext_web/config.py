@@ -12,13 +12,13 @@ from pathlib import Path
 
 from flext_core import FlextConfig, FlextResult
 from pydantic import Field, computed_field
-from pydantic_settings import SettingsConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from flext_web.constants import FlextWebConstants
 
 
 @FlextConfig.auto_register("web")
-class FlextWebConfig(FlextConfig.AutoConfig):
+class FlextWebConfig(BaseSettings):
     """HTTP server configuration using AutoConfig pattern.
 
     **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
@@ -39,7 +39,7 @@ class FlextWebConfig(FlextConfig.AutoConfig):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="forbid",
+        extra="ignore",
         validate_assignment=True,
         str_strip_whitespace=True,
         validate_default=True,
@@ -71,7 +71,6 @@ class FlextWebConfig(FlextConfig.AutoConfig):
     )
     debug_mode: bool = Field(
         default=FlextWebConstants.WebDefaults.DEBUG_MODE,
-        alias="debug",
         description="Debug mode",
     )
     ssl_enabled: bool = Field(default=False, description="Enable SSL/TLS")

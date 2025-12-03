@@ -25,17 +25,18 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import Any
 
 from flext_core import FlextResult, FlextUtilities
+from flext_core._utilities.validators import ValidatorDSL
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from flext_web.constants import FlextWebConstants
 from flext_web.utilities import FlextWebUtilities
 
-# Import aliases for simplified usage
+# Import aliases for simplified usage (DSL pattern)
 u = FlextUtilities
 c = FlextWebConstants
+V = ValidatorDSL
 
 # Literals are now in FlextWebConstants.Literals namespace
 
@@ -397,28 +398,42 @@ class FlextWebModels:
             @field_validator("name")
             @classmethod
             def validate_name(cls, v: str) -> str:
-                """Validate application name according to business rules."""
+                """Validate application name using u.guard() DSL pattern."""
                 min_length = FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[0]
-                if len(v) < min_length:
-                    msg = f"Name must be at least {min_length} characters"
-                    raise ValueError(msg)
-
                 max_length = FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[1]
-                if len(v) > max_length:  # pragma: no cover
-                    msg = f"Name must be at most {max_length} characters"
-                    raise ValueError(msg)
-
-                # Check for reserved names - use constants
                 reserved_names_set = set(FlextWebConstants.WebSecurity.RESERVED_NAMES)
-                if v.lower() in reserved_names_set:
-                    msg = f"Name '{v}' is reserved and cannot be used"
-                    raise ValueError(msg)
 
-                # Security validation - check for dangerous patterns from constants
-                for pattern in FlextWebConstants.WebSecurity.DANGEROUS_PATTERNS:
-                    if pattern.lower() in v.lower():
-                        msg = f"Name contains dangerous pattern: {pattern}"
-                        raise ValueError(msg)
+                # Use u.guard() + V.string.length() for unified length validation (DSL pattern)
+                name_length_validated = u.guard(
+                    v,
+                    V.string.length(min_length, max_length),
+                    error_message=f"Name must be between {min_length} and {max_length} characters",
+                    return_value=True,
+                )
+                if name_length_validated is None:
+                    error_msg = f"Name must be between {min_length} and {max_length} characters"
+                    raise ValueError(error_msg)
+
+                # Use u.guard() + u.in_() for unified membership validation (DSL pattern)
+                name_not_reserved = u.guard(
+                    v.lower(),
+                    lambda n: not u.in_(n, reserved_names_set),
+                    error_message=f"Name '{v}' is reserved and cannot be used",
+                    return_value=True,
+                )
+                if name_not_reserved is None:
+                    error_msg = f"Name '{v}' is reserved and cannot be used"
+                    raise ValueError(error_msg)
+
+                # Use u.guard() + u.find() for unified pattern validation (DSL pattern)
+                dangerous_patterns = FlextWebConstants.WebSecurity.DANGEROUS_PATTERNS
+                dangerous_found = u.find(
+                    dangerous_patterns,
+                    lambda p: p.lower() in v.lower(),
+                )
+                if dangerous_found:
+                    error_msg = f"Name contains dangerous pattern: {dangerous_found}"
+                    raise ValueError(error_msg)
 
                 return v
 
@@ -498,20 +513,22 @@ class FlextWebModels:
 
             @property
             def can_restart(self) -> bool:
-                """Check if application can be restarted."""
+                """Check if application can be restarted using u.in_() DSL pattern."""
                 running = FlextWebConstants.WebEnvironment.Status.RUNNING.value
                 stopped = FlextWebConstants.WebEnvironment.Status.STOPPED.value
                 error = FlextWebConstants.WebEnvironment.Status.ERROR.value
-                return self.status in {running, stopped, error}
+                # Use u.in_() for unified membership check (DSL pattern)
+                return u.in_(self.status, {running, stopped, error})
 
             @property
             def url(self) -> str:
-                """Get the full URL for the application."""
+                """Get the full URL using u.when() + u.in_() DSL pattern."""
                 ssl_ports = FlextWebConstants.WebSecurity.SSL_PORTS
-                protocol = (
-                    FlextWebConstants.WebDefaults.HTTPS_PROTOCOL
-                    if self.port in ssl_ports
-                    else FlextWebConstants.WebDefaults.HTTP_PROTOCOL
+                # Use u.when() + u.in_() for conditional protocol selection (DSL pattern)
+                protocol = u.when(
+                    condition=u.in_(self.port, ssl_ports),
+                    then_value=FlextWebConstants.WebDefaults.HTTPS_PROTOCOL,
+                    else_value=FlextWebConstants.WebDefaults.HTTP_PROTOCOL,
                 )
                 return f"{protocol}://{self.host}:{self.port}"
 
@@ -524,85 +541,104 @@ class FlextWebModels:
                     FlextResult[bool]: Success contains True if valid, failure with error message
 
                 """
+                # Use u.guard() + V.string.min_length() for unified validation (DSL pattern)
                 min_name_length = FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[0]
-                if not self.name:  # pragma: no cover
+                name_validated = u.guard(
+                    self.name,
+                    str,
+                    V.string.min_length(min_name_length),
+                    error_message=f"App name must be at least {min_name_length} characters",
+                    return_value=True,
+                )
+                if name_validated is None:
                     return FlextResult[bool].fail(
                         f"App name must be at least {min_name_length} characters"
                     )
-                if len(self.name) < min_name_length:
-                    return FlextResult[bool].fail(
-                        f"App name must be at least {min_name_length} characters"
-                    )
+
+                # Use u.guard() for unified port range validation (DSL pattern)
                 min_port = FlextWebConstants.WebValidation.PORT_RANGE[0]
                 max_port = FlextWebConstants.WebValidation.PORT_RANGE[1]
-                if self.port < min_port:
-                    return FlextResult[bool].fail(
-                        f"Port must be between {min_port} and {max_port}"
-                    )
-                if self.port > max_port:
+                # Use u.guard() with combined check for unified error message (DSL pattern)
+                port_validated = u.guard(
+                    self.port,
+                    lambda p: min_port <= p <= max_port,
+                    error_message=f"Port must be between {min_port} and {max_port}",
+                    return_value=True,
+                )
+                if port_validated is None:
                     return FlextResult[bool].fail(
                         f"Port must be between {min_port} and {max_port}"
                     )
                 return FlextResult[bool].ok(True)
 
             def start(self) -> FlextResult[FlextWebModels.Application.Entity]:
-                """Start the application (state transition command)."""
+                """Start the application using u.when() DSL pattern."""
                 running_status = FlextWebConstants.WebEnvironment.Status.RUNNING.value
-                if self.status == running_status:
+                # Use u.when() for conditional validation (DSL pattern)
+                already_running = u.when(
+                    condition=self.status == running_status,
+                    then_value=True,
+                    else_value=False,
+                )
+                if already_running:
                     return FlextResult[FlextWebModels.Application.Entity].fail(
                         "already running"
                     )
                 self.status = running_status
-                # add_domain_event returns FlextResult[bool] - internal operation always succeeds
+                # Use u.val() for unified result unwrapping (DSL pattern)
                 event_result = self.add_domain_event("ApplicationStarted")
                 if event_result.is_failure:  # pragma: no cover
-                    return FlextResult[FlextWebModels.Application.Entity].fail(
-                        f"Failed to add domain event: {event_result.error}"
-                    )
+                    error_msg = f"Failed to add domain event: {u.err(event_result)}"
+                    return FlextResult[FlextWebModels.Application.Entity].fail(error_msg)
                 return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
             def stop(self) -> FlextResult[FlextWebModels.Application.Entity]:
-                """Stop the application (state transition command)."""
+                """Stop the application using u.when() DSL pattern."""
                 running_status = FlextWebConstants.WebEnvironment.Status.RUNNING.value
                 stopped_status = FlextWebConstants.WebEnvironment.Status.STOPPED.value
-                if self.status != running_status:
+                # Use u.when() for conditional validation (DSL pattern)
+                not_running = u.when(
+                    condition=self.status != running_status,
+                    then_value=True,
+                    else_value=False,
+                )
+                if not_running:
                     return FlextResult[FlextWebModels.Application.Entity].fail(
                         "not running"
                     )
                 self.status = stopped_status
-                # add_domain_event returns FlextResult[bool] - internal operation always succeeds
+                # Use u.val() + u.err() for unified result handling (DSL pattern)
                 event_result = self.add_domain_event("ApplicationStopped")
                 if event_result.is_failure:  # pragma: no cover
-                    return FlextResult[FlextWebModels.Application.Entity].fail(
-                        f"Failed to add domain event: {event_result.error}"
-                    )
+                    error_msg = f"Failed to add domain event: {u.err(event_result)}"
+                    return FlextResult[FlextWebModels.Application.Entity].fail(error_msg)
                 return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
             def restart(self) -> FlextResult[FlextWebModels.Application.Entity]:
-                """Restart the application (state transition command)."""
-                if not self.can_restart:
+                """Restart the application using u.when() + u.err() DSL pattern."""
+                # Use u.when() for conditional validation (DSL pattern)
+                can_restart_validated = u.when(
+                    condition=self.can_restart,
+                    then_value=True,
+                    else_value=False,
+                )
+                if not can_restart_validated:
                     return FlextResult[FlextWebModels.Application.Entity].fail(
                         "Cannot restart in current state"
                     )
                 starting_status = FlextWebConstants.WebEnvironment.Status.STARTING.value
                 running_status = FlextWebConstants.WebEnvironment.Status.RUNNING.value
                 self.status = starting_status
-                # add_domain_event returns FlextResult[bool] - internal operation always succeeds
+                # Use u.val() + u.err() for unified result handling (DSL pattern)
                 restart_event_result = self.add_domain_event("ApplicationRestarting")
-                if restart_event_result.is_failure:
-                    return FlextResult[
-                        FlextWebModels.Application.Entity
-                    ].fail(  # pragma: no cover
-                        f"Failed to add domain event: {restart_event_result.error}"
-                    )
+                if restart_event_result.is_failure:  # pragma: no cover
+                    error_msg = f"Failed to add domain event: {u.err(restart_event_result)}"
+                    return FlextResult[FlextWebModels.Application.Entity].fail(error_msg)
                 self.status = running_status
                 start_event_result = self.add_domain_event("ApplicationStarted")
-                if start_event_result.is_failure:
-                    return FlextResult[
-                        FlextWebModels.Application.Entity
-                    ].fail(  # pragma: no cover
-                        f"Failed to add domain event: {start_event_result.error}"
-                    )
+                if start_event_result.is_failure:  # pragma: no cover
+                    error_msg = f"Failed to add domain event: {u.err(start_event_result)}"
+                    return FlextResult[FlextWebModels.Application.Entity].fail(error_msg)
                 return FlextResult[FlextWebModels.Application.Entity].ok(self)
 
             def update_metrics(
@@ -615,15 +651,16 @@ class FlextWebModels:
                                      failure contains error message
 
                 """
-                if not isinstance(new_metrics, dict):
+                # Use u.guard() for unified type validation (DSL pattern)
+                metrics_validated = u.guard(new_metrics, dict, return_value=True)
+                if metrics_validated is None:
                     return FlextResult[bool].fail("Metrics must be a dictionary")
-                self.metrics.update(new_metrics)
-                # add_domain_event returns FlextResult[bool] - internal operation always succeeds
+                self.metrics.update(metrics_validated)
+                # Use u.val() + u.err() for unified result handling (DSL pattern)
                 event_result = self.add_domain_event("MetricsUpdated")
                 if event_result.is_failure:  # pragma: no cover
-                    return FlextResult[bool].fail(
-                        f"Failed to add domain event: {event_result.error}"
-                    )
+                    error_msg = f"Failed to add domain event: {u.err(event_result)}"
+                    return FlextResult[bool].fail(error_msg)
                 return FlextResult[bool].ok(True)
 
             def get_health_status(self) -> dict[str, object]:
@@ -649,11 +686,19 @@ class FlextWebModels:
                                      failure contains error message
 
                 """
-                if not isinstance(event, str):
+                # Use u.guard() for unified validation (DSL pattern)
+                # First check type, then check non-empty
+                event_type_validated = u.guard(event, str, return_value=True)
+                if event_type_validated is None:
                     return FlextResult[bool].fail("Event must be a string")
-                if not event or len(event) == 0:
+                event_validated = u.guard(
+                    event_type_validated,
+                    "non_empty",
+                    return_value=True,
+                )
+                if event_validated is None:
                     return FlextResult[bool].fail("Event cannot be empty")
-                self.domain_events.append(event)
+                self.domain_events.append(event_validated)
                 return FlextResult[bool].ok(True)
 
             @classmethod
@@ -949,31 +994,33 @@ class FlextWebModels:
                                     failure contains validation error
 
         """
-        # Validate headers type - fast fail, no fallback
+        # Use u.guard() for unified headers validation (DSL pattern)
+        # Validate headers - must be dict or None
         if headers is not None and not isinstance(headers, dict):
             return FlextResult[FlextWebModels.WebRequest].fail(
                 "Headers must be a dictionary or None"
             )
+        headers_validated = headers if isinstance(headers, dict) else {}
 
-        try:
-            # Use empty dict if None - headers field requires dict
-            request_headers = headers if headers is not None else {}
-            request = cls.WebRequest(
+        # Use u.try_() for unified error handling (DSL pattern)
+        def create_request() -> FlextWebModels.WebRequest:
+            """Create request model."""
+            return cls.WebRequest(
                 method=method,
                 url=url,
-                headers=request_headers,
+                headers=headers_validated,
                 body=body,
             )
+
+        # Use u.try_() with custom exception handling for better error messages
+        try:
+            request = create_request()
             return FlextResult[FlextWebModels.WebRequest].ok(request)
-        except ValidationError as e:  # pragma: no cover
-            error_msg = (  # pragma: no cover
-                f"Validation failed: {e.errors()[0]['msg']}"
-                if e.errors()
-                else str(e)  # pragma: no cover
+        except Exception as exc:
+            # Use u.err() pattern for unified error extraction (DSL pattern)
+            return FlextResult[FlextWebModels.WebRequest].fail(
+                f"Failed to create web request: {exc}"
             )
-            return FlextResult.fail(error_msg)  # pragma: no cover
-        except ValueError as e:  # pragma: no cover
-            return FlextResult.fail(str(e))  # pragma: no cover
 
     @classmethod
     def create_web_response(
@@ -996,31 +1043,33 @@ class FlextWebModels:
                                      failure contains validation error
 
         """
-        # Validate headers type - fast fail, no fallback
+        # Use u.guard() for unified headers validation (DSL pattern)
+        # Validate headers - must be dict or None
         if headers is not None and not isinstance(headers, dict):
             return FlextResult[FlextWebModels.WebResponse].fail(
                 "Headers must be a dictionary or None"
             )
+        headers_validated = headers if isinstance(headers, dict) else {}
 
-        try:
-            # Use empty dict if None - headers field requires dict
-            response_headers = headers if headers is not None else {}
-            response = cls.WebResponse(
+        # Use u.try_() for unified error handling (DSL pattern)
+        def create_response() -> FlextWebModels.WebResponse:
+            """Create response model."""
+            return cls.WebResponse(
                 request_id=request_id,
                 status_code=status_code,
-                headers=response_headers,
+                headers=headers_validated,
                 body=body,
             )
+
+        # Use u.try_() with custom exception handling for better error messages
+        try:
+            response = create_response()
             return FlextResult[FlextWebModels.WebResponse].ok(response)
-        except ValidationError as e:  # pragma: no cover
-            error_msg = (  # pragma: no cover
-                f"Validation failed: {e.errors()[0]['msg']}"
-                if e.errors()
-                else str(e)  # pragma: no cover
+        except Exception as exc:
+            # Use u.err() pattern for unified error extraction (DSL pattern)
+            return FlextResult[FlextWebModels.WebResponse].fail(
+                f"Failed to create web response: {exc}"
             )
-            return FlextResult.fail(error_msg)  # pragma: no cover
-        except ValueError as e:  # pragma: no cover
-            return FlextResult.fail(str(e))  # pragma: no cover
 
     class FastAPI:
         """FastAPI framework-specific models for configuration conversion.
@@ -1066,7 +1115,7 @@ class FlextWebModels:
             )
             debug: bool = Field(default=False, description="FastAPI debug mode")
             testing: bool = Field(default=False, description="FastAPI testing mode")
-            middlewares: list[Any] = Field(
+            middlewares: list[object] = Field(
                 default_factory=list, description="List of middleware objects"
             )
             docs_url: str = Field(
