@@ -96,7 +96,9 @@ class TestFlextWebModels:
         """Test WebApp port validation."""
         # Valid port
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", port=8080
+            id="test-id",
+            name="test-app",
+            port=8080,
         )
         assert app.port == 8080
 
@@ -112,20 +114,26 @@ class TestFlextWebModels:
         """Test WebApp status validation."""
         # Valid status
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", status="running"
+            id="test-id",
+            name="test-app",
+            status="running",
         )
         assert app.status == "running"
 
         # Invalid status
         with pytest.raises(ValidationError):
             FlextWebModels.Application.Entity(
-                id="test-id", name="test-app", status="invalid"
+                id="test-id",
+                name="test-app",
+                status="invalid",
             )
 
     def test_web_app_computed_fields(self) -> None:
         """Test WebApp computed fields."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", status="running"
+            id="test-id",
+            name="test-app",
+            status="running",
         )
         assert app.is_running is True
         assert app.is_healthy is True
@@ -136,20 +144,29 @@ class TestFlextWebModels:
     def test_web_app_url_generation(self) -> None:
         """Test WebApp URL generation."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", host="localhost", port=8080
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=8080,
         )
         assert app.url == "http://localhost:8080"
 
         # HTTPS port
         app_https = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", host="localhost", port=443
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=443,
         )
         assert app_https.url == "https://localhost:443"
 
     def test_web_app_business_rules_validation(self) -> None:
         """Test WebApp business rules validation."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", host="localhost", port=8080
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=8080,
         )
         result = app.validate_business_rules()
         assert result.is_success
@@ -157,7 +174,9 @@ class TestFlextWebModels:
     def test_web_app_start_success(self) -> None:
         """Test WebApp start operation."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", status="stopped"
+            id="test-id",
+            name="test-app",
+            status="stopped",
         )
         result = app.start()
         assert result.is_success
@@ -167,7 +186,9 @@ class TestFlextWebModels:
     def test_web_app_start_already_running(self) -> None:
         """Test WebApp start when already running."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", status="running"
+            id="test-id",
+            name="test-app",
+            status="running",
         )
         result = app.start()
         assert result.is_failure
@@ -177,7 +198,9 @@ class TestFlextWebModels:
     def test_web_app_stop_success(self) -> None:
         """Test WebApp stop operation."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", status="running"
+            id="test-id",
+            name="test-app",
+            status="running",
         )
         result = app.stop()
         assert result.is_success
@@ -187,7 +210,9 @@ class TestFlextWebModels:
     def test_web_app_stop_not_running(self) -> None:
         """Test WebApp stop when not running."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", status="stopped"
+            id="test-id",
+            name="test-app",
+            status="stopped",
         )
         result = app.stop()
         assert result.is_failure
@@ -197,7 +222,9 @@ class TestFlextWebModels:
     def test_web_app_restart_success(self) -> None:
         """Test WebApp restart operation."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", status="running"
+            id="test-id",
+            name="test-app",
+            status="running",
         )
         result = app.restart()
         assert result.is_success
@@ -221,7 +248,9 @@ class TestFlextWebModels:
     def test_web_app_health_status(self) -> None:
         """Test WebApp health status."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", status="running"
+            id="test-id",
+            name="test-app",
+            status="running",
         )
         health = app.get_health_status()
         assert "status" in health
@@ -233,7 +262,10 @@ class TestFlextWebModels:
     def test_web_app_to_dict(self) -> None:
         """Test WebApp to_dict conversion."""
         app = FlextWebModels.Application.Entity(
-            id="test-id", name="test-app", host="localhost", port=8080
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=8080,
         )
         app_dict = app.model_dump()
         assert app_dict["id"] == "test-id"
@@ -302,7 +334,9 @@ class TestFlextWebModels:
     def test_app_config_initialization(self) -> None:
         """Test AppConfig initialization."""
         config = FlextWebModels.AppConfig(
-            title="Test API", version="1.0.0", description="Test API Description"
+            title="Test API",
+            version="1.0.0",
+            description="Test API Description",
         )
         assert config.title == "Test API"
         assert config.version == "1.0.0"
@@ -615,7 +649,10 @@ class TestFlextWebModels:
 
         # Test with special characters in name
         result = create_entry(
-            "web_app", name="test_app-123_special", host="localhost", port=8080
+            "web_app",
+            name="test_app-123_special",
+            host="localhost",
+            port=8080,
         )
         assert result.is_success
 
@@ -656,7 +693,11 @@ class TestFlextWebModels:
         ],
     )
     def test_application_parametrized_creation(
-        self, name: str, host: str, port: int, should_succeed: bool
+        self,
+        name: str,
+        host: str,
+        port: int,
+        should_succeed: bool,
     ) -> None:
         """Test application creation with parametrized edge cases."""
         result = create_entry("web_app", name=name, host=host, port=port)
@@ -710,7 +751,10 @@ class TestFlextWebModels:
         # Just over maximum (should fail)
         too_long_name = "x" * 101
         result = create_entry(
-            "web_app", name=too_long_name, host="localhost", port=8080
+            "web_app",
+            name=too_long_name,
+            host="localhost",
+            port=8080,
         )
         assert result.is_failure
 
@@ -730,7 +774,10 @@ class TestFlextWebModels:
 
         for dangerous_name in dangerous_patterns:
             result = create_entry(
-                "web_app", name=dangerous_name, host="localhost", port=8080
+                "web_app",
+                name=dangerous_name,
+                host="localhost",
+                port=8080,
             )
             assert result.is_failure, (
                 f"Dangerous pattern '{dangerous_name}' should be rejected"

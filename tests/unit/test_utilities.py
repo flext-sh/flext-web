@@ -18,24 +18,24 @@ class TestFlextWebUtilities:
         """Test that FlextWebUtilities inherits from u."""
         # Should have access to base u
         assert hasattr(FlextWebUtilities, "Generators")
-        assert hasattr(FlextWebUtilities, "TextProcessor")
+        assert hasattr(FlextWebUtilities, "Text")
 
     def test_slugify_method(self) -> None:
-        """Test _slugify method."""
+        """Test slugify method."""
         # Test basic slugification
-        result = FlextWebUtilities._slugify("Test App Name")
+        result = FlextWebUtilities.slugify("Test App Name")
         assert result == "test-app-name"
 
         # Test with special characters
-        result = FlextWebUtilities._slugify("Test@App#Name!")
+        result = FlextWebUtilities.slugify("Test@App#Name!")
         assert result == "testappname"
 
         # Test with multiple spaces
-        result = FlextWebUtilities._slugify("Test   App    Name")
+        result = FlextWebUtilities.slugify("Test   App    Name")
         assert result == "test-app-name"
 
         # Test with leading/trailing spaces
-        result = FlextWebUtilities._slugify("  Test App Name  ")
+        result = FlextWebUtilities.slugify("  Test App Name  ")
         assert result == "test-app-name"
 
     def test_format_app_id(self) -> None:
@@ -56,7 +56,9 @@ class TestFlextWebUtilities:
     def test_app_creation_functionality(self) -> None:
         """Test app creation functionality."""
         app = FlextWebModels.Application.Entity(
-            name="test-app", host="localhost", port=8080
+            name="test-app",
+            host="localhost",
+            port=8080,
         )
 
         assert app.name == "test-app"
@@ -77,7 +79,7 @@ class TestFlextWebUtilities:
     def test_slugify_functionality(self) -> None:
         """Test slugify functionality."""
         # Test that slugify works
-        slug = FlextWebUtilities._slugify("Test App Name")
+        slug = FlextWebUtilities.slugify("Test App Name")
 
         assert isinstance(slug, str)
         assert slug == "test-app-name"
@@ -116,10 +118,10 @@ class TestFlextWebUtilities:
 
     def test_format_app_id_safe_string_failure(self) -> None:
         """Test format_app_id when safe_string fails."""
-        # Mock TextProcessor.safe_string to raise ValueError
+        # Mock Text.safe_string to raise ValueError
         with (
             patch(
-                "flext_web.utilities.u.TextProcessor.safe_string",
+                "flext_web.utilities.u.Text.safe_string",
                 side_effect=ValueError("Invalid string"),
             ),
             pytest.raises(ValueError, match="Invalid application name"),
@@ -128,10 +130,10 @@ class TestFlextWebUtilities:
 
     def test_format_app_id_empty_after_stripping(self) -> None:
         """Test format_app_id when name becomes empty after stripping."""
-        # Mock TextProcessor.safe_string to return empty string after stripping
+        # Mock Text.safe_string to return empty string after stripping
         with (
             patch(
-                "flext_web.utilities.u.TextProcessor.safe_string",
+                "flext_web.utilities.u.Text.safe_string",
                 return_value="   ",
             ),
             pytest.raises(ValueError, match="Application name cannot be empty"),
@@ -140,14 +142,14 @@ class TestFlextWebUtilities:
 
     def test_format_app_id_slugify_empty(self) -> None:
         """Test format_app_id when slugify results in empty string."""
-        # Mock TextProcessor.safe_string to return valid string, but slugify returns empty
+        # Mock Text.safe_string to return valid string, but slugify returns empty
         with (
             patch(
-                "flext_web.utilities.u.TextProcessor.safe_string",
+                "flext_web.utilities.u.Text.safe_string",
                 return_value="test",
             ),
             patch(
-                "flext_web.utilities.FlextWebUtilities._slugify",
+                "flext_web.utilities.FlextWebUtilities.slugify",
                 return_value="",
             ),
             pytest.raises(ValueError, match="Cannot format application name"),

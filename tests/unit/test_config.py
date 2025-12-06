@@ -27,7 +27,10 @@ class TestFlextWebConfig:
     def test_initialization_with_custom_values(self) -> None:
         """Test FlextWebConfig initialization with custom values."""
         config = FlextWebConfig(
-            host="0.0.0.0", port=3000, debug=True, app_name="Test App"
+            host="0.0.0.0",
+            port=3000,
+            debug=True,
+            app_name="Test App",
         )
         assert config.host == "0.0.0.0"
         assert config.port == 3000
@@ -63,7 +66,9 @@ class TestFlextWebConfig:
         """Test SSL configuration with valid cert and key paths."""
         # This would need actual cert files in a real test
         config = FlextWebConfig(
-            ssl_enabled=False, ssl_cert_path=None, ssl_key_path=None
+            ssl_enabled=False,
+            ssl_cert_path=None,
+            ssl_key_path=None,
         )
         assert config.ssl_enabled is False
 
@@ -114,7 +119,9 @@ class TestFlextWebConfig:
         """Test create_web_config exception handling (lines 99-100)."""
         # Patch __init__ to raise an exception
         with patch.object(
-            FlextWebConfig, "__init__", side_effect=Exception("Config creation failed")
+            FlextWebConfig,
+            "__init__",
+            side_effect=Exception("Config creation failed"),
         ):
             result = FlextWebConfig.create_web_config()
             assert result.is_failure

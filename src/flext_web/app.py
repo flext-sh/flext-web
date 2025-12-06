@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TypedDict
+from typing import TypedDict, cast
 
 from fastapi import FastAPI
 from flask import Flask
@@ -102,7 +102,6 @@ class FlextWebApp(FlextService[bool]):
             """
             logger = FlextLogger(__name__)
 
-            # Use u.when() for conditional config creation (DSL pattern)
             default_config = _FastAPIConfig(
                 title="FastAPI",
                 version=c.WebDefaults.VERSION_STRING,
@@ -111,19 +110,27 @@ class FlextWebApp(FlextService[bool]):
                 redoc_url=c.WebApi.REDOC_URL,
                 openapi_url=c.WebApi.OPENAPI_URL,
             )
-            config_final = u.when(
-                condition=config is not None,
-                then_value=config,
-                else_value=default_config,
-            )
+            config_final = config if config is not None else default_config
 
             # Use u.get() for unified extraction with defaults (DSL pattern)
             title = u.get(config_final, "title", default="FastAPI")
-            version = u.get(config_final, "version", default=c.WebDefaults.VERSION_STRING)
-            description = u.get(config_final, "description", default="FlextWeb FastAPI Application")
+            version = u.get(
+                config_final,
+                "version",
+                default=c.WebDefaults.VERSION_STRING,
+            )
+            description = u.get(
+                config_final,
+                "description",
+                default="FlextWeb FastAPI Application",
+            )
             docs_url = u.get(config_final, "docs_url", default=c.WebApi.DOCS_URL)
             redoc_url = u.get(config_final, "redoc_url", default=c.WebApi.REDOC_URL)
-            openapi_url = u.get(config_final, "openapi_url", default=c.WebApi.OPENAPI_URL)
+            openapi_url = u.get(
+                config_final,
+                "openapi_url",
+                default=c.WebApi.OPENAPI_URL,
+            )
 
             # Use try/except for error handling with exception message
             try:
@@ -140,7 +147,7 @@ class FlextWebApp(FlextService[bool]):
                 logger.exception(error_msg)
                 return FlextResult[FastAPI].fail(error_msg)
 
-            logger.info(f"FastAPI application '{title}' v{version} created")
+            logger.info("FastAPI application '%s' v%s created", title, version)
             return FlextResult.ok(app)
 
     @classmethod
@@ -164,21 +171,15 @@ class FlextWebApp(FlextService[bool]):
         failure contains detailed error message
 
         """
-        # Use u.when() for conditional config creation (DSL pattern)
-        fastapi_config = u.when(
-            condition=config is not None,
-            then_value=config,
-            else_value=m.FastAPI.FastAPIAppConfig(),
+        fastapi_config_raw = (
+            config if config is not None else m.FastAPI.FastAPIAppConfig()
         )
+        # Type narrowing: fastapi_config is never None after u.when with non-None else_value
+        fastapi_config = cast("m.FastAPI.FastAPIAppConfig", fastapi_config_raw)
 
-        # Use u.when() for conditional factory_config creation (DSL pattern)
-        factory_config_final = u.when(
-            condition=factory_config is not None,
-            then_value=factory_config,
-            else_value=None,
-        )
+        factory_config_final = factory_config if factory_config is not None else None
         if factory_config_final is None:
-            factory_config = _FastAPIConfig(
+            factory_config_new = _FastAPIConfig(
                 title=fastapi_config.title,
                 version=fastapi_config.version,
                 description=fastapi_config.description,
@@ -186,15 +187,17 @@ class FlextWebApp(FlextService[bool]):
                 redoc_url=fastapi_config.redoc_url,
                 openapi_url=fastapi_config.openapi_url,
             )
-            factory_config_final = factory_config
+            factory_config_final = factory_config_new
 
         return cls.FastAPIFactory.create_instance(factory_config_final).map(
-            lambda app: cls._configure_fastapi_endpoints(app, fastapi_config)
+            lambda app: cls._configure_fastapi_endpoints(app, fastapi_config),
         )
 
     @classmethod
     def _configure_fastapi_endpoints(
-        cls, app: FastAPI, config: m.FastAPI.FastAPIAppConfig
+        cls,
+        app: FastAPI,
+        config: m.FastAPI.FastAPIAppConfig,
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
@@ -234,12 +237,9 @@ class FlextWebApp(FlextService[bool]):
         """
         logger = FlextLogger(__name__)
 
-        # Use u.when() for conditional config creation (DSL pattern)
-        flask_config = u.when(
-            condition=config is not None,
-            then_value=config,
-            else_value=FlextWebConfig(),
-        )
+        flask_config_raw = config if config is not None else FlextWebConfig()
+        # Type narrowing: flask_config is never None after u.when with non-None else_value
+        flask_config = cast("FlextWebConfig", flask_config_raw)
 
         # Create Flask application
         app = Flask(flask_config.app_name)
@@ -308,7 +308,9 @@ class FlextWebApp(FlextService[bool]):
 
     @classmethod
     def configure_middleware(
-        cls, app: FastAPI, config: FlextWebConfig
+        cls,
+        app: FastAPI,
+        config: FlextWebConfig,
     ) -> FlextResult[bool]:
         """Configure FastAPI middleware (extensible for future needs).
 
@@ -328,7 +330,9 @@ class FlextWebApp(FlextService[bool]):
 
     @classmethod
     def configure_routes(
-        cls, app: FastAPI, config: FlextWebConfig
+        cls,
+        app: FastAPI,
+        config: FlextWebConfig,
     ) -> FlextResult[bool]:
         """Configure FastAPI routes (extensible for future needs).
 
@@ -363,8 +367,7 @@ class FlextWebApp(FlextService[bool]):
         _ = app  # Parameter reserved for future implementation
         return FlextResult[bool].ok(True)
 
-    @staticmethod
-    def validate_business_rules() -> FlextResult[bool]:
+    def validate_business_rules(self) -> FlextResult[bool]:
         """Validate business rules for web app service (FlextService requirement).
 
         Returns:

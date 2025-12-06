@@ -153,7 +153,10 @@ class TestFlextWebTypes:
         """Test model creation functionality."""
         # Test that models can be created
         app = FlextWebTypes.ApplicationEntity(
-            id="test-id", name="test-app", host="localhost", port=8080
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=8080,
         )
 
         assert app.id == "test-id"
@@ -197,7 +200,8 @@ class TestFlextWebTypes:
             return {"processed": True, "method": request.method, "url": request.url}
 
         request = FlextWebTypes.HttpRequest(
-            url="http://localhost:8080/api/test", method="GET"
+            url="http://localhost:8080/api/test",
+            method="GET",
         )
 
         result = process_request_data(request)

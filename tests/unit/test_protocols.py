@@ -355,7 +355,10 @@ class TestFlextWebProtocols:
         # Create a real implementation that satisfies the protocol
         class RealAppManager:
             def create_app(
-                self, name: str, port: int, host: str
+                self,
+                name: str,
+                port: int,
+                host: str,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({
                     "name": name,
@@ -380,12 +383,16 @@ class TestFlextWebProtocols:
 
             # Required by p.Service
             def execute(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
@@ -426,7 +433,8 @@ class TestFlextWebProtocols:
                 return result
 
             def create_json_response(
-                self, data: dict[str, object]
+                self,
+                data: dict[str, object],
             ) -> dict[str, object]:
                 response: dict[str, object] = {
                     FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
@@ -439,18 +447,23 @@ class TestFlextWebProtocols:
                 return response
 
             def get_request_data(
-                self, _request: dict[str, object]
+                self,
+                _request: dict[str, object],
             ) -> dict[str, object]:
                 return {}
 
             # Required by p.Service
             def execute(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
@@ -465,7 +478,8 @@ class TestFlextWebProtocols:
 
         # Test format_success with nested dict
         data_with_nested = cast(
-            "dict[str, object]", {"key1": "value1", "nested": {"key2": "value2"}}
+            "dict[str, object]",
+            {"key1": "value1", "nested": {"key2": "value2"}},
         )
         result = formatter.format_success(data_with_nested)
         assert result["status"] == FlextWebConstants.WebResponse.STATUS_SUCCESS
@@ -491,7 +505,8 @@ class TestFlextWebProtocols:
 
         class RealFrameworkInterface:
             def create_json_response(
-                self, data: dict[str, object]
+                self,
+                data: dict[str, object],
             ) -> dict[str, object]:
                 response: dict[str, object] = {
                     FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
@@ -504,7 +519,8 @@ class TestFlextWebProtocols:
                 return response
 
             def get_request_data(
-                self, _request: dict[str, object]
+                self,
+                _request: dict[str, object],
             ) -> dict[str, object]:
                 return {}
 
@@ -513,12 +529,16 @@ class TestFlextWebProtocols:
 
             # Required by p.Service
             def execute(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
@@ -560,12 +580,16 @@ class TestFlextWebProtocols:
 
             # Required by p.Service
             def execute(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
@@ -590,7 +614,8 @@ class TestFlextWebProtocols:
 
         class RealWebRepository:
             def find_by_criteria(
-                self, criteria: dict[str, object]
+                self,
+                criteria: dict[str, object],
             ) -> FlextResult[list[dict[str, object]]]:
                 return FlextResult[list[dict[str, object]]].ok([])
 
@@ -609,12 +634,16 @@ class TestFlextWebProtocols:
 
             # Required by p.Service
             def execute(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
@@ -634,7 +663,9 @@ class TestFlextWebProtocols:
 
         class RealTemplateRenderer:
             def render_template(
-                self, template_name: str, _context: dict[str, object]
+                self,
+                template_name: str,
+                _context: dict[str, object],
             ) -> FlextResult[str]:
                 return FlextResult[str].ok("")
 
@@ -643,12 +674,16 @@ class TestFlextWebProtocols:
 
             # Required by p.Service
             def execute(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
@@ -673,7 +708,8 @@ class TestFlextWebProtocols:
 
         class RealTemplateEngine:
             def load_template_config(
-                self, config: dict[str, object]
+                self,
+                config: dict[str, object],
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
@@ -681,12 +717,15 @@ class TestFlextWebProtocols:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_template_config(
-                self, config: dict[str, object]
+                self,
+                config: dict[str, object],
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
             def render(
-                self, template: str, _context: dict[str, object]
+                self,
+                template: str,
+                _context: dict[str, object],
             ) -> FlextResult[str]:
                 return FlextResult[str].ok("")
 
@@ -703,12 +742,16 @@ class TestFlextWebProtocols:
 
             # Required by p.Service
             def execute(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
@@ -743,7 +786,9 @@ class TestFlextWebProtocols:
 
         class RealWebMonitoring:
             def record_web_request(
-                self, request: dict[str, object], response_time: float
+                self,
+                request: dict[str, object],
+                response_time: float,
             ) -> None:
                 pass
 
@@ -758,12 +803,16 @@ class TestFlextWebProtocols:
 
             # Required by p.Service
             def execute(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
@@ -815,7 +864,8 @@ class TestFlextWebProtocols:
             """Concrete implementation using protocol placeholder logic."""
 
             def format_success(
-                self, data: FlextWebTypes.Core.ResponseDict
+                self,
+                data: FlextWebTypes.Core.ResponseDict,
             ) -> FlextWebTypes.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 292-302)
                 response: FlextWebTypes.Core.ResponseDict = {
@@ -835,7 +885,8 @@ class TestFlextWebProtocols:
                 return result
 
             def create_json_response(
-                self, data: FlextWebTypes.Core.ResponseDict
+                self,
+                data: FlextWebTypes.Core.ResponseDict,
             ) -> FlextWebTypes.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 335-345)
                 response: FlextWebTypes.Core.ResponseDict = {
@@ -847,7 +898,8 @@ class TestFlextWebProtocols:
                 return response
 
             def get_request_data(
-                self, _request: FlextWebTypes.Core.RequestDict
+                self,
+                _request: FlextWebTypes.Core.RequestDict,
             ) -> FlextWebTypes.Core.RequestDict:
                 # Execute placeholder logic from protocol (lines 361-362)
                 empty_result: FlextWebTypes.Core.RequestDict = {}
@@ -855,12 +907,16 @@ class TestFlextWebProtocols:
 
             # Required by p.Service
             def execute(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[dict[str, object]]:
                 return FlextResult[dict[str, object]].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self,
+                *args: object,
+                **kwargs: object,
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 

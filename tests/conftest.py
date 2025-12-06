@@ -23,7 +23,7 @@ import pytest
 from flask import Flask
 from flext_core import FlextResult
 from flext_tests import (
-    FlextTestDocker,
+    FlextTestsDocker,
     FlextTestsFactories,
     FlextTestsMatchers,
     FlextTestsUtilities,
@@ -40,7 +40,8 @@ from flext_web.typings import (
 
 
 def assert_success(
-    result: FlextResult[object], message: str = "Operation should succeed"
+    result: FlextResult[object],
+    message: str = "Operation should succeed",
 ) -> None:
     """Assert that a FlextResult is successful using flext_tests matchers."""
     matchers = FlextTestsMatchers()
@@ -48,7 +49,8 @@ def assert_success(
 
 
 def assert_failure(
-    result: FlextResult[object], message: str = "Operation should fail"
+    result: FlextResult[object],
+    message: str = "Operation should fail",
 ) -> None:
     """Assert that a FlextResult is a failure using flext_tests matchers."""
     matchers = FlextTestsMatchers()
@@ -56,7 +58,9 @@ def assert_failure(
 
 
 def assert_result(
-    result: FlextResult[object], *, expected_success: bool = True
+    result: FlextResult[object],
+    *,
+    expected_success: bool = True,
 ) -> None:
     """Assert FlextResult state with appropriate message using flext_tests."""
     if expected_success:
@@ -89,13 +93,13 @@ def create_entry(entry_type: str, **kwargs: object) -> FlextResult[object]:
     if entry_type == "http_response":
         return FlextWebTypes.create_http_response(**kwargs)
     if entry_type == "web_request":
-        config: _WebRequestConfig = kwargs  # type: ignore[assignment]
+        config: _WebRequestConfig = kwargs
         return FlextWebTypes.create_web_request(config)
     if entry_type == "web_response":
-        config: _WebResponseConfig = kwargs  # type: ignore[assignment]
+        config: _WebResponseConfig = kwargs
         return FlextWebTypes.create_web_response(config)
     if entry_type == "application":
-        config: _ApplicationConfig = kwargs  # type: ignore[assignment]
+        config: _ApplicationConfig = kwargs
         return FlextWebTypes.create_application(config)
     msg = f"Unsupported entry type: {entry_type}"
     raise ValueError(msg)
@@ -131,11 +135,15 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, object]:
                 service_id="test-entity",
                 name="Test Entity",
                 **kwargs,
-            )
+            ),
         }
     if data_type == "config_data":
         return FlextTestsFactories.create_config(
-            service_type="web", host="localhost", port=8080, debug=True, **kwargs
+            service_type="web",
+            host="localhost",
+            port=8080,
+            debug=True,
+            **kwargs,
         )
     if data_type == "request_data":
         return FlextTestsFactories.create_config(
@@ -181,7 +189,9 @@ def create_test_app(**kwargs: object) -> FlextWebModels.Application.Entity:
 
 
 def create_test_result(
-    *, success: bool = True, **kwargs: object
+    *,
+    success: bool = True,
+    **kwargs: object,
 ) -> FlextResult[object]:
     """Create a test FlextResult using flext_tests utilities.
 
@@ -221,7 +231,7 @@ def run_parameterized_test(
 
     """
     for i, (test_case, expected_success) in enumerate(
-        zip(test_cases, expected_results, strict=True)
+        zip(test_cases, expected_results, strict=True),
     ):
         try:
             result = (
@@ -381,7 +391,7 @@ def running_service(
     # Wait for the service to be ready
     if not wait_for_port(test_config.port, timeout=5.0):
         pytest.fail(
-            f"Service failed to start on port {test_config.port} within 5 seconds"
+            f"Service failed to start on port {test_config.port} within 5 seconds",
         )
 
     yield service
@@ -425,16 +435,16 @@ def production_config() -> dict[str, str]:
 
 
 @pytest.fixture(scope="session")
-def docker_manager() -> Generator[FlextTestDocker]:
-    """Provide FlextTestDocker instance for integration tests."""
+def docker_manager() -> Generator[FlextTestsDocker]:
+    """Provide FlextTestsDocker instance for integration tests."""
     try:
-        manager = FlextTestDocker(workspace_root=Path().absolute())
+        manager = FlextTestsDocker(workspace_root=Path().absolute())
         yield manager
     except ImportError:
-        # FlextTestDocker may not be available in all environments
-        pytest.skip("FlextTestDocker not available")
+        # FlextTestsDocker may not be available in all environments
+        pytest.skip("FlextTestsDocker not available")
     except Exception as e:
-        pytest.skip(f"FlextTestDocker initialization failed: {e}")
+        pytest.skip(f"FlextTestsDocker initialization failed: {e}")
 
 
 # Pytest configuration

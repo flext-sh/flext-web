@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 import requests
 from flext_core import FlextLogger
-from flext_tests import FlextTestDocker
+from flext_tests import FlextTestsDocker
 
 # Configure logging
 logger = FlextLogger(__name__)
@@ -29,20 +29,22 @@ class ExamplesFullFunctionalityTest:
         self.service_url = (
             "http://localhost:8093"  # Port específica para evitar conflitos
         )
-        self.docker_manager = FlextTestDocker(workspace_root=Path().absolute())
+        self.docker_manager = FlextTestsDocker(workspace_root=Path().absolute())
 
     def start_service_in_docker(self) -> bool | None:
-        """Inicia o serviço em Docker para teste completo usando FlextTestDocker."""
-        # Build container using FlextTestDocker
+        """Inicia o serviço em Docker para teste completo usando FlextTestsDocker."""
+        # Build container using FlextTestsDocker
         build_result = self.docker_manager.build_image(
-            path=".", tag="flext-web-full-test", dockerfile="Dockerfile"
+            path=".",
+            tag="flext-web-full-test",
+            dockerfile="Dockerfile",
         )
 
         if build_result.is_failure:
             logger.error(f"Docker build failed: {build_result.error}")
             return False
 
-        # Start container using FlextTestDocker
+        # Start container using FlextTestsDocker
         environment = {
             "FLEXT_WEB_SECRET_KEY": "test-full-functionality-key-32-chars!",
             "FLEXT_WEB_HOST": "0.0.0.0",
@@ -82,19 +84,20 @@ class ExamplesFullFunctionalityTest:
         return False
 
     def stop_docker_service(self) -> None:
-        """Para o serviço Docker usando FlextTestDocker."""
+        """Para o serviço Docker usando FlextTestsDocker."""
         if self.container_id:
-            # Stop container using FlextTestDocker
+            # Stop container using FlextTestsDocker
             stop_result = self.docker_manager.stop_container(self.container_id)
             if stop_result.is_failure:
                 logger.warning(f"Container stop failed: {stop_result.error}")
                 # Try to force remove if stop failed
                 remove_result = self.docker_manager.remove_container(
-                    self.container_id, force=True
+                    self.container_id,
+                    force=True,
                 )
                 if remove_result.is_failure:
                     logger.error(
-                        f"Container force removal failed: {remove_result.error}"
+                        f"Container force removal failed: {remove_result.error}",
                     )
 
     def test_basic_service_full_functionality(self) -> bool | None:

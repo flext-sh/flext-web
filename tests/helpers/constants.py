@@ -14,7 +14,7 @@ from typing import Final, TypeAlias
 from flext_web.constants import FlextWebConstants
 
 
-class TestConstants:
+class TestsConstants(FlextWebConstants):
     """Centralized test constants following flext-core nested class pattern."""
 
     class Paths:
@@ -81,4 +81,7 @@ class TestConstants:
         SameSiteLiteral: TypeAlias = FlextWebConstants.Literals.SameSiteLiteral
 
 
-__all__ = ["TestConstants"]
+# Standardized short name for use in tests (same pattern as flext-core)
+c = TestsConstants
+
+__all__ = ["TestsConstants", "c"]

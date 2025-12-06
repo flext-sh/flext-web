@@ -215,7 +215,9 @@ class FlextWebProtocols(FlextProtocols):
 
         @staticmethod
         def create_app(
-            name: str, port: int, host: str
+            name: str,
+            port: int,
+            host: str,
         ) -> FlextResult[t.Core.ResponseDict]:
             """Create a new web application.
 
@@ -274,7 +276,8 @@ class FlextWebProtocols(FlextProtocols):
             return FlextResult.fail("list_apps method not implemented")
 
     class WebResponseFormatterProtocol(
-        FlextProtocols.Service[t.Core.ResponseDict], Protocol
+        FlextProtocols.Service[t.Core.ResponseDict],
+        Protocol,
     ):
         """Protocol for web response formatting.
 
@@ -366,7 +369,8 @@ class FlextWebProtocols(FlextProtocols):
             return empty_result
 
     class WebFrameworkInterfaceProtocol(
-        FlextProtocols.Service[t.Core.ResponseDict], Protocol
+        FlextProtocols.Service[t.Core.ResponseDict],
+        Protocol,
     ):
         """Protocol for web framework integration.
 
@@ -489,7 +493,8 @@ class FlextWebProtocols(FlextProtocols):
             return FlextResult[bool].ok(True)  # pragma: no cover
 
     class WebRepositoryProtocol(
-        FlextProtocols.Repository[t.Core.ResponseDict], Protocol
+        FlextProtocols.Repository[t.Core.ResponseDict],
+        Protocol,
     ):
         """Base web repository protocol for data access.
 
@@ -627,7 +632,8 @@ class FlextWebProtocols(FlextProtocols):
     # =========================================================================
 
     class WebTemplateRendererProtocol(
-        FlextProtocols.Service[t.Core.ResponseDict], Protocol
+        FlextProtocols.Service[t.Core.ResponseDict],
+        Protocol,
     ):
         """Protocol for web template rendering.
 
@@ -639,7 +645,8 @@ class FlextWebProtocols(FlextProtocols):
 
         @staticmethod
         def render_template(
-            template_name: str, context: t.Core.RequestDict
+            template_name: str,
+            context: t.Core.RequestDict,
         ) -> FlextResult[str]:
             """Render template with context data.
 
@@ -671,7 +678,8 @@ class FlextWebProtocols(FlextProtocols):
             return FlextResult[str].ok("<html>Dashboard</html>")
 
     class WebTemplateEngineProtocol(
-        FlextProtocols.Service[t.Core.ResponseDict], Protocol
+        FlextProtocols.Service[t.Core.ResponseDict],
+        Protocol,
     ):
         """Protocol for web template engine operations.
 
@@ -776,7 +784,9 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         def record_web_request(
-            self, request: t.Core.RequestDict, response_time: float
+            self,
+            request: t.Core.RequestDict,
+            response_time: float,
         ) -> None:
             """Record web request metrics.
 
@@ -832,7 +842,9 @@ class FlextWebProtocols(FlextProtocols):
         """Protocol for response data structures."""
 
         def get(
-            self, key: str, default: str | None = None
+            self,
+            key: str,
+            default: str | None = None,
         ) -> str | int | bool | list[str] | None:
             """Get value by key with optional default."""
             ...
@@ -842,21 +854,24 @@ class FlextWebProtocols(FlextProtocols):
 class _WebAppManagerBase:
     """Base implementation of WebAppManagerProtocol for testing."""
 
-    def create_app(  # noqa: PLR6301
-        self, name: str, port: int, host: str
+    def create_app(
+        self,
+        name: str,
+        port: int,
+        host: str,
     ) -> FlextResult[t.Core.ResponseDict]:
         """Create a new web application."""
         return FlextWebProtocols.WebAppManagerProtocol.create_app(name, port, host)
 
-    def start_app(self, app_id: str) -> FlextResult[t.Core.ResponseDict]:  # noqa: PLR6301
+    def start_app(self, app_id: str) -> FlextResult[t.Core.ResponseDict]:
         """Start a web application."""
         return FlextWebProtocols.WebAppManagerProtocol.start_app(app_id)
 
-    def stop_app(self, app_id: str) -> FlextResult[t.Core.ResponseDict]:  # noqa: PLR6301
+    def stop_app(self, app_id: str) -> FlextResult[t.Core.ResponseDict]:
         """Stop a running web application."""
         return FlextWebProtocols.WebAppManagerProtocol.stop_app(app_id)
 
-    def list_apps(self) -> FlextResult[list[t.Core.ResponseDict]]:  # noqa: PLR6301
+    def list_apps(self) -> FlextResult[list[t.Core.ResponseDict]]:
         """List all web applications."""
         return FlextWebProtocols.WebAppManagerProtocol.list_apps()
 
@@ -864,25 +879,19 @@ class _WebAppManagerBase:
 class _WebResponseFormatterBase:
     """Base implementation of WebResponseFormatterProtocol for testing."""
 
-    def format_success(  # noqa: PLR6301
-        self, data: t.Core.ResponseDict
-    ) -> t.Core.ResponseDict:
+    def format_success(self, data: t.Core.ResponseDict) -> t.Core.ResponseDict:
         """Format successful response data."""
         return FlextWebProtocols.WebResponseFormatterProtocol.format_success(data)
 
-    def format_error(self, error: Exception) -> t.Core.ResponseDict:  # noqa: PLR6301
+    def format_error(self, error: Exception) -> t.Core.ResponseDict:
         """Format error response data."""
         return FlextWebProtocols.WebResponseFormatterProtocol.format_error(error)
 
-    def create_json_response(  # noqa: PLR6301
-        self, data: t.Core.ResponseDict
-    ) -> t.Core.ResponseDict:
+    def create_json_response(self, data: t.Core.ResponseDict) -> t.Core.ResponseDict:
         """Create a JSON response."""
         return FlextWebProtocols.WebResponseFormatterProtocol.create_json_response(data)
 
-    def get_request_data(  # noqa: PLR6301
-        self, _request: t.Core.RequestDict
-    ) -> t.Core.RequestDict:
+    def get_request_data(self, _request: t.Core.RequestDict) -> t.Core.RequestDict:
         """Extract data from web request."""
         return FlextWebProtocols.WebResponseFormatterProtocol.get_request_data(_request)
 
@@ -890,23 +899,19 @@ class _WebResponseFormatterBase:
 class _WebFrameworkInterfaceBase:
     """Base implementation of WebFrameworkInterfaceProtocol for testing."""
 
-    def create_json_response(  # noqa: PLR6301
-        self, data: t.Core.ResponseDict
-    ) -> t.Core.ResponseDict:
+    def create_json_response(self, data: t.Core.ResponseDict) -> t.Core.ResponseDict:
         """Create a JSON response."""
         return FlextWebProtocols.WebFrameworkInterfaceProtocol.create_json_response(
-            data
+            data,
         )
 
-    def get_request_data(  # noqa: PLR6301
-        self, _request: t.Core.RequestDict
-    ) -> t.Core.RequestDict:
+    def get_request_data(self, _request: t.Core.RequestDict) -> t.Core.RequestDict:
         """Extract data from web request."""
         return FlextWebProtocols.WebFrameworkInterfaceProtocol.get_request_data(
-            _request
+            _request,
         )
 
-    def is_json_request(self, _request: t.Core.RequestDict) -> bool:  # noqa: PLR6301
+    def is_json_request(self, _request: t.Core.RequestDict) -> bool:
         """Check if request contains JSON data."""
         return FlextWebProtocols.WebFrameworkInterfaceProtocol.is_json_request(_request)
 
@@ -914,19 +919,19 @@ class _WebFrameworkInterfaceBase:
 class _WebServiceBase:
     """Base implementation of WebServiceProtocol for testing."""
 
-    def initialize_routes(self) -> FlextResult[bool]:  # noqa: PLR6301
+    def initialize_routes(self) -> FlextResult[bool]:
         """Initialize web service routes."""
         return FlextWebProtocols.WebServiceProtocol.initialize_routes()
 
-    def configure_middleware(self) -> FlextResult[bool]:  # noqa: PLR6301
+    def configure_middleware(self) -> FlextResult[bool]:
         """Configure web service middleware."""
         return FlextWebProtocols.WebServiceProtocol.configure_middleware()
 
-    def start_service(self) -> FlextResult[bool]:  # noqa: PLR6301
+    def start_service(self) -> FlextResult[bool]:
         """Start the web service."""
         return FlextWebProtocols.WebServiceProtocol.start_service()
 
-    def stop_service(self) -> FlextResult[bool]:  # noqa: PLR6301
+    def stop_service(self) -> FlextResult[bool]:
         """Stop the web service."""
         return FlextWebProtocols.WebServiceProtocol.stop_service()
 
@@ -934,8 +939,9 @@ class _WebServiceBase:
 class _WebRepositoryBase:
     """Base implementation of WebRepositoryProtocol for testing."""
 
-    def find_by_criteria(  # noqa: PLR6301
-        self, criteria: t.Core.RequestDict
+    def find_by_criteria(
+        self,
+        criteria: t.Core.RequestDict,
     ) -> FlextResult[list[t.Core.ResponseDict]]:
         """Find entities by criteria."""
         return FlextWebProtocols.WebRepositoryProtocol.find_by_criteria(criteria)
@@ -944,8 +950,9 @@ class _WebRepositoryBase:
 class _WebHandlerBase:
     """Base implementation of WebHandlerProtocol for testing."""
 
-    def handle_request(  # noqa: PLR6301
-        self, request: t.Core.RequestDict
+    def handle_request(
+        self,
+        request: t.Core.RequestDict,
     ) -> FlextResult[t.Core.ResponseDict]:
         """Handle web request and return response."""
         return FlextWebProtocols.WebHandlerProtocol.handle_request(request)
@@ -954,7 +961,7 @@ class _WebHandlerBase:
 class _WebConnectionBase:
     """Base implementation of WebConnectionProtocol for testing."""
 
-    def get_endpoint_url(self) -> str:  # noqa: PLR6301
+    def get_endpoint_url(self) -> str:
         """Get the web service endpoint URL."""
         return FlextWebProtocols.WebConnectionProtocol.get_endpoint_url()
 
@@ -962,17 +969,18 @@ class _WebConnectionBase:
 class _WebTemplateRendererBase:
     """Base implementation of WebTemplateRendererProtocol for testing."""
 
-    def render_template(  # noqa: PLR6301
-        self, template_name: str, context: t.Core.RequestDict
+    def render_template(
+        self,
+        template_name: str,
+        context: t.Core.RequestDict,
     ) -> FlextResult[str]:
         """Render template with context data."""
         return FlextWebProtocols.WebTemplateRendererProtocol.render_template(
-            template_name, context
+            template_name,
+            context,
         )
 
-    def render_dashboard(  # noqa: PLR6301
-        self, data: t.Core.ResponseDict
-    ) -> FlextResult[str]:
+    def render_dashboard(self, data: t.Core.ResponseDict) -> FlextResult[str]:
         """Render dashboard template with data."""
         return FlextWebProtocols.WebTemplateRendererProtocol.render_dashboard(data)
 
@@ -980,36 +988,30 @@ class _WebTemplateRendererBase:
 class _WebTemplateEngineBase:
     """Base implementation of WebTemplateEngineProtocol for testing."""
 
-    def load_template_config(  # noqa: PLR6301
-        self, config: t.Core.RequestDict
-    ) -> FlextResult[bool]:
+    def load_template_config(self, config: t.Core.RequestDict) -> FlextResult[bool]:
         """Load template engine configuration."""
         return FlextWebProtocols.WebTemplateEngineProtocol.load_template_config(config)
 
-    def get_template_config(self) -> FlextResult[t.Core.ResponseDict]:  # noqa: PLR6301
+    def get_template_config(self) -> FlextResult[t.Core.ResponseDict]:
         """Get current template engine configuration."""
         return FlextWebProtocols.WebTemplateEngineProtocol.get_template_config()
 
-    def validate_template_config(  # noqa: PLR6301
-        self, config: t.Core.RequestDict
-    ) -> FlextResult[bool]:
+    def validate_template_config(self, config: t.Core.RequestDict) -> FlextResult[bool]:
         """Validate template engine configuration."""
         return FlextWebProtocols.WebTemplateEngineProtocol.validate_template_config(
-            config
+            config,
         )
 
-    def render(  # noqa: PLR6301
-        self, template: str, context: t.Core.RequestDict
-    ) -> FlextResult[str]:
+    def render(self, template: str, context: t.Core.RequestDict) -> FlextResult[str]:
         """Render template string with context."""
         return FlextWebProtocols.WebTemplateEngineProtocol.render(template, context)
 
-    def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:  # noqa: PLR6301
+    def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
         """Add template filter function."""
         # Protocol implementation placeholder - parameters are part of interface contract
         _ = name, filter_func
 
-    def add_global(  # noqa: PLR6301
+    def add_global(
         self,
         name: str,
         *,
@@ -1023,18 +1025,20 @@ class _WebTemplateEngineBase:
 class _WebMonitoringBase:
     """Base implementation of WebMonitoringProtocol for testing."""
 
-    def get_web_health_status(self) -> t.Core.ResponseDict:  # noqa: PLR6301
+    def get_web_health_status(self) -> t.Core.ResponseDict:
         """Get web application health status."""
         return FlextWebProtocols.WebMonitoringProtocol.get_web_health_status()
 
-    def record_web_request(  # noqa: PLR6301
-        self, request: t.Core.RequestDict, response_time: float
+    def record_web_request(
+        self,
+        request: t.Core.RequestDict,
+        response_time: float,
     ) -> None:
         """Record web request metrics."""
         # Protocol implementation placeholder
         _ = request, response_time
 
-    def get_web_metrics(self) -> t.Core.ResponseDict:  # noqa: PLR6301
+    def get_web_metrics(self) -> t.Core.ResponseDict:
         """Get web application metrics."""
         return FlextWebProtocols.WebMonitoringProtocol.get_web_metrics()
 

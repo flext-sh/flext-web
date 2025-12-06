@@ -36,7 +36,8 @@ class TestFlextWebApi:
     def test_create_fastapi_app_with_config(self) -> None:
         """Test FastAPI app creation with configuration."""
         config = FlextWebModels.FastAPI.FastAPIAppConfig(
-            title="Test API", version="1.0.0"
+            title="Test API",
+            version="1.0.0",
         )
 
         result = FlextWebApi.create_fastapi_app(config)
@@ -115,7 +116,9 @@ class TestFlextWebApi:
         """Test HTTP configuration creation with edge cases."""
         # Test with maximum port number
         result = FlextWebApi.create_http_config(
-            host="localhost", port=65535, debug=True
+            host="localhost",
+            port=65535,
+            debug=True,
         )
         assert result.is_success
 
@@ -136,7 +139,9 @@ class TestFlextWebApi:
 
         # Test with invalid port (too high)
         result = FlextWebApi.create_http_config(
-            host="localhost", port=65536, debug=True
+            host="localhost",
+            port=65536,
+            debug=True,
         )
         assert result.is_failure
 
@@ -148,7 +153,9 @@ class TestFlextWebApi:
         """Test that HTTP config results follow FlextResult patterns."""
         # Test successful result structure
         success_result = FlextWebApi.create_http_config(
-            host="localhost", port=8080, debug=True
+            host="localhost",
+            port=8080,
+            debug=True,
         )
         assert success_result.is_success
         assert success_result.value is not None
@@ -190,7 +197,11 @@ class TestFlextWebApi:
         ],
     )
     def test_http_config_parametrized(
-        self, host: str, port: int, debug: bool, should_succeed: bool
+        self,
+        host: str,
+        port: int,
+        debug: bool,
+        should_succeed: bool,
     ) -> None:
         """Test HTTP configuration creation with parametrized edge cases."""
         result = FlextWebApi.create_http_config(host=host, port=port, debug=debug)

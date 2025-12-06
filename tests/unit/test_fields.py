@@ -95,7 +95,8 @@ class TestFlextWebFields:
         # Test that Pydantic models have proper field constraints
         # Create a test model instance to check constraints
         test_model = FlextWebModels.Web.Request(
-            url="http://localhost:8080", method="GET"
+            url="http://localhost:8080",
+            method="GET",
         )
         assert test_model.url == "http://localhost:8080"
         assert test_model.method == "GET"
@@ -115,7 +116,8 @@ class TestFlextWebFields:
         """Test HTTP status field with additional kwargs."""
         # Test that Pydantic models handle status codes properly
         response_model = FlextWebModels.Web.Response(
-            status_code=200, request_id="test-123"
+            status_code=200,
+            request_id="test-123",
         )
         assert response_model.status_code == 200
         assert response_model.is_success is True
@@ -140,7 +142,8 @@ class TestFlextWebFields:
 
         for status_code in status_codes:
             response_model = FlextWebModels.Web.Response(
-                status_code=status_code, request_id="test-123"
+                status_code=status_code,
+                request_id="test-123",
             )
             assert response_model.status_code == status_code
             assert isinstance(response_model, FlextWebModels.Web.Response)

@@ -38,7 +38,7 @@ class TestFlextWebVersion:
                 author_email="flext@example.com",
                 license_type="MIT",
                 url="https://github.com/flext/flext-web",
-            )
+            ),
         )
 
         assert version.version == "1.0.0"

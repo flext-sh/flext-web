@@ -490,7 +490,7 @@ class TestFlextWebService:
         """Test configuration creation."""
         service = FlextWebServices()
         config = FlextWebConfig(
-            secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY
+            secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY,
         )
         create_result = service.create_configuration(config)
         assert create_result.is_success
@@ -593,7 +593,7 @@ class TestFlextWebService:
     def test_create_service_with_config(self) -> None:
         """Test create_service with config."""
         config = FlextWebConfig(
-            secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY
+            secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY,
         )
         result = FlextWebServices.create_service(config)
         assert result.is_success

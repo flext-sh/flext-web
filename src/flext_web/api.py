@@ -68,7 +68,8 @@ class FlextWebApi:
 
     @classmethod
     def create_fastapi_app(
-        cls, config: m.FastAPI.FastAPIAppConfig | None = None
+        cls,
+        config: m.FastAPI.FastAPIAppConfig | None = None,
     ) -> FlextResult[FastAPI]:
         """Create FastAPI web application with complete validation.
 
@@ -174,7 +175,11 @@ class FlextWebApi:
             dict(provided_values) if isinstance(provided_values, dict) else {}
         )
 
-        logger.debug(f"Creating HTTP config with data: {config_kwargs}")
+        # Map 'debug' to 'debug_mode' for Pydantic compatibility
+        if "debug" in config_kwargs:
+            config_kwargs["debug_mode"] = config_kwargs.pop("debug")
+
+        logger.debug("Creating HTTP config with data: %s", config_kwargs)
 
         # Create and validate configuration - Pydantic will validate types at runtime
         # Use regular constructor - AutoConfig handles defaults automatically
@@ -184,12 +189,14 @@ class FlextWebApi:
             # Ensure secret_key is provided for AutoConfig compatibility
             if "secret_key" not in config_kwargs:
                 config_kwargs["secret_key"] = c.WebDefaults.SECRET_KEY
+            # Pydantic will validate types at runtime - use type: ignore for pyright
+            # config_kwargs contains validated values from filter_dict
             config = FlextWebConfig(**config_kwargs)
         except ValidationError as e:
             # Use u to extract error message - simplifies code
             errors = e.errors()
             error_msg = errors[0]["msg"] if errors else str(e)
-            logger.exception(f"HTTP config creation failed: {error_msg}")
+            logger.exception("HTTP config creation failed: %s", error_msg)
             return FlextResult.fail(f"Configuration validation failed: {error_msg}")
 
         logger.info(f"HTTP config created successfully: {config.host}:{config.port}")

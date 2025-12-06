@@ -32,7 +32,7 @@ m = FlextWebModels
 t = FlextWebTypes
 
 
-class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
+class FlextWebServices(FlextService[bool]):
     """HTTP service orchestration layer.
 
     Delegates all operations to focused nested services.
@@ -118,7 +118,8 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
             self._storage: dict[str, m.Service.EntityData] = {}
 
         def create(
-            self, data: m.Service.EntityData
+            self,
+            data: m.Service.EntityData,
         ) -> FlextResult[m.Service.EntityData]:
             """Create entity with validation.
 
@@ -177,7 +178,7 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
 
             """
             ready_response = m.Service.EntityData(
-                data={"message": "Entity service ready"}
+                data={"message": "Entity service ready"},
             )
             return FlextResult.ok(ready_response)
 
@@ -221,12 +222,7 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
                    If None, uses FlextWebConfig() with Constants defaults.
 
         """
-        # Use u.when() for conditional config creation (DSL pattern)
-        web_config = u.when(
-            condition=config is not None,
-            then_value=config,
-            else_value=FlextWebConfig(),
-        )
+        web_config = config if config is not None else FlextWebConfig()
         # Pass config to super().__init__() - FlextService will use _get_service_config_type()
         # but we override _config after initialization to use the passed config
         super().__init__()
@@ -245,7 +241,8 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         self._applications: dict[str, m.Service.AppResponse] = {}
 
     def authenticate(
-        self, credentials: m.Service.Credentials
+        self,
+        credentials: m.Service.Credentials,
     ) -> FlextResult[m.Service.AuthResponse]:
         """Authenticate user with explicit validation - no fallbacks.
 
@@ -260,7 +257,8 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         return self.Auth.authenticate(credentials)
 
     def register_user(
-        self, user_data: m.Service.UserData
+        self,
+        user_data: m.Service.UserData,
     ) -> FlextResult[m.Service.UserResponse]:
         """Register user with explicit validation - no fallbacks.
 
@@ -281,17 +279,18 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         return FlextResult.ok(self._entity_service)
 
     def create_entity(
-        self, data: m.Service.EntityData
+        self,
+        data: m.Service.EntityData,
     ) -> FlextResult[m.Service.EntityData]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
-            lambda service: service.create(data)
+            lambda service: service.create(data),
         )
 
     def get_entity(self, entity_id: str) -> FlextResult[m.Service.EntityData]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
-            lambda service: service.get(entity_id)
+            lambda service: service.get(entity_id),
         )
 
     def list_entities(
@@ -299,7 +298,7 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
     ) -> FlextResult[list[m.Service.EntityData]]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
-            lambda service: service.list_all()
+            lambda service: service.list_all(),
         )
 
     def health_status(
@@ -347,7 +346,11 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         return FlextResult[bool].ok(True)
 
     def start_service(
-        self, _host: str = "localhost", _port: int = 8080, *, _debug: bool = False
+        self,
+        _host: str = "localhost",
+        _port: int = 8080,
+        *,
+        _debug: bool = False,
     ) -> FlextResult[bool]:
         """Start HTTP service."""
         if self._service_running:
@@ -395,7 +398,8 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         return FlextResult.ok(apps_list)
 
     def create_app(
-        self, app_data: m.Service.AppData
+        self,
+        app_data: m.Service.AppData,
     ) -> FlextResult[m.Service.AppResponse]:
         """Create application with explicit validation - no fallbacks.
 
@@ -423,17 +427,17 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         """Get application by ID - fail fast if not found."""
         if not isinstance(app_id, str):
             return FlextResult[m.Service.AppResponse].fail(
-                "Application ID must be a string"
+                "Application ID must be a string",
             )
         # Use u.ensure_str to simplify validation
         if not u.ensure_str(app_id):
             return FlextResult[m.Service.AppResponse].fail(
-                "Application ID cannot be empty"
+                "Application ID cannot be empty",
             )
 
         if app_id not in self._applications:
             return FlextResult[m.Service.AppResponse].fail(
-                f"Application not found: {app_id}"
+                f"Application not found: {app_id}",
             )
 
         return FlextResult[m.Service.AppResponse].ok(self._applications[app_id])
@@ -442,24 +446,24 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         """Start application - fail fast if not found."""
         if not isinstance(app_id, str):
             return FlextResult[m.Service.AppResponse].fail(
-                "Application ID must be a string"
+                "Application ID must be a string",
             )
         # Use u.ensure_str to simplify validation
         if not u.ensure_str(app_id):
             return FlextResult[m.Service.AppResponse].fail(
-                "Application ID cannot be empty"
+                "Application ID cannot be empty",
             )
 
         if app_id not in self._applications:
             return FlextResult[m.Service.AppResponse].fail(
-                f"Application not found: {app_id}"
+                f"Application not found: {app_id}",
             )
 
         app = self._applications[app_id]
         updated_app = app.model_copy(
             update={
                 "status": c.WebEnvironment.Status.RUNNING.value,
-            }
+            },
         )
         self._applications[app_id] = updated_app
         return FlextResult[m.Service.AppResponse].ok(updated_app)
@@ -468,22 +472,22 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         """Stop application - fail fast if not found."""
         if not isinstance(app_id, str):
             return FlextResult[m.Service.AppResponse].fail(
-                "Application ID must be a string"
+                "Application ID must be a string",
             )
         # Use u.ensure_str to simplify validation
         if not u.ensure_str(app_id):
             return FlextResult[m.Service.AppResponse].fail(
-                "Application ID cannot be empty"
+                "Application ID cannot be empty",
             )
 
         if app_id not in self._applications:
             return FlextResult[m.Service.AppResponse].fail(
-                f"Application not found: {app_id}"
+                f"Application not found: {app_id}",
             )
 
         app = self._applications[app_id]
         updated_app = app.model_copy(
-            update={"status": c.WebEnvironment.Status.STOPPED.value}
+            update={"status": c.WebEnvironment.Status.STOPPED.value},
         )
         self._applications[app_id] = updated_app
         return FlextResult[m.Service.AppResponse].ok(updated_app)
@@ -495,7 +499,7 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
                 "status": health_response.status,
                 "service": health_response.service,
                 "timestamp": health_response.timestamp,
-            }
+            },
         )
 
     def dashboard(
@@ -514,11 +518,10 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         )
         running_apps = u.count(running_apps_filtered)
 
-        # Use u.when() for conditional status (DSL pattern)
-        service_status = u.when(
-            condition=self._service_running,
-            then_value=c.WebResponse.STATUS_OPERATIONAL,
-            else_value=stopped_status,
+        service_status = (
+            c.WebResponse.STATUS_OPERATIONAL
+            if self._service_running
+            else stopped_status
         )
 
         dashboard_response = m.Service.DashboardResponse(
@@ -533,7 +536,8 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
 
     @classmethod
     def create_web_service(
-        cls, config: FlextWebConfig | None = None
+        cls,
+        config: FlextWebConfig | None = None,
     ) -> FlextResult[FlextWebServices]:
         """Create web service with explicit validation.
 
@@ -575,7 +579,7 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         )
         if routes_validated is None:
             return FlextResult[bool].fail(
-                "Service cannot be running without initialized routes"
+                "Service cannot be running without initialized routes",
             )
         middleware_validated = u.guard(
             self._middleware_configured,
@@ -585,13 +589,14 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         )
         if middleware_validated is None:
             return FlextResult[bool].fail(
-                "Service cannot be running without configured middleware"
+                "Service cannot be running without configured middleware",
             )
         return FlextResult[bool].ok(True)
 
     @classmethod
     def create_service(
-        cls, config: FlextWebConfig | None = None
+        cls,
+        config: FlextWebConfig | None = None,
     ) -> FlextResult[FlextWebServices]:
         """Create service instance with explicit validation.
 
@@ -606,12 +611,7 @@ class FlextWebServices(FlextService[bool]):  # noqa: PLR0904
         """
         # Use Pydantic defaults if None - Models use Constants in initialization
         # FlextWebConfig uses Constants defaults, so None creates config with defaults
-        # Use u.when() for conditional config creation (DSL pattern)
-        service_config = u.when(
-            condition=config is not None,
-            then_value=config,
-            else_value=FlextWebConfig(),
-        )
+        service_config = config if config is not None else FlextWebConfig()
         return FlextResult.ok(cls(config=service_config))
 
 

@@ -116,7 +116,7 @@ def create_application(
         .flat_map(
             lambda json_data: (
                 FlextResult[FlextWebTypes.AppData].ok(
-                    cast("FlextWebTypes.AppData", json_data["data"])
+                    cast("FlextWebTypes.AppData", json_data["data"]),
                 )
                 if (
                     json_data.get("success")
@@ -125,7 +125,7 @@ def create_application(
                     and "name" in data
                 )
                 else FlextResult[FlextWebTypes.AppData].fail("Invalid application data")
-            )
+            ),
         )
     )
 

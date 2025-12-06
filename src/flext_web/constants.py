@@ -264,7 +264,7 @@ class FlextWebConstants(FlextConstants):
 
         ENVIRONMENTS: ClassVar[tuple[str, ...]] = tuple(Name.__members__.values())
         APPLICATION_TYPES: ClassVar[tuple[str, ...]] = tuple(
-            ApplicationType.__members__.values()
+            ApplicationType.__members__.values(),
         )
         STATUSES: ClassVar[tuple[str, ...]] = tuple(Status.__members__.values())
 
@@ -295,12 +295,21 @@ class FlextWebConstants(FlextConstants):
 
         # HTTP method literal (matches Http.Method StrEnum)
         HttpMethodLiteral: type = Literal[
-            "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "HEAD",
+            "OPTIONS",
         ]
 
         # Environment name literal (matches WebEnvironment.Name StrEnum)
         EnvironmentNameLiteral: type = Literal[
-            "development", "staging", "production", "testing"
+            "development",
+            "staging",
+            "production",
+            "testing",
         ]
 
         # Application status literal (matches WebEnvironment.Status StrEnum)
@@ -328,7 +337,10 @@ class FlextWebConstants(FlextConstants):
 
         # Response status literal (matches WebResponse constants)
         ResponseStatusLiteral: type = Literal[
-            "success", "error", "operational", "healthy"
+            "success",
+            "error",
+            "operational",
+            "healthy",
         ]
 
         # Protocol literal (matches WebDefaults constants)
@@ -336,7 +348,9 @@ class FlextWebConstants(FlextConstants):
 
         # Content type literal (matches Http constants)
         ContentTypeLiteral: type = Literal[
-            "application/json", "text/plain", "text/html"
+            "application/json",
+            "text/plain",
+            "text/html",
         ]
 
         # Session cookie SameSite literal (matches WebSecurity constants)

@@ -82,7 +82,8 @@ class FlextWebConfig(BaseSettings):
         description="Secret key for session management",
     )
     testing: bool = Field(
-        default=False, description="Testing mode"
+        default=False,
+        description="Testing mode",
     )  # Testing mode is False by default, not in Constants as it's runtime-specific
 
     @computed_field
