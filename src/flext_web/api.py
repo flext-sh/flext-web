@@ -188,7 +188,7 @@ class FlextWebApi:
             # AutoConfig will use defaults from Field() definitions
             # Ensure secret_key is provided for AutoConfig compatibility
             if "secret_key" not in config_kwargs:
-                config_kwargs["secret_key"] = c.WebDefaults.SECRET_KEY
+                config_kwargs["secret_key"] = c.Web.WebDefaults.SECRET_KEY
             # Pydantic will validate types at runtime - use type: ignore for pyright
             # config_kwargs contains validated values from filter_dict
             config = FlextWebConfig(**config_kwargs)
@@ -224,14 +224,14 @@ class FlextWebApi:
         _container = FlextContainer()
 
         status_info = m.WebService.ServiceResponse(
-            service=c.WebService.SERVICE_NAME_API,
+            service=c.Web.WebService.SERVICE_NAME_API,
             capabilities=[
                 "http_services_available",
                 "fastapi_support",
                 "container_initialized",
                 "api_facade_ready",
             ],
-            status=c.WebResponse.STATUS_OPERATIONAL,
+            status=c.Web.WebResponse.STATUS_OPERATIONAL,
             config=True,
         )
 

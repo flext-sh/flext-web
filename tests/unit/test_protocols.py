@@ -50,7 +50,7 @@ class TestFlextWebProtocols:
 
     def test_web_app_manager_protocol(self) -> None:
         """Test WebAppManagerProtocol definition."""
-        protocol = FlextWebProtocols.WebAppManagerProtocol
+        protocol = FlextWebProtocols.Web.WebAppManagerProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -102,7 +102,7 @@ class TestFlextWebProtocols:
 
     def test_web_service_protocol(self) -> None:
         """Test WebServiceProtocol definition."""
-        protocol = FlextWebProtocols.WebServiceProtocol
+        protocol = FlextWebProtocols.Web.WebServiceProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -130,7 +130,7 @@ class TestFlextWebProtocols:
 
     def test_web_handler_protocol(self) -> None:
         """Test WebHandlerProtocol definition."""
-        protocol = FlextWebProtocols.WebHandlerProtocol
+        protocol = FlextWebProtocols.Web.WebHandlerProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -177,13 +177,13 @@ class TestFlextWebProtocols:
         """Test that protocols are runtime checkable."""
         # All protocols should be runtime checkable (decorated with @runtime_checkable)
         protocols = [
-            FlextWebProtocols.WebAppManagerProtocol,
+            FlextWebProtocols.Web.WebAppManagerProtocol,
             FlextWebProtocols.WebResponseFormatterProtocol,
             FlextWebProtocols.WebFrameworkInterfaceProtocol,
             FlextWebProtocols.WebTemplateRendererProtocol,
-            FlextWebProtocols.WebServiceProtocol,
+            FlextWebProtocols.Web.WebServiceProtocol,
             FlextWebProtocols.WebRepositoryProtocol,
-            FlextWebProtocols.WebHandlerProtocol,
+            FlextWebProtocols.Web.WebHandlerProtocol,
             FlextWebProtocols.WebTemplateEngineProtocol,
             FlextWebProtocols.WebMonitoringProtocol,
         ]
@@ -197,7 +197,7 @@ class TestFlextWebProtocols:
     def test_protocol_method_signatures(self) -> None:
         """Test that protocol methods have correct signatures."""
         # Test AppManagerProtocol methods
-        protocol = FlextWebProtocols.WebAppManagerProtocol
+        protocol = FlextWebProtocols.Web.WebAppManagerProtocol
 
         # create_app should take name, port, host and return FlextResult[WebApp]
         create_app_method = protocol.__dict__["create_app"]
@@ -218,7 +218,7 @@ class TestFlextWebProtocols:
     def test_protocol_inheritance_chain(self) -> None:
         """Test that protocols properly inherit from base protocols."""
         # WebServiceInterface should inherit from Domain.Service
-        web_service_protocol = FlextWebProtocols.WebServiceProtocol
+        web_service_protocol = FlextWebProtocols.Web.WebServiceProtocol
         assert hasattr(web_service_protocol, "__bases__")
 
         # AppRepositoryInterface should inherit from Domain.Repository
@@ -226,7 +226,7 @@ class TestFlextWebProtocols:
         assert hasattr(app_repo_protocol, "__bases__")
 
         # MiddlewareInterface should inherit from Extensions.Middleware
-        middleware_protocol = FlextWebProtocols.WebHandlerProtocol
+        middleware_protocol = FlextWebProtocols.Web.WebHandlerProtocol
         assert hasattr(middleware_protocol, "__bases__")
 
         # TemplateEngineInterface should inherit from Infrastructure.Configurable
@@ -240,7 +240,7 @@ class TestFlextWebProtocols:
     def test_protocol_type_annotations(self) -> None:
         """Test that protocols have proper type annotations."""
         # Test AppManagerProtocol type annotations
-        protocol = FlextWebProtocols.WebAppManagerProtocol
+        protocol = FlextWebProtocols.Web.WebAppManagerProtocol
 
         # create_app should have proper type annotations
         create_app_annotations = protocol.__dict__["create_app"].__annotations__
@@ -252,7 +252,7 @@ class TestFlextWebProtocols:
     def test_protocol_documentation(self) -> None:
         """Test that protocols have proper documentation."""
         # Test AppManagerProtocol documentation
-        protocol = FlextWebProtocols.WebAppManagerProtocol
+        protocol = FlextWebProtocols.Web.WebAppManagerProtocol
         assert hasattr(protocol, "__doc__")
         assert protocol.__doc__ is not None
 
@@ -263,13 +263,13 @@ class TestFlextWebProtocols:
         """Test that protocols are consistent with implementation."""
         # All protocols should be consistent with their expected usage
         protocols = [
-            FlextWebProtocols.WebAppManagerProtocol,
+            FlextWebProtocols.Web.WebAppManagerProtocol,
             FlextWebProtocols.WebResponseFormatterProtocol,
             FlextWebProtocols.WebFrameworkInterfaceProtocol,
             FlextWebProtocols.WebTemplateRendererProtocol,
-            FlextWebProtocols.WebServiceProtocol,
+            FlextWebProtocols.Web.WebServiceProtocol,
             FlextWebProtocols.WebRepositoryProtocol,
-            FlextWebProtocols.WebHandlerProtocol,
+            FlextWebProtocols.Web.WebHandlerProtocol,
             FlextWebProtocols.WebTemplateEngineProtocol,
             FlextWebProtocols.WebMonitoringProtocol,
         ]
@@ -312,7 +312,7 @@ class TestFlextWebProtocols:
         """Test that protocols are extensible."""
 
         # Should be able to create new protocols that inherit from web protocols
-        class CustomProtocol(FlextWebProtocols.WebAppManagerProtocol):
+        class CustomProtocol(FlextWebProtocols.Web.WebAppManagerProtocol):
             def custom_method(self) -> None:
                 pass
 

@@ -10,9 +10,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TypeAlias, TypedDict, cast
+from typing import TypedDict, cast
 
-from flext_core import FlextResult, FlextUtilities, t
+from flext_core import FlextResult, FlextTypes, FlextUtilities
 
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
@@ -22,7 +22,7 @@ u = FlextUtilities
 c = FlextWebConstants
 m = FlextWebModels
 
-HttpMethod = FlextWebConstants.Http.Method
+HttpMethod = FlextWebConstants.Web.Http.Method
 
 
 class _WebRequestConfig(TypedDict, total=False):
@@ -63,7 +63,7 @@ class _ApplicationConfig(TypedDict, total=False):
     version: int
 
 
-class FlextWebTypes(t):
+class FlextWebTypes(FlextTypes):
     """Web-specific type definitions using FlextWebModels.
 
     Uses Pydantic 2 models from FlextWebModels for type safety.
@@ -97,7 +97,7 @@ class FlextWebTypes(t):
         """Application entity model - inherits from FlextWebModels.Application.Entity."""
 
     # ApplicationStatus - StrEnum cannot be inherited (Python limitation)
-    ApplicationStatus = FlextWebConstants.WebEnvironment.Status
+    ApplicationStatus = FlextWebConstants.Web.WebEnvironment.Status
 
     # Application data types - proper inheritance from FlextWebModels
     class AppData(FlextWebModels.WebService.AppResponse):
@@ -115,12 +115,12 @@ class FlextWebTypes(t):
     class WebCore:
         """Web core type aliases for request/response data."""
 
-        ConfigValue: TypeAlias = str | int | bool | list[str]
-        RequestDict: TypeAlias = dict[
+        type ConfigValue = str | int | bool | list[str]
+        type RequestDict = dict[
             str,
             str | int | bool | list[str] | dict[str, str | int | bool],
         ]
-        ResponseDict: TypeAlias = dict[
+        type ResponseDict = dict[
             str,
             str | int | bool | list[str] | dict[str, str | int | bool],
         ]
@@ -135,12 +135,11 @@ class FlextWebTypes(t):
     class ErrorResponse(FlextWebModels.WebService.ServiceResponse):
         """Error response model - inherits from FlextWebModels.WebService.ServiceResponse."""
 
-    # ResponseDict wrapper for FlextService - use TypeAlias for registration compatibility
-    # FlextService registration requires TypeAlias, not direct assignment
+    # ResponseDict wrapper for FlextService - use PEP 695 type keyword
     class Data:
         """Data type definitions for FlextService compatibility."""
 
-        WebResponseDict: TypeAlias = dict[
+        type WebResponseDict = dict[
             str,
             str | int | bool | list[str] | dict[str, str | int | bool],
         ]
@@ -160,10 +159,10 @@ class FlextWebTypes(t):
     def create_http_request(
         cls,
         url: str,
-        method: str = FlextWebConstants.Http.Method.GET,
+        method: str = FlextWebConstants.Web.Http.Method.GET,
         headers: dict[str, str] | None = None,
         body: str | dict[str, str] | None = None,
-        timeout: float = FlextWebConstants.Http.DEFAULT_TIMEOUT_SECONDS,
+        timeout: float = FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
     ) -> FlextResult[FlextWebModels.Http.Request]:
         """Create HTTP request model instance with proper validation.
 
@@ -181,7 +180,7 @@ class FlextWebTypes(t):
         """
         # Use # Direct validation instead for unified method validation (DSL pattern)
         method_upper = method.upper()
-        valid_methods = set(FlextWebConstants.Http.METHODS)
+        valid_methods = set(FlextWebConstants.Web.Http.METHODS)
         method_validated = FlextUtilities.Validation.guard(
             method_upper,
             lambda m: m in valid_methods,
@@ -296,14 +295,14 @@ class FlextWebTypes(t):
         # Use FlextUtilities.get() for unified extraction with defaults (DSL pattern)
         url = FlextUtilities.get(config, "url", default="")
         method = FlextUtilities.get(
-            config, "method", default=FlextWebConstants.Http.Method.GET
+            config, "method", default=FlextWebConstants.Web.Http.Method.GET
         )
         headers = FlextUtilities.get(config, "headers")
         body = FlextUtilities.get(config, "body")
         timeout = FlextUtilities.get(
             config,
             "timeout",
-            default=FlextWebConstants.Http.DEFAULT_TIMEOUT_SECONDS,
+            default=FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
         )
         query_params = FlextUtilities.get(config, "query_params")
         client_ip = FlextUtilities.get(config, "client_ip", default="")
@@ -330,7 +329,7 @@ class FlextWebTypes(t):
 
         # Use # Direct validation instead for method validation (DSL pattern)
         method_upper = str(method).upper()
-        valid_methods = set(FlextWebConstants.Http.METHODS)
+        valid_methods = set(FlextWebConstants.Web.Http.METHODS)
         method_validated = FlextUtilities.Validation.guard(
             method_upper,
             lambda m: m in valid_methods,
@@ -390,7 +389,7 @@ class FlextWebTypes(t):
         content_type = FlextUtilities.get(
             config,
             "content_type",
-            default=FlextWebConstants.Http.CONTENT_TYPE_JSON,
+            default=FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
         )
         content_length = FlextUtilities.get(config, "content_length", default=0)
         processing_time_ms = FlextUtilities.get(
@@ -452,32 +451,32 @@ class FlextWebTypes(t):
         status = FlextUtilities.get(
             config,
             "status",
-            default=FlextWebConstants.WebEnvironment.Status.STOPPED.value,
+            default=FlextWebConstants.Web.WebEnvironment.Status.STOPPED.value,
         )
         environment = FlextUtilities.get(
             config,
             "environment",
-            default=FlextWebConstants.WebEnvironment.Name.DEVELOPMENT.value,
+            default=FlextWebConstants.Web.WebEnvironment.Name.DEVELOPMENT.value,
         )
         debug_mode_raw = FlextUtilities.get(
             config,
             "debug_mode",
-            default=FlextWebConstants.WebDefaults.DEBUG_MODE,
+            default=FlextWebConstants.Web.WebDefaults.DEBUG_MODE,
         )
         debug_mode = (
             debug_mode_raw
             if isinstance(debug_mode_raw, bool)
-            else FlextWebConstants.WebDefaults.DEBUG_MODE
+            else FlextWebConstants.Web.WebDefaults.DEBUG_MODE
         )
         version_raw = FlextUtilities.get(
             config,
             "version",
-            default=FlextWebConstants.WebDefaults.VERSION_INT,
+            default=FlextWebConstants.Web.WebDefaults.VERSION_INT,
         )
         version = (
             version_raw
             if isinstance(version_raw, int)
-            else FlextWebConstants.WebDefaults.VERSION_INT
+            else FlextWebConstants.Web.WebDefaults.VERSION_INT
         )
 
         # Use FlextUtilities.try_() for unified error handling (DSL pattern)

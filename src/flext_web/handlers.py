@@ -66,8 +66,8 @@ class FlextWebHandlers(FlextService[bool]):
         def create(
             self,
             name: str,
-            port: int = c.WebDefaults.PORT,
-            host: str = c.WebDefaults.HOST,
+            port: int = c.Web.WebDefaults.PORT,
+            host: str = c.Web.WebDefaults.HOST,
         ) -> FlextResult[m.Application.Entity]:
             """Create new web application with validation."""
             self.logger.info("Create app command")
@@ -114,13 +114,13 @@ class FlextWebHandlers(FlextService[bool]):
             # Use u.guard() for length validation (DSL pattern)
             name_length_validated = u.guard(
                 name_validated,
-                lambda n: len(n) >= c.WebServer.MIN_APP_NAME_LENGTH,
-                error_message=f"Application name must be at least {c.WebServer.MIN_APP_NAME_LENGTH} characters",
+                lambda n: len(n) >= c.Web.WebServer.MIN_APP_NAME_LENGTH,
+                error_message=f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
                 return_value=True,
             )
             if name_length_validated is None:
                 return FlextResult[str].fail(
-                    f"Application name must be at least {c.WebServer.MIN_APP_NAME_LENGTH} characters",
+                    f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
                 )
             host_non_empty = u.guard(
                 host_validated,
@@ -132,8 +132,8 @@ class FlextWebHandlers(FlextService[bool]):
                 return FlextResult[str].fail("Host cannot be empty")
 
             # Use u.guard() for port range validation (DSL pattern)
-            min_port = c.WebValidation.PORT_RANGE[0]
-            max_port = c.WebValidation.PORT_RANGE[1]
+            min_port = c.Web.WebValidation.PORT_RANGE[0]
+            max_port = c.Web.WebValidation.PORT_RANGE[1]
             # Use u.guard() with separate checks for better error messages (DSL pattern)
             port_min_validated = u.guard(
                 port_validated,
@@ -169,8 +169,8 @@ class FlextWebHandlers(FlextService[bool]):
         def create_app(
             self,
             name: str,
-            port: int = c.WebDefaults.PORT,
-            host: str = c.WebDefaults.HOST,
+            port: int = c.Web.WebDefaults.PORT,
+            host: str = c.Web.WebDefaults.HOST,
         ) -> FlextResult[m.Application.Entity]:
             """Create a new application - implements WebAppManagerProtocol.
 
@@ -232,12 +232,12 @@ class FlextWebHandlers(FlextService[bool]):
         """
         return FlextResult[FlextWebTypes.Core.ResponseDict].ok(
             {
-                "status": c.WebResponse.STATUS_HEALTHY,
-                "service": c.WebService.SERVICE_NAME,
+                "status": c.Web.WebResponse.STATUS_HEALTHY,
+                "service": c.Web.WebService.SERVICE_NAME,
                 "version": "0.9.0",
                 "timestamp": u.Generators.generate_iso_timestamp(),
                 "components": {
-                    "web_service": c.WebResponse.STATUS_OPERATIONAL,
+                    "web_service": c.Web.WebResponse.STATUS_OPERATIONAL,
                     "configuration": "loaded",
                     "handlers": "registered",
                 },
@@ -280,8 +280,8 @@ class FlextWebHandlers(FlextService[bool]):
     def handle_create_app(
         cls,
         name: str,
-        port: int = c.WebDefaults.PORT,
-        host: str = c.WebDefaults.HOST,
+        port: int = c.Web.WebDefaults.PORT,
+        host: str = c.Web.WebDefaults.HOST,
     ) -> FlextResult[m.Application.Entity]:
         """Handle application creation requests.
 

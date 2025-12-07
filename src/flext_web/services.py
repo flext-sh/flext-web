@@ -194,8 +194,8 @@ class FlextWebServices(FlextService[bool]):
 
             """
             health_response = m.Service.HealthResponse(
-                status=c.WebResponse.STATUS_HEALTHY,
-                service=c.WebService.SERVICE_NAME,
+                status=c.Web.WebResponse.STATUS_HEALTHY,
+                service=c.Web.WebService.SERVICE_NAME,
                 timestamp=u.Generators.generate_iso_timestamp(),
             )
             return FlextResult.ok(health_response)
@@ -209,7 +209,7 @@ class FlextWebServices(FlextService[bool]):
 
             """
             metrics_response = m.Service.MetricsResponse(
-                service_status=c.WebResponse.STATUS_OPERATIONAL,
+                service_status=c.Web.WebResponse.STATUS_OPERATIONAL,
                 components=["auth", "entities", "health"],
             )
             return FlextResult.ok(metrics_response)
@@ -418,7 +418,7 @@ class FlextWebServices(FlextService[bool]):
             name=app_data.name,
             host=app_data.host,
             port=app_data.port,
-            status=c.WebEnvironment.Status.STOPPED.value,
+            status=c.Web.WebEnvironment.Status.STOPPED.value,
             created_at=u.Generators.generate_iso_timestamp(),
         )
         self._applications[app_id] = app_response
@@ -463,7 +463,7 @@ class FlextWebServices(FlextService[bool]):
         app = self._applications[app_id]
         updated_app = app.model_copy(
             update={
-                "status": c.WebEnvironment.Status.RUNNING.value,
+                "status": c.Web.WebEnvironment.Status.RUNNING.value,
             },
         )
         self._applications[app_id] = updated_app
@@ -488,7 +488,7 @@ class FlextWebServices(FlextService[bool]):
 
         app = self._applications[app_id]
         updated_app = app.model_copy(
-            update={"status": c.WebEnvironment.Status.STOPPED.value},
+            update={"status": c.Web.WebEnvironment.Status.STOPPED.value},
         )
         self._applications[app_id] = updated_app
         return FlextResult[m.Service.AppResponse].ok(updated_app)
@@ -510,8 +510,8 @@ class FlextWebServices(FlextService[bool]):
         # Use u.count() for unified counting (DSL pattern)
         apps_list = list(self._applications.values())
         total_apps = u.count(apps_list)
-        running_status = c.WebEnvironment.Status.RUNNING.value
-        stopped_status = c.WebEnvironment.Status.STOPPED.value
+        running_status = c.Web.WebEnvironment.Status.RUNNING.value
+        stopped_status = c.Web.WebEnvironment.Status.STOPPED.value
         # Use u.count() + u.filter() for unified counting with predicate (DSL pattern)
         running_apps_filtered = u.filter(
             apps_list,
@@ -520,7 +520,7 @@ class FlextWebServices(FlextService[bool]):
         running_apps = u.count(running_apps_filtered)
 
         service_status = (
-            c.WebResponse.STATUS_OPERATIONAL
+            c.Web.WebResponse.STATUS_OPERATIONAL
             if self._service_running
             else stopped_status
         )

@@ -43,42 +43,37 @@ class TestsConstants(FlextWebConstants):
     class Literals:
         """Literal type aliases for test constants (Python 3.13 pattern).
 
-        These type aliases reuse production Literals from FlextWebConstants
+        These type aliases reuse production Literals from FlextWebConstants.Web
         to ensure consistency between tests and production code.
+        All Literal types are now at FlextWebConstants.Web level for direct access.
         """
 
         # Reuse production Literals for consistency (Python 3.13+ best practices)
-        # HTTP method literal (reusing production type)
-        HttpMethodLiteral: TypeAlias = FlextWebConstants.Literals.HttpMethodLiteral
+        # HTTP method literal (reusing production type from Web level)
+        HttpMethodLiteral: TypeAlias = FlextWebConstants.Web.HttpMethodLiteral
 
-        # Environment name literal (reusing production type)
-        EnvironmentNameLiteral: TypeAlias = (
-            FlextWebConstants.Literals.EnvironmentNameLiteral
-        )
+        # Environment name literal (reusing production type from Web level)
+        EnvironmentNameLiteral: TypeAlias = FlextWebConstants.Web.EnvironmentNameLiteral
 
-        # Application status literal (reusing production type)
+        # Application status literal (reusing production type from Web level)
         ApplicationStatusLiteral: TypeAlias = (
-            FlextWebConstants.Literals.ApplicationStatusLiteral
+            FlextWebConstants.Web.ApplicationStatusLiteral
         )
 
-        # Application type literal (reusing production type)
-        ApplicationTypeLiteral: TypeAlias = (
-            FlextWebConstants.Literals.ApplicationTypeLiteral
-        )
+        # Application type literal (reusing production type from Web level)
+        ApplicationTypeLiteral: TypeAlias = FlextWebConstants.Web.ApplicationTypeLiteral
 
-        # Response status literal (reusing production type)
-        ResponseStatusLiteral: TypeAlias = (
-            FlextWebConstants.Literals.ResponseStatusLiteral
-        )
+        # Response status literal (reusing production type from Web level)
+        ResponseStatusLiteral: TypeAlias = FlextWebConstants.Web.ResponseStatusLiteral
 
-        # Protocol literal (reusing production type)
-        ProtocolLiteral: TypeAlias = FlextWebConstants.Literals.ProtocolLiteral
+        # Protocol literal (reusing production type from Web level)
+        ProtocolLiteral: TypeAlias = FlextWebConstants.Web.ProtocolLiteral
 
-        # Content type literal (reusing production type)
-        ContentTypeLiteral: TypeAlias = FlextWebConstants.Literals.ContentTypeLiteral
+        # Content type literal (reusing production type from Web level)
+        ContentTypeLiteral: TypeAlias = FlextWebConstants.Web.ContentTypeLiteral
 
-        # Session cookie SameSite literal (reusing production type)
-        SameSiteLiteral: TypeAlias = FlextWebConstants.Literals.SameSiteLiteral
+        # Session cookie SameSite literal (reusing production type from Web level)
+        SameSiteLiteral: TypeAlias = FlextWebConstants.Web.SameSiteLiteral
 
 
 # Standardized short name for use in tests (same pattern as flext-core)

@@ -52,7 +52,7 @@ flext-web uses patterns from flext-core:
 - **FlextModels** for domain entities
 - **Clean Architecture** layer separation
 
-See [../flext-core/README.md](../flext-core/README.md) for foundation patterns.
+See [flext-core README](https://github.com/organization/flext/tree/main/flext-core/README.md) for foundation patterns.
 
 ## Development Priority
 

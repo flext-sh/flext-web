@@ -48,37 +48,37 @@ class FlextWebConfig(BaseSettings):
     )
 
     host: str = Field(
-        default=FlextWebConstants.WebDefaults.HOST,
+        default=FlextWebConstants.Web.WebDefaults.HOST,
         min_length=1,
         max_length=255,
         description="Web server host address",
     )
     port: int = Field(
-        default=FlextWebConstants.WebDefaults.PORT,
-        ge=FlextWebConstants.WebValidation.PORT_RANGE[0],
-        le=FlextWebConstants.WebValidation.PORT_RANGE[1],
+        default=FlextWebConstants.Web.WebDefaults.PORT,
+        ge=FlextWebConstants.Web.WebValidation.PORT_RANGE[0],
+        le=FlextWebConstants.Web.WebValidation.PORT_RANGE[1],
         description="Web server port number",
     )
     app_name: str = Field(
-        default=FlextWebConstants.WebDefaults.APP_NAME,
-        min_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[0],
-        max_length=FlextWebConstants.WebValidation.NAME_LENGTH_RANGE[1],
+        default=FlextWebConstants.Web.WebDefaults.APP_NAME,
+        min_length=FlextWebConstants.Web.WebValidation.NAME_LENGTH_RANGE[0],
+        max_length=FlextWebConstants.Web.WebValidation.NAME_LENGTH_RANGE[1],
         description="Web application name",
     )
     version: str = Field(
-        default=FlextWebConstants.WebDefaults.VERSION_STRING,
+        default=FlextWebConstants.Web.WebDefaults.VERSION_STRING,
         description="Application version",
     )
     debug_mode: bool = Field(
-        default=FlextWebConstants.WebDefaults.DEBUG_MODE,
+        default=FlextWebConstants.Web.WebDefaults.DEBUG_MODE,
         description="Debug mode",
     )
     ssl_enabled: bool = Field(default=False, description="Enable SSL/TLS")
     ssl_cert_path: Path | None = Field(default=None, description="SSL certificate path")
     ssl_key_path: Path | None = Field(default=None, description="SSL key path")
     secret_key: str = Field(
-        default=FlextWebConstants.WebDefaults.SECRET_KEY,
-        min_length=FlextWebConstants.WebSecurity.MIN_SECRET_KEY_LENGTH,
+        default=FlextWebConstants.Web.WebDefaults.SECRET_KEY,
+        min_length=FlextWebConstants.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
         description="Secret key for session management",
     )
     testing: bool = Field(

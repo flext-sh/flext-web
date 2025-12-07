@@ -104,11 +104,11 @@ class FlextWebApp(FlextService[bool]):
 
             default_config = _FastAPIConfig(
                 title="FastAPI",
-                version=c.WebDefaults.VERSION_STRING,
+                version=c.Web.WebDefaults.VERSION_STRING,
                 description="FlextWeb FastAPI Application",
-                docs_url=c.WebApi.DOCS_URL,
-                redoc_url=c.WebApi.REDOC_URL,
-                openapi_url=c.WebApi.OPENAPI_URL,
+                docs_url=c.Web.WebApi.DOCS_URL,
+                redoc_url=c.Web.WebApi.REDOC_URL,
+                openapi_url=c.Web.WebApi.OPENAPI_URL,
             )
             config_final = config if config is not None else default_config
 
@@ -117,19 +117,19 @@ class FlextWebApp(FlextService[bool]):
             version = u.get(
                 config_final,
                 "version",
-                default=c.WebDefaults.VERSION_STRING,
+                default=c.Web.WebDefaults.VERSION_STRING,
             )
             description = u.get(
                 config_final,
                 "description",
                 default="FlextWeb FastAPI Application",
             )
-            docs_url = u.get(config_final, "docs_url", default=c.WebApi.DOCS_URL)
-            redoc_url = u.get(config_final, "redoc_url", default=c.WebApi.REDOC_URL)
+            docs_url = u.get(config_final, "docs_url", default=c.Web.WebApi.DOCS_URL)
+            redoc_url = u.get(config_final, "redoc_url", default=c.Web.WebApi.REDOC_URL)
             openapi_url = u.get(
                 config_final,
                 "openapi_url",
-                default=c.WebApi.OPENAPI_URL,
+                default=c.Web.WebApi.OPENAPI_URL,
             )
 
             # Use try/except for error handling with exception message
@@ -253,8 +253,8 @@ class FlextWebApp(FlextService[bool]):
         @app.route("/health")
         def health_check() -> dict[str, str]:
             return {
-                "status": c.WebResponse.STATUS_HEALTHY,
-                "service": c.WebService.SERVICE_NAME_FLASK,
+                "status": c.Web.WebResponse.STATUS_HEALTHY,
+                "service": c.Web.WebService.SERVICE_NAME_FLASK,
                 "timestamp": u.Generators.generate_iso_timestamp(),
             }
 
@@ -274,8 +274,8 @@ class FlextWebApp(FlextService[bool]):
 
             def health_check() -> t.Core.ResponseDict:
                 return {
-                    "status": c.WebResponse.STATUS_HEALTHY,
-                    "service": c.WebService.SERVICE_NAME,
+                    "status": c.Web.WebResponse.STATUS_HEALTHY,
+                    "service": c.Web.WebService.SERVICE_NAME,
                     "timestamp": u.Generators.generate_iso_timestamp(),
                 }
 
@@ -292,7 +292,7 @@ class FlextWebApp(FlextService[bool]):
 
             def info_handler() -> t.Core.ResponseDict:
                 return {
-                    "service": c.WebService.SERVICE_NAME,
+                    "service": c.Web.WebService.SERVICE_NAME,
                     "title": config.title,
                     "version": config.version,
                     "description": config.description,
