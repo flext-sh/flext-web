@@ -70,14 +70,14 @@ class FlextWebModels(FlextModels):
     # HTTP PROTOCOL MODELS (Value Objects - immutable)
     # =========================================================================
 
-    class Http(BaseModel):
+    class Http(FlextModels.Value):
         """HTTP protocol models for generic web communication (Layer 2: Domain).
 
         Contains immutable value objects for HTTP message representation
         following RFC standards. All models validate against HTTP constraints.
         """
 
-        class Message(BaseModel):
+        class Message(FlextModels.Value):
             """Generic HTTP message base model with protocol validation.
 
             Represents common HTTP message structure with headers, body,
@@ -196,14 +196,14 @@ class FlextWebModels(FlextModels):
     # WEB APPLICATION MODELS (Entities - with identity)
     # =========================================================================
 
-    class Web(BaseModel):
+    class WebApp(FlextModels.Value):
         """Web-specific models extending HTTP with application context.
 
         Contains entities and value objects specific to web applications
         including request/response tracking and web-specific metadata.
         """
 
-        class Request(BaseModel):
+        class Request(FlextModels.Value):
             """Web request entity with tracking and context information.
 
             Extends generic HTTP request with web application-specific fields
@@ -281,7 +281,7 @@ class FlextWebModels(FlextModels):
                 """
                 return self.url.startswith("https://")
 
-        class Response(BaseModel):
+        class Response(FlextModels.Value):
             """Web response entity with tracking and performance metrics.
 
             Extends generic HTTP response with web application-specific fields
@@ -374,7 +374,7 @@ class FlextWebModels(FlextModels):
     # APPLICATION MODELS (Aggregates - consistency boundaries)
     # =========================================================================
 
-    class Application(BaseModel):
+    class Application(FlextModels.Value):
         """Application domain models with state management.
 
         Contains application entities with lifecycle management,
@@ -384,7 +384,7 @@ class FlextWebModels(FlextModels):
         # EntityStatus removed - use FlextWebConstants.WebEnvironment.Status instead
         # All status values are now centralized in constants.py
 
-        class Entity(BaseModel):
+        class Entity(FlextModels.Entity):
             """Application entity with identity and lifecycle (Aggregate Root).
 
             Represents a web application as a domain entity with identity,
@@ -741,7 +741,7 @@ class FlextWebModels(FlextModels):
                 # Import at module level - FlextWebUtilities is used for ID formatting
                 return FlextWebUtilities.format_app_id(name)
 
-        class EntityConfig(BaseModel):
+        class EntityConfig(FlextModels.Value):
             """Application entity configuration (Value Object).
 
             Represents configuration settings for application entities.
@@ -780,16 +780,16 @@ class FlextWebModels(FlextModels):
     # SERVICE REQUEST/RESPONSE MODELS - Replace dict[str, object] types
     # =========================================================================
 
-    class Service(BaseModel):
+    class WebService(FlextModels.Value):
         """Service layer request/response models replacing generic dict types."""
 
-        class Credentials(BaseModel):
+        class Credentials(FlextModels.Value):
             """Authentication credentials model."""
 
             username: str = Field(min_length=1, description="Username")
             password: str = Field(min_length=1, description="Password")
 
-        class UserData(BaseModel):
+        class UserData(FlextModels.Value):
             """User registration data model."""
 
             username: str = Field(min_length=1, description="Username")
@@ -799,7 +799,7 @@ class FlextWebModels(FlextModels):
                 description="Password (empty string if not provided)",
             )
 
-        class AppData(BaseModel):
+        class AppData(FlextModels.Value):
             """Application creation data model."""
 
             name: str = Field(
@@ -818,7 +818,7 @@ class FlextWebModels(FlextModels):
                 description="Application port",
             )
 
-        class EntityData(BaseModel):
+        class EntityData(FlextModels.Value):
             """Generic entity data model."""
 
             data: dict[str, object] = Field(
@@ -826,14 +826,14 @@ class FlextWebModels(FlextModels):
                 description="Entity data dictionary",
             )
 
-        class AuthResponse(BaseModel):
+        class AuthResponse(FlextModels.Value):
             """Authentication response model."""
 
             token: str = Field(description="Authentication token")
             user_id: str = Field(description="User identifier")
             authenticated: bool = Field(description="Authentication status")
 
-        class UserResponse(BaseModel):
+        class UserResponse(FlextModels.Value):
             """User registration response model."""
 
             id: str = Field(description="User identifier")
@@ -841,7 +841,7 @@ class FlextWebModels(FlextModels):
             email: str = Field(description="Email address")
             created: bool = Field(description="Creation status")
 
-        class AppResponse(BaseModel):
+        class AppResponse(FlextModels.Value):
             """Application response model."""
 
             id: str = Field(description="Application identifier")
@@ -851,20 +851,20 @@ class FlextWebModels(FlextModels):
             status: str = Field(description="Application status")
             created_at: str = Field(description="Creation timestamp")
 
-        class HealthResponse(BaseModel):
+        class HealthResponse(FlextModels.Value):
             """Health check response model."""
 
             status: str = Field(description="Health status")
             service: str = Field(description="Service name")
             timestamp: str = Field(description="Timestamp")
 
-        class MetricsResponse(BaseModel):
+        class MetricsResponse(FlextModels.Value):
             """Metrics response model."""
 
             service_status: str = Field(description="Service status")
             components: list[str] = Field(description="Service components")
 
-        class DashboardResponse(BaseModel):
+        class DashboardResponse(FlextModels.Value):
             """Dashboard response model."""
 
             total_applications: int = Field(description="Total applications")
@@ -876,7 +876,7 @@ class FlextWebModels(FlextModels):
             )
             timestamp: str = Field(description="Timestamp")
 
-        class ServiceResponse(BaseModel):
+        class ServiceResponse(FlextModels.Value):
             """Generic service response model."""
 
             service: str = Field(description="Service name")
@@ -888,7 +888,7 @@ class FlextWebModels(FlextModels):
     # WEB REQUEST/RESPONSE MODELS (Value Objects)
     # =========================================================================
 
-    class WebRequest(BaseModel):
+    class WebRequest(FlextModels.Value):
         """Web request model with complete tracking."""
 
         method: FlextWebConstants.Literals.HttpMethodLiteral = Field(
@@ -913,7 +913,7 @@ class FlextWebModels(FlextModels):
             description="Request timestamp",
         )
 
-    class WebResponse(BaseModel):
+    class WebResponse(FlextModels.Value):
         """Web response model with status tracking."""
 
         request_id: str = Field(description="Associated request identifier")
@@ -935,7 +935,7 @@ class FlextWebModels(FlextModels):
             description="Response timestamp",
         )
 
-    class AppConfig(BaseModel):
+    class AppConfig(FlextModels.Value):
         """Application configuration model."""
 
         title: str = Field(
@@ -991,7 +991,7 @@ class FlextWebModels(FlextModels):
 
         """
         try:
-            entity = cls.Application.Entity(
+            entity = cls.Entity(
                 name=name,
                 host=host,
                 port=port,
@@ -1169,5 +1169,32 @@ class FlextWebModels(FlextModels):
 
         FastAPIAppConfig.model_rebuild()
 
+
+# =============================================================================
+# POPULATE FlextModels.Web NAMESPACE
+# =============================================================================
+# Copy all models from FlextWebModels to FlextModels.Web namespace
+# This allows access via both:
+# - FlextWebModels.* (backward compatibility, deprecated)
+# - FlextModels.Web.* (new namespace pattern)
+# - m.Web.* (convenience alias)
+# =============================================================================
+
+# Get all attributes from FlextWebModels that are models, classes, or type aliases
+# Exclude private attributes and special methods
+_web_model_attrs = {
+    name: attr
+    for name, attr in vars(FlextWebModels).items()
+    if not name.startswith("_")
+    and (
+        isinstance(attr, type)
+        or hasattr(attr, "__origin__")  # TypeAlias
+        or (callable(attr) and not isinstance(attr, type(FlextWebModels.__init__)))
+    )
+}
+
+# Populate FlextModels.Web namespace
+for name, attr in _web_model_attrs.items():
+    setattr(FlextModels.Web, name, attr)
 
 __all__ = ["FlextWebModels"]

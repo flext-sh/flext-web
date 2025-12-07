@@ -109,18 +109,18 @@ class FlextWebServices(FlextService[bool]):
             )
             return FlextResult.ok(user_response)
 
-    class Entity(FlextService[m.Service.EntityData]):
+    class Entity(FlextService[m.WebService.EntityData]):
         """Entity CRUD service with monadic patterns."""
 
         def __init__(self) -> None:
             """Initialize storage."""
             super().__init__()
-            self._storage: dict[str, m.Service.EntityData] = {}
+            self._storage: dict[str, m.WebService.EntityData] = {}
 
         def create(
             self,
-            data: m.Service.EntityData,
-        ) -> FlextResult[m.Service.EntityData]:
+            data: m.WebService.EntityData,
+        ) -> FlextResult[m.WebService.EntityData]:
             """Create entity with validation.
 
             Args:
@@ -132,11 +132,11 @@ class FlextWebServices(FlextService[bool]):
 
             """
             entity_id = str(uuid.uuid4())
-            entity = m.Service.EntityData(data={"id": entity_id, **data.data})
+            entity = m.WebService.EntityData(data={"id": entity_id, **data.data})
             self._storage[entity_id] = entity
             return FlextResult.ok(entity)
 
-        def get(self, entity_id: str) -> FlextResult[m.Service.EntityData]:
+        def get(self, entity_id: str) -> FlextResult[m.WebService.EntityData]:
             """Get entity - fail fast if not found.
 
             Args:
@@ -160,7 +160,7 @@ class FlextWebServices(FlextService[bool]):
 
         def list_all(
             self,
-        ) -> FlextResult[list[m.Service.EntityData]]:
+        ) -> FlextResult[list[m.WebService.EntityData]]:
             """List all entities.
 
             Returns:
@@ -170,14 +170,14 @@ class FlextWebServices(FlextService[bool]):
             return FlextResult.ok(list(self._storage.values()))
 
         @staticmethod
-        def execute(**_kwargs: object) -> FlextResult[m.Service.EntityData]:
+        def execute(**_kwargs: object) -> FlextResult[m.WebService.EntityData]:
             """Execute entity service - required by FlextService.
 
             Returns:
                 FlextResult[EntityData]: Service ready response
 
             """
-            ready_response = m.Service.EntityData(
+            ready_response = m.WebService.EntityData(
                 data={"message": "Entity service ready"},
             )
             return FlextResult.ok(ready_response)
@@ -227,7 +227,8 @@ class FlextWebServices(FlextService[bool]):
         # but we override _config after initialization to use the passed config
         super().__init__()
         # Override _config with web config (FlextService creates default via _get_service_config_type)
-        object.__setattr__(self, "_config", web_config)
+        # Set attribute directly (no PrivateAttr needed, compatible with FlextService)
+        self._config = web_config
         self._container = FlextContainer()
         self._logger = FlextLogger(__name__)
         self._entity_service: FlextWebServices.Entity | None = None
@@ -280,14 +281,14 @@ class FlextWebServices(FlextService[bool]):
 
     def create_entity(
         self,
-        data: m.Service.EntityData,
-    ) -> FlextResult[m.Service.EntityData]:
+        data: m.WebService.EntityData,
+    ) -> FlextResult[m.WebService.EntityData]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
             lambda service: service.create(data),
         )
 
-    def get_entity(self, entity_id: str) -> FlextResult[m.Service.EntityData]:
+    def get_entity(self, entity_id: str) -> FlextResult[m.WebService.EntityData]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
             lambda service: service.get(entity_id),
@@ -295,7 +296,7 @@ class FlextWebServices(FlextService[bool]):
 
     def list_entities(
         self,
-    ) -> FlextResult[list[m.Service.EntityData]]:
+    ) -> FlextResult[list[m.WebService.EntityData]]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
             lambda service: service.list_all(),
@@ -375,14 +376,14 @@ class FlextWebServices(FlextService[bool]):
         return FlextResult[bool].ok(True)
 
     @staticmethod
-    def logout() -> FlextResult[m.Service.EntityData]:
+    def logout() -> FlextResult[m.WebService.EntityData]:
         """Logout user.
 
         Returns:
             FlextResult[EntityData]: Success response
 
         """
-        logout_response = m.Service.EntityData(data={"success": True})
+        logout_response = m.WebService.EntityData(data={"success": True})
         return FlextResult.ok(logout_response)
 
     def list_apps(

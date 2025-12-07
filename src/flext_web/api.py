@@ -207,7 +207,7 @@ class FlextWebApi:
     # =========================================================================
 
     @classmethod
-    def get_service_status(cls) -> FlextResult[m.Service.ServiceResponse]:
+    def get_service_status(cls) -> FlextResult[m.WebService.ServiceResponse]:
         """Get complete HTTP service status information.
 
         Single Responsibility: Provides system status and health information only.
@@ -223,7 +223,7 @@ class FlextWebApi:
 
         _container = FlextContainer()
 
-        status_info = m.Service.ServiceResponse(
+        status_info = m.WebService.ServiceResponse(
             service=c.WebService.SERVICE_NAME_API,
             capabilities=[
                 "http_services_available",
