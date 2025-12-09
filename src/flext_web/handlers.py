@@ -16,13 +16,12 @@ from flext_core import (
 
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
-from flext_web.typings import FlextWebTypes
+from flext_web.typings import t
 
 # Import aliases for simplified usage
 u = FlextUtilities
 c = FlextWebConstants
 m = FlextWebModels
-t = FlextWebTypes
 
 
 class FlextWebHandlers(FlextService[bool]):
@@ -230,7 +229,7 @@ class FlextWebHandlers(FlextService[bool]):
         FlextResult containing health status information.
 
         """
-        return FlextResult[FlextWebTypes.Core.ResponseDict].ok(
+        return FlextResult[t.Core.ResponseDict].ok(
             {
                 "status": c.Web.WebResponse.STATUS_HEALTHY,
                 "service": c.Web.WebService.SERVICE_NAME,
@@ -252,7 +251,7 @@ class FlextWebHandlers(FlextService[bool]):
         FlextResult containing detailed system information.
 
         """
-        return FlextResult[FlextWebTypes.Core.ResponseDict].ok(
+        return FlextResult[t.Core.ResponseDict].ok(
             {
                 "service_name": "FLEXT Web Interface",
                 "service_type": "web_api",

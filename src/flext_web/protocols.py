@@ -12,7 +12,7 @@ ARCHITECTURE:
 
 PROTOCOL INHERITANCE:
  Protocols use inheritance to reduce duplication and create logical hierarchies.
- Example: WebAppManagerProtocol extends FlextProtocols.Domain.Service[object]
+ Example: WebAppManagerProtocol extends FlextProtocols.Service[object]
 
 USAGE IN WEB PROJECT:
  Web services extend FlextWebProtocols with web-specific protocols:
@@ -113,7 +113,7 @@ class FlextWebProtocols(FlextProtocols):
     - Allows type-safe web-specific interface definitions
 
     **3. Protocol inheritance creates logical web hierarchies**
-    - WebAppManagerProtocol extends FlextProtocols.Domain.Service[object]
+    - WebAppManagerProtocol extends FlextProtocols.Service[object]
     - WebRepositoryProtocol extends p.Repository
     - Reduces duplication, improves maintainability
 
@@ -129,7 +129,7 @@ class FlextWebProtocols(FlextProtocols):
     **Example 1: Web Application Project**
     class FlextWebProtocols(p):
         class Web:
-            class WebAppManagerProtocol(FlextProtocols.Domain.Service[object], Protocol):
+            class WebAppManagerProtocol(FlextProtocols.Service[object], Protocol):
                 '''Web application management service.'''
                 def create_app(self, name: str, port: int, host: str) -> r:
                     '''Create web application.'''
@@ -138,7 +138,7 @@ class FlextWebProtocols(FlextProtocols):
     **Example 2: Web API Project**
     class FlextApiProtocols(p):
         class Api:
-            class ApiServiceProtocol(FlextProtocols.Domain.Service[object], Protocol):
+            class ApiServiceProtocol(FlextProtocols.Service[object], Protocol):
                 '''API service operations.'''
                 def handle_request(self, request: dict) -> r:
                     '''Handle API request.'''
@@ -207,10 +207,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebAppManagerProtocol(FlextProtocols.Domain.Service[object], Protocol):
+        class WebAppManagerProtocol(FlextProtocols.Service[object], Protocol):
             """Protocol for web application lifecycle management.
 
-            Extends FlextProtocols.Domain.Service[object] with web-specific application management
+            Extends FlextProtocols.Service[object] with web-specific application management
             operations. Provides standardized interface for creating, starting, stopping,
             and managing web applications.
 
@@ -285,12 +285,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebResponseFormatterProtocol(
-            FlextProtocols.Domain.Service[object],
+            FlextProtocols.Service[object],
             Protocol,
         ):
             """Protocol for web response formatting.
 
-            Extends FlextProtocols.Domain.Service[object] with web-specific response formatting
+            Extends FlextProtocols.Service[object] with web-specific response formatting
             operations. Provides standardized interface for formatting success and
             error responses for web APIs.
 
@@ -383,12 +383,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebFrameworkInterfaceProtocol(
-            FlextProtocols.Domain.Service[object],
+            FlextProtocols.Service[object],
             Protocol,
         ):
             """Protocol for web framework integration.
 
-            Extends FlextProtocols.Domain.Service[object] with web framework integration operations.
+            Extends FlextProtocols.Service[object] with web framework integration operations.
             Provides standardized interface for creating JSON responses, extracting
             request data, and handling JSON requests.
 
@@ -458,10 +458,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebServiceProtocol(FlextProtocols.Domain.Service[object], Protocol):
+        class WebServiceProtocol(FlextProtocols.Service[object], Protocol):
             """Base web service protocol.
 
-            Extends FlextProtocols.Domain.Service[object] with web-specific service operations.
+            Extends FlextProtocols.Service[object] with web-specific service operations.
             Provides the foundation for all web services in the FLEXT web ecosystem.
 
             Used in: web service implementations
@@ -592,10 +592,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebConnectionProtocol(FlextProtocols.Domain.Service[object], Protocol):
+        class WebConnectionProtocol(FlextProtocols.Service[object], Protocol):
             """Web connection protocol for external systems.
 
-            Extends FlextProtocols.Domain.Service[object] with web-specific connection operations.
+            Extends FlextProtocols.Service[object] with web-specific connection operations.
             Provides standardized interface for web service connections.
 
             Used in: web service adapters and external integrations
@@ -613,10 +613,10 @@ class FlextWebProtocols(FlextProtocols):
                 return "http://localhost:8080"  # pragma: no cover
 
         @runtime_checkable
-        class WebLoggerProtocol(FlextProtocols.Domain.Service[object], Protocol):
+        class WebLoggerProtocol(FlextProtocols.Service[object], Protocol):
             """Web logging protocol.
 
-            Extends FlextProtocols.Domain.Service[object] with web-specific logging operations.
+            Extends FlextProtocols.Service[object] with web-specific logging operations.
             Provides standardized interface for web application logging.
 
             Used in: web logging implementations
@@ -654,12 +654,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateRendererProtocol(
-            FlextProtocols.Domain.Service[object],
+            FlextProtocols.Service[object],
             Protocol,
         ):
             """Protocol for web template rendering.
 
-            Extends FlextProtocols.Domain.Service[object] with web template rendering operations.
+            Extends FlextProtocols.Service[object] with web template rendering operations.
             Provides standardized interface for template engine integration.
 
             Used in: web template rendering implementations
@@ -703,12 +703,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateEngineProtocol(
-            FlextProtocols.Domain.Service[object],
+            FlextProtocols.Service[object],
             Protocol,
         ):
             """Protocol for web template engine operations.
 
-            Extends FlextProtocols.Domain.Service[object] with template engine management operations.
+            Extends FlextProtocols.Service[object] with template engine management operations.
             Provides interface for loading, validating, and managing templates.
 
             Used in: web template engine implementations
@@ -805,10 +805,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebMonitoringProtocol(FlextProtocols.Domain.Service[object], Protocol):
+        class WebMonitoringProtocol(FlextProtocols.Service[object], Protocol):
             """Web monitoring protocol for observability.
 
-            Extends FlextProtocols.Domain.Service[object] with web-specific monitoring operations.
+            Extends FlextProtocols.Service[object] with web-specific monitoring operations.
             Provides interface for web application metrics and health monitoring.
 
             Used in: web monitoring and observability implementations

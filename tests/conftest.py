@@ -29,13 +29,14 @@ from flext_tests import (
     FlextTestsUtilities,
 )
 
-from flext_web import FlextWebConfig, FlextWebModels, FlextWebServices, FlextWebTypes
+from flext_web import FlextWebConfig, FlextWebModels, FlextWebServices
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants
 from flext_web.typings import (
     _ApplicationConfig,
     _WebRequestConfig,
     _WebResponseConfig,
+    t,
 )
 
 
@@ -89,18 +90,18 @@ def create_entry(entry_type: str, **kwargs: object) -> FlextResult[object]:
     if entry_type == "web_app":
         return FlextWebModels.create_web_app(**kwargs)
     if entry_type == "http_request":
-        return FlextWebTypes.create_http_request(**kwargs)
+        return t.create_http_request(**kwargs)
     if entry_type == "http_response":
-        return FlextWebTypes.create_http_response(**kwargs)
+        return t.create_http_response(**kwargs)
     if entry_type == "web_request":
         config: _WebRequestConfig = kwargs
-        return FlextWebTypes.create_web_request(config)
+        return t.create_web_request(config)
     if entry_type == "web_response":
         config: _WebResponseConfig = kwargs
-        return FlextWebTypes.create_web_response(config)
+        return t.create_web_response(config)
     if entry_type == "application":
         config: _ApplicationConfig = kwargs
-        return FlextWebTypes.create_application(config)
+        return t.create_application(config)
     msg = f"Unsupported entry type: {entry_type}"
     raise ValueError(msg)
 

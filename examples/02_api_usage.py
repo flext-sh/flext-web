@@ -16,7 +16,7 @@ from typing import cast
 import requests
 from flext_core import FlextResult
 
-from flext_web import FlextWebTypes
+from flext_web.typings import t
 
 
 class ExampleConstants:
@@ -68,7 +68,7 @@ def create_application(
     name: str,
     port: int,
     host: str = "localhost",
-) -> FlextWebTypes.AppData:
+) -> t.AppData:
     """Create a new application using WebHandlers.
 
     Args:
@@ -115,8 +115,8 @@ def create_application(
         .flat_map(_parse_json)
         .flat_map(
             lambda json_data: (
-                FlextResult[FlextWebTypes.AppData].ok(
-                    cast("FlextWebTypes.AppData", json_data["data"]),
+                FlextResult[t.AppData].ok(
+                    cast("t.AppData", json_data["data"]),
                 )
                 if (
                     json_data.get("success")
@@ -124,7 +124,7 @@ def create_application(
                     and "id" in data
                     and "name" in data
                 )
-                else FlextResult[FlextWebTypes.AppData].fail("Invalid application data")
+                else FlextResult[t.AppData].fail("Invalid application data")
             ),
         )
     )
@@ -139,7 +139,7 @@ def create_application(
 def _extract_apps_from_response(
     response_data: object,
     data_key: str,
-) -> list[FlextWebTypes.AppData]:
+) -> list[t.AppData]:
     """Extract apps list from response data with proper type checking."""
     # Fast fail - no fallback, validate structure explicitly
     if not isinstance(response_data, dict):
@@ -158,7 +158,7 @@ def _extract_apps_from_response(
         return []
 
     return [
-        cast("FlextWebTypes.AppData", app)
+        cast("t.AppData", app)
         for app in apps_list
         if isinstance(app, dict)
         and all(k in app and isinstance(app[k], str) for k in ["id", "name"])
@@ -169,7 +169,7 @@ def _execute_app_operation(
     method: str,
     endpoint: str,
     json_data: dict[str, object] | None = None,
-) -> FlextWebTypes.AppData:
+) -> t.AppData:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
     Reduces from 9 returns to single monadic chain using FlextResult from flext-core.
@@ -211,8 +211,8 @@ def _execute_app_operation(
         _make_http_request()
         .flat_map(_parse_json_response)
         .flat_map(
-            lambda json_data: FlextResult[FlextWebTypes.AppData].ok(
-                cast("FlextWebTypes.AppData", json_data["data"]),
+            lambda json_data: FlextResult[t.AppData].ok(
+                cast("t.AppData", json_data["data"]),
             )
             if (
                 isinstance(json_data, dict)
@@ -223,7 +223,7 @@ def _execute_app_operation(
                 and "id" in data
                 and "name" in data
             )
-            else FlextResult[FlextWebTypes.AppData].fail("Invalid app data"),
+            else FlextResult[t.AppData].fail("Invalid app data"),
         )
     )
 
@@ -237,7 +237,7 @@ def _execute_app_operation(
 def _execute_list_operation(
     endpoint: str,
     data_key: str,
-) -> list[FlextWebTypes.AppData]:
+) -> list[t.AppData]:
     """Advanced Monad Composition using flext-core - eliminates 7 returns with Kleisli composition."""
 
     # Pure functional Kleisli composition using flext-core patterns
@@ -276,7 +276,7 @@ def _execute_list_operation(
     return result.unwrap()
 
 
-def start_application(app_id: str) -> FlextWebTypes.AppData:
+def start_application(app_id: str) -> t.AppData:
     """Start an application using FlextWebAppHandler.start().
 
     Args:
@@ -292,7 +292,7 @@ def start_application(app_id: str) -> FlextWebTypes.AppData:
     )
 
 
-def get_application_status(app_id: str) -> FlextWebTypes.AppData:
+def get_application_status(app_id: str) -> t.AppData:
     """Get application status using FlextWebApp entity.
 
     Args:
@@ -308,7 +308,7 @@ def get_application_status(app_id: str) -> FlextWebTypes.AppData:
     )
 
 
-def stop_application(app_id: str) -> FlextWebTypes.AppData:
+def stop_application(app_id: str) -> t.AppData:
     """Stop an application using FlextWebAppHandler.stop().
 
     Args:
@@ -324,7 +324,7 @@ def stop_application(app_id: str) -> FlextWebTypes.AppData:
     )
 
 
-def list_applications() -> list[FlextWebTypes.AppData]:
+def list_applications() -> list[t.AppData]:
     """List all applications using FlextWebServices.apps storage.
 
     Returns:

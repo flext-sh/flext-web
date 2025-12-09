@@ -20,7 +20,7 @@ from flext_web.protocols import (
     _WebTemplateEngineBase,
     _WebTemplateRendererBase,
 )
-from flext_web.typings import FlextWebTypes
+from flext_web.typings import t
 
 
 class TestFlextWebProtocols:
@@ -217,11 +217,11 @@ class TestFlextWebProtocols:
 
     def test_protocol_inheritance_chain(self) -> None:
         """Test that protocols properly inherit from base protocols."""
-        # WebServiceInterface should inherit from Domain.Service
+        # WebServiceInterface should inherit from Service
         web_service_protocol = FlextWebProtocols.Web.WebServiceProtocol
         assert hasattr(web_service_protocol, "__bases__")
 
-        # AppRepositoryInterface should inherit from Domain.Repository
+        # AppRepositoryInterface should inherit from Repository
         app_repo_protocol = FlextWebProtocols.WebRepositoryProtocol
         assert hasattr(app_repo_protocol, "__bases__")
 
@@ -865,10 +865,10 @@ class TestFlextWebProtocols:
 
             def format_success(
                 self,
-                data: FlextWebTypes.Core.ResponseDict,
-            ) -> FlextWebTypes.Core.ResponseDict:
+                data: t.Core.ResponseDict,
+            ) -> t.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 292-302)
-                response: FlextWebTypes.Core.ResponseDict = {
+                response: t.Core.ResponseDict = {
                     "status": FlextWebConstants.WebResponse.STATUS_SUCCESS,
                 }
                 for key, value in data.items():
@@ -876,9 +876,9 @@ class TestFlextWebProtocols:
                         response[key] = value
                 return response
 
-            def format_error(self, error: Exception) -> FlextWebTypes.Core.ResponseDict:
+            def format_error(self, error: Exception) -> t.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 315-319)
-                result: FlextWebTypes.Core.ResponseDict = {
+                result: t.Core.ResponseDict = {
                     "status": FlextWebConstants.WebResponse.STATUS_ERROR,
                     "message": str(error),
                 }
@@ -886,10 +886,10 @@ class TestFlextWebProtocols:
 
             def create_json_response(
                 self,
-                data: FlextWebTypes.Core.ResponseDict,
-            ) -> FlextWebTypes.Core.ResponseDict:
+                data: t.Core.ResponseDict,
+            ) -> t.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 335-345)
-                response: FlextWebTypes.Core.ResponseDict = {
+                response: t.Core.ResponseDict = {
                     FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
                 }
                 for key, value in data.items():
@@ -899,10 +899,10 @@ class TestFlextWebProtocols:
 
             def get_request_data(
                 self,
-                _request: FlextWebTypes.Core.RequestDict,
-            ) -> FlextWebTypes.Core.RequestDict:
+                _request: t.Core.RequestDict,
+            ) -> t.Core.RequestDict:
                 # Execute placeholder logic from protocol (lines 361-362)
-                empty_result: FlextWebTypes.Core.RequestDict = {}
+                empty_result: t.Core.RequestDict = {}
                 return empty_result
 
             # Required by p.Service
@@ -926,7 +926,7 @@ class TestFlextWebProtocols:
         formatter = ConcreteFormatter()
 
         # Test format_success with all value types to cover lines 292-302
-        data_with_all_types: FlextWebTypes.Core.ResponseDict = {
+        data_with_all_types: t.Core.ResponseDict = {
             "string": "value",
             "int": 42,
             "bool": True,
@@ -963,7 +963,7 @@ class TestFlextWebProtocols:
         framework = _WebFrameworkInterfaceBase()
 
         # Test create_json_response to cover lines 390-400
-        data: FlextWebTypes.Core.ResponseDict = {
+        data: t.Core.ResponseDict = {
             "test": "value",
             "nested": {"key": "value"},
         }

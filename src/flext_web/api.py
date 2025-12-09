@@ -32,13 +32,12 @@ from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.services import FlextWebServices
-from flext_web.typings import FlextWebTypes
+from flext_web.typings import t
 
 # Import aliases for simplified usage
 u = FlextUtilities
 c = FlextWebConstants
 m = FlextWebModels
-t = FlextWebTypes
 
 
 class FlextWebApi:
@@ -269,7 +268,7 @@ class FlextWebApi:
         """Get API facade capabilities and supported operations.
 
         Returns:
-        FlextResult[FlextWebTypes.Core.ResponseDict]: Success contains capabilities info
+        FlextResult[t.Core.ResponseDict]: Success contains capabilities info
 
         """
         return FlextResult.ok({

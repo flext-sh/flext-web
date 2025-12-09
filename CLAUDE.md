@@ -1,6 +1,8 @@
-# FLEXT-Web Project Guidelines
+# flext-web - FLEXT Infrastructure
 
-**Reference**: See [../CLAUDE.md](../CLAUDE.md) for FLEXT ecosystem standards and general rules.
+**Hierarchy**: PROJECT
+**Parent**: [../CLAUDE.md](../CLAUDE.md) - Workspace standards
+**Last Update**: 2025-12-07
 
 ---
 
@@ -92,4 +94,8 @@ cli.print("Success!", style="green")
 
 ---
 
-**Additional Resources**: [../CLAUDE.md](../CLAUDE.md) (workspace), [README.md](README.md) (overview)
+**See Also**:
+- [Workspace Standards](../CLAUDE.md)
+- [flext-core Patterns](../flext-core/CLAUDE.md)
+- [flext-api Patterns](../flext-api/CLAUDE.md)
+- [flext-auth Patterns](../flext-auth/CLAUDE.md)

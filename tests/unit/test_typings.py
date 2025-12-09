@@ -7,10 +7,10 @@ from typing import cast
 
 from flext_web.config import FlextWebConfig
 from flext_web.typings import (
-    FlextWebTypes,
     _ApplicationConfig,
     _WebRequestConfig,
     _WebResponseConfig,
+    t,
 )
 
 
@@ -42,18 +42,18 @@ class TestFlextWebTypes:
     def test_model_functionality(self) -> None:
         """Test Pydantic model functionality."""
         # Test that models can be created and used
-        request = FlextWebTypes.WebRequest(url="http://localhost:8080", method="GET")
+        request = t.WebRequest(url="http://localhost:8080", method="GET")
         assert request.url == "http://localhost:8080"
         assert request.method == "GET"
 
-        response = FlextWebTypes.WebResponse(status_code=200, request_id="test-123")
+        response = t.WebResponse(status_code=200, request_id="test-123")
         assert response.status_code == 200
         assert response.is_success, "HTTP response should be successful"
 
     def test_app_data_functionality(self) -> None:
         """Test app data functionality."""
         # Test that we can create and use app models
-        app = FlextWebTypes.ApplicationEntity(
+        app = t.ApplicationEntity(
             id="test-id",
             name="test-app",
             host="localhost",
@@ -89,7 +89,7 @@ class TestFlextWebTypes:
     def test_request_context_functionality(self) -> None:
         """Test request context functionality."""
         # Test that request models work
-        request = FlextWebTypes.WebRequest(
+        request = t.WebRequest(
             url="http://localhost:8080/api/test",
             method="GET",
             headers={"Content-Type": "application/json"},
@@ -110,7 +110,7 @@ class TestFlextWebTypes:
     def test_configure_web_types_system(self) -> None:
         """Test configure_web_types_system method."""
         # Use keyword arguments, not dict
-        result = FlextWebTypes.configure_web_types_system(
+        result = t.configure_web_types_system(
             use_pydantic_models=True,
             enable_runtime_validation=True,
         )
@@ -125,7 +125,7 @@ class TestFlextWebTypes:
         """Test configure_web_types_system with invalid config."""
         # Use keyword arguments - invalid values will be caught by Pydantic if TypesConfig becomes a Pydantic model
         # For now, test with valid but different values
-        result = FlextWebTypes.configure_web_types_system(
+        result = t.configure_web_types_system(
             use_pydantic_models=False,
             enable_runtime_validation=False,
         )
@@ -137,7 +137,7 @@ class TestFlextWebTypes:
 
     def test_get_web_types_system_config(self) -> None:
         """Test get_web_types_system_config method."""
-        result = FlextWebTypes.get_web_types_system_config()
+        result = t.get_web_types_system_config()
 
         assert result.is_success, "Operation should succeed"
         config = result.value
@@ -152,7 +152,7 @@ class TestFlextWebTypes:
     def test_model_creation(self) -> None:
         """Test model creation functionality."""
         # Test that models can be created
-        app = FlextWebTypes.ApplicationEntity(
+        app = t.ApplicationEntity(
             id="test-id",
             name="test-app",
             host="localhost",
@@ -180,7 +180,7 @@ class TestFlextWebTypes:
         assert hasattr(FlextWebTypes, "ApplicationEntity")
 
         # Test that types can be instantiated
-        test_request = FlextWebTypes.WebRequest(url="https://example.com")
+        test_request = t.WebRequest(url="https://example.com")
         assert hasattr(test_request, "is_secure")
 
     def test_type_annotations(self) -> None:
@@ -195,11 +195,11 @@ class TestFlextWebTypes:
 
         # Test that models can be used in type hints and operations
         def process_request_data(
-            request: FlextWebTypes.HttpRequest,
+            request: t.HttpRequest,
         ) -> dict[str, object]:
             return {"processed": True, "method": request.method, "url": request.url}
 
-        request = FlextWebTypes.HttpRequest(
+        request = t.HttpRequest(
             url="http://localhost:8080/api/test",
             method="GET",
         )
@@ -212,7 +212,7 @@ class TestFlextWebTypes:
 
     def test_create_http_request_invalid_method(self) -> None:
         """Test create_http_request with invalid HTTP method."""
-        result = FlextWebTypes.create_http_request(
+        result = t.create_http_request(
             url="http://localhost:8080",
             method="INVALID_METHOD",
         )
@@ -222,7 +222,7 @@ class TestFlextWebTypes:
 
     def test_create_http_request_invalid_headers(self) -> None:
         """Test create_http_request with invalid headers type."""
-        result = FlextWebTypes.create_http_request(
+        result = t.create_http_request(
             url="http://localhost:8080",
             method="GET",
             headers=cast("dict[str, str]", "not_a_dict"),
@@ -236,7 +236,7 @@ class TestFlextWebTypes:
         # This will test the exception catch block
         # We need to trigger an exception during model creation
         # Using a very long URL that might cause issues
-        result = FlextWebTypes.create_http_request(
+        result = t.create_http_request(
             url="http://localhost:8080",
             method="GET",
             headers={},
@@ -251,7 +251,7 @@ class TestFlextWebTypes:
 
     def test_create_http_response_invalid_headers(self) -> None:
         """Test create_http_response with invalid headers type."""
-        result = FlextWebTypes.create_http_response(
+        result = t.create_http_response(
             status_code=200,
             headers=cast("dict[str, str]", "not_a_dict"),
         )
@@ -262,7 +262,7 @@ class TestFlextWebTypes:
     def test_create_http_response_exception_handling(self) -> None:
         """Test create_http_response exception handling."""
         # Test exception handling in response creation
-        result = FlextWebTypes.create_http_response(
+        result = t.create_http_response(
             status_code=200,
             headers={},
             body=None,
@@ -285,7 +285,7 @@ class TestFlextWebTypes:
             "url": "http://localhost:8080",
             "method": "INVALID_METHOD",
         }
-        result = FlextWebTypes.create_web_request(config)
+        result = t.create_web_request(config)
         assert result.is_failure, "Operation should fail"
         assert result.error is not None
         assert "Invalid HTTP method" in result.error
@@ -297,7 +297,7 @@ class TestFlextWebTypes:
             "method": "GET",
             "headers": cast("dict[str, str]", "not_a_dict"),
         }
-        result = FlextWebTypes.create_web_request(config)
+        result = t.create_web_request(config)
         assert result.is_failure, "Operation should fail"
         assert result.error is not None
         assert "Headers must be a dictionary" in result.error
@@ -309,7 +309,7 @@ class TestFlextWebTypes:
             "method": "GET",
             "query_params": cast("dict[str, object]", "not_a_dict"),
         }
-        result = FlextWebTypes.create_web_request(config)
+        result = t.create_web_request(config)
         assert result.is_failure, "Operation should fail"
         assert result.error is not None
         assert "Query params must be a dictionary" in result.error
@@ -325,7 +325,7 @@ class TestFlextWebTypes:
             "timeout": -1.0,  # This might cause validation error
             "query_params": {},
         }
-        result = FlextWebTypes.create_web_request(config)
+        result = t.create_web_request(config)
         # Should fail due to negative timeout
         assert result.is_failure, "Negative timeout should cause validation failure"
         assert result.error is not None
@@ -339,7 +339,7 @@ class TestFlextWebTypes:
             "request_id": "test-123",
             "headers": cast("dict[str, str]", "not_a_dict"),
         }
-        result = FlextWebTypes.create_web_response(config)
+        result = t.create_web_response(config)
         assert result.is_failure, "Operation should fail"
         assert result.error is not None
         assert "Headers must be a dictionary" in result.error
@@ -354,7 +354,7 @@ class TestFlextWebTypes:
             "body": None,
             "elapsed_time": -1.0,  # This might cause validation error
         }
-        result = FlextWebTypes.create_web_response(config)
+        result = t.create_web_response(config)
         # Should fail due to negative elapsed_time
         assert result.is_failure, (
             "Negative elapsed_time should cause validation failure"
@@ -376,7 +376,7 @@ class TestFlextWebTypes:
             "port": 8080,
             "status": "invalid_status",  # This should cause validation error
         }
-        result = FlextWebTypes.create_application(config)
+        result = t.create_application(config)
         # Should fail due to invalid status
         assert result.is_failure, "Invalid status should cause validation failure"
         assert result.error is not None
@@ -386,7 +386,7 @@ class TestFlextWebTypes:
     def test_configure_web_types_system_exception_handling(self) -> None:
         """Test configure_web_types_system exception handling."""
         # Test with custom models_available list
-        result = FlextWebTypes.configure_web_types_system(
+        result = t.configure_web_types_system(
             use_pydantic_models=True,
             enable_runtime_validation=True,
             models_available=["Custom.Model"],
@@ -398,7 +398,7 @@ class TestFlextWebTypes:
     def test_get_web_types_system_config_exception_handling(self) -> None:
         """Test get_web_types_system_config exception handling."""
         # This should always succeed, but test the exception path
-        result = FlextWebTypes.get_web_types_system_config()
+        result = t.get_web_types_system_config()
         assert result.is_success, "Operation should succeed"
         config = result.value
         assert hasattr(config, "use_pydantic_models")
@@ -409,7 +409,7 @@ class TestFlextWebTypes:
         """Test create_http_request with all valid HTTP methods."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
-            result = FlextWebTypes.create_http_request(
+            result = t.create_http_request(
                 url="http://localhost:8080",
                 method=method,
             )
@@ -424,13 +424,13 @@ class TestFlextWebTypes:
                 "url": "http://localhost:8080",
                 "method": method,
             }
-            result = FlextWebTypes.create_web_request(config)
+            result = t.create_web_request(config)
             assert result.is_success, f"Operation should succeed for method {method}"
             assert result.value.method == method
 
     def test_create_http_request_with_none_headers(self) -> None:
         """Test create_http_request with None headers."""
-        result = FlextWebTypes.create_http_request(
+        result = t.create_http_request(
             url="http://localhost:8080",
             method="GET",
             headers=None,
@@ -440,7 +440,7 @@ class TestFlextWebTypes:
 
     def test_create_http_response_with_none_headers(self) -> None:
         """Test create_http_response with None headers."""
-        result = FlextWebTypes.create_http_response(
+        result = t.create_http_response(
             status_code=200,
             headers=None,
         )
@@ -455,7 +455,7 @@ class TestFlextWebTypes:
             "headers": None,
             "query_params": None,
         }
-        result = FlextWebTypes.create_web_request(config)
+        result = t.create_web_request(config)
         assert result.is_success, "Operation should succeed"
         assert isinstance(result.value.headers, dict)
         assert isinstance(result.value.query_params, dict)
@@ -467,13 +467,13 @@ class TestFlextWebTypes:
             "request_id": "test-123",
             "headers": None,
         }
-        result = FlextWebTypes.create_web_response(config)
+        result = t.create_web_response(config)
         assert result.is_success, "Operation should succeed"
         assert isinstance(result.value.headers, dict)
 
     def test_types_config_initialization(self) -> None:
         """Test TypesConfig initialization with all parameters."""
-        config = FlextWebTypes.TypesConfig(
+        config = t.TypesConfig(
             use_pydantic_models=False,
             enable_runtime_validation=False,
             models_available=["Custom.Model"],
@@ -484,7 +484,7 @@ class TestFlextWebTypes:
 
     def test_types_config_default_initialization(self) -> None:
         """Test TypesConfig initialization with defaults."""
-        config = FlextWebTypes.TypesConfig()
+        config = t.TypesConfig()
         assert config.use_pydantic_models is True
         assert config.enable_runtime_validation is True
         assert isinstance(config.models_available, list)
@@ -495,7 +495,7 @@ class TestFlextWebTypes:
         # This tests the default case in match/case that should never happen
         # but is defensive code. We can't easily trigger it without modifying
         # the code, but we test that the validation before match/case works
-        result = FlextWebTypes.create_http_request(
+        result = t.create_http_request(
             url="http://localhost:8080",
             method="GET",
         )
@@ -505,7 +505,7 @@ class TestFlextWebTypes:
         """Test create_http_request duplicate validation path (line 157)."""
         # Test the duplicate validation that happens after first check
         # This covers line 157 which is the second validation check
-        result = FlextWebTypes.create_http_request(
+        result = t.create_http_request(
             url="http://localhost:8080",
             method="INVALID",
         )
@@ -519,7 +519,7 @@ class TestFlextWebTypes:
             "url": "http://localhost:8080",
             "method": "GET",
         }
-        result = FlextWebTypes.create_web_request(config)
+        result = t.create_web_request(config)
         assert result.is_success, "Operation should succeed"
 
     def test_create_web_request_duplicate_validation(self) -> None:
@@ -529,7 +529,7 @@ class TestFlextWebTypes:
             "url": "http://localhost:8080",
             "method": "INVALID",
         }
-        result = FlextWebTypes.create_web_request(config)
+        result = t.create_web_request(config)
         assert result.is_failure, "Operation should fail"
 
     def test_create_application_exception_path(self) -> None:
@@ -541,14 +541,14 @@ class TestFlextWebTypes:
             "host": "localhost",
             "port": 8080,
         }
-        result = FlextWebTypes.create_application(config)
+        result = t.create_application(config)
         # Should succeed with default values
         assert result.is_success, "Configuration with defaults should succeed"
 
     def test_configure_web_types_system_exception_path(self) -> None:
         """Test configure_web_types_system exception handling (lines 461-462)."""
         # Test exception handling in configure_web_types_system
-        result = FlextWebTypes.configure_web_types_system(
+        result = t.configure_web_types_system(
             use_pydantic_models=True,
             enable_runtime_validation=True,
         )
@@ -558,6 +558,6 @@ class TestFlextWebTypes:
     def test_get_web_types_system_config_exception_path(self) -> None:
         """Test get_web_types_system_config exception handling (lines 479-480)."""
         # Test exception handling in get_web_types_system_config
-        result = FlextWebTypes.get_web_types_system_config()
+        result = t.get_web_types_system_config()
         # Should succeed normally, but tests the exception path exists
         assert result.is_success, "Operation should succeed"

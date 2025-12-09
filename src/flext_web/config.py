@@ -1,6 +1,6 @@
 """HTTP Configuration - Domain-agnostic HTTP configuration.
 
-Uses Pydantic 2 with flext-core patterns and FlextWebConstants.
+Uses Pydantic 2 with flext-core patterns and c.
 
 Copyright (c) 2025 FLEXT Contributors
 SPDX-License-Identifier: MIT
@@ -14,7 +14,7 @@ from flext_core import FlextConfig, FlextResult
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from flext_web.constants import FlextWebConstants
+from flext_web.constants import c
 
 
 @FlextConfig.auto_register("web")
@@ -34,9 +34,10 @@ class FlextWebConfig(BaseSettings):
     Domain-agnostic configuration for any HTTP-based service.
     """
 
+    # Use FlextConfig.resolve_env_file() to ensure all FLEXT configs use same .env
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_WEB_",
-        env_file=".env",
+        env_file=FlextConfig.resolve_env_file(),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -48,37 +49,37 @@ class FlextWebConfig(BaseSettings):
     )
 
     host: str = Field(
-        default=FlextWebConstants.Web.WebDefaults.HOST,
+        default=c.Web.WebDefaults.HOST,
         min_length=1,
         max_length=255,
         description="Web server host address",
     )
     port: int = Field(
-        default=FlextWebConstants.Web.WebDefaults.PORT,
-        ge=FlextWebConstants.Web.WebValidation.PORT_RANGE[0],
-        le=FlextWebConstants.Web.WebValidation.PORT_RANGE[1],
+        default=c.Web.WebDefaults.PORT,
+        ge=c.Web.WebValidation.PORT_RANGE[0],
+        le=c.Web.WebValidation.PORT_RANGE[1],
         description="Web server port number",
     )
     app_name: str = Field(
-        default=FlextWebConstants.Web.WebDefaults.APP_NAME,
-        min_length=FlextWebConstants.Web.WebValidation.NAME_LENGTH_RANGE[0],
-        max_length=FlextWebConstants.Web.WebValidation.NAME_LENGTH_RANGE[1],
+        default=c.Web.WebDefaults.APP_NAME,
+        min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
+        max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
         description="Web application name",
     )
     version: str = Field(
-        default=FlextWebConstants.Web.WebDefaults.VERSION_STRING,
+        default=c.Web.WebDefaults.VERSION_STRING,
         description="Application version",
     )
     debug_mode: bool = Field(
-        default=FlextWebConstants.Web.WebDefaults.DEBUG_MODE,
+        default=c.Web.WebDefaults.DEBUG_MODE,
         description="Debug mode",
     )
     ssl_enabled: bool = Field(default=False, description="Enable SSL/TLS")
     ssl_cert_path: Path | None = Field(default=None, description="SSL certificate path")
     ssl_key_path: Path | None = Field(default=None, description="SSL key path")
     secret_key: str = Field(
-        default=FlextWebConstants.Web.WebDefaults.SECRET_KEY,
-        min_length=FlextWebConstants.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
+        default=c.Web.WebDefaults.SECRET_KEY,
+        min_length=c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
         description="Secret key for session management",
     )
     testing: bool = Field(

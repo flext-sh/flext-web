@@ -53,9 +53,16 @@ class FlextWebModels(m_core):
         ... )
         >>> # Check request properties
         >>> assert request.is_secure
-        >>> assert request.has_body
 
     """
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        """Warn when FlextWebModels is subclassed directly."""
+        super().__init_subclass__(**kwargs)
+        flext_u.Deprecation.warn_once(
+            f"subclass:{cls.__name__}",
+            "Subclassing FlextWebModels is deprecated. Use FlextModels directly with composition instead.",
+        )
 
     # =========================================================================
     # HTTP PROTOCOL MODELS (Value Objects - immutable)
@@ -1152,33 +1159,8 @@ class FlextWebModels(m_core):
                 description="OpenAPI URL",
             )
 
-        FastAPIAppConfig.model_rebuild()
 
+m = FlextWebModels
+m_web = FlextWebModels
 
-# =============================================================================
-# POPULATE m_core.Web NAMESPACE
-# =============================================================================
-# Copy all models from FlextWebModels to m_core.Web namespace
-# This allows access via both:
-# - FlextWebModels.* (backward compatibility, deprecated)
-# - m_core.Web.* (new namespace pattern)
-# - m.Web.* (convenience alias)
-# =============================================================================
-
-# Get all attributes from FlextWebModels that are models, classes, or type aliases
-# Exclude private attributes and special methods
-_web_model_attrs = {
-    name: attr
-    for name, attr in vars(FlextWebModels).items()
-    if not name.startswith("_")
-    and (
-        isinstance(attr, type)
-        or hasattr(attr, "__origin__")  # TypeAlias
-        or (callable(attr) and not isinstance(attr, type(FlextWebModels.__init__)))
-    )
-}
-
-# Note: m_core.Web namespace does not exist in flext-core
-# Models should be accessed directly via FlextWebModels.*
-
-__all__ = ["FlextWebModels"]
+__all__ = ["FlextWebModels", "m", "m_web"]
