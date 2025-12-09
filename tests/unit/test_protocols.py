@@ -360,29 +360,23 @@ class TestFlextWebProtocols:
                 port: int,
                 host: str,
             ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok(
-                    {
-                        "name": name,
-                        "port": port,
-                        "host": host,
-                    }
-                )
+                return FlextResult[dict[str, object]].ok({
+                    "name": name,
+                    "port": port,
+                    "host": host,
+                })
 
             def start_app(self, app_id: str) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok(
-                    {
-                        "id": app_id,
-                        "status": "started",
-                    }
-                )
+                return FlextResult[dict[str, object]].ok({
+                    "id": app_id,
+                    "status": "started",
+                })
 
             def stop_app(self, app_id: str) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok(
-                    {
-                        "id": app_id,
-                        "status": "stopped",
-                    }
-                )
+                return FlextResult[dict[str, object]].ok({
+                    "id": app_id,
+                    "status": "stopped",
+                })
 
             def list_apps(self) -> FlextResult[list[dict[str, object]]]:
                 return FlextResult[list[dict[str, object]]].ok([])
@@ -424,13 +418,11 @@ class TestFlextWebProtocols:
                 response: dict[str, object] = {
                     "status": FlextWebConstants.WebResponse.STATUS_SUCCESS,
                 }
-                response.update(
-                    {
-                        key: value
-                        for key, value in data.items()
-                        if isinstance(value, (str, int, bool, list, dict))
-                    }
-                )
+                response.update({
+                    key: value
+                    for key, value in data.items()
+                    if isinstance(value, (str, int, bool, list, dict))
+                })
                 return response
 
             def format_error(self, error: Exception) -> dict[str, object]:
@@ -447,13 +439,11 @@ class TestFlextWebProtocols:
                 response: dict[str, object] = {
                     FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
                 }
-                response.update(
-                    {
-                        key: value
-                        for key, value in data.items()
-                        if isinstance(value, (str, int, bool, list, dict))
-                    }
-                )
+                response.update({
+                    key: value
+                    for key, value in data.items()
+                    if isinstance(value, (str, int, bool, list, dict))
+                })
                 return response
 
             def get_request_data(
@@ -521,13 +511,11 @@ class TestFlextWebProtocols:
                 response: dict[str, object] = {
                     FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
                 }
-                response.update(
-                    {
-                        key: value
-                        for key, value in data.items()
-                        if isinstance(value, (str, int, bool, list, dict))
-                    }
-                )
+                response.update({
+                    key: value
+                    for key, value in data.items()
+                    if isinstance(value, (str, int, bool, list, dict))
+                })
                 return response
 
             def get_request_data(

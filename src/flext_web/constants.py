@@ -118,12 +118,10 @@ class FlextWebConstants(c_core):
             )
             REQUEST_TIMEOUT_RANGE: Final[tuple[int, int]] = (1, REQUEST_TIMEOUT_MAX)
             URL_LENGTH_RANGE: Final[tuple[int, int]] = (MIN_URL_LENGTH, MAX_URL_LENGTH)
-            HEADER_LIMITS: ClassVar[Mapping[str, int]] = MappingProxyType(
-                {
-                    "max_length": MAX_HEADER_LENGTH,
-                    "max_count": MAX_HEADERS_COUNT,
-                }
-            )
+            HEADER_LIMITS: ClassVar[Mapping[str, int]] = MappingProxyType({
+                "max_length": MAX_HEADER_LENGTH,
+                "max_count": MAX_HEADERS_COUNT,
+            })
 
         class Http:
             """HTTP protocol constants, methods and status codes."""
@@ -195,18 +193,16 @@ class FlextWebConstants(c_core):
                 SERVICE_UNAVAILABLE = 503
                 GATEWAY_TIMEOUT = 504
 
-            STATUS_CODES: ClassVar[Mapping[str, int]] = MappingProxyType(
-                {status.name: int(status.value) for status in StatusCode}
-            )
-            STATUS_RANGES: ClassVar[Mapping[str, tuple[int, int]]] = MappingProxyType(
-                {
-                    "INFORMATIONAL": (100, 199),
-                    "SUCCESS": (200, 299),
-                    "REDIRECTION": (300, 399),
-                    "CLIENT_ERROR": (400, 499),
-                    "SERVER_ERROR": (500, 599),
-                }
-            )
+            STATUS_CODES: ClassVar[Mapping[str, int]] = MappingProxyType({
+                status.name: int(status.value) for status in StatusCode
+            })
+            STATUS_RANGES: ClassVar[Mapping[str, tuple[int, int]]] = MappingProxyType({
+                "INFORMATIONAL": (100, 199),
+                "SUCCESS": (200, 299),
+                "REDIRECTION": (300, 399),
+                "CLIENT_ERROR": (400, 499),
+                "SERVER_ERROR": (500, 599),
+            })
             SUCCESS_RANGE: Final[tuple[int, int]] = (200, 299)
             ERROR_MIN: Final[int] = 400
 
@@ -237,13 +233,11 @@ class FlextWebConstants(c_core):
                 "Content-Type",
                 "Authorization",
             )
-            SESSION_DEFAULTS: ClassVar[Mapping[str, str | bool]] = MappingProxyType(
-                {
-                    "secure": False,
-                    "httponly": True,
-                    "samesite": "Lax",
-                }
-            )
+            SESSION_DEFAULTS: ClassVar[Mapping[str, str | bool]] = MappingProxyType({
+                "secure": False,
+                "httponly": True,
+                "samesite": "Lax",
+            })
             SSL_PORTS: Final[tuple[int, int]] = (443, 8443)
             SSL_ALT_PORT: Final[int] = 8443
             SESSION_COOKIE_SECURE_DEFAULT: Final[bool] = False
