@@ -1,10 +1,11 @@
 """Comprehensive unit tests for flext_web.typings module.
 
-Tests the unified FlextWebTypes class following flext standards.
+Tests the unified FlextWebModels class following flext standards.
 """
 
 from typing import cast
 
+from flext_web import FlextWebModels
 from flext_web.config import FlextWebConfig
 from flext_web.typings import (
     _ApplicationConfig,
@@ -14,30 +15,30 @@ from flext_web.typings import (
 )
 
 
-class TestFlextWebTypes:
-    """Test suite for FlextWebTypes unified class."""
+class TestFlextWebModels:
+    """Test suite for FlextWebModels unified class."""
 
     def test_typings_structure(self) -> None:
-        """Test that FlextWebTypes has proper structure."""
+        """Test that FlextWebModels has proper structure."""
         # Should have model type aliases
-        assert hasattr(FlextWebTypes, "HttpMessage")
-        assert hasattr(FlextWebTypes, "HttpRequest")
-        assert hasattr(FlextWebTypes, "HttpResponse")
-        assert hasattr(FlextWebTypes, "WebRequest")
-        assert hasattr(FlextWebTypes, "WebResponse")
-        assert hasattr(FlextWebTypes, "ApplicationEntity")
+        assert hasattr(FlextWebModels, "HttpMessage")
+        assert hasattr(FlextWebModels, "HttpRequest")
+        assert hasattr(FlextWebModels, "HttpResponse")
+        assert hasattr(FlextWebModels, "WebRequest")
+        assert hasattr(FlextWebModels, "WebResponse")
+        assert hasattr(FlextWebModels, "ApplicationEntity")
 
     def test_core_web_types(self) -> None:
         """Test Core web types."""
         # Test that core types exist
-        assert hasattr(FlextWebTypes, "SuccessResponse")
-        assert hasattr(FlextWebTypes, "BaseResponse")
-        assert hasattr(FlextWebTypes, "ErrorResponse")
+        assert hasattr(FlextWebModels, "SuccessResponse")
+        assert hasattr(FlextWebModels, "BaseResponse")
+        assert hasattr(FlextWebModels, "ErrorResponse")
 
     def test_application_types(self) -> None:
         """Test Application types."""
         # Test that Application types exist
-        assert hasattr(FlextWebTypes, "ApplicationEntity")
+        assert hasattr(FlextWebModels, "ApplicationEntity")
 
     def test_model_functionality(self) -> None:
         """Test Pydantic model functionality."""
@@ -105,7 +106,7 @@ class TestFlextWebTypes:
         """Test Project types."""
         # Test that project types are defined
         # WebProjectType is a type alias, so we test that the class has the expected structure
-        assert hasattr(FlextWebTypes, "ApplicationEntity")
+        assert hasattr(FlextWebModels, "ApplicationEntity")
 
     def test_configure_web_types_system(self) -> None:
         """Test configure_web_types_system method."""
@@ -175,9 +176,9 @@ class TestFlextWebTypes:
     def test_type_consistency(self) -> None:
         """Test that types are consistent."""
         # Test that core types exist
-        assert hasattr(FlextWebTypes, "WebRequest")
-        assert hasattr(FlextWebTypes, "WebResponse")
-        assert hasattr(FlextWebTypes, "ApplicationEntity")
+        assert hasattr(FlextWebModels, "WebRequest")
+        assert hasattr(FlextWebModels, "WebResponse")
+        assert hasattr(FlextWebModels, "ApplicationEntity")
 
         # Test that types can be instantiated
         test_request = t.WebRequest(url="https://example.com")
@@ -186,9 +187,9 @@ class TestFlextWebTypes:
     def test_type_annotations(self) -> None:
         """Test that types have proper annotations."""
         # Test that type annotations are available
-        assert hasattr(FlextWebTypes, "WebRequest")
-        assert hasattr(FlextWebTypes, "WebResponse")
-        assert hasattr(FlextWebTypes, "ApplicationEntity")
+        assert hasattr(FlextWebModels, "WebRequest")
+        assert hasattr(FlextWebModels, "WebResponse")
+        assert hasattr(FlextWebModels, "ApplicationEntity")
 
     def test_type_usage_patterns(self) -> None:
         """Test that types follow expected usage patterns."""
