@@ -78,7 +78,7 @@ class TestFlextWebService:
         )
         authenticate_result = service.authenticate(credentials)
         assert authenticate_result.is_success, "Authentication should succeed"
-        authenticate_data = authenticate_result.unwrap()
+        authenticate_data = authenticate_result.value
         assert authenticate_data.authenticated is True
         assert authenticate_data.token is not None
         assert authenticate_data.user_id == "testuser"
@@ -132,7 +132,7 @@ class TestFlextWebService:
         service = FlextWebServices()
         logout_result = service.logout()
         assert logout_result.is_success
-        logout_data = logout_result.unwrap()
+        logout_data = logout_result.value
         assert logout_data.data["success"] is True
 
     def test_register_success(self) -> None:
@@ -145,7 +145,7 @@ class TestFlextWebService:
         )
         register_result = service.register_user(user_data)
         assert register_result.is_success
-        user_response = register_result.unwrap()
+        user_response = register_result.value
         assert user_response.id is not None
         assert user_response.username == "newuser"
         assert user_response.email == "newuser@example.com"
@@ -193,7 +193,7 @@ class TestFlextWebService:
         service = FlextWebServices()
         health_result = service.health_check()
         assert health_result.is_success
-        health_data = health_result.unwrap()
+        health_data = health_result.value
         assert health_data["status"] == "healthy"
         assert health_data["service"] == "flext-web"
         assert "timestamp" in health_data
@@ -203,7 +203,7 @@ class TestFlextWebService:
         service = FlextWebServices()
         dashboard_result = service.dashboard()
         assert dashboard_result.is_success
-        dashboard_data = dashboard_result.unwrap()
+        dashboard_data = dashboard_result.value
         assert dashboard_data.total_applications >= 0
         assert dashboard_data.running_applications >= 0
         assert dashboard_data.service_status in {"operational", "stopped"}
@@ -216,7 +216,7 @@ class TestFlextWebService:
         service = FlextWebServices()
         list_result = service.list_apps()
         assert list_result.is_success
-        apps_data = list_result.unwrap()
+        apps_data = list_result.value
         assert isinstance(apps_data, list)
         assert all(hasattr(app, "id") for app in apps_data)
 
@@ -230,7 +230,7 @@ class TestFlextWebService:
         )
         create_result = service.create_app(app_data)
         assert create_result.is_success
-        app_response = create_result.unwrap()
+        app_response = create_result.value
         assert app_response.name == "test-app"
         assert app_response.host == "localhost"
         assert app_response.port == 8080
@@ -266,13 +266,13 @@ class TestFlextWebService:
         )
         create_result = service.create_app(app_data)
         assert create_result.is_success
-        app_response = create_result.unwrap()
+        app_response = create_result.value
         app_id = app_response.id
 
         # Then get it
         get_result = service.get_app(app_id)
         assert get_result.is_success
-        retrieved_app = get_result.unwrap()
+        retrieved_app = get_result.value
         assert retrieved_app.id == app_id
 
     def test_get_app_not_found(self) -> None:
@@ -309,13 +309,13 @@ class TestFlextWebService:
         )
         create_result = service.create_app(app_data)
         assert create_result.is_success
-        app_response = create_result.unwrap()
+        app_response = create_result.value
         app_id = app_response.id
 
         # Then start it
         start_result = service.start_app(app_id)
         assert start_result.is_success
-        started_app = start_result.unwrap()
+        started_app = start_result.value
         assert started_app.status == "running"
 
     def test_start_app_invalid_id(self) -> None:
@@ -350,7 +350,7 @@ class TestFlextWebService:
         )
         create_result = service.create_app(app_data)
         assert create_result.is_success
-        app_response = create_result.unwrap()
+        app_response = create_result.value
         app_id = app_response.id
 
         service.start_app(app_id)
@@ -358,7 +358,7 @@ class TestFlextWebService:
         # Then stop it
         stop_result = service.stop_app(app_id)
         assert stop_result.is_success
-        stopped_app = stop_result.unwrap()
+        stopped_app = stop_result.value
         assert stopped_app.status == "stopped"
 
     def test_stop_app_invalid_id(self) -> None:
@@ -386,7 +386,7 @@ class TestFlextWebService:
         """Test create_web_service class method."""
         result = FlextWebServices.create_web_service()
         assert result.is_success
-        service = result.unwrap()
+        service = result.value
         assert isinstance(service, FlextWebServices)
 
     def test_create_web_service_with_config(self) -> None:
@@ -394,7 +394,7 @@ class TestFlextWebService:
         config = cast("FlextWebConfig", {"host": "localhost", "port": 8080})
         result = FlextWebServices.create_web_service(config)
         assert result.is_success
-        service = result.unwrap()
+        service = result.value
         assert isinstance(service, FlextWebServices)
 
     def test_create_web_service_invalid_config(self) -> None:
@@ -409,7 +409,7 @@ class TestFlextWebService:
         entity_data = FlextWebModels.Service.EntityData(data={"key": "value"})
         create_result = service.create_entity(entity_data)
         assert create_result.is_success
-        created_entity = create_result.unwrap()
+        created_entity = create_result.value
         assert "id" in created_entity.data
         assert created_entity.data["key"] == "value"
 
@@ -420,13 +420,13 @@ class TestFlextWebService:
         entity_data = FlextWebModels.Service.EntityData(data={"key": "value"})
         create_result = service.create_entity(entity_data)
         assert create_result.is_success
-        created_entity = create_result.unwrap()
+        created_entity = create_result.value
         entity_id = created_entity.data["id"]
 
         # Then get it
         get_result = service.get_entity(entity_id)
         assert get_result.is_success
-        retrieved_entity = get_result.unwrap()
+        retrieved_entity = get_result.value
         assert retrieved_entity.data["id"] == entity_id
 
     def test_get_entity_not_found(self) -> None:
@@ -464,7 +464,7 @@ class TestFlextWebService:
         # List all entities
         list_result = service.list_entities()
         assert list_result.is_success
-        entities = list_result.unwrap()
+        entities = list_result.value
         assert len(entities) >= 2
 
     def test_health_status_success(self) -> None:
@@ -472,7 +472,7 @@ class TestFlextWebService:
         service = FlextWebServices()
         health_result = service.health_status()
         assert health_result.is_success
-        health_data = health_result.unwrap()
+        health_data = health_result.value
         assert health_data.status == "healthy"
         assert health_data.service == "flext-web"
         assert health_data.timestamp is not None
@@ -482,7 +482,7 @@ class TestFlextWebService:
         service = FlextWebServices()
         metrics_result = service.dashboard_metrics()
         assert metrics_result.is_success
-        metrics_data = metrics_result.unwrap()
+        metrics_data = metrics_result.value
         assert metrics_data.service_status == "operational"
         assert isinstance(metrics_data.components, list)
 
@@ -494,7 +494,7 @@ class TestFlextWebService:
         )
         create_result = service.create_configuration(config)
         assert create_result.is_success
-        created_config = create_result.unwrap()
+        created_config = create_result.value
         assert created_config == config
 
     def test_initialize_routes_already_initialized(self) -> None:
@@ -549,7 +549,7 @@ class TestFlextWebService:
         # Service is valid by default (not running)
         result = service.validate_business_rules()
         assert result.is_success
-        assert result.unwrap() is True
+        assert result.value is True
 
     def test_validate_business_rules_running_without_routes(self) -> None:
         """Test business rules validation when service is running without routes."""
@@ -581,13 +581,13 @@ class TestFlextWebService:
         service = FlextWebServices()
         result = service.execute()
         assert result.is_success
-        assert result.unwrap() is True
+        assert result.value is True
 
     def test_create_service_class_method(self) -> None:
         """Test create_service class method."""
         result = FlextWebServices.create_service()
         assert result.is_success
-        service = result.unwrap()
+        service = result.value
         assert isinstance(service, FlextWebServices)
 
     def test_create_service_with_config(self) -> None:
@@ -597,7 +597,7 @@ class TestFlextWebService:
         )
         result = FlextWebServices.create_service(config)
         assert result.is_success
-        service = result.unwrap()
+        service = result.value
         assert isinstance(service, FlextWebServices)
         # Config is cloned by FlextService, so compare attributes instead
         assert service._config.host == config.host
@@ -609,5 +609,5 @@ class TestFlextWebService:
         entity_service = FlextWebServices.Entity()
         execute_result = entity_service.execute()
         assert execute_result.is_success
-        ready_response = execute_result.unwrap()
+        ready_response = execute_result.value
         assert ready_response.data["message"] == "Entity service ready"

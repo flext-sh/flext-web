@@ -133,7 +133,7 @@ def create_application(
     if result.is_failure:
         error_msg = f"Application creation failed: {result.error}"
         raise ValueError(error_msg)
-    return result.unwrap()
+    return result.value
 
 
 def _extract_apps_from_response(
@@ -231,7 +231,7 @@ def _execute_app_operation(
     if result.is_failure:
         error_msg = f"Operation failed: {result.error}"
         raise ValueError(error_msg)
-    return result.unwrap()
+    return result.value
 
 
 def _execute_list_operation(
@@ -273,7 +273,7 @@ def _execute_list_operation(
     if result.is_failure:
         error_msg = f"List operation failed: {result.error}"
         raise ValueError(error_msg)
-    return result.unwrap()
+    return result.value
 
 
 def start_application(app_id: str) -> t.AppData:

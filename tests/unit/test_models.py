@@ -180,7 +180,7 @@ class TestFlextWebModels:
         )
         result = app.start()
         assert result.is_success
-        started_app = result.unwrap()
+        started_app = result.value
         assert started_app.status == "running"
 
     def test_web_app_start_already_running(self) -> None:
@@ -204,7 +204,7 @@ class TestFlextWebModels:
         )
         result = app.stop()
         assert result.is_success
-        stopped_app = result.unwrap()
+        stopped_app = result.value
         assert stopped_app.status == "stopped"
 
     def test_web_app_stop_not_running(self) -> None:
@@ -228,7 +228,7 @@ class TestFlextWebModels:
         )
         result = app.restart()
         assert result.is_success
-        restarted_app = result.unwrap()
+        restarted_app = result.value
         assert restarted_app.status == "running"
 
     def test_web_app_metrics_update(self) -> None:
@@ -238,7 +238,7 @@ class TestFlextWebModels:
         result = app.update_metrics(metrics)
         # The update_metrics method should return FlextResult[bool]
         assert result.is_success
-        assert result.unwrap() is True
+        assert result.value is True
         # The update_metrics method should merge with existing metrics
         assert "requests" in app.metrics
         assert "errors" in app.metrics
@@ -349,7 +349,7 @@ class TestFlextWebModels:
         """Test create_web_app factory method."""
         result = create_entry("web_app", name="test-app", host="localhost", port=8080)
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         assert app.name == "test-app"
         assert app.host == "localhost"
         assert app.port == 8080
@@ -364,7 +364,7 @@ class TestFlextWebModels:
             body='{"test": "data"}',
         )
         assert result.is_success
-        request = result.unwrap()
+        request = result.value
         assert request.method == "POST"
         assert request.url == "http://localhost:8080/api/test"
 
@@ -378,7 +378,7 @@ class TestFlextWebModels:
             body='{"id": 1}',
         )
         assert result.is_success
-        response = result.unwrap()
+        response = result.value
         assert response.request_id == "req-123"
         assert response.status_code == 201
 
@@ -706,7 +706,7 @@ class TestFlextWebModels:
             assert result.is_success, (
                 f"Expected success for app '{name}', got: {result.error}"
             )
-            app = result.unwrap()
+            app = result.value
             assert app.name == name
             assert app.host == host
             assert app.port == port
@@ -793,7 +793,7 @@ class TestFlextWebModels:
         )
         result = app.add_domain_event("TestEvent")
         assert result.is_success
-        assert result.unwrap() is True
+        assert result.value is True
         assert "TestEvent" in app.domain_events
 
     def test_application_add_domain_event_empty(self) -> None:

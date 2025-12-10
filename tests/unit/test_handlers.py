@@ -26,14 +26,14 @@ class TestFlextWebHandlers:
         handler = FlextWebHandlers.ApplicationHandler()
         result = handler.list_apps()
         assert result.is_success
-        apps = result.unwrap()
+        apps = result.value
         assert isinstance(apps, list)
 
     def test_handle_health_check(self) -> None:
         """Test health check handling."""
         result = FlextWebHandlers.handle_health_check()
         assert result.is_success
-        health_data = result.unwrap()
+        health_data = result.value
         assert "status" in health_data
         assert "service" in health_data
         assert "version" in health_data
@@ -43,7 +43,7 @@ class TestFlextWebHandlers:
         """Test system info handling."""
         result = FlextWebHandlers.handle_system_info()
         assert result.is_success
-        system_data = result.unwrap()
+        system_data = result.value
         assert "service_name" in system_data
         assert "service_type" in system_data
         assert "architecture" in system_data
@@ -52,7 +52,7 @@ class TestFlextWebHandlers:
         """Test app creation handling."""
         result = FlextWebHandlers.handle_create_app("test-app", 8080, "localhost")
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         assert app.name == "test-app"
         assert app.port == 8080
         assert app.host == "localhost"
@@ -82,7 +82,7 @@ class TestFlextWebHandlers:
         # Create an app
         create_result = handler.create_app("test-app", 8080, "localhost")
         assert create_result.is_success
-        app = create_result.unwrap()
+        app = create_result.value
 
         # App should be in registry
         assert app.id in handler._apps_registry
@@ -170,19 +170,19 @@ class TestFlextWebHandlers:
         # Create app
         create_result = handler.create("test-app", 8080, "localhost")
         assert create_result.is_success
-        app = create_result.unwrap()
+        app = create_result.value
         app_id = app.id
 
         # Start app
         start_result = handler.start_app(app_id)
         assert start_result.is_success
-        started_app = start_result.unwrap()
+        started_app = start_result.value
         assert started_app.status == "running"
 
         # Stop app
         stop_result = handler.stop_app(app_id)
         assert stop_result.is_success
-        stopped_app = stop_result.unwrap()
+        stopped_app = stop_result.value
         assert stopped_app.status == "stopped"
 
     def test_handle_start_app_invalid_type(self) -> None:
@@ -210,26 +210,26 @@ class TestFlextWebHandlers:
         handlers = FlextWebHandlers()
         result = handlers.execute()
         assert result.is_success
-        assert result.unwrap() is True
+        assert result.value is True
 
     def test_handlers_validate_business_rules(self) -> None:
         """Test FlextWebHandlers.validate_business_rules - REAL execution."""
         handlers = FlextWebHandlers()
         result = handlers.validate_business_rules()
         assert result.is_success
-        assert result.unwrap() is True
+        assert result.value is True
 
     def test_handle_start_app(self) -> None:
         """Test handle_start_app with valid entity."""
         # Create a valid app entity
         app_result = FlextWebModels.create_web_app("test-app", "localhost", 8080)
         assert app_result.is_success
-        app = app_result.unwrap()
+        app = app_result.value
 
         # Handle start
         result = FlextWebHandlers.handle_start_app(app)
         assert result.is_success
-        started_app = result.unwrap()
+        started_app = result.value
         assert started_app.is_running
 
     def test_handle_stop_app(self) -> None:
@@ -237,13 +237,13 @@ class TestFlextWebHandlers:
         # Create and start a valid app entity
         app_result = FlextWebModels.create_web_app("test-app", "localhost", 8080)
         assert app_result.is_success
-        app = app_result.unwrap()
+        app = app_result.value
         start_result = app.start()
         assert start_result.is_success
-        started_app = start_result.unwrap()
+        started_app = start_result.value
 
         # Handle stop
         result = FlextWebHandlers.handle_stop_app(started_app)
         assert result.is_success
-        stopped_app = result.unwrap()
+        stopped_app = result.value
         assert stopped_app.status == "stopped"

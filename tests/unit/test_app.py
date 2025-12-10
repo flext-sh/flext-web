@@ -47,7 +47,7 @@ class TestFlextWebApp:
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - verify it has expected attributes
         assert hasattr(app, "title")
         assert hasattr(app, "version")
@@ -67,7 +67,7 @@ class TestFlextWebApp:
 
         # FastAPI validates title - should succeed with valid title
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         assert app.title == "Valid Test API"
         assert hasattr(app, "get")
 
@@ -84,7 +84,7 @@ class TestFlextWebApp:
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Verify real FastAPI app properties
         assert app.title == "Real Test API"
         assert app.version == "1.0.0"
@@ -102,7 +102,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - verify it has expected attributes
         assert app.title == "Test API"
         assert app.version == "1.0.0"
@@ -119,7 +119,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - verify custom config is used
         assert app.title == "Custom Test API"
         assert app.version == "2.0.0"
@@ -130,7 +130,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(None)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app with defaults from Constants
         assert hasattr(app, "title")
         assert hasattr(app, "version")
@@ -146,7 +146,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - test health endpoint with TestClient
         client = TestClient(app)
         response = client.get("/health")
@@ -170,7 +170,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - verify custom URLs are set
         assert app.title == "Test API"
         assert app.version == "1.0.0"
@@ -187,7 +187,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - verify default description from Constants
         assert app.title == "Test API"
         assert app.version == "1.0.0"
@@ -218,7 +218,7 @@ class TestFlextWebApp:
 
         # Should handle gracefully with defaults - REAL FastAPI app
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         assert hasattr(app, "title")
         assert hasattr(app, "version")
 
@@ -236,7 +236,7 @@ class TestFlextWebApp:
         assert hasattr(result, "value")
         assert hasattr(result, "error")
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         assert hasattr(app, "title")
 
     def test_app_logging_integration(self) -> None:
@@ -249,7 +249,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - logging happens internally via FlextLogger
         assert hasattr(app, "title")
 
@@ -264,7 +264,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - verify it's a real FastAPI instance
 
         assert isinstance(app, FastAPI)
@@ -280,7 +280,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - test health endpoint with TestClient
         client = TestClient(app)
         response = client.get("/health")
@@ -303,7 +303,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - verify custom configuration
         assert app.title == "Custom API"
         assert app.version == "2.0.0"
@@ -328,7 +328,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config, factory_config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - verify title override
         assert app.title == "Override Title"
         assert app.version == "1.0.0"
@@ -353,7 +353,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config, factory_config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real FastAPI app - verify URL overrides
         assert app.title == "Test API"
         assert app.version == "1.0.0"
@@ -457,7 +457,7 @@ class TestFlextWebApp:
         }
         app_result = FlextWebApp.FastAPIFactory.create_instance(fastapi_config)
         assert app_result.is_success
-        app = app_result.unwrap()
+        app = app_result.value
 
         # Configure endpoints - REAL execution
         configured_app = FlextWebApp._configure_fastapi_endpoints(app, config)
@@ -484,7 +484,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_flask_app(config)
 
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         # Real Flask app - test health endpoint
         app.config["TESTING"] = True
         client: FlaskClient = app.test_client()
@@ -511,4 +511,4 @@ class TestFlextWebApp:
         app = FlextWebApp()
         result = app.validate_business_rules()
         assert result.is_success
-        assert result.unwrap() is True
+        assert result.value is True

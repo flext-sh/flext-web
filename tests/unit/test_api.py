@@ -30,7 +30,7 @@ class TestFlextWebApi:
         """Test successful FastAPI app creation."""
         result = FlextWebApi.create_fastapi_app()
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         assert app is not None
 
     def test_create_fastapi_app_with_config(self) -> None:
@@ -42,14 +42,14 @@ class TestFlextWebApi:
 
         result = FlextWebApi.create_fastapi_app(config)
         assert result.is_success
-        app = result.unwrap()
+        app = result.value
         assert app is not None
 
     def test_create_http_service_success(self) -> None:
         """Test successful HTTP service creation."""
         result = FlextWebApi.create_http_service()
         assert result.is_success
-        service = result.unwrap()
+        service = result.value
         assert service is not None
 
     def test_create_http_service_with_config(self) -> None:
@@ -63,7 +63,7 @@ class TestFlextWebApi:
 
         result = FlextWebApi.create_http_service(config)
         assert result.is_success
-        service = result.unwrap()
+        service = result.value
         assert service is not None
 
     def test_create_fastapi_app_with_invalid_config(self) -> None:
@@ -103,7 +103,7 @@ class TestFlextWebApi:
         """Test HTTP configuration creation."""
         result = FlextWebApi.create_http_config(host="localhost", port=8080, debug=True)
         assert result.is_success
-        config = result.unwrap()
+        config = result.value
         assert config.host == "localhost"
         assert config.port == 8080
 
@@ -210,7 +210,7 @@ class TestFlextWebApi:
             assert result.is_success, (
                 f"Expected success for {host}:{port}, got: {result.error}"
             )
-            config = result.unwrap()
+            config = result.value
             assert config.host == host
             assert config.port == port
             assert config.debug == debug
@@ -231,7 +231,7 @@ class TestFlextWebApi:
 
         result = FlextWebApi.validate_http_config(config)
         assert result.is_success
-        assert result.unwrap() is True
+        assert result.value is True
 
     def test_validate_http_config_invalid(self) -> None:
         """Test HTTP configuration validation with invalid data."""
@@ -243,7 +243,7 @@ class TestFlextWebApi:
         """Test service status retrieval."""
         result = FlextWebApi.get_service_status()
         assert result.is_success
-        status = result.unwrap()
+        status = result.value
         # ServiceResponse is now a Pydantic model, not a dict
         assert isinstance(status, FlextWebModels.Service.ServiceResponse)
         assert "http_services_available" in status.capabilities
@@ -254,7 +254,7 @@ class TestFlextWebApi:
         """Test API capabilities retrieval."""
         result = FlextWebApi.get_api_capabilities()
         assert result.is_success
-        capabilities = result.unwrap()
+        capabilities = result.value
         # ResponseDict is a TypeAlias for dict, so isinstance check is valid
         assert isinstance(capabilities, dict)
         assert "application_management" in capabilities

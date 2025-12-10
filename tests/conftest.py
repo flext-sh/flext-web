@@ -320,7 +320,7 @@ def real_service(
     # Pass config object directly - no dict conversion
     service_result = FlextWebServices.create_service(real_config)
     assert service_result.is_success, f"Service creation failed: {service_result.error}"
-    return service_result.unwrap()
+    return service_result.value
     # Clean up service state after each test
     # Note: services don't have apps attribute in current implementation
 
@@ -355,13 +355,13 @@ def running_service(
 
     service_result = FlextWebServices.create_service(test_config)
     assert service_result.is_success, f"Service creation failed: {service_result.error}"
-    service = service_result.unwrap()
+    service = service_result.value
 
     # Start service in background thread
     def run_service() -> None:
         app_result = FlextWebApp.create_flask_app(test_config)
         if app_result.is_success:
-            app = app_result.unwrap()
+            app = app_result.value
             app.run(
                 host=test_config.host,
                 port=test_config.port,
