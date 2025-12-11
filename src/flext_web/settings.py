@@ -10,20 +10,20 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from flext_core import FlextConfig, FlextResult
+from flext_core import FlextResult, FlextSettings
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from flext_web.constants import c
 
 
-@FlextConfig.auto_register("web")
-class FlextWebConfig(BaseSettings):
+@FlextSettings.auto_register("web")
+class FlextWebSettings(BaseSettings):
     """HTTP server configuration using AutoConfig pattern.
 
     **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
 
-    This class uses FlextConfig.AutoConfig for automatic:
+    This class uses FlextSettings.AutoConfig for automatic:
     - Singleton pattern (thread-safe)
     - Namespace registration (accessible via config.web)
     - Environment variable loading from FLEXT_WEB_* variables
@@ -34,10 +34,10 @@ class FlextWebConfig(BaseSettings):
     Domain-agnostic configuration for any HTTP-based service.
     """
 
-    # Use FlextConfig.resolve_env_file() to ensure all FLEXT configs use same .env
+    # Use FlextSettings.resolve_env_file() to ensure all FLEXT configs use same .env
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_WEB_",
-        env_file=FlextConfig.resolve_env_file(),
+        env_file=FlextSettings.resolve_env_file(),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -108,11 +108,11 @@ class FlextWebConfig(BaseSettings):
         return (self.host, self.port)
 
     @classmethod
-    def create_web_config(cls) -> FlextResult[FlextWebConfig]:
+    def create_web_config(cls) -> FlextResult[FlextWebSettings]:
         """Create default web configuration.
 
         Returns:
-        FlextResult[FlextWebConfig]: Success contains default config,
+        FlextResult[FlextWebSettings]: Success contains default config,
         failure contains error message
 
         """
@@ -123,4 +123,4 @@ class FlextWebConfig(BaseSettings):
             return FlextResult.fail(f"Failed to create web config: {e}")
 
 
-__all__ = ["FlextWebConfig"]
+__all__ = ["FlextWebSettings"]

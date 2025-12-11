@@ -14,7 +14,7 @@ class TestFlextWebInit:
         # Test that all __all__ exports are available
         assert hasattr(flext_web, "FlextWebApi")
         assert hasattr(flext_web, "FlextWebApp")
-        assert hasattr(flext_web, "FlextWebConfig")
+        assert hasattr(flext_web, "FlextWebSettings")
         assert hasattr(flext_web, "FlextWebConstants")
         assert hasattr(flext_web, "FlextWebHandlers")
         assert hasattr(flext_web, "FlextWebModels")
@@ -35,7 +35,7 @@ class TestFlextWebInit:
         expected_exports = {
             "FlextWebApi",
             "FlextWebApp",
-            "FlextWebConfig",
+            "FlextWebSettings",
             "FlextWebConstants",
             "FlextWebHandlers",
             "FlextWebModels",
@@ -53,7 +53,7 @@ class TestFlextWebInit:
         """Test that imported items are of correct types."""
         # Test that main classes are classes
         assert callable(flext_web.FlextWebApi)  # Should be callable class
-        assert callable(flext_web.FlextWebConfig)  # Should be callable class
+        assert callable(flext_web.FlextWebSettings)  # Should be callable class
 
         # Test that version is string
         assert isinstance(flext_web.__version__, str)

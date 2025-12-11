@@ -9,10 +9,10 @@ import pytest
 from flext_core import FlextConstants
 from pydantic import ValidationError
 
-from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.services import FlextWebServices
+from flext_web.settings import FlextWebSettings
 
 
 class TestFlextWebService:
@@ -32,7 +32,7 @@ class TestFlextWebService:
 
     def test_initialization_with_config(self) -> None:
         """Test FlextWebServices initialization with config."""
-        config = FlextWebConfig(host="localhost", port=8080)
+        config = FlextWebSettings(host="localhost", port=8080)
         service = FlextWebServices(config=config)
         assert service is not None
         assert service._config == config
@@ -391,7 +391,7 @@ class TestFlextWebService:
 
     def test_create_web_service_with_config(self) -> None:
         """Test create_web_service with config."""
-        config = cast("FlextWebConfig", {"host": "localhost", "port": 8080})
+        config = cast("FlextWebSettings", {"host": "localhost", "port": 8080})
         result = FlextWebServices.create_web_service(config)
         assert result.is_success
         service = result.value
@@ -401,7 +401,7 @@ class TestFlextWebService:
         """Test create_web_service with invalid config (Pydantic validation fails on creation)."""
         # Config with invalid port should fail Pydantic validation on creation
         with pytest.raises(ValidationError):  # Pydantic will raise ValidationError
-            FlextWebConfig(port=-1)
+            FlextWebSettings(port=-1)
 
     def test_create_entity_success(self) -> None:
         """Test successful entity creation."""
@@ -489,7 +489,7 @@ class TestFlextWebService:
     def test_create_configuration_success(self) -> None:
         """Test configuration creation."""
         service = FlextWebServices()
-        config = FlextWebConfig(
+        config = FlextWebSettings(
             secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY,
         )
         create_result = service.create_configuration(config)
@@ -592,7 +592,7 @@ class TestFlextWebService:
 
     def test_create_service_with_config(self) -> None:
         """Test create_service with config."""
-        config = FlextWebConfig(
+        config = FlextWebSettings(
             secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY,
         )
         result = FlextWebServices.create_service(config)

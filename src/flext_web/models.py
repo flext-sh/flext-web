@@ -26,12 +26,13 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from flext_core import r
+from flext_core import FlextUtilities as flext_u, r
 from flext_core.models import m as m_core
+from flext_core.typings import EventDataMapping
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from flext_web.constants import c
-from flext_web.utilities import u
+from flext_web.constants.c_web import HttpMethodLiteral
 
 
 class FlextWebModels(m_core):
@@ -48,7 +49,7 @@ class FlextWebModels(m_core):
 
     Example:
         >>> # Create HTTP message value objects
-        >>> request = FlextWebModels.Http.Request(
+        >>> request = FlextWebModels.Web.Request(
         ...     url="https://example.com/api", method="POST", body={"key": "value"}
         ... )
         >>> # Check request properties
@@ -64,16 +65,10 @@ class FlextWebModels(m_core):
             "Subclassing FlextWebModels is deprecated. Use FlextModels directly with composition instead.",
         )
 
-    # =========================================================================
-    # HTTP PROTOCOL MODELS (Value Objects - immutable)
-    # =========================================================================
-
-    class Http(m_core.Value):
-        """HTTP protocol models for generic web communication (Layer 2: Domain).
-
-        Contains immutable value objects for HTTP message representation
-        following RFC standards. All models validate against HTTP constraints.
-        """
+    class Web:
+        # =========================================================================
+        # HTTP PROTOCOL MODELS (Value Objects - immutable)
+        # =========================================================================
 
         class Message(m_core.Value):
             """Generic HTTP message base model with protocol validation.
@@ -119,8 +114,8 @@ class FlextWebModels(m_core):
                 max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: c.Web.HttpMethodLiteral = Field(
-                default="GET",  # Use string literal, validated against c.Web.HttpMethodLiteral
+            method: HttpMethodLiteral = Field(
+                default=HttpMethodLiteral.GET.value,  # Use StrEnum value
                 description="HTTP method",
             )
             timeout: float = Field(
@@ -190,18 +185,11 @@ class FlextWebModels(m_core):
                 """
                 return self.status_code >= c.Web.Http.ERROR_MIN
 
-    # =========================================================================
-    # WEB APPLICATION MODELS (Entities - with identity)
-    # =========================================================================
+        # =========================================================================
+        # WEB APPLICATION MODELS (Entities - with identity)
+        # =========================================================================
 
-    class WebApp(m_core.Value):
-        """Web-specific models extending HTTP with application context.
-
-        Contains entities and value objects specific to web applications
-        including request/response tracking and web-specific metadata.
-        """
-
-        class Request(m_core.Value):
+        class AppRequest(m_core.Value):
             """Web request entity with tracking and context information.
 
             Extends generic HTTP request with web application-specific fields
@@ -226,8 +214,8 @@ class FlextWebModels(m_core):
                 max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: c.Web.HttpMethodLiteral = Field(
-                default="GET",  # Use string literal, validated against c.Web.HttpMethodLiteral
+            method: HttpMethodLiteral = Field(
+                default=HttpMethodLiteral.GET.value,  # Use StrEnum value
                 description="HTTP method",
             )
             timeout: float = Field(
@@ -279,7 +267,7 @@ class FlextWebModels(m_core):
                 """
                 return self.url.startswith("https://")
 
-        class Response(m_core.Value):
+        class AppResponse(m_core.Value):
             """Web response entity with tracking and performance metrics.
 
             Extends generic HTTP response with web application-specific fields
@@ -368,16 +356,9 @@ class FlextWebModels(m_core):
                 """
                 return self.processing_time_ms / 1000.0
 
-    # =========================================================================
-    # APPLICATION MODELS (Aggregates - consistency boundaries)
-    # =========================================================================
-
-    class Application(m_core.Value):
-        """Application domain models with state management.
-
-        Contains application entities with lifecycle management,
-        status tracking, and event sourcing support.
-        """
+        # =========================================================================
+        # APPLICATION MODELS (Aggregates - consistency boundaries)
+        # =========================================================================
 
         # EntityStatus removed - use c.Web.WebEnvironment.Status instead
         # All status values are now centralized in constants.py
@@ -420,10 +401,10 @@ class FlextWebModels(m_core):
                 max_length = c.Web.WebValidation.NAME_LENGTH_RANGE[1]
                 reserved_names_set = set(c.Web.WebSecurity.RESERVED_NAMES)
 
-                # Use u.guard() + u.V.string.length() for unified length validation (DSL pattern)
-                name_length_validated = u.guard(
+                # Use flext_u.guard() + flext_u.V.string.length() for unified length validation (DSL pattern)
+                name_length_validated = flext_u.guard(
                     v,
-                    u.V.string.length(min_length, max_length),
+                    flext_u.V.string.length(min_length, max_length),
                     error_message=f"Name must be between {min_length} and {max_length} characters",
                     return_value=True,
                 )
@@ -433,10 +414,10 @@ class FlextWebModels(m_core):
                     )
                     raise ValueError(error_msg)
 
-                # Use u.guard() + u.in_() for unified membership validation (DSL pattern)
-                name_not_reserved = u.guard(
+                # Use flext_u.guard() + flext_u.in_() for unified membership validation (DSL pattern)
+                name_not_reserved = flext_u.guard(
                     v.lower(),
-                    lambda n: not u.in_(n, reserved_names_set),
+                    lambda n: not flext_u.in_(n, reserved_names_set),
                     error_message=f"Name '{v}' is reserved and cannot be used",
                     return_value=True,
                 )
@@ -444,9 +425,9 @@ class FlextWebModels(m_core):
                     error_msg = f"Name '{v}' is reserved and cannot be used"
                     raise ValueError(error_msg)
 
-                # Use u.guard() + u.find() for unified pattern validation (DSL pattern)
+                # Use flext_u.find() for unified pattern validation (DSL pattern)
                 dangerous_patterns = c.Web.WebSecurity.DANGEROUS_PATTERNS
-                dangerous_found = u.find(
+                dangerous_found = flext_u.find(
                     dangerous_patterns,
                     lambda p: p.lower() in v.lower(),
                 )
@@ -528,12 +509,12 @@ class FlextWebModels(m_core):
 
             @property
             def can_restart(self) -> bool:
-                """Check if application can be restarted using u.in_() DSL pattern."""
+                """Check if application can be restarted using flext_u.in_() DSL pattern."""
                 running = c.Web.WebEnvironment.Status.RUNNING.value
                 stopped = c.Web.WebEnvironment.Status.STOPPED.value
                 error = c.Web.WebEnvironment.Status.ERROR.value
-                # Use u.in_() for unified membership check (DSL pattern)
-                return u.in_(self.status, {running, stopped, error})
+                # Use flext_u.in_() for unified membership check (DSL pattern)
+                return flext_u.in_(self.status, {running, stopped, error})
 
             @property
             def url(self) -> str:
@@ -541,7 +522,7 @@ class FlextWebModels(m_core):
                 ssl_ports = c.Web.WebSecurity.SSL_PORTS
                 protocol = (
                     c.Web.WebDefaults.HTTPS_PROTOCOL
-                    if u.in_(self.port, ssl_ports)
+                    if flext_u.in_(self.port, ssl_ports)
                     else c.Web.WebDefaults.HTTP_PROTOCOL
                 )
                 return f"{protocol}://{self.host}:{self.port}"
@@ -555,12 +536,12 @@ class FlextWebModels(m_core):
                     r[bool]: Success contains True if valid, failure with error message
 
                 """
-                # Use u.guard() + u.V.string.min_length() for unified validation (DSL pattern)
+                # Use flext_u.guard() + flext_u.V.string.min_length() for unified validation (DSL pattern)
                 min_name_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
-                name_validated = u.guard(
+                name_validated = flext_u.guard(
                     self.name,
                     str,
-                    u.V.string.min_length(min_name_length),
+                    flext_u.V.string.min_length(min_name_length),
                     error_message=f"App name must be at least {min_name_length} characters",
                     return_value=True,
                 )
@@ -569,11 +550,11 @@ class FlextWebModels(m_core):
                         f"App name must be at least {min_name_length} characters",
                     )
 
-                # Use u.guard() for unified port range validation (DSL pattern)
+                # Use flext_u.guard() for unified port range validation (DSL pattern)
                 min_port = c.Web.WebValidation.PORT_RANGE[0]
                 max_port = c.Web.WebValidation.PORT_RANGE[1]
-                # Use u.guard() with combined check for unified error message (DSL pattern)
-                port_validated = u.guard(
+                # Use flext_u.guard() with combined check for unified error message (DSL pattern)
+                port_validated = flext_u.guard(
                     self.port,
                     lambda p: min_port <= p <= max_port,
                     error_message=f"Port must be between {min_port} and {max_port}",
@@ -585,72 +566,74 @@ class FlextWebModels(m_core):
                     )
                 return r[bool].ok(True)
 
-            def start(self) -> r[FlextWebModels.Application.Entity]:
+            def start(self) -> r[FlextWebModels.Web.Entity]:
                 """Start the application."""
                 running_status = c.Web.WebEnvironment.Status.RUNNING.value
                 already_running = self.status == running_status
                 if already_running:
-                    return r[FlextWebModels.Application.Entity].fail(
+                    return r[FlextWebModels.Web.Entity].fail(
                         "already running",
                     )
                 self.status = running_status
-                # Use u.val() for unified result unwrapping (DSL pattern)
+                # Use flext_u.val() for unified result unwrapping (DSL pattern)
                 event_result = self.add_domain_event("ApplicationStarted")
                 if event_result.is_failure:  # pragma: no cover
-                    error_msg = f"Failed to add domain event: {u.err(event_result)}"
-                    return r[FlextWebModels.Application.Entity].fail(
+                    error_msg = (
+                        f"Failed to add domain event: {flext_u.err(event_result)}"
+                    )
+                    return r[FlextWebModels.Web.Entity].fail(
                         error_msg,
                     )
-                return r[FlextWebModels.Application.Entity].ok(self)
+                return r[FlextWebModels.Web.Entity].ok(self)
 
-            def stop(self) -> r[FlextWebModels.Application.Entity]:
+            def stop(self) -> r[FlextWebModels.Web.Entity]:
                 """Stop the application."""
                 running_status = c.Web.WebEnvironment.Status.RUNNING.value
                 stopped_status = c.Web.WebEnvironment.Status.STOPPED.value
                 not_running = self.status != running_status
                 if not_running:
-                    return r[FlextWebModels.Application.Entity].fail(
+                    return r[FlextWebModels.Web.Entity].fail(
                         "not running",
                     )
                 self.status = stopped_status
-                # Use u.val() + u.err() for unified result handling (DSL pattern)
+                # Use flext_u.val() + flext_u.err() for unified result handling (DSL pattern)
                 event_result = self.add_domain_event("ApplicationStopped")
                 if event_result.is_failure:  # pragma: no cover
-                    error_msg = f"Failed to add domain event: {u.err(event_result)}"
-                    return r[FlextWebModels.Application.Entity].fail(
+                    error_msg = (
+                        f"Failed to add domain event: {flext_u.err(event_result)}"
+                    )
+                    return r[FlextWebModels.Web.Entity].fail(
                         error_msg,
                     )
-                return r[FlextWebModels.Application.Entity].ok(self)
+                return r[FlextWebModels.Web.Entity].ok(self)
 
-            def restart(self) -> r[FlextWebModels.Application.Entity]:
+            def restart(self) -> r[FlextWebModels.Web.Entity]:
                 """Restart the application."""
                 can_restart_validated = self.can_restart
                 if not can_restart_validated:
-                    return r[FlextWebModels.Application.Entity].fail(
+                    return r[FlextWebModels.Web.Entity].fail(
                         "Cannot restart in current state",
                     )
                 starting_status = c.Web.WebEnvironment.Status.STARTING.value
                 running_status = c.Web.WebEnvironment.Status.RUNNING.value
                 self.status = starting_status
-                # Use u.val() + u.err() for unified result handling (DSL pattern)
+                # Use flext_u.val() + flext_u.err() for unified result handling (DSL pattern)
                 restart_event_result = self.add_domain_event("ApplicationRestarting")
                 if restart_event_result.is_failure:  # pragma: no cover
-                    error_msg = (
-                        f"Failed to add domain event: {u.err(restart_event_result)}"
-                    )
-                    return r[FlextWebModels.Application.Entity].fail(
+                    error_msg = f"Failed to add domain event: {flext_u.err(restart_event_result)}"
+                    return r[FlextWebModels.Web.Entity].fail(
                         error_msg,
                     )
                 self.status = running_status
                 start_event_result = self.add_domain_event("ApplicationStarted")
                 if start_event_result.is_failure:  # pragma: no cover
                     error_msg = (
-                        f"Failed to add domain event: {u.err(start_event_result)}"
+                        f"Failed to add domain event: {flext_u.err(start_event_result)}"
                     )
-                    return r[FlextWebModels.Application.Entity].fail(
+                    return r[FlextWebModels.Web.Entity].fail(
                         error_msg,
                     )
-                return r[FlextWebModels.Application.Entity].ok(self)
+                return r[FlextWebModels.Web.Entity].ok(self)
 
             def update_metrics(
                 self,
@@ -660,18 +643,20 @@ class FlextWebModels(m_core):
 
                 Returns:
                     r[bool]: Success contains True if metrics updated,
-                                     failure contains error message
+                                    failure contains error message
 
                 """
-                # Use u.guard() for unified type validation (DSL pattern)
-                metrics_validated = u.guard(new_metrics, dict, return_value=True)
+                # Use flext_u.guard() for unified type validation (DSL pattern)
+                metrics_validated = flext_u.guard(new_metrics, dict, return_value=True)
                 if metrics_validated is None:
                     return r[bool].fail("Metrics must be a dictionary")
                 self.metrics.update(metrics_validated)
-                # Use u.val() + u.err() for unified result handling (DSL pattern)
+                # Use flext_u.val() + flext_u.err() for unified result handling (DSL pattern)
                 event_result = self.add_domain_event("MetricsUpdated")
                 if event_result.is_failure:  # pragma: no cover
-                    error_msg = f"Failed to add domain event: {u.err(event_result)}"
+                    error_msg = (
+                        f"Failed to add domain event: {flext_u.err(event_result)}"
+                    )
                     return r[bool].fail(error_msg)
                 return r[bool].ok(True)
 
@@ -690,20 +675,22 @@ class FlextWebModels(m_core):
                 """Return string representation of the application."""
                 return f"{self.name} ({self.url}) - {self.status}"
 
-            def add_domain_event(self, event: str) -> r[bool]:
+            def add_domain_event(
+                self, event_name: str, data: EventDataMapping | None = None
+            ) -> r[bool]:
                 """Add domain event for event sourcing.
 
                 Returns:
                     r[bool]: Success contains True if event added,
-                                     failure contains error message
+                                    failure contains error message
 
                 """
-                # Use u.guard() for unified validation (DSL pattern)
+                # Use flext_u.guard() for unified validation (DSL pattern)
                 # First check type, then check non-empty
-                event_type_validated = u.guard(event, str, return_value=True)
+                event_type_validated = flext_u.guard(event_name, str, return_value=True)
                 if event_type_validated is None:
                     return r[bool].fail("Event must be a string")
-                event_validated = u.guard(
+                event_validated = flext_u.guard(
                     event_type_validated,
                     "non_empty",
                     return_value=True,
@@ -717,7 +704,7 @@ class FlextWebModels(m_core):
             def format_id_from_name(cls, name: str) -> str:
                 """Format application ID from name using web utilities.
 
-                This method uses u.format_app_id directly,
+                This method uses flext_u.format_app_id directly,
                 ensuring consistent ID formatting across the codebase.
 
                 Args:
@@ -730,8 +717,8 @@ class FlextWebModels(m_core):
                     ValueError: If name cannot be formatted to valid ID
 
                 """
-                # Import at module level - u is used for ID formatting
-                return u.format_app_id(name)
+                # Import at module level - flext_u is used for ID formatting
+                return flext_u.format_app_id(name)
 
         class EntityConfig(m_core.Value):
             """Application entity configuration (Value Object).
@@ -768,342 +755,334 @@ class FlextWebModels(m_core):
                 description="Application secret key",
             )
 
-    # =========================================================================
-    # SERVICE REQUEST/RESPONSE MODELS - Replace dict[str, object] types
-    # =========================================================================
+            # =========================================================================
+            # SERVICE REQUEST/RESPONSE MODELS - Replace dict[str, object] types
+            # =========================================================================
 
-    class WebService(m_core.Value):
-        """Service layer request/response models replacing generic dict types."""
+            class Credentials(m_core.Value):
+                """Authentication credentials model."""
 
-        class Credentials(m_core.Value):
-            """Authentication credentials model."""
+                username: str = Field(min_length=1, description="Username")
+                password: str = Field(min_length=1, description="Password")
 
-            username: str = Field(min_length=1, description="Username")
-            password: str = Field(min_length=1, description="Password")
+            class UserData(m_core.Value):
+                """User registration data model."""
 
-        class UserData(m_core.Value):
-            """User registration data model."""
+                username: str = Field(min_length=1, description="Username")
+                email: str = Field(min_length=1, description="Email address")
+                password: str = Field(
+                    default="",
+                    description="Password (empty string if not provided)",
+                )
 
-            username: str = Field(min_length=1, description="Username")
-            email: str = Field(min_length=1, description="Email address")
-            password: str = Field(
-                default="",
-                description="Password (empty string if not provided)",
+            class AppData(m_core.Value):
+                """Application creation data model."""
+
+                name: str = Field(
+                    min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
+                    max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
+                    description="Application name",
+                )
+                host: str = Field(
+                    min_length=1,
+                    max_length=255,
+                    description="Application host",
+                )
+                port: int = Field(
+                    ge=c.Web.WebValidation.PORT_RANGE[0],
+                    le=c.Web.WebValidation.PORT_RANGE[1],
+                    description="Application port",
+                )
+
+            class EntityData(m_core.Value):
+                """Generic entity data model."""
+
+                data: dict[str, object] = Field(
+                    default_factory=dict,
+                    description="Entity data dictionary",
+                )
+
+            class AuthResponse(m_core.Value):
+                """Authentication response model."""
+
+                token: str = Field(description="Authentication token")
+                user_id: str = Field(description="User identifier")
+                authenticated: bool = Field(description="Authentication status")
+
+            class UserResponse(m_core.Value):
+                """User registration response model."""
+
+                id: str = Field(description="User identifier")
+                username: str = Field(description="Username")
+                email: str = Field(description="Email address")
+                created: bool = Field(description="Creation status")
+
+            class AppResponse(m_core.Value):
+                """Application response model."""
+
+                id: str = Field(description="Application identifier")
+                name: str = Field(description="Application name")
+                host: str = Field(description="Application host")
+                port: int = Field(description="Application port")
+                status: str = Field(description="Application status")
+                created_at: str = Field(description="Creation timestamp")
+
+            class HealthResponse(m_core.Value):
+                """Health check response model."""
+
+                status: str = Field(description="Health status")
+                service: str = Field(description="Service name")
+                timestamp: str = Field(description="Timestamp")
+
+            class MetricsResponse(m_core.Value):
+                """Metrics response model."""
+
+                service_status: str = Field(description="Service status")
+                components: list[str] = Field(description="Service components")
+
+            class DashboardResponse(m_core.Value):
+                """Dashboard response model."""
+
+                total_applications: int = Field(description="Total applications")
+                running_applications: int = Field(description="Running applications")
+                service_status: str = Field(description="Service status")
+                routes_initialized: bool = Field(
+                    description="Routes initialization status"
+                )
+                middleware_configured: bool = Field(
+                    description="Middleware configuration status",
+                )
+                timestamp: str = Field(description="Timestamp")
+
+            class ServiceResponse(m_core.Value):
+                """Generic service response model."""
+
+                service: str = Field(description="Service name")
+                capabilities: list[str] = Field(description="Service capabilities")
+                status: str = Field(description="Service status")
+                config: bool = Field(description="Configuration status")
+
+        # =========================================================================
+        # WEB REQUEST/RESPONSE MODELS (Value Objects)
+        # =========================================================================
+
+        class WebRequest(m_core.Value):
+            """Web request model with complete tracking."""
+
+            method: HttpMethodLiteral = Field(
+                default=HttpMethodLiteral.GET.value,  # Use string literal, validated against c.Web.HttpMethodLiteral
+                description="HTTP method",
             )
-
-        class AppData(m_core.Value):
-            """Application creation data model."""
-
-            name: str = Field(
-                min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
-                max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
-                description="Application name",
-            )
-            host: str = Field(
-                min_length=1,
-                max_length=255,
-                description="Application host",
-            )
-            port: int = Field(
-                ge=c.Web.WebValidation.PORT_RANGE[0],
-                le=c.Web.WebValidation.PORT_RANGE[1],
-                description="Application port",
-            )
-
-        class EntityData(m_core.Value):
-            """Generic entity data model."""
-
-            data: dict[str, object] = Field(
+            url: str = Field(min_length=1, max_length=2048, description="Request URL")
+            headers: dict[str, str] = Field(
                 default_factory=dict,
-                description="Entity data dictionary",
+                description="HTTP headers",
+            )
+            body: str | dict[str, object] | None = Field(
+                default=None,
+                description="Request body (optional for GET/HEAD)",
+            )
+            request_id: str = Field(
+                default_factory=lambda: str(uuid.uuid4()),
+                description="Unique request identifier",
+            )
+            timestamp: datetime = Field(
+                default_factory=lambda: datetime.now(UTC),
+                description="Request timestamp",
             )
 
-        class AuthResponse(m_core.Value):
-            """Authentication response model."""
+        class WebResponse(m_core.Value):
+            """Web response model with status tracking."""
 
-            token: str = Field(description="Authentication token")
-            user_id: str = Field(description="User identifier")
-            authenticated: bool = Field(description="Authentication status")
-
-        class UserResponse(m_core.Value):
-            """User registration response model."""
-
-            id: str = Field(description="User identifier")
-            username: str = Field(description="Username")
-            email: str = Field(description="Email address")
-            created: bool = Field(description="Creation status")
-
-        class AppResponse(m_core.Value):
-            """Application response model."""
-
-            id: str = Field(description="Application identifier")
-            name: str = Field(description="Application name")
-            host: str = Field(description="Application host")
-            port: int = Field(description="Application port")
-            status: str = Field(description="Application status")
-            created_at: str = Field(description="Creation timestamp")
-
-        class HealthResponse(m_core.Value):
-            """Health check response model."""
-
-            status: str = Field(description="Health status")
-            service: str = Field(description="Service name")
-            timestamp: str = Field(description="Timestamp")
-
-        class MetricsResponse(m_core.Value):
-            """Metrics response model."""
-
-            service_status: str = Field(description="Service status")
-            components: list[str] = Field(description="Service components")
-
-        class DashboardResponse(m_core.Value):
-            """Dashboard response model."""
-
-            total_applications: int = Field(description="Total applications")
-            running_applications: int = Field(description="Running applications")
-            service_status: str = Field(description="Service status")
-            routes_initialized: bool = Field(description="Routes initialization status")
-            middleware_configured: bool = Field(
-                description="Middleware configuration status",
+            request_id: str = Field(description="Associated request identifier")
+            status_code: int = Field(ge=100, le=599, description="HTTP status code")
+            headers: dict[str, str] = Field(
+                default_factory=dict,
+                description="HTTP response headers",
             )
-            timestamp: str = Field(description="Timestamp")
-
-        class ServiceResponse(m_core.Value):
-            """Generic service response model."""
-
-            service: str = Field(description="Service name")
-            capabilities: list[str] = Field(description="Service capabilities")
-            status: str = Field(description="Service status")
-            config: bool = Field(description="Configuration status")
-
-    # =========================================================================
-    # WEB REQUEST/RESPONSE MODELS (Value Objects)
-    # =========================================================================
-
-    class WebRequest(m_core.Value):
-        """Web request model with complete tracking."""
-
-        method: c.Web.HttpMethodLiteral = Field(
-            default="GET",  # Use string literal, validated against c.Web.HttpMethodLiteral
-            description="HTTP method",
-        )
-        url: str = Field(min_length=1, max_length=2048, description="Request URL")
-        headers: dict[str, str] = Field(
-            default_factory=dict,
-            description="HTTP headers",
-        )
-        body: str | dict[str, object] | None = Field(
-            default=None,
-            description="Request body (optional for GET/HEAD)",
-        )
-        request_id: str = Field(
-            default_factory=lambda: str(uuid.uuid4()),
-            description="Unique request identifier",
-        )
-        timestamp: datetime = Field(
-            default_factory=lambda: datetime.now(UTC),
-            description="Request timestamp",
-        )
-
-    class WebResponse(m_core.Value):
-        """Web response model with status tracking."""
-
-        request_id: str = Field(description="Associated request identifier")
-        status_code: int = Field(ge=100, le=599, description="HTTP status code")
-        headers: dict[str, str] = Field(
-            default_factory=dict,
-            description="HTTP response headers",
-        )
-        body: str | dict[str, object] | None = Field(
-            default=None,
-            description="Response body (optional for 204 No Content)",
-        )
-        response_id: str = Field(
-            default_factory=lambda: str(uuid.uuid4()),
-            description="Unique response identifier",
-        )
-        timestamp: datetime = Field(
-            default_factory=lambda: datetime.now(UTC),
-            description="Response timestamp",
-        )
-
-    class AppConfig(m_core.Value):
-        """Application configuration model."""
-
-        title: str = Field(
-            min_length=1,
-            max_length=100,
-            description="Application title",
-        )
-        version: str = Field(description="Application version")
-        description: str = Field(
-            min_length=1,
-            max_length=500,
-            description="Application description",
-        )
-        docs_url: str = Field(
-            default=c.Web.WebApi.DOCS_URL,
-            description="Documentation URL",
-        )
-        redoc_url: str = Field(
-            default=c.Web.WebApi.REDOC_URL,
-            description="ReDoc URL",
-        )
-        openapi_url: str = Field(
-            default=c.Web.WebApi.OPENAPI_URL,
-            description="OpenAPI URL",
-        )
-
-    # =========================================================================
-    # FACTORY METHODS (Creation patterns)
-    # =========================================================================
-
-    @classmethod
-    def create_web_app(
-        cls,
-        name: str,
-        host: str = c.Web.WebDefaults.HOST,
-        port: int = c.Web.WebDefaults.PORT,
-        **kwargs: dict[str, object],
-    ) -> r[FlextWebModels.Application.Entity]:
-        """Create a web application from direct parameters.
-
-        No dict conversion - use direct parameters for type safety.
-        Pydantic validation will handle errors automatically.
-
-        Args:
-            name: Application name
-            host: Application host
-            port: Application port
-            **kwargs: Additional entity parameters
-
-        Returns:
-            r[Application.Entity]: Success contains entity,
-                                           failure contains validation error
-
-        """
-        try:
-            entity = cls.Entity(
-                name=name,
-                host=host,
-                port=port,
-                **kwargs,
+            body: str | dict[str, object] | None = Field(
+                default=None,
+                description="Response body (optional for 204 No Content)",
             )
-            return r.ok(entity)
-        except ValidationError as e:  # pragma: no cover
-            error_msg = (  # pragma: no cover
-                f"Validation failed: {e.errors()[0]['msg']}"
-                if e.errors()
-                else str(e)  # pragma: no cover
+            response_id: str = Field(
+                default_factory=lambda: str(uuid.uuid4()),
+                description="Unique response identifier",
             )
-            return r.fail(error_msg)  # pragma: no cover
-        except ValueError as e:  # pragma: no cover
-            return r.fail(str(e))  # pragma: no cover
-
-    @classmethod
-    def create_web_request(
-        cls,
-        method: c.Web.HttpMethodLiteral,
-        url: str,
-        headers: dict[str, str] | None = None,
-        body: str | dict[str, object] | None = None,
-    ) -> r[WebRequest]:
-        """Create a web request model.
-
-        Args:
-            method: HTTP method
-            url: Request URL
-            headers: Request headers (defaults to empty dict)
-            body: Request body
-
-        Returns:
-            r[WebRequest]: Success contains request model,
-                                    failure contains validation error
-
-        """
-        # Use u.guard() for unified headers validation (DSL pattern)
-        # Validate headers - must be dict or None
-        if headers is not None and not isinstance(headers, dict):
-            return r[FlextWebModels.WebRequest].fail(
-                "Headers must be a dictionary or None",
-            )
-        headers_validated = headers if isinstance(headers, dict) else {}
-
-        # Use u.try_() for unified error handling (DSL pattern)
-        def create_request() -> FlextWebModels.WebRequest:
-            """Create request model."""
-            return cls.WebRequest(
-                method=method,
-                url=url,
-                headers=headers_validated,
-                body=body,
+            timestamp: datetime = Field(
+                default_factory=lambda: datetime.now(UTC),
+                description="Response timestamp",
             )
 
-        # Use u.try_() with custom exception handling for better error messages
-        try:
-            request = create_request()
-            return r[FlextWebModels.WebRequest].ok(request)
-        except Exception as exc:
-            # Use u.err() pattern for unified error extraction (DSL pattern)
-            return r[FlextWebModels.WebRequest].fail(
-                f"Failed to create web request: {exc}",
+        class AppConfig(m_core.Value):
+            """Application configuration model."""
+
+            title: str = Field(
+                min_length=1,
+                max_length=100,
+                description="Application title",
+            )
+            version: str = Field(description="Application version")
+            description: str = Field(
+                min_length=1,
+                max_length=500,
+                description="Application description",
+            )
+            docs_url: str = Field(
+                default=c.Web.WebApi.DOCS_URL,
+                description="Documentation URL",
+            )
+            redoc_url: str = Field(
+                default=c.Web.WebApi.REDOC_URL,
+                description="ReDoc URL",
+            )
+            openapi_url: str = Field(
+                default=c.Web.WebApi.OPENAPI_URL,
+                description="OpenAPI URL",
             )
 
-    @classmethod
-    def create_web_response(
-        cls,
-        request_id: str,
-        status_code: int,
-        headers: dict[str, str] | None = None,
-        body: str | dict[str, object] | None = None,
-    ) -> r[WebResponse]:
-        """Create a web response model.
+        # =========================================================================
+        # FACTORY METHODS (Creation patterns)
+        # =========================================================================
 
-        Args:
-            request_id: Associated request identifier
-            status_code: HTTP status code
-            headers: Response headers (defaults to empty dict)
-            body: Response body
+        @classmethod
+        def create_web_app(
+            cls,
+            name: str,
+            host: str = c.Web.WebDefaults.HOST,
+            port: int = c.Web.WebDefaults.PORT,
+            **kwargs: dict[str, object],
+        ) -> r[FlextWebModels.Web.Entity]:
+            """Create a web application from direct parameters.
 
-        Returns:
-            r[WebResponse]: Success contains response model,
-                                     failure contains validation error
+            No dict conversion - use direct parameters for type safety.
+            Pydantic validation will handle errors automatically.
 
-        """
-        # Use u.guard() for unified headers validation (DSL pattern)
-        # Validate headers - must be dict or None
-        if headers is not None and not isinstance(headers, dict):
-            return r[FlextWebModels.WebResponse].fail(
-                "Headers must be a dictionary or None",
-            )
-        headers_validated = headers if isinstance(headers, dict) else {}
+            Args:
+                name: Application name
+                host: Application host
+                port: Application port
+                **kwargs: Additional entity parameters
 
-        # Use u.try_() for unified error handling (DSL pattern)
-        def create_response() -> FlextWebModels.WebResponse:
-            """Create response model."""
-            return cls.WebResponse(
-                request_id=request_id,
-                status_code=status_code,
-                headers=headers_validated,
-                body=body,
-            )
+            Returns:
+                r[Web.Entity]: Success contains entity,
+                                            failure contains validation error
 
-        # Use u.try_() with custom exception handling for better error messages
-        try:
-            response = create_response()
-            return r[FlextWebModels.WebResponse].ok(response)
-        except Exception as exc:
-            # Use u.err() pattern for unified error extraction (DSL pattern)
-            return r[FlextWebModels.WebResponse].fail(
-                f"Failed to create web response: {exc}",
-            )
+            """
+            try:
+                entity = cls.Entity(
+                    name=name,
+                    host=host,
+                    port=port,
+                    **kwargs,
+                )
+                return r.ok(entity)
+            except ValidationError as e:  # pragma: no cover
+                error_msg = (  # pragma: no cover
+                    f"Validation failed: {e.errors()[0]['msg']}"
+                    if e.errors()
+                    else str(e)  # pragma: no cover
+                )
+                return r.fail(error_msg)  # pragma: no cover
+            except ValueError as e:  # pragma: no cover
+                return r.fail(str(e))  # pragma: no cover
 
-    class FastAPI:
-        """FastAPI framework-specific models for configuration conversion.
+        @classmethod
+        def create_web_request(
+            cls,
+            method: HttpMethodLiteral,
+            url: str,
+            headers: dict[str, str] | None = None,
+            body: str | dict[str, object] | None = None,
+        ) -> r[WebRequest]:
+            """Create a web request model.
 
-        Provides Pydantic models for FastAPI application configuration with
-        validation. Used internally for FastAPI framework integration.
-        """
+            Args:
+                method: HTTP method
+                url: Request URL
+                headers: Request headers (defaults to empty dict)
+                body: Request body
+
+            Returns:
+                r[WebRequest]: Success contains request model,
+                                        failure contains validation error
+
+            """
+            # Use flext_u.guard() for unified headers validation (DSL pattern)
+            # Validate headers - must be dict or None
+            if headers is not None and not isinstance(headers, dict):
+                return r[FlextWebModels.WebRequest].fail(
+                    "Headers must be a dictionary or None",
+                )
+            headers_validated = headers if isinstance(headers, dict) else {}
+
+            # Use flext_u.try_() for unified error handling (DSL pattern)
+            def create_request() -> FlextWebModels.WebRequest:
+                """Create request model."""
+                return cls.WebRequest(
+                    method=method,
+                    url=url,
+                    headers=headers_validated,
+                    body=body,
+                )
+
+            # Use flext_u.try_() with custom exception handling for better error messages
+            try:
+                request = create_request()
+                return r[FlextWebModels.WebRequest].ok(request)
+            except Exception as exc:
+                # Use flext_u.err() pattern for unified error extraction (DSL pattern)
+                return r[FlextWebModels.WebRequest].fail(
+                    f"Failed to create web request: {exc}",
+                )
+
+        @classmethod
+        def create_web_response(
+            cls,
+            request_id: str,
+            status_code: int,
+            headers: dict[str, str] | None = None,
+            body: str | dict[str, object] | None = None,
+        ) -> r[WebResponse]:
+            """Create a web response model.
+
+            Args:
+                request_id: Associated request identifier
+                status_code: HTTP status code
+                headers: Response headers (defaults to empty dict)
+                body: Response body
+
+            Returns:
+                r[WebResponse]: Success contains response model,
+                                        failure contains validation error
+
+            """
+            # Use flext_u.guard() for unified headers validation (DSL pattern)
+            # Validate headers - must be dict or None
+            if headers is not None and not isinstance(headers, dict):
+                return r[FlextWebModels.WebResponse].fail(
+                    "Headers must be a dictionary or None",
+                )
+            headers_validated = headers if isinstance(headers, dict) else {}
+
+            # Use flext_u.try_() for unified error handling (DSL pattern)
+            def create_response() -> FlextWebModels.WebResponse:
+                """Create response model."""
+                return cls.WebResponse(
+                    request_id=request_id,
+                    status_code=status_code,
+                    headers=headers_validated,
+                    body=body,
+                )
+
+            # Use flext_u.try_() with custom exception handling for better error messages
+            try:
+                response = create_response()
+                return r[FlextWebModels.WebResponse].ok(response)
+            except Exception as exc:
+                # Use flext_u.err() pattern for unified error extraction (DSL pattern)
+                return r[FlextWebModels.WebResponse].fail(
+                    f"Failed to create web response: {exc}",
+                )
 
         class FastAPIAppConfig(BaseModel):
             """FastAPI application configuration model (Value Object).

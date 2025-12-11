@@ -11,9 +11,9 @@ from pydantic import ValidationError
 from tests.conftest import create_test_result
 
 from flext_web.api import FlextWebApi
-from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
+from flext_web.settings import FlextWebSettings
 
 
 class TestFlextWebApi:
@@ -54,7 +54,7 @@ class TestFlextWebApi:
 
     def test_create_http_service_with_config(self) -> None:
         """Test HTTP service creation with configuration."""
-        config = FlextWebConfig(
+        config = FlextWebSettings(
             host="localhost",
             port=8080,
             debug=True,  # Use alias
@@ -88,7 +88,7 @@ class TestFlextWebApi:
         # Test with invalid config - Pydantic validation should fail
         try:
             # Config with invalid port should fail Pydantic validation
-            invalid_config = FlextWebConfig(port=-1)  # Invalid port
+            invalid_config = FlextWebSettings(port=-1)  # Invalid port
             # If validation passes (shouldn't), test will continue
             result = FlextWebApi.create_http_service(invalid_config)
             # Service creation should handle invalid config
@@ -222,7 +222,7 @@ class TestFlextWebApi:
 
     def test_validate_http_config_success(self) -> None:
         """Test HTTP configuration validation."""
-        config = FlextWebConfig(
+        config = FlextWebSettings(
             host="localhost",
             port=8080,
             debug=True,  # Use alias
@@ -237,7 +237,7 @@ class TestFlextWebApi:
         """Test HTTP configuration validation with invalid data."""
         # Config with invalid port should fail Pydantic validation on creation
         with pytest.raises(ValidationError):  # Pydantic will raise ValidationError
-            FlextWebConfig(port=-1)
+            FlextWebSettings(port=-1)
 
     def test_get_service_status(self) -> None:
         """Test service status retrieval."""

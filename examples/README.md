@@ -27,14 +27,14 @@ service.run()
 ```python
 # examples/custom_config.py
 import os
-from flext_web import FlextWebConfig, create_service
+from flext_web import FlextWebSettings, create_service
 
 # Configure via environment variables
 os.environ['FLEXT_WEB_HOST'] = '0.0.0.0'
 os.environ['FLEXT_WEB_PORT'] = '8080'
 os.environ['FLEXT_WEB_DEBUG'] = 'false'
 
-config = FlextWebConfig()
+config = FlextWebSettings()
 service = create_service(config)
 service.run()
 ```
@@ -102,11 +102,11 @@ if __name__ == "__main__":
 ```python
 # examples/flask_integration.py
 from flask import Flask, request, jsonify
-from flext_web import FlextWebServices, FlextWebConfig
+from flext_web import FlextWebServices, FlextWebSettings
 
 # Create custom Flask app with FLEXT Web integration
 app = Flask(__name__)
-config = FlextWebConfig(host='localhost', port=5000)
+config = FlextWebSettings(host='localhost', port=5000)
 flext_service = FlextWebServices(config)
 
 # Add custom routes
@@ -134,9 +134,9 @@ if __name__ == '__main__':
 
 ```python
 # examples/enterprise_config.py
-from flext_web import FlextWebConfig, create_service
+from flext_web import FlextWebSettings, create_service
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -159,7 +159,7 @@ import os
 
 logger = FlextLogger(__name__)
 
-class EnterpriseWebConfig(FlextWebConfig):
+class EnterpriseWebConfig(FlextWebSettings):
     """Enterprise configuration with additional validation"""
 
     def validate_config(self):
@@ -200,9 +200,9 @@ if __name__ == "__main__":
 import os
 import signal
 import sys
-from flext_web import create_service, FlextWebConfig
+from flext_web import create_service, FlextWebSettings
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -224,9 +224,9 @@ from flext_core import u
 
 logger = FlextLogger(__name__)
 
-def create_docker_config() -> FlextWebConfig:
+def create_docker_config() -> FlextWebSettings:
     """Create Docker-optimized configuration"""
-    return FlextWebConfig(
+    return FlextWebSettings(
         host='0.0.0.0',  # Bind to all interfaces
         port=int(os.environ.get('PORT', 8080)),
         debug=os.environ.get('DEBUG', 'false').lower() == 'true',
@@ -261,9 +261,9 @@ if __name__ == "__main__":
 ```python
 # examples/kubernetes_deployment.py
 """Kubernetes-ready service with health checks and metrics"""
-from flext_web import create_service, FlextWebConfig
+from flext_web import create_service, FlextWebSettings
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -288,7 +288,7 @@ import time
 
 logger = FlextLogger(__name__)
 
-class KubernetesWebConfig(FlextWebConfig):
+class KubernetesWebConfig(FlextWebSettings):
     """Kubernetes-optimized configuration"""
 
     # Kubernetes environment variables
@@ -346,7 +346,7 @@ if __name__ == "__main__":
 ```python
 # examples/testing_patterns.py
 import pytest
-from flext_web import FlextWebApp, FlextWebAppHandler, FlextWebConfig
+from flext_web import FlextWebApp, FlextWebAppHandler, FlextWebSettings
 
 class TestApplicationWorkflow:
     """Example test patterns for FLEXT Web Interface"""
@@ -375,7 +375,7 @@ class TestApplicationWorkflow:
     def test_configuration_validation(self):
         """Test configuration validation patterns"""
         # Valid configuration
-        config = FlextWebConfig(
+        config = FlextWebSettings(
             host='localhost',
             port=8080,
             debug=True
@@ -384,7 +384,7 @@ class TestApplicationWorkflow:
         assert result.success
 
         # Invalid configuration
-        invalid_config = FlextWebConfig(
+        invalid_config = FlextWebSettings(
             host='',  # Invalid empty host
             port=70000,  # Invalid port range
             debug=False

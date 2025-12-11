@@ -383,15 +383,15 @@ class TestFlextWebModels:
         assert response.status_code == 201
 
     def test_http_request_has_body_property(self) -> None:
-        """Test Http.Request has_body property."""
-        request_with_body = FlextWebModels.Http.Request(
+        """Test Web.Request has_body property."""
+        request_with_body = FlextWebModels.Web.Request(
             url="http://localhost:8080",
             method="POST",
             body='{"data": "test"}',
         )
         assert request_with_body.has_body is True
 
-        request_without_body = FlextWebModels.Http.Request(
+        request_without_body = FlextWebModels.Web.Request(
             url="http://localhost:8080",
             method="GET",
             body=None,
@@ -399,39 +399,39 @@ class TestFlextWebModels:
         assert request_without_body.has_body is False
 
     def test_http_request_is_secure_property(self) -> None:
-        """Test Http.Request is_secure property."""
-        https_request = FlextWebModels.Http.Request(
+        """Test Web.Request is_secure property."""
+        https_request = FlextWebModels.Web.Request(
             url="https://localhost:8080",
             method="GET",
         )
         assert https_request.is_secure is True
 
-        http_request = FlextWebModels.Http.Request(
+        http_request = FlextWebModels.Web.Request(
             url="http://localhost:8080",
             method="GET",
         )
         assert http_request.is_secure is False
 
     def test_http_response_is_success_property(self) -> None:
-        """Test Http.Response is_success property."""
-        success_response = FlextWebModels.Http.Response(
+        """Test Web.Response is_success property."""
+        success_response = FlextWebModels.Web.Response(
             status_code=200,
         )
         assert success_response.is_success is True
 
-        error_response = FlextWebModels.Http.Response(
+        error_response = FlextWebModels.Web.Response(
             status_code=404,
         )
         assert error_response.is_success is False
 
     def test_http_response_is_error_property(self) -> None:
-        """Test Http.Response is_error property."""
-        error_response = FlextWebModels.Http.Response(
+        """Test Web.Response is_error property."""
+        error_response = FlextWebModels.Web.Response(
             status_code=500,
         )
         assert error_response.is_error is True
 
-        success_response = FlextWebModels.Http.Response(
+        success_response = FlextWebModels.Web.Response(
             status_code=200,
         )
         assert success_response.is_error is False

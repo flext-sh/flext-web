@@ -376,7 +376,7 @@ repos:
 ```python
 # src/flext_web/domain/entities.py (target)
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -412,7 +412,7 @@ class FlextWebApp(FlextModels.Entity):
 ```python
 # src/flext_web/application/handlers.py (target)
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -495,7 +495,7 @@ def create_app():
 from flext_core import (
     FlextResult,      # Railway-oriented programming
     FlextModels.Entity,      # Domain entity base class
-    FlextConfig,      # Configuration management
+    FlextSettings,      # Configuration management
     FlextProcessors,    # CQRS handlers
     FlextLogger        # Structured logging
 )
@@ -559,7 +559,7 @@ pytest tests/test_name.py --cov=src --pdb
 ```python
 # Current logging (via flext-core)
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

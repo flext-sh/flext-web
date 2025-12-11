@@ -20,9 +20,9 @@ from flext_core import (
     FlextUtilities,
 )
 
-from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
+from flext_web.settings import FlextWebSettings
 from flext_web.typings import FlextWebTypes
 
 # Import aliases for simplified usage
@@ -41,9 +41,9 @@ class FlextWebServices(FlextService[bool]):
     """
 
     @classmethod
-    def _get_service_config_type(cls) -> type[FlextWebConfig]:
+    def _get_service_config_type(cls) -> type[FlextWebSettings]:
         """Get the config type for this service class."""
-        return FlextWebConfig
+        return FlextWebSettings
 
     class Auth:
         """User authentication service."""
@@ -214,15 +214,15 @@ class FlextWebServices(FlextService[bool]):
             )
             return FlextResult.ok(metrics_response)
 
-    def __init__(self, config: FlextWebConfig | None = None) -> None:
+    def __init__(self, config: FlextWebSettings | None = None) -> None:
         """Initialize with config.
 
         Args:
             config: Service configuration model or None for defaults.
-                   If None, uses FlextWebConfig() with Constants defaults.
+                   If None, uses FlextWebSettings() with Constants defaults.
 
         """
-        web_config = config if config is not None else FlextWebConfig()
+        web_config = config if config is not None else FlextWebSettings()
         # Pass config to super().__init__() - FlextService will use _get_service_config_type()
         # but we override _config after initialization to use the passed config
         super().__init__()
@@ -315,14 +315,14 @@ class FlextWebServices(FlextService[bool]):
         return self.Health.metrics()
 
     @staticmethod
-    def create_configuration(config: FlextWebConfig) -> FlextResult[FlextWebConfig]:
+    def create_configuration(config: FlextWebSettings) -> FlextResult[FlextWebSettings]:
         """Create config using Pydantic 2 with explicit validation.
 
         Args:
             config: Configuration model (already validated by Pydantic)
 
         Returns:
-            FlextResult[FlextWebConfig]: Success contains config,
+            FlextResult[FlextWebSettings]: Success contains config,
                                         failure contains error message
 
         """
@@ -538,7 +538,7 @@ class FlextWebServices(FlextService[bool]):
     @classmethod
     def create_web_service(
         cls,
-        config: FlextWebConfig | None = None,
+        config: FlextWebSettings | None = None,
     ) -> FlextResult[FlextWebServices]:
         """Create web service with explicit validation.
 
@@ -597,13 +597,13 @@ class FlextWebServices(FlextService[bool]):
     @classmethod
     def create_service(
         cls,
-        config: FlextWebConfig | None = None,
+        config: FlextWebSettings | None = None,
     ) -> FlextResult[FlextWebServices]:
         """Create service instance with explicit validation.
 
         Args:
             config: Service configuration model or None for defaults.
-                   If None, uses FlextWebConfig() with Constants defaults.
+                   If None, uses FlextWebSettings() with Constants defaults.
 
         Returns:
             FlextResult[FlextWebServices]: Success contains service instance,
@@ -611,8 +611,8 @@ class FlextWebServices(FlextService[bool]):
 
         """
         # Use Pydantic defaults if None - Models use Constants in initialization
-        # FlextWebConfig uses Constants defaults, so None creates config with defaults
-        service_config = config if config is not None else FlextWebConfig()
+        # FlextWebSettings uses Constants defaults, so None creates config with defaults
+        service_config = config if config is not None else FlextWebSettings()
         return FlextResult.ok(cls(config=service_config))
 
 

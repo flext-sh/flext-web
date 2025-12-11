@@ -123,7 +123,7 @@ class ExamplesFullFunctionalityTest:
             flext_web = importlib.import_module("flext_web")
             # Using direct FlextWebServices.create_web_service instead of alias
 
-            config = flext_web.FlextWebConfig.create_web_config()
+            config = flext_web.FlextWebSettings.create_web_config()
             service = flext_web.FlextWebServices.create_web_service(config)
 
             # Test 4: Service has correct attributes
@@ -234,11 +234,11 @@ class ExamplesFullFunctionalityTest:
             # Create services using different approaches from examples
 
             # Approach 1: basic_service style
-            config1 = flext_web.FlextWebConfig.create_web_config()
+            config1 = flext_web.FlextWebSettings.create_web_config()
             service1 = flext_web.FlextWebServices.create_web_service(config1)
 
             # Approach 2: docker_ready style
-            config2 = flext_web.FlextWebConfig(
+            config2 = flext_web.FlextWebSettings(
                 host="127.0.0.1",
                 port=8094,
                 debug=False,

@@ -29,7 +29,7 @@ from flext_tests import (
     FlextTestsUtilities,
 )
 
-from flext_web import FlextWebConfig, FlextWebModels, FlextWebServices
+from flext_web import FlextWebModels, FlextWebServices, FlextWebSettings
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants
 from flext_web.typings import (
@@ -165,7 +165,7 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, object]:
     raise ValueError(msg)
 
 
-def create_test_app(**kwargs: object) -> FlextWebModels.Application.Entity:
+def create_test_app(**kwargs: object) -> FlextWebModels.Web.Entity:
     """Create a test application entity using flext-core patterns.
 
     This function provides a standardized way to create test applications,
@@ -175,7 +175,7 @@ def create_test_app(**kwargs: object) -> FlextWebModels.Application.Entity:
         **kwargs: Override default app properties
 
     Returns:
-        FlextWebModels.Application.Entity instance
+        FlextWebModels.Web.Entity instance
 
     """
     defaults: dict[str, Any] = {
@@ -186,7 +186,7 @@ def create_test_app(**kwargs: object) -> FlextWebModels.Application.Entity:
     }
 
     defaults.update(kwargs)
-    return FlextWebModels.Application.Entity(**defaults)
+    return FlextWebModels.Web.Entity(**defaults)
 
 
 def create_test_result(
@@ -304,17 +304,17 @@ def setup_test_environment() -> Generator[None]:
 
 
 @pytest.fixture
-def real_config() -> FlextWebConfig:
+def real_config() -> FlextWebSettings:
     """Create real test configuration with required secret key.
 
     Fast fail if secret key cannot be provided - no fallback.
     """
-    return FlextWebConfig(secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY)
+    return FlextWebSettings(secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY)
 
 
 @pytest.fixture
 def real_service(
-    real_config: FlextWebConfig,
+    real_config: FlextWebSettings,
 ) -> FlextWebServices:
     """Create real FlextWebServices instance with clean state."""
     # Pass config object directly - no dict conversion
@@ -326,7 +326,7 @@ def real_service(
 
 
 @pytest.fixture
-def real_app(real_config: FlextWebConfig) -> Flask:
+def real_app(real_config: FlextWebSettings) -> Flask:
     """Create real Flask app."""
     # Create a basic Flask app for testing
     app = Flask(__name__)
@@ -340,13 +340,13 @@ def real_app(real_config: FlextWebConfig) -> Flask:
 
 @pytest.fixture
 def running_service(
-    real_config: FlextWebConfig,
+    real_config: FlextWebSettings,
 ) -> Generator[FlextWebServices]:
     """Start real service in background thread with clean state."""
     # Allocate unique port to avoid conflicts
     test_port = TestPortManager.allocate_port()
 
-    test_config = FlextWebConfig(
+    test_config = FlextWebSettings(
         host=real_config.host,
         port=test_port,
         app_name=real_config.app_name,

@@ -55,7 +55,7 @@ class TestFlextWebUtilities:
 
     def test_app_creation_functionality(self) -> None:
         """Test app creation functionality."""
-        app = FlextWebModels.Application.Entity(
+        app = FlextWebModels.Web.Entity(
             name="test-app",
             host="localhost",
             port=8080,
@@ -71,7 +71,7 @@ class TestFlextWebUtilities:
         # Test that invalid app creation fails properly
         try:
             # This should fail validation
-            FlextWebModels.Application.Entity(name="", host="localhost", port=8080)
+            FlextWebModels.Web.Entity(name="", host="localhost", port=8080)
             # If it doesn't fail, that's also acceptable for this test
         except Exception:
             pass  # Expected validation error

@@ -8,10 +8,10 @@ from ipaddress import IPv4Address
 from types import MappingProxyType
 from typing import ClassVar, Final, Literal
 
-from flext_core import c as c_core
+from flext_core import FlextConstants
 
 
-class FlextWebConstants(c_core):
+class FlextWebConstants(FlextConstants):
     """Immutable project-specific constants organised by domain.
 
     Usage:
@@ -389,23 +389,6 @@ class FlextWebConstants(c_core):
         # Session cookie SameSite literal - standard HTTP cookie attribute values
         # Note: This is a standard HTTP cookie attribute, not a project-specific enum
         type SameSiteLiteral = Literal["Lax", "Strict", "None"]
-
-        # ═══════════════════════════════════════════════════════════════════
-        # LITERALS NAMESPACE (For backward compatibility and organization)
-        # ═══════════════════════════════════════════════════════════════════
-        # All Literal types are defined at Web level above for proper StrEnum access.
-        # This namespace is kept for backward compatibility and organization.
-
-        class Literals:
-            """Literal type aliases namespace (for backward compatibility).
-
-            DEPRECATED: Access Literal types directly from Web namespace:
-            - Use: Web.HttpMethodLiteral, Web.EnvironmentNameLiteral
-            - Not: Web.Literals.HttpMethodLiteral, Web.Literals.EnvironmentNameLiteral
-
-            All Literal types are now defined at Web level and reference StrEnum members
-            to avoid string duplication, following the DRY principle.
-            """
 
 
 c = FlextWebConstants

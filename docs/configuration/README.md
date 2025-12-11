@@ -21,7 +21,7 @@ FLEXT Web Interface uses **Pydantic Settings** with **flext-core configuration p
 
 ```python
 # Configuration hierarchy
-FlextWebConfig(BaseSettings, FlextConfig)
+FlextWebSettings(BaseSettings, FlextSettings)
 ├── Server Settings (host, port, debug)
 ├── Security Settings (secret_key, cors)
 ├── Integration Settings (flexcore_url, flext_service_url)
@@ -119,7 +119,7 @@ FLEXT_ENVIRONMENT=production
 ```python
 from pydantic_settings import BaseSettings
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext
@@ -140,7 +140,7 @@ from flext_core import t
 from flext_core import u
 from pydantic import Field
 
-class FlextWebConfig(BaseSettings, FlextConfig):
+class FlextWebSettings(BaseSettings, FlextSettings):
     """Web configuration using flext-core patterns"""
 
     model_config = {
@@ -189,7 +189,7 @@ reset_web_settings()
 
 # Create service with custom configuration
 from flext_web import create_service
-custom_config = FlextWebConfig(port=9000, debug=False)
+custom_config = FlextWebSettings(port=9000, debug=False)
 service = create_service(custom_config)
 ```
 
@@ -204,7 +204,7 @@ except ValueError as e:
     print(f"Configuration error: {e}")
 
 # Manual validation
-config = FlextWebConfig()
+config = FlextWebSettings()
 validation_result = config.validate_config()
 if not validation_result.success:
     print(f"Validation failed: {validation_result.error}")
@@ -379,7 +379,7 @@ print(f'Debug: {config.debug}')
 ```bash
 # Test configuration validation
 python -c "
-from flext_web.config import FlextWebConfig
+from flext_web.settings import FlextWebSettings
 import os
 
 # Test with invalid configuration
@@ -387,7 +387,7 @@ os.environ['FLEXT_WEB_SECRET_KEY'] = 'short'
 os.environ['FLEXT_WEB_DEBUG'] = 'false'
 
 try:
-    config = FlextWebConfig()
+    config = FlextWebSettings()
     result = config.validate_config()
     if not result.success:
         print(f'Validation error: {result.error}')
@@ -463,8 +463,8 @@ env | grep FLEXT_WEB_
 
 # Test direct configuration
 python -c "
-from flext_web.config import FlextWebConfig
-config = FlextWebConfig(host='test', port=9999)
+from flext_web.settings import FlextWebSettings
+config = FlextWebSettings(host='test', port=9999)
 print(f'Host: {config.host}, Port: {config.port}')
 "
 ```

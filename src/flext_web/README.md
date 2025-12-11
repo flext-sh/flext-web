@@ -125,7 +125,7 @@ if result.success:
         print(f"Application {start_result.data.name} is running")
 ```
 
-#### FlextWebConfig
+#### FlextWebSettings
 
 Environment-based configuration management with comprehensive validation and production safety checks.
 
@@ -139,7 +139,7 @@ Environment-based configuration management with comprehensive validation and pro
 **Usage**:
 
 ```python
-from flext_web import FlextWebConfig, get_web_settings
+from flext_web import FlextWebSettings, get_web_settings
 
 # Get validated configuration
 config = get_web_settings()
@@ -201,7 +201,7 @@ The module extensively uses flext-core foundation patterns for consistency acros
 
 - **FlextResult**: Railway-oriented programming for error handling
 - **FlextModels.Entity**: Domain entity base class with validation
-- **FlextConfig**: Configuration management with validation
+- **FlextSettings**: Configuration management with validation
 - **FlextProcessors**: CQRS command handler patterns
 
 ### Error Handling
@@ -210,7 +210,7 @@ All operations use FlextResult for consistent error handling:
 
 ```python
 from flext_core import FlextBus
-from flext_core import FlextConfig
+from flext_core import FlextSettings
 from flext_core import FlextConstants
 from flext_core import FlextContainer
 from flext_core import FlextContext

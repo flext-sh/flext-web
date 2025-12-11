@@ -28,10 +28,10 @@ from flext_core import (
 from pydantic import ValidationError
 
 from flext_web.app import FlextWebApp
-from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.services import FlextWebServices
+from flext_web.settings import FlextWebSettings
 from flext_web.typings import t
 
 # Import aliases for simplified usage
@@ -68,7 +68,7 @@ class FlextWebApi:
     @classmethod
     def create_fastapi_app(
         cls,
-        config: m.FastAPI.FastAPIAppConfig | None = None,
+        config: m.Web.FastAPIAppConfig | None = None,
     ) -> FlextResult[FastAPI]:
         """Create FastAPI web application with complete validation.
 
@@ -104,7 +104,7 @@ class FlextWebApi:
     @classmethod
     def create_http_service(
         cls,
-        config: FlextWebConfig | None = None,
+        config: FlextWebSettings | None = None,
     ) -> FlextResult[FlextWebServices]:
         """Create HTTP service with validation and dependency injection.
 
@@ -144,7 +144,7 @@ class FlextWebApi:
         port: int | None = None,
         *,
         debug: bool | None = None,
-    ) -> FlextResult[FlextWebConfig]:
+    ) -> FlextResult[FlextWebSettings]:
         """Create HTTP configuration with defaults and validation.
 
         Single Responsibility: Creates and validates HTTP configurations only.
@@ -157,7 +157,7 @@ class FlextWebApi:
         debug: Debug mode flag
 
         Returns:
-        FlextResult[FlextWebConfig]: Success contains validated config,
+        FlextResult[FlextWebSettings]: Success contains validated config,
         failure contains validation error
 
         """
@@ -190,7 +190,7 @@ class FlextWebApi:
                 config_kwargs["secret_key"] = c.Web.WebDefaults.SECRET_KEY
             # Pydantic will validate types at runtime - use type: ignore for pyright
             # config_kwargs contains validated values from filter_dict
-            config = FlextWebConfig(**config_kwargs)
+            config = FlextWebSettings(**config_kwargs)
         except ValidationError as e:
             # Use u to extract error message - simplifies code
             errors = e.errors()
@@ -238,7 +238,7 @@ class FlextWebApi:
         return FlextResult.ok(status_info)
 
     @classmethod
-    def validate_http_config(cls, config: FlextWebConfig) -> FlextResult[bool]:
+    def validate_http_config(cls, config: FlextWebSettings) -> FlextResult[bool]:
         """Validate HTTP configuration for correctness and security.
 
         Single Responsibility: Validates HTTP configurations only.

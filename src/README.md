@@ -40,7 +40,7 @@ src/
 
 - `FlextWebApp`: Domain entity with complete lifecycle management
 - `FlextWebAppStatus`: State machine enumeration with transition rules
-- `FlextWebConfig`: Environment-based configuration with validation
+- `FlextWebSettings`: Environment-based configuration with validation
 - `FlextWebAppHandler`: CQRS command handlers with business logic
 - `FlextWebServices`: Flask integration with complete API endpoints
 - Factory functions: Service creation and configuration management
@@ -123,7 +123,7 @@ def start(self) -> FlextResult[FlextWebApp]:
 #### **Factory Function Documentation**
 
 ```python
-def create_service(config: FlextWebConfig | None = None) -> FlextWebServices:
+def create_service(config: FlextWebSettings | None = None) -> FlextWebServices:
     """Create configured FLEXT Web Service instance with comprehensive initialization.
 
     [Complete configuration handling, deployment patterns, examples]:
@@ -173,7 +173,7 @@ make security                  # Security scanning
 
 - **FlextResult**: Railway-oriented programming for all operations
 - **FlextModels.Entity**: Domain entity base classes with validation
-- **FlextConfig**: Configuration management with environment integration
+- **FlextSettings**: Configuration management with environment integration
 - **FlextProcessors**: CQRS command handler patterns
 
 ### **Ecosystem Integration**

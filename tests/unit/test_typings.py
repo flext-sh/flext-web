@@ -6,7 +6,7 @@ Tests the unified FlextWebModels class following flext standards.
 from typing import cast
 
 from flext_web import FlextWebModels
-from flext_web.config import FlextWebConfig
+from flext_web.settings import FlextWebSettings
 from flext_web.typings import (
     _ApplicationConfig,
     _WebRequestConfig,
@@ -169,7 +169,7 @@ class TestFlextWebModels:
         """Test config validation functionality."""
         # Test that config creation works
 
-        config = FlextWebConfig(host="localhost", port=8080)
+        config = FlextWebSettings(host="localhost", port=8080)
         assert config.host == "localhost"
         assert config.port == 8080
 
@@ -474,7 +474,7 @@ class TestFlextWebModels:
 
     def test_types_config_initialization(self) -> None:
         """Test TypesConfig initialization with all parameters."""
-        config = t.TypesConfig(
+        config = t.Config(
             use_pydantic_models=False,
             enable_runtime_validation=False,
             models_available=["Custom.Model"],
@@ -485,7 +485,7 @@ class TestFlextWebModels:
 
     def test_types_config_default_initialization(self) -> None:
         """Test TypesConfig initialization with defaults."""
-        config = t.TypesConfig()
+        config = t.Config()
         assert config.use_pydantic_models is True
         assert config.enable_runtime_validation is True
         assert isinstance(config.models_available, list)

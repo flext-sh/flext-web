@@ -24,7 +24,7 @@ tests/
 #### Unit Tests (`pytest -m unit`)
 
 - **Domain Entities**: FlextWebApp, FlextWebAppStatus business logic
-- **Configuration**: FlextWebConfig validation and environment handling
+- **Configuration**: FlextWebSettings validation and environment handling
 - **Handlers**: FlextWebAppHandler CQRS command processing
 - **Exceptions**: Domain-specific exception hierarchy
 
@@ -158,7 +158,7 @@ pytest --profile
 
 ### Fixtures (`conftest.py`)
 
-- **clean_config**: Fresh FlextWebConfig for each test
+- **clean_config**: Fresh FlextWebSettings for each test
 - **test_app**: Isolated Flask application instance
 - **mock_handler**: Mocked FlextWebAppHandler for unit tests
 - **sample_web_app**: Pre-configured FlextWebApp for testing

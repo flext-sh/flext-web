@@ -5,9 +5,9 @@ Tests the web fields functionality following flext standards.
 
 from pydantic import BaseModel
 
-from flext_web.config import FlextWebConfig
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
+from flext_web.settings import FlextWebSettings
 
 
 class TestFlextWebFields:
@@ -15,22 +15,22 @@ class TestFlextWebFields:
 
     def test_host_field_creation(self) -> None:
         """Test host field creation."""
-        config = FlextWebConfig(host="localhost")
+        config = FlextWebSettings(host="localhost")
         assert config.host == "localhost"
 
     def test_host_field_with_custom_default(self) -> None:
         """Test host field creation with custom default."""
-        config = FlextWebConfig(host="0.0.0.0")
+        config = FlextWebSettings(host="0.0.0.0")
         assert config.host == "0.0.0.0"
 
     def test_port_field_creation(self) -> None:
         """Test port field creation."""
-        config = FlextWebConfig(port=8080)
+        config = FlextWebSettings(port=8080)
         assert config.port == 8080
 
     def test_port_field_with_custom_default(self) -> None:
         """Test port field creation with custom default."""
-        config = FlextWebConfig(port=3000)
+        config = FlextWebSettings(port=3000)
         assert config.port == 3000
 
     def test_url_field_creation(self) -> None:
@@ -40,12 +40,12 @@ class TestFlextWebFields:
 
     def test_app_name_field_creation(self) -> None:
         """Test app name field creation."""
-        config = FlextWebConfig(app_name="Test App")
+        config = FlextWebSettings(app_name="Test App")
         assert config.app_name == "Test App"
 
     def test_secret_key_field_creation(self) -> None:
         """Test secret key field creation."""
-        config = FlextWebConfig(secret_key="valid-secret-key-32-characters-long")
+        config = FlextWebSettings(secret_key="valid-secret-key-32-characters-long")
         assert config.secret_key is not None
 
     def test_http_status_field_creation(self) -> None:
