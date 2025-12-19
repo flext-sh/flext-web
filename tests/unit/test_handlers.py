@@ -189,7 +189,7 @@ class TestFlextWebHandlers:
         """Test handle_start_app with invalid entity type - REAL validation."""
         # Pass non-Entity object
         result = FlextWebHandlers.handle_start_app(
-            cast("FlextWebModels.Application.Entity", "not-an-entity"),
+            cast("FlextWebModels.Web.Entity", "not-an-entity"),
         )
         assert result.is_failure
         assert result.error is not None
@@ -199,7 +199,7 @@ class TestFlextWebHandlers:
         """Test handle_stop_app with invalid entity type - REAL validation."""
         # Pass non-Entity object
         result = FlextWebHandlers.handle_stop_app(
-            cast("FlextWebModels.Application.Entity", "not-an-entity"),
+            cast("FlextWebModels.Web.Entity", "not-an-entity"),
         )
         assert result.is_failure
         assert result.error is not None

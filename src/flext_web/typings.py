@@ -85,12 +85,12 @@ class FlextWebTypes(FlextTypes):
     class HttpResponse(FlextWebModels.Web.Response):
         """HTTP response model - inherits from FlextWebModels.Web.Response."""
 
-    # Web-specific models - proper inheritance from FlextWebModels
-    class WebRequest(FlextWebModels.WebRequest):
-        """Web request model - inherits from FlextWebModels.WebRequest."""
+    # Web-specific models - reference existing models
+    WebRequest = FlextWebModels.Web.AppRequest
+    """Web request model - references FlextWebModels.Web.AppRequest."""
 
-    class WebResponse(FlextWebModels.WebResponse):
-        """Web response model - inherits from FlextWebModels.WebResponse."""
+    WebResponse = FlextWebModels.Web.AppResponse
+    """Web response model - references FlextWebModels.Web.AppResponse."""
 
     # Application models - proper inheritance from FlextWebModels
     class ApplicationEntity(FlextWebModels.Web.Entity):
@@ -100,12 +100,12 @@ class FlextWebTypes(FlextTypes):
     ApplicationStatus = FlextWebConstants.Web.WebEnvironment.Status
 
     # Application data types - proper inheritance from FlextWebModels
-    class AppData(FlextWebModels.WebService.AppResponse):
-        """Application data model - inherits from FlextWebModels.WebService.AppResponse."""
+    class AppData(FlextWebModels.Web.ApplicationResponse):
+        """Application data model - inherits from FlextWebModels.Web.ApplicationResponse."""
 
     # Health response type - proper inheritance from FlextWebModels
-    class HealthResponse(FlextWebModels.WebService.HealthResponse):
-        """Health response model - inherits from FlextWebModels.WebService.HealthResponse."""
+    HealthResponse = FlextWebModels.Web.HealthResponse
+    """Health response model - references FlextWebModels.Web.HealthResponse."""
 
     # =========================================================================
     # TYPE ALIASES - Using Pydantic models and Protocols
@@ -126,14 +126,14 @@ class FlextWebTypes(FlextTypes):
         ]
 
     # Core response types - proper inheritance from FlextWebModels
-    class SuccessResponse(FlextWebModels.WebService.ServiceResponse):
-        """Success response model - inherits from FlextWebModels.WebService.ServiceResponse."""
+    SuccessResponse = FlextWebModels.Web.ServiceResponse
+    """Success response model - references FlextWebModels.Web.ServiceResponse."""
 
-    class BaseResponse(FlextWebModels.WebService.ServiceResponse):
-        """Base response model - inherits from FlextWebModels.WebService.ServiceResponse."""
+    BaseResponse = FlextWebModels.Web.ServiceResponse
+    """Base response model - references FlextWebModels.Web.ServiceResponse."""
 
-    class ErrorResponse(FlextWebModels.WebService.ServiceResponse):
-        """Error response model - inherits from FlextWebModels.WebService.ServiceResponse."""
+    ErrorResponse = FlextWebModels.Web.ServiceResponse
+    """Error response model - references FlextWebModels.Web.ServiceResponse."""
 
     # ResponseDict wrapper for FlextService - use PEP 695 type keyword
     class Data:
@@ -194,11 +194,7 @@ class FlextWebTypes(FlextTypes):
 
         # Use # Direct validation instead for unified headers validation (DSL pattern)
         # Validate headers - must be dict or None
-        if headers is not None and not isinstance(headers, dict):
-            return FlextResult[FlextWebModels.Web.Request].fail(
-                "Headers must be a dictionary or None",
-            )
-        headers_validated = headers if isinstance(headers, dict) else {}
+        headers_validated = headers or {}
 
         # Use FlextUtilities.try_() for unified error handling (DSL pattern)
         def create_request() -> FlextWebModels.Web.Request:
@@ -247,11 +243,7 @@ class FlextWebTypes(FlextTypes):
         """
         # Use # Direct validation instead for unified headers validation (DSL pattern)
         # Validate headers - must be dict or None
-        if headers is not None and not isinstance(headers, dict):
-            return FlextResult[FlextWebModels.Web.Response].fail(
-                "Headers must be a dictionary or None",
-            )
-        headers_validated = headers if isinstance(headers, dict) else {}
+        headers_validated = headers or {}
 
         # Use FlextUtilities.try_() for unified error handling (DSL pattern)
         def create_response() -> FlextWebModels.Web.Response:
@@ -281,15 +273,15 @@ class FlextWebTypes(FlextTypes):
     def create_web_request(
         cls,
         config: _WebRequestConfig,
-    ) -> FlextResult[FlextWebModels.WebRequest]:
+    ) -> FlextResult[m.Web.AppRequest]:
         """Create web request model instance with proper validation.
 
         Args:
             config: Web request configuration dictionary
 
         Returns:
-            FlextResult[Web.Request]: Success contains request model,
-                                     failure contains validation error
+            FlextResult[Web.AppRequest]: Success contains request model,
+                                        failure contains validation error
 
         """
         # Use FlextUtilities.get() for unified extraction with defaults (DSL pattern)
@@ -297,38 +289,30 @@ class FlextWebTypes(FlextTypes):
         method = FlextUtilities.get(
             config, "method", default=FlextWebConstants.Web.Http.Method.GET
         )
-        headers = FlextUtilities.get(config, "headers")
+        headers = config.get("headers")
         body = FlextUtilities.get(config, "body")
         timeout = FlextUtilities.get(
             config,
             "timeout",
             default=FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
         )
-        query_params = FlextUtilities.get(config, "query_params")
+        query_params = config.get("query_params")
         client_ip = FlextUtilities.get(config, "client_ip", default="")
         user_agent = FlextUtilities.get(config, "user_agent", default="")
 
         # Validate URL - must be non-empty string
-        if not isinstance(url, str) or not url.strip():
-            return FlextResult[FlextWebModels.Web.Request].fail("URL is required")
+        if not url or not url.strip():
+            return FlextResult[FlextWebModels.Web.AppRequest].fail("URL is required")
         url_validated = url.strip()
 
         # Use # Direct validation instead for headers and query_params validation (DSL pattern)
         # Validate headers - must be dict or None
-        if headers is not None and not isinstance(headers, dict):
-            return FlextResult[FlextWebModels.Web.Request].fail(
-                "Headers must be a dictionary or None",
-            )
-        headers_validated = headers if isinstance(headers, dict) else {}
+        headers_validated: dict[str, str] = headers or {}
         # Validate query_params - must be dict or None
-        if query_params is not None and not isinstance(query_params, dict):
-            return FlextResult[FlextWebModels.Web.Request].fail(
-                "Query params must be a dictionary or None",
-            )
-        query_params_validated = query_params if isinstance(query_params, dict) else {}
+        query_params_validated: dict[str, object] = query_params or {}
 
         # Use # Direct validation instead for method validation (DSL pattern)
-        method_upper = str(method).upper()
+        method_upper = method.upper()
         valid_methods = set(FlextWebConstants.Web.Http.METHODS)
         method_validated = FlextUtilities.Validation.guard(
             method_upper,
@@ -342,15 +326,15 @@ class FlextWebTypes(FlextTypes):
             )
 
         # Use FlextUtilities.try_() for unified error handling (DSL pattern)
-        def create_request() -> FlextWebModels.Web.Request:
+        def create_request() -> FlextWebModels.Web.AppRequest:
             """Create request model."""
-            return FlextWebModels.Web.Request(
+            return FlextWebModels.Web.AppRequest(
                 url=url_validated,
-                method=method_upper,
-                headers=headers_validated or {},
+                method=method_upper,  # method_upper is validated to be HttpMethodLiteral
+                headers=headers_validated,
                 body=body,
-                timeout=timeout,
-                query_params=query_params_validated or {},
+                timeout=timeout or FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
+                query_params=query_params_validated,
                 client_ip=client_ip,
                 user_agent=user_agent,
             )
@@ -358,10 +342,10 @@ class FlextWebTypes(FlextTypes):
         # Use FlextUtilities.try_() with custom exception handling for better error messages
         try:
             request = create_request()
-            return FlextResult[FlextWebModels.Web.Request].ok(request)
+            return FlextResult[FlextWebModels.Web.AppRequest].ok(request)
         except Exception as exc:
             # Use FlextUtilities.err() pattern for unified error extraction (DSL pattern)
-            return FlextResult[FlextWebModels.Web.Request].fail(
+            return FlextResult[FlextWebModels.Web.AppRequest].fail(
                 f"Failed to create web request: {exc}",
             )
 
@@ -369,21 +353,21 @@ class FlextWebTypes(FlextTypes):
     def create_web_response(
         cls,
         config: _WebResponseConfig,
-    ) -> FlextResult[FlextWebModels.Web.Response]:
+    ) -> FlextResult[m.Web.AppResponse]:
         """Create web response model instance with proper validation.
 
         Args:
             config: Web response configuration dictionary
 
         Returns:
-            FlextResult[Web.Response]: Success contains response model,
-                                      failure contains validation error
+            FlextResult[Web.AppResponse]: Success contains response model,
+                                         failure contains validation error
 
         """
         # Use FlextUtilities.get() for unified extraction with defaults (DSL pattern)
         status_code = FlextUtilities.get(config, "status_code", default=200)
         request_id = FlextUtilities.get(config, "request_id", default="")
-        headers = FlextUtilities.get(config, "headers")
+        headers = config.get("headers")
         body = FlextUtilities.get(config, "body")
         elapsed_time = FlextUtilities.get(config, "elapsed_time", default=0.0)
         content_type = FlextUtilities.get(
@@ -398,33 +382,29 @@ class FlextWebTypes(FlextTypes):
 
         # Use # Direct validation instead for unified headers validation (DSL pattern)
         # Validate headers - must be dict or None
-        if headers is not None and not isinstance(headers, dict):
-            return FlextResult[FlextWebModels.Web.Response].fail(
-                "Headers must be a dictionary or None",
-            )
-        headers_validated = headers if isinstance(headers, dict) else {}
+        headers_validated: dict[str, str] = headers if isinstance(headers, dict) else {}
 
         # Use FlextUtilities.try_() for unified error handling (DSL pattern)
-        def create_response() -> FlextWebModels.Web.Response:
+        def create_response() -> FlextWebModels.Web.AppResponse:
             """Create response model."""
-            return FlextWebModels.Web.Response(
-                status_code=status_code,
+            return FlextWebModels.Web.AppResponse(
+                status_code=status_code or 200,
                 request_id=request_id,
-                headers=headers_validated or {},
+                headers=headers_validated,
                 body=body,
-                elapsed_time=elapsed_time,
+                elapsed_time=elapsed_time or 0.0,
                 content_type=content_type,
-                content_length=content_length,
-                processing_time_ms=processing_time_ms,
+                content_length=content_length or 0,
+                processing_time_ms=processing_time_ms or 0.0,
             )
 
         # Use FlextUtilities.try_() with custom exception handling for better error messages
         try:
             response = create_response()
-            return FlextResult[FlextWebModels.Web.Response].ok(response)
+            return FlextResult[FlextWebModels.Web.AppResponse].ok(response)
         except Exception as exc:
             # Use FlextUtilities.err() pattern for unified error extraction (DSL pattern)
-            return FlextResult[FlextWebModels.Web.Response].fail(
+            return FlextResult[FlextWebModels.Web.AppResponse].fail(
                 f"Failed to create web response: {exc}",
             )
 
@@ -432,7 +412,7 @@ class FlextWebTypes(FlextTypes):
     def create_application(
         cls,
         config: _ApplicationConfig,
-    ) -> FlextResult[FlextWebModels.Web.Entity]:
+    ) -> FlextResult[m.Web.Entity]:
         """Create application model instance.
 
         Args:
@@ -518,6 +498,7 @@ class FlextWebTypes(FlextTypes):
             models_available: list[str] | None = None,
         ) -> None:
             """Initialize types configuration."""
+            super().__init__()
             self.use_pydantic_models = use_pydantic_models
             self.enable_runtime_validation = enable_runtime_validation
             self.models_available = (

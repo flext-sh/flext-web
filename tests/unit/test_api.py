@@ -35,7 +35,7 @@ class TestFlextWebApi:
 
     def test_create_fastapi_app_with_config(self) -> None:
         """Test FastAPI app creation with configuration."""
-        config = FlextWebModels.FastAPI.FastAPIAppConfig(
+        config = FlextWebModels.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
         )
@@ -71,7 +71,7 @@ class TestFlextWebApi:
         # Test with invalid config - Pydantic validation should fail
         # FastAPIAppConfig requires valid title (min_length=1)
         try:
-            invalid_config = FlextWebModels.FastAPI.FastAPIAppConfig(
+            invalid_config = FlextWebModels.Web.FastAPIAppConfig(
                 title="",  # Empty title - should fail Pydantic validation
                 version="1.0.0",
             )

@@ -43,7 +43,7 @@ class FlextWebCliService:
 
     def _log_status_and_return(
         self,
-        status_data: FlextWebModels.WebService.ServiceResponse,
+        status_data: FlextWebModels.Web.ServiceResponse,
     ) -> bool:
         """Log service status and return True for success - internal state management.
 

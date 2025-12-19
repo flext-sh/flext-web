@@ -11,12 +11,8 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import re
-from typing import cast
 
 from flext_core import FlextUtilities
-
-# Import uplified usage
-u = FlextUtilities
 
 
 class FlextWebUtilities(FlextUtilities):
@@ -30,58 +26,33 @@ class FlextWebUtilities(FlextUtilities):
 
     @staticmethod
     def slugify(text: str) -> str:
-        """Convert text to URL-safe slug using advanced DSL builders.
+        """Convert text to URL-safe slug using standard string operations.
 
-        Uses chain_builder with norm, filt, mp, and norm_join for fluent composition.
+        Implements slugification without relying on non-existent DSL builders.
         """
+        if not text:
+            return ""
 
-        # DSL: chain_builder → norm → clean → split → filt → mp → join
-        def norm_lower(t: object) -> str:
-            """Normalize to lowercase."""
-            s = str(t) if t else ""
-            return u.norm(s).str(case="lower", default="").build() or ""
+        # Normalize to lowercase
+        normalized = text.lower()
 
-        def clean_special(n: object) -> str:
-            """Remove special chars, keep word chars, spaces, hyphens."""
-            s = str(n) if n else ""
-            return re.sub(r"[^\w\s-]", "", s) if s else ""
+        # Remove special chars, keep word chars, spaces, hyphens
+        cleaned = re.sub(r"[^\w\s-]", "", normalized)
 
-        def split_words(c: object) -> list[str]:
-            """Split on hyphens/spaces."""
-            s = str(c) if c else ""
-            return re.split(r"[-\s]+", s) if s else []
+        # Split on hyphens/spaces
+        words = re.split(r"[-\s]+", cleaned)
 
-        def filt_truthy(p: object) -> list[str]:
-            """Filter truthy parts."""
-            lst = p if isinstance(p, list) else []
-            return cast("list[str]", u.filt(lst).truthy().build()) or []
+        # Filter truthy parts
+        truthy_words = [word for word in words if word]
 
-        def mp_str(fp: object) -> list[str]:
-            """Map to strings."""
-            lst = fp if isinstance(fp, list) else []
-            return cast("list[str]", u.mp(lst).str().build()) or []
-
-        def join_hyphen(sl: object) -> str:
-            """Join with hyphens."""
-            lst = sl if isinstance(sl, list) else []
-            return u.norm_join(cast("list[str]", lst), sep="-") or ""
-
-        return (
-            u.chain_builder(text)
-            .then(norm_lower)
-            .then(clean_special)
-            .then(split_words)
-            .then(filt_truthy)
-            .then(mp_str)
-            .then(join_hyphen)
-            .build()
-        ) or ""
+        # Join with hyphens
+        return "-".join(truthy_words)
 
     @staticmethod
     def format_app_id(name: str) -> str:
-        """Format app name to valid ID using advanced DSL builders.
+        """Format app name to valid ID using flext-core utilities.
 
-        Uses chain_builder with safe, validate, slugify, and norm_join.
+        Uses proper validation and string operations.
         Fails fast if name is invalid (no fallbacks).
 
         Args:
@@ -94,59 +65,25 @@ class FlextWebUtilities(FlextUtilities):
             ValueError: If name cannot be formatted to valid ID
 
         """
+        if not name:
+            msg = f"Invalid application name: {name}"
+            raise ValueError(msg)
 
-        # DSL: chain_builder → safe → validate → slugify → prefix
-        def safe_clean(n: object) -> str:
-            """Safely clean using Text."""
-            s = str(n) if n else ""
-            cleaned = u.whn(s).safe(lambda x: u.Text.safe_string(str(x))).build()
-            if cleaned is None:
-                msg = f"Invalid application name: {name}"
-                raise ValueError(msg)
-            return cast("str", cleaned)
+        # Clean the name using flext-core Text utilities
+        cleaned = FlextUtilities.Text.safe_string(name)
+        if not cleaned:
+            msg = f"Application name cannot be empty: {name}"
+            raise ValueError(msg)
 
-        def validate_non_empty(n: object) -> str:
-            """Validate non-empty using validate_builder."""
-            s = str(n) if n else ""
-            validated = u.validate_builder(s).truthy().str(default="").build()
-            if not validated or not isinstance(validated, str):
-                msg = f"Invalid application name: {name}"
-                raise ValueError(msg)
-            # Additional validation using u.validate
-            result = u.validate(
-                validated,
-                u.V.string.non_empty,
-                field_name="application_name",
-            )
-            if result.is_failure:
-                msg = f"Application name cannot be empty: {name}"
-                raise ValueError(msg)
-            return result.value
+        # Slugify the cleaned name
+        slug = FlextWebUtilities.slugify(cleaned)
+        if not slug:
+            msg = f"Cannot format application name '{name}' to valid ID"
+            raise ValueError(msg)
 
-        def slugify_name(n: object) -> str:
-            """Slugify validated name."""
-            s = str(n) if n else ""
-            slug = FlextWebUtilities.slugify(s)
-            if not slug:
-                msg = f"Cannot format application name '{name}' to valid ID"
-                raise ValueError(msg)
-            return slug
-
-        def prefix_app(slug: object) -> str:
-            """Add app prefix."""
-            s = str(slug) if slug else ""
-            return u.norm_join(["app", s], sep="_")
-
-        return (
-            u.chain_builder(name)
-            .then(safe_clean)
-            .then(validate_non_empty)
-            .then(slugify_name)
-            .then(prefix_app)
-            .build()
-        ) or ""
+        # Add app prefix
+        return f"app_{slug}"
 
 
-__all__ = [
-    "FlextWebUtilities",
-]
+u = FlextWebUtilities
+__all__ = ["FlextWebUtilities", "u"]

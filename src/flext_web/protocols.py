@@ -838,7 +838,7 @@ class FlextWebProtocols(FlextProtocols):
                 # Protocol implementation placeholder
                 return {
                     "status": c.Web.WebResponse.STATUS_HEALTHY,
-                    "service": c.Web.WebService.SERVICE_NAME,
+                    "service": c.Web.Web.SERVICE_NAME,
                 }
 
             @staticmethod

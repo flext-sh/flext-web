@@ -109,18 +109,18 @@ class FlextWebServices(FlextService[bool]):
             )
             return FlextResult.ok(user_response)
 
-    class Entity(FlextService[m.WebService.EntityData]):
+    class Entity(FlextService[m.Web.EntityData]):
         """Entity CRUD service with monadic patterns."""
 
         def __init__(self) -> None:
             """Initialize storage."""
             super().__init__()
-            self._storage: dict[str, m.WebService.EntityData] = {}
+            self._storage: dict[str, m.Web.EntityData] = {}
 
         def create(
             self,
-            data: m.WebService.EntityData,
-        ) -> FlextResult[m.WebService.EntityData]:
+            data: m.Web.EntityData,
+        ) -> FlextResult[m.Web.EntityData]:
             """Create entity with validation.
 
             Args:
@@ -132,11 +132,11 @@ class FlextWebServices(FlextService[bool]):
 
             """
             entity_id = str(uuid.uuid4())
-            entity = m.WebService.EntityData(data={"id": entity_id, **data.data})
+            entity = m.Web.EntityData(data={"id": entity_id, **data.data})
             self._storage[entity_id] = entity
             return FlextResult.ok(entity)
 
-        def get(self, entity_id: str) -> FlextResult[m.WebService.EntityData]:
+        def get(self, entity_id: str) -> FlextResult[m.Web.EntityData]:
             """Get entity - fail fast if not found.
 
             Args:
@@ -160,7 +160,7 @@ class FlextWebServices(FlextService[bool]):
 
         def list_all(
             self,
-        ) -> FlextResult[list[m.WebService.EntityData]]:
+        ) -> FlextResult[list[m.Web.EntityData]]:
             """List all entities.
 
             Returns:
@@ -170,14 +170,14 @@ class FlextWebServices(FlextService[bool]):
             return FlextResult.ok(list(self._storage.values()))
 
         @staticmethod
-        def execute(**_kwargs: object) -> FlextResult[m.WebService.EntityData]:
+        def execute(**_kwargs: object) -> FlextResult[m.Web.EntityData]:
             """Execute entity service - required by FlextService.
 
             Returns:
                 FlextResult[EntityData]: Service ready response
 
             """
-            ready_response = m.WebService.EntityData(
+            ready_response = m.Web.EntityData(
                 data={"message": "Entity service ready"},
             )
             return FlextResult.ok(ready_response)
@@ -195,7 +195,7 @@ class FlextWebServices(FlextService[bool]):
             """
             health_response = m.Service.HealthResponse(
                 status=c.Web.WebResponse.STATUS_HEALTHY,
-                service=c.Web.WebService.SERVICE_NAME,
+                service=c.Web.Web.SERVICE_NAME,
                 timestamp=u.Generators.generate_iso_timestamp(),
             )
             return FlextResult.ok(health_response)
@@ -239,7 +239,7 @@ class FlextWebServices(FlextService[bool]):
         self._service_running = False
 
         # Application registry for web service management
-        self._applications: dict[str, m.Service.AppResponse] = {}
+        self._applications: dict[str, m.Web.ApplicationResponse] = {}
 
     def authenticate(
         self,
@@ -281,14 +281,14 @@ class FlextWebServices(FlextService[bool]):
 
     def create_entity(
         self,
-        data: m.WebService.EntityData,
-    ) -> FlextResult[m.WebService.EntityData]:
+        data: m.Web.EntityData,
+    ) -> FlextResult[m.Web.EntityData]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
             lambda service: service.create(data),
         )
 
-    def get_entity(self, entity_id: str) -> FlextResult[m.WebService.EntityData]:
+    def get_entity(self, entity_id: str) -> FlextResult[m.Web.EntityData]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
             lambda service: service.get(entity_id),
@@ -296,7 +296,7 @@ class FlextWebServices(FlextService[bool]):
 
     def list_entities(
         self,
-    ) -> FlextResult[list[m.WebService.EntityData]]:
+    ) -> FlextResult[list[m.Web.EntityData]]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
             lambda service: service.list_all(),
@@ -376,19 +376,19 @@ class FlextWebServices(FlextService[bool]):
         return FlextResult[bool].ok(True)
 
     @staticmethod
-    def logout() -> FlextResult[m.WebService.EntityData]:
+    def logout() -> FlextResult[m.Web.EntityData]:
         """Logout user.
 
         Returns:
             FlextResult[EntityData]: Success response
 
         """
-        logout_response = m.WebService.EntityData(data={"success": True})
+        logout_response = m.Web.EntityData(data={"success": True})
         return FlextResult.ok(logout_response)
 
     def list_apps(
         self,
-    ) -> FlextResult[list[m.Service.AppResponse]]:
+    ) -> FlextResult[list[m.Web.ApplicationResponse]]:
         """List applications.
 
         Returns:
@@ -401,7 +401,7 @@ class FlextWebServices(FlextService[bool]):
     def create_app(
         self,
         app_data: m.Service.AppData,
-    ) -> FlextResult[m.Service.AppResponse]:
+    ) -> FlextResult[m.Web.ApplicationResponse]:
         """Create application with explicit validation - no fallbacks.
 
         Args:
@@ -413,7 +413,7 @@ class FlextWebServices(FlextService[bool]):
 
         """
         app_id = str(uuid.uuid4())
-        app_response = m.Service.AppResponse(
+        app_response = m.Web.ApplicationResponse(
             id=app_id,
             name=app_data.name,
             host=app_data.host,
@@ -424,39 +424,39 @@ class FlextWebServices(FlextService[bool]):
         self._applications[app_id] = app_response
         return FlextResult.ok(app_response)
 
-    def get_app(self, app_id: str) -> FlextResult[m.Service.AppResponse]:
+    def get_app(self, app_id: str) -> FlextResult[m.Web.ApplicationResponse]:
         """Get application by ID - fail fast if not found."""
         if not isinstance(app_id, str):
-            return FlextResult[m.Service.AppResponse].fail(
+            return FlextResult[m.Web.ApplicationResponse].fail(
                 "Application ID must be a string",
             )
         # Use u.ensure_str to simplify validation
         if not u.ensure_str(app_id):
-            return FlextResult[m.Service.AppResponse].fail(
+            return FlextResult[m.Web.ApplicationResponse].fail(
                 "Application ID cannot be empty",
             )
 
         if app_id not in self._applications:
-            return FlextResult[m.Service.AppResponse].fail(
+            return FlextResult[m.Web.ApplicationResponse].fail(
                 f"Application not found: {app_id}",
             )
 
-        return FlextResult[m.Service.AppResponse].ok(self._applications[app_id])
+        return FlextResult[m.Web.ApplicationResponse].ok(self._applications[app_id])
 
-    def start_app(self, app_id: str) -> FlextResult[m.Service.AppResponse]:
+    def start_app(self, app_id: str) -> FlextResult[m.Web.ApplicationResponse]:
         """Start application - fail fast if not found."""
         if not isinstance(app_id, str):
-            return FlextResult[m.Service.AppResponse].fail(
+            return FlextResult[m.Web.ApplicationResponse].fail(
                 "Application ID must be a string",
             )
         # Use u.ensure_str to simplify validation
         if not u.ensure_str(app_id):
-            return FlextResult[m.Service.AppResponse].fail(
+            return FlextResult[m.Web.ApplicationResponse].fail(
                 "Application ID cannot be empty",
             )
 
         if app_id not in self._applications:
-            return FlextResult[m.Service.AppResponse].fail(
+            return FlextResult[m.Web.ApplicationResponse].fail(
                 f"Application not found: {app_id}",
             )
 
@@ -467,22 +467,22 @@ class FlextWebServices(FlextService[bool]):
             },
         )
         self._applications[app_id] = updated_app
-        return FlextResult[m.Service.AppResponse].ok(updated_app)
+        return FlextResult[m.Web.ApplicationResponse].ok(updated_app)
 
-    def stop_app(self, app_id: str) -> FlextResult[m.Service.AppResponse]:
+    def stop_app(self, app_id: str) -> FlextResult[m.Web.ApplicationResponse]:
         """Stop application - fail fast if not found."""
         if not isinstance(app_id, str):
-            return FlextResult[m.Service.AppResponse].fail(
+            return FlextResult[m.Web.ApplicationResponse].fail(
                 "Application ID must be a string",
             )
         # Use u.ensure_str to simplify validation
         if not u.ensure_str(app_id):
-            return FlextResult[m.Service.AppResponse].fail(
+            return FlextResult[m.Web.ApplicationResponse].fail(
                 "Application ID cannot be empty",
             )
 
         if app_id not in self._applications:
-            return FlextResult[m.Service.AppResponse].fail(
+            return FlextResult[m.Web.ApplicationResponse].fail(
                 f"Application not found: {app_id}",
             )
 
@@ -491,7 +491,7 @@ class FlextWebServices(FlextService[bool]):
             update={"status": c.Web.WebEnvironment.Status.STOPPED.value},
         )
         self._applications[app_id] = updated_app
-        return FlextResult[m.Service.AppResponse].ok(updated_app)
+        return FlextResult[m.Web.ApplicationResponse].ok(updated_app)
 
     def health_check(self) -> FlextResult[t.Core.ResponseDict]:
         """Health check."""

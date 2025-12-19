@@ -246,7 +246,7 @@ class FlextWebApp(FlextService[bool]):
         def health_check() -> dict[str, str]:
             return {
                 "status": c.Web.WebResponse.STATUS_HEALTHY,
-                "service": c.Web.WebService.SERVICE_NAME_FLASK,
+                "service": c.Web.Web.SERVICE_NAME_FLASK,
                 "timestamp": u.Generators.generate_iso_timestamp(),
             }
 
@@ -267,7 +267,7 @@ class FlextWebApp(FlextService[bool]):
             def health_check() -> t.Web.ResponseDict:
                 return {
                     "status": c.Web.WebResponse.STATUS_HEALTHY,
-                    "service": c.Web.WebService.SERVICE_NAME,
+                    "service": c.Web.Web.SERVICE_NAME,
                     "timestamp": u.Generators.generate_iso_timestamp(),
                 }
 
@@ -284,7 +284,7 @@ class FlextWebApp(FlextService[bool]):
 
             def info_handler() -> t.Web.ResponseDict:
                 return {
-                    "service": c.Web.WebService.SERVICE_NAME,
+                    "service": c.Web.Web.SERVICE_NAME,
                     "title": config.title,
                     "version": config.version,
                     "description": config.description,

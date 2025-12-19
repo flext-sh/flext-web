@@ -28,7 +28,8 @@ from datetime import UTC, datetime
 
 from flext_core import FlextUtilities as flext_u, r
 from flext_core.models import m as m_core
-from flext_core.typings import EventDataMapping
+
+# EventDataMapping imported via flext_core.typings.t
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from flext_web.constants import c
@@ -66,6 +67,15 @@ class FlextWebModels(m_core):
         )
 
     class Web:
+        """Web application models for HTTP protocol and application entities.
+
+        Contains HTTP message models, application entities, and web-specific
+        domain objects used throughout the FLEXT web ecosystem.
+
+        Models are immutable value objects (frozen=True) following domain-driven
+        design principles with Pydantic v2 validation.
+        """
+
         # =========================================================================
         # HTTP PROTOCOL MODELS (Value Objects - immutable)
         # =========================================================================
@@ -676,7 +686,7 @@ class FlextWebModels(m_core):
                 return f"{self.name} ({self.url}) - {self.status}"
 
             def add_domain_event(
-                self, event_name: str, data: EventDataMapping | None = None
+                self, event_name: str, _data: object | None = None
             ) -> r[bool]:
                 """Add domain event for event sourcing.
 
@@ -755,112 +765,110 @@ class FlextWebModels(m_core):
                 description="Application secret key",
             )
 
-            # =========================================================================
-            # SERVICE REQUEST/RESPONSE MODELS - Replace dict[str, object] types
-            # =========================================================================
+        # =========================================================================
+        # SERVICE REQUEST/RESPONSE MODELS - Replace dict[str, object] types
+        # =========================================================================
 
-            class Credentials(m_core.Value):
-                """Authentication credentials model."""
+        class Credentials(m_core.Value):
+            """Authentication credentials model."""
 
-                username: str = Field(min_length=1, description="Username")
-                password: str = Field(min_length=1, description="Password")
+            username: str = Field(min_length=1, description="Username")
+            password: str = Field(min_length=1, description="Password")
 
-            class UserData(m_core.Value):
-                """User registration data model."""
+        class UserData(m_core.Value):
+            """User registration data model."""
 
-                username: str = Field(min_length=1, description="Username")
-                email: str = Field(min_length=1, description="Email address")
-                password: str = Field(
-                    default="",
-                    description="Password (empty string if not provided)",
-                )
+            username: str = Field(min_length=1, description="Username")
+            email: str = Field(min_length=1, description="Email address")
+            password: str = Field(
+                default="",
+                description="Password (empty string if not provided)",
+            )
 
-            class AppData(m_core.Value):
-                """Application creation data model."""
+        class AppData(m_core.Value):
+            """Application creation data model."""
 
-                name: str = Field(
-                    min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
-                    max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
-                    description="Application name",
-                )
-                host: str = Field(
-                    min_length=1,
-                    max_length=255,
-                    description="Application host",
-                )
-                port: int = Field(
-                    ge=c.Web.WebValidation.PORT_RANGE[0],
-                    le=c.Web.WebValidation.PORT_RANGE[1],
-                    description="Application port",
-                )
+            name: str = Field(
+                min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
+                max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
+                description="Application name",
+            )
+            host: str = Field(
+                min_length=1,
+                max_length=255,
+                description="Application host",
+            )
+            port: int = Field(
+                ge=c.Web.WebValidation.PORT_RANGE[0],
+                le=c.Web.WebValidation.PORT_RANGE[1],
+                description="Application port",
+            )
 
-            class EntityData(m_core.Value):
-                """Generic entity data model."""
+        class EntityData(m_core.Value):
+            """Generic entity data model."""
 
-                data: dict[str, object] = Field(
-                    default_factory=dict,
-                    description="Entity data dictionary",
-                )
+            data: dict[str, object] = Field(
+                default_factory=dict,
+                description="Entity data dictionary",
+            )
 
-            class AuthResponse(m_core.Value):
-                """Authentication response model."""
+        class AuthResponse(m_core.Value):
+            """Authentication response model."""
 
-                token: str = Field(description="Authentication token")
-                user_id: str = Field(description="User identifier")
-                authenticated: bool = Field(description="Authentication status")
+            token: str = Field(description="Authentication token")
+            user_id: str = Field(description="User identifier")
+            authenticated: bool = Field(description="Authentication status")
 
-            class UserResponse(m_core.Value):
-                """User registration response model."""
+        class UserResponse(m_core.Value):
+            """User registration response model."""
 
-                id: str = Field(description="User identifier")
-                username: str = Field(description="Username")
-                email: str = Field(description="Email address")
-                created: bool = Field(description="Creation status")
+            id: str = Field(description="User identifier")
+            username: str = Field(description="Username")
+            email: str = Field(description="Email address")
+            created: bool = Field(description="Creation status")
 
-            class AppResponse(m_core.Value):
-                """Application response model."""
+        class ApplicationResponse(m_core.Value):
+            """Application management response model."""
 
-                id: str = Field(description="Application identifier")
-                name: str = Field(description="Application name")
-                host: str = Field(description="Application host")
-                port: int = Field(description="Application port")
-                status: str = Field(description="Application status")
-                created_at: str = Field(description="Creation timestamp")
+            id: str = Field(description="Application identifier")
+            name: str = Field(description="Application name")
+            host: str = Field(description="Application host")
+            port: int = Field(description="Application port")
+            status: str = Field(description="Application status")
+            created_at: str = Field(description="Creation timestamp")
 
-            class HealthResponse(m_core.Value):
-                """Health check response model."""
+        class HealthResponse(m_core.Value):
+            """Health check response model."""
 
-                status: str = Field(description="Health status")
-                service: str = Field(description="Service name")
-                timestamp: str = Field(description="Timestamp")
+            status: str = Field(description="Health status")
+            service: str = Field(description="Service name")
+            timestamp: str = Field(description="Timestamp")
 
-            class MetricsResponse(m_core.Value):
-                """Metrics response model."""
+        class MetricsResponse(m_core.Value):
+            """Metrics response model."""
 
-                service_status: str = Field(description="Service status")
-                components: list[str] = Field(description="Service components")
+            service_status: str = Field(description="Service status")
+            components: list[str] = Field(description="Service components")
 
-            class DashboardResponse(m_core.Value):
-                """Dashboard response model."""
+        class DashboardResponse(m_core.Value):
+            """Dashboard response model."""
 
-                total_applications: int = Field(description="Total applications")
-                running_applications: int = Field(description="Running applications")
-                service_status: str = Field(description="Service status")
-                routes_initialized: bool = Field(
-                    description="Routes initialization status"
-                )
-                middleware_configured: bool = Field(
-                    description="Middleware configuration status",
-                )
-                timestamp: str = Field(description="Timestamp")
+            total_applications: int = Field(description="Total applications")
+            running_applications: int = Field(description="Running applications")
+            service_status: str = Field(description="Service status")
+            routes_initialized: bool = Field(description="Routes initialization status")
+            middleware_configured: bool = Field(
+                description="Middleware configuration status",
+            )
+            timestamp: str = Field(description="Timestamp")
 
-            class ServiceResponse(m_core.Value):
-                """Generic service response model."""
+        class ServiceResponse(m_core.Value):
+            """Generic service response model."""
 
-                service: str = Field(description="Service name")
-                capabilities: list[str] = Field(description="Service capabilities")
-                status: str = Field(description="Service status")
-                config: bool = Field(description="Configuration status")
+            service: str = Field(description="Service name")
+            capabilities: list[str] = Field(description="Service capabilities")
+            status: str = Field(description="Service status")
+            config: bool = Field(description="Configuration status")
 
         # =========================================================================
         # WEB REQUEST/RESPONSE MODELS (Value Objects)

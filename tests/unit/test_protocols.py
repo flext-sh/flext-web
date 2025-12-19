@@ -795,7 +795,7 @@ class TestFlextWebProtocols:
             def get_web_health_status(self) -> dict[str, object]:
                 return {
                     "status": FlextWebConstants.WebResponse.STATUS_HEALTHY,
-                    "service": FlextWebConstants.WebService.SERVICE_NAME,
+                    "service": FlextWebConstants.Web.SERVICE_NAME,
                 }
 
             def get_web_metrics(self) -> dict[str, object]:
@@ -1055,7 +1055,7 @@ class TestFlextWebProtocols:
         # Test get_web_health_status
         health = monitoring.get_web_health_status()
         assert health["status"] == FlextWebConstants.WebResponse.STATUS_HEALTHY
-        assert health["service"] == FlextWebConstants.WebService.SERVICE_NAME
+        assert health["service"] == FlextWebConstants.Web.SERVICE_NAME
 
         # Test get_web_metrics
         metrics = monitoring.get_web_metrics()

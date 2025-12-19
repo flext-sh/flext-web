@@ -9,19 +9,14 @@ from __future__ import annotations
 
 from flext_core import (
     FlextLogger,
-    FlextResult,
     FlextService,
-    FlextUtilities,
+    r,
 )
 
-from flext_web.constants import FlextWebConstants
-from flext_web.models import FlextWebModels
+from flext_web.constants import c
+from flext_web.models import m
 from flext_web.typings import t
-
-# Import aliases for simplified usage
-u = FlextUtilities
-c = FlextWebConstants
-m = FlextWebModels
+from flext_web.utilities import u
 
 
 class FlextWebHandlers(FlextService[bool]):
@@ -67,14 +62,14 @@ class FlextWebHandlers(FlextService[bool]):
             name: str,
             port: int = c.Web.WebDefaults.PORT,
             host: str = c.Web.WebDefaults.HOST,
-        ) -> FlextResult[m.Web.Entity]:
+        ) -> r[m.Web.Entity]:
             """Create new web application with validation."""
             self.logger.info("Create app command")
 
             # Validate inputs using ues validation
             validation_result = self._validate_create_inputs(name, port, host)
             if validation_result.is_failure:
-                return FlextResult[m.Web.Entity].fail(validation_result.error)
+                return r[m.Web.Entity].fail(validation_result.error)
 
             # Create domain entity
             app_id = m.Web.Entity.format_id_from_name(name)
@@ -96,70 +91,41 @@ class FlextWebHandlers(FlextService[bool]):
             name: str,
             port: int,
             host: str,
-        ) -> FlextResult[str]:
-            """Validate create inputs - consolidates all validations using u."""
-            # Use u to process validations
-            # Use u.guard() for unified validation (DSL pattern)
-            name_validated = u.guard(name, str, return_value=True)
-            if name_validated is None:
-                return FlextResult[str].fail("Application name must be a string")
-            host_validated = u.guard(host, str, return_value=True)
-            if host_validated is None:
-                return FlextResult[str].fail("Host must be a string")
-            port_validated = u.guard(port, int, return_value=True)
-            if port_validated is None:
-                return FlextResult[str].fail("Port must be an integer")
+        ) -> r[str]:
+            """Validate create inputs - consolidates all validations."""
+            # Basic type validation
+            if not isinstance(name, str):
+                return r[str].fail("Application name must be a string")
+            if not isinstance(host, str):
+                return r[str].fail("Host must be a string")
+            if not isinstance(port, int):
+                return r[str].fail("Port must be an integer")
 
-            # Use u.guard() for length validation (DSL pattern)
-            name_length_validated = u.guard(
-                name_validated,
-                lambda n: len(n) >= c.Web.WebServer.MIN_APP_NAME_LENGTH,
-                error_message=f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
-                return_value=True,
-            )
-            if name_length_validated is None:
-                return FlextResult[str].fail(
+            # Length validation
+            if len(name) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
+                return r[str].fail(
                     f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
                 )
-            host_non_empty = u.guard(
-                host_validated,
-                lambda h: len(h) > 0,
-                error_message="Host cannot be empty",
-                return_value=True,
-            )
-            if host_non_empty is None:
-                return FlextResult[str].fail("Host cannot be empty")
+            if not host:
+                return r[str].fail("Host cannot be empty")
 
-            # Use u.guard() for port range validation (DSL pattern)
+            # Port range validation
             min_port = c.Web.WebValidation.PORT_RANGE[0]
             max_port = c.Web.WebValidation.PORT_RANGE[1]
-            # Use u.guard() with separate checks for better error messages (DSL pattern)
-            port_min_validated = u.guard(
-                port_validated,
-                lambda p: p >= min_port,
-                error_message=f"Port must be at least {min_port}",
-                return_value=True,
-            )
-            if port_min_validated is None:
-                return FlextResult[str].fail(f"Port must be at least {min_port}")
-            port_max_validated = u.guard(
-                port_min_validated,
-                lambda p: p <= max_port,
-                error_message=f"Port must be at most {max_port}",
-                return_value=True,
-            )
-            if port_max_validated is None:
-                return FlextResult[str].fail(f"Port must be at most {max_port}")
+            if port < min_port:
+                return r[str].fail(f"Port must be at least {min_port}")
+            if port > max_port:
+                return r[str].fail(f"Port must be at most {max_port}")
 
-            return FlextResult[str].ok("")
+            return r[str].ok("")
 
         def _register_app(
             self,
             app: m.Web.Entity,
-        ) -> FlextResult[m.Web.Entity]:
+        ) -> r[m.Web.Entity]:
             """Register application in registry."""
             self._apps_registry[app.id] = app
-            return FlextResult[m.Web.Entity].ok(app)
+            return r[m.Web.Entity].ok(app)
 
         # =============================================================================
         # PROTOCOL IMPLEMENTATION METHODS - WebAppManagerProtocol
@@ -170,17 +136,17 @@ class FlextWebHandlers(FlextService[bool]):
             name: str,
             port: int = c.Web.WebDefaults.PORT,
             host: str = c.Web.WebDefaults.HOST,
-        ) -> FlextResult[m.Web.Entity]:
+        ) -> r[m.Web.Entity]:
             """Create a new application - implements WebAppManagerProtocol.
 
             This method delegates to the create method for protocol compliance.
             """
             return self.create(name, port, host)
 
-        def start_app(self, app_id: str) -> FlextResult[m.Web.Entity]:
+        def start_app(self, app_id: str) -> r[m.Web.Entity]:
             """Start an application - implements WebAppManagerProtocol."""
             if app_id not in self._apps_registry:
-                return FlextResult[m.Web.Entity].fail(
+                return r[m.Web.Entity].fail(
                     f"Application {app_id} not found",
                 )
 
@@ -199,10 +165,10 @@ class FlextWebHandlers(FlextService[bool]):
             self._apps_registry[app_id] = app
             return app
 
-        def stop_app(self, app_id: str) -> FlextResult[m.Web.Entity]:
+        def stop_app(self, app_id: str) -> r[m.Web.Entity]:
             """Stop an application - implements WebAppManagerProtocol."""
             if app_id not in self._apps_registry:
-                return FlextResult[m.Web.Entity].fail(
+                return r[m.Web.Entity].fail(
                     f"Application {app_id} not found",
                 )
 
@@ -212,24 +178,24 @@ class FlextWebHandlers(FlextService[bool]):
                 lambda updated_app: self._update_app_in_registry(app_id, updated_app),
             )
 
-        def list_apps(self) -> FlextResult[list[m.Web.Entity]]:
+        def list_apps(self) -> r[list[m.Web.Entity]]:
             """List all applications - implements WebAppManagerProtocol."""
             apps_list = list(self._apps_registry.values())
-            return FlextResult[list[m.Web.Entity]].ok(apps_list)
+            return r[list[m.Web.Entity]].ok(apps_list)
 
     # =========================================================================
     # HEALTH AND SYSTEM HANDLERS
     # =========================================================================
 
     @staticmethod
-    def handle_health_check() -> FlextResult[t.Core.ResponseDict]:
+    def handle_health_check() -> r[dict[str, object]]:
         """Handle health check requests with system status.
 
         Returns:
-        FlextResult containing health status information.
+        r containing health status information.
 
         """
-        return FlextResult[t.Core.ResponseDict].ok(
+        return r[t.StringDict].ok(
             {
                 "status": c.Web.WebResponse.STATUS_HEALTHY,
                 "service": c.Web.WebService.SERVICE_NAME,
@@ -244,14 +210,14 @@ class FlextWebHandlers(FlextService[bool]):
         )
 
     @classmethod
-    def handle_system_info(cls) -> FlextResult[t.Core.ResponseDict]:
+    def handle_system_info(cls) -> r[dict[str, object]]:
         """Handle system information requests.
 
         Returns:
-        FlextResult containing detailed system information.
+        r containing detailed system information.
 
         """
-        return FlextResult[t.Core.ResponseDict].ok(
+        return r[t.StringDict].ok(
             {
                 "service_name": "FLEXT Web Interface",
                 "service_type": "web_api",
@@ -281,7 +247,7 @@ class FlextWebHandlers(FlextService[bool]):
         name: str,
         port: int = c.Web.WebDefaults.PORT,
         host: str = c.Web.WebDefaults.HOST,
-    ) -> FlextResult[m.Web.Entity]:
+    ) -> r[m.Web.Entity]:
         """Handle application creation requests.
 
         Args:
@@ -290,7 +256,7 @@ class FlextWebHandlers(FlextService[bool]):
         host: Application host
 
         Returns:
-        FlextResult containing created application or error
+        r containing created application or error
 
         """
         app_id = m.Web.Entity.format_id_from_name(name)
@@ -304,26 +270,26 @@ class FlextWebHandlers(FlextService[bool]):
         )
         # Use monadic pattern for validation
         return app.validate_business_rules().flat_map(
-            lambda _: FlextResult[m.Web.Entity].ok(app),
+            lambda _: r[m.Web.Entity].ok(app),
         )
 
     @classmethod
     def handle_start_app(
         cls,
         app: m.Web.Entity,
-    ) -> FlextResult[m.Web.Entity]:
+    ) -> r[m.Web.Entity]:
         """Handle application start requests.
 
         Args:
         app: Application to start
 
         Returns:
-        FlextResult containing updated application or error
+        r containing updated application or error
 
         """
         # Validate application entity - fast fail
         if not isinstance(app, m.Web.Entity):
-            return FlextResult[m.Web.Entity].fail(
+            return r[m.Web.Entity].fail(
                 "Invalid application entity type",
             )
 
@@ -334,22 +300,17 @@ class FlextWebHandlers(FlextService[bool]):
     def handle_stop_app(
         cls,
         app: m.Web.Entity,
-    ) -> FlextResult[m.Web.Entity]:
+    ) -> r[m.Web.Entity]:
         """Handle application stop requests.
 
         Args:
         app: Application to stop
 
         Returns:
-        FlextResult containing updated application or error
+        r containing updated application or error
 
         """
-        # Validate application entity - fast fail
-        if not isinstance(app, m.Web.Entity):
-            return FlextResult[m.Web.Entity].fail(
-                "Invalid application entity type",
-            )
-
+        # Application entity is already validated by type system
         # Use entity's stop method with monadic pattern
         return app.stop()
 
@@ -361,10 +322,10 @@ class FlextWebHandlers(FlextService[bool]):
     # No helpers needed - direct model instantiation is clearer and more maintainable
 
     # =========================================================================
-    # ERROR HANDLING - Use FlextResult.fail() directly, no helpers needed
+    # ERROR HANDLING - Use r.fail() directly, no helpers needed
     # =========================================================================
     # Removed handle_validation_error and handle_processing_error helpers
-    # Use FlextResult.fail() directly where needed for proper error handling
+    # Use r.fail() directly where needed for proper error handling
 
     # =========================================================================
     # HANDLER FACTORY METHODS - Removed unnecessary wrapper methods
@@ -374,27 +335,25 @@ class FlextWebHandlers(FlextService[bool]):
     # FLEXTSERVICE REQUIRED METHODS
     # =========================================================================
 
-    @staticmethod
-    def execute(**_kwargs: object) -> FlextResult[bool]:
+    def execute(self, **_kwargs: object) -> r[bool]:
         """Execute web handler service (FlextService requirement).
 
         Returns:
-            FlextResult[bool]: Success contains True if handlers are operational,
+            r[bool]: Success contains True if handlers are operational,
             failure contains error message
 
         """
         # Return bool for FlextService compatibility
-        return FlextResult[bool].ok(True)
+        return r[bool].ok(True)
 
-    @staticmethod
-    def validate_business_rules() -> FlextResult[bool]:
+    def validate_business_rules(self) -> r[bool]:
         """Validate business rules for web handlers (FlextService requirement).
 
         Returns:
-            FlextResult[bool]: Success contains True if valid, failure with error message
+            r[bool]: Success contains True if valid, failure with error message
 
         """
-        return FlextResult[bool].ok(True)
+        return r[bool].ok(True)
 
 
 __all__ = [
