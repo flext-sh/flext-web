@@ -50,43 +50,43 @@ class TestFlextWebFields:
 
     def test_http_status_field_creation(self) -> None:
         """Test HTTP status field creation."""
-        response = FlextWebModels.Web.Response(status_code=200, request_id="test-123")
+        response = FlextWebModels.Web.Response(status_code=200)
         assert response.status_code == 200
         assert response.is_success is True
 
     def test_http_status_field_ok(self) -> None:
         """Test HTTP 200 OK status field creation."""
-        response = FlextWebModels.Web.Response(status_code=200, request_id="test-123")
+        response = FlextWebModels.Web.Response(status_code=200)
         assert response.status_code == 200
         assert response.is_success is True
 
     def test_http_status_field_created(self) -> None:
         """Test HTTP 201 Created status field creation."""
-        response = FlextWebModels.Web.Response(status_code=201, request_id="test-123")
+        response = FlextWebModels.Web.Response(status_code=201)
         assert response.status_code == 201
         assert response.is_success is True
 
     def test_http_status_field_bad_request(self) -> None:
         """Test HTTP 400 Bad Request status field creation."""
-        response = FlextWebModels.Web.Response(status_code=400, request_id="test-123")
+        response = FlextWebModels.Web.Response(status_code=400)
         assert response.status_code == 400
         assert response.is_error is True
 
     def test_http_status_field_not_found(self) -> None:
         """Test HTTP 404 Not Found status field creation."""
-        response = FlextWebModels.Web.Response(status_code=404, request_id="test-123")
+        response = FlextWebModels.Web.Response(status_code=404)
         assert response.status_code == 404
         assert response.is_error is True
 
     def test_http_status_field_server_error(self) -> None:
         """Test HTTP 500 Internal Server Error status field creation."""
-        response = FlextWebModels.Web.Response(status_code=500, request_id="test-123")
+        response = FlextWebModels.Web.Response(status_code=500)
         assert response.status_code == 500
         assert response.is_error is True
 
     def test_http_status_field_create_field(self) -> None:
         """Test HTTP status field creation."""
-        response = FlextWebModels.Web.Response(status_code=200, request_id="test-123")
+        response = FlextWebModels.Web.Response(status_code=200)
         assert response.status_code == 200
         assert response.is_success is True
 
@@ -117,7 +117,6 @@ class TestFlextWebFields:
         # Test that Pydantic models handle status codes properly
         response_model = FlextWebModels.Web.Response(
             status_code=200,
-            request_id="test-123",
         )
         assert response_model.status_code == 200
         assert response_model.is_success is True
@@ -143,7 +142,6 @@ class TestFlextWebFields:
         for status_code in status_codes:
             response_model = FlextWebModels.Web.Response(
                 status_code=status_code,
-                request_id="test-123",
             )
             assert response_model.status_code == status_code
             assert isinstance(response_model, FlextWebModels.Web.Response)

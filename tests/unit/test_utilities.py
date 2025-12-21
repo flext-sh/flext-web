@@ -121,10 +121,10 @@ class TestFlextWebUtilities:
         # Mock Text.safe_string to raise ValueError
         with (
             patch(
-                "flext_web.utilities.u.Text.safe_string",
+                "flext_web.utilities.FlextUtilities.Text.safe_string",
                 side_effect=ValueError("Invalid string"),
             ),
-            pytest.raises(ValueError, match="Invalid application name"),
+            pytest.raises(ValueError, match="Invalid string"),
         ):
             FlextWebUtilities.format_app_id("test")
 
@@ -133,10 +133,10 @@ class TestFlextWebUtilities:
         # Mock Text.safe_string to return empty string after stripping
         with (
             patch(
-                "flext_web.utilities.u.Text.safe_string",
+                "flext_web.utilities.FlextUtilities.Text.safe_string",
                 return_value="   ",
             ),
-            pytest.raises(ValueError, match="Application name cannot be empty"),
+            pytest.raises(ValueError, match="Cannot format application name 'test' to valid ID"),
         ):
             FlextWebUtilities.format_app_id("test")
 
@@ -145,7 +145,7 @@ class TestFlextWebUtilities:
         # Mock Text.safe_string to return valid string, but slugify returns empty
         with (
             patch(
-                "flext_web.utilities.u.Text.safe_string",
+                "flext_web.utilities.FlextUtilities.Text.safe_string",
                 return_value="test",
             ),
             patch(

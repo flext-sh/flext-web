@@ -33,10 +33,10 @@ from flext_web import FlextWebModels, FlextWebServices, FlextWebSettings
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants
 from flext_web.typings import (
+    FlextWebTypes,
     _ApplicationConfig,
     _WebRequestConfig,
     _WebResponseConfig,
-    t,
 )
 
 
@@ -90,18 +90,18 @@ def create_entry(entry_type: str, **kwargs: object) -> FlextResult[object]:
     if entry_type == "web_app":
         return FlextWebModels.create_web_app(**kwargs)
     if entry_type == "http_request":
-        return t.create_http_request(**kwargs)
+        return FlextWebTypes.create_http_request(**kwargs)
     if entry_type == "http_response":
-        return t.create_http_response(**kwargs)
+        return FlextWebTypes.create_http_response(**kwargs)
     if entry_type == "web_request":
         config: _WebRequestConfig = kwargs
-        return t.create_web_request(config)
+        return FlextWebTypes.create_web_request(config)
     if entry_type == "web_response":
         config: _WebResponseConfig = kwargs
-        return t.create_web_response(config)
+        return FlextWebTypes.create_web_response(config)
     if entry_type == "application":
         config: _ApplicationConfig = kwargs
-        return t.create_application(config)
+        return FlextWebTypes.create_application(config)
     msg = f"Unsupported entry type: {entry_type}"
     raise ValueError(msg)
 
@@ -318,9 +318,9 @@ def real_service(
 ) -> FlextWebServices:
     """Create real FlextWebServices instance with clean state."""
     # Pass config object directly - no dict conversion
-    service_result = FlextWebServices.create_service(real_config)
-    assert service_result.is_success, f"Service creation failed: {service_result.error}"
-    return service_result.value
+    result = FlextWebServices.create_service(real_config)
+    assert result.is_success, f"Service creation failed: {result.error}"
+    return result.value
     # Clean up service state after each test
     # Note: services don't have apps attribute in current implementation
 
@@ -353,15 +353,15 @@ def running_service(
         version=real_config.version,
     )
 
-    service_result = FlextWebServices.create_service(test_config)
-    assert service_result.is_success, f"Service creation failed: {service_result.error}"
-    service = service_result.value
+    result = FlextWebServices.create_service(test_config)
+    assert result.is_success, f"Service creation failed: {result.error}"
+    service = result.value
 
     # Start service in background thread
     def run_service() -> None:
-        app_result = FlextWebApp.create_flask_app(test_config)
-        if app_result.is_success:
-            app = app_result.value
+        result = FlextWebApp.create_flask_app(test_config)
+        if result.is_success:
+            app = result.value
             app.run(
                 host=test_config.host,
                 port=test_config.port,

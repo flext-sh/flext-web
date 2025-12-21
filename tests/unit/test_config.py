@@ -29,7 +29,7 @@ class TestFlextWebSettings:
         config = FlextWebSettings(
             host="0.0.0.0",
             port=3000,
-            debug=True,
+            debug_mode=True,
             app_name="Test App",
         )
         assert config.host == "0.0.0.0"

@@ -34,7 +34,7 @@ class ExamplesFullFunctionalityTest:
     def start_service_in_docker(self) -> bool | None:
         """Inicia o serviço em Docker para teste completo usando FlextTestsDocker."""
         # Build container using FlextTestsDocker
-        build_result = self.docker_manager.build_image(
+        build_result = self.docker_manager.build_image(  # type: ignore[attr-defined]
             path=".",
             tag="flext-web-full-test",
             dockerfile="Dockerfile",
@@ -52,7 +52,7 @@ class ExamplesFullFunctionalityTest:
             "FLEXT_WEB_DEBUG": "false",
         }
 
-        run_result = self.docker_manager.run_container(
+        run_result = self.docker_manager.run_container(  # type: ignore[attr-defined]
             image="flext-web-full-test",
             name="flext-full-test",
             ports={"8080/tcp": 8093},
@@ -75,7 +75,7 @@ class ExamplesFullFunctionalityTest:
                     return True
             except Exception as exc:
                 # Log the transient failure but keep waiting
-                logger.debug("health check attempt failed: %s", exc)
+                logger.debug(f"health check attempt failed: {exc}")
             time.sleep(0.5)  # Faster polling
 
         # If we get here, service didn't start - this is a real failure
@@ -87,11 +87,11 @@ class ExamplesFullFunctionalityTest:
         """Para o serviço Docker usando FlextTestsDocker."""
         if self.container_id:
             # Stop container using FlextTestsDocker
-            stop_result = self.docker_manager.stop_container(self.container_id)
+            stop_result = self.docker_manager.stop_container(self.container_id)  # type: ignore[attr-defined]
             if stop_result.is_failure:
                 logger.warning(f"Container stop failed: {stop_result.error}")
                 # Try to force remove if stop failed
-                remove_result = self.docker_manager.remove_container(
+                remove_result = self.docker_manager.remove_container(  # type: ignore[attr-defined]
                     self.container_id,
                     force=True,
                 )

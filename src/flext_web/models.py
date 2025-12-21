@@ -33,7 +33,8 @@ from flext_core.models import m as m_core
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from flext_web.constants import c
-from flext_web.constants.c_web import HttpMethodLiteral
+
+# c.Web.HttpMethodLiteral is accessed via c.Web.c.Web.HttpMethodLiteral
 
 
 class FlextWebModels(m_core):
@@ -124,8 +125,8 @@ class FlextWebModels(m_core):
                 max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: HttpMethodLiteral = Field(
-                default=HttpMethodLiteral.GET.value,  # Use StrEnum value
+            method: c.Web.HttpMethodLiteral = Field(
+                default=c.Web.Http.Method.GET,  # Use StrEnum value
                 description="HTTP method",
             )
             timeout: float = Field(
@@ -224,8 +225,8 @@ class FlextWebModels(m_core):
                 max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: HttpMethodLiteral = Field(
-                default=HttpMethodLiteral.GET.value,  # Use StrEnum value
+            method: c.Web.HttpMethodLiteral = Field(
+                default=c.Web.Http.Method.GET,  # Use StrEnum value
                 description="HTTP method",
             )
             timeout: float = Field(
@@ -877,8 +878,8 @@ class FlextWebModels(m_core):
         class WebRequest(m_core.Value):
             """Web request model with complete tracking."""
 
-            method: HttpMethodLiteral = Field(
-                default=HttpMethodLiteral.GET.value,  # Use string literal, validated against c.Web.HttpMethodLiteral
+            method: c.Web.HttpMethodLiteral = Field(
+                default=c.Web.HttpMethodLiteral.GET.value,  # Use string literal, validated against c.Web.c.Web.HttpMethodLiteral
                 description="HTTP method",
             )
             url: str = Field(min_length=1, max_length=2048, description="Request URL")
@@ -997,7 +998,7 @@ class FlextWebModels(m_core):
         @classmethod
         def create_web_request(
             cls,
-            method: HttpMethodLiteral,
+            method: c.Web.HttpMethodLiteral,
             url: str,
             headers: dict[str, str] | None = None,
             body: str | dict[str, object] | None = None,

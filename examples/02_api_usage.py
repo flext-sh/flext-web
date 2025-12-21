@@ -11,8 +11,6 @@ This example shows:
 - Usage of new type aliases for better type safety
 """
 
-from typing import cast
-
 import requests
 from flext_core import FlextResult
 
@@ -106,17 +104,14 @@ def create_application(
         except Exception as e:
             return FlextResult[dict[str, object]].fail(f"JSON parse failed: {e}")
 
-    result = (
-        _make_request()
-        .filter(
-            lambda r: r.status_code == ExampleConstants.HTTP_OK,
-            "HTTP request failed",
-        )
-        .flat_map(_parse_json)
-        .flat_map(
+    result = _make_request()
+    if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
+        result = FlextResult[dict[str, object]].fail("HTTP request failed")
+    else:
+        result = result.flat_map(_parse_json).flat_map(
             lambda json_data: (
                 FlextResult[t.AppData].ok(
-                    cast("t.AppData", json_data["data"]),
+                    t.AppData.model_validate(json_data["data"]),
                 )
                 if (
                     json_data.get("success")
@@ -127,7 +122,6 @@ def create_application(
                 else FlextResult[t.AppData].fail("Invalid application data")
             ),
         )
-    )
 
     # Fast fail - no fallback to None
     if result.is_failure:
@@ -158,7 +152,7 @@ def _extract_apps_from_response(
         return []
 
     return [
-        cast("t.AppData", app)
+        t.AppData.model_validate(app)
         for app in apps_list
         if isinstance(app, dict)
         and all(k in app and isinstance(app[k], str) for k in ["id", "name"])
@@ -212,7 +206,7 @@ def _execute_app_operation(
         .flat_map(_parse_json_response)
         .flat_map(
             lambda json_data: FlextResult[t.AppData].ok(
-                cast("t.AppData", json_data["data"]),
+                t.AppData.model_validate(json_data["data"]),
             )
             if (
                 isinstance(json_data, dict)
@@ -259,15 +253,13 @@ def _execute_list_operation(
         except Exception as e:
             return FlextResult[dict[str, object]].fail(f"JSON parse failed: {e}")
 
-    result = (
-        _make_get_request()
-        .filter(
-            lambda r: r.status_code == ExampleConstants.HTTP_OK,
-            "HTTP request failed",
+    result = _make_get_request()
+    if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
+        result = FlextResult[dict[str, object]].fail("HTTP request failed")
+    else:
+        result = result.flat_map(_parse_response_json).map(
+            lambda d: _extract_apps_from_response(d, data_key)
         )
-        .flat_map(_parse_response_json)
-        .map(lambda d: _extract_apps_from_response(d, data_key))
-    )
 
     # Fast fail - no fallback to empty list
     if result.is_failure:

@@ -20,7 +20,7 @@ from flext_web.protocols import (
     _WebTemplateEngineBase,
     _WebTemplateRendererBase,
 )
-from flext_web.typings import t
+from flext_web.typings import FlextWebTypes
 
 
 class TestFlextWebProtocols:
@@ -64,7 +64,7 @@ class TestFlextWebProtocols:
 
     def test_response_formatter_protocol(self) -> None:
         """Test ResponseFormatterProtocol definition."""
-        protocol = FlextWebProtocols.WebResponseFormatterProtocol
+        protocol = FlextWebProtocols.Web.WebResponseFormatterProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -76,7 +76,7 @@ class TestFlextWebProtocols:
 
     def test_web_framework_interface_protocol(self) -> None:
         """Test WebFrameworkInterfaceProtocol definition."""
-        protocol = FlextWebProtocols.WebFrameworkInterfaceProtocol
+        protocol = FlextWebProtocols.Web.WebFrameworkInterfaceProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -89,7 +89,7 @@ class TestFlextWebProtocols:
 
     def test_template_renderer_protocol(self) -> None:
         """Test TemplateRendererProtocol definition."""
-        protocol = FlextWebProtocols.WebTemplateRendererProtocol
+        protocol = FlextWebProtocols.Web.WebTemplateRendererProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -116,7 +116,7 @@ class TestFlextWebProtocols:
 
     def test_web_repository_protocol(self) -> None:
         """Test WebRepositoryProtocol definition."""
-        protocol = FlextWebProtocols.WebRepositoryProtocol
+        protocol = FlextWebProtocols.Web.WebRepositoryProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -146,7 +146,7 @@ class TestFlextWebProtocols:
 
     def test_web_template_engine_protocol(self) -> None:
         """Test WebTemplateEngineProtocol definition."""
-        protocol = FlextWebProtocols.WebTemplateEngineProtocol
+        protocol = FlextWebProtocols.Web.WebTemplateEngineProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -162,7 +162,7 @@ class TestFlextWebProtocols:
 
     def test_web_monitoring_protocol(self) -> None:
         """Test WebMonitoringProtocol definition."""
-        protocol = FlextWebProtocols.WebMonitoringProtocol
+        protocol = FlextWebProtocols.Web.WebMonitoringProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -178,14 +178,14 @@ class TestFlextWebProtocols:
         # All protocols should be runtime checkable (decorated with @runtime_checkable)
         protocols = [
             FlextWebProtocols.Web.WebAppManagerProtocol,
-            FlextWebProtocols.WebResponseFormatterProtocol,
-            FlextWebProtocols.WebFrameworkInterfaceProtocol,
-            FlextWebProtocols.WebTemplateRendererProtocol,
+            FlextWebProtocols.Web.WebResponseFormatterProtocol,
+            FlextWebProtocols.Web.WebFrameworkInterfaceProtocol,
+            FlextWebProtocols.Web.WebTemplateRendererProtocol,
             FlextWebProtocols.Web.WebServiceProtocol,
-            FlextWebProtocols.WebRepositoryProtocol,
+            FlextWebProtocols.Web.WebRepositoryProtocol,
             FlextWebProtocols.Web.WebHandlerProtocol,
-            FlextWebProtocols.WebTemplateEngineProtocol,
-            FlextWebProtocols.WebMonitoringProtocol,
+            FlextWebProtocols.Web.WebTemplateEngineProtocol,
+            FlextWebProtocols.Web.WebMonitoringProtocol,
         ]
 
         for protocol in protocols:
@@ -222,7 +222,7 @@ class TestFlextWebProtocols:
         assert hasattr(web_service_protocol, "__bases__")
 
         # AppRepositoryInterface should inherit from Repository
-        app_repo_protocol = FlextWebProtocols.WebRepositoryProtocol
+        app_repo_protocol = FlextWebProtocols.Web.WebRepositoryProtocol
         assert hasattr(app_repo_protocol, "__bases__")
 
         # MiddlewareInterface should inherit from Extensions.Middleware
@@ -230,11 +230,11 @@ class TestFlextWebProtocols:
         assert hasattr(middleware_protocol, "__bases__")
 
         # TemplateEngineInterface should inherit from Infrastructure.Configurable
-        template_engine_protocol = FlextWebProtocols.WebTemplateEngineProtocol
+        template_engine_protocol = FlextWebProtocols.Web.WebTemplateEngineProtocol
         assert hasattr(template_engine_protocol, "__bases__")
 
         # MonitoringInterface should inherit from Extensions.Observability
-        monitoring_protocol = FlextWebProtocols.WebMonitoringProtocol
+        monitoring_protocol = FlextWebProtocols.Web.WebMonitoringProtocol
         assert hasattr(monitoring_protocol, "__bases__")
 
     def test_protocol_type_annotations(self) -> None:
@@ -264,14 +264,14 @@ class TestFlextWebProtocols:
         # All protocols should be consistent with their expected usage
         protocols = [
             FlextWebProtocols.Web.WebAppManagerProtocol,
-            FlextWebProtocols.WebResponseFormatterProtocol,
-            FlextWebProtocols.WebFrameworkInterfaceProtocol,
-            FlextWebProtocols.WebTemplateRendererProtocol,
+            FlextWebProtocols.Web.WebResponseFormatterProtocol,
+            FlextWebProtocols.Web.WebFrameworkInterfaceProtocol,
+            FlextWebProtocols.Web.WebTemplateRendererProtocol,
             FlextWebProtocols.Web.WebServiceProtocol,
-            FlextWebProtocols.WebRepositoryProtocol,
+            FlextWebProtocols.Web.WebRepositoryProtocol,
             FlextWebProtocols.Web.WebHandlerProtocol,
-            FlextWebProtocols.WebTemplateEngineProtocol,
-            FlextWebProtocols.WebMonitoringProtocol,
+            FlextWebProtocols.Web.WebTemplateEngineProtocol,
+            FlextWebProtocols.Web.WebMonitoringProtocol,
         ]
 
         for protocol in protocols:
@@ -696,7 +696,7 @@ class TestFlextWebProtocols:
         assert hasattr(renderer, "render_dashboard")
 
         # Execute methods
-        template_result = renderer.render_template("test.html", {"key": "value"})
+        template_result = renderer.render_template("tesFlextWebTypes.html", {"key": "value"})
         assert template_result.is_success
 
         dashboard_result = renderer.render_dashboard({"data": "value"})
@@ -865,10 +865,10 @@ class TestFlextWebProtocols:
 
             def format_success(
                 self,
-                data: t.Core.ResponseDict,
-            ) -> t.Core.ResponseDict:
+                data: FlextWebTypes.Core.ResponseDict,
+            ) -> FlextWebTypes.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 292-302)
-                response: t.Core.ResponseDict = {
+                response: FlextWebTypes.Core.ResponseDict = {
                     "status": FlextWebConstants.WebResponse.STATUS_SUCCESS,
                 }
                 for key, value in data.items():
@@ -876,9 +876,9 @@ class TestFlextWebProtocols:
                         response[key] = value
                 return response
 
-            def format_error(self, error: Exception) -> t.Core.ResponseDict:
+            def format_error(self, error: Exception) -> FlextWebTypes.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 315-319)
-                result: t.Core.ResponseDict = {
+                result: FlextWebTypes.Core.ResponseDict = {
                     "status": FlextWebConstants.WebResponse.STATUS_ERROR,
                     "message": str(error),
                 }
@@ -886,10 +886,10 @@ class TestFlextWebProtocols:
 
             def create_json_response(
                 self,
-                data: t.Core.ResponseDict,
-            ) -> t.Core.ResponseDict:
+                data: FlextWebTypes.Core.ResponseDict,
+            ) -> FlextWebTypes.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 335-345)
-                response: t.Core.ResponseDict = {
+                response: FlextWebTypes.Core.ResponseDict = {
                     FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
                 }
                 for key, value in data.items():
@@ -899,10 +899,10 @@ class TestFlextWebProtocols:
 
             def get_request_data(
                 self,
-                _request: t.Core.RequestDict,
-            ) -> t.Core.RequestDict:
+                _request: FlextWebTypes.Core.RequestDict,
+            ) -> FlextWebTypes.Core.RequestDict:
                 # Execute placeholder logic from protocol (lines 361-362)
-                empty_result: t.Core.RequestDict = {}
+                empty_result: FlextWebTypes.Core.RequestDict = {}
                 return empty_result
 
             # Required by p.Service
@@ -926,7 +926,7 @@ class TestFlextWebProtocols:
         formatter = ConcreteFormatter()
 
         # Test format_success with all value types to cover lines 292-302
-        data_with_all_types: t.Core.ResponseDict = {
+        data_with_all_types: FlextWebTypes.Core.ResponseDict = {
             "string": "value",
             "int": 42,
             "bool": True,
@@ -963,7 +963,7 @@ class TestFlextWebProtocols:
         framework = _WebFrameworkInterfaceBase()
 
         # Test create_json_response to cover lines 390-400
-        data: t.Core.ResponseDict = {
+        data: FlextWebTypes.Core.ResponseDict = {
             "test": "value",
             "nested": {"key": "value"},
         }
@@ -1014,7 +1014,7 @@ class TestFlextWebProtocols:
         renderer = _WebTemplateRendererBase()
 
         # Execute placeholder methods to cover lines 642-643, 658-659
-        result = renderer.render_template("test.html", {"key": "value"})
+        result = renderer.render_template("tesFlextWebTypes.html", {"key": "value"})
         assert result.is_success
         assert result.value == ""
 

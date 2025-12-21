@@ -166,19 +166,14 @@ class FlextWebApi:
         # Build configuration using u code
         # Use uild config dict from provided values
         input_values = {"host": host, "port": port, "debug": debug}
-        provided_values = u.filter(
-            input_values,
-            lambda _k, v: v is not None,
-        )
-        config_kwargs: dict[str, object] = (
-            dict(provided_values) if isinstance(provided_values, dict) else {}
-        )
+        provided_values = {k: v for k, v in input_values.items() if v is not None}
+        config_kwargs = dict(provided_values)
 
         # Map 'debug' to 'debug_mode' for Pydantic compatibility
         if "debug" in config_kwargs:
             config_kwargs["debug_mode"] = config_kwargs.pop("debug")
 
-        logger.debug("Creating HTTP config with data: %s", config_kwargs)
+        logger.debug("Creating HTTP config with data", config=config_kwargs)
 
         # Create and validate configuration - Pydantic will validate types at runtime
         # Use regular constructor - AutoConfig handles defaults automatically
@@ -195,7 +190,7 @@ class FlextWebApi:
             # Use u to extract error message - simplifies code
             errors = e.errors()
             error_msg = errors[0]["msg"] if errors else str(e)
-            logger.exception("HTTP config creation failed: %s", error_msg)
+            logger.exception("HTTP config creation failed: %s", exception=e)
             return FlextResult.fail(f"Configuration validation failed: {error_msg}")
 
         logger.info(f"HTTP config created successfully: {config.host}:{config.port}")
@@ -223,7 +218,7 @@ class FlextWebApi:
         _container = FlextContainer()
 
         status_info = m.Web.ServiceResponse(
-            service=c.Web.Web.SERVICE_NAME_API,
+            service=c.Web.WebService.SERVICE_NAME_API,
             capabilities=[
                 "http_services_available",
                 "fastapi_support",
@@ -264,7 +259,7 @@ class FlextWebApi:
     # =========================================================================
 
     @classmethod
-    def get_api_capabilities(cls) -> FlextResult[t.Core.ResponseDict]:
+    def get_api_capabilities(cls) -> FlextResult[t.WebCore.ResponseDict]:
         """Get API facade capabilities and supported operations.
 
         Returns:
