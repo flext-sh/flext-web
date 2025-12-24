@@ -12,8 +12,8 @@ This example shows:
 """
 
 import requests
-from flext_core import FlextResult
 
+from flext import FlextResult
 from flext_web.typings import t
 
 
@@ -258,7 +258,7 @@ def _execute_list_operation(
         result = FlextResult[dict[str, object]].fail("HTTP request failed")
     else:
         result = result.flat_map(_parse_response_json).map(
-            lambda d: _extract_apps_from_response(d, data_key)
+            lambda d: _extract_apps_from_response(d, data_key),
         )
 
     # Fast fail - no fallback to empty list

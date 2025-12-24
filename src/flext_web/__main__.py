@@ -11,8 +11,7 @@ from __future__ import annotations
 
 import sys
 
-from flext_core import FlextLogger, FlextResult
-
+from flext import FlextLogger, FlextResult
 from flext_web.api import FlextWebApi
 from flext_web.models import FlextWebModels
 

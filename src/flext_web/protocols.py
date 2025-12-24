@@ -761,7 +761,7 @@ class FlextWebProtocols(FlextProtocols):
 
             @staticmethod
             def render(
-                template: str, context: t.WebCore.RequestDict
+                template: str, context: t.WebCore.RequestDict,
             ) -> FlextProtocols.Result[str]:
                 """Render template string with context.
 
@@ -921,13 +921,13 @@ class _WebResponseFormatterBase:
         return FlextWebProtocols.WebResponseFormatterProtocol.format_error(error)
 
     def create_json_response(
-        self, data: t.WebCore.ResponseDict
+        self, data: t.WebCore.ResponseDict,
     ) -> t.WebCore.ResponseDict:
         """Create a JSON response."""
         return FlextWebProtocols.WebResponseFormatterProtocol.create_json_response(data)
 
     def get_request_data(
-        self, _request: t.WebCore.RequestDict
+        self, _request: t.WebCore.RequestDict,
     ) -> t.WebCore.RequestDict:
         """Extract data from web request."""
         return FlextWebProtocols.WebResponseFormatterProtocol.get_request_data(_request)
@@ -937,7 +937,7 @@ class _WebFrameworkInterfaceBase:
     """Base implementation of WebFrameworkInterfaceProtocol for testing."""
 
     def create_json_response(
-        self, data: t.WebCore.ResponseDict
+        self, data: t.WebCore.ResponseDict,
     ) -> t.WebCore.ResponseDict:
         """Create a JSON response."""
         return FlextWebProtocols.WebFrameworkInterfaceProtocol.create_json_response(
@@ -945,7 +945,7 @@ class _WebFrameworkInterfaceBase:
         )
 
     def get_request_data(
-        self, _request: t.WebCore.RequestDict
+        self, _request: t.WebCore.RequestDict,
     ) -> t.WebCore.RequestDict:
         """Extract data from web request."""
         return FlextWebProtocols.WebFrameworkInterfaceProtocol.get_request_data(
@@ -1022,7 +1022,7 @@ class _WebTemplateRendererBase:
         )
 
     def render_dashboard(
-        self, data: t.WebCore.ResponseDict
+        self, data: t.WebCore.ResponseDict,
     ) -> FlextProtocols.Result[str]:
         """Render dashboard template with data."""
         return FlextWebProtocols.WebTemplateRendererProtocol.render_dashboard(data)
@@ -1032,7 +1032,7 @@ class _WebTemplateEngineBase:
     """Base implementation of WebTemplateEngineProtocol for testing."""
 
     def load_template_config(
-        self, config: t.WebCore.RequestDict
+        self, config: t.WebCore.RequestDict,
     ) -> FlextProtocols.Result[bool]:
         """Load template engine configuration."""
         return FlextWebProtocols.WebTemplateEngineProtocol.load_template_config(config)
@@ -1044,7 +1044,7 @@ class _WebTemplateEngineBase:
         return FlextWebProtocols.WebTemplateEngineProtocol.get_template_config()
 
     def validate_template_config(
-        self, config: t.WebCore.RequestDict
+        self, config: t.WebCore.RequestDict,
     ) -> FlextProtocols.Result[bool]:
         """Validate template engine configuration."""
         return FlextWebProtocols.WebTemplateEngineProtocol.validate_template_config(
@@ -1052,7 +1052,7 @@ class _WebTemplateEngineBase:
         )
 
     def render(
-        self, template: str, context: t.WebCore.RequestDict
+        self, template: str, context: t.WebCore.RequestDict,
     ) -> FlextProtocols.Result[str]:
         """Render template string with context."""
         return FlextWebProtocols.WebTemplateEngineProtocol.render(template, context)

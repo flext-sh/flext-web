@@ -15,6 +15,7 @@
 **Python**: 3.13+
 
 **Key Architecture**:
+
 - Flask-based web interface
 - REST API foundation
 - Integration with flext-core patterns
@@ -80,12 +81,14 @@ cli.print("Success!", style="green")
 ### ZERO TOLERANCE Policies
 
 **ABSOLUTELY FORBIDDEN**:
+
 - ❌ Direct Click/Rich imports (use flext-cli)
 - ❌ Exception-based error handling in web handlers (use FlextResult)
 - ❌ Type ignores or `Any` types
 - ❌ Mockpatch in tests
 
 **MANDATORY**:
+
 - ✅ Use `FlextResult[T]` for all operations
 - ✅ Use flext-cli for all CLI and output operations
 - ✅ Complete type annotations
@@ -95,6 +98,7 @@ cli.print("Success!", style="green")
 ---
 
 **See Also**:
+
 - [Workspace Standards](../CLAUDE.md)
 - [flext-core Patterns](../flext-core/CLAUDE.md)
 - [flext-api Patterns](../flext-api/CLAUDE.md)

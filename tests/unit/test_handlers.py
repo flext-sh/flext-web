@@ -5,7 +5,7 @@ Tests the web handlers functionality following flext standards.
 
 from typing import cast
 
-from flext_core import FlextResult
+from flext import FlextResult
 
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels

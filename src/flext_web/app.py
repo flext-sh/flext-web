@@ -14,12 +14,10 @@ from typing import TypedDict
 
 from fastapi import FastAPI
 from flask import Flask
-from flext_core import (
-    FlextContainer,
+from flext import FlextContainer,
     FlextLogger,
     FlextService,
-    r,
-)
+    r
 
 from flext_web.constants import c
 from flext_web.models import m

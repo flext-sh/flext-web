@@ -1,7 +1,11 @@
-"""Test constants for flext-web tests.
+"""Constants for flext-web tests.
 
-Centralized constants for test fixtures, factories, and test data.
-Does NOT duplicate src/flext_web/constants.py - only test-specific constants.
+Provides TestsFlextWebConstants, extending FlextTestsConstants with flext-web-specific
+constants using COMPOSITION INHERITANCE.
+
+Inheritance hierarchy:
+- FlextTestsConstants (flext_tests) - Provides .Tests.* namespace
+- FlextWebConstants (production) - Provides .Web.* namespace
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -11,11 +15,31 @@ from __future__ import annotations
 
 from typing import Final, TypeAlias
 
+from flext_tests.constants import FlextTestsConstants
+
 from flext_web.constants import FlextWebConstants
 
 
-class TestsConstants(FlextWebConstants):
-    """Centralized test constants following flext-core nested class pattern."""
+class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
+    """Constants for flext-web tests using COMPOSITION INHERITANCE.
+
+    MANDATORY: Inherits from BOTH:
+    1. FlextTestsConstants - for test infrastructure (.Tests.*)
+    2. FlextWebConstants - for domain constants (.Web.*)
+
+    Access patterns:
+    - tc.Tests.Docker.* (container testing)
+    - tc.Tests.Matcher.* (assertion messages)
+    - tc.Tests.Factory.* (test data generation)
+    - tc.Web.* (domain constants from production)
+    - tc.TestWeb.* (project-specific test data)
+
+    Rules:
+    - NEVER duplicate constants from FlextTestsConstants or FlextWebConstants
+    - Only flext-web-specific test constants allowed (not generic for other projects)
+    - All generic constants come from FlextTestsConstants
+    - All production constants come from FlextWebConstants
+    """
 
     class Paths:
         """Test path constants."""
@@ -24,7 +48,7 @@ class TestsConstants(FlextWebConstants):
         TEST_OUTPUT_DIR: Final[str] = "tests/fixtures/data/output"
         TEST_TEMP_PREFIX: Final[str] = "flext_web_test_"
 
-    class Web:
+    class TestWeb:
         """Web test server constants."""
 
         DEFAULT_HOST: Final[str] = "localhost"
@@ -33,7 +57,7 @@ class TestsConstants(FlextWebConstants):
         CONNECTION_TIMEOUT: Final[float] = 5.0
         OPERATION_TIMEOUT: Final[float] = 10.0
 
-    class Http:
+    class TestHttp:
         """HTTP test constants."""
 
         TEST_ENDPOINT: Final[str] = "/test"
@@ -49,34 +73,24 @@ class TestsConstants(FlextWebConstants):
         """
 
         # Reuse production Literals for consistency (Python 3.13+ best practices)
-        # HTTP method literal (reusing production type from Web level)
         HttpMethodLiteral: TypeAlias = FlextWebConstants.Web.HttpMethodLiteral
-
-        # Environment name literal (reusing production type from Web level)
         EnvironmentNameLiteral: TypeAlias = FlextWebConstants.Web.EnvironmentNameLiteral
-
-        # Application status literal (reusing production type from Web level)
         ApplicationStatusLiteral: TypeAlias = (
             FlextWebConstants.Web.ApplicationStatusLiteral
         )
-
-        # Application type literal (reusing production type from Web level)
         ApplicationTypeLiteral: TypeAlias = FlextWebConstants.Web.ApplicationTypeLiteral
-
-        # Response status literal (reusing production type from Web level)
         ResponseStatusLiteral: TypeAlias = FlextWebConstants.Web.ResponseStatusLiteral
-
-        # Protocol literal (reusing production type from Web level)
         ProtocolLiteral: TypeAlias = FlextWebConstants.Web.ProtocolLiteral
-
-        # Content type literal (reusing production type from Web level)
         ContentTypeLiteral: TypeAlias = FlextWebConstants.Web.ContentTypeLiteral
-
-        # Session cookie SameSite literal (reusing production type from Web level)
         SameSiteLiteral: TypeAlias = FlextWebConstants.Web.SameSiteLiteral
 
 
-# Standardized short name for use in tests (same pattern as flext-core)
-c = TestsConstants
+# Short aliases per FLEXT convention
+tc = TestsFlextWebConstants  # Primary test constants alias
+c = TestsFlextWebConstants   # Alternative alias for compatibility
 
-__all__ = ["TestsConstants", "c"]
+__all__ = [
+    "TestsFlextWebConstants",
+    "c",
+    "tc",
+]

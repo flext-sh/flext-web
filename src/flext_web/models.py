@@ -26,8 +26,7 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from flext_core import FlextUtilities as flext_u, r
-from flext_core.models import m as m_core
+from flext import FlextUtilities as flext_u, r, m as m_core
 
 # EventDataMapping imported via flext_core.typings.t
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -687,7 +686,9 @@ class FlextWebModels(m_core):
                 return f"{self.name} ({self.url}) - {self.status}"
 
             def add_domain_event(
-                self, event_name: str, _data: object | None = None
+                self,
+                event_name: str,
+                _data: object | None = None,
             ) -> r[bool]:
                 """Add domain event for event sourcing.
 
@@ -879,7 +880,7 @@ class FlextWebModels(m_core):
             """Web request model with complete tracking."""
 
             method: c.Web.HttpMethodLiteral = Field(
-                default=c.Web.HttpMethodLiteral.GET.value,  # Use string literal, validated against c.Web.c.Web.HttpMethodLiteral
+                default="GET",  # Default HTTP method
                 description="HTTP method",
             )
             url: str = Field(min_length=1, max_length=2048, description="Request URL")
@@ -959,7 +960,7 @@ class FlextWebModels(m_core):
             name: str,
             host: str = c.Web.WebDefaults.HOST,
             port: int = c.Web.WebDefaults.PORT,
-            **kwargs: dict[str, object],
+            **kwargs,
         ) -> r[FlextWebModels.Web.Entity]:
             """Create a web application from direct parameters.
 

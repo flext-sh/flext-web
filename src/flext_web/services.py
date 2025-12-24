@@ -11,14 +11,12 @@ from __future__ import annotations
 
 import uuid
 
-from flext_core import (
-    FlextConstants,
+from flext import FlextConstants,
     FlextContainer,
     FlextLogger,
     FlextResult,
     FlextService,
-    FlextUtilities,
-)
+    FlextUtilities
 
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
