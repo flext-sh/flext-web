@@ -17,8 +17,7 @@ from flask import Flask
 from flext import FlextContainer,
     FlextLogger,
     FlextService,
-    r
-
+    r,
 from flext_web.constants import c
 from flext_web.models import m
 from flext_web.settings import FlextWebSettings
