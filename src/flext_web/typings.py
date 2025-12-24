@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TypedDict, cast
+from typing import TypedDict
 
 from flext_core import FlextResult, FlextTypes, FlextUtilities
 
@@ -199,15 +199,11 @@ class FlextWebTypes(FlextTypes):
         # Use FlextUtilities.try_() for unified error handling (DSL pattern)
         def create_request() -> FlextWebModels.Web.Request:
             """Create request model."""
-            # Cast body to match model type (dict[str, object] | str | None)
-            body_typed: str | dict[str, object] | None = (
-                cast("dict[str, object]", body) if isinstance(body, dict) else body
-            )
             return FlextWebModels.Web.Request(
                 url=url,
                 method=method_upper,
                 headers=headers_validated or {},
-                body=body_typed,
+                body=body,
                 timeout=timeout,
             )
 
@@ -248,14 +244,10 @@ class FlextWebTypes(FlextTypes):
         # Use FlextUtilities.try_() for unified error handling (DSL pattern)
         def create_response() -> FlextWebModels.Web.Response:
             """Create response model."""
-            # Cast body to match model type (dict[str, object] | str | None)
-            body_typed: str | dict[str, object] | None = (
-                cast("dict[str, object]", body) if isinstance(body, dict) else body
-            )
             return FlextWebModels.Web.Response(
                 status_code=status_code,
                 headers=headers_validated or {},
-                body=body_typed,
+                body=body,
                 elapsed_time=elapsed_time,
             )
 
