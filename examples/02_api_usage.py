@@ -12,8 +12,8 @@ This example shows:
 """
 
 import requests
+from flext_core import FlextResult
 
-from flext import FlextResult
 from flext_web.typings import t
 
 
@@ -205,19 +205,21 @@ def _execute_app_operation(
         _make_http_request()
         .flat_map(_parse_json_response)
         .flat_map(
-            lambda json_data: FlextResult[t.AppData].ok(
-                t.AppData.model_validate(json_data["data"]),
-            )
-            if (
-                isinstance(json_data, dict)
-                and "success" in json_data
-                and json_data["success"] is True
-                and "data" in json_data
-                and isinstance(data := json_data["data"], dict)
-                and "id" in data
-                and "name" in data
-            )
-            else FlextResult[t.AppData].fail("Invalid app data"),
+            lambda json_data: (
+                FlextResult[t.AppData].ok(
+                    t.AppData.model_validate(json_data["data"]),
+                )
+                if (
+                    isinstance(json_data, dict)
+                    and "success" in json_data
+                    and json_data["success"] is True
+                    and "data" in json_data
+                    and isinstance(data := json_data["data"], dict)
+                    and "id" in data
+                    and "name" in data
+                )
+                else FlextResult[t.AppData].fail("Invalid app data")
+            ),
         )
     )
 

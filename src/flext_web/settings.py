@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from flext_core import FlextResult, FlextSettings
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from flext import FlextResult, FlextSettings
 from flext_web.constants import c
 
 

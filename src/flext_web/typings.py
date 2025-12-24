@@ -12,7 +12,8 @@ from __future__ import annotations
 
 from typing import TypedDict
 
-from flext import FlextResult, FlextTypes, FlextUtilities
+from flext_core import FlextResult, FlextTypes, FlextUtilities
+
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 
@@ -278,7 +279,9 @@ class FlextWebTypes(FlextTypes):
         # Use FlextUtilities.get() for unified extraction with defaults (DSL pattern)
         url = FlextUtilities.get(config, "url", default="")
         method = FlextUtilities.get(
-            config, "method", default=FlextWebConstants.Web.Http.Method.GET,
+            config,
+            "method",
+            default=FlextWebConstants.Web.Http.Method.GET,
         )
         headers = config.get("headers")
         body = FlextUtilities.get(config, "body")
@@ -368,7 +371,9 @@ class FlextWebTypes(FlextTypes):
         )
         content_length = FlextUtilities.get(config, "content_length", default=0)
         processing_time_ms = FlextUtilities.get(
-            config, "processing_time_ms", default=0.0,
+            config,
+            "processing_time_ms",
+            default=0.0,
         )
 
         # Use # Direct validation instead for unified headers validation (DSL pattern)

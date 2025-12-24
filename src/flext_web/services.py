@@ -11,12 +11,14 @@ from __future__ import annotations
 
 import uuid
 
-from flext import FlextConstants,
+from flext_core import (
+    FlextConstants,
     FlextContainer,
     FlextLogger,
     FlextResult,
     FlextService,
-    FlextUtilities
+    FlextUtilities,
+)
 
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
@@ -356,7 +358,8 @@ class FlextWebServices(FlextService[bool]):
             return FlextResult[bool].fail("Service is already running")
 
         return (
-            self.initialize_routes()
+            self
+            .initialize_routes()
             .flat_map(lambda _: self.configure_middleware())
             .map(lambda _: self._mark_service_running())
         )

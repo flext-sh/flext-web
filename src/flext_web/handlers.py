@@ -7,9 +7,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext import FlextLogger,
+from flext_core import (
+    FlextLogger,
     FlextService,
-    r
+    r,
+)
 
 from flext_web.constants import c
 from flext_web.models import m

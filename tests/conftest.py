@@ -21,6 +21,7 @@ from typing import Any, ClassVar
 
 import pytest
 from flask import Flask
+from flext_core import FlextResult
 from flext_tests import (
     FlextTestsDocker,
     FlextTestsFactories,
@@ -28,7 +29,6 @@ from flext_tests import (
     FlextTestsUtilities,
 )
 
-from flext import FlextResult
 from flext_web import FlextWebModels, FlextWebServices, FlextWebSettings
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants
@@ -292,7 +292,9 @@ def setup_test_environment() -> Generator[None]:
     os.environ["FLEXT_LOG_LEVEL"] = "info"  # Reduce noise
     os.environ["FLEXT_WEB_DEBUG_MODE"] = "true"
     os.environ["FLEXT_WEB_HOST"] = FlextWebConstants.Web.WebDefaults.HOST
-    os.environ["FLEXT_WEB_SECRET_KEY"] = FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY
+    os.environ["FLEXT_WEB_SECRET_KEY"] = (
+        FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY
+    )
 
     yield
 

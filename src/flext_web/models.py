@@ -26,13 +26,10 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-# EventDataMapping imported via flext_core.typings.t
+from flext_core import FlextUtilities as flext_u, m as m_core, r
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
-from flext import FlextUtilities as flext_u, m as m_core, r
 from flext_web.constants import c
-
-# c.Web.HttpMethodLiteral is accessed via c.Web.c.Web.HttpMethodLiteral
 
 
 class FlextWebModels(m_core):

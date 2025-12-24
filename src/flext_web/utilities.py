@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 
-from flext import FlextUtilities
+from flext_core import FlextUtilities
 
 
 class FlextWebUtilities(FlextUtilities):
