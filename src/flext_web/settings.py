@@ -1,8 +1,8 @@
-"""HTTP Configuration - Domain-agnostic HTTP configuration.
+"""HTTP configuration management.
 
-Uses Pydantic 2 with flext-core patterns and c.
+Provides configuration for HTTP-based services using Pydantic.
 
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -12,29 +12,18 @@ from pathlib import Path
 
 from flext_core import FlextResult, FlextSettings
 from pydantic import Field, computed_field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import SettingsConfigDict
 
 from flext_web.constants import c
 
 
 @FlextSettings.auto_register("web")
-class FlextWebSettings(BaseSettings):
-    """HTTP server configuration using AutoConfig pattern.
+class FlextWebSettings(FlextSettings):
+    """HTTP server configuration using Pydantic.
 
-    **ARCHITECTURAL PATTERN**: Zero-Boilerplate Auto-Registration
-
-    This class uses FlextSettings.AutoConfig for automatic:
-    - Singleton pattern (thread-safe)
-    - Namespace registration (accessible via config.web)
-    - Environment variable loading from FLEXT_WEB_* variables
-    - .env file loading (production/development)
-    - Automatic type conversion and validation via Pydantic v2
-
-    Pydantic 2 model with computed properties for derived values.
-    Domain-agnostic configuration for any HTTP-based service.
+    Pydantic model with computed properties for HTTP service configuration.
     """
 
-    # Use FlextSettings.resolve_env_file() to ensure all FLEXT configs use same .env
     model_config = SettingsConfigDict(
         env_prefix="FLEXT_WEB_",
         env_file=FlextSettings.resolve_env_file(),
@@ -86,11 +75,6 @@ class FlextWebSettings(BaseSettings):
         default=False,
         description="Testing mode",
     )  # Testing mode is False by default, not in Constants as it's runtime-specific
-
-    @computed_field
-    def debug(self) -> bool:
-        """Debug property for compatibility."""
-        return self.debug_mode
 
     @computed_field
     def protocol(self) -> str:

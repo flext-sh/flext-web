@@ -161,7 +161,7 @@ class FlextWebTypes(FlextTypes):
         url: str,
         method: str = FlextWebConstants.Web.Http.Method.GET,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, str] | None = None,
+        body: str | dict[str, object] | None = None,
         timeout: float = FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
     ) -> FlextResult[FlextWebModels.Web.Request]:
         """Create HTTP request model instance with proper validation.
@@ -221,7 +221,7 @@ class FlextWebTypes(FlextTypes):
         cls,
         status_code: int,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, str] | None = None,
+        body: str | dict[str, object] | None = None,
         elapsed_time: float | None = None,
     ) -> FlextResult[FlextWebModels.Web.Response]:
         """Create HTTP response model instance with proper validation.

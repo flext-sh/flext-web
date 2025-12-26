@@ -9,7 +9,7 @@ from flext_core import FlextResult, p
 
 from flext_web.constants import FlextWebConstants
 
-
+from flext_web.protocols import (
     FlextWebProtocols,
     _WebAppManagerBase,
     _WebConnectionBase,
@@ -417,7 +417,7 @@ class TestFlextWebProtocols:
         class RealResponseFormatter:
             def format_success(self, data: dict[str, object]) -> dict[str, object]:
                 response: dict[str, object] = {
-                    "status": FlextWebConstants.WebResponse.STATUS_SUCCESS,
+                    "status": FlextWebConstants.Web.WebResponse.STATUS_SUCCESS,
                 }
                 response.update({
                     key: value
@@ -428,7 +428,7 @@ class TestFlextWebProtocols:
 
             def format_error(self, error: Exception) -> dict[str, object]:
                 result: dict[str, object] = {
-                    "status": FlextWebConstants.WebResponse.STATUS_ERROR,
+                    "status": FlextWebConstants.Web.WebResponse.STATUS_ERROR,
                     "message": str(error),
                 }
                 return result
@@ -438,7 +438,7 @@ class TestFlextWebProtocols:
                 data: dict[str, object],
             ) -> dict[str, object]:
                 response: dict[str, object] = {
-                    FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
+                    FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
                 }
                 response.update({
                     key: value
@@ -483,22 +483,22 @@ class TestFlextWebProtocols:
             {"key1": "value1", "nested": {"key2": "value2"}},
         )
         result = formatter.format_success(data_with_nested)
-        assert result["status"] == FlextWebConstants.WebResponse.STATUS_SUCCESS
+        assert result["status"] == FlextWebConstants.Web.WebResponse.STATUS_SUCCESS
         assert result["key1"] == "value1"
         assert isinstance(result["nested"], dict)
 
         # Test format_error
         error = ValueError("Test error")
         error_result = formatter.format_error(error)
-        assert error_result["status"] == FlextWebConstants.WebResponse.STATUS_ERROR
+        assert error_result["status"] == FlextWebConstants.Web.WebResponse.STATUS_ERROR
         assert "Test error" in str(error_result["message"])
 
         # Test create_json_response with nested dict
         json_result = formatter.create_json_response(data_with_nested)
-        assert FlextWebConstants.Http.HEADER_CONTENT_TYPE in json_result
+        assert FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE in json_result
         assert (
-            json_result[FlextWebConstants.Http.HEADER_CONTENT_TYPE]
-            == FlextWebConstants.Http.CONTENT_TYPE_JSON
+            json_result[FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE]
+            == FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
         )
 
     def test_web_framework_interface_protocol_methods(self) -> None:
@@ -510,7 +510,7 @@ class TestFlextWebProtocols:
                 data: dict[str, object],
             ) -> dict[str, object]:
                 response: dict[str, object] = {
-                    FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
+                    FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
                 }
                 response.update({
                     key: value
@@ -555,7 +555,7 @@ class TestFlextWebProtocols:
         # Test methods
         data = cast("dict[str, object]", {"test": "value", "nested": {"key": "value"}})
         json_response = framework.create_json_response(data)
-        assert FlextWebConstants.Http.HEADER_CONTENT_TYPE in json_response
+        assert FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE in json_response
 
         request_data = framework.get_request_data({})
         assert isinstance(request_data, dict)
@@ -795,8 +795,8 @@ class TestFlextWebProtocols:
 
             def get_web_health_status(self) -> dict[str, object]:
                 return {
-                    "status": FlextWebConstants.WebResponse.STATUS_HEALTHY,
-                    "service": FlextWebConstants.Web.SERVICE_NAME,
+                    "status": FlextWebConstants.Web.WebResponse.STATUS_HEALTHY,
+                    "service": FlextWebConstants.Web.WebService.SERVICE_NAME,
                 }
 
             def get_web_metrics(self) -> dict[str, object]:
@@ -822,13 +822,13 @@ class TestFlextWebProtocols:
 
         monitoring = RealWebMonitoring()
         # WebMonitoringProtocol is @runtime_checkable, so isinstance should work
-        if hasattr(FlextWebProtocols.WebMonitoringProtocol, "__runtime_checkable__"):
-            assert isinstance(monitoring, FlextWebProtocols.WebMonitoringProtocol)
+        if hasattr(FlextWebProtocols.Web.WebMonitoringProtocol, "__runtime_checkable__"):
+            assert isinstance(monitoring, FlextWebProtocols.Web.WebMonitoringProtocol)
 
         # Execute methods
         monitoring.record_web_request({"method": "GET"}, 0.1)
         health = monitoring.get_web_health_status()
-        assert health["status"] == FlextWebConstants.WebResponse.STATUS_HEALTHY
+        assert health["status"] == FlextWebConstants.Web.WebResponse.STATUS_HEALTHY
         metrics = monitoring.get_web_metrics()
         assert "requests" in metrics
 
@@ -870,7 +870,7 @@ class TestFlextWebProtocols:
             ) -> FlextWebTypes.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 292-302)
                 response: FlextWebTypes.Core.ResponseDict = {
-                    "status": FlextWebConstants.WebResponse.STATUS_SUCCESS,
+                    "status": FlextWebConstants.Web.WebResponse.STATUS_SUCCESS,
                 }
                 for key, value in data.items():
                     if isinstance(value, (str, int, bool, list, dict)):
@@ -880,7 +880,7 @@ class TestFlextWebProtocols:
             def format_error(self, error: Exception) -> FlextWebTypes.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 315-319)
                 result: FlextWebTypes.Core.ResponseDict = {
-                    "status": FlextWebConstants.WebResponse.STATUS_ERROR,
+                    "status": FlextWebConstants.Web.WebResponse.STATUS_ERROR,
                     "message": str(error),
                 }
                 return result
@@ -891,7 +891,7 @@ class TestFlextWebProtocols:
             ) -> FlextWebTypes.Core.ResponseDict:
                 # Execute placeholder logic from protocol (lines 335-345)
                 response: FlextWebTypes.Core.ResponseDict = {
-                    FlextWebConstants.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Http.CONTENT_TYPE_JSON,
+                    FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
                 }
                 for key, value in data.items():
                     if isinstance(value, (str, int, bool, list, dict)):
@@ -935,7 +935,7 @@ class TestFlextWebProtocols:
             "dict": {"nested": "value"},
         }
         result = formatter.format_success(data_with_all_types)
-        assert result["status"] == FlextWebConstants.WebResponse.STATUS_SUCCESS
+        assert result["status"] == FlextWebConstants.Web.WebResponse.STATUS_SUCCESS
         assert result["string"] == "value"
         assert result["int"] == 42
         assert result["bool"] is True
@@ -945,14 +945,14 @@ class TestFlextWebProtocols:
         # Test format_error to cover lines 315-319
         error = ValueError("Test error message")
         error_result = formatter.format_error(error)
-        assert error_result["status"] == FlextWebConstants.WebResponse.STATUS_ERROR
+        assert error_result["status"] == FlextWebConstants.Web.WebResponse.STATUS_ERROR
         assert "Test error message" in str(error_result["message"])
 
         # Test create_json_response with all value types to cover lines 335-345
         json_result = formatter.create_json_response(data_with_all_types)
         assert (
-            json_result[FlextWebConstants.Http.HEADER_CONTENT_TYPE]
-            == FlextWebConstants.Http.CONTENT_TYPE_JSON
+            json_result[FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE]
+            == FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
         )
 
         # Test get_request_data to cover lines 361-362
@@ -970,8 +970,8 @@ class TestFlextWebProtocols:
         }
         result = framework.create_json_response(data)
         assert (
-            result[FlextWebConstants.Http.HEADER_CONTENT_TYPE]
-            == FlextWebConstants.Http.CONTENT_TYPE_JSON
+            result[FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE]
+            == FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
         )
 
         # Test get_request_data to cover lines 416-417
@@ -1055,8 +1055,8 @@ class TestFlextWebProtocols:
 
         # Test get_web_health_status
         health = monitoring.get_web_health_status()
-        assert health["status"] == FlextWebConstants.WebResponse.STATUS_HEALTHY
-        assert health["service"] == FlextWebConstants.Web.SERVICE_NAME
+        assert health["status"] == FlextWebConstants.Web.WebResponse.STATUS_HEALTHY
+        assert health["service"] == FlextWebConstants.Web.WebService.SERVICE_NAME
 
         # Test get_web_metrics
         metrics = monitoring.get_web_metrics()

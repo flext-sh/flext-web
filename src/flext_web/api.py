@@ -1,18 +1,8 @@
-"""Generic HTTP API - Unified Facade with SOLID Principles.
+"""Generic HTTP API facade.
 
-Domain-agnostic HTTP API facade using flext-core patterns and SOLID principles.
-This class serves as the main entry point for all HTTP API operations, providing
-a unified interface that delegates to specialized components following proper
-separation of concerns.
+Provides unified interface for HTTP API operations using flext-core patterns.
 
-SOLID Principles Applied:
-- Single Responsibility: Each method handles one specific API concern
-- Open/Closed: Extensible through inheritance but closed for modification
-- Liskov Substitution: All methods can be substituted by implementations
-- Interface Segregation: Methods provide focused interfaces
-- Dependency Inversion: Depends on abstractions (services, apps, configs)
-
-Copyright (c) 2025 FLEXT Contributors. All rights reserved.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -41,18 +31,9 @@ m = FlextWebModels
 
 
 class FlextWebApi:
-    """Generic HTTP API facade using flext-core patterns and SOLID principles.
+    """Generic HTTP API facade using flext-core patterns.
 
-    This class serves as the single entry point for all HTTP API operations,
-    following the "one class per module" architectural requirement. It provides
-    a unified facade that delegates to specialized components (apps, services,
-    configs) while maintaining proper separation of concerns.
-
-    Architecture:
-    - Main facade class: FlextWebApi (coordinates all API operations)
-    - Delegation pattern: Methods delegate to specialized components
-    - SOLID principles: Each method has single responsibility
-    - Error handling: Complete error handling with flext-core patterns
+    Provides unified interface for HTTP API operations with proper error handling.
     """
 
     def __init__(self) -> None:
@@ -61,10 +42,6 @@ class FlextWebApi:
         self._container = FlextContainer()
         self._logger = FlextLogger(__name__)
 
-    # =========================================================================
-    # APPLICATION MANAGEMENT - Single Responsibility: App Lifecycle
-    # =========================================================================
-
     @classmethod
     def create_fastapi_app(
         cls,
@@ -72,7 +49,6 @@ class FlextWebApi:
     ) -> FlextResult[FastAPI]:
         """Create FastAPI web application with complete validation.
 
-        Single Responsibility: Creates and configures FastAPI web applications.
         Delegates to FlextWebApp for actual app creation while providing facade-level
         validation and error handling.
 
@@ -96,10 +72,6 @@ class FlextWebApi:
             logger.error(f"FastAPI application creation failed: {result.error}")
 
         return result
-
-    # =========================================================================
-    # SERVICE MANAGEMENT - Single Responsibility: Service Lifecycle
-    # =========================================================================
 
     @classmethod
     def create_http_service(
@@ -133,10 +105,6 @@ class FlextWebApi:
 
         return result
 
-    # =========================================================================
-    # CONFIGURATION MANAGEMENT - Single Responsibility: Config Operations
-    # =========================================================================
-
     @classmethod
     def create_http_config(
         cls,
@@ -163,29 +131,26 @@ class FlextWebApi:
         """
         logger = FlextLogger(__name__)
 
-        # Build configuration using u code
-        # Use uild config dict from provided values
-        input_values = {"host": host, "port": port, "debug": debug}
-        provided_values = {k: v for k, v in input_values.items() if v is not None}
-        config_kwargs = dict(provided_values)
+        # Use defaults from constants when not provided
+        host_val: str = host if host is not None else c.Web.WebDefaults.HOST
+        port_val: int = port if port is not None else c.Web.WebDefaults.PORT
+        debug_mode_val: bool = (
+            debug if debug is not None else c.Web.WebDefaults.DEBUG_MODE
+        )
+        secret_key_val: str = c.Web.WebDefaults.SECRET_KEY
 
-        # Map 'debug' to 'debug_mode' for Pydantic compatibility
-        if "debug" in config_kwargs:
-            config_kwargs["debug_mode"] = config_kwargs.pop("debug")
+        logger.debug(
+            "Creating HTTP config with data",
+            config={"host": host_val, "port": port_val, "debug_mode": debug_mode_val},
+        )
 
-        logger.debug("Creating HTTP config with data", config=config_kwargs)
-
-        # Create and validate configuration - Pydantic will validate types at runtime
-        # Use regular constructor - AutoConfig handles defaults automatically
         try:
-            # Only pass the fields that are provided, let Pydantic use defaults for others
-            # AutoConfig will use defaults from Field() definitions
-            # Ensure secret_key is provided for AutoConfig compatibility
-            if "secret_key" not in config_kwargs:
-                config_kwargs["secret_key"] = c.Web.WebDefaults.SECRET_KEY
-            # Pydantic will validate types at runtime - use type: ignore for pyright
-            # config_kwargs contains validated values from filter_dict
-            config = FlextWebSettings(**config_kwargs)
+            config = FlextWebSettings(
+                host=host_val,
+                port=port_val,
+                debug_mode=debug_mode_val,
+                secret_key=secret_key_val,
+            )
         except ValidationError as e:
             # Use u to extract error message - simplifies code
             errors = e.errors()
@@ -195,10 +160,6 @@ class FlextWebApi:
 
         logger.info(f"HTTP config created successfully: {config.host}:{config.port}")
         return FlextResult.ok(config)
-
-    # =========================================================================
-    # SYSTEM STATUS AND MONITORING - Single Responsibility: Status Operations
-    # =========================================================================
 
     @classmethod
     def get_service_status(cls) -> FlextResult[m.Web.ServiceResponse]:
@@ -254,9 +215,7 @@ class FlextWebApi:
         logger.info("HTTP configuration validation successful")
         return FlextResult.ok(True)
 
-    # =========================================================================
     # UTILITY METHODS - Supporting Operations
-    # =========================================================================
 
     @classmethod
     def get_api_capabilities(cls) -> FlextResult[t.WebCore.ResponseDict]:

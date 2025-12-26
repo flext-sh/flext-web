@@ -1,23 +1,8 @@
-"""FLEXT Web Models - Domain-Driven Design models for web applications (Layer 2: Domain).
+"""FLEXT Web models for web applications.
 
-This module provides complete domain-driven design models for web-based applications
-following flext-core patterns and Pydantic v2 standards. All models implement proper
-entity/value object distinction and include complete validation.
+Provides Pydantic models for web-based applications with validation.
 
-Architecture Layer: Layer 2 (Domain)
-- Entities: Models with identity (WebApplication, HttpRequest, etc.)
-- Value Objects: Immutable models without identity
-- Commands: Request objects for operations
-- Queries: Request objects for data retrieval
-
-Pydantic Features Used:
-- Model validation with Field constraints
-- Computed fields for derived properties
-- Validators for business rule enforcement
-- Alias support for alternative field names
-- Model serialization with custom strategies
-
-Copyright (c) 2025 FLEXT Contributors
+Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
@@ -33,25 +18,9 @@ from flext_web.constants import c
 
 
 class FlextWebModels(m_core):
-    """Domain-driven design model collection for web applications (Layer 2: Domain).
+    """Web application models collection.
 
-    Organizes web models using flext-core DDD patterns:
-    - Entities: Models with identity and lifecycle
-    - Value Objects: Immutable models without identity
-    - Commands: Request objects triggering operations
-    - Queries: Request objects for data retrieval
-
-    All models use Pydantic v2 with complete validation and follow
-    SOLID principles for maintainability and type safety.
-
-    Example:
-        >>> # Create HTTP message value objects
-        >>> request = FlextWebModels.Web.Request(
-        ...     url="https://example.com/api", method="POST", body={"key": "value"}
-        ... )
-        >>> # Check request properties
-        >>> assert request.is_secure
-
+    Provides Pydantic models for web applications with validation.
     """
 
     def __init_subclass__(cls, **kwargs: object) -> None:
@@ -71,10 +40,6 @@ class FlextWebModels(m_core):
         Models are immutable value objects (frozen=True) following domain-driven
         design principles with Pydantic v2 validation.
         """
-
-        # =========================================================================
-        # HTTP PROTOCOL MODELS (Value Objects - immutable)
-        # =========================================================================
 
         class Message(m_core.Value):
             """Generic HTTP message base model with protocol validation.
@@ -120,9 +85,9 @@ class FlextWebModels(m_core):
                 max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: c.Web.HttpMethodLiteral = Field(
-                default="GET",  # Use string literal
-                description="HTTP method",
+            method: str = Field(
+                default="GET",
+                description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
             )
             timeout: float = Field(
                 default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
@@ -130,6 +95,28 @@ class FlextWebModels(m_core):
                 le=300.0,
                 description="Request timeout in seconds",
             )
+
+            @field_validator("method", mode="before")
+            @classmethod
+            def validate_method(cls, v: str) -> str:
+                """Validate HTTP method is one of the allowed values."""
+                if not isinstance(v, str):
+                    msg = "HTTP method must be a string"
+                    raise TypeError(msg)
+                upper = v.upper()
+                valid_methods = {
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE",
+                    "PATCH",
+                    "HEAD",
+                    "OPTIONS",
+                }
+                if upper not in valid_methods:
+                    msg = f"Invalid HTTP method: {v}. Must be one of: {valid_methods}"
+                    raise TypeError(msg)
+                return upper
 
             @property
             def has_body(self) -> bool:
@@ -191,10 +178,6 @@ class FlextWebModels(m_core):
                 """
                 return self.status_code >= c.Web.Http.ERROR_MIN
 
-        # =========================================================================
-        # WEB APPLICATION MODELS (Entities - with identity)
-        # =========================================================================
-
         class AppRequest(m_core.Value):
             """Web request entity with tracking and context information.
 
@@ -220,9 +203,9 @@ class FlextWebModels(m_core):
                 max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: c.Web.HttpMethodLiteral = Field(
-                default="GET",  # Use string literal
-                description="HTTP method",
+            method: str = Field(
+                default="GET",
+                description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
             )
             timeout: float = Field(
                 default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
@@ -230,6 +213,29 @@ class FlextWebModels(m_core):
                 le=300.0,
                 description="Request timeout in seconds",
             )
+
+            @field_validator("method", mode="before")
+            @classmethod
+            def validate_method(cls, v: str) -> str:
+                """Validate HTTP method is one of the allowed values."""
+                if not isinstance(v, str):
+                    msg = "HTTP method must be a string"
+                    raise TypeError(msg)
+                upper = v.upper()
+                valid_methods = {
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE",
+                    "PATCH",
+                    "HEAD",
+                    "OPTIONS",
+                }
+                if upper not in valid_methods:
+                    msg = f"Invalid HTTP method: {v}. Must be one of: {valid_methods}"
+                    raise TypeError(msg)
+                return upper
+
             headers: dict[str, str] = Field(
                 default_factory=dict,
                 description="HTTP headers",
@@ -362,9 +368,7 @@ class FlextWebModels(m_core):
                 """
                 return self.processing_time_ms / 1000.0
 
-        # =========================================================================
         # APPLICATION MODELS (Aggregates - consistency boundaries)
-        # =========================================================================
 
         # EntityStatus removed - use c.Web.WebEnvironment.Status instead
         # All status values are now centralized in constants.py
@@ -408,9 +412,10 @@ class FlextWebModels(m_core):
                 reserved_names_set = set(c.Web.WebSecurity.RESERVED_NAMES)
 
                 # Validate name length using lambda-based guard
+                # Type narrowing: v is str from pydantic validation, use explicit str check
                 name_length_validated = flext_u.guard(
                     v,
-                    lambda s: min_length <= len(s) <= max_length,
+                    lambda s: isinstance(s, str) and min_length <= len(s) <= max_length,
                     return_value=True,
                 )
                 if name_length_validated is None:
@@ -465,7 +470,7 @@ class FlextWebModels(m_core):
                 valid_statuses = set(c.Web.WebEnvironment.STATUSES)
                 if v not in valid_statuses:
                     msg = f"Invalid status '{v}'. Must be one of: {sorted(valid_statuses)}"
-                    raise ValueError(msg)
+                    raise TypeError(msg)
                 return v
 
             environment: str = Field(
@@ -484,9 +489,11 @@ class FlextWebModels(m_core):
                 default_factory=dict,
                 description="Application metrics",
             )
-            domain_events: list[str] = Field(
+            # Note: domain_events is inherited from Entry with type list[DomainEvent]
+            # Use add_event() method to add events instead of direct list manipulation
+            web_events: list[str] = Field(
                 default_factory=list,
-                description="Domain events for event sourcing",
+                description="Web-specific events (application lifecycle)",
             )
 
             @property
@@ -544,8 +551,7 @@ class FlextWebModels(m_core):
                 min_name_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
                 name_validated = flext_u.guard(
                     self.name,
-                    str,
-                    lambda s: len(s) >= min_name_length,
+                    lambda s: isinstance(s, str) and len(s) >= min_name_length,
                     return_value=True,
                 )
                 if name_validated is None:
@@ -559,7 +565,7 @@ class FlextWebModels(m_core):
                 # Use flext_u.guard() with combined check for unified error message (DSL pattern)
                 port_validated = flext_u.guard(
                     self.port,
-                    lambda p: min_port <= p <= max_port,
+                    lambda p: isinstance(p, int) and min_port <= p <= max_port,
                     return_value=True,
                 )
                 if port_validated is None:
@@ -577,14 +583,11 @@ class FlextWebModels(m_core):
                         "already running",
                     )
                 self.status = running_status
-                # Use flext_u.val() for unified result unwrapping (DSL pattern)
-                event_result = self.add_domain_event("ApplicationStarted")
+                # Add web lifecycle event
+                event_result = self.add_web_event("ApplicationStarted")
                 if event_result.is_failure:  # pragma: no cover
-                    error_msg = (
-                        f"Failed to add domain event: {flext_u.err(event_result)}"
-                    )
                     return r[FlextWebModels.Web.Entity].fail(
-                        error_msg,
+                        f"Failed to add web event: {event_result.error}",
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
@@ -598,14 +601,11 @@ class FlextWebModels(m_core):
                         "not running",
                     )
                 self.status = stopped_status
-                # Use flext_u.val() + flext_u.err() for unified result handling (DSL pattern)
-                event_result = self.add_domain_event("ApplicationStopped")
+                # Add web lifecycle event
+                event_result = self.add_web_event("ApplicationStopped")
                 if event_result.is_failure:  # pragma: no cover
-                    error_msg = (
-                        f"Failed to add domain event: {flext_u.err(event_result)}"
-                    )
                     return r[FlextWebModels.Web.Entity].fail(
-                        error_msg,
+                        f"Failed to add web event: {event_result.error}",
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
@@ -619,21 +619,17 @@ class FlextWebModels(m_core):
                 starting_status = c.Web.WebEnvironment.Status.STARTING.value
                 running_status = c.Web.WebEnvironment.Status.RUNNING.value
                 self.status = starting_status
-                # Use flext_u.val() + flext_u.err() for unified result handling (DSL pattern)
-                restart_event_result = self.add_domain_event("ApplicationRestarting")
+                # Add web lifecycle events
+                restart_event_result = self.add_web_event("ApplicationRestarting")
                 if restart_event_result.is_failure:  # pragma: no cover
-                    error_msg = f"Failed to add domain event: {flext_u.err(restart_event_result)}"
                     return r[FlextWebModels.Web.Entity].fail(
-                        error_msg,
+                        f"Failed to add web event: {restart_event_result.error}",
                     )
                 self.status = running_status
-                start_event_result = self.add_domain_event("ApplicationStarted")
+                start_event_result = self.add_web_event("ApplicationStarted")
                 if start_event_result.is_failure:  # pragma: no cover
-                    error_msg = (
-                        f"Failed to add domain event: {flext_u.err(start_event_result)}"
-                    )
                     return r[FlextWebModels.Web.Entity].fail(
-                        error_msg,
+                        f"Failed to add web event: {start_event_result.error}",
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
@@ -648,18 +644,16 @@ class FlextWebModels(m_core):
                                     failure contains error message
 
                 """
-                # Use flext_u.guard() for unified type validation (DSL pattern)
-                metrics_validated = flext_u.guard(new_metrics, dict, return_value=True)
-                if metrics_validated is None:
+                # Validate and update metrics
+                if not isinstance(new_metrics, dict):
                     return r[bool].fail("Metrics must be a dictionary")
-                self.metrics.update(metrics_validated)
-                # Use flext_u.val() + flext_u.err() for unified result handling (DSL pattern)
-                event_result = self.add_domain_event("MetricsUpdated")
+                self.metrics.update(new_metrics)
+                # Add web lifecycle event
+                event_result = self.add_web_event("MetricsUpdated")
                 if event_result.is_failure:  # pragma: no cover
-                    error_msg = (
-                        f"Failed to add domain event: {flext_u.err(event_result)}"
+                    return r[bool].fail(
+                        f"Failed to add web event: {event_result.error}"
                     )
-                    return r[bool].fail(error_msg)
                 return r[bool].ok(True)
 
             def get_health_status(self) -> dict[str, object]:
@@ -677,31 +671,24 @@ class FlextWebModels(m_core):
                 """Return string representation of the application."""
                 return f"{self.name} ({self.url}) - {self.status}"
 
-            def add_domain_event(
+            def add_web_event(
                 self,
                 event_name: str,
-                _data: object | None = None,
             ) -> r[bool]:
-                """Add domain event for event sourcing.
+                """Add web-specific event (not domain event).
+
+                This is for web application lifecycle events, not DDD domain events.
+                Use parent's add_domain_event() for actual domain events.
 
                 Returns:
                     r[bool]: Success contains True if event added,
                                     failure contains error message
 
                 """
-                # Use flext_u.guard() for unified validation (DSL pattern)
-                # First check type, then check non-empty
-                event_type_validated = flext_u.guard(event_name, str, return_value=True)
-                if event_type_validated is None:
-                    return r[bool].fail("Event must be a string")
-                event_validated = flext_u.guard(
-                    event_type_validated,
-                    "non_empty",
-                    return_value=True,
-                )
-                if event_validated is None:
-                    return r[bool].fail("Event cannot be empty")
-                self.domain_events.append(event_validated)
+                # Validate event name is non-empty string
+                if not isinstance(event_name, str) or not event_name.strip():
+                    return r[bool].fail("Event name cannot be empty")
+                self.web_events.append(event_name)
                 return r[bool].ok(True)
 
             @classmethod
@@ -758,10 +745,6 @@ class FlextWebModels(m_core):
                 min_length=c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
                 description="Application secret key",
             )
-
-        # =========================================================================
-        # SERVICE REQUEST/RESPONSE MODELS - Replace dict[str, object] types
-        # =========================================================================
 
         class Credentials(m_core.Value):
             """Authentication credentials model."""
@@ -864,10 +847,6 @@ class FlextWebModels(m_core):
             status: str = Field(description="Service status")
             config: bool = Field(description="Configuration status")
 
-        # =========================================================================
-        # WEB REQUEST/RESPONSE MODELS (Value Objects)
-        # =========================================================================
-
         class WebRequest(m_core.Value):
             """Web request model with complete tracking."""
 
@@ -942,9 +921,7 @@ class FlextWebModels(m_core):
                 description="OpenAPI URL",
             )
 
-        # =========================================================================
         # FACTORY METHODS (Creation patterns)
-        # =========================================================================
 
         @classmethod
         def create_web_app(
@@ -952,7 +929,6 @@ class FlextWebModels(m_core):
             name: str,
             host: str = c.Web.WebDefaults.HOST,
             port: int = c.Web.WebDefaults.PORT,
-            **kwargs: t.FlexibleValue,
         ) -> r[FlextWebModels.Web.Entity]:
             """Create a web application from direct parameters.
 
@@ -963,7 +939,6 @@ class FlextWebModels(m_core):
                 name: Application name
                 host: Application host
                 port: Application port
-                **kwargs: Additional entity parameters
 
             Returns:
                 r[Web.Entity]: Success contains entity,
@@ -975,7 +950,6 @@ class FlextWebModels(m_core):
                     name=name,
                     host=host,
                     port=port,
-                    **kwargs,
                 )
                 return r.ok(entity)
             except ValidationError as e:  # pragma: no cover
@@ -1012,13 +986,13 @@ class FlextWebModels(m_core):
             # Use flext_u.guard() for unified headers validation (DSL pattern)
             # Validate headers - must be dict or None
             if headers is not None and not isinstance(headers, dict):
-                return r[FlextWebModels.WebRequest].fail(
+                return r[FlextWebModels.Web.WebRequest].fail(
                     "Headers must be a dictionary or None",
                 )
             headers_validated = headers if isinstance(headers, dict) else {}
 
             # Use flext_u.try_() for unified error handling (DSL pattern)
-            def create_request() -> FlextWebModels.WebRequest:
+            def create_request() -> FlextWebModels.Web.WebRequest:
                 """Create request model."""
                 return cls.WebRequest(
                     method=method,
@@ -1030,10 +1004,10 @@ class FlextWebModels(m_core):
             # Use flext_u.try_() with custom exception handling for better error messages
             try:
                 request = create_request()
-                return r[FlextWebModels.WebRequest].ok(request)
+                return r[FlextWebModels.Web.WebRequest].ok(request)
             except Exception as exc:
                 # Use flext_u.err() pattern for unified error extraction (DSL pattern)
-                return r[FlextWebModels.WebRequest].fail(
+                return r[FlextWebModels.Web.WebRequest].fail(
                     f"Failed to create web request: {exc}",
                 )
 
@@ -1061,13 +1035,13 @@ class FlextWebModels(m_core):
             # Use flext_u.guard() for unified headers validation (DSL pattern)
             # Validate headers - must be dict or None
             if headers is not None and not isinstance(headers, dict):
-                return r[FlextWebModels.WebResponse].fail(
+                return r[FlextWebModels.Web.WebResponse].fail(
                     "Headers must be a dictionary or None",
                 )
             headers_validated = headers if isinstance(headers, dict) else {}
 
             # Use flext_u.try_() for unified error handling (DSL pattern)
-            def create_response() -> FlextWebModels.WebResponse:
+            def create_response() -> FlextWebModels.Web.WebResponse:
                 """Create response model."""
                 return cls.WebResponse(
                     request_id=request_id,
@@ -1079,10 +1053,10 @@ class FlextWebModels(m_core):
             # Use flext_u.try_() with custom exception handling for better error messages
             try:
                 response = create_response()
-                return r[FlextWebModels.WebResponse].ok(response)
+                return r[FlextWebModels.Web.WebResponse].ok(response)
             except Exception as exc:
                 # Use flext_u.err() pattern for unified error extraction (DSL pattern)
-                return r[FlextWebModels.WebResponse].fail(
+                return r[FlextWebModels.Web.WebResponse].fail(
                     f"Failed to create web response: {exc}",
                 )
 

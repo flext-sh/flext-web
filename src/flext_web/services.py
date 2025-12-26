@@ -50,8 +50,8 @@ class FlextWebServices(FlextService[bool]):
 
         @staticmethod
         def authenticate(
-            credentials: m.Service.Credentials,
-        ) -> FlextResult[m.Service.AuthResponse]:
+            credentials: m.Web.Credentials,
+        ) -> FlextResult[m.Web.AuthResponse]:
             """Authenticate user with explicit validation - no fallbacks.
 
             Args:
@@ -65,22 +65,25 @@ class FlextWebServices(FlextService[bool]):
             # Use u.guard() for unified validation (DSL pattern)
             username_validated = u.guard(
                 credentials.username,
-                lambda u: u != FlextConstants.Test.NONEXISTENT_USERNAME,
-                error_message="Authentication failed",
+                lambda un: (
+                    isinstance(un, str)
+                    and un != FlextConstants.Test.NONEXISTENT_USERNAME
+                ),
                 return_value=True,
             )
             if username_validated is None:
                 return FlextResult.fail("Authentication failed")
             password_validated = u.guard(
                 credentials.password,
-                lambda p: p == FlextConstants.Test.DEFAULT_PASSWORD,
-                error_message="Authentication failed",
+                lambda pw: (
+                    isinstance(pw, str) and pw == FlextConstants.Test.DEFAULT_PASSWORD
+                ),
                 return_value=True,
             )
             if password_validated is None:
                 return FlextResult.fail("Authentication failed")
 
-            auth_response = m.Service.AuthResponse(
+            auth_response = m.Web.AuthResponse(
                 token=f"token_{credentials.username}",
                 user_id=credentials.username,
                 authenticated=True,
@@ -89,8 +92,8 @@ class FlextWebServices(FlextService[bool]):
 
         @staticmethod
         def register_user(
-            user_data: m.Service.UserData,
-        ) -> FlextResult[m.Service.UserResponse]:
+            user_data: m.Web.UserData,
+        ) -> FlextResult[m.Web.UserResponse]:
             """Register user with explicit validation - no fallbacks.
 
             Args:
@@ -101,7 +104,7 @@ class FlextWebServices(FlextService[bool]):
                                          failure contains error message
 
             """
-            user_response = m.Service.UserResponse(
+            user_response = m.Web.UserResponse(
                 id=f"user_{user_data.username}",
                 username=user_data.username,
                 email=user_data.email,
@@ -186,29 +189,29 @@ class FlextWebServices(FlextService[bool]):
         """Health check service."""
 
         @staticmethod
-        def status() -> FlextResult[m.Service.HealthResponse]:
+        def status() -> FlextResult[m.Web.HealthResponse]:
             """Get health status.
 
             Returns:
                 FlextResult[HealthResponse]: Success contains health status
 
             """
-            health_response = m.Service.HealthResponse(
+            health_response = m.Web.HealthResponse(
                 status=c.Web.WebResponse.STATUS_HEALTHY,
-                service=c.Web.Web.SERVICE_NAME,
+                service=c.Web.WebService.SERVICE_NAME,
                 timestamp=u.Generators.generate_iso_timestamp(),
             )
             return FlextResult.ok(health_response)
 
         @staticmethod
-        def metrics() -> FlextResult[m.Service.MetricsResponse]:
+        def metrics() -> FlextResult[m.Web.MetricsResponse]:
             """Get metrics.
 
             Returns:
                 FlextResult[MetricsResponse]: Success contains metrics
 
             """
-            metrics_response = m.Service.MetricsResponse(
+            metrics_response = m.Web.MetricsResponse(
                 service_status=c.Web.WebResponse.STATUS_OPERATIONAL,
                 components=["auth", "entities", "health"],
             )
@@ -243,8 +246,8 @@ class FlextWebServices(FlextService[bool]):
 
     def authenticate(
         self,
-        credentials: m.Service.Credentials,
-    ) -> FlextResult[m.Service.AuthResponse]:
+        credentials: m.Web.Credentials,
+    ) -> FlextResult[m.Web.AuthResponse]:
         """Authenticate user with explicit validation - no fallbacks.
 
         Args:
@@ -259,8 +262,8 @@ class FlextWebServices(FlextService[bool]):
 
     def register_user(
         self,
-        user_data: m.Service.UserData,
-    ) -> FlextResult[m.Service.UserResponse]:
+        user_data: m.Web.UserData,
+    ) -> FlextResult[m.Web.UserResponse]:
         """Register user with explicit validation - no fallbacks.
 
         Args:
@@ -304,13 +307,13 @@ class FlextWebServices(FlextService[bool]):
 
     def health_status(
         self,
-    ) -> FlextResult[m.Service.HealthResponse]:
+    ) -> FlextResult[m.Web.HealthResponse]:
         """Delegate to Health."""
         return self.Health.status()
 
     def dashboard_metrics(
         self,
-    ) -> FlextResult[m.Service.MetricsResponse]:
+    ) -> FlextResult[m.Web.MetricsResponse]:
         """Delegate to Health."""
         return self.Health.metrics()
 
@@ -358,8 +361,7 @@ class FlextWebServices(FlextService[bool]):
             return FlextResult[bool].fail("Service is already running")
 
         return (
-            self
-            .initialize_routes()
+            self.initialize_routes()
             .flat_map(lambda _: self.configure_middleware())
             .map(lambda _: self._mark_service_running())
         )
@@ -401,7 +403,7 @@ class FlextWebServices(FlextService[bool]):
 
     def create_app(
         self,
-        app_data: m.Service.AppData,
+        app_data: m.Web.AppData,
     ) -> FlextResult[m.Web.ApplicationResponse]:
         """Create application with explicit validation - no fallbacks.
 
@@ -494,7 +496,7 @@ class FlextWebServices(FlextService[bool]):
         self._applications[app_id] = updated_app
         return FlextResult[m.Web.ApplicationResponse].ok(updated_app)
 
-    def health_check(self) -> FlextResult[t.Core.ResponseDict]:
+    def health_check(self) -> FlextResult[t.WebCore.ResponseDict]:
         """Health check."""
         return self.health_status().map(
             lambda health_response: {
@@ -506,7 +508,7 @@ class FlextWebServices(FlextService[bool]):
 
     def dashboard(
         self,
-    ) -> FlextResult[m.Service.DashboardResponse]:
+    ) -> FlextResult[m.Web.DashboardResponse]:
         """Dashboard info with explicit status calculation."""
         # Use u.count() for unified counting (DSL pattern)
         apps_list = list(self._applications.values())
@@ -526,7 +528,7 @@ class FlextWebServices(FlextService[bool]):
             else stopped_status
         )
 
-        dashboard_response = m.Service.DashboardResponse(
+        dashboard_response = m.Web.DashboardResponse(
             total_applications=total_apps,
             running_applications=running_apps,
             service_status=service_status,
@@ -534,7 +536,7 @@ class FlextWebServices(FlextService[bool]):
             middleware_configured=self._middleware_configured,
             timestamp=u.Generators.generate_iso_timestamp(),
         )
-        return FlextResult[m.Service.DashboardResponse].ok(dashboard_response)
+        return FlextResult[m.Web.DashboardResponse].ok(dashboard_response)
 
     @classmethod
     def create_web_service(
@@ -575,8 +577,10 @@ class FlextWebServices(FlextService[bool]):
         # Use u.guard() for unified validation (DSL pattern)
         routes_validated = u.guard(
             self._routes_initialized,
-            lambda r: not self._service_running or r,
-            error_message="Service cannot be running without initialized routes",
+            lambda routes_init: (
+                isinstance(routes_init, bool)
+                and (not self._service_running or routes_init)
+            ),
             return_value=True,
         )
         if routes_validated is None:
@@ -585,8 +589,9 @@ class FlextWebServices(FlextService[bool]):
             )
         middleware_validated = u.guard(
             self._middleware_configured,
-            lambda m: not self._service_running or m,
-            error_message="Service cannot be running without configured middleware",
+            lambda mw_conf: (
+                isinstance(mw_conf, bool) and (not self._service_running or mw_conf)
+            ),
             return_value=True,
         )
         if middleware_validated is None:

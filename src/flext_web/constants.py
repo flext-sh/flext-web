@@ -12,16 +12,7 @@ from flext_core import FlextConstants
 
 
 class FlextWebConstants(FlextConstants):
-    """Immutable project-specific constants organised by domain.
-
-    Usage:
-    ```python
-    from flext_web.constants import FlextWebConstants
-
-    host = FlextWebConstants.Web.WebDefaults.HOST
-    port = FlextWebConstants.Web.WebDefaults.PORT
-    ```
-    """
+    """Immutable project-specific constants organized by domain."""
 
     CONSTANTS_VERSION: Final[str] = "1.1.0"
     PROJECT_PREFIX: Final[str] = "FLEXT_WEB"
