@@ -3,7 +3,8 @@
 Tests the version management functionality following flext standards.
 """
 
-from flext_web.__version__ import (
+
+
     __author__,
     __author_email__,
     __description__,

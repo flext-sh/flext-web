@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 import requests
-from flext import FlextLogger
+from flext_core import FlextLogger
 from flext_tests import FlextTestsDocker
 
 # Configure logging

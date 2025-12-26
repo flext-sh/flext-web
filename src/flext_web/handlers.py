@@ -15,7 +15,6 @@ from flext_core import (
 
 from flext_web.constants import c
 from flext_web.models import m
-from flext_web.typings import t
 from flext_web.utilities import u
 
 
@@ -195,7 +194,7 @@ class FlextWebHandlers(FlextService[bool]):
         r containing health status information.
 
         """
-        return r[t.StringDict].ok(
+        return r[dict[str, str]].ok(
             {
                 "status": c.Web.WebResponse.STATUS_HEALTHY,
                 "service": c.Web.WebService.SERVICE_NAME,
@@ -217,7 +216,7 @@ class FlextWebHandlers(FlextService[bool]):
         r containing detailed system information.
 
         """
-        return r[t.StringDict].ok(
+        return r[dict[str, str]].ok(
             {
                 "service_name": "FLEXT Web Interface",
                 "service_type": "web_api",

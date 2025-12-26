@@ -6,7 +6,7 @@ Tests the web services functionality following flext standards.
 from typing import cast
 
 import pytest
-from flext import FlextConstants
+from flext_core import FlextConstants
 from pydantic import ValidationError
 
 from flext_web.constants import FlextWebConstants

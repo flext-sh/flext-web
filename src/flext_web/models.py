@@ -121,7 +121,7 @@ class FlextWebModels(m_core):
                 description="Request URL",
             )
             method: c.Web.HttpMethodLiteral = Field(
-                default=c.Web.Http.Method.GET,  # Use StrEnum value
+                default="GET",  # Use string literal
                 description="HTTP method",
             )
             timeout: float = Field(
@@ -221,7 +221,7 @@ class FlextWebModels(m_core):
                 description="Request URL",
             )
             method: c.Web.HttpMethodLiteral = Field(
-                default=c.Web.Http.Method.GET,  # Use StrEnum value
+                default="GET",  # Use string literal
                 description="HTTP method",
             )
             timeout: float = Field(
@@ -407,11 +407,10 @@ class FlextWebModels(m_core):
                 max_length = c.Web.WebValidation.NAME_LENGTH_RANGE[1]
                 reserved_names_set = set(c.Web.WebSecurity.RESERVED_NAMES)
 
-                # Use flext_u.guard() + flext_u.V.string.length() for unified length validation (DSL pattern)
+                # Validate name length using lambda-based guard
                 name_length_validated = flext_u.guard(
                     v,
-                    flext_u.V.string.length(min_length, max_length),
-                    error_message=f"Name must be between {min_length} and {max_length} characters",
+                    lambda s: min_length <= len(s) <= max_length,
                     return_value=True,
                 )
                 if name_length_validated is None:
@@ -424,7 +423,6 @@ class FlextWebModels(m_core):
                 name_not_reserved = flext_u.guard(
                     v.lower(),
                     lambda n: not flext_u.in_(n, reserved_names_set),
-                    error_message=f"Name '{v}' is reserved and cannot be used",
                     return_value=True,
                 )
                 if name_not_reserved is None:
@@ -542,13 +540,12 @@ class FlextWebModels(m_core):
                     r[bool]: Success contains True if valid, failure with error message
 
                 """
-                # Use flext_u.guard() + flext_u.V.string.min_length() for unified validation (DSL pattern)
+                # Validate name minimum length using lambda-based guard
                 min_name_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
                 name_validated = flext_u.guard(
                     self.name,
                     str,
-                    flext_u.V.string.min_length(min_name_length),
-                    error_message=f"App name must be at least {min_name_length} characters",
+                    lambda s: len(s) >= min_name_length,
                     return_value=True,
                 )
                 if name_validated is None:
@@ -563,7 +560,6 @@ class FlextWebModels(m_core):
                 port_validated = flext_u.guard(
                     self.port,
                     lambda p: min_port <= p <= max_port,
-                    error_message=f"Port must be between {min_port} and {max_port}",
                     return_value=True,
                 )
                 if port_validated is None:
@@ -956,7 +952,7 @@ class FlextWebModels(m_core):
             name: str,
             host: str = c.Web.WebDefaults.HOST,
             port: int = c.Web.WebDefaults.PORT,
-            **kwargs,
+            **kwargs: t.FlexibleValue,
         ) -> r[FlextWebModels.Web.Entity]:
             """Create a web application from direct parameters.
 

@@ -5,10 +5,11 @@ Tests the unified FlextWebProtocols class following flext standards.
 
 from typing import cast
 
-from flext import FlextResult, p
+from flext_core import FlextResult, p
 
 from flext_web.constants import FlextWebConstants
-from flext_web.protocols import (
+
+
     FlextWebProtocols,
     _WebAppManagerBase,
     _WebConnectionBase,

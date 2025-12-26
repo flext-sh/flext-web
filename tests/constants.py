@@ -87,7 +87,7 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
 
 # Short aliases per FLEXT convention
 tc = TestsFlextWebConstants  # Primary test constants alias
-c = TestsFlextWebConstants   # Alternative alias for compatibility
+c = TestsFlextWebConstants  # Alternative alias for compatibility
 
 __all__ = [
     "TestsFlextWebConstants",

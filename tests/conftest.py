@@ -32,7 +32,7 @@ from flext_tests import (
 from flext_web import FlextWebModels, FlextWebServices, FlextWebSettings
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants
-from flext_web.typings import (
+from flext_web.types import (
     FlextWebTypes,
     _ApplicationConfig,
     _WebRequestConfig,

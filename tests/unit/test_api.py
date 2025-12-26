@@ -6,7 +6,7 @@ Tests the main API facade functionality following flext standards.
 from unittest.mock import patch
 
 import pytest
-from flext import FlextResult
+from flext_core import FlextResult
 from pydantic import ValidationError
 from tests.conftest import create_test_result
 

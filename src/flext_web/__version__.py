@@ -1,8 +1,7 @@
-"""Package metadata - Canonical single source of truth (Layer 0: Pure Constants).
+"""Package version and metadata information.
 
-Uses importlib.metadata to fetch version and package information from pyproject.toml.
-Provides both simple module-level constants and structured FlextWebVersion class
-following flext-core patterns for consistent access patterns.
+Provides version information and package metadata using standard library
+metadata extraction.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -41,16 +40,9 @@ class _VersionMetadata(TypedDict):
 
 
 class FlextWebVersion:
-    """Structured package metadata following flext-core patterns.
+    """Structured package metadata.
 
-    Provides canonical metadata access through singleton pattern.
-    All data comes from pyproject.toml via importlib.metadata.
-
-    Example:
-        >>> version = FlextWebVersion.current()
-        >>> print(version.version)  # "0.9.0"
-        >>> print(version.version_info)  # (0, 9, 0)
-
+    Provides metadata access through singleton pattern using importlib.metadata.
     """
 
     def __init__(self, metadata: _VersionMetadata) -> None:

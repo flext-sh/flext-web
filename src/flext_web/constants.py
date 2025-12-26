@@ -1,4 +1,4 @@
-"""FLEXT Web constants following the unified FLEXT pattern."""
+"""FLEXT Web constants."""
 
 from __future__ import annotations
 
@@ -319,44 +319,44 @@ class FlextWebConstants(FlextConstants):
 
         # HTTP method literal - references Http.Method StrEnum members
         type HttpMethodLiteral = Literal[
-            Http.Method.GET,
-            Http.Method.POST,
-            Http.Method.PUT,
-            Http.Method.DELETE,
-            Http.Method.PATCH,
-            Http.Method.HEAD,
-            Http.Method.OPTIONS,
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "HEAD",
+            "OPTIONS",
         ]
 
         # Environment name literal - references WebEnvironment.Name StrEnum members
         type EnvironmentNameLiteral = Literal[
-            WebEnvironment.Name.DEVELOPMENT,
-            WebEnvironment.Name.STAGING,
-            WebEnvironment.Name.PRODUCTION,
-            WebEnvironment.Name.TESTING,
+            "development",
+            "staging",
+            "production",
+            "testing",
         ]
 
         # Application status literal - references WebEnvironment.Status StrEnum members
         type ApplicationStatusLiteral = Literal[
-            WebEnvironment.Status.STOPPED,
-            WebEnvironment.Status.STARTING,
-            WebEnvironment.Status.RUNNING,
-            WebEnvironment.Status.STOPPING,
-            WebEnvironment.Status.ERROR,
-            WebEnvironment.Status.MAINTENANCE,
-            WebEnvironment.Status.DEPLOYING,
+            "stopped",
+            "starting",
+            "running",
+            "stopping",
+            "error",
+            "maintenance",
+            "deploying",
         ]
 
         # Application type literal - references WebEnvironment.ApplicationType StrEnum members
         type ApplicationTypeLiteral = Literal[
-            WebEnvironment.ApplicationType.APPLICATION,
-            WebEnvironment.ApplicationType.SERVICE,
-            WebEnvironment.ApplicationType.API,
-            WebEnvironment.ApplicationType.MICROSERVICE,
-            WebEnvironment.ApplicationType.WEBAPP,
-            WebEnvironment.ApplicationType.SPA,
-            WebEnvironment.ApplicationType.DASHBOARD,
-            WebEnvironment.ApplicationType.ADMIN_PANEL,
+            "application",
+            "service",
+            "api",
+            "microservice",
+            "webapp",
+            "spa",
+            "dashboard",
+            "REDACTED_LDAP_BIND_PASSWORD_panel",
         ]
 
         # Response status literal - uses string literals matching WebResponse constants
