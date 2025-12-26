@@ -32,16 +32,16 @@ class TestFlextWebProtocols:
         # Should inherit from p
         assert issubclass(FlextWebProtocols, p)
 
-        # Should have web-specific protocols directly available
-        assert hasattr(FlextWebProtocols, "WebAppManagerProtocol")
-        assert hasattr(FlextWebProtocols, "WebResponseFormatterProtocol")
-        assert hasattr(FlextWebProtocols, "WebFrameworkInterfaceProtocol")
+        # Should have web-specific protocols under Web namespace
+        assert hasattr(FlextWebProtocols.Web, "WebAppManagerProtocol")
+        assert hasattr(FlextWebProtocols.Web, "WebResponseFormatterProtocol")
+        assert hasattr(FlextWebProtocols.Web, "WebFrameworkInterfaceProtocol")
 
     def test_web_protocols_structure(self) -> None:
         """Test FlextWebProtocols structure."""
-        # Web protocols should be directly available (flattened structure)
-        assert hasattr(FlextWebProtocols, "WebAppManagerProtocol")
-        assert hasattr(FlextWebProtocols, "WebResponseFormatterProtocol")
+        # Web protocols should be available under Web namespace
+        assert hasattr(FlextWebProtocols.Web, "WebAppManagerProtocol")
+        assert hasattr(FlextWebProtocols.Web, "WebResponseFormatterProtocol")
         assert hasattr(FlextWebProtocols, "WebFrameworkInterfaceProtocol")
         assert hasattr(FlextWebProtocols, "WebTemplateRendererProtocol")
         assert hasattr(FlextWebProtocols, "WebServiceProtocol")
