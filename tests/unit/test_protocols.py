@@ -3,9 +3,9 @@
 Tests the unified FlextWebProtocols class following flext standards.
 """
 
-from typing import cast
+from __future__ import annotations
 
-from flext_core import FlextResult, p
+from flext_core import FlextTypes as t, FlextResult, p
 
 from flext_web.constants import FlextWebConstants
 
@@ -289,16 +289,16 @@ class TestFlextWebProtocols:
 
         # Protocols should be usable with isinstance checks
         class MockAppManager:
-            def create_app(self, name: str, port: int, host: str) -> dict[str, object]:
+            def create_app(self, name: str, port: int, host: str) -> dict[str, t.GeneralValueType]:
                 return {"name": name, "host": host, "port": port}
 
-            def start_app(self, app_id: str) -> dict[str, object]:
+            def start_app(self, app_id: str) -> dict[str, t.GeneralValueType]:
                 return {"name": "test", "host": "localhost", "port": 8080}
 
-            def stop_app(self, app_id: str) -> dict[str, object]:
+            def stop_app(self, app_id: str) -> dict[str, t.GeneralValueType]:
                 return {"name": "test", "host": "localhost", "port": 8080}
 
-            def list_apps(self) -> list[dict[str, object]]:
+            def list_apps(self) -> list[dict[str, t.GeneralValueType]]:
                 return [{"name": "test", "host": "localhost", "port": 8080}]
 
         mock_manager = MockAppManager()
@@ -360,35 +360,35 @@ class TestFlextWebProtocols:
                 name: str,
                 port: int,
                 host: str,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({
                     "name": name,
                     "port": port,
                     "host": host,
                 })
 
-            def start_app(self, app_id: str) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({
+            def start_app(self, app_id: str) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({
                     "id": app_id,
                     "status": "started",
                 })
 
-            def stop_app(self, app_id: str) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({
+            def stop_app(self, app_id: str) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({
                     "id": app_id,
                     "status": "stopped",
                 })
 
-            def list_apps(self) -> FlextResult[list[dict[str, object]]]:
-                return FlextResult[list[dict[str, object]]].ok([])
+            def list_apps(self) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
+                return FlextResult[list[dict[str, t.GeneralValueType]]].ok([])
 
             # Required by p.Service
             def execute(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
@@ -397,7 +397,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "AppManager"}
 
         manager = RealAppManager()
@@ -415,8 +415,8 @@ class TestFlextWebProtocols:
         """Test WebResponseFormatterProtocol methods execution."""
 
         class RealResponseFormatter:
-            def format_success(self, data: dict[str, object]) -> dict[str, object]:
-                response: dict[str, object] = {
+            def format_success(self, data: dict[str, t.GeneralValueType]) -> dict[str, t.GeneralValueType]:
+                response: dict[str, t.GeneralValueType] = {
                     "status": FlextWebConstants.Web.WebResponse.STATUS_SUCCESS,
                 }
                 response.update({
@@ -426,8 +426,8 @@ class TestFlextWebProtocols:
                 })
                 return response
 
-            def format_error(self, error: Exception) -> dict[str, object]:
-                result: dict[str, object] = {
+            def format_error(self, error: Exception) -> dict[str, t.GeneralValueType]:
+                result: dict[str, t.GeneralValueType] = {
                     "status": FlextWebConstants.Web.WebResponse.STATUS_ERROR,
                     "message": str(error),
                 }
@@ -435,9 +435,9 @@ class TestFlextWebProtocols:
 
             def create_json_response(
                 self,
-                data: dict[str, object],
-            ) -> dict[str, object]:
-                response: dict[str, object] = {
+                data: dict[str, t.GeneralValueType],
+            ) -> dict[str, t.GeneralValueType]:
+                response: dict[str, t.GeneralValueType] = {
                     FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
                 }
                 response.update({
@@ -449,8 +449,8 @@ class TestFlextWebProtocols:
 
             def get_request_data(
                 self,
-                _request: dict[str, object],
-            ) -> dict[str, object]:
+                _request: dict[str, t.GeneralValueType],
+            ) -> dict[str, t.GeneralValueType]:
                 return {}
 
             # Required by p.Service
@@ -458,8 +458,8 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
@@ -468,7 +468,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "ResponseFormatter"}
 
         formatter = RealResponseFormatter()
@@ -477,11 +477,11 @@ class TestFlextWebProtocols:
         assert hasattr(formatter, "format_error")
         assert hasattr(formatter, "create_json_response")
 
-        # Test format_success with nested dict
-        data_with_nested = cast(
-            "dict[str, object]",
-            {"key1": "value1", "nested": {"key2": "value2"}},
-        )
+        # Test format_success with nested dict - proper type annotation
+        data_with_nested: dict[str, t.GeneralValueType] = {
+            "key1": "value1",
+            "nested": {"key2": "value2"},
+        }
         result = formatter.format_success(data_with_nested)
         assert result["status"] == FlextWebConstants.Web.WebResponse.STATUS_SUCCESS
         assert result["key1"] == "value1"
@@ -507,9 +507,9 @@ class TestFlextWebProtocols:
         class RealFrameworkInterface:
             def create_json_response(
                 self,
-                data: dict[str, object],
-            ) -> dict[str, object]:
-                response: dict[str, object] = {
+                data: dict[str, t.GeneralValueType],
+            ) -> dict[str, t.GeneralValueType]:
+                response: dict[str, t.GeneralValueType] = {
                     FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
                 }
                 response.update({
@@ -521,11 +521,11 @@ class TestFlextWebProtocols:
 
             def get_request_data(
                 self,
-                _request: dict[str, object],
-            ) -> dict[str, object]:
+                _request: dict[str, t.GeneralValueType],
+            ) -> dict[str, t.GeneralValueType]:
                 return {}
 
-            def is_json_request(self, _request: dict[str, object]) -> bool:
+            def is_json_request(self, _request: dict[str, t.GeneralValueType]) -> bool:
                 return False
 
             # Required by p.Service
@@ -533,8 +533,8 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
@@ -543,7 +543,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "FrameworkInterface"}
 
         framework = RealFrameworkInterface()
@@ -552,8 +552,11 @@ class TestFlextWebProtocols:
         assert hasattr(framework, "get_request_data")
         assert hasattr(framework, "is_json_request")
 
-        # Test methods
-        data = cast("dict[str, object]", {"test": "value", "nested": {"key": "value"}})
+        # Test methods - proper type annotation
+        data: dict[str, t.GeneralValueType] = {
+            "test": "value",
+            "nested": {"key": "value"},
+        }
         json_response = framework.create_json_response(data)
         assert FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE in json_response
 
@@ -584,8 +587,8 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
@@ -594,7 +597,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "WebService"}
 
         service = RealWebService()
@@ -616,30 +619,30 @@ class TestFlextWebProtocols:
         class RealWebRepository:
             def find_by_criteria(
                 self,
-                criteria: dict[str, object],
-            ) -> FlextResult[list[dict[str, object]]]:
-                return FlextResult[list[dict[str, object]]].ok([])
+                criteria: dict[str, t.GeneralValueType],
+            ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
+                return FlextResult[list[dict[str, t.GeneralValueType]]].ok([])
 
             # Required by p.Repository
-            def get_by_id(self, entity_id: str) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({"id": entity_id})
+            def get_by_id(self, entity_id: str) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({"id": entity_id})
 
-            def save(self, entity: dict[str, object]) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok(entity)
+            def save(self, entity: dict[str, t.GeneralValueType]) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok(entity)
 
             def delete(self, entity_id: str) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def find_all(self) -> FlextResult[list[dict[str, object]]]:
-                return FlextResult[list[dict[str, object]]].ok([])
+            def find_all(self) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
+                return FlextResult[list[dict[str, t.GeneralValueType]]].ok([])
 
             # Required by p.Service
             def execute(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
@@ -648,7 +651,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "WebRepository"}
 
         repo = RealWebRepository()
@@ -666,11 +669,11 @@ class TestFlextWebProtocols:
             def render_template(
                 self,
                 template_name: str,
-                _context: dict[str, object],
+                _context: dict[str, t.GeneralValueType],
             ) -> FlextResult[str]:
                 return FlextResult[str].ok("")
 
-            def render_dashboard(self, data: dict[str, object]) -> FlextResult[str]:
+            def render_dashboard(self, data: dict[str, t.GeneralValueType]) -> FlextResult[str]:
                 return FlextResult[str].ok("<html>Dashboard</html>")
 
             # Required by p.Service
@@ -678,8 +681,8 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
@@ -688,7 +691,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "TemplateRenderer"}
 
         renderer = RealTemplateRenderer()
@@ -710,23 +713,23 @@ class TestFlextWebProtocols:
         class RealTemplateEngine:
             def load_template_config(
                 self,
-                config: dict[str, object],
+                config: dict[str, t.GeneralValueType],
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_template_config(self) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            def get_template_config(self) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_template_config(
                 self,
-                config: dict[str, object],
+                config: dict[str, t.GeneralValueType],
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
             def render(
                 self,
                 template: str,
-                _context: dict[str, object],
+                _context: dict[str, t.GeneralValueType],
             ) -> FlextResult[str]:
                 return FlextResult[str].ok("")
 
@@ -746,8 +749,8 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
@@ -756,7 +759,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "TemplateEngine"}
 
         engine = RealTemplateEngine()
@@ -788,18 +791,18 @@ class TestFlextWebProtocols:
         class RealWebMonitoring:
             def record_web_request(
                 self,
-                request: dict[str, object],
+                request: dict[str, t.GeneralValueType],
                 response_time: float,
             ) -> None:
                 pass
 
-            def get_web_health_status(self) -> dict[str, object]:
+            def get_web_health_status(self) -> dict[str, t.GeneralValueType]:
                 return {
                     "status": FlextWebConstants.Web.WebResponse.STATUS_HEALTHY,
                     "service": FlextWebConstants.Web.WebService.SERVICE_NAME,
                 }
 
-            def get_web_metrics(self) -> dict[str, object]:
+            def get_web_metrics(self) -> dict[str, t.GeneralValueType]:
                 return {"requests": 0, "errors": 0, "uptime": "0s"}
 
             # Required by p.Service
@@ -807,8 +810,8 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
@@ -817,7 +820,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "WebMonitoring"}
 
         monitoring = RealWebMonitoring()
@@ -911,8 +914,8 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, object]]:
-                return FlextResult[dict[str, object]].ok({})
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
+                return FlextResult[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
@@ -921,7 +924,7 @@ class TestFlextWebProtocols:
             ) -> FlextResult[bool]:
                 return FlextResult[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "Formatter"}
 
         formatter = ConcreteFormatter()

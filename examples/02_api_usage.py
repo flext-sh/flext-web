@@ -96,17 +96,21 @@ def create_application(
         except requests.RequestException as e:
             return FlextResult[requests.Response].fail(f"Request failed: {e}")
 
-    def _parse_json(response: requests.Response) -> FlextResult[dict[str, object]]:
+    def _parse_json(
+        response: requests.Response,
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Parse JSON response."""
         try:
             json_data = response.json()
-            return FlextResult[dict[str, object]].ok(json_data)
+            return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(f"JSON parse failed: {e}")
+            return FlextResult[dict[str, t.GeneralValueType]].fail(
+                f"JSON parse failed: {e}"
+            )
 
     result = _make_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
-        result = FlextResult[dict[str, object]].fail("HTTP request failed")
+        result = FlextResult[dict[str, t.GeneralValueType]].fail("HTTP request failed")
     else:
         result = result.flat_map(_parse_json).flat_map(
             lambda json_data: (
@@ -162,7 +166,7 @@ def _extract_apps_from_response(
 def _execute_app_operation(
     method: str,
     endpoint: str,
-    json_data: dict[str, object] | None = None,
+    json_data: dict[str, t.GeneralValueType] | None = None,
 ) -> t.AppData:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
@@ -174,7 +178,7 @@ def _execute_app_operation(
         """Make HTTP request using FlextResult for error handling."""
         try:
             request_func = getattr(requests, method.lower())
-            kwargs: dict[str, object] = {
+            kwargs: dict[str, t.GeneralValueType] = {
                 "url": f"{ExampleConstants.BASE_URL}{endpoint}",
                 "timeout": 5,
             }
@@ -192,13 +196,15 @@ def _execute_app_operation(
 
     def _parse_json_response(
         response: requests.Response,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Parse JSON from response."""
         try:
             json_data = response.json()
-            return FlextResult[dict[str, object]].ok(json_data)
+            return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(f"JSON parse failed: {e}")
+            return FlextResult[dict[str, t.GeneralValueType]].fail(
+                f"JSON parse failed: {e}"
+            )
 
     # Use existing flext-core monadic chain
     result = (
@@ -247,17 +253,19 @@ def _execute_list_operation(
 
     def _parse_response_json(
         response: requests.Response,
-    ) -> FlextResult[dict[str, object]]:
+    ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Parse JSON from response."""
         try:
             json_data = response.json()
-            return FlextResult[dict[str, object]].ok(json_data)
+            return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
-            return FlextResult[dict[str, object]].fail(f"JSON parse failed: {e}")
+            return FlextResult[dict[str, t.GeneralValueType]].fail(
+                f"JSON parse failed: {e}"
+            )
 
     result = _make_get_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
-        result = FlextResult[dict[str, object]].fail("HTTP request failed")
+        result = FlextResult[dict[str, t.GeneralValueType]].fail("HTTP request failed")
     else:
         result = result.flat_map(_parse_response_json).map(
             lambda d: _extract_apps_from_response(d, data_key),

@@ -11,7 +11,12 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from flext_core import FlextUtilities as flext_u, m as m_core, r
+from flext_core import (
+    FlextTypes as t,
+    FlextUtilities as flext_u,
+    m as m_core,
+    r,
+)
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from flext_web.constants import c
@@ -58,7 +63,7 @@ class FlextWebModels(m_core):
                 default_factory=dict,
                 description="HTTP headers for message",
             )
-            body: str | dict[str, object] | None = Field(
+            body: str | dict[str, t.GeneralValueType] | None = Field(
                 default=None,
                 description="Message body content (optional for GET/HEAD)",
             )
@@ -240,7 +245,7 @@ class FlextWebModels(m_core):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | dict[str, object] | None = Field(
+            body: str | dict[str, t.GeneralValueType] | None = Field(
                 default=None,
                 description="Request body content (optional for GET/HEAD)",
             )
@@ -252,7 +257,7 @@ class FlextWebModels(m_core):
                 default_factory=lambda: str(uuid.uuid4()),
                 description="Unique request identifier",
             )
-            query_params: dict[str, object] = Field(
+            query_params: dict[str, t.GeneralValueType] = Field(
                 default_factory=dict,
                 description="Query string parameters",
             )
@@ -304,7 +309,7 @@ class FlextWebModels(m_core):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | dict[str, object] | None = Field(
+            body: str | dict[str, t.GeneralValueType] | None = Field(
                 default=None,
                 description="Response body content",
             )
@@ -485,7 +490,7 @@ class FlextWebModels(m_core):
                 default=c.Web.WebDefaults.VERSION_INT,
                 description="Application version",
             )
-            metrics: dict[str, object] = Field(
+            metrics: dict[str, t.GeneralValueType] = Field(
                 default_factory=dict,
                 description="Application metrics",
             )
@@ -635,7 +640,7 @@ class FlextWebModels(m_core):
 
             def update_metrics(
                 self,
-                new_metrics: dict[str, object],
+                new_metrics: dict[str, t.GeneralValueType],
             ) -> r[bool]:
                 """Update application metrics.
 
@@ -656,7 +661,7 @@ class FlextWebModels(m_core):
                     )
                 return r[bool].ok(True)
 
-            def get_health_status(self) -> dict[str, object]:
+            def get_health_status(self) -> dict[str, t.GeneralValueType]:
                 """Get comprehensive health status."""
                 return {
                     "status": self.status,
@@ -784,7 +789,7 @@ class FlextWebModels(m_core):
         class EntityData(m_core.Value):
             """Generic entity data model."""
 
-            data: dict[str, object] = Field(
+            data: dict[str, t.GeneralValueType] = Field(
                 default_factory=dict,
                 description="Entity data dictionary",
             )
@@ -859,7 +864,7 @@ class FlextWebModels(m_core):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | dict[str, object] | None = Field(
+            body: str | dict[str, t.GeneralValueType] | None = Field(
                 default=None,
                 description="Request body (optional for GET/HEAD)",
             )
@@ -881,7 +886,7 @@ class FlextWebModels(m_core):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | dict[str, object] | None = Field(
+            body: str | dict[str, t.GeneralValueType] | None = Field(
                 default=None,
                 description="Response body (optional for 204 No Content)",
             )
@@ -968,7 +973,7 @@ class FlextWebModels(m_core):
             method: c.Web.HttpMethodLiteral,
             url: str,
             headers: dict[str, str] | None = None,
-            body: str | dict[str, object] | None = None,
+            body: str | dict[str, t.GeneralValueType] | None = None,
         ) -> r[WebRequest]:
             """Create a web request model.
 
@@ -1017,7 +1022,7 @@ class FlextWebModels(m_core):
             request_id: str,
             status_code: int,
             headers: dict[str, str] | None = None,
-            body: str | dict[str, object] | None = None,
+            body: str | dict[str, t.GeneralValueType] | None = None,
         ) -> r[WebResponse]:
             """Create a web response model.
 
@@ -1097,7 +1102,7 @@ class FlextWebModels(m_core):
             )
             debug: bool = Field(default=False, description="FastAPI debug mode")
             testing: bool = Field(default=False, description="FastAPI testing mode")
-            middlewares: list[object] = Field(
+            middlewares: list[t.GeneralValueType] = Field(
                 default_factory=list,
                 description="List of middleware objects",
             )

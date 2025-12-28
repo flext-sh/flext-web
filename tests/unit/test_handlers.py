@@ -3,7 +3,7 @@
 Tests the web handlers functionality following flext standards.
 """
 
-from typing import cast
+from __future__ import annotations
 
 from flext_core import FlextResult
 
@@ -103,8 +103,9 @@ class TestFlextWebHandlers:
         """Test ApplicationHandler.create with validation errors - REAL validation."""
         handler = FlextWebHandlers.ApplicationHandler()
 
-        # Test invalid name type
-        result = handler.create(cast("str", 123), 8080, "localhost")
+        # Test invalid name type - use actual invalid type
+        invalid_name: object = 123
+        result = handler.create(invalid_name, 8080, "localhost")  # type: ignore[arg-type]
         assert result.is_failure
         assert result.error is not None
         assert "must be a string" in result.error
@@ -115,8 +116,9 @@ class TestFlextWebHandlers:
         assert result.error is not None
         assert "at least" in result.error
 
-        # Test invalid host type
-        result = handler.create("test-app", 8080, cast("str", 123))
+        # Test invalid host type - use actual invalid type
+        invalid_host: object = 123
+        result = handler.create("test-app", 8080, invalid_host)  # type: ignore[arg-type]
         assert result.is_failure
         assert result.error is not None
         assert "must be a string" in result.error
@@ -127,8 +129,9 @@ class TestFlextWebHandlers:
         assert result.error is not None
         assert "cannot be empty" in result.error
 
-        # Test invalid port type
-        result = handler.create("test-app", cast("int", "8080"), "localhost")
+        # Test invalid port type - use actual invalid type
+        invalid_port: object = "8080"
+        result = handler.create("test-app", invalid_port, "localhost")  # type: ignore[arg-type]
         assert result.is_failure
         assert result.error is not None
         assert "must be an integer" in result.error
@@ -187,20 +190,18 @@ class TestFlextWebHandlers:
 
     def test_handle_start_app_invalid_type(self) -> None:
         """Test handle_start_app with invalid entity type - REAL validation."""
-        # Pass non-Entity object
-        result = FlextWebHandlers.handle_start_app(
-            cast("FlextWebModels.Web.Entity", "not-an-entity"),
-        )
+        # Pass non-Entity object - use actual invalid type
+        invalid_entity: object = "not-an-entity"
+        result = FlextWebHandlers.handle_start_app(invalid_entity)  # type: ignore[arg-type]
         assert result.is_failure
         assert result.error is not None
         assert "Invalid application entity type" in result.error
 
     def test_handle_stop_app_invalid_type(self) -> None:
         """Test handle_stop_app with invalid entity type - REAL validation."""
-        # Pass non-Entity object
-        result = FlextWebHandlers.handle_stop_app(
-            cast("FlextWebModels.Web.Entity", "not-an-entity"),
-        )
+        # Pass non-Entity object - use actual invalid type
+        invalid_entity: object = "not-an-entity"
+        result = FlextWebHandlers.handle_stop_app(invalid_entity)  # type: ignore[arg-type]
         assert result.is_failure
         assert result.error is not None
         assert "Invalid application entity type" in result.error

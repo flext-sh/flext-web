@@ -10,6 +10,7 @@ from __future__ import annotations
 from flext_core import (
     FlextLogger,
     FlextService,
+    FlextTypes as t,
     r,
 )
 
@@ -187,7 +188,7 @@ class FlextWebHandlers(FlextService[bool]):
     # =========================================================================
 
     @staticmethod
-    def handle_health_check() -> r[dict[str, object]]:
+    def handle_health_check() -> r[dict[str, t.GeneralValueType]]:
         """Handle health check requests with system status.
 
         Returns:
@@ -209,7 +210,7 @@ class FlextWebHandlers(FlextService[bool]):
         )
 
     @classmethod
-    def handle_system_info(cls) -> r[dict[str, object]]:
+    def handle_system_info(cls) -> r[dict[str, t.GeneralValueType]]:
         """Handle system information requests.
 
         Returns:

@@ -21,7 +21,7 @@ from typing import Any, ClassVar
 
 import pytest
 from flask import Flask
-from flext_core import FlextResult
+from flext_core import FlextResult, FlextTypes as t
 from flext_tests import (
     FlextTestsDocker,
     FlextTestsFactories,
@@ -106,7 +106,7 @@ def create_entry(entry_type: str, **kwargs: object) -> FlextResult[object]:
     raise ValueError(msg)
 
 
-def create_test_data(data_type: str, **kwargs: object) -> dict[str, object]:
+def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.GeneralValueType]:
     """Create test data using flext_tests factories.
 
     This function provides a standardized way to create test data,
@@ -285,7 +285,7 @@ def create_comprehensive_test_suite(
 def setup_test_environment() -> Generator[None]:
     """Set up test environment with real configuration."""
     # Save original environment
-    original_env = dict[str, object](os.environ)
+    original_env = dict[str, t.GeneralValueType](os.environ)
 
     # Set test environment variables
     os.environ["FLEXT_ENV"] = "test"

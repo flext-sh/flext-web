@@ -40,9 +40,9 @@ class TestFlextWebApp:
             "title": "Test API",
             "version": "1.0.0",
             "description": "Test Description",
-            "docs_url": FlextWebConstants.WebApi.DOCS_URL,
-            "redoc_url": FlextWebConstants.WebApi.REDOC_URL,
-            "openapi_url": FlextWebConstants.WebApi.OPENAPI_URL,
+            "docs_url": FlextWebConstants.Web.WebApi.DOCS_URL,
+            "redoc_url": FlextWebConstants.Web.WebApi.REDOC_URL,
+            "openapi_url": FlextWebConstants.Web.WebApi.OPENAPI_URL,
         }
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
@@ -59,9 +59,9 @@ class TestFlextWebApp:
         config: _FastAPIConfig = {
             "title": "Valid Test API",
             "version": "1.0.0",
-            "docs_url": FlextWebConstants.WebApi.DOCS_URL,
-            "redoc_url": FlextWebConstants.WebApi.REDOC_URL,
-            "openapi_url": FlextWebConstants.WebApi.OPENAPI_URL,
+            "docs_url": FlextWebConstants.Web.WebApi.DOCS_URL,
+            "redoc_url": FlextWebConstants.Web.WebApi.REDOC_URL,
+            "openapi_url": FlextWebConstants.Web.WebApi.OPENAPI_URL,
         }
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
@@ -77,9 +77,9 @@ class TestFlextWebApp:
             "title": "Real Test API",
             "version": "1.0.0",
             "description": "Real Test Description",
-            "docs_url": FlextWebConstants.WebApi.DOCS_URL,
-            "redoc_url": FlextWebConstants.WebApi.REDOC_URL,
-            "openapi_url": FlextWebConstants.WebApi.OPENAPI_URL,
+            "docs_url": FlextWebConstants.Web.WebApi.DOCS_URL,
+            "redoc_url": FlextWebConstants.Web.WebApi.REDOC_URL,
+            "openapi_url": FlextWebConstants.Web.WebApi.OPENAPI_URL,
         }
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
@@ -113,7 +113,7 @@ class TestFlextWebApp:
         config = FlextWebModels.Web.FastAPIAppConfig(
             title="Custom Test API",
             version="2.0.0",
-            description=FlextWebConstants.WebApi.DEFAULT_DESCRIPTION,
+            description=FlextWebConstants.Web.WebApi.DEFAULT_DESCRIPTION,
         )
 
         result = FlextWebApp.create_fastapi_app(config)
@@ -191,7 +191,7 @@ class TestFlextWebApp:
         # Real FastAPI app - verify default description from Constants
         assert app.title == "Test API"
         assert app.version == "1.0.0"
-        assert app.description == FlextWebConstants.WebApi.DEFAULT_DESCRIPTION
+        assert app.description == FlextWebConstants.Web.WebApi.DEFAULT_DESCRIPTION
 
     def test_app_inheritance(self) -> None:
         """Test FlextWebApp inheritance from FlextService."""
@@ -332,7 +332,7 @@ class TestFlextWebApp:
         # Real FastAPI app - verify title override
         assert app.title == "Override Title"
         assert app.version == "1.0.0"
-        assert app.description == FlextWebConstants.WebApi.DEFAULT_DESCRIPTION
+        assert app.description == FlextWebConstants.Web.WebApi.DEFAULT_DESCRIPTION
 
     def test_create_fastapi_app_with_override_urls(self) -> None:
         """Test create_fastapi_app with URL override parameters - REAL FastAPI."""
@@ -357,7 +357,7 @@ class TestFlextWebApp:
         # Real FastAPI app - verify URL overrides
         assert app.title == "Test API"
         assert app.version == "1.0.0"
-        assert app.description == FlextWebConstants.WebApi.DEFAULT_DESCRIPTION
+        assert app.description == FlextWebConstants.Web.WebApi.DEFAULT_DESCRIPTION
 
     def test_create_flask_app_success(self) -> None:
         """Test create_flask_app with success."""

@@ -3,7 +3,7 @@
 Tests the web services functionality following flext standards.
 """
 
-from typing import cast
+from __future__ import annotations
 
 import pytest
 from flext_core import FlextConstants
@@ -286,8 +286,9 @@ class TestFlextWebService:
     def test_get_app_invalid_id(self) -> None:
         """Test app retrieval with invalid ID."""
         service = FlextWebServices()
-        # Test with non-string ID
-        get_result = service.get_app(cast("str", 123))
+        # Test with non-string ID - use actual invalid type
+        invalid_id: object = 123
+        get_result = service.get_app(invalid_id)  # type: ignore[arg-type]
         assert get_result.is_failure
         assert get_result.error is not None
         assert "must be a string" in get_result.error
@@ -321,8 +322,9 @@ class TestFlextWebService:
     def test_start_app_invalid_id(self) -> None:
         """Test app start with invalid ID."""
         service = FlextWebServices()
-        # Test with non-string ID
-        start_result = service.start_app(cast("str", 123))
+        # Test with non-string ID - use actual invalid type
+        invalid_id: object = 123
+        start_result = service.start_app(invalid_id)  # type: ignore[arg-type]
         assert start_result.is_failure
         assert start_result.error is not None
         assert "must be a string" in start_result.error
@@ -364,8 +366,9 @@ class TestFlextWebService:
     def test_stop_app_invalid_id(self) -> None:
         """Test app stop with invalid ID."""
         service = FlextWebServices()
-        # Test with non-string ID
-        stop_result = service.stop_app(cast("str", 123))
+        # Test with non-string ID - use actual invalid type
+        invalid_id: object = 123
+        stop_result = service.stop_app(invalid_id)  # type: ignore[arg-type]
         assert stop_result.is_failure
         assert stop_result.error is not None
         assert "must be a string" in stop_result.error
@@ -391,7 +394,7 @@ class TestFlextWebService:
 
     def test_create_web_service_with_config(self) -> None:
         """Test create_web_service with config."""
-        config = cast("FlextWebSettings", {"host": "localhost", "port": 8080})
+        config = FlextWebSettings(host="localhost", port=8080)
         result = FlextWebServices.create_web_service(config)
         assert result.is_success
         service = result.value
@@ -440,8 +443,9 @@ class TestFlextWebService:
     def test_get_entity_invalid_id(self) -> None:
         """Test entity retrieval with invalid ID."""
         service = FlextWebServices()
-        # Test with non-string ID
-        get_result = service.get_entity(cast("str", 123))
+        # Test with non-string ID - use actual invalid type
+        invalid_id: object = 123
+        get_result = service.get_entity(invalid_id)  # type: ignore[arg-type]
         assert get_result.is_failure
         assert get_result.error is not None
         assert "must be a string" in get_result.error
