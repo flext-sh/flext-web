@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from enum import IntEnum, StrEnum
 from ipaddress import IPv4Address
 from types import MappingProxyType
-from typing import ClassVar, Final, Literal
+from typing import ClassVar, Final
 
 from flext_core import FlextConstants
 
@@ -17,6 +17,121 @@ class FlextWebConstants(FlextConstants):
     CONSTANTS_VERSION: Final[str] = "1.1.0"
     PROJECT_PREFIX: Final[str] = "FLEXT_WEB"
     PROJECT_NAME: Final[str] = "FLEXT Web"
+
+    class Method(StrEnum):
+        """Enumeration of supported HTTP methods.
+
+        DRY Pattern:
+            StrEnum is the single source of truth. Use Method.GET.value
+            or Method.GET directly - no base strings needed.
+        """
+
+        GET = "GET"
+        POST = "POST"
+        PUT = "PUT"
+        DELETE = "DELETE"
+        PATCH = "PATCH"
+        HEAD = "HEAD"
+        OPTIONS = "OPTIONS"
+
+    class StatusCode(IntEnum):
+        """Enumeration of canonical HTTP status codes."""
+
+        CONTINUE = 100
+        SWITCHING_PROTOCOLS = 101
+        PROCESSING = 102
+        EARLY_HINTS = 103
+        OK = 200
+        CREATED = 201
+        ACCEPTED = 202
+        NO_CONTENT = 204
+        NOT_MODIFIED = 304
+        MOVED_PERMANENTLY = 301
+        FOUND = 302
+        SEE_OTHER = 303
+        TEMPORARY_REDIRECT = 307
+        BAD_REQUEST = 400
+        UNAUTHORIZED = 401
+        FORBIDDEN = 403
+        NOT_FOUND = 404
+        METHOD_NOT_ALLOWED = 405
+        CONFLICT = 409
+        UNPROCESSABLE_ENTITY = 422
+        TOO_MANY_REQUESTS = 429
+        INTERNAL_SERVER_ERROR = 500
+        NOT_IMPLEMENTED = 501
+        BAD_GATEWAY = 502
+        SERVICE_UNAVAILABLE = 503
+        GATEWAY_TIMEOUT = 504
+
+    STATUS_CODES: ClassVar[Mapping[str, int]] = MappingProxyType({
+        status.name: int(status.value) for status in StatusCode
+    })
+    STATUS_RANGES: ClassVar[Mapping[str, tuple[int, int]]] = MappingProxyType({
+        "INFORMATIONAL": (100, 199),
+        "SUCCESS": (200, 299),
+        "REDIRECTION": (300, 399),
+        "CLIENT_ERROR": (400, 499),
+        "SERVER_ERROR": (500, 599),
+    })
+    SUCCESS_RANGE: Final[tuple[int, int]] = (200, 299)
+    ERROR_MIN: Final[int] = 400
+
+    class Name(StrEnum):
+        """Allowed deployment environments.
+
+        DRY Pattern:
+            StrEnum is the single source of truth. Use Name.DEVELOPMENT.value
+            or Name.DEVELOPMENT directly - no base strings needed.
+        """
+
+        DEVELOPMENT = "development"
+        STAGING = "staging"
+        PRODUCTION = "production"
+        TESTING = "testing"
+
+    class ApplicationType(StrEnum):
+        """Supported application classifications.
+
+        DRY Pattern:
+            StrEnum is the single source of truth. Use ApplicationType.APPLICATION.value
+            or ApplicationType.APPLICATION directly - no base strings needed.
+        """
+
+        APPLICATION = "application"
+        SERVICE = "service"
+        API = "api"
+        MICROSERVICE = "microservice"
+        WEBAPP = "webapp"
+        SPA = "spa"
+        DASHBOARD = "dashboard"
+        ADMIN_PANEL = "REDACTED_LDAP_BIND_PASSWORD-panel"
+
+    class Status(StrEnum):
+        """Lifecycle status values for web applications.
+
+        DRY Pattern:
+            StrEnum is the single source of truth. Use Status.STOPPED.value
+            or Status.STOPPED directly - no base strings needed.
+        """
+
+        STOPPED = "stopped"
+        STARTING = "starting"
+        RUNNING = "running"
+        STOPPING = "stopping"
+        ERROR = "error"
+        MAINTENANCE = "maintenance"
+        DEPLOYING = "deploying"
+
+    ENVIRONMENTS: ClassVar[tuple[str, ...]] = tuple(
+        member.value for member in Name.__members__.values()
+    )
+    APPLICATION_TYPES: ClassVar[tuple[str, ...]] = tuple(
+        member.value for member in ApplicationType.__members__.values()
+    )
+    STATUSES: ClassVar[tuple[str, ...]] = tuple(
+        member.value for member in Status.__members__.values()
+    )
 
     class Web:
         """Web domain constants namespace.
@@ -117,22 +232,6 @@ class FlextWebConstants(FlextConstants):
         class Http:
             """HTTP protocol constants, methods and status codes."""
 
-            class Method(StrEnum):
-                """Enumeration of supported HTTP methods.
-
-                DRY Pattern:
-                    StrEnum is the single source of truth. Use Method.GET.value
-                    or Method.GET directly - no base strings needed.
-                """
-
-                GET = "GET"
-                POST = "POST"
-                PUT = "PUT"
-                DELETE = "DELETE"
-                PATCH = "PATCH"
-                HEAD = "HEAD"
-                OPTIONS = "OPTIONS"
-
             # HTTP Content Types
             CONTENT_TYPE_JSON: Final[str] = "application/json"
             CONTENT_TYPE_TEXT: Final[str] = "text/plain"
@@ -153,49 +252,6 @@ class FlextWebConstants(FlextConstants):
                 Method.HEAD.value,
                 Method.OPTIONS.value,
             )
-
-            class StatusCode(IntEnum):
-                """Enumeration of canonical HTTP status codes."""
-
-                CONTINUE = 100
-                SWITCHING_PROTOCOLS = 101
-                PROCESSING = 102
-                EARLY_HINTS = 103
-                OK = 200
-                CREATED = 201
-                ACCEPTED = 202
-                NO_CONTENT = 204
-                NOT_MODIFIED = 304
-                MOVED_PERMANENTLY = 301
-                FOUND = 302
-                SEE_OTHER = 303
-                TEMPORARY_REDIRECT = 307
-                BAD_REQUEST = 400
-                UNAUTHORIZED = 401
-                FORBIDDEN = 403
-                NOT_FOUND = 404
-                METHOD_NOT_ALLOWED = 405
-                CONFLICT = 409
-                UNPROCESSABLE_ENTITY = 422
-                TOO_MANY_REQUESTS = 429
-                INTERNAL_SERVER_ERROR = 500
-                NOT_IMPLEMENTED = 501
-                BAD_GATEWAY = 502
-                SERVICE_UNAVAILABLE = 503
-                GATEWAY_TIMEOUT = 504
-
-            STATUS_CODES: ClassVar[Mapping[str, int]] = MappingProxyType({
-                status.name: int(status.value) for status in StatusCode
-            })
-            STATUS_RANGES: ClassVar[Mapping[str, tuple[int, int]]] = MappingProxyType({
-                "INFORMATIONAL": (100, 199),
-                "SUCCESS": (200, 299),
-                "REDIRECTION": (300, 399),
-                "CLIENT_ERROR": (400, 499),
-                "SERVER_ERROR": (500, 599),
-            })
-            SUCCESS_RANGE: Final[tuple[int, int]] = (200, 299)
-            ERROR_MIN: Final[int] = 400
 
         class WebSecurity:
             """Security settings and safe defaults."""
@@ -243,64 +299,6 @@ class FlextWebConstants(FlextConstants):
             OPENAPI_URL: Final[str] = "/openapi.json"
             DEFAULT_DESCRIPTION: Final[str] = "Generic HTTP Service"
 
-        class WebEnvironment:
-            """Enumerations for environments, application types and status."""
-
-            class Name(StrEnum):
-                """Allowed deployment environments.
-
-                DRY Pattern:
-                    StrEnum is the single source of truth. Use Name.DEVELOPMENT.value
-                    or Name.DEVELOPMENT directly - no base strings needed.
-                """
-
-                DEVELOPMENT = "development"
-                STAGING = "staging"
-                PRODUCTION = "production"
-                TESTING = "testing"
-
-            class ApplicationType(StrEnum):
-                """Supported application classifications.
-
-                DRY Pattern:
-                    StrEnum is the single source of truth. Use ApplicationType.APPLICATION.value
-                    or ApplicationType.APPLICATION directly - no base strings needed.
-                """
-
-                APPLICATION = "application"
-                SERVICE = "service"
-                API = "api"
-                MICROSERVICE = "microservice"
-                WEBAPP = "webapp"
-                SPA = "spa"
-                DASHBOARD = "dashboard"
-                ADMIN_PANEL = "REDACTED_LDAP_BIND_PASSWORD-panel"
-
-            class Status(StrEnum):
-                """Lifecycle status values for web applications.
-
-                DRY Pattern:
-                    StrEnum is the single source of truth. Use Status.STOPPED.value
-                    or Status.STOPPED directly - no base strings needed.
-                """
-
-                STOPPED = "stopped"
-                STARTING = "starting"
-                RUNNING = "running"
-                STOPPING = "stopping"
-                ERROR = "error"
-                MAINTENANCE = "maintenance"
-                DEPLOYING = "deploying"
-
-            ENVIRONMENTS: ClassVar[tuple[str, ...]] = tuple(
-                member.value for member in Name.__members__.values()
-            )
-            APPLICATION_TYPES: ClassVar[tuple[str, ...]] = tuple(
-                member.value for member in ApplicationType.__members__.values()
-            )
-            STATUSES: ClassVar[tuple[str, ...]] = tuple(
-                member.value for member in Status.__members__.values()
-            )
 
         # ═══════════════════════════════════════════════════════════════════
         # LITERAL TYPES (PEP 695 - Reference StrEnum Members)
@@ -308,78 +306,6 @@ class FlextWebConstants(FlextConstants):
         # All Literal types are defined at Web level to reference StrEnum classes.
         # They reference StrEnum members to avoid string duplication (DRY principle).
 
-        # HTTP method literal - references Http.Method StrEnum members
-        type HttpMethodLiteral = Literal[
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "PATCH",
-            "HEAD",
-            "OPTIONS",
-        ]
-
-        # Environment name literal - references WebEnvironment.Name StrEnum members
-        type EnvironmentNameLiteral = Literal[
-            "development",
-            "staging",
-            "production",
-            "testing",
-        ]
-
-        # Application status literal - references WebEnvironment.Status StrEnum members
-        type ApplicationStatusLiteral = Literal[
-            "stopped",
-            "starting",
-            "running",
-            "stopping",
-            "error",
-            "maintenance",
-            "deploying",
-        ]
-
-        # Application type literal - references WebEnvironment.ApplicationType StrEnum members
-        type ApplicationTypeLiteral = Literal[
-            "application",
-            "service",
-            "api",
-            "microservice",
-            "webapp",
-            "spa",
-            "dashboard",
-            "REDACTED_LDAP_BIND_PASSWORD_panel",
-        ]
-
-        # Response status literal - uses string literals matching WebResponse constants
-        # Note: WebResponse uses Final[str] constants, not StrEnum, so Literal uses string literals
-        # These match WebResponse.STATUS_SUCCESS, STATUS_ERROR, STATUS_OPERATIONAL, STATUS_HEALTHY
-        type ResponseStatusLiteral = Literal[
-            "success",
-            "error",
-            "operational",
-            "healthy",
-        ]
-
-        # Protocol literal - uses string literals matching WebDefaults constants
-        # Note: WebDefaults uses Final[str] constants, not StrEnum, so Literal uses string literals
-        # These match WebDefaults.HTTP_PROTOCOL, HTTPS_PROTOCOL
-        type ProtocolLiteral = Literal[
-            "http",
-            "https",
-        ]
-
-        # Content type literal - uses string literals matching Http constants
-        # Note: Http uses Final[str] constants, not StrEnum, so Literal uses string literals
-        # These match Http.CONTENT_TYPE_JSON, CONTENT_TYPE_TEXT, CONTENT_TYPE_HTML
-        type ContentTypeLiteral = Literal[
-            "application/json",
-            "text/plain",
-            "text/html",
-        ]
-
-        # Session cookie SameSite literal - standard HTTP cookie attribute values
-        # Note: This is a standard HTTP cookie attribute, not a project-specific enum
-        type SameSiteLiteral = Literal["Lax", "Strict", "None"]
 
 
 c = FlextWebConstants

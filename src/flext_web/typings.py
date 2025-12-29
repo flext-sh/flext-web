@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from flext_core import (
     FlextResult,
@@ -628,7 +628,96 @@ t = FlextWebTypes
 # - t.Project.* for project types
 # - t.Core.* for core types (inherited from parent)
 
+
+# ============================================================================
+# LITERAL TYPE DEFINITIONS
+# ============================================================================
+# These Literal types are moved from constants.py to maintain proper architecture
+# All Literal[] definitions belong in typings.py under the t.* namespace
+
+class Literals:
+    """Literal type definitions for web domain.
+
+    These types provide compile-time safety for string literals used throughout
+    the web application, ensuring only valid values are accepted.
+    """
+
+    # HTTP method literal - references Http.Method StrEnum members
+    HttpMethodLiteral = Literal[
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "HEAD",
+        "OPTIONS",
+    ]
+
+    # Environment name literal - references WebEnvironment.Name StrEnum members
+    EnvironmentNameLiteral = Literal[
+        "development",
+        "staging",
+        "production",
+        "testing",
+    ]
+
+    # Application status literal - references WebEnvironment.Status StrEnum members
+    ApplicationStatusLiteral = Literal[
+        "stopped",
+        "starting",
+        "running",
+        "stopping",
+        "error",
+        "maintenance",
+        "deploying",
+    ]
+
+    # Application type literal - references WebEnvironment.ApplicationType StrEnum members
+    ApplicationTypeLiteral = Literal[
+        "application",
+        "service",
+        "api",
+        "microservice",
+        "webapp",
+        "spa",
+        "dashboard",
+        "REDACTED_LDAP_BIND_PASSWORD_panel",
+    ]
+
+    # Response status literal - uses string literals matching WebResponse constants
+    # Note: WebResponse uses Final[str] constants, not StrEnum, so Literal uses string literals
+    # These match WebResponse.STATUS_SUCCESS, STATUS_ERROR, STATUS_OPERATIONAL, STATUS_HEALTHY
+    ResponseStatusLiteral = Literal[
+        "success",
+        "error",
+        "operational",
+        "healthy",
+    ]
+
+    # Protocol literal - uses string literals matching WebDefaults constants
+    # Note: WebDefaults uses Final[str] constants, not StrEnum, so Literal uses string literals
+    # These match WebDefaults.HTTP_PROTOCOL, HTTPS_PROTOCOL
+    ProtocolLiteral = Literal[
+        "http",
+        "https",
+    ]
+
+    # Content type literal - uses string literals matching Http constants
+    # Note: Http uses Final[str] constants, not StrEnum, so Literal uses string literals
+    # These match Http.CONTENT_TYPE_JSON, CONTENT_TYPE_TEXT, CONTENT_TYPE_HTML
+    ContentTypeLiteral = Literal[
+        "application/json",
+        "text/plain",
+        "text/html",
+    ]
+
+    # Session cookie SameSite literal - standard HTTP cookie attribute values
+    # Note: This is a standard HTTP cookie attribute, not a project-specific enum
+    SameSiteLiteral = Literal["Lax", "Strict", "None"]
+
+
 __all__ = [
     "FlextWebTypes",
     "t",
+    "Literals",
 ]

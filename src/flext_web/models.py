@@ -28,7 +28,7 @@ class FlextWebModels(m_core):
     Provides Pydantic models for web applications with validation.
     """
 
-    def __init_subclass__(cls, **kwargs: object) -> None:
+    def __init_subclass__(cls, **kwargs) -> None:
         """Warn when FlextWebModels is subclassed directly."""
         super().__init_subclass__(**kwargs)
         flext_u.Deprecation.warn_once(
@@ -155,7 +155,7 @@ class FlextWebModels(m_core):
 
             """
 
-            status_code: int = Field(ge=100, le=599, description="HTTP status code")
+            status_code: int = Field(ge=c.StatusCode.CONTINUE.value, le=c.StatusCode.GATEWAY_TIMEOUT.value, description="HTTP status code")
             elapsed_time: float | None = Field(
                 default=None,
                 ge=0.0,
@@ -304,7 +304,7 @@ class FlextWebModels(m_core):
 
             """
 
-            status_code: int = Field(ge=100, le=599, description="HTTP status code")
+            status_code: int = Field(ge=c.StatusCode.CONTINUE.value, le=c.StatusCode.GATEWAY_TIMEOUT.value, description="HTTP status code")
             headers: dict[str, str] = Field(
                 default_factory=dict,
                 description="HTTP response headers",
@@ -881,7 +881,7 @@ class FlextWebModels(m_core):
             """Web response model with status tracking."""
 
             request_id: str = Field(description="Associated request identifier")
-            status_code: int = Field(ge=100, le=599, description="HTTP status code")
+            status_code: int = Field(ge=c.StatusCode.CONTINUE.value, le=c.StatusCode.GATEWAY_TIMEOUT.value, description="HTTP status code")
             headers: dict[str, str] = Field(
                 default_factory=dict,
                 description="HTTP response headers",
