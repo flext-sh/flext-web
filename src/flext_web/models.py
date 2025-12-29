@@ -97,7 +97,7 @@ class FlextWebModels(m_core):
             timeout: float = Field(
                 default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
                 ge=0.0,
-                le=300.0,
+                le=c.Web.Request.REQUEST_TIMEOUT_MAX,
                 description="Request timeout in seconds",
             )
 
@@ -167,7 +167,7 @@ class FlextWebModels(m_core):
                 """Check if HTTP status indicates success (2xx range).
 
                 Returns:
-                    True if status code is 200-299, False otherwise
+                    True if status code in range(*c.SUCCESS_RANGE), False otherwise
 
                 """
                 success_min, success_max = c.Web.Http.SUCCESS_RANGE
@@ -178,7 +178,7 @@ class FlextWebModels(m_core):
                 """Check if HTTP status indicates client or server error.
 
                 Returns:
-                    True if status code >= 400, False otherwise
+                    True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
                 return self.status_code >= c.Web.Http.ERROR_MIN
@@ -215,7 +215,7 @@ class FlextWebModels(m_core):
             timeout: float = Field(
                 default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
                 ge=0.0,
-                le=300.0,
+                le=c.Web.Request.REQUEST_TIMEOUT_MAX,
                 description="Request timeout in seconds",
             )
 
@@ -347,7 +347,7 @@ class FlextWebModels(m_core):
                 """Check if web response status indicates success.
 
                 Returns:
-                    True if status code is 200-299, False otherwise
+                    True if status code in range(*c.SUCCESS_RANGE), False otherwise
 
                 """
                 success_min, success_max = c.Web.Http.SUCCESS_RANGE
@@ -358,7 +358,7 @@ class FlextWebModels(m_core):
                 """Check if web response status indicates error.
 
                 Returns:
-                    True if status code >= 400, False otherwise
+                    True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
                 return self.status_code >= c.Web.Http.ERROR_MIN
@@ -371,7 +371,7 @@ class FlextWebModels(m_core):
                     Processing time in seconds
 
                 """
-                return self.processing_time_ms / 1000.0
+                return self.processing_time_ms / 1000  # Convert ms to seconds
 
         # APPLICATION MODELS (Aggregates - consistency boundaries)
 
@@ -404,7 +404,7 @@ class FlextWebModels(m_core):
             )
             name: str = Field(
                 min_length=1,
-                max_length=100,
+                max_length=c.Web.Application.MAX_APP_NAME_LENGTH,
                 description="Application name",
             )
 
@@ -454,7 +454,7 @@ class FlextWebModels(m_core):
             host: str = Field(
                 default=c.Web.WebDefaults.HOST,
                 min_length=1,
-                max_length=255,
+                max_length=c.Web.MAX_HOST_LENGTH,
                 description="Application host address",
             )
             port: int = Field(
@@ -590,7 +590,7 @@ class FlextWebModels(m_core):
                 self.status = running_status
                 # Add web lifecycle event
                 event_result = self.add_web_event("ApplicationStarted")
-                if event_result.is_failure:  # pragma: no cover
+                if event_result.is_failure:  # DEFENSIVE
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {event_result.error}",
                     )
@@ -608,7 +608,7 @@ class FlextWebModels(m_core):
                 self.status = stopped_status
                 # Add web lifecycle event
                 event_result = self.add_web_event("ApplicationStopped")
-                if event_result.is_failure:  # pragma: no cover
+                if event_result.is_failure:  # DEFENSIVE
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {event_result.error}",
                     )
@@ -655,7 +655,7 @@ class FlextWebModels(m_core):
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
                 event_result = self.add_web_event("MetricsUpdated")
-                if event_result.is_failure:  # pragma: no cover
+                if event_result.is_failure:  # DEFENSIVE
                     return r[bool].fail(
                         f"Failed to add web event: {event_result.error}"
                     )
@@ -732,7 +732,7 @@ class FlextWebModels(m_core):
             host: str = Field(
                 default=c.Web.WebDefaults.HOST,
                 min_length=1,
-                max_length=255,
+                max_length=c.Web.MAX_HOST_LENGTH,
                 description="Application host address",
             )
             port: int = Field(
@@ -777,7 +777,7 @@ class FlextWebModels(m_core):
             )
             host: str = Field(
                 min_length=1,
-                max_length=255,
+                max_length=c.Web.MAX_HOST_LENGTH,
                 description="Application host",
             )
             port: int = Field(
@@ -859,7 +859,7 @@ class FlextWebModels(m_core):
                 default="GET",  # Default HTTP method
                 description="HTTP method",
             )
-            url: str = Field(min_length=1, max_length=2048, description="Request URL")
+            url: str = Field(min_length=1, max_length=c.Web.Request.MAX_URL_LENGTH, description="Request URL")
             headers: dict[str, str] = Field(
                 default_factory=dict,
                 description="HTTP headers",
@@ -904,13 +904,13 @@ class FlextWebModels(m_core):
 
             title: str = Field(
                 min_length=1,
-                max_length=100,
+                max_length=c.Web.Application.MAX_APP_NAME_LENGTH,
                 description="Application title",
             )
             version: str = Field(description="Application version")
             description: str = Field(
                 min_length=1,
-                max_length=500,
+                max_length=c.Web.MAX_DESCRIPTION_LENGTH,
                 description="Application description",
             )
             docs_url: str = Field(
@@ -957,7 +957,7 @@ class FlextWebModels(m_core):
                     port=port,
                 )
                 return r.ok(entity)
-            except ValidationError as e:  # pragma: no cover
+            except ValidationError as e:  # DEFENSIVE
                 error_msg = (  # pragma: no cover
                     f"Validation failed: {e.errors()[0]['msg']}"
                     if e.errors()
@@ -1097,7 +1097,7 @@ class FlextWebModels(m_core):
             description: str = Field(
                 default=c.Web.WebApi.DEFAULT_DESCRIPTION,
                 min_length=1,
-                max_length=500,
+                max_length=c.Web.MAX_DESCRIPTION_LENGTH,
                 description="Application description",
             )
             debug: bool = Field(default=False, description="FastAPI debug mode")

@@ -291,6 +291,10 @@ class FlextWebConstants(FlextConstants):
             SESSION_COOKIE_HTTPONLY_DEFAULT: Final[bool] = True
             SESSION_COOKIE_SAMESITE_DEFAULT: Final[str] = "Lax"
 
+            # Model field length limits
+            MAX_DESCRIPTION_LENGTH: Final[int] = 500
+            MAX_HOST_LENGTH: Final[int] = 255
+
         class WebApi:
             """Web API documentation and endpoint constants."""
 
