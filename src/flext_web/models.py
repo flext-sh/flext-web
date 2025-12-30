@@ -958,7 +958,7 @@ class FlextWebModels(m_core):
                 )
                 return r.ok(entity)
             except ValidationError as e:  # DEFENSIVE
-                error_msg = (  # pragma: no cover
+                error_msg = (  # DEFENSIVE
                     f"Validation failed: {e.errors()[0]['msg']}"
                     if e.errors()
                     else str(e)  # pragma: no cover
