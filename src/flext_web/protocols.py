@@ -12,7 +12,7 @@ ARCHITECTURE:
 
 PROTOCOL INHERITANCE:
  Protocols use inheritance to reduce duplication and create logical hierarchies.
- Example: WebAppManagerProtocol extends FlextProtocols.Service[object]
+ Example: WebAppManagerProtocol extends p.Service[object]
 
 USAGE IN WEB PROJECT:
  Web services extend FlextWebProtocols with web-specific protocols:
@@ -30,7 +30,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Protocol, runtime_checkable
 
-from flext_core.protocols import FlextProtocols
+from flext_core.protocols import FlextProtocols, p
 from flext_core.result import r
 
 from flext_web.constants import c
@@ -113,7 +113,7 @@ class FlextWebProtocols(FlextProtocols):
     - Allows type-safe web-specific interface definitions
 
     **3. Protocol inheritance creates logical web hierarchies**
-    - WebAppManagerProtocol extends FlextProtocols.Service[object]
+    - WebAppManagerProtocol extends p.Service[object]
     - WebRepositoryProtocol extends p.Repository
     - Reduces duplication, improves maintainability
 
@@ -127,21 +127,10 @@ class FlextWebProtocols(FlextProtocols):
     Web projects extend FlextWebProtocols with domain-specific protocols:
 
     **Example 1: Web Application Project**
-    class FlextWebProtocols(p):
-        class Web:
-            class WebAppManagerProtocol(FlextProtocols.Service[object], Protocol):
-                '''Web application management service.'''
-                def create_app(self, name: str, port: int, host: str) -> r:
-                    '''Create web application.'''
-                    ...
+    # (See actual implementation above for correct usage patterns)
 
     **Example 2: Web API Project**
-    class FlextApiProtocols(p):
-        class Api:
-            class ApiServiceProtocol(FlextProtocols.Service[object], Protocol):
-                '''API service operations.'''
-                def handle_request(self, request: dict) -> r:
-                    '''Handle API request.'''
+    # (See actual implementation above for correct usage patterns)
                     ...
 
     INTEGRATION POINTS WITH FLEXT WEB ARCHITECTURE
@@ -207,10 +196,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebAppManagerProtocol(FlextProtocols.Service[object], Protocol):
+        class WebAppManagerProtocol(p.Service[object], Protocol):
             """Protocol for web application lifecycle management.
 
-            Extends FlextProtocols.Service[object] with web-specific application management
+            Extends p.Service[object] with web-specific application management
             operations. Provides standardized interface for creating, starting, stopping,
             and managing web applications.
 
@@ -285,12 +274,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebResponseFormatterProtocol(
-            FlextProtocols.Service[object],
+            p.Service[object],
             Protocol,
         ):
             """Protocol for web response formatting.
 
-            Extends FlextProtocols.Service[object] with web-specific response formatting
+            Extends p.Service[object] with web-specific response formatting
             operations. Provides standardized interface for formatting success and
             error responses for web APIs.
 
@@ -383,12 +372,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebFrameworkInterfaceProtocol(
-            FlextProtocols.Service[object],
+            p.Service[object],
             Protocol,
         ):
             """Protocol for web framework integration.
 
-            Extends FlextProtocols.Service[object] with web framework integration operations.
+            Extends p.Service[object] with web framework integration operations.
             Provides standardized interface for creating JSON responses, extracting
             request data, and handling JSON requests.
 
@@ -458,10 +447,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebServiceProtocol(FlextProtocols.Service[object], Protocol):
+        class WebServiceProtocol(p.Service[object], Protocol):
             """Base web service protocol.
 
-            Extends FlextProtocols.Service[object] with web-specific service operations.
+            Extends p.Service[object] with web-specific service operations.
             Provides the foundation for all web services in the FLEXT web ecosystem.
 
             Used in: web service implementations
@@ -513,7 +502,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebRepositoryProtocol(
-            FlextProtocols.Repository[t.WebCore.ResponseDict],
+            p.Repository[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Base web repository protocol for data access.
@@ -546,7 +535,7 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebHandlerProtocol(FlextProtocols.Handler, Protocol):
+        class WebHandlerProtocol(p.Handler, Protocol):
             """Web handler protocol for request/response patterns.
 
             Extends p.Handler with web-specific handler operations.
@@ -592,10 +581,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebConnectionProtocol(FlextProtocols.Service[object], Protocol):
+        class WebConnectionProtocol(p.Service[object], Protocol):
             """Web connection protocol for external systems.
 
-            Extends FlextProtocols.Service[object] with web-specific connection operations.
+            Extends p.Service[object] with web-specific connection operations.
             Provides standardized interface for web service connections.
 
             Used in: web service adapters and external integrations
@@ -613,10 +602,10 @@ class FlextWebProtocols(FlextProtocols):
                 return "http://localhost:8080"  # pragma: no cover
 
         @runtime_checkable
-        class WebLoggerProtocol(FlextProtocols.Service[object], Protocol):
+        class WebLoggerProtocol(p.Service[object], Protocol):
             """Web logging protocol.
 
-            Extends FlextProtocols.Service[object] with web-specific logging operations.
+            Extends p.Service[object] with web-specific logging operations.
             Provides standardized interface for web application logging.
 
             Used in: web logging implementations
@@ -654,12 +643,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateRendererProtocol(
-            FlextProtocols.Service[object],
+            p.Service[object],
             Protocol,
         ):
             """Protocol for web template rendering.
 
-            Extends FlextProtocols.Service[object] with web template rendering operations.
+            Extends p.Service[object] with web template rendering operations.
             Provides standardized interface for template engine integration.
 
             Used in: web template rendering implementations
@@ -703,12 +692,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateEngineProtocol(
-            FlextProtocols.Service[object],
+            p.Service[object],
             Protocol,
         ):
             """Protocol for web template engine operations.
 
-            Extends FlextProtocols.Service[object] with template engine management operations.
+            Extends p.Service[object] with template engine management operations.
             Provides interface for loading, validating, and managing templates.
 
             Used in: web template engine implementations
@@ -806,10 +795,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebMonitoringProtocol(FlextProtocols.Service[object], Protocol):
+        class WebMonitoringProtocol(p.Service[object], Protocol):
             """Web monitoring protocol for observability.
 
-            Extends FlextProtocols.Service[object] with web-specific monitoring operations.
+            Extends p.Service[object] with web-specific monitoring operations.
             Provides interface for web application metrics and health monitoring.
 
             Used in: web monitoring and observability implementations
@@ -881,235 +870,250 @@ class FlextWebProtocols(FlextProtocols):
                 """Get value by key with optional default."""
                 ...
 
+        # Base implementation classes for testing
+        class TestBases:
+            """Namespace for test base implementations."""
 
-# Base implementation classes for testing
-class _WebAppManagerBase:
-    """Base implementation of WebAppManagerProtocol for testing."""
+            class _WebAppManagerBase:
+                """Base implementation of WebAppManagerProtocol for testing."""
 
-    def create_app(
-        self,
-        name: str,
-        port: int,
-        host: str,
-    ) -> r[t.WebCore.ResponseDict]:
-        """Create a new web application."""
-        return FlextWebProtocols.Web.WebAppManagerProtocol.create_app(name, port, host)
+                def create_app(
+                    self,
+                    name: str,
+                    port: int,
+                    host: str,
+                ) -> r[t.WebCore.ResponseDict]:
+                    """Create a new web application."""
+                    return FlextWebProtocols.Web.WebAppManagerProtocol.create_app(
+                        name, port, host
+                    )
 
-    def start_app(self, app_id: str) -> r[t.WebCore.ResponseDict]:
-        """Start a web application."""
-        return FlextWebProtocols.Web.WebAppManagerProtocol.start_app(app_id)
+                def start_app(self, app_id: str) -> r[t.WebCore.ResponseDict]:
+                    """Start a web application."""
+                    return FlextWebProtocols.Web.WebAppManagerProtocol.start_app(app_id)
 
-    def stop_app(self, app_id: str) -> r[t.WebCore.ResponseDict]:
-        """Stop a running web application."""
-        return FlextWebProtocols.Web.WebAppManagerProtocol.stop_app(app_id)
+                def stop_app(self, app_id: str) -> r[t.WebCore.ResponseDict]:
+                    """Stop a running web application."""
+                    return FlextWebProtocols.Web.WebAppManagerProtocol.stop_app(app_id)
 
-    def list_apps(
-        self,
-    ) -> r[list[t.WebCore.ResponseDict]]:
-        """List all web applications."""
-        return FlextWebProtocols.Web.WebAppManagerProtocol.list_apps()
+                def list_apps(
+                    self,
+                ) -> r[list[t.WebCore.ResponseDict]]:
+                    """List all web applications."""
+                    return FlextWebProtocols.Web.WebAppManagerProtocol.list_apps()
 
+            class _WebResponseFormatterBase:
+                """Base implementation of WebResponseFormatterProtocol for testing."""
 
-class _WebResponseFormatterBase:
-    """Base implementation of WebResponseFormatterProtocol for testing."""
+                def format_success(
+                    self, data: t.WebCore.ResponseDict
+                ) -> t.WebCore.ResponseDict:
+                    """Format successful response data."""
+                    return FlextWebProtocols.Web.WebResponseFormatterProtocol.format_success(
+                        data
+                    )
 
-    def format_success(self, data: t.WebCore.ResponseDict) -> t.WebCore.ResponseDict:
-        """Format successful response data."""
-        return FlextWebProtocols.Web.WebResponseFormatterProtocol.format_success(data)
+                def format_error(self, error: Exception) -> t.WebCore.ResponseDict:
+                    """Format error response data."""
+                    return (
+                        FlextWebProtocols.Web.WebResponseFormatterProtocol.format_error(
+                            error
+                        )
+                    )
 
-    def format_error(self, error: Exception) -> t.WebCore.ResponseDict:
-        """Format error response data."""
-        return FlextWebProtocols.Web.WebResponseFormatterProtocol.format_error(error)
+                def create_json_response(
+                    self,
+                    data: t.WebCore.ResponseDict,
+                ) -> t.WebCore.ResponseDict:
+                    """Create a JSON response."""
+                    return FlextWebProtocols.Web.WebResponseFormatterProtocol.create_json_response(
+                        data
+                    )
 
-    def create_json_response(
-        self,
-        data: t.WebCore.ResponseDict,
-    ) -> t.WebCore.ResponseDict:
-        """Create a JSON response."""
-        return FlextWebProtocols.Web.WebResponseFormatterProtocol.create_json_response(
-            data
-        )
+                def get_request_data(
+                    self,
+                    _request: t.WebCore.RequestDict,
+                ) -> t.WebCore.RequestDict:
+                    """Extract data from web request."""
+                    return FlextWebProtocols.Web.WebResponseFormatterProtocol.get_request_data(
+                        _request
+                    )
 
-    def get_request_data(
-        self,
-        _request: t.WebCore.RequestDict,
-    ) -> t.WebCore.RequestDict:
-        """Extract data from web request."""
-        return FlextWebProtocols.Web.WebResponseFormatterProtocol.get_request_data(
-            _request
-        )
+            class _WebFrameworkInterfaceBase:
+                """Base implementation of WebFrameworkInterfaceProtocol for testing."""
 
+                def create_json_response(
+                    self,
+                    data: t.WebCore.ResponseDict,
+                ) -> t.WebCore.ResponseDict:
+                    """Create a JSON response."""
+                    return FlextWebProtocols.Web.WebFrameworkInterfaceProtocol.create_json_response(
+                        data,
+                    )
 
-class _WebFrameworkInterfaceBase:
-    """Base implementation of WebFrameworkInterfaceProtocol for testing."""
+                def get_request_data(
+                    self,
+                    _request: t.WebCore.RequestDict,
+                ) -> t.WebCore.RequestDict:
+                    """Extract data from web request."""
+                    return FlextWebProtocols.Web.WebFrameworkInterfaceProtocol.get_request_data(
+                        _request,
+                    )
 
-    def create_json_response(
-        self,
-        data: t.WebCore.ResponseDict,
-    ) -> t.WebCore.ResponseDict:
-        """Create a JSON response."""
-        return FlextWebProtocols.Web.WebFrameworkInterfaceProtocol.create_json_response(
-            data,
-        )
+                def is_json_request(self, _request: t.WebCore.RequestDict) -> bool:
+                    """Check if request contains JSON data."""
+                    return FlextWebProtocols.Web.WebFrameworkInterfaceProtocol.is_json_request(
+                        _request
+                    )
 
-    def get_request_data(
-        self,
-        _request: t.WebCore.RequestDict,
-    ) -> t.WebCore.RequestDict:
-        """Extract data from web request."""
-        return FlextWebProtocols.Web.WebFrameworkInterfaceProtocol.get_request_data(
-            _request,
-        )
+            class _WebServiceBase:
+                """Base implementation of WebServiceProtocol for testing."""
 
-    def is_json_request(self, _request: t.WebCore.RequestDict) -> bool:
-        """Check if request contains JSON data."""
-        return FlextWebProtocols.Web.WebFrameworkInterfaceProtocol.is_json_request(
-            _request
-        )
+            def initialize_routes(self) -> r[bool]:
+                """Initialize web service routes."""
+                return FlextWebProtocols.Web.WebServiceProtocol.initialize_routes()
 
+            def configure_middleware(self) -> r[bool]:
+                """Configure web service middleware."""
+                return FlextWebProtocols.Web.WebServiceProtocol.configure_middleware()
 
-class _WebServiceBase:
-    """Base implementation of WebServiceProtocol for testing."""
+            def start_service(self) -> r[bool]:
+                """Start the web service."""
+                return FlextWebProtocols.Web.WebServiceProtocol.start_service()
 
-    def initialize_routes(self) -> r[bool]:
-        """Initialize web service routes."""
-        return FlextWebProtocols.Web.WebServiceProtocol.initialize_routes()
+            def stop_service(self) -> r[bool]:
+                """Stop the web service."""
+                return FlextWebProtocols.Web.WebServiceProtocol.stop_service()
 
-    def configure_middleware(self) -> r[bool]:
-        """Configure web service middleware."""
-        return FlextWebProtocols.Web.WebServiceProtocol.configure_middleware()
+            class _WebRepositoryBase:
+                """Base implementation of WebRepositoryProtocol for testing."""
 
-    def start_service(self) -> r[bool]:
-        """Start the web service."""
-        return FlextWebProtocols.Web.WebServiceProtocol.start_service()
+                def find_by_criteria(
+                    self,
+                    criteria: t.WebCore.RequestDict,
+                ) -> r[list[t.WebCore.ResponseDict]]:
+                    """Find entities by criteria."""
+                    return FlextWebProtocols.Web.WebRepositoryProtocol.find_by_criteria(
+                        criteria
+                    )
 
-    def stop_service(self) -> r[bool]:
-        """Stop the web service."""
-        return FlextWebProtocols.Web.WebServiceProtocol.stop_service()
+            class _WebHandlerBase:
+                """Base implementation of WebHandlerProtocol for testing."""
 
+                def handle_request(
+                    self,
+                    request: t.WebCore.RequestDict,
+                ) -> r[t.WebCore.ResponseDict]:
+                    """Handle web request and return response."""
+                    return FlextWebProtocols.Web.WebHandlerProtocol.handle_request(
+                        request
+                    )
 
-class _WebRepositoryBase:
-    """Base implementation of WebRepositoryProtocol for testing."""
+            class _WebConnectionBase:
+                """Base implementation of WebConnectionProtocol for testing."""
 
-    def find_by_criteria(
-        self,
-        criteria: t.WebCore.RequestDict,
-    ) -> r[list[t.WebCore.ResponseDict]]:
-        """Find entities by criteria."""
-        return FlextWebProtocols.Web.WebRepositoryProtocol.find_by_criteria(criteria)
+                def get_endpoint_url(self) -> str:
+                    """Get the web service endpoint URL."""
+                    return (
+                        FlextWebProtocols.Web.WebConnectionProtocol.get_endpoint_url()
+                    )
 
+            class _WebTemplateRendererBase:
+                """Base implementation of WebTemplateRendererProtocol for testing."""
 
-class _WebHandlerBase:
-    """Base implementation of WebHandlerProtocol for testing."""
+                def render_template(
+                    self,
+                    template_name: str,
+                    context: t.WebCore.RequestDict,
+                ) -> r[str]:
+                    """Render template with context data."""
+                    return FlextWebProtocols.Web.WebTemplateRendererProtocol.render_template(
+                        template_name,
+                        context,
+                    )
 
-    def handle_request(
-        self,
-        request: t.WebCore.RequestDict,
-    ) -> r[t.WebCore.ResponseDict]:
-        """Handle web request and return response."""
-        return FlextWebProtocols.Web.WebHandlerProtocol.handle_request(request)
+                def render_dashboard(
+                    self,
+                    data: t.WebCore.ResponseDict,
+                ) -> r[str]:
+                    """Render dashboard template with data."""
+                    return FlextWebProtocols.Web.WebTemplateRendererProtocol.render_dashboard(
+                        data
+                    )
 
+            class _WebTemplateEngineBase:
+                """Base implementation of WebTemplateEngineProtocol for testing."""
 
-class _WebConnectionBase:
-    """Base implementation of WebConnectionProtocol for testing."""
+                def load_template_config(
+                    self,
+                    config: t.WebCore.RequestDict,
+                ) -> r[bool]:
+                    """Load template engine configuration."""
+                    return FlextWebProtocols.Web.WebTemplateEngineProtocol.load_template_config(
+                        config
+                    )
 
-    def get_endpoint_url(self) -> str:
-        """Get the web service endpoint URL."""
-        return FlextWebProtocols.Web.WebConnectionProtocol.get_endpoint_url()
+                def get_template_config(
+                    self,
+                ) -> r[t.WebCore.ResponseDict]:
+                    """Get current template engine configuration."""
+                    return FlextWebProtocols.Web.WebTemplateEngineProtocol.get_template_config()
 
+                def validate_template_config(
+                    self,
+                    config: t.WebCore.RequestDict,
+                ) -> r[bool]:
+                    """Validate template engine configuration."""
+                    return FlextWebProtocols.Web.WebTemplateEngineProtocol.validate_template_config(
+                        config,
+                    )
 
-class _WebTemplateRendererBase:
-    """Base implementation of WebTemplateRendererProtocol for testing."""
+                def render(
+                    self,
+                    template: str,
+                    context: t.WebCore.RequestDict,
+                ) -> r[str]:
+                    """Render template string with context."""
+                    return FlextWebProtocols.Web.WebTemplateEngineProtocol.render(
+                        template, context
+                    )
 
-    def render_template(
-        self,
-        template_name: str,
-        context: t.WebCore.RequestDict,
-    ) -> r[str]:
-        """Render template with context data."""
-        return FlextWebProtocols.Web.WebTemplateRendererProtocol.render_template(
-            template_name,
-            context,
-        )
+                def add_filter(
+                    self, name: str, filter_func: Callable[[str], str]
+                ) -> None:
+                    """Add template filter function."""
+                    # Protocol implementation placeholder - parameters are part of interface contract
+                    _ = name, filter_func
 
-    def render_dashboard(
-        self,
-        data: t.WebCore.ResponseDict,
-    ) -> r[str]:
-        """Render dashboard template with data."""
-        return FlextWebProtocols.Web.WebTemplateRendererProtocol.render_dashboard(data)
+                def add_global(
+                    self,
+                    name: str,
+                    *,
+                    value: str | int | bool | list[str] | dict[str, str | int | bool],
+                ) -> None:
+                    """Add template global variable."""
+                    # Protocol implementation placeholder - parameters are part of interface contract
+                    _ = name, value
 
+            class _WebMonitoringBase:
+                """Base implementation of WebMonitoringProtocol for testing."""
 
-class _WebTemplateEngineBase:
-    """Base implementation of WebTemplateEngineProtocol for testing."""
+                def get_web_health_status(self) -> t.WebCore.ResponseDict:
+                    """Get web application health status."""
+                    return FlextWebProtocols.Web.WebMonitoringProtocol.get_web_health_status()
 
-    def load_template_config(
-        self,
-        config: t.WebCore.RequestDict,
-    ) -> r[bool]:
-        """Load template engine configuration."""
-        return FlextWebProtocols.Web.WebTemplateEngineProtocol.load_template_config(
-            config
-        )
+                def record_web_request(
+                    self,
+                    request: t.WebCore.RequestDict,
+                    response_time: float,
+                ) -> None:
+                    """Record web request metrics."""
+                    # Protocol implementation placeholder
+                    _ = request, response_time
 
-    def get_template_config(
-        self,
-    ) -> r[t.WebCore.ResponseDict]:
-        """Get current template engine configuration."""
-        return FlextWebProtocols.Web.WebTemplateEngineProtocol.get_template_config()
-
-    def validate_template_config(
-        self,
-        config: t.WebCore.RequestDict,
-    ) -> r[bool]:
-        """Validate template engine configuration."""
-        return FlextWebProtocols.Web.WebTemplateEngineProtocol.validate_template_config(
-            config,
-        )
-
-    def render(
-        self,
-        template: str,
-        context: t.WebCore.RequestDict,
-    ) -> r[str]:
-        """Render template string with context."""
-        return FlextWebProtocols.Web.WebTemplateEngineProtocol.render(template, context)
-
-    def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
-        """Add template filter function."""
-        # Protocol implementation placeholder - parameters are part of interface contract
-        _ = name, filter_func
-
-    def add_global(
-        self,
-        name: str,
-        *,
-        value: str | int | bool | list[str] | dict[str, str | int | bool],
-    ) -> None:
-        """Add template global variable."""
-        # Protocol implementation placeholder - parameters are part of interface contract
-        _ = name, value
-
-
-class _WebMonitoringBase:
-    """Base implementation of WebMonitoringProtocol for testing."""
-
-    def get_web_health_status(self) -> t.WebCore.ResponseDict:
-        """Get web application health status."""
-        return FlextWebProtocols.Web.WebMonitoringProtocol.get_web_health_status()
-
-    def record_web_request(
-        self,
-        request: t.WebCore.RequestDict,
-        response_time: float,
-    ) -> None:
-        """Record web request metrics."""
-        # Protocol implementation placeholder
-        _ = request, response_time
-
-    def get_web_metrics(self) -> t.WebCore.ResponseDict:
-        """Get web application metrics."""
-        return FlextWebProtocols.Web.WebMonitoringProtocol.get_web_metrics()
+                def get_web_metrics(self) -> t.WebCore.ResponseDict:
+                    """Get web application metrics."""
+                    return FlextWebProtocols.Web.WebMonitoringProtocol.get_web_metrics()
 
 
 # Runtime alias for simplified usage
@@ -1117,14 +1121,4 @@ p = FlextWebProtocols
 
 __all__ = [
     "FlextWebProtocols",
-    "_WebAppManagerBase",
-    "_WebConnectionBase",
-    "_WebFrameworkInterfaceBase",
-    "_WebHandlerBase",
-    "_WebMonitoringBase",
-    "_WebRepositoryBase",
-    "_WebServiceBase",
-    "_WebTemplateEngineBase",
-    "_WebTemplateRendererBase",
-    "p",
 ]

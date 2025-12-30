@@ -186,7 +186,7 @@ class FlextWebTypes(FlextTypes):
         # Use # Direct validation instead for unified method validation (DSL pattern)
         method_upper = method.upper()
         valid_methods = set(FlextWebConstants.Web.Http.METHODS)
-        method_validated = FlextUtilities.Validation.guard(
+        method_validated = u.Validation.guard(
             method_upper,
             lambda m: m in valid_methods,
             error_message=f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
@@ -201,7 +201,7 @@ class FlextWebTypes(FlextTypes):
         # Validate headers - must be dict or None
         headers_validated = headers or {}
 
-        # Use FlextUtilities.try_() for unified error handling (DSL pattern)
+        # Use u.try_() for unified error handling (DSL pattern)
         def create_request() -> FlextWebModels.Web.Request:
             """Create request model."""
             return FlextWebModels.Web.Request(
@@ -212,12 +212,12 @@ class FlextWebTypes(FlextTypes):
                 timeout=timeout,
             )
 
-        # Use FlextUtilities.try_() with custom exception handling for better error messages
+        # Use u.try_() with custom exception handling for better error messages
         try:
             request = create_request()
             return FlextResult[FlextWebModels.Web.Request].ok(request)
         except Exception as exc:
-            # Use FlextUtilities.err() pattern for unified error extraction (DSL pattern)
+            # Use u.err() pattern for unified error extraction (DSL pattern)
             error_msg = f"Failed to create HTTP request: {exc}"
             return FlextResult[FlextWebModels.Web.Request].fail(error_msg)
 
@@ -246,7 +246,7 @@ class FlextWebTypes(FlextTypes):
         # Validate headers - must be dict or None
         headers_validated = headers or {}
 
-        # Use FlextUtilities.try_() for unified error handling (DSL pattern)
+        # Use u.try_() for unified error handling (DSL pattern)
         def create_response() -> FlextWebModels.Web.Response:
             """Create response model."""
             return FlextWebModels.Web.Response(
@@ -256,12 +256,12 @@ class FlextWebTypes(FlextTypes):
                 elapsed_time=elapsed_time,
             )
 
-        # Use FlextUtilities.try_() with custom exception handling for better error messages
+        # Use u.try_() with custom exception handling for better error messages
         try:
             response = create_response()
             return FlextResult[FlextWebModels.Web.Response].ok(response)
         except Exception as exc:
-            # Use FlextUtilities.err() pattern for unified error extraction (DSL pattern)
+            # Use u.err() pattern for unified error extraction (DSL pattern)
             return FlextResult[FlextWebModels.Web.Response].fail(
                 f"Failed to create HTTP response: {exc}",
             )
@@ -281,23 +281,23 @@ class FlextWebTypes(FlextTypes):
                                         failure contains validation error
 
         """
-        # Use FlextUtilities.get() for unified extraction with defaults (DSL pattern)
-        url = FlextUtilities.get(config, "url", default="")
-        method = FlextUtilities.get(
+        # Use u.get() for unified extraction with defaults (DSL pattern)
+        url = u.get(config, "url", default="")
+        method = u.get(
             config,
             "method",
             default=FlextWebConstants.Web.Http.Method.GET,
         )
         headers = config.get("headers")
-        body = FlextUtilities.get(config, "body")
-        timeout = FlextUtilities.get(
+        body = u.get(config, "body")
+        timeout = u.get(
             config,
             "timeout",
             default=FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
         )
         query_params = config.get("query_params")
-        client_ip = FlextUtilities.get(config, "client_ip", default="")
-        user_agent = FlextUtilities.get(config, "user_agent", default="")
+        client_ip = u.get(config, "client_ip", default="")
+        user_agent = u.get(config, "user_agent", default="")
 
         # Validate URL - must be non-empty string
         if not url or not url.strip():
@@ -313,7 +313,7 @@ class FlextWebTypes(FlextTypes):
         # Use # Direct validation instead for method validation (DSL pattern)
         method_upper = method.upper()
         valid_methods = set(FlextWebConstants.Web.Http.METHODS)
-        method_validated = FlextUtilities.Validation.guard(
+        method_validated = u.Validation.guard(
             method_upper,
             lambda m: m in valid_methods,
             error_message=f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
@@ -324,7 +324,7 @@ class FlextWebTypes(FlextTypes):
                 f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             )
 
-        # Use FlextUtilities.try_() for unified error handling (DSL pattern)
+        # Use u.try_() for unified error handling (DSL pattern)
         def create_request() -> FlextWebModels.Web.AppRequest:
             """Create request model."""
             return FlextWebModels.Web.AppRequest(
@@ -338,12 +338,12 @@ class FlextWebTypes(FlextTypes):
                 user_agent=user_agent,
             )
 
-        # Use FlextUtilities.try_() with custom exception handling for better error messages
+        # Use u.try_() with custom exception handling for better error messages
         try:
             request = create_request()
             return FlextResult[FlextWebModels.Web.AppRequest].ok(request)
         except Exception as exc:
-            # Use FlextUtilities.err() pattern for unified error extraction (DSL pattern)
+            # Use u.err() pattern for unified error extraction (DSL pattern)
             return FlextResult[FlextWebModels.Web.AppRequest].fail(
                 f"Failed to create web request: {exc}",
             )
@@ -363,19 +363,19 @@ class FlextWebTypes(FlextTypes):
                                          failure contains validation error
 
         """
-        # Use FlextUtilities.get() for unified extraction with defaults (DSL pattern)
-        status_code = FlextUtilities.get(config, "status_code", default=200)
-        request_id = FlextUtilities.get(config, "request_id", default="")
+        # Use u.get() for unified extraction with defaults (DSL pattern)
+        status_code = u.get(config, "status_code", default=200)
+        request_id = u.get(config, "request_id", default="")
         headers = config.get("headers")
-        body = FlextUtilities.get(config, "body")
-        elapsed_time = FlextUtilities.get(config, "elapsed_time", default=0.0)
-        content_type = FlextUtilities.get(
+        body = u.get(config, "body")
+        elapsed_time = u.get(config, "elapsed_time", default=0.0)
+        content_type = u.get(
             config,
             "content_type",
             default=FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
         )
-        content_length = FlextUtilities.get(config, "content_length", default=0)
-        processing_time_ms = FlextUtilities.get(
+        content_length = u.get(config, "content_length", default=0)
+        processing_time_ms = u.get(
             config,
             "processing_time_ms",
             default=0.0,
@@ -385,7 +385,7 @@ class FlextWebTypes(FlextTypes):
         # Validate headers - must be dict or None
         headers_validated: dict[str, str] = headers if isinstance(headers, dict) else {}
 
-        # Use FlextUtilities.try_() for unified error handling (DSL pattern)
+        # Use u.try_() for unified error handling (DSL pattern)
         def create_response() -> FlextWebModels.Web.AppResponse:
             """Create response model."""
             return FlextWebModels.Web.AppResponse(
@@ -399,12 +399,12 @@ class FlextWebTypes(FlextTypes):
                 processing_time_ms=processing_time_ms or 0.0,
             )
 
-        # Use FlextUtilities.try_() with custom exception handling for better error messages
+        # Use u.try_() with custom exception handling for better error messages
         try:
             response = create_response()
             return FlextResult[FlextWebModels.Web.AppResponse].ok(response)
         except Exception as exc:
-            # Use FlextUtilities.err() pattern for unified error extraction (DSL pattern)
+            # Use u.err() pattern for unified error extraction (DSL pattern)
             return FlextResult[FlextWebModels.Web.AppResponse].fail(
                 f"Failed to create web response: {exc}",
             )
@@ -424,22 +424,22 @@ class FlextWebTypes(FlextTypes):
                                             failure contains error message
 
         """
-        # Use FlextUtilities.get() for unified extraction with defaults (DSL pattern)
-        name = FlextUtilities.get(config, "name", default="")
-        host = FlextUtilities.get(config, "host", default="localhost")
-        port_raw = FlextUtilities.get(config, "port", default=8080)
+        # Use u.get() for unified extraction with defaults (DSL pattern)
+        name = u.get(config, "name", default="")
+        host = u.get(config, "host", default="localhost")
+        port_raw = u.get(config, "port", default=8080)
         port = port_raw if isinstance(port_raw, int) else 8080
-        status = FlextUtilities.get(
+        status = u.get(
             config,
             "status",
             default=FlextWebConstants.Web.WebEnvironment.Status.STOPPED.value,
         )
-        environment = FlextUtilities.get(
+        environment = u.get(
             config,
             "environment",
             default=FlextWebConstants.Web.WebEnvironment.Name.DEVELOPMENT.value,
         )
-        debug_mode_raw = FlextUtilities.get(
+        debug_mode_raw = u.get(
             config,
             "debug_mode",
             default=FlextWebConstants.Web.WebDefaults.DEBUG_MODE,
@@ -449,7 +449,7 @@ class FlextWebTypes(FlextTypes):
             if isinstance(debug_mode_raw, bool)
             else FlextWebConstants.Web.WebDefaults.DEBUG_MODE
         )
-        version_raw = FlextUtilities.get(
+        version_raw = u.get(
             config,
             "version",
             default=FlextWebConstants.Web.WebDefaults.VERSION_INT,
@@ -460,7 +460,7 @@ class FlextWebTypes(FlextTypes):
             else FlextWebConstants.Web.WebDefaults.VERSION_INT
         )
 
-        # Use FlextUtilities.try_() for unified error handling (DSL pattern)
+        # Use u.try_() for unified error handling (DSL pattern)
         def create_entity() -> FlextWebModels.Web.Entity:
             """Create application entity."""
             return FlextWebModels.Web.Entity(
@@ -474,12 +474,12 @@ class FlextWebTypes(FlextTypes):
                 domain_events=[],
             )
 
-        # Use FlextUtilities.try_() with custom exception handling for better error messages
+        # Use u.try_() with custom exception handling for better error messages
         try:
             entity = create_entity()
             return FlextResult[FlextWebModels.Web.Entity].ok(entity)
         except Exception as exc:
-            # Use FlextUtilities.err() pattern for unified error extraction (DSL pattern)
+            # Use u.err() pattern for unified error extraction (DSL pattern)
             return FlextResult[FlextWebModels.Web.Entity].fail(
                 f"Failed to create application: {exc}",
             )
@@ -617,6 +617,78 @@ class FlextWebTypes(FlextTypes):
 
         """
 
+        # ============================================================================
+        # LITERAL TYPE DEFINITIONS
+        # ============================================================================
+        # These Literal types provide compile-time safety for string literals
+        # All Literal[] definitions belong in typings.py under the t.* namespace
+
+        # HTTP method literal - references Http.Method StrEnum members
+        HttpMethodLiteral = Literal[
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "HEAD",
+            "OPTIONS",
+        ]
+
+        # Environment name literal - references WebEnvironment.Name StrEnum members
+        EnvironmentNameLiteral = Literal[
+            "development",
+            "staging",
+            "production",
+            "testing",
+        ]
+
+        # Application status literal - references WebEnvironment.Status StrEnum members
+        ApplicationStatusLiteral = Literal[
+            "stopped",
+            "starting",
+            "running",
+            "stopping",
+            "error",
+            "maintenance",
+            "deploying",
+        ]
+
+        # Application type literal - references WebEnvironment.ApplicationType StrEnum members
+        ApplicationTypeLiteral = Literal[
+            "application",
+            "service",
+            "api",
+            "microservice",
+            "webapp",
+            "spa",
+            "dashboard",
+            "REDACTED_LDAP_BIND_PASSWORD_panel",
+        ]
+
+        # Response status literal - uses string literals matching WebResponse constants
+        ResponseStatusLiteral = Literal[
+            "success",
+            "error",
+            "operational",
+            "healthy",
+        ]
+
+        # Protocol literal - uses string literals matching WebDefaults constants
+        ProtocolLiteral = Literal[
+            "http",
+            "https",
+        ]
+
+        # Content type literal - uses string literals matching Http constants
+        ContentTypeLiteral = Literal[
+            "application/json",
+            "text/plain",
+            "text/html",
+        ]
+
+        # Session cookie SameSite literal - standard HTTP cookie attribute values
+        SameSiteLiteral = Literal["Lax", "Strict", "None"]
+
 
 # Alias for simplified usage
 t = FlextWebTypes
@@ -629,95 +701,7 @@ t = FlextWebTypes
 # - t.Core.* for core types (inherited from parent)
 
 
-# ============================================================================
-# LITERAL TYPE DEFINITIONS
-# ============================================================================
-# These Literal types are moved from constants.py to maintain proper architecture
-# All Literal[] definitions belong in typings.py under the t.* namespace
-
-class Literals:
-    """Literal type definitions for web domain.
-
-    These types provide compile-time safety for string literals used throughout
-    the web application, ensuring only valid values are accepted.
-    """
-
-    # HTTP method literal - references Http.Method StrEnum members
-    HttpMethodLiteral = Literal[
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE",
-        "PATCH",
-        "HEAD",
-        "OPTIONS",
-    ]
-
-    # Environment name literal - references WebEnvironment.Name StrEnum members
-    EnvironmentNameLiteral = Literal[
-        "development",
-        "staging",
-        "production",
-        "testing",
-    ]
-
-    # Application status literal - references WebEnvironment.Status StrEnum members
-    ApplicationStatusLiteral = Literal[
-        "stopped",
-        "starting",
-        "running",
-        "stopping",
-        "error",
-        "maintenance",
-        "deploying",
-    ]
-
-    # Application type literal - references WebEnvironment.ApplicationType StrEnum members
-    ApplicationTypeLiteral = Literal[
-        "application",
-        "service",
-        "api",
-        "microservice",
-        "webapp",
-        "spa",
-        "dashboard",
-        "REDACTED_LDAP_BIND_PASSWORD_panel",
-    ]
-
-    # Response status literal - uses string literals matching WebResponse constants
-    # Note: WebResponse uses Final[str] constants, not StrEnum, so Literal uses string literals
-    # These match WebResponse.STATUS_SUCCESS, STATUS_ERROR, STATUS_OPERATIONAL, STATUS_HEALTHY
-    ResponseStatusLiteral = Literal[
-        "success",
-        "error",
-        "operational",
-        "healthy",
-    ]
-
-    # Protocol literal - uses string literals matching WebDefaults constants
-    # Note: WebDefaults uses Final[str] constants, not StrEnum, so Literal uses string literals
-    # These match WebDefaults.HTTP_PROTOCOL, HTTPS_PROTOCOL
-    ProtocolLiteral = Literal[
-        "http",
-        "https",
-    ]
-
-    # Content type literal - uses string literals matching Http constants
-    # Note: Http uses Final[str] constants, not StrEnum, so Literal uses string literals
-    # These match Http.CONTENT_TYPE_JSON, CONTENT_TYPE_TEXT, CONTENT_TYPE_HTML
-    ContentTypeLiteral = Literal[
-        "application/json",
-        "text/plain",
-        "text/html",
-    ]
-
-    # Session cookie SameSite literal - standard HTTP cookie attribute values
-    # Note: This is a standard HTTP cookie attribute, not a project-specific enum
-    SameSiteLiteral = Literal["Lax", "Strict", "None"]
-
-
 __all__ = [
     "FlextWebTypes",
     "t",
-    "Literals",
 ]

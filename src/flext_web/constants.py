@@ -14,124 +14,9 @@ from flext_core import FlextConstants
 class FlextWebConstants(FlextConstants):
     """Immutable project-specific constants organized by domain."""
 
-    CONSTANTS_VERSION: Final[str] = "1.1.0"
-    PROJECT_PREFIX: Final[str] = "FLEXT_WEB"
-    PROJECT_NAME: Final[str] = "FLEXT Web"
-
-    class Method(StrEnum):
-        """Enumeration of supported HTTP methods.
-
-        DRY Pattern:
-            StrEnum is the single source of truth. Use Method.GET.value
-            or Method.GET directly - no base strings needed.
-        """
-
-        GET = "GET"
-        POST = "POST"
-        PUT = "PUT"
-        DELETE = "DELETE"
-        PATCH = "PATCH"
-        HEAD = "HEAD"
-        OPTIONS = "OPTIONS"
-
-    class StatusCode(IntEnum):
-        """Enumeration of canonical HTTP status codes."""
-
-        CONTINUE = 100
-        SWITCHING_PROTOCOLS = 101
-        PROCESSING = 102
-        EARLY_HINTS = 103
-        OK = 200
-        CREATED = 201
-        ACCEPTED = 202
-        NO_CONTENT = 204
-        NOT_MODIFIED = 304
-        MOVED_PERMANENTLY = 301
-        FOUND = 302
-        SEE_OTHER = 303
-        TEMPORARY_REDIRECT = 307
-        BAD_REQUEST = 400
-        UNAUTHORIZED = 401
-        FORBIDDEN = 403
-        NOT_FOUND = 404
-        METHOD_NOT_ALLOWED = 405
-        CONFLICT = 409
-        UNPROCESSABLE_ENTITY = 422
-        TOO_MANY_REQUESTS = 429
-        INTERNAL_SERVER_ERROR = 500
-        NOT_IMPLEMENTED = 501
-        BAD_GATEWAY = 502
-        SERVICE_UNAVAILABLE = 503
-        GATEWAY_TIMEOUT = 504
-
-    STATUS_CODES: ClassVar[Mapping[str, int]] = MappingProxyType({
-        status.name: int(status.value) for status in StatusCode
-    })
-    STATUS_RANGES: ClassVar[Mapping[str, tuple[int, int]]] = MappingProxyType({
-        "INFORMATIONAL": (100, 199),
-        "SUCCESS": (200, 299),
-        "REDIRECTION": (300, 399),
-        "CLIENT_ERROR": (400, 499),
-        "SERVER_ERROR": (500, 599),
-    })
-    SUCCESS_RANGE: Final[tuple[int, int]] = (200, 299)
-    ERROR_MIN: Final[int] = 400
-
-    class Name(StrEnum):
-        """Allowed deployment environments.
-
-        DRY Pattern:
-            StrEnum is the single source of truth. Use Name.DEVELOPMENT.value
-            or Name.DEVELOPMENT directly - no base strings needed.
-        """
-
-        DEVELOPMENT = "development"
-        STAGING = "staging"
-        PRODUCTION = "production"
-        TESTING = "testing"
-
-    class ApplicationType(StrEnum):
-        """Supported application classifications.
-
-        DRY Pattern:
-            StrEnum is the single source of truth. Use ApplicationType.APPLICATION.value
-            or ApplicationType.APPLICATION directly - no base strings needed.
-        """
-
-        APPLICATION = "application"
-        SERVICE = "service"
-        API = "api"
-        MICROSERVICE = "microservice"
-        WEBAPP = "webapp"
-        SPA = "spa"
-        DASHBOARD = "dashboard"
-        ADMIN_PANEL = "REDACTED_LDAP_BIND_PASSWORD-panel"
-
-    class Status(StrEnum):
-        """Lifecycle status values for web applications.
-
-        DRY Pattern:
-            StrEnum is the single source of truth. Use Status.STOPPED.value
-            or Status.STOPPED directly - no base strings needed.
-        """
-
-        STOPPED = "stopped"
-        STARTING = "starting"
-        RUNNING = "running"
-        STOPPING = "stopping"
-        ERROR = "error"
-        MAINTENANCE = "maintenance"
-        DEPLOYING = "deploying"
-
-    ENVIRONMENTS: ClassVar[tuple[str, ...]] = tuple(
-        member.value for member in Name.__members__.values()
-    )
-    APPLICATION_TYPES: ClassVar[tuple[str, ...]] = tuple(
-        member.value for member in ApplicationType.__members__.values()
-    )
-    STATUSES: ClassVar[tuple[str, ...]] = tuple(
-        member.value for member in Status.__members__.values()
-    )
+    # =========================================================================
+    # NAMESPACE: .Web - All Web domain constants
+    # =========================================================================
 
     class Web:
         """Web domain constants namespace.
@@ -139,6 +24,129 @@ class FlextWebConstants(FlextConstants):
         All web-specific constants are organized here for better namespace
         organization and to enable composition with other domain constants.
         """
+
+        # ═══════════════════════════════════════════════════════════════════
+        # STRENUM: Single declaration needed for automatic validation
+        # ═══════════════════════════════════════════════════════════════════
+
+        class Method(StrEnum):
+            """Enumeration of supported HTTP methods.
+
+            DRY Pattern:
+                StrEnum is the single source of truth. Use Method.GET.value
+                or Method.GET directly - no base strings needed.
+            """
+
+            GET = "GET"
+            POST = "POST"
+            PUT = "PUT"
+            DELETE = "DELETE"
+            PATCH = "PATCH"
+            HEAD = "HEAD"
+            OPTIONS = "OPTIONS"
+
+        class StatusCode(IntEnum):
+            """Enumeration of canonical HTTP status codes."""
+
+            CONTINUE = 100
+            SWITCHING_PROTOCOLS = 101
+            PROCESSING = 102
+            EARLY_HINTS = 103
+            OK = 200
+            CREATED = 201
+            ACCEPTED = 202
+            NO_CONTENT = 204
+            NOT_MODIFIED = 304
+            MOVED_PERMANENTLY = 301
+            FOUND = 302
+            SEE_OTHER = 303
+            TEMPORARY_REDIRECT = 307
+            BAD_REQUEST = 400
+            UNAUTHORIZED = 401
+            FORBIDDEN = 403
+            NOT_FOUND = 404
+            METHOD_NOT_ALLOWED = 405
+            CONFLICT = 409
+            UNPROCESSABLE_ENTITY = 422
+            TOO_MANY_REQUESTS = 429
+            INTERNAL_SERVER_ERROR = 500
+            NOT_IMPLEMENTED = 501
+            BAD_GATEWAY = 502
+            SERVICE_UNAVAILABLE = 503
+            GATEWAY_TIMEOUT = 504
+
+        class Name(StrEnum):
+            """Allowed deployment environments.
+
+            DRY Pattern:
+                StrEnum is the single source of truth. Use Name.DEVELOPMENT.value
+                or Name.DEVELOPMENT directly - no base strings needed.
+            """
+
+            DEVELOPMENT = "development"
+            STAGING = "staging"
+            PRODUCTION = "production"
+            TESTING = "testing"
+
+        class ApplicationType(StrEnum):
+            """Supported application classifications.
+
+            DRY Pattern:
+                StrEnum is the single source of truth. Use ApplicationType.APPLICATION.value
+                or ApplicationType.APPLICATION directly - no base strings needed.
+            """
+
+            APPLICATION = "application"
+            SERVICE = "service"
+            API = "api"
+            MICROSERVICE = "microservice"
+            WEBAPP = "webapp"
+            SPA = "spa"
+            DASHBOARD = "dashboard"
+            ADMIN_PANEL = "REDACTED_LDAP_BIND_PASSWORD-panel"
+
+        class Status(StrEnum):
+            """Lifecycle status values for web applications.
+
+            DRY Pattern:
+                StrEnum is the single source of truth. Use Status.STOPPED.value
+                or Status.STOPPED directly - no base strings needed.
+            """
+
+            STOPPED = "stopped"
+            STARTING = "starting"
+            RUNNING = "running"
+            STOPPING = "stopping"
+            ERROR = "error"
+            MAINTENANCE = "maintenance"
+            DEPLOYING = "deploying"
+
+        # ═══════════════════════════════════════════════════════════════════
+        # DERIVED CONSTANTS: Computed from StrEnum members
+        # ═══════════════════════════════════════════════════════════════════
+
+        STATUS_CODES: ClassVar[Mapping[str, int]] = MappingProxyType({
+            status.name: int(status.value) for status in StatusCode
+        })
+        STATUS_RANGES: ClassVar[Mapping[str, tuple[int, int]]] = MappingProxyType({
+            "INFORMATIONAL": (100, 199),
+            "SUCCESS": (200, 299),
+            "REDIRECTION": (300, 399),
+            "CLIENT_ERROR": (400, 499),
+            "SERVER_ERROR": (500, 599),
+        })
+        SUCCESS_RANGE: Final[tuple[int, int]] = (200, 299)
+        ERROR_MIN: Final[int] = 400
+
+        ENVIRONMENTS: ClassVar[tuple[str, ...]] = tuple(
+            member.value for member in Name.__members__.values()
+        )
+        APPLICATION_TYPES: ClassVar[tuple[str, ...]] = tuple(
+            member.value for member in ApplicationType.__members__.values()
+        )
+        STATUSES: ClassVar[tuple[str, ...]] = tuple(
+            member.value for member in Status.__members__.values()
+        )
 
         class WebDefaults:
             """Default bootstrap values for web services."""
@@ -244,13 +252,19 @@ class FlextWebConstants(FlextConstants):
             # HTTP Default Timeout
             DEFAULT_TIMEOUT_SECONDS: Final[float] = 30.0
 
-            METHODS: ClassVar[tuple[str, ...]] = tuple(
-                member.value for member in Method.__members__.values()
+            METHODS: ClassVar[tuple[str, ...]] = (
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "HEAD",
+                "OPTIONS",
             )
             SAFE_METHODS: ClassVar[tuple[str, ...]] = (
-                Method.GET.value,
-                Method.HEAD.value,
-                Method.OPTIONS.value,
+                "GET",
+                "HEAD",
+                "OPTIONS",
             )
 
         class WebSecurity:
@@ -303,13 +317,11 @@ class FlextWebConstants(FlextConstants):
             OPENAPI_URL: Final[str] = "/openapi.json"
             DEFAULT_DESCRIPTION: Final[str] = "Generic HTTP Service"
 
-
         # ═══════════════════════════════════════════════════════════════════
         # LITERAL TYPES (PEP 695 - Reference StrEnum Members)
         # ═══════════════════════════════════════════════════════════════════
         # All Literal types are defined at Web level to reference StrEnum classes.
         # They reference StrEnum members to avoid string duplication (DRY principle).
-
 
 
 c = FlextWebConstants

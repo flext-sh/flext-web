@@ -28,17 +28,6 @@ from flext_web.typings import t
 from flext_web.utilities import u
 
 
-class _FastAPIConfig(TypedDict, total=False):
-    """FastAPI configuration dictionary."""
-
-    title: str
-    version: str
-    description: str
-    docs_url: str
-    redoc_url: str
-    openapi_url: str
-
-
 class FlextWebApp(FlextService[bool]):
     """Generic web application coordinator using flext-core patterns and SOLID principles.
 
@@ -48,13 +37,23 @@ class FlextWebApp(FlextService[bool]):
     Delegates to flext-core for logging, container management, and error handling.
     """
 
+    class _FastAPIConfig(TypedDict, total=False):
+        """FastAPI configuration dictionary."""
+
+        title: str
+        version: str
+        description: str
+        docs_url: str
+        redoc_url: str
+        openapi_url: str
+
     def __init__(self) -> None:
         """Initialize with flext-core container and logger."""
         super().__init__()
         self._container = FlextContainer()
         self._logger = FlextLogger(__name__)
 
-    def execute(self, **_kwargs: object) -> r[bool]:
+    def execute(self, **_kwargs: t.Types.GeneralValueType) -> r[bool]:
         """Execute the web application service.
 
         Main domain operation for the web application service.
@@ -82,7 +81,7 @@ class FlextWebApp(FlextService[bool]):
 
         @staticmethod
         def create_instance(
-            config: _FastAPIConfig | None = None,
+            config: FlextWebApp._FastAPIConfig | None = None,
         ) -> r[FastAPI]:
             """Create FastAPI application instance with validated configuration.
 
@@ -96,7 +95,7 @@ class FlextWebApp(FlextService[bool]):
             """
             logger = FlextLogger(__name__)
 
-            default_config = _FastAPIConfig(
+            default_config = FlextWebApp._FastAPIConfig(
                 title="FastAPI",
                 version=c.Web.WebDefaults.VERSION_STRING,
                 description="FlextWeb FastAPI Application",
@@ -148,7 +147,7 @@ class FlextWebApp(FlextService[bool]):
     def create_fastapi_app(
         cls,
         config: m.Web.FastAPIAppConfig | None = None,
-        factory_config: _FastAPIConfig | None = None,
+        factory_config: FlextWebApp._FastAPIConfig | None = None,
     ) -> r[FastAPI]:
         """Create FastAPI app with flext-core integration and Pydantic validation.
 
@@ -169,7 +168,7 @@ class FlextWebApp(FlextService[bool]):
 
         factory_config_final = factory_config if factory_config is not None else None
         if factory_config_final is None:
-            factory_config_new = _FastAPIConfig(
+            factory_config_new = FlextWebApp._FastAPIConfig(
                 title=fastapi_config.title,
                 version=fastapi_config.version,
                 description=fastapi_config.description,
@@ -367,5 +366,4 @@ class FlextWebApp(FlextService[bool]):
 
 __all__ = [
     "FlextWebApp",
-    "_FastAPIConfig",
 ]

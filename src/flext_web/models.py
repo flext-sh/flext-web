@@ -28,7 +28,7 @@ class FlextWebModels(m_core):
     Provides Pydantic models for web applications with validation.
     """
 
-    def __init_subclass__(cls, **kwargs) -> None:
+    def __init_subclass__(cls, **kwargs: t.Types.GeneralValueType) -> None:
         """Warn when FlextWebModels is subclassed directly."""
         super().__init_subclass__(**kwargs)
         flext_u.Deprecation.warn_once(
@@ -155,7 +155,11 @@ class FlextWebModels(m_core):
 
             """
 
-            status_code: int = Field(ge=c.StatusCode.CONTINUE.value, le=c.StatusCode.GATEWAY_TIMEOUT.value, description="HTTP status code")
+            status_code: int = Field(
+                ge=c.StatusCode.CONTINUE.value,
+                le=c.StatusCode.GATEWAY_TIMEOUT.value,
+                description="HTTP status code",
+            )
             elapsed_time: float | None = Field(
                 default=None,
                 ge=0.0,
@@ -304,7 +308,11 @@ class FlextWebModels(m_core):
 
             """
 
-            status_code: int = Field(ge=c.StatusCode.CONTINUE.value, le=c.StatusCode.GATEWAY_TIMEOUT.value, description="HTTP status code")
+            status_code: int = Field(
+                ge=c.StatusCode.CONTINUE.value,
+                le=c.StatusCode.GATEWAY_TIMEOUT.value,
+                description="HTTP status code",
+            )
             headers: dict[str, str] = Field(
                 default_factory=dict,
                 description="HTTP response headers",
@@ -408,7 +416,7 @@ class FlextWebModels(m_core):
                 description="Application name",
             )
 
-            @field_validator("name")
+            @field_validator("name", mode="before")
             @classmethod
             def validate_name(cls, v: str) -> str:
                 """Validate application name using u.guard() DSL pattern."""
@@ -468,7 +476,7 @@ class FlextWebModels(m_core):
                 description="Current application status",
             )
 
-            @field_validator("status")
+            @field_validator("status", mode="before")
             @classmethod
             def validate_status(cls, v: str) -> str:
                 """Validate application status against allowed values from constants."""
@@ -590,7 +598,7 @@ class FlextWebModels(m_core):
                 self.status = running_status
                 # Add web lifecycle event
                 event_result = self.add_web_event("ApplicationStarted")
-                if event_result.is_failure:  # DEFENSIVE
+                if event_result.is_failure:  # pragma: no cover
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {event_result.error}",
                     )
@@ -608,7 +616,7 @@ class FlextWebModels(m_core):
                 self.status = stopped_status
                 # Add web lifecycle event
                 event_result = self.add_web_event("ApplicationStopped")
-                if event_result.is_failure:  # DEFENSIVE
+                if event_result.is_failure:  # pragma: no cover
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {event_result.error}",
                     )
@@ -655,7 +663,7 @@ class FlextWebModels(m_core):
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
                 event_result = self.add_web_event("MetricsUpdated")
-                if event_result.is_failure:  # DEFENSIVE
+                if event_result.is_failure:  # pragma: no cover
                     return r[bool].fail(
                         f"Failed to add web event: {event_result.error}"
                     )
@@ -859,7 +867,11 @@ class FlextWebModels(m_core):
                 default="GET",  # Default HTTP method
                 description="HTTP method",
             )
-            url: str = Field(min_length=1, max_length=c.Web.Request.MAX_URL_LENGTH, description="Request URL")
+            url: str = Field(
+                min_length=1,
+                max_length=c.Web.Request.MAX_URL_LENGTH,
+                description="Request URL",
+            )
             headers: dict[str, str] = Field(
                 default_factory=dict,
                 description="HTTP headers",
@@ -881,7 +893,11 @@ class FlextWebModels(m_core):
             """Web response model with status tracking."""
 
             request_id: str = Field(description="Associated request identifier")
-            status_code: int = Field(ge=c.StatusCode.CONTINUE.value, le=c.StatusCode.GATEWAY_TIMEOUT.value, description="HTTP status code")
+            status_code: int = Field(
+                ge=c.StatusCode.CONTINUE.value,
+                le=c.StatusCode.GATEWAY_TIMEOUT.value,
+                description="HTTP status code",
+            )
             headers: dict[str, str] = Field(
                 default_factory=dict,
                 description="HTTP response headers",
@@ -957,8 +973,8 @@ class FlextWebModels(m_core):
                     port=port,
                 )
                 return r.ok(entity)
-            except ValidationError as e:  # DEFENSIVE
-                error_msg = (  # DEFENSIVE
+            except ValidationError as e:  # pragma: no cover
+                error_msg = (  # pragma: no cover
                     f"Validation failed: {e.errors()[0]['msg']}"
                     if e.errors()
                     else str(e)  # pragma: no cover

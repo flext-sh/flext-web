@@ -20,11 +20,11 @@ from pydantic import ValidationError
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
-from flext_web.services import FlextWebServices
 from flext_web.settings import FlextWebSettings
 from flext_web.typings import t
 
 # Import aliases for simplified usage
+r = FlextResult
 u = FlextUtilities
 c = FlextWebConstants
 m = FlextWebModels
@@ -70,38 +70,6 @@ class FlextWebApi:
             logger.info("FastAPI application created successfully")
         else:
             logger.error(f"FastAPI application creation failed: {result.error}")
-
-        return result
-
-    @classmethod
-    def create_http_service(
-        cls,
-        config: FlextWebSettings | None = None,
-    ) -> FlextResult[FlextWebServices]:
-        """Create HTTP service with validation and dependency injection.
-
-        Single Responsibility: Creates and configures HTTP services only.
-        Uses dependency injection pattern for flexible service composition.
-        Delegates to FlextWebServices for actual service creation.
-
-        Args:
-        config: Service configuration model or None for defaults
-
-        Returns:
-        FlextResult[FlextWebServices]: Success contains configured service,
-        failure contains detailed error message
-
-        """
-        logger = FlextLogger(__name__)
-
-        logger.info("Creating HTTP service via API facade")
-        result = FlextWebServices.create_service(config)
-
-        # Log result using monadic pattern
-        if result.is_success:
-            logger.info("HTTP service created successfully")
-        else:
-            logger.error(f"HTTP service creation failed: {result.error}")
 
         return result
 
