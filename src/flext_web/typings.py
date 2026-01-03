@@ -27,7 +27,7 @@ u = FlextUtilities
 c = FlextWebConstants
 m = FlextWebModels
 
-HttpMethod = FlextWebConstants.Web.Http.Method
+HttpMethod = FlextWebConstants.Web.Method
 
 
 class _WebRequestConfig(TypedDict, total=False):
@@ -102,7 +102,7 @@ class FlextWebTypes(FlextTypes):
         """Application entity model - inherits from FlextWebModels.Web.Entity."""
 
     # ApplicationStatus - StrEnum cannot be inherited (Python limitation)
-    ApplicationStatus = FlextWebConstants.Web.WebEnvironment.Status
+    ApplicationStatus = FlextWebConstants.Web.Status
 
     # Application data types - proper inheritance from FlextWebModels
     class AppData(FlextWebModels.Web.ApplicationResponse):
@@ -164,7 +164,7 @@ class FlextWebTypes(FlextTypes):
     def create_http_request(
         cls,
         url: str,
-        method: str = FlextWebConstants.Web.Http.Method.GET,
+        method: str = FlextWebConstants.Web.Method.GET,
         headers: dict[str, str] | None = None,
         body: str | dict[str, t_core.GeneralValueType] | None = None,
         timeout: float = FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
@@ -286,7 +286,7 @@ class FlextWebTypes(FlextTypes):
         method = u.get(
             config,
             "method",
-            default=FlextWebConstants.Web.Http.Method.GET,
+            default=FlextWebConstants.Web.Method.GET,
         )
         headers = config.get("headers")
         body = u.get(config, "body")
@@ -432,12 +432,12 @@ class FlextWebTypes(FlextTypes):
         status = u.get(
             config,
             "status",
-            default=FlextWebConstants.Web.WebEnvironment.Status.STOPPED.value,
+            default=FlextWebConstants.Web.Status.STOPPED.value,
         )
         environment = u.get(
             config,
             "environment",
-            default=FlextWebConstants.Web.WebEnvironment.Name.DEVELOPMENT.value,
+            default=FlextWebConstants.Web.Name.DEVELOPMENT.value,
         )
         debug_mode_raw = u.get(
             config,

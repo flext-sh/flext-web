@@ -20,13 +20,15 @@
     dependencies = [
         "fastapi (>=0.119.0)",
         "flask (>=3.0.0)",
-        "flext-core @ file:///home/marlonsc/flext/flext-core",
         "pydantic (>=2.12.3)",
         "pydantic-settings (>=2.11.0)",
-        "pytest (>=8.0.0)",
+        "pytest (>=9.0.2,<10.0.0)",
         "requests (>=2.31.0)",
         "uvicorn (>=0.38.0)",
         "pydantic-core (>=2.41.4)",
+        "pytest-cov (>=7.0.0,<8.0.0)",
+        "pytest-randomly (>=4.0.1,<5.0.0)",
+        "faker (>=40.1.0,<41.0.0)",
     ]
     description = "FLEXT Web - Modern Web Interface for FLEXT Platform"
     keywords = [
@@ -105,57 +107,62 @@
 
 [tool]
     [tool.deptry]
-		known_first_party = [
-		    "flext_web",
-		]
+        known_first_party = [
+            "flext_web",
+        ]
 
     [tool.poetry]
         [[tool.poetry.packages]]
             from = "src"
             include = "flext_web"
 
-		[tool.poetry.dependencies]
-			python = ">=3.13,<3.14"
+        [tool.poetry.dependencies]
+            python = ">=3.13,<3.14"
 
-	        [tool.poetry.dependencies.flext-core]
-	            develop = true
-	            path = "../flext-core"
+            [tool.poetry.dependencies.flext-core]
+                develop = true
+                path = "../flext-core"
 
         [tool.poetry.group]
-			[tool.poetry.group.dev.dependencies]
-				commitizen     = ">=4.8.3"
-				detect-secrets = ">=1.5.0"
-				pyrefly        = "^0.34.0"
+            [tool.poetry.group.dev.dependencies]
+                commitizen     = ">=4.8.3"
+                detect-secrets = ">=1.5.0"
+                pyrefly        = "^0.46.3"
+            pytest = "^9.0.2"
+            opentelemetry-api = ">=1.39.1"
+            opentelemetry-sdk = ">=1.39.1"
+            prompt-toolkit = ">=3.0.52"
+            sqlparse = ">=0.5.5"
 
-	[tool.pytest.ini_options]
-		addopts = [
+    [tool.pytest.ini_options]
+        addopts = [
             "--cov-report=term-missing",
             "--cov=src/",
-		    "--strict-config",
+            "--strict-config",
             "--strict-markers",
-		    "--tb=short",
+            "--tb=short",
             "-p no:sugar",
             "-q",
-		    "-ra",
-		]
-		markers = [
-		    "api: API tests",
-		    "benchmark: Benchmark tests",
-		    "concurrency: Concurrency tests",
-		    "db: Database tests",
-		    "e2e: End-to-end tests",
-		    "integration: Integration tests",
-		    "memory: Memory tests",
-		    "network: Network tests",
-		    "performance: Performance tests",
-		    "race_condition: Race condition tests",
-		    "slow: Slow tests",
-		    "smoke: Smoke tests",
-		    "stress: Stress tests",
-		    "unit: Unit tests",
-		    "web: Web interface tests",
-		]
-		minversion = "8.0"
+            "-ra",
+        ]
+        markers = [
+            "api: API tests",
+            "benchmark: Benchmark tests",
+            "concurrency: Concurrency tests",
+            "db: Database tests",
+            "e2e: End-to-end tests",
+            "integration: Integration tests",
+            "memory: Memory tests",
+            "network: Network tests",
+            "performance: Performance tests",
+            "race_condition: Race condition tests",
+            "slow: Slow tests",
+            "smoke: Smoke tests",
+            "stress: Stress tests",
+            "unit: Unit tests",
+            "web: Web interface tests",
+        ]
+        minversion = "8.0"
         python_classes = [
             "Test*",
         ]
@@ -166,15 +173,15 @@
         python_functions = [
             "test_*",
         ]
-		testpaths = [
-		    "tests",
-		]
+        testpaths = [
+            "tests",
+        ]
 
-		[tool.ruff]
-		    extend = "../ruff-shared.toml"
+        [tool.ruff]
+            extend = "../ruff-shared.toml"
 
-		[tool.ruff.lint.isort]
-		    known-first-party = [
-		        "flext_web",
-		    ]
+        [tool.ruff.lint.isort]
+            known-first-party = [
+                "flext_web",
+            ]
 

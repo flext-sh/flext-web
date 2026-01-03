@@ -97,7 +97,7 @@ class FlextWebModels(m_core):
             timeout: float = Field(
                 default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
                 ge=0.0,
-                le=c.Web.Request.REQUEST_TIMEOUT_MAX,
+                le=c.Web.WebValidation.REQUEST_TIMEOUT_MAX,
                 description="Request timeout in seconds",
             )
 
@@ -156,8 +156,8 @@ class FlextWebModels(m_core):
             """
 
             status_code: int = Field(
-                ge=c.StatusCode.CONTINUE.value,
-                le=c.StatusCode.GATEWAY_TIMEOUT.value,
+                ge=c.Web.StatusCode.CONTINUE.value,
+                le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
                 description="HTTP status code",
             )
             elapsed_time: float | None = Field(
@@ -174,7 +174,7 @@ class FlextWebModels(m_core):
                     True if status code in range(*c.SUCCESS_RANGE), False otherwise
 
                 """
-                success_min, success_max = c.Web.Http.SUCCESS_RANGE
+                success_min, success_max = c.Web.SUCCESS_RANGE
                 return success_min <= self.status_code <= success_max
 
             @property
@@ -185,7 +185,7 @@ class FlextWebModels(m_core):
                     True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
-                return self.status_code >= c.Web.Http.ERROR_MIN
+                return self.status_code >= c.Web.ERROR_MIN
 
         class AppRequest(m_core.Value):
             """Web request entity with tracking and context information.
@@ -219,7 +219,7 @@ class FlextWebModels(m_core):
             timeout: float = Field(
                 default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
                 ge=0.0,
-                le=c.Web.Request.REQUEST_TIMEOUT_MAX,
+                le=c.Web.WebValidation.REQUEST_TIMEOUT_MAX,
                 description="Request timeout in seconds",
             )
 
@@ -309,8 +309,8 @@ class FlextWebModels(m_core):
             """
 
             status_code: int = Field(
-                ge=c.StatusCode.CONTINUE.value,
-                le=c.StatusCode.GATEWAY_TIMEOUT.value,
+                ge=c.Web.StatusCode.CONTINUE.value,
+                le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
                 description="HTTP status code",
             )
             headers: dict[str, str] = Field(
@@ -335,7 +335,7 @@ class FlextWebModels(m_core):
                 description="Unique response identifier",
             )
             request_id: str = Field(description="Associated request identifier")
-            content_type: c.Web.ContentTypeLiteral | str = Field(
+            content_type: c.Web.Literals.ContentTypeLiteral | str = Field(
                 default=c.Web.Http.CONTENT_TYPE_JSON,
                 description="Response content type",
             )
@@ -358,7 +358,7 @@ class FlextWebModels(m_core):
                     True if status code in range(*c.SUCCESS_RANGE), False otherwise
 
                 """
-                success_min, success_max = c.Web.Http.SUCCESS_RANGE
+                success_min, success_max = c.Web.SUCCESS_RANGE
                 return success_min <= self.status_code <= success_max
 
             @property
@@ -369,7 +369,7 @@ class FlextWebModels(m_core):
                     True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
-                return self.status_code >= c.Web.Http.ERROR_MIN
+                return self.status_code >= c.Web.ERROR_MIN
 
             @property
             def processing_time_seconds(self) -> float:
@@ -383,7 +383,7 @@ class FlextWebModels(m_core):
 
         # APPLICATION MODELS (Aggregates - consistency boundaries)
 
-        # EntityStatus removed - use c.Web.WebEnvironment.Status instead
+        # EntityStatus removed - use c.Web.Status instead
         # All status values are now centralized in constants.py
 
         class Entity(m_core.Entity):
@@ -412,7 +412,7 @@ class FlextWebModels(m_core):
             )
             name: str = Field(
                 min_length=1,
-                max_length=c.Web.Application.MAX_APP_NAME_LENGTH,
+                max_length=c.Web.WebServer.MAX_APP_NAME_LENGTH,
                 description="Application name",
             )
 
@@ -462,7 +462,7 @@ class FlextWebModels(m_core):
             host: str = Field(
                 default=c.Web.WebDefaults.HOST,
                 min_length=1,
-                max_length=c.Web.MAX_HOST_LENGTH,
+                max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
                 description="Application host address",
             )
             port: int = Field(
@@ -471,8 +471,8 @@ class FlextWebModels(m_core):
                 le=c.Web.WebValidation.PORT_RANGE[1],
                 description="Application port number",
             )
-            status: c.Web.ApplicationStatusLiteral | str = Field(
-                default=c.Web.WebEnvironment.Status.STOPPED.value,
+            status: c.Web.Literals.ApplicationStatusLiteral | str = Field(
+                default=c.Web.Status.STOPPED.value,
                 description="Current application status",
             )
 
@@ -480,14 +480,14 @@ class FlextWebModels(m_core):
             @classmethod
             def validate_status(cls, v: str) -> str:
                 """Validate application status against allowed values from constants."""
-                valid_statuses = set(c.Web.WebEnvironment.STATUSES)
+                valid_statuses = set(c.Web.STATUSES)
                 if v not in valid_statuses:
                     msg = f"Invalid status '{v}'. Must be one of: {sorted(valid_statuses)}"
                     raise TypeError(msg)
                 return v
 
             environment: str = Field(
-                default=c.Web.WebEnvironment.Name.DEVELOPMENT.value,
+                default=c.Web.Name.DEVELOPMENT.value,
                 description="Deployment environment",
             )
             debug_mode: bool = Field(
@@ -512,31 +512,31 @@ class FlextWebModels(m_core):
             @property
             def is_running(self) -> bool:
                 """Check if application is currently running."""
-                return self.status == c.Web.WebEnvironment.Status.RUNNING.value
+                return self.status == c.Web.Status.RUNNING.value
 
             @property
             def is_healthy(self) -> bool:
                 """Check if application is healthy and operational."""
-                running = c.Web.WebEnvironment.Status.RUNNING.value
-                maintenance = c.Web.WebEnvironment.Status.MAINTENANCE.value
+                running = c.Web.Status.RUNNING.value
+                maintenance = c.Web.Status.MAINTENANCE.value
                 return self.status in {running, maintenance}
 
             @property
             def can_start(self) -> bool:
                 """Check if application can be started."""
-                return self.status == c.Web.WebEnvironment.Status.STOPPED.value
+                return self.status == c.Web.Status.STOPPED.value
 
             @property
             def can_stop(self) -> bool:
                 """Check if application can be stopped."""
-                return self.status == c.Web.WebEnvironment.Status.RUNNING.value
+                return self.status == c.Web.Status.RUNNING.value
 
             @property
             def can_restart(self) -> bool:
                 """Check if application can be restarted using flext_u.in_() DSL pattern."""
-                running = c.Web.WebEnvironment.Status.RUNNING.value
-                stopped = c.Web.WebEnvironment.Status.STOPPED.value
-                error = c.Web.WebEnvironment.Status.ERROR.value
+                running = c.Web.Status.RUNNING.value
+                stopped = c.Web.Status.STOPPED.value
+                error = c.Web.Status.ERROR.value
                 # Use flext_u.in_() for unified membership check (DSL pattern)
                 return flext_u.in_(self.status, {running, stopped, error})
 
@@ -589,7 +589,7 @@ class FlextWebModels(m_core):
 
             def start(self) -> r[FlextWebModels.Web.Entity]:
                 """Start the application."""
-                running_status = c.Web.WebEnvironment.Status.RUNNING.value
+                running_status = c.Web.Status.RUNNING.value
                 already_running = self.status == running_status
                 if already_running:
                     return r[FlextWebModels.Web.Entity].fail(
@@ -606,8 +606,8 @@ class FlextWebModels(m_core):
 
             def stop(self) -> r[FlextWebModels.Web.Entity]:
                 """Stop the application."""
-                running_status = c.Web.WebEnvironment.Status.RUNNING.value
-                stopped_status = c.Web.WebEnvironment.Status.STOPPED.value
+                running_status = c.Web.Status.RUNNING.value
+                stopped_status = c.Web.Status.STOPPED.value
                 not_running = self.status != running_status
                 if not_running:
                     return r[FlextWebModels.Web.Entity].fail(
@@ -629,8 +629,8 @@ class FlextWebModels(m_core):
                     return r[FlextWebModels.Web.Entity].fail(
                         "Cannot restart in current state",
                     )
-                starting_status = c.Web.WebEnvironment.Status.STARTING.value
-                running_status = c.Web.WebEnvironment.Status.RUNNING.value
+                starting_status = c.Web.Status.STARTING.value
+                running_status = c.Web.Status.RUNNING.value
                 self.status = starting_status
                 # Add web lifecycle events
                 restart_event_result = self.add_web_event("ApplicationRestarting")
@@ -740,7 +740,7 @@ class FlextWebModels(m_core):
             host: str = Field(
                 default=c.Web.WebDefaults.HOST,
                 min_length=1,
-                max_length=c.Web.MAX_HOST_LENGTH,
+                max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
                 description="Application host address",
             )
             port: int = Field(
@@ -785,7 +785,7 @@ class FlextWebModels(m_core):
             )
             host: str = Field(
                 min_length=1,
-                max_length=c.Web.MAX_HOST_LENGTH,
+                max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
                 description="Application host",
             )
             port: int = Field(
@@ -863,13 +863,13 @@ class FlextWebModels(m_core):
         class WebRequest(m_core.Value):
             """Web request model with complete tracking."""
 
-            method: c.Web.HttpMethodLiteral = Field(
+            method: c.Web.Literals.HttpMethodLiteral = Field(
                 default="GET",  # Default HTTP method
                 description="HTTP method",
             )
             url: str = Field(
                 min_length=1,
-                max_length=c.Web.Request.MAX_URL_LENGTH,
+                max_length=c.Web.WebValidation.MAX_URL_LENGTH,
                 description="Request URL",
             )
             headers: dict[str, str] = Field(
@@ -894,8 +894,8 @@ class FlextWebModels(m_core):
 
             request_id: str = Field(description="Associated request identifier")
             status_code: int = Field(
-                ge=c.StatusCode.CONTINUE.value,
-                le=c.StatusCode.GATEWAY_TIMEOUT.value,
+                ge=c.Web.StatusCode.CONTINUE.value,
+                le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
                 description="HTTP status code",
             )
             headers: dict[str, str] = Field(
@@ -920,13 +920,13 @@ class FlextWebModels(m_core):
 
             title: str = Field(
                 min_length=1,
-                max_length=c.Web.Application.MAX_APP_NAME_LENGTH,
+                max_length=c.Web.WebServer.MAX_APP_NAME_LENGTH,
                 description="Application title",
             )
             version: str = Field(description="Application version")
             description: str = Field(
                 min_length=1,
-                max_length=c.Web.MAX_DESCRIPTION_LENGTH,
+                max_length=c.Web.WebSecurity.MAX_DESCRIPTION_LENGTH,
                 description="Application description",
             )
             docs_url: str = Field(
@@ -986,7 +986,7 @@ class FlextWebModels(m_core):
         @classmethod
         def create_web_request(
             cls,
-            method: c.Web.HttpMethodLiteral,
+            method: c.Web.Literals.HttpMethodLiteral,
             url: str,
             headers: dict[str, str] | None = None,
             body: str | dict[str, t.GeneralValueType] | None = None,
@@ -1113,7 +1113,7 @@ class FlextWebModels(m_core):
             description: str = Field(
                 default=c.Web.WebApi.DEFAULT_DESCRIPTION,
                 min_length=1,
-                max_length=c.Web.MAX_DESCRIPTION_LENGTH,
+                max_length=c.Web.WebSecurity.MAX_DESCRIPTION_LENGTH,
                 description="Application description",
             )
             debug: bool = Field(default=False, description="FastAPI debug mode")

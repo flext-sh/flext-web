@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from enum import IntEnum, StrEnum
 from ipaddress import IPv4Address
 from types import MappingProxyType
-from typing import ClassVar, Final
+from typing import ClassVar, Final, Literal
 
 from flext_core import FlextConstants
 
@@ -322,6 +322,60 @@ class FlextWebConstants(FlextConstants):
         # ═══════════════════════════════════════════════════════════════════
         # All Literal types are defined at Web level to reference StrEnum classes.
         # They reference StrEnum members to avoid string duplication (DRY principle).
+
+        class Literals:
+            """Type literals for compile-time type safety.
+
+            Provides Literal type aliases derived from StrEnum values.
+            Usage: c.Web.Literals.HttpMethodLiteral
+            """
+
+            # HTTP method literal - references Method StrEnum
+            HttpMethodLiteral = Literal[
+                "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
+            ]
+
+            # Content type literal - references Http content types
+            ContentTypeLiteral = Literal["application/json", "text/plain", "text/html"]
+
+            # Environment name literal - references Name StrEnum
+            EnvironmentNameLiteral = Literal[
+                "development", "staging", "production", "testing"
+            ]
+
+            # Application status literal - references Status StrEnum
+            ApplicationStatusLiteral = Literal[
+                "stopped",
+                "starting",
+                "running",
+                "stopping",
+                "error",
+                "maintenance",
+                "deploying",
+            ]
+
+            # Application type literal - references ApplicationType StrEnum
+            ApplicationTypeLiteral = Literal[
+                "application",
+                "service",
+                "api",
+                "microservice",
+                "webapp",
+                "spa",
+                "dashboard",
+                "REDACTED_LDAP_BIND_PASSWORD-panel",
+            ]
+
+            # Response status literal
+            ResponseStatusLiteral = Literal[
+                "success", "error", "operational", "healthy"
+            ]
+
+            # Protocol literal
+            ProtocolLiteral = Literal["http", "https"]
+
+            # SameSite cookie literal
+            SameSiteLiteral = Literal["Lax", "Strict", "None"]
 
 
 c = FlextWebConstants

@@ -208,8 +208,8 @@ class ExamplesFullFunctionalityTest:
 
             # Test 2: Configuration validation
             validation_result = config.validate_business_rules()
-            if validation_result.success:
-                assert validation_result.success is True
+            if validation_result.is_success:
+                assert validation_result.is_success is True
                 assert validation_result.value is not None
 
             # Test 3: setup_signal_handlers function
