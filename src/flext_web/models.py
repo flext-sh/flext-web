@@ -28,7 +28,7 @@ class FlextWebModels(m_core):
     Provides Pydantic models for web applications with validation.
     """
 
-    def __init_subclass__(cls, **kwargs: t.Types.GeneralValueType) -> None:
+    def __init_subclass__(cls, **kwargs: t.GeneralValueType) -> None:
         """Warn when FlextWebModels is subclassed directly."""
         super().__init_subclass__(**kwargs)
         flext_u.Deprecation.warn_once(
@@ -451,7 +451,7 @@ class FlextWebModels(m_core):
                 dangerous_patterns = c.Web.WebSecurity.DANGEROUS_PATTERNS
                 dangerous_found = flext_u.find(
                     dangerous_patterns,
-                    lambda p: p.lower() in v.lower(),
+                    lambda value: value.lower() in v.lower(),
                 )
                 if dangerous_found:
                     error_msg = f"Name contains dangerous pattern: {dangerous_found}"

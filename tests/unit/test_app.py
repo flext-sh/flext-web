@@ -3,13 +3,11 @@
 Tests the unified FlextWebApp class following flext standards.
 """
 
-from unittest.mock import patch
-
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from flask.testing import FlaskClient
 
-from flext_web.app import FlextWebApp, _FastAPIConfig
+from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.settings import FlextWebSettings
@@ -36,7 +34,7 @@ class TestFlextWebApp:
 
     def test_factory_create_instance_success(self) -> None:
         """Test FastAPIFactory.create_instance with success - REAL FastAPI."""
-        config: _FastAPIConfig = {
+        config: FlextWebApp._FastAPIConfig = {
             "title": "Test API",
             "version": "1.0.0",
             "description": "Test Description",
@@ -56,7 +54,7 @@ class TestFlextWebApp:
     def test_factory_create_instance_with_valid_params(self) -> None:
         """Test FastAPIFactory.create_instance with valid parameters - REAL FastAPI."""
         # FastAPI requires non-empty title - use valid title
-        config: _FastAPIConfig = {
+        config: FlextWebApp._FastAPIConfig = {
             "title": "Valid Test API",
             "version": "1.0.0",
             "docs_url": FlextWebConstants.Web.WebApi.DOCS_URL,
@@ -73,7 +71,7 @@ class TestFlextWebApp:
 
     def test_factory_create_instance_real_fastapi(self) -> None:
         """Test FastAPIFactory.create_instance with REAL FastAPI - no mocks."""
-        config: _FastAPIConfig = {
+        config: FlextWebApp._FastAPIConfig = {
             "title": "Real Test API",
             "version": "1.0.0",
             "description": "Real Test Description",
@@ -317,7 +315,7 @@ class TestFlextWebApp:
         )
 
         # Use factory_config to override title
-        factory_config: _FastAPIConfig = {
+        factory_config: FlextWebApp._FastAPIConfig = {
             "title": "Override Title",
             "version": config.version,
             "description": config.description,
@@ -341,7 +339,7 @@ class TestFlextWebApp:
             version="1.0.0",
         )
 
-        factory_config: _FastAPIConfig = {
+        factory_config: FlextWebApp._FastAPIConfig = {
             "title": config.title,
             "version": config.version,
             "description": config.description,
@@ -362,7 +360,7 @@ class TestFlextWebApp:
     def test_create_flask_app_success(self) -> None:
         """Test create_flask_app with success."""
         config = FlextWebSettings(
-            secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY,
+            secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY,
         )
 
         result = FlextWebApp.create_flask_app(config)
@@ -447,7 +445,7 @@ class TestFlextWebApp:
         )
 
         # Create real FastAPI app
-        fastapi_config: _FastAPIConfig = {
+        fastapi_config: FlextWebApp._FastAPIConfig = {
             "title": "Test API",
             "version": "1.0.0",
             "description": config.description,
@@ -478,7 +476,7 @@ class TestFlextWebApp:
     def test_create_flask_app_health_endpoint_real(self) -> None:
         """Test create_flask_app health endpoint - REAL Flask app."""
         config = FlextWebSettings(
-            secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY,
+            secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY,
         )
 
         result = FlextWebApp.create_flask_app(config)
@@ -494,17 +492,7 @@ class TestFlextWebApp:
         assert health_data is not None
         assert "status" in health_data
         assert "service" in health_data
-        assert health_data["status"] == FlextWebConstants.WebResponse.STATUS_HEALTHY
-
-    def test_create_fastapi_app_exception_handling(self) -> None:
-        """Test create_fastapi_app exception handling (lines 108-112)."""
-        # Patch FastAPI to raise an exception
-        with patch("flext_web.app.FastAPI", side_effect=Exception("Test exception")):
-            result = FlextWebApp.create_fastapi_app()
-            assert result.is_failure
-            assert result.error is not None
-            assert "Failed to create FastAPI application" in result.error
-            assert "Test exception" in result.error
+        assert health_data["status"] == FlextWebConstants.Web.WebResponse.STATUS_HEALTHY
 
     def test_validate_business_rules(self) -> None:
         """Test validate_business_rules method (line 352)."""

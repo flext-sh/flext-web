@@ -69,20 +69,28 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
 
         These type aliases reuse production Literals from FlextWebConstants.Web
         to ensure consistency between tests and production code.
-        All Literal types are now at FlextWebConstants.Web level for direct access.
+        All Literal types are at FlextWebConstants.Web.Literals namespace.
         """
 
         # Reuse production Literals for consistency (Python 3.13+ best practices)
-        HttpMethodLiteral: TypeAlias = FlextWebConstants.Web.HttpMethodLiteral
-        EnvironmentNameLiteral: TypeAlias = FlextWebConstants.Web.EnvironmentNameLiteral
-        ApplicationStatusLiteral: TypeAlias = (
-            FlextWebConstants.Web.ApplicationStatusLiteral
+        HttpMethodLiteral: TypeAlias = FlextWebConstants.Web.Literals.HttpMethodLiteral
+        EnvironmentNameLiteral: TypeAlias = (
+            FlextWebConstants.Web.Literals.EnvironmentNameLiteral
         )
-        ApplicationTypeLiteral: TypeAlias = FlextWebConstants.Web.ApplicationTypeLiteral
-        ResponseStatusLiteral: TypeAlias = FlextWebConstants.Web.ResponseStatusLiteral
-        ProtocolLiteral: TypeAlias = FlextWebConstants.Web.ProtocolLiteral
-        ContentTypeLiteral: TypeAlias = FlextWebConstants.Web.ContentTypeLiteral
-        SameSiteLiteral: TypeAlias = FlextWebConstants.Web.SameSiteLiteral
+        ApplicationStatusLiteral: TypeAlias = (
+            FlextWebConstants.Web.Literals.ApplicationStatusLiteral
+        )
+        ApplicationTypeLiteral: TypeAlias = (
+            FlextWebConstants.Web.Literals.ApplicationTypeLiteral
+        )
+        ResponseStatusLiteral: TypeAlias = (
+            FlextWebConstants.Web.Literals.ResponseStatusLiteral
+        )
+        ProtocolLiteral: TypeAlias = FlextWebConstants.Web.Literals.ProtocolLiteral
+        ContentTypeLiteral: TypeAlias = (
+            FlextWebConstants.Web.Literals.ContentTypeLiteral
+        )
+        SameSiteLiteral: TypeAlias = FlextWebConstants.Web.Literals.SameSiteLiteral
 
 
 # Short aliases per FLEXT convention

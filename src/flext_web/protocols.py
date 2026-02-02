@@ -72,7 +72,7 @@ class FlextWebProtocols(FlextProtocols):
     5. Type Safety: Full mypy/pyright type checking without inheritance
 
     Example of structural typing:
-    class WebApplicationService:
+    class Web:
         '''Satisfies FlextWebProtocols.Web.WebAppManagerProtocol through method implementation.'''
         def create_app(self, name: str, port: int, host: str) -> r:
             '''Required method - protocol compliance verified.'''
@@ -969,21 +969,23 @@ class FlextWebProtocols(FlextProtocols):
             class _WebServiceBase:
                 """Base implementation of WebServiceProtocol for testing."""
 
-            def initialize_routes(self) -> r[bool]:
-                """Initialize web service routes."""
-                return FlextWebProtocols.Web.WebServiceProtocol.initialize_routes()
+                def initialize_routes(self) -> r[bool]:
+                    """Initialize web service routes."""
+                    return FlextWebProtocols.Web.WebServiceProtocol.initialize_routes()
 
-            def configure_middleware(self) -> r[bool]:
-                """Configure web service middleware."""
-                return FlextWebProtocols.Web.WebServiceProtocol.configure_middleware()
+                def configure_middleware(self) -> r[bool]:
+                    """Configure web service middleware."""
+                    return (
+                        FlextWebProtocols.Web.WebServiceProtocol.configure_middleware()
+                    )
 
-            def start_service(self) -> r[bool]:
-                """Start the web service."""
-                return FlextWebProtocols.Web.WebServiceProtocol.start_service()
+                def start_service(self) -> r[bool]:
+                    """Start the web service."""
+                    return FlextWebProtocols.Web.WebServiceProtocol.start_service()
 
-            def stop_service(self) -> r[bool]:
-                """Stop the web service."""
-                return FlextWebProtocols.Web.WebServiceProtocol.stop_service()
+                def stop_service(self) -> r[bool]:
+                    """Stop the web service."""
+                    return FlextWebProtocols.Web.WebServiceProtocol.stop_service()
 
             class _WebRepositoryBase:
                 """Base implementation of WebRepositoryProtocol for testing."""

@@ -13,8 +13,6 @@ import uuid
 
 from flext_core import (
     FlextConstants,
-    FlextContainer,
-    FlextLogger,
     FlextResult,
     FlextService,
     FlextUtilities,
@@ -232,8 +230,6 @@ class FlextWebServices(FlextService[bool]):
         # Override _config with web config (FlextService creates default via _get_service_config_type)
         # Set attribute directly (no PrivateAttr needed, compatible with FlextService)
         self._config = web_config
-        self._container = FlextContainer()
-        self._logger = FlextLogger(__name__)
         self._entity_service: FlextWebServices.Entity | None = None
 
         # HTTP server state management
@@ -422,7 +418,7 @@ class FlextWebServices(FlextService[bool]):
             name=app_data.name,
             host=app_data.host,
             port=app_data.port,
-            status=c.Web.WebEnvironment.Status.STOPPED.value,
+            status=c.Web.Status.STOPPED.value,
             created_at=u.Generators.generate_iso_timestamp(),
         )
         self._applications[app_id] = app_response
@@ -467,7 +463,7 @@ class FlextWebServices(FlextService[bool]):
         app = self._applications[app_id]
         updated_app = app.model_copy(
             update={
-                "status": c.Web.WebEnvironment.Status.RUNNING.value,
+                "status": c.Web.Status.RUNNING.value,
             },
         )
         self._applications[app_id] = updated_app
@@ -492,7 +488,7 @@ class FlextWebServices(FlextService[bool]):
 
         app = self._applications[app_id]
         updated_app = app.model_copy(
-            update={"status": c.Web.WebEnvironment.Status.STOPPED.value},
+            update={"status": c.Web.Status.STOPPED.value},
         )
         self._applications[app_id] = updated_app
         return FlextResult[m.Web.ApplicationResponse].ok(updated_app)
@@ -514,8 +510,8 @@ class FlextWebServices(FlextService[bool]):
         # Use u.count() for unified counting (DSL pattern)
         apps_list = list(self._applications.values())
         total_apps = u.count(apps_list)
-        running_status = c.Web.WebEnvironment.Status.RUNNING.value
-        stopped_status = c.Web.WebEnvironment.Status.STOPPED.value
+        running_status = c.Web.Status.RUNNING.value
+        stopped_status = c.Web.Status.STOPPED.value
         # Use u.count() + u.filter() for unified counting with predicate (DSL pattern)
         running_apps_filtered = u.filter(
             apps_list,

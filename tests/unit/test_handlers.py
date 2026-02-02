@@ -105,7 +105,7 @@ class TestFlextWebHandlers:
 
         # Test invalid name type - use actual invalid type
         invalid_name: object = 123
-        result = handler.create(invalid_name, 8080, "localhost")  # type: ignore[arg-type]
+        result = handler.create(invalid_name, 8080, "localhost")
         assert result.is_failure
         assert result.error is not None
         assert "must be a string" in result.error
@@ -118,7 +118,7 @@ class TestFlextWebHandlers:
 
         # Test invalid host type - use actual invalid type
         invalid_host: object = 123
-        result = handler.create("test-app", 8080, invalid_host)  # type: ignore[arg-type]
+        result = handler.create("test-app", 8080, invalid_host)
         assert result.is_failure
         assert result.error is not None
         assert "must be a string" in result.error
@@ -131,7 +131,7 @@ class TestFlextWebHandlers:
 
         # Test invalid port type - use actual invalid type
         invalid_port: object = "8080"
-        result = handler.create("test-app", invalid_port, "localhost")  # type: ignore[arg-type]
+        result = handler.create("test-app", invalid_port, "localhost")
         assert result.is_failure
         assert result.error is not None
         assert "must be an integer" in result.error
@@ -192,7 +192,7 @@ class TestFlextWebHandlers:
         """Test handle_start_app with invalid entity type - REAL validation."""
         # Pass non-Entity object - use actual invalid type
         invalid_entity: object = "not-an-entity"
-        result = FlextWebHandlers.handle_start_app(invalid_entity)  # type: ignore[arg-type]
+        result = FlextWebHandlers.handle_start_app(invalid_entity)
         assert result.is_failure
         assert result.error is not None
         assert "Invalid application entity type" in result.error
@@ -201,7 +201,7 @@ class TestFlextWebHandlers:
         """Test handle_stop_app with invalid entity type - REAL validation."""
         # Pass non-Entity object - use actual invalid type
         invalid_entity: object = "not-an-entity"
-        result = FlextWebHandlers.handle_stop_app(invalid_entity)  # type: ignore[arg-type]
+        result = FlextWebHandlers.handle_stop_app(invalid_entity)
         assert result.is_failure
         assert result.error is not None
         assert "Invalid application entity type" in result.error
@@ -223,7 +223,7 @@ class TestFlextWebHandlers:
     def test_handle_start_app(self) -> None:
         """Test handle_start_app with valid entity."""
         # Create a valid app entity
-        app_result = FlextWebModels.create_web_app("test-app", "localhost", 8080)
+        app_result = FlextWebModels.Web.create_web_app("test-app", "localhost", 8080)
         assert app_result.is_success
         app = app_result.value
 
@@ -236,7 +236,7 @@ class TestFlextWebHandlers:
     def test_handle_stop_app(self) -> None:
         """Test handle_stop_app with valid entity."""
         # Create and start a valid app entity
-        app_result = FlextWebModels.create_web_app("test-app", "localhost", 8080)
+        app_result = FlextWebModels.Web.create_web_app("test-app", "localhost", 8080)
         assert app_result.is_success
         app = app_result.value
         start_result = app.start()

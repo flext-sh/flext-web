@@ -310,7 +310,12 @@ class FlextWebHandlers(FlextService[bool]):
         r containing updated application or error
 
         """
-        # Application entity is already validated by type system
+        # Validate application entity - fast fail
+        if not isinstance(app, m.Web.Entity):
+            return r[m.Web.Entity].fail(
+                "Invalid application entity type",
+            )
+
         # Use entity's stop method with monadic pattern
         return app.stop()
 

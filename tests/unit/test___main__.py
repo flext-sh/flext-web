@@ -26,7 +26,7 @@ class TestFlextWebCliService:
         cli_service = __main__.FlextWebCliService()
 
         # Use real ServiceResponse structure
-        status = FlextWebModels.Service.ServiceResponse(
+        status = FlextWebModels.Web.ServiceResponse(
             service="test-service",
             status="healthy",
             capabilities=["http_services_available"],

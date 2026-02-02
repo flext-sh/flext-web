@@ -33,6 +33,7 @@ class TestFlextWebInit:
     def test_all_exports_match(self) -> None:
         """Test that __all__ contains all expected exports."""
         expected_exports = {
+            # Main classes
             "FlextWebApi",
             "FlextWebApp",
             "FlextWebSettings",
@@ -43,8 +44,15 @@ class TestFlextWebInit:
             "FlextWebServices",
             "FlextWebTypes",
             "FlextWebUtilities",
+            # Version info
             "__version__",
             "__version_info__",
+            # Short aliases (FLEXT namespace pattern)
+            "c",  # FlextWebConstants alias
+            "m",  # FlextWebModels alias
+            "p",  # FlextWebProtocols alias
+            "t",  # FlextWebTypes alias
+            "u",  # FlextWebUtilities alias
         }
 
         assert set(flext_web.__all__) == expected_exports

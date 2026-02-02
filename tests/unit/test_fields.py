@@ -151,9 +151,9 @@ class TestFlextWebFields:
         # Test that Pydantic models work with default values
 
         class TestModel(BaseModel):
-            host: str = FlextWebConstants.WebDefaults.HOST
-            port: int = FlextWebConstants.WebDefaults.PORT
+            host: str = FlextWebConstants.Web.WebDefaults.HOST
+            port: int = FlextWebConstants.Web.WebDefaults.PORT
 
         model = TestModel()
-        assert model.host == FlextWebConstants.WebDefaults.HOST
-        assert model.port == FlextWebConstants.WebDefaults.PORT
+        assert model.host == FlextWebConstants.Web.WebDefaults.HOST
+        assert model.port == FlextWebConstants.Web.WebDefaults.PORT

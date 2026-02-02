@@ -5,23 +5,22 @@ Tests the unified FlextWebProtocols class following flext standards.
 
 from __future__ import annotations
 
-from flext_core import FlextTypes as t, FlextResult, p
+from flext_core import FlextResult, FlextTypes as t, p
 
 from flext_web.constants import FlextWebConstants
-
-from flext_web.protocols import (
-    FlextWebProtocols,
-    _WebAppManagerBase,
-    _WebConnectionBase,
-    _WebFrameworkInterfaceBase,
-    _WebHandlerBase,
-    _WebMonitoringBase,
-    _WebRepositoryBase,
-    _WebServiceBase,
-    _WebTemplateEngineBase,
-    _WebTemplateRendererBase,
-)
+from flext_web.protocols import FlextWebProtocols
 from flext_web.typings import FlextWebTypes
+
+# Access test base classes via the namespace
+_WebAppManagerBase = FlextWebProtocols.Web.TestBases._WebAppManagerBase
+_WebConnectionBase = FlextWebProtocols.Web.TestBases._WebConnectionBase
+_WebFrameworkInterfaceBase = FlextWebProtocols.Web.TestBases._WebFrameworkInterfaceBase
+_WebHandlerBase = FlextWebProtocols.Web.TestBases._WebHandlerBase
+_WebMonitoringBase = FlextWebProtocols.Web.TestBases._WebMonitoringBase
+_WebRepositoryBase = FlextWebProtocols.Web.TestBases._WebRepositoryBase
+_WebServiceBase = FlextWebProtocols.Web.TestBases._WebServiceBase
+_WebTemplateEngineBase = FlextWebProtocols.Web.TestBases._WebTemplateEngineBase
+_WebTemplateRendererBase = FlextWebProtocols.Web.TestBases._WebTemplateRendererBase
 
 
 class TestFlextWebProtocols:
@@ -39,15 +38,15 @@ class TestFlextWebProtocols:
 
     def test_web_protocols_structure(self) -> None:
         """Test FlextWebProtocols structure."""
-        # Web protocols should be available under Web namespace
+        # All web protocols are under the Web namespace
         assert hasattr(FlextWebProtocols.Web, "WebAppManagerProtocol")
         assert hasattr(FlextWebProtocols.Web, "WebResponseFormatterProtocol")
-        assert hasattr(FlextWebProtocols, "WebFrameworkInterfaceProtocol")
-        assert hasattr(FlextWebProtocols, "WebTemplateRendererProtocol")
-        assert hasattr(FlextWebProtocols, "WebServiceProtocol")
-        assert hasattr(FlextWebProtocols, "WebRepositoryProtocol")
-        assert hasattr(FlextWebProtocols, "WebTemplateEngineProtocol")
-        assert hasattr(FlextWebProtocols, "WebMonitoringProtocol")
+        assert hasattr(FlextWebProtocols.Web, "WebFrameworkInterfaceProtocol")
+        assert hasattr(FlextWebProtocols.Web, "WebTemplateRendererProtocol")
+        assert hasattr(FlextWebProtocols.Web, "WebServiceProtocol")
+        assert hasattr(FlextWebProtocols.Web, "WebRepositoryProtocol")
+        assert hasattr(FlextWebProtocols.Web, "WebTemplateEngineProtocol")
+        assert hasattr(FlextWebProtocols.Web, "WebMonitoringProtocol")
 
     def test_web_app_manager_protocol(self) -> None:
         """Test WebAppManagerProtocol definition."""
@@ -289,7 +288,9 @@ class TestFlextWebProtocols:
 
         # Protocols should be usable with isinstance checks
         class MockAppManager:
-            def create_app(self, name: str, port: int, host: str) -> dict[str, t.GeneralValueType]:
+            def create_app(
+                self, name: str, port: int, host: str
+            ) -> dict[str, t.GeneralValueType]:
                 return {"name": name, "host": host, "port": port}
 
             def start_app(self, app_id: str) -> dict[str, t.GeneralValueType]:
@@ -367,13 +368,17 @@ class TestFlextWebProtocols:
                     "host": host,
                 })
 
-            def start_app(self, app_id: str) -> FlextResult[dict[str, t.GeneralValueType]]:
+            def start_app(
+                self, app_id: str
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
                 return FlextResult[dict[str, t.GeneralValueType]].ok({
                     "id": app_id,
                     "status": "started",
                 })
 
-            def stop_app(self, app_id: str) -> FlextResult[dict[str, t.GeneralValueType]]:
+            def stop_app(
+                self, app_id: str
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
                 return FlextResult[dict[str, t.GeneralValueType]].ok({
                     "id": app_id,
                     "status": "stopped",
@@ -415,7 +420,9 @@ class TestFlextWebProtocols:
         """Test WebResponseFormatterProtocol methods execution."""
 
         class RealResponseFormatter:
-            def format_success(self, data: dict[str, t.GeneralValueType]) -> dict[str, t.GeneralValueType]:
+            def format_success(
+                self, data: dict[str, t.GeneralValueType]
+            ) -> dict[str, t.GeneralValueType]:
                 response: dict[str, t.GeneralValueType] = {
                     "status": FlextWebConstants.Web.WebResponse.STATUS_SUCCESS,
                 }
@@ -624,10 +631,14 @@ class TestFlextWebProtocols:
                 return FlextResult[list[dict[str, t.GeneralValueType]]].ok([])
 
             # Required by p.Repository
-            def get_by_id(self, entity_id: str) -> FlextResult[dict[str, t.GeneralValueType]]:
+            def get_by_id(
+                self, entity_id: str
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
                 return FlextResult[dict[str, t.GeneralValueType]].ok({"id": entity_id})
 
-            def save(self, entity: dict[str, t.GeneralValueType]) -> FlextResult[dict[str, t.GeneralValueType]]:
+            def save(
+                self, entity: dict[str, t.GeneralValueType]
+            ) -> FlextResult[dict[str, t.GeneralValueType]]:
                 return FlextResult[dict[str, t.GeneralValueType]].ok(entity)
 
             def delete(self, entity_id: str) -> FlextResult[bool]:
@@ -673,7 +684,9 @@ class TestFlextWebProtocols:
             ) -> FlextResult[str]:
                 return FlextResult[str].ok("")
 
-            def render_dashboard(self, data: dict[str, t.GeneralValueType]) -> FlextResult[str]:
+            def render_dashboard(
+                self, data: dict[str, t.GeneralValueType]
+            ) -> FlextResult[str]:
                 return FlextResult[str].ok("<html>Dashboard</html>")
 
             # Required by p.Service
@@ -700,7 +713,9 @@ class TestFlextWebProtocols:
         assert hasattr(renderer, "render_dashboard")
 
         # Execute methods
-        template_result = renderer.render_template("tesFlextWebTypes.html", {"key": "value"})
+        template_result = renderer.render_template(
+            "tesFlextWebTypes.html", {"key": "value"}
+        )
         assert template_result.is_success
 
         dashboard_result = renderer.render_dashboard({"data": "value"})
@@ -825,7 +840,9 @@ class TestFlextWebProtocols:
 
         monitoring = RealWebMonitoring()
         # WebMonitoringProtocol is @runtime_checkable, so isinstance should work
-        if hasattr(FlextWebProtocols.Web.WebMonitoringProtocol, "__runtime_checkable__"):
+        if hasattr(
+            FlextWebProtocols.Web.WebMonitoringProtocol, "__runtime_checkable__"
+        ):
             assert isinstance(monitoring, FlextWebProtocols.Web.WebMonitoringProtocol)
 
         # Execute methods

@@ -10,12 +10,11 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TypedDict
+from typing import TypedDict, override
 
 from fastapi import FastAPI
 from flask import Flask
 from flext_core import (
-    FlextContainer,
     FlextLogger,
     FlextService,
     r,
@@ -50,9 +49,8 @@ class FlextWebApp(FlextService[bool]):
     def __init__(self) -> None:
         """Initialize with flext-core container and logger."""
         super().__init__()
-        self._container = FlextContainer()
-        self._logger = FlextLogger(__name__)
 
+    @override
     def execute(self, **_kwargs: t.Types.GeneralValueType) -> r[bool]:
         """Execute the web application service.
 
@@ -64,7 +62,7 @@ class FlextWebApp(FlextService[bool]):
         failure contains error message
 
         """
-        self._logger.info("FlextWebApp service executed successfully")
+        self.logger.info("FlextWebApp service executed successfully")
         # Return bool for FlextService compatibility
         return r[bool].ok(True)
 
@@ -103,26 +101,22 @@ class FlextWebApp(FlextService[bool]):
                 redoc_url=c.Web.WebApi.REDOC_URL,
                 openapi_url=c.Web.WebApi.OPENAPI_URL,
             )
-            config_final = config if config is not None else default_config
-
-            # Use u.get() for unified extraction with defaults (DSL pattern)
-            title = u.get(config_final, "title", default="FastAPI")
-            version = u.get(
-                config_final,
+            # Extract configuration values with defaults
+            final_config = config if config is not None else default_config
+            title: str = final_config.get("title", "FastAPI")
+            version: str = final_config.get(
                 "version",
-                default=c.Web.WebDefaults.VERSION_STRING,
+                c.Web.WebDefaults.VERSION_STRING,
             )
-            description = u.get(
-                config_final,
+            description: str = final_config.get(
                 "description",
-                default="FlextWeb FastAPI Application",
+                "FlextWeb FastAPI Application",
             )
-            docs_url = u.get(config_final, "docs_url", default=c.Web.WebApi.DOCS_URL)
-            redoc_url = u.get(config_final, "redoc_url", default=c.Web.WebApi.REDOC_URL)
-            openapi_url = u.get(
-                config_final,
+            docs_url: str = final_config.get("docs_url", c.Web.WebApi.DOCS_URL)
+            redoc_url: str = final_config.get("redoc_url", c.Web.WebApi.REDOC_URL)
+            openapi_url: str = final_config.get(
                 "openapi_url",
-                default=c.Web.WebApi.OPENAPI_URL,
+                c.Web.WebApi.OPENAPI_URL,
             )
 
             # Use try/except for error handling with exception message

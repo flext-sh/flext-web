@@ -36,7 +36,7 @@ class _WebRequestConfig(TypedDict, total=False):
     url: str
     method: str
     headers: dict[str, str] | None
-    body: str | dict[str, str] | None
+    body: str | dict[str, t_core.GeneralValueType] | None
     timeout: float
     query_params: dict[str, t_core.GeneralValueType] | None
     client_ip: str
@@ -49,7 +49,7 @@ class _WebResponseConfig(TypedDict, total=False):
     status_code: int
     request_id: str
     headers: dict[str, str] | None
-    body: str | dict[str, str] | None
+    body: str | dict[str, t_core.GeneralValueType] | None
     elapsed_time: float
     content_type: str
     content_length: int
@@ -117,8 +117,13 @@ class FlextWebTypes(FlextTypes):
     # =========================================================================
 
     # Core data types - use Protocols and specific types
-    class WebCore:
-        """Web core type aliases for request/response data."""
+    class Web:
+        """Web core type aliases for request/response data.
+
+        Provides organized access to all Web types for other FLEXT projects.
+        Usage: Other projects can reference `t.Web.Http.*`, `t.Web.Project.*`, etc.
+        This enables consistent namespace patterns for cross-project type access.
+        """
 
         type ConfigValue = str | int | bool | list[str]
         type RequestDict = dict[
@@ -129,6 +134,89 @@ class FlextWebTypes(FlextTypes):
             str,
             str | int | bool | list[str] | dict[str, str | int | bool],
         ]
+
+        # ============================================================================
+        # LITERAL TYPE DEFINITIONS
+        # ============================================================================
+        # These Literal types provide compile-time safety for string literals
+        # All Literal[] definitions belong in typings.py under the t.* namespace
+
+        # HTTP method literal - references Http.Method StrEnum members
+        HttpMethodLiteral = Literal[
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "HEAD",
+            "OPTIONS",
+        ]
+
+        # Environment name literal - references WebEnvironment.Name StrEnum members
+        EnvironmentNameLiteral = Literal[
+            "development",
+            "staging",
+            "production",
+            "testing",
+        ]
+
+        # Application status literal - references WebEnvironment.Status StrEnum members
+        ApplicationStatusLiteral = Literal[
+            "stopped",
+            "starting",
+            "running",
+            "stopping",
+            "error",
+            "maintenance",
+            "deploying",
+        ]
+
+        # Application type literal - references WebEnvironment.ApplicationType StrEnum members
+        ApplicationTypeLiteral = Literal[
+            "application",
+            "service",
+            "api",
+            "microservice",
+            "webapp",
+            "spa",
+            "dashboard",
+            "REDACTED_LDAP_BIND_PASSWORD_panel",
+        ]
+
+        # Response status literal - uses string literals matching WebResponse constants
+        ResponseStatusLiteral = Literal[
+            "success",
+            "error",
+            "operational",
+            "healthy",
+        ]
+
+        # Protocol literal - uses string literals matching WebDefaults constants
+        ProtocolLiteral = Literal[
+            "http",
+            "https",
+        ]
+
+        # Content type literal - uses string literals matching Http constants
+        ContentTypeLiteral = Literal[
+            "application/json",
+            "text/plain",
+            "text/html",
+        ]
+
+        # Session cookie SameSite literal - standard HTTP cookie attribute values
+        SameSiteLiteral = Literal["Lax", "Strict", "None"]
+
+    # WebCore alias - for compatibility with code using t.WebCore
+    WebCore = Web
+    """Alias for Web class - provides access to t.WebCore.ResponseDict, t.WebCore.RequestDict."""
+
+    # Types alias - for compatibility with code using t.Types.GeneralValueType
+    class Types:
+        """Type system aliases for flext-web."""
+
+        GeneralValueType = t_core.GeneralValueType
+        """General value type - references FlextTypes.GeneralValueType."""
 
     # Core response types - proper inheritance from FlextWebModels
     SuccessResponse = FlextWebModels.Web.ServiceResponse
@@ -281,23 +369,19 @@ class FlextWebTypes(FlextTypes):
                                         failure contains validation error
 
         """
-        # Use u.get() for unified extraction with defaults (DSL pattern)
-        url = u.get(config, "url", default="")
-        method = u.get(
-            config,
+        # Direct TypedDict access with defaults
+        url: str = config.get("url") or ""
+        method: str = config.get(
             "method",
-            default=FlextWebConstants.Web.Method.GET,
-        )
+        ) or FlextWebConstants.Web.Method.GET
         headers = config.get("headers")
-        body = u.get(config, "body")
-        timeout = u.get(
-            config,
+        body = config.get("body")
+        timeout: float = config.get(
             "timeout",
-            default=FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
-        )
+        ) or FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS
         query_params = config.get("query_params")
-        client_ip = u.get(config, "client_ip", default="")
-        user_agent = u.get(config, "user_agent", default="")
+        client_ip: str = config.get("client_ip") or ""
+        user_agent: str = config.get("user_agent") or ""
 
         # Validate URL - must be non-empty string
         if not url or not url.strip():
@@ -320,7 +404,7 @@ class FlextWebTypes(FlextTypes):
             return_value=True,
         )
         if method_validated is None:
-            return FlextResult[FlextWebModels.Web.Request].fail(
+            return FlextResult[FlextWebModels.Web.AppRequest].fail(
                 f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             )
 
@@ -363,23 +447,19 @@ class FlextWebTypes(FlextTypes):
                                          failure contains validation error
 
         """
-        # Use u.get() for unified extraction with defaults (DSL pattern)
-        status_code = u.get(config, "status_code", default=200)
-        request_id = u.get(config, "request_id", default="")
+        # Direct TypedDict access with defaults
+        status_code: int = config.get("status_code") or 200
+        request_id: str = config.get("request_id") or ""
         headers = config.get("headers")
-        body = u.get(config, "body")
-        elapsed_time = u.get(config, "elapsed_time", default=0.0)
-        content_type = u.get(
-            config,
+        body = config.get("body")
+        elapsed_time: float = config.get("elapsed_time") or 0.0
+        content_type: str = config.get(
             "content_type",
-            default=FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
-        )
-        content_length = u.get(config, "content_length", default=0)
-        processing_time_ms = u.get(
-            config,
+        ) or FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
+        content_length: int = config.get("content_length") or 0
+        processing_time_ms: float = config.get(
             "processing_time_ms",
-            default=0.0,
-        )
+        ) or 0.0
 
         # Use # Direct validation instead for unified headers validation (DSL pattern)
         # Validate headers - must be dict or None
@@ -424,37 +504,24 @@ class FlextWebTypes(FlextTypes):
                                             failure contains error message
 
         """
-        # Use u.get() for unified extraction with defaults (DSL pattern)
-        name = u.get(config, "name", default="")
-        host = u.get(config, "host", default="localhost")
-        port_raw = u.get(config, "port", default=8080)
-        port = port_raw if isinstance(port_raw, int) else 8080
-        status = u.get(
-            config,
+        # Direct TypedDict access with defaults
+        name: str = config.get("name") or ""
+        host: str = config.get("host") or "localhost"
+        port: int = config.get("port") or 8080
+        status: str = config.get(
             "status",
-            default=FlextWebConstants.Web.Status.STOPPED.value,
-        )
-        environment = u.get(
-            config,
+        ) or FlextWebConstants.Web.Status.STOPPED.value
+        environment: str = config.get(
             "environment",
-            default=FlextWebConstants.Web.Name.DEVELOPMENT.value,
-        )
-        debug_mode_raw = u.get(
-            config,
-            "debug_mode",
-            default=FlextWebConstants.Web.WebDefaults.DEBUG_MODE,
-        )
-        debug_mode = (
+        ) or FlextWebConstants.Web.Name.DEVELOPMENT.value
+        debug_mode_raw = config.get("debug_mode")
+        debug_mode: bool = (
             debug_mode_raw
             if isinstance(debug_mode_raw, bool)
             else FlextWebConstants.Web.WebDefaults.DEBUG_MODE
         )
-        version_raw = u.get(
-            config,
-            "version",
-            default=FlextWebConstants.Web.WebDefaults.VERSION_INT,
-        )
-        version = (
+        version_raw = config.get("version")
+        version: int = (
             version_raw
             if isinstance(version_raw, int)
             else FlextWebConstants.Web.WebDefaults.VERSION_INT
@@ -599,95 +666,6 @@ class FlextWebTypes(FlextTypes):
 
         class WebPipelineConfig(FlextWebModels.Web.EntityConfig):
             """Web pipeline configuration model - inherits from FlextWebModels.Web.EntityConfig."""
-
-    class Web:
-        """Web types namespace for cross-project access.
-
-        Provides organized access to all Web types for other FLEXT projects.
-        Usage: Other projects can reference `t.Web.Http.*`, `t.Web.Project.*`, etc.
-        This enables consistent namespace patterns for cross-project type access.
-
-        Examples:
-            from flext_web.typings import t
-            request: t.Web.HttpRequest = ...
-            config: t.Web.Project.WebProjectConfig = ...
-
-        Note: Namespace composition via inheritance - no aliases needed.
-        Access parent namespaces directly through inheritance.
-
-        """
-
-        # ============================================================================
-        # LITERAL TYPE DEFINITIONS
-        # ============================================================================
-        # These Literal types provide compile-time safety for string literals
-        # All Literal[] definitions belong in typings.py under the t.* namespace
-
-        # HTTP method literal - references Http.Method StrEnum members
-        HttpMethodLiteral = Literal[
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "PATCH",
-            "HEAD",
-            "OPTIONS",
-        ]
-
-        # Environment name literal - references WebEnvironment.Name StrEnum members
-        EnvironmentNameLiteral = Literal[
-            "development",
-            "staging",
-            "production",
-            "testing",
-        ]
-
-        # Application status literal - references WebEnvironment.Status StrEnum members
-        ApplicationStatusLiteral = Literal[
-            "stopped",
-            "starting",
-            "running",
-            "stopping",
-            "error",
-            "maintenance",
-            "deploying",
-        ]
-
-        # Application type literal - references WebEnvironment.ApplicationType StrEnum members
-        ApplicationTypeLiteral = Literal[
-            "application",
-            "service",
-            "api",
-            "microservice",
-            "webapp",
-            "spa",
-            "dashboard",
-            "REDACTED_LDAP_BIND_PASSWORD_panel",
-        ]
-
-        # Response status literal - uses string literals matching WebResponse constants
-        ResponseStatusLiteral = Literal[
-            "success",
-            "error",
-            "operational",
-            "healthy",
-        ]
-
-        # Protocol literal - uses string literals matching WebDefaults constants
-        ProtocolLiteral = Literal[
-            "http",
-            "https",
-        ]
-
-        # Content type literal - uses string literals matching Http constants
-        ContentTypeLiteral = Literal[
-            "application/json",
-            "text/plain",
-            "text/html",
-        ]
-
-        # Session cookie SameSite literal - standard HTTP cookie attribute values
-        SameSiteLiteral = Literal["Lax", "Strict", "None"]
 
 
 # Alias for simplified usage

@@ -17,7 +17,7 @@ import threading
 import time
 from collections.abc import Callable, Generator
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import ClassVar
 
 import pytest
 from flask import Flask
@@ -26,7 +26,6 @@ from flext_tests import (
     FlextTestsDocker,
     FlextTestsFactories,
     FlextTestsMatchers,
-    FlextTestsUtilities,
 )
 
 from flext_web import FlextWebModels, FlextWebServices, FlextWebSettings
@@ -88,7 +87,7 @@ def create_entry(entry_type: str, **kwargs: object) -> FlextResult[object]:
 
     """
     if entry_type == "web_app":
-        return FlextWebModels.create_web_app(**kwargs)
+        return FlextWebModels.Web.create_web_app(**kwargs)
     if entry_type == "http_request":
         return FlextWebTypes.create_http_request(**kwargs)
     if entry_type == "http_response":
@@ -178,7 +177,7 @@ def create_test_app(**kwargs: object) -> FlextWebModels.Web.Entity:
         FlextWebModels.Web.Entity instance
 
     """
-    defaults: dict[str, Any] = {
+    defaults: dict[str, str | int] = {
         "id": "test-id",
         "name": "test-app",
         "host": "localhost",
@@ -194,7 +193,7 @@ def create_test_result(
     success: bool = True,
     **kwargs: object,
 ) -> FlextResult[object]:
-    """Create a test FlextResult using flext_tests utilities.
+    """Create a test FlextResult using FlextResult API directly.
 
     This function provides a standardized way to create test results,
     reducing code duplication across test files.
@@ -202,17 +201,26 @@ def create_test_result(
     Args:
         success: Whether the result should be successful
         **kwargs: Additional parameters for result creation
+            - data: Value for success result
+            - value: Alternative key for success value
+            - error: Error message for failure result
 
     Returns:
         FlextResult instance
 
     """
-    return FlextTestsUtilities.create_test_result(success=success, **kwargs)
+    if success:
+        # Get value from kwargs (could be 'data' or 'value')
+        value = kwargs.get("data") or kwargs.get("value")
+        return FlextResult[object].ok(value)
+    # Failure case
+    error = str(kwargs.get("error", "Test error"))
+    return FlextResult[object].fail(error)
 
 
 def run_parameterized_test(
-    test_cases: list[tuple[Any, ...]],
-    test_function: Callable[[Any], FlextResult[object]],
+    test_cases: list[tuple[object, ...]],
+    test_function: Callable[[object], FlextResult[object]],
     expected_results: list[bool],
     test_name: str = "parameterized_test",
 ) -> None:
@@ -252,8 +260,8 @@ def run_parameterized_test(
 
 def create_comprehensive_test_suite(
     entity_type: str,
-    valid_cases: list[dict[str, Any]],
-    invalid_cases: list[dict[str, Any]],
+    valid_cases: list[dict[str, object]],
+    invalid_cases: list[dict[str, object]],
     test_name_prefix: str = "comprehensive",
 ) -> None:
     """Create comprehensive test suite using flext_tests patterns.
@@ -289,7 +297,7 @@ def setup_test_environment() -> Generator[None]:
 
     # Set test environment variables
     os.environ["FLEXT_ENV"] = "test"
-    os.environ["FLEXT_LOG_LEVEL"] = "info"  # Reduce noise
+    os.environ["FLEXT_LOG_LEVEL"] = "INFO"  # Reduce noise
     os.environ["FLEXT_WEB_DEBUG_MODE"] = "true"
     os.environ["FLEXT_WEB_HOST"] = FlextWebConstants.Web.WebDefaults.HOST
     os.environ["FLEXT_WEB_SECRET_KEY"] = (
@@ -311,7 +319,9 @@ def real_config() -> FlextWebSettings:
 
     Fast fail if secret key cannot be provided - no fallback.
     """
-    return FlextWebSettings(secret_key=FlextWebConstants.WebDefaults.TEST_SECRET_KEY)
+    return FlextWebSettings(
+        secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY
+    )
 
 
 @pytest.fixture
@@ -410,8 +420,8 @@ def test_app_data() -> dict[str, str | int]:
     """Real application data for testing."""
     return {
         "name": "test-application",
-        "port": FlextWebConstants.WebDefaults.PORT + 1001,
-        "host": FlextWebConstants.WebDefaults.HOST,
+        "port": FlextWebConstants.Web.WebDefaults.PORT + 1001,
+        "host": FlextWebConstants.Web.WebDefaults.HOST,
     }
 
 
@@ -430,10 +440,10 @@ def invalid_app_data() -> dict[str, str | int]:
 def production_config() -> dict[str, str]:
     """Production-like configuration for testing."""
     return {
-        "FLEXT_WEB_HOST": FlextWebConstants.WebSpecific.ALL_INTERFACES,
-        "FLEXT_WEB_PORT": str(FlextWebConstants.WebDefaults.PORT),
+        "FLEXT_WEB_HOST": FlextWebConstants.Web.WebSpecific.ALL_INTERFACES,
+        "FLEXT_WEB_PORT": str(FlextWebConstants.Web.WebDefaults.PORT),
         "FLEXT_WEB_DEBUG": "false",
-        "FLEXT_WEB_SECRET_KEY": FlextWebConstants.WebDefaults.DEV_SECRET_KEY,
+        "FLEXT_WEB_SECRET_KEY": FlextWebConstants.Web.WebDefaults.DEV_SECRET_KEY,
     }
 
 

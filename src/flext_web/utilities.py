@@ -24,6 +24,9 @@ class FlextWebUtilities(FlextUtilities):
     Uses advanced builder/DSL patterns for composition.
     """
 
+    class Web:
+        """Web domain namespace."""
+
     @staticmethod
     def slugify(text: str) -> str:
         """Convert text to URL-safe slug using standard string operations.
