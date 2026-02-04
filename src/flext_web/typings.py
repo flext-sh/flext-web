@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Literal, TypedDict
+from typing import Literal
 
 from flext_core import (
     FlextResult,
@@ -18,6 +18,7 @@ from flext_core import (
     FlextTypes as t_core,
     FlextUtilities,
 )
+from pydantic import BaseModel, ConfigDict, Field
 
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
@@ -30,42 +31,48 @@ m = FlextWebModels
 HttpMethod = FlextWebConstants.Web.Method
 
 
-class _WebRequestConfig(TypedDict, total=False):
-    """Web request configuration dictionary."""
+class _WebRequestConfig(BaseModel):
+    """Web request configuration model."""
 
-    url: str
-    method: str
-    headers: dict[str, str] | None
-    body: str | dict[str, t_core.GeneralValueType] | None
-    timeout: float
-    query_params: dict[str, t_core.GeneralValueType] | None
-    client_ip: str
-    user_agent: str
+    model_config = ConfigDict(frozen=False, extra="forbid")
 
-
-class _WebResponseConfig(TypedDict, total=False):
-    """Web response configuration dictionary."""
-
-    status_code: int
-    request_id: str
-    headers: dict[str, str] | None
-    body: str | dict[str, t_core.GeneralValueType] | None
-    elapsed_time: float
-    content_type: str
-    content_length: int
-    processing_time_ms: float
+    url: str = Field(default="")
+    method: str = Field(default="GET")
+    headers: dict[str, str] | None = Field(default=None)
+    body: str | dict[str, t_core.GeneralValueType] | None = Field(default=None)
+    timeout: float = Field(default=30.0)
+    query_params: dict[str, t_core.GeneralValueType] | None = Field(default=None)
+    client_ip: str = Field(default="")
+    user_agent: str = Field(default="")
 
 
-class _ApplicationConfig(TypedDict, total=False):
-    """Application configuration dictionary."""
+class _WebResponseConfig(BaseModel):
+    """Web response configuration model."""
 
-    name: str
-    host: str
-    port: int
-    status: str
-    environment: str
-    debug_mode: bool
-    version: int
+    model_config = ConfigDict(frozen=False, extra="forbid")
+
+    status_code: int = Field(default=200)
+    request_id: str = Field(default="")
+    headers: dict[str, str] | None = Field(default=None)
+    body: str | dict[str, t_core.GeneralValueType] | None = Field(default=None)
+    elapsed_time: float = Field(default=0.0)
+    content_type: str = Field(default="application/json")
+    content_length: int = Field(default=0)
+    processing_time_ms: float = Field(default=0.0)
+
+
+class _ApplicationConfig(BaseModel):
+    """Application configuration model."""
+
+    model_config = ConfigDict(frozen=False, extra="forbid")
+
+    name: str = Field(default="")
+    host: str = Field(default="localhost")
+    port: int = Field(default=8080)
+    status: str = Field(default="stopped")
+    environment: str = Field(default="development")
+    debug_mode: bool = Field(default=False)
+    version: int = Field(default=1)
 
 
 class FlextWebTypes(FlextTypes):
@@ -362,26 +369,24 @@ class FlextWebTypes(FlextTypes):
         """Create web request model instance with proper validation.
 
         Args:
-            config: Web request configuration dictionary
+            config: Web request configuration model
 
         Returns:
             FlextResult[Web.AppRequest]: Success contains request model,
                                         failure contains validation error
 
         """
-        # Direct TypedDict access with defaults
-        url: str = config.get("url") or ""
-        method: str = config.get(
-            "method",
-        ) or FlextWebConstants.Web.Method.GET
-        headers = config.get("headers")
-        body = config.get("body")
-        timeout: float = config.get(
-            "timeout",
-        ) or FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS
-        query_params = config.get("query_params")
-        client_ip: str = config.get("client_ip") or ""
-        user_agent: str = config.get("user_agent") or ""
+        # Direct model access with defaults
+        url: str = config.url or ""
+        method: str = config.method or FlextWebConstants.Web.Method.GET
+        headers = config.headers
+        body = config.body
+        timeout: float = (
+            config.timeout or FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS
+        )
+        query_params = config.query_params
+        client_ip: str = config.client_ip or ""
+        user_agent: str = config.user_agent or ""
 
         # Validate URL - must be non-empty string
         if not url or not url.strip():
@@ -440,26 +445,24 @@ class FlextWebTypes(FlextTypes):
         """Create web response model instance with proper validation.
 
         Args:
-            config: Web response configuration dictionary
+            config: Web response configuration model
 
         Returns:
             FlextResult[Web.AppResponse]: Success contains response model,
                                          failure contains validation error
 
         """
-        # Direct TypedDict access with defaults
-        status_code: int = config.get("status_code") or 200
-        request_id: str = config.get("request_id") or ""
-        headers = config.get("headers")
-        body = config.get("body")
-        elapsed_time: float = config.get("elapsed_time") or 0.0
-        content_type: str = config.get(
-            "content_type",
-        ) or FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
-        content_length: int = config.get("content_length") or 0
-        processing_time_ms: float = config.get(
-            "processing_time_ms",
-        ) or 0.0
+        # Direct model access with defaults
+        status_code: int = config.status_code or 200
+        request_id: str = config.request_id or ""
+        headers = config.headers
+        body = config.body
+        elapsed_time: float = config.elapsed_time or 0.0
+        content_type: str = (
+            config.content_type or FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
+        )
+        content_length: int = config.content_length or 0
+        processing_time_ms: float = config.processing_time_ms or 0.0
 
         # Use # Direct validation instead for unified headers validation (DSL pattern)
         # Validate headers - must be dict or None
@@ -497,33 +500,29 @@ class FlextWebTypes(FlextTypes):
         """Create application model instance.
 
         Args:
-            config: Application configuration dictionary
+            config: Application configuration model
 
         Returns:
             FlextResult[Web.Entity]: Success contains application entity,
                                             failure contains error message
 
         """
-        # Direct TypedDict access with defaults
-        name: str = config.get("name") or ""
-        host: str = config.get("host") or "localhost"
-        port: int = config.get("port") or 8080
-        status: str = config.get(
-            "status",
-        ) or FlextWebConstants.Web.Status.STOPPED.value
-        environment: str = config.get(
-            "environment",
-        ) or FlextWebConstants.Web.Name.DEVELOPMENT.value
-        debug_mode_raw = config.get("debug_mode")
+        # Direct model access with defaults
+        name: str = config.name or ""
+        host: str = config.host or "localhost"
+        port: int = config.port or 8080
+        status: str = config.status or FlextWebConstants.Web.Status.STOPPED.value
+        environment: str = (
+            config.environment or FlextWebConstants.Web.Name.DEVELOPMENT.value
+        )
         debug_mode: bool = (
-            debug_mode_raw
-            if isinstance(debug_mode_raw, bool)
+            config.debug_mode
+            if isinstance(config.debug_mode, bool)
             else FlextWebConstants.Web.WebDefaults.DEBUG_MODE
         )
-        version_raw = config.get("version")
         version: int = (
-            version_raw
-            if isinstance(version_raw, int)
+            config.version
+            if isinstance(config.version, int)
             else FlextWebConstants.Web.WebDefaults.VERSION_INT
         )
 
