@@ -349,7 +349,7 @@ class FlextWebHandlers(FlextService[bool]):
 
         """
         # Return bool for FlextService compatibility
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
     def validate_business_rules(self) -> r[bool]:
         """Validate business rules for web handlers (FlextService requirement).
@@ -358,7 +358,7 @@ class FlextWebHandlers(FlextService[bool]):
             r[bool]: Success contains True if valid, failure with error message
 
         """
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
 
 __all__ = [

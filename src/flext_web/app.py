@@ -67,7 +67,7 @@ class FlextWebApp(FlextService[bool]):
         """
         self.logger.info("FlextWebApp service executed successfully")
         # Return bool for FlextService compatibility
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
     # =========================================================================
     # FASTAPI APPLICATION FACTORY - Single Responsibility
@@ -303,7 +303,7 @@ class FlextWebApp(FlextService[bool]):
         # Placeholder for middleware configuration
         # Can be extended with CORS, authentication, rate limiting, etc.
         _ = app, config  # Parameters reserved for future implementation
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
     @classmethod
     def configure_routes(
@@ -325,7 +325,7 @@ class FlextWebApp(FlextService[bool]):
         # Placeholder for route configuration
         # Can be extended with API routes, WebSocket routes, etc.
         _ = app, config  # Parameters reserved for future implementation
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
     @classmethod
     def configure_error_handlers(cls, app: FastAPI) -> r[bool]:
@@ -342,7 +342,7 @@ class FlextWebApp(FlextService[bool]):
         # Placeholder for error handler configuration
         # Can be extended with custom exception handlers
         _ = app  # Parameter reserved for future implementation
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
     def validate_business_rules(self) -> r[bool]:
         """Validate business rules for web app service (FlextService requirement).
@@ -351,7 +351,7 @@ class FlextWebApp(FlextService[bool]):
             r[bool]: Success contains True if valid, failure with error message
 
         """
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
 
 __all__ = [

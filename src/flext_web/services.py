@@ -334,16 +334,16 @@ class FlextWebServices(FlextService[bool]):
     def initialize_routes(self) -> FlextResult[bool]:
         """Initialize HTTP routes."""
         if self._routes_initialized:
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(value=True)
         self._routes_initialized = True
-        return FlextResult[bool].ok(True)
+        return FlextResult[bool].ok(value=True)
 
     def configure_middleware(self) -> FlextResult[bool]:
         """Configure HTTP middleware."""
         if self._middleware_configured:
-            return FlextResult[bool].ok(True)
+            return FlextResult[bool].ok(value=True)
         self._middleware_configured = True
-        return FlextResult[bool].ok(True)
+        return FlextResult[bool].ok(value=True)
 
     def start_service(
         self,
@@ -373,7 +373,7 @@ class FlextWebServices(FlextService[bool]):
         if not self._service_running:
             return FlextResult[bool].fail("Service is not running")
         self._service_running = False
-        return FlextResult[bool].ok(True)
+        return FlextResult[bool].ok(value=True)
 
     @staticmethod
     def logout() -> FlextResult[m.Web.EntityData]:
@@ -562,7 +562,7 @@ class FlextWebServices(FlextService[bool]):
 
         """
         # Return bool for FlextService compatibility
-        return FlextResult[bool].ok(True)
+        return FlextResult[bool].ok(value=True)
 
     def validate_business_rules(self) -> FlextResult[bool]:
         """Validate business rules for web services (FlextService requirement).
@@ -595,7 +595,7 @@ class FlextWebServices(FlextService[bool]):
             return FlextResult[bool].fail(
                 "Service cannot be running without configured middleware",
             )
-        return FlextResult[bool].ok(True)
+        return FlextResult[bool].ok(value=True)
 
     @classmethod
     def create_service(

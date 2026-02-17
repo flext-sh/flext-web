@@ -168,7 +168,7 @@ class EnterpriseWebConfig(FlextWebSettings):
         if not result.success:
             return result
 
-        return FlextResult[None].ok(None)
+        return FlextResult[bool].| ok(value=True)
 
 def deploy_enterprise_service():
     """Deploy with enterprise configuration"""

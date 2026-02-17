@@ -585,7 +585,7 @@ class FlextWebModels(m_core):
                     return r[bool].fail(
                         f"Port must be between {min_port} and {max_port}",
                     )
-                return r[bool].ok(True)
+                return r[bool].ok(value=True)
 
             def start(self) -> r[FlextWebModels.Web.Entity]:
                 """Start the application."""
@@ -667,7 +667,7 @@ class FlextWebModels(m_core):
                     return r[bool].fail(
                         f"Failed to add web event: {event_result.error}"
                     )
-                return r[bool].ok(True)
+                return r[bool].ok(value=True)
 
             def get_health_status(self) -> dict[str, t.GeneralValueType]:
                 """Get comprehensive health status."""
@@ -702,7 +702,7 @@ class FlextWebModels(m_core):
                 if not isinstance(event_name, str) or not event_name.strip():
                     return r[bool].fail("Event name cannot be empty")
                 self.web_events.append(event_name)
-                return r[bool].ok(True)
+                return r[bool].ok(value=True)
 
             @classmethod
             def format_id_from_name(cls, name: str) -> str:

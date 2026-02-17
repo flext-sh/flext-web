@@ -46,7 +46,7 @@ def check_service_health() -> bool:
         if response.status_code != ExampleConstants.HTTP_OK:
             return False
 
-        result = response.json()
+        result = response.model_dump_json()
         # Use ustructure - reduces returns
         validations = [
             isinstance(result, dict),
@@ -101,7 +101,7 @@ def create_application(
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Parse JSON response."""
         try:
-            json_data = response.json()
+            json_data = response.model_dump_json()
             return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(
@@ -199,7 +199,7 @@ def _execute_app_operation(
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Parse JSON from response."""
         try:
-            json_data = response.json()
+            json_data = response.model_dump_json()
             return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(
@@ -256,7 +256,7 @@ def _execute_list_operation(
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Parse JSON from response."""
         try:
-            json_data = response.json()
+            json_data = response.model_dump_json()
             return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(

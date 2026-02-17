@@ -465,7 +465,7 @@ class FlextWebProtocols(FlextProtocols):
 
                 """
                 # Protocol implementation placeholder
-                return r[bool].ok(True)  # pragma: no cover
+                return r[bool].ok(value=True)  # pragma: no cover
 
             @staticmethod
             def configure_middleware() -> r[bool]:
@@ -476,7 +476,7 @@ class FlextWebProtocols(FlextProtocols):
 
                 """
                 # Protocol implementation placeholder
-                return r[bool].ok(True)  # pragma: no cover
+                return r[bool].ok(value=True)  # pragma: no cover
 
             @staticmethod
             def start_service() -> r[bool]:
@@ -487,7 +487,7 @@ class FlextWebProtocols(FlextProtocols):
 
                 """
                 # Protocol implementation placeholder
-                return r[bool].ok(True)  # pragma: no cover
+                return r[bool].ok(value=True)  # pragma: no cover
 
             @staticmethod
             def stop_service() -> r[bool]:
@@ -498,7 +498,7 @@ class FlextWebProtocols(FlextProtocols):
 
                 """
                 # Protocol implementation placeholder
-                return r[bool].ok(True)  # pragma: no cover
+                return r[bool].ok(value=True)  # pragma: no cover
 
         @runtime_checkable
         class WebRepositoryProtocol(
@@ -718,7 +718,7 @@ class FlextWebProtocols(FlextProtocols):
                 """
                 # Protocol implementation placeholder - parameter is part of interface contract
                 _ = config
-                return r[bool].ok(True)  # pragma: no cover
+                return r[bool].ok(value=True)  # pragma: no cover
 
             @staticmethod
             def get_template_config() -> r[t.WebCore.ResponseDict]:
@@ -746,7 +746,7 @@ class FlextWebProtocols(FlextProtocols):
                 """
                 # Protocol implementation placeholder - parameter is part of interface contract
                 _ = config
-                return r[bool].ok(True)  # pragma: no cover
+                return r[bool].ok(value=True)  # pragma: no cover
 
             @staticmethod
             def render(

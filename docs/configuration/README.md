@@ -163,12 +163,12 @@ class FlextWebSettings(BaseSettings, FlextSettings):
         description="Secret key for cryptographic operations"
     )
 
-    def validate_config(self) -> FlextResult[None]:
+    def validate_config(self) -> FlextResult[bool]:
         """Validate configuration"""
         # Implementation includes business rules and security validation
         if not self.debug and "change-in-production" in self.secret_key:
-            return FlextResult[None].fail("Secret key must be changed")
-        return FlextResult[None].ok(None)
+            return FlextResult[bool].fail("Secret key must be changed")
+        return FlextResult[bool].| ok(value=True)
 
     def get_server_url(self) -> str:
         """Get complete server URL"""
@@ -246,27 +246,27 @@ aws ssm put-parameter \
 The configuration includes several security validation rules:
 
 ```python
-def validate_config(self) -> FlextResult[None]:
+def validate_config(self) -> FlextResult[bool]:
     """Security validation rules"""
 
     # Production secret key validation
     if not self.debug and "change-in-production" in self.secret_key:
-        return FlextResult[None].fail("Secret key must be changed in production")
+        return FlextResult[bool].fail("Secret key must be changed in production")
 
     # Secret key length validation
     if len(self.secret_key) < 32:
-        return FlextResult[None].fail("Secret key must be at least 32 characters")
+        return FlextResult[bool].fail("Secret key must be at least 32 characters")
 
     # Port range validation
     if not (1 <= self.port <= 65535):
-        return FlextResult[None].fail("Port must be between 1 and 65535")
+        return FlextResult[bool].fail("Port must be between 1 and 65535")
 
     # Host validation for production
     if not self.debug and self.host == "0.0.0.0":
         # Log warning for production binding to all interfaces
         logger.warning("Production service binding to all interfaces")
 
-    return FlextResult[None].ok(None)
+    return FlextResult[bool].| ok(value=True)
 ```
 
 ## 🏗️ Environment-Specific Configuration

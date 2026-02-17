@@ -149,7 +149,7 @@ class TestFlextWebApp:
         client = TestClient(app)
         response = client.get("/health")
         assert response.status_code == 200
-        health_data = response.json()
+        health_data = response.model_dump_json()
         assert "status" in health_data
         assert "service" in health_data
         assert "timestamp" in health_data
@@ -283,7 +283,7 @@ class TestFlextWebApp:
         client = TestClient(app)
         response = client.get("/health")
         assert response.status_code == 200
-        health_data = response.json()
+        health_data = response.model_dump_json()
         assert "status" in health_data
         assert "service" in health_data
 
@@ -468,7 +468,7 @@ class TestFlextWebApp:
         # Test info endpoint - REAL HTTP request
         info_response = client.get("/info")
         assert info_response.status_code == 200
-        info_data = info_response.json()
+        info_data = info_response.model_dump_json()
         assert "service" in info_data
         assert "title" in info_data
         assert info_data["title"] == "Test API"
