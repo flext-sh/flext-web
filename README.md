@@ -6,6 +6,10 @@
 
 **FLEXT-Web** provides the web application layer for the FLEXT ecosystem, offering a unified interface for building web dashboards and REST APIs. It integrates seamlessly with `flext-auth` for security and `flext-api` for backend communication, providing a robust foundation for enterprise web interfaces.
 
+**Reviewed**: 2026-02-17 | **Version**: 0.10.0-dev
+
+Part of the [FLEXT](https://github.com/flext/flext) ecosystem.
+
 ## 🚀 Key Features
 
 - **Unified Web Interface**: abstract both Flask and FastAPI patterns into a cohesive web application model.
