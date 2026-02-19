@@ -6,15 +6,16 @@
 > Project profile: `flext-web`
 
 
+
 <!-- TOC START -->
-- [Goal](#goal)
-- [Required Outputs](#required-outputs)
-- [Standard Skill Contract](#standard-skill-contract)
-- [Standard Skill Format](#standard-skill-format)
-- [Implementation Checklist](#implementation-checklist)
-- [Example (Current Pattern)](#example-current-pattern)
-- [Verification Commands](#verification-commands)
-- [Adoption Rule](#adoption-rule)
+- Goal
+- Required Outputs
+- Standard Skill Contract
+- Standard Skill Format
+- Implementation Checklist
+- Example (Current Pattern)
+- Verification Commands
+- Adoption Rule
 <!-- TOC END -->
 
 This guide defines the standard way to create reusable automation skills in this repository.
