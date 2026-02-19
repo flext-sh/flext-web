@@ -1,7 +1,7 @@
 # Development Guide - flext-web
 
-
 <!-- TOC START -->
+
 - [Development Focus](#development-focus)
 - [Current Development Status](#current-development-status)
 - [Development Setup](#development-setup)
@@ -18,6 +18,7 @@
 - [Integration Guidelines](#integration-guidelines)
 - [Contributing Workflow](#contributing-workflow)
 - [Getting Help](#getting-help)
+
 <!-- TOC END -->
 
 **Updated**: September 17, 2025 | **Version**: 0.9.9 RC
@@ -157,12 +158,12 @@ src/flext_web/
 **Current focus**: Architectural compliance and quality improvement
 
 1. **Analyze current architecture**: Understand existing patterns
-2. **Plan incremental changes**: Small, focused improvements
-3. **Implement FLEXT compliance**: Fix architectural violations
-4. **Add web functionality**: Implement missing API methods
-5. **Add comprehensive tests**: Web-specific testing
-6. **Performance optimization**: Benchmark and improve
-7. **Documentation updates**: Keep docs current with code
+1. **Plan incremental changes**: Small, focused improvements
+1. **Implement FLEXT compliance**: Fix architectural violations
+1. **Add web functionality**: Implement missing API methods
+1. **Add comprehensive tests**: Web-specific testing
+1. **Performance optimization**: Benchmark and improve
+1. **Documentation updates**: Keep docs current with code
 
 ## Getting Help
 

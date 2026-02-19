@@ -1,7 +1,7 @@
 # Troubleshooting - flext-web
 
-
 <!-- TOC START -->
+
 - [Primary Issue: Circular Import Error](#primary-issue-circular-import-error)
 - [Diagnosis Steps](#diagnosis-steps)
   - [Test Import Failure](#test-import-failure)
@@ -16,6 +16,7 @@
   - [Quality Impact](#quality-impact)
 - [Development Workflow](#development-workflow)
 - [Getting Help](#getting-help)
+
 <!-- TOC END -->
 
 **Updated**: September 17, 2025 | **Version**: 0.9.9 RC
@@ -171,9 +172,9 @@ Can measure:
 Until circular imports are resolved:
 
 1. **Focus on static analysis**: Use lint and type-check on source files
-2. **Avoid import testing**: Cannot test actual functionality
-3. **Plan refactoring**: Design solution for dependency structure
-4. **Test incrementally**: Test imports after each structural change
+1. **Avoid import testing**: Cannot test actual functionality
+1. **Plan refactoring**: Design solution for dependency structure
+1. **Test incrementally**: Test imports after each structural change
 
 ## Getting Help
 
