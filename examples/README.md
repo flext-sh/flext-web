@@ -1,5 +1,23 @@
 # FLEXT Web Interface - Usage Examples
 
+
+<!-- TOC START -->
+- [Example Categories](#example-categories)
+  - [Basic Usage Examples](#basic-usage-examples)
+  - [API Usage Examples](#api-usage-examples)
+  - [Programmatic Integration Examples](#programmatic-integration-examples)
+  - [Advanced Integration Examples](#advanced-integration-examples)
+  - [Testing Examples](#testing-examples)
+  - [Performance Examples](#performance-examples)
+- [Running Examples](#running-examples)
+  - [Basic Examples](#basic-examples)
+  - [Docker Examples](#docker-examples)
+  - [Testing Examples](#testing-examples)
+- [Example Development](#example-development)
+  - [Creating New Examples](#creating-new-examples)
+  - [Example Standards](#example-standards)
+<!-- TOC END -->
+
 **Purpose**: Practical usage examples and integration patterns  
 **Target**: Developers integrating FLEXT Web Interface  
 **Coverage**: Complete API and programmatic usage scenarios

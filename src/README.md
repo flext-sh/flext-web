@@ -1,5 +1,29 @@
 # FLEXT Web Interface - Source Code
 
+
+<!-- TOC START -->
+- [Overview](#overview)
+- [Directory Structure](#directory-structure)
+- [Implementation Architecture](#implementation-architecture)
+  - [**Current Architecture (v0.9.9)**](#current-architecture-v099)
+  - [**Target Architecture (v1.0.0)**](#target-architecture-v100)
+- [Documentation Standards](#documentation-standards)
+  - [**Achieved Documentation Quality**](#achieved-documentation-quality)
+  - [**Documentation Patterns**](#documentation-patterns)
+- [Quality Standards](#quality-standards)
+  - [**Code Quality Metrics**](#code-quality-metrics)
+  - [**Architectural Standards**](#architectural-standards)
+- [Development Workflow](#development-workflow)
+  - [**Quality Gates**](#quality-gates)
+  - [**Documentation Standards**](#documentation-standards)
+- [Integration Points](#integration-points)
+  - [**FLEXT Core Integration**](#flext-core-integration)
+  - [**Ecosystem Integration**](#ecosystem-integration)
+- [Migration Path](#migration-path)
+  - [**Current State (v0.9.9)**](#current-state-v099)
+  - [**Target State (v1.0.0)**](#target-state-v100)
+<!-- TOC END -->
+
 **Directory**: `src/` - Python source code implementation  
 **Architecture**: Clean Architecture with Domain-Driven Design patterns  
 **Documentation Status**: Comprehensive; evolving with development

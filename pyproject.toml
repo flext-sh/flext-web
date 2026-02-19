@@ -1,237 +1,196 @@
 [build-system]
-    build-backend = "poetry.core.masonry.api"
-    requires = [
-        "poetry-core>=1.9.0",
-    ]
+build-backend = "poetry.core.masonry.api"
+requires = [
+  "poetry-core>=2",
+]
 
 [project]
-    classifiers = [
-        "Development Status :: 5 - Production/Stable",
-        "Framework :: Flask",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.13",
-        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Typing :: Typed",
-    ]
-    dependencies = [
-        "fastapi (>=0.119.0)",
-        "flask (>=3.0.0)",
-        "pydantic (>=2.12.3)",
-        "pydantic-settings (>=2.11.0)",
-        "pytest (>=9.0.2,<10.0.0)",
-        "requests (>=2.31.0)",
-        "uvicorn (>=0.38.0)",
-        "pydantic-core (>=2.41.4)",
-        "pytest-cov (>=7.0.0,<8.0.0)",
-        "pytest-randomly (>=4.0.1,<5.0.0)",
-        "faker (>=40.1.0,<41.0.0)",
-    ]
-    description = "FLEXT Web - Modern Web Interface for FLEXT Platform"
-    keywords = [
-        "enterprise",
-        "flask",
-        "flext",
-        "frontend",
-        "typed",
-        "web",
-    ]
-    name = "flext-web"
-    readme = "README.md"
-    requires-python = ">=3.13,<3.14"
-    version = "0.10.0-dev"
-    [[project.authors]]
-        email = "team@flext.sh"
-        name  = "FLEXT Team"
-
-    [[project.maintainers]]
-        email = "team@flext.sh"
-        name  = "FLEXT Team"
-
-    [project.license]
-        text = "MIT"
-
-    [project.urls]
-        Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
-        Homepage      = "https://github.com/flext-sh/flext"
-        Repository    = "https://github.com/flext-sh/flext"
-
-    [project.scripts]
-        flext-web = "flext_web.__main__:main"
-
-    [project.optional-dependencies]
-        dev = [
-            "autoflake>=2.3.1",
-            "black>=25.1.0",
-            "codespell>=2.3.0",
-            "isort>=6.0.1",
-            "pre-commit>=4.0.1",
-            "pylint>=3.3.0",
-            "pyupgrade>=3.19.0",
-            "radon>=6.0.1",
-            "ruff>=0.12.3",
-            "vulture>=2.13",
-        ]
-        security = [
-            "bandit>=1.8.0",
-            "pip-audit>=2.7.3",
-        ]
-        test = [
-            "factory-boy>=3.3.1",
-            "faker>=37.4.0",
-            "hypothesis>=6.125.0",
-            "pytest-benchmark>=5.1.0",
-            "pytest-clarity>=1.0.1",
-            "pytest-cov>=6.2.0",
-            "pytest-deadfixtures>=2.2.1",
-            "pytest-env>=1.1.5",
-            "pytest-mock>=3.14.0",
-            "pytest-randomly>=3.16.0",
-            "pytest-sugar>=1.0.0",
-            "pytest-timeout>=2.4.0",
-            "pytest-xdist>=3.8.0",
-            "pytest>=8.4.0",
-        ]
-        typings = [
-            "types-psutil>=7.0.0",
-            "types-python-dateutil>=2.9.0",
-            "types-pyyaml>=6.0.12",
-            "types-redis>=4.6.0",
-            "types-requests>=2.32.4",
-            "types-setuptools>=80.9.0",
-            "types-toml>=0.10.8.20240310",
-        ]
+name = "flext-web"
+version = "0.10.0-dev"
+description = "FLEXT Web - Modern Web Interface for FLEXT Platform"
+readme = "README.md"
+keywords = [
+  "enterprise",
+  "flask",
+  "flext",
+  "frontend",
+  "typed",
+  "web",
+]
+license = "MIT"
+maintainers = [ { email = "team@flext.sh", name = "FLEXT Team" } ]
+authors = [ { email = "team@flext.sh", name = "FLEXT Team" } ]
+requires-python = ">=3.13,<3.14"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Framework :: Flask",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+dependencies = [
+  "fastapi>=0.119",
+  "flask>=3",
+  "pydantic>=2.12.3",
+  "pydantic-core>=2.41.4",
+  "pydantic-settings>=2.11",
+  "requests>=2.31",
+  "uvicorn>=0.38"
+]
+optional-dependencies.dev = [
+  "autoflake>=2.3.1",
+  "black>=25.1",
+  "codespell>=2.3",
+  "isort>=6.0.1",
+  "pre-commit>=4.0.1",
+  "pylint>=3.3",
+  "pyupgrade>=3.19",
+  "radon>=6.0.1",
+  "ruff>=0.12.3",
+  "vulture>=2.13",
+]
+optional-dependencies.security = [
+  "bandit>=1.8",
+  "pip-audit>=2.7.3",
+]
+optional-dependencies.test = [
+  "factory-boy>=3.3.1",
+  "faker>=37.4",
+  "hypothesis>=6.125",
+  "pytest>=8.4",
+  "pytest-benchmark>=5.1",
+  "pytest-clarity>=1.0.1",
+  "pytest-cov>=6.2",
+  "pytest-deadfixtures>=2.2.1",
+  "pytest-env>=1.1.5",
+  "pytest-mock>=3.14",
+  "pytest-randomly>=3.16",
+  "pytest-sugar>=1",
+  "pytest-timeout>=2.4",
+  "pytest-xdist>=3.8",
+]
+optional-dependencies.typings = [
+  "types-psutil>=7",
+  "types-python-dateutil>=2.9",
+  "types-pyyaml>=6.0.12",
+  "types-redis>=4.6",
+  "types-requests>=2.32.4",
+  "types-setuptools>=80.9",
+  "types-toml>=0.10.8.20240310",
+]
+urls.Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
+urls.Homepage = "https://github.com/flext-sh/flext"
+scripts.flext-web = "flext_web.__main__:main"
 
 [tool]
-    [tool.deptry]
-        known_first_party = [
-            "flext_web",
-            "flext_core",
-        ]
-        pep621_dev_dependency_groups = [
-            "dev",
-            "test",
-            "typings",
-            "security",
-        ]
-
-    [tool.deptry.per_rule_ignores]
-        DEP002 = [
-            # CLI tools (invoked from command line, not imported)
-            "autoflake",
-            "bandit",
-            "black",
-            "codespell",
-            "commitizen",
-            "detect-secrets",
-            "isort",
-            "pip-audit",
-            "pre-commit",
-            "pylint",
-            "pyrefly",
-            "pyupgrade",
-            "radon",
-            "ruff",
-            "vulture",
-            # Type stubs
-            "types-psutil",
-            "types-python-dateutil",
-            "types-pyyaml",
-            "types-redis",
-            "types-requests",
-            "types-setuptools",
-            "types-toml",
-            # Runtime deps used indirectly (via pydantic, flask, fastapi)
-            "faker",
-            "pydantic-core",
-            "pytest",
-            "pytest-cov",
-            "pytest-randomly",
-            "requests",
-        ]
-
-    [tool.poetry]
-        [[tool.poetry.packages]]
-            from = "src"
-            include = "flext_web"
-
-        [tool.poetry.dependencies]
-            python = ">=3.13,<3.14"
-
-            [tool.poetry.dependencies.flext-core]
-                develop = true
-                path = "../flext-core"
-
-        [tool.poetry.group]
-            [tool.poetry.group.dev.dependencies]
-                commitizen     = ">=4.8.3"
-                detect-secrets = ">=1.5.0"
-                pyrefly        = "^0.46.3"
-            pytest = "^9.0.2"
-            opentelemetry-api = ">=1.39.1"
-            opentelemetry-sdk = ">=1.39.1"
-            prompt-toolkit = ">=3.0.52"
-            sqlparse = ">=0.5.5"
-
-    [tool.pytest.ini_options]
-        addopts = [
-            "--cov-report=term-missing",
-            "--cov=src/",
-            "--strict-config",
-            "--strict-markers",
-            "--tb=short",
-            "-p no:sugar",
-            "-q",
-            "-ra",
-        ]
-        markers = [
-            "api: API tests",
-            "benchmark: Benchmark tests",
-            "concurrency: Concurrency tests",
-            "db: Database tests",
-            "e2e: End-to-end tests",
-            "integration: Integration tests",
-            "memory: Memory tests",
-            "network: Network tests",
-            "performance: Performance tests",
-            "race_condition: Race condition tests",
-            "slow: Slow tests",
-            "smoke: Smoke tests",
-            "stress: Stress tests",
-            "unit: Unit tests",
-            "web: Web interface tests",
-        ]
-        minversion = "8.0"
-        python_classes = [
-            "Test*",
-        ]
-        python_files = [
-            "*_test.py",
-            "test_*.py",
-        ]
-        python_functions = [
-            "test_*",
-        ]
-        testpaths = [
-            "tests",
-        ]
-
-            [tool.pyrefly]
-        search-path = [
-            "../typings",
-            "../typings/generated",
-            "src",
-            "tests",
-        ]
+[tool.poetry]
+dependencies.python = ">=3.13,<3.14"
+dependencies.flext-core.develop = true
+dependencies.flext-core.path = ".flext-deps/flext-core"
+group.dev.dependencies.commitizen = ">=4.8.3"
+group.dev.dependencies.detect-secrets = ">=1.5.0"
+group.dev.dependencies.pyrefly = "^0.46.3"
+group.dev.dependencies.pytest = "^9.0.2"
+group.dev.dependencies.opentelemetry-api = ">=1.39.1"
+group.dev.dependencies.opentelemetry-sdk = ">=1.39.1"
+group.dev.dependencies.prompt-toolkit = ">=3.0.52"
+group.dev.dependencies.sqlparse = ">=0.5.5"
+packages = [ { from = "src", include = "flext_web" } ]
 
 [tool.ruff]
-            extend = "../ruff-shared.toml"
+extend = "../ruff-shared.toml"
 
-        [tool.ruff.lint.isort]
-            known-first-party = [
-                "flext_web",
-            ]
+[tool.deptry]
+known_first_party = [
+  "flext_web",
+  "flext_core",
+]
+pep621_dev_dependency_groups = [
+  "dev",
+  "test",
+  "typings",
+  "security",
+]
+per_rule_ignores.DEP002 = [
+  # CLI tools (invoked from command line, not imported)
+  # Type stubs
+  # Runtime deps used indirectly (via pydantic, flask, fastapi)
+  "autoflake",
+  "bandit",
+  "black",
+  "codespell",
+  "commitizen",
+  "detect-secrets",
+  "isort",
+  "pip-audit",
+  "pre-commit",
+  "pylint",
+  "pyrefly",
+  "pyupgrade",
+  "radon",
+  "ruff",
+  "vulture",
+  "types-psutil",
+  "types-python-dateutil",
+  "types-pyyaml",
+  "types-redis",
+  "types-requests",
+  "types-setuptools",
+  "types-toml",
+  "pydantic-core",
+  "requests"
+]
 
+[tool.pytest]
+ini_options.addopts = [ "--strict-config", "--strict-markers", "--tb=short", "-p no:sugar", "-q", "-ra" ]
+ini_options.markers = [
+  "api: API tests",
+  "benchmark: Benchmark tests",
+  "concurrency: Concurrency tests",
+  "db: Database tests",
+  "e2e: End-to-end tests",
+  "integration: Integration tests",
+  "memory: Memory tests",
+  "network: Network tests",
+  "performance: Performance tests",
+  "race_condition: Race condition tests",
+  "slow: Slow tests",
+  "smoke: Smoke tests",
+  "stress: Stress tests",
+  "unit: Unit tests",
+  "web: Web interface tests",
+]
+ini_options.minversion = "8.0"
+ini_options.python_classes = [
+  "Test*",
+]
+ini_options.python_files = [
+  "*_test.py",
+  "test_*.py",
+]
+ini_options.python_functions = [
+  "test_*",
+]
+ini_options.testpaths = [
+  "tests",
+]
+
+[tool.coverage]
+run.source = [ "src/flext_web" ]
+report.fail_under = 100
+report.precision = 2
+
+[tool.pyrefly]
+search-path = [
+  "../typings",
+  "../typings/generated",
+  "src",
+  "tests",
+]
+
+[tool.bandit]
+skips = [ "B404", "B603", "B607", "B105", "B608" ]

@@ -1,5 +1,17 @@
 # Getting Started - flext-web
 
+
+<!-- TOC START -->
+- [Current Status](#current-status)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Basic Usage](#basic-usage)
+- [Integration with FLEXT Patterns](#integration-with-flext-patterns)
+- [Development Priority](#development-priority)
+- [Getting Help](#getting-help)
+- [Related Documentation](#related-documentation)
+<!-- TOC END -->
+
 **Updated**: September 17, 2025 | **Version**: 0.9.9 RC
 
 ## Current Status

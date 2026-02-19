@@ -1,5 +1,23 @@
 # Troubleshooting - flext-web
 
+
+<!-- TOC START -->
+- [Primary Issue: Circular Import Error](#primary-issue-circular-import-error)
+- [Diagnosis Steps](#diagnosis-steps)
+  - [Test Import Failure](#test-import-failure)
+  - [Analyze Dependency Chain](#analyze-dependency-chain)
+- [Resolution Approaches](#resolution-approaches)
+  - [Option 1: Move Shared Components](#option-1-move-shared-components)
+  - [Option 2: Lazy Imports](#option-2-lazy-imports)
+  - [Option 3: Dependency Injection](#option-3-dependency-injection)
+- [Testing Resolution](#testing-resolution)
+- [Related Issues](#related-issues)
+  - [Development Commands Affected](#development-commands-affected)
+  - [Quality Impact](#quality-impact)
+- [Development Workflow](#development-workflow)
+- [Getting Help](#getting-help)
+<!-- TOC END -->
+
 **Updated**: September 17, 2025 | **Version**: 0.9.9 RC
 
 ## Primary Issue: Circular Import Error

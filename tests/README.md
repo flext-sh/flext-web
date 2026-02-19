@@ -1,5 +1,33 @@
 # FLEXT Web Interface - Test Suite
 
+
+<!-- TOC START -->
+- [Test Organization](#test-organization)
+  - [Test Structure](#test-structure)
+  - [Test Categories](#test-categories)
+- [Test Standards](#test-standards)
+  - [Quality Requirements](#quality-requirements)
+  - [Testing Patterns](#testing-patterns)
+- [Running Tests](#running-tests)
+  - [Basic Test Execution](#basic-test-execution)
+  - [Development Testing](#development-testing)
+  - [Performance Testing](#performance-testing)
+- [Test Configuration](#test-configuration)
+  - [Fixtures (`conftest.py`)](#fixtures-conftestpy)
+  - [Test Data](#test-data)
+- [Test Documentation](#test-documentation)
+  - [Test File Documentation](#test-file-documentation)
+- [Quality Gates](#quality-gates)
+  - [Pre-Commit Validation](#pre-commit-validation)
+  - [CI/CD Integration](#cicd-integration)
+- [Troubleshooting](#troubleshooting)
+  - [Common Test Issues](#common-test-issues)
+  - [Test Environment Setup](#test-environment-setup)
+- [Contributing](#contributing)
+  - [Adding New Tests](#adding-new-tests)
+  - [Test Review Checklist](#test-review-checklist)
+<!-- TOC END -->
+
 **Coverage**: 90%+ | **Framework**: pytest | **Standards**: Enterprise Testing Patterns
 
 Comprehensive test suite for the FLEXT Web Interface implementing enterprise testing standards with unit, integration, and end-to-end test coverage. The test suite follows Clean Architecture principles with clear separation between domain, application, and infrastructure testing.
@@ -275,10 +303,10 @@ make test-db-check
 
 ```bash
 # Generate detailed coverage report
-pytest --cov=src --cov-report=term-missing
+pytest --cov --cov-report=term-missing
 
-# Find uncovered lines
-pytest --cov=src --cov-fail-under=90
+# Run with coverage enforcement (thresholds in pyproject.toml)
+make test
 ```
 
 #### Performance Test Failures

@@ -12,8 +12,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import override
 
+import flask
 from fastapi import FastAPI
-from flask import Flask
 from flext_core import (
     FlextLogger,
     FlextService,
@@ -199,7 +199,7 @@ class FlextWebApp(FlextService[bool]):
     def create_flask_app(
         cls,
         config: FlextWebSettings | None = None,
-    ) -> r[Flask]:
+    ) -> r[flask.Flask]:
         """Create Flask app with flext-core integration and configuration.
 
         Single Responsibility: Creates and configures Flask application only.
@@ -210,7 +210,7 @@ class FlextWebApp(FlextService[bool]):
         config: Flask configuration model or None for defaults
 
         Returns:
-        r[Flask]: Success contains configured Flask app,
+        r[flask.Flask]: Success contains configured Flask app,
         failure contains detailed error message
 
         """
@@ -219,7 +219,7 @@ class FlextWebApp(FlextService[bool]):
         flask_config = config if config is not None else FlextWebSettings()
 
         # Create Flask application
-        app = Flask(flask_config.app_name)
+        app = flask.Flask(flask_config.app_name)
 
         # Configure Flask app
         app.config["SECRET_KEY"] = flask_config.secret_key

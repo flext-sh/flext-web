@@ -27,7 +27,6 @@ from flext_tests import (
     FlextTestsFactories,
     FlextTestsMatchers,
 )
-
 from flext_web import FlextWebModels, FlextWebServices, FlextWebSettings
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants

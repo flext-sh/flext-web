@@ -1,5 +1,25 @@
 # Development Guide - flext-web
 
+
+<!-- TOC START -->
+- [Development Focus](#development-focus)
+- [Current Development Status](#current-development-status)
+- [Development Setup](#development-setup)
+- [Development Commands](#development-commands)
+  - [Quality Gates](#quality-gates)
+  - [Testing (Implementation Needed)](#testing-implementation-needed)
+- [Architecture Context](#architecture-context)
+- [Code Organization](#code-organization)
+- [Development Priorities](#development-priorities)
+  - [Priority 1: Architectural Compliance](#priority-1-architectural-compliance)
+  - [Priority 2: Web Framework Enhancement](#priority-2-web-framework-enhancement)
+  - [Priority 3: Modern Web Patterns](#priority-3-modern-web-patterns)
+- [Quality Standards](#quality-standards)
+- [Integration Guidelines](#integration-guidelines)
+- [Contributing Workflow](#contributing-workflow)
+- [Getting Help](#getting-help)
+<!-- TOC END -->
+
 **Updated**: September 17, 2025 | **Version**: 0.9.9 RC
 
 ## Development Focus

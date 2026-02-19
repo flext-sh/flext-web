@@ -1,5 +1,34 @@
 # FLEXT Web Interface - Source Code
 
+
+<!-- TOC START -->
+- [Overview](#overview)
+- [Module Structure](#module-structure)
+  - [Current Implementation (Monolithic - Requires Refactoring)](#current-implementation-monolithic-requires-refactoring)
+  - [Target Architecture (Post-Refactoring)](#target-architecture-post-refactoring)
+- [Components](#components)
+  - [Domain Layer](#domain-layer)
+  - [Application Layer](#application-layer)
+  - [Infrastructure Layer](#infrastructure-layer)
+  - [CLI Interface](#cli-interface)
+- [FLEXT Core Integration](#flext-core-integration)
+  - [Foundation Patterns](#foundation-patterns)
+  - [Error Handling](#error-handling)
+- [Current Issues (Critical)](#current-issues-critical)
+  - [1. Monolithic Architecture](#1-monolithic-architecture)
+  - [2. Dependency Confusion](#2-dependency-confusion)
+  - [3. Template Inconsistency](#3-template-inconsistency)
+  - [4. No Persistence Layer](#4-no-persistence-layer)
+- [Development Guidelines](#development-guidelines)
+  - [Code Quality Standards](#code-quality-standards)
+  - [Testing Approach](#testing-approach)
+  - [Refactoring Priorities (Phase 1)](#refactoring-priorities-phase-1)
+- [Integration Points](#integration-points)
+  - [FLEXT Ecosystem](#flext-ecosystem)
+  - [External Services](#external-services)
+- [Version History](#version-history)
+<!-- TOC END -->
+
 **Module**: `flext_web` - Enterprise web management console for FLEXT ecosystem
 **Architecture**: Clean Architecture + Domain-Driven Design + FLEXT Core Integration
 **Version**: 0.9.9 RC (Development)
