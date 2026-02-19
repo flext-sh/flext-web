@@ -1,8 +1,5 @@
 # flext-web - Web Framework
 PROJECT_NAME := flext-web
-COV_DIR := flext_web
-MIN_COVERAGE := 90
-
 include ../base.mk
 
 # === PROJECT-SPECIFIC TARGETS ===

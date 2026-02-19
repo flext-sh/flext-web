@@ -168,8 +168,8 @@ class ProjectConstants(FlextConstants):
 
 ### 🔄 Migration Projects
 
-- [ ] client-a-oud-mig: client-aOudMigConfig, client-aOudMigModels, client-aOudMigConstants
-- [ ] client-b-meltano-native: client-bMeltanoConfig, client-bMeltanoModels, client-bMeltanoConstants
+- [ ] flext-oud-mig: FlextOudMigConfig, FlextOudMigModels, FlextOudMigConstants
+- [ ] flext-meltano-native: flextMeltanoConfig, flextMeltanoModels, flextMeltanoConstants
 
 ## 🚀 NEXT STEPS
 
