@@ -7,39 +7,39 @@
 
 
 <!-- TOC START -->
-- Overview
-- Test Structure
-- Test Categories
-  - Unit Tests
-  - Integration Tests
-  - End-to-End Tests
-- Test Markers
-- Running Tests
-  - Basic Test Execution
-  - Coverage Analysis
-  - Parallel Test Execution
-- Test Fixtures
-  - Pytest Fixtures
-  - Using Fixtures
-- Mocking and Stubbing
-  - Unit Test Mocking
-  - Integration Test Stubbing
-- Performance Testing
-  - Load Testing
-  - Memory Testing
-- Test Data Management
-  - Test Fixtures Directory
-  - Loading Test Data
-- Continuous Integration
-  - GitHub Actions Workflow
-- Best Practices
-  - 1. Test Naming
-  - 2. Test Organization
-  - 3. Assertion Quality
-  - 4. Test Independence
-- Troubleshooting
-  - Common Test Issues
-- Resources
+- [Overview](#overview)
+- [Test Structure](#test-structure)
+- [Test Categories](#test-categories)
+  - [Unit Tests](#unit-tests)
+  - [Integration Tests](#integration-tests)
+  - [End-to-End Tests](#end-to-end-tests)
+- [Test Markers](#test-markers)
+- [Running Tests](#running-tests)
+  - [Basic Test Execution](#basic-test-execution)
+  - [Coverage Analysis](#coverage-analysis)
+  - [Parallel Test Execution](#parallel-test-execution)
+- [Test Fixtures](#test-fixtures)
+  - [Pytest Fixtures](#pytest-fixtures)
+  - [Using Fixtures](#using-fixtures)
+- [Mocking and Stubbing](#mocking-and-stubbing)
+  - [Unit Test Mocking](#unit-test-mocking)
+  - [Integration Test Stubbing](#integration-test-stubbing)
+- [Performance Testing](#performance-testing)
+  - [Load Testing](#load-testing)
+  - [Memory Testing](#memory-testing)
+- [Test Data Management](#test-data-management)
+  - [Test Fixtures Directory](#test-fixtures-directory)
+  - [Loading Test Data](#loading-test-data)
+- [Continuous Integration](#continuous-integration)
+  - [GitHub Actions Workflow](#github-actions-workflow)
+- [Best Practices](#best-practices)
+  - [1. Test Naming](#1-test-naming)
+  - [2. Test Organization](#2-test-organization)
+  - [3. Assertion Quality](#3-assertion-quality)
+  - [4. Test Independence](#4-test-independence)
+- [Troubleshooting](#troubleshooting)
+  - [Common Test Issues](#common-test-issues)
+- [Resources](#resources)
 <!-- TOC END -->
 
 This guide covers testing strategies, best practices, and procedures for FLEXT applications and libraries.

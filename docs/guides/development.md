@@ -7,45 +7,45 @@
 
 
 <!-- TOC START -->
-- Prerequisites
-- Development Environment Setup
-  - 1. Clone the Repository
-  - 2. Install Dependencies
-  - 3. Verify Installation
-- Project Structure
-- Development Workflow
-  - 1. Create a Feature Branch
-  - 2. Make Changes
-  - 3. Run Quality Gates
-  - 4. Commit Changes
-- Code Standards
-  - Type Safety (ZERO TOLERANCE)
-  - Railway-Oriented Programming
-  - Unified Models Pattern
-- Testing
-  - Running Tests
-  - Writing Tests
-- Quality Gates
-  - Pre-commit Hooks
-  - Quality Checks
-- Adding New Projects
-  - 1. Create Project Structure
-  - 2. Implement Core Patterns
-  - 3. Add to Workspace
-- Debugging
-  - Type Errors
-  - Test Failures
-  - Import Issues
-- Documentation
-  - Code Documentation
-  - README Updates
-- Contributing
-  - Pull Request Process
-  - Code Review Guidelines
-- Troubleshooting
-  - Common Issues
-- Resources
-- Support
+- [Prerequisites](#prerequisites)
+- [Development Environment Setup](#development-environment-setup)
+  - [1. Clone the Repository](#1-clone-the-repository)
+  - [2. Install Dependencies](#2-install-dependencies)
+  - [3. Verify Installation](#3-verify-installation)
+- [Project Structure](#project-structure)
+- [Development Workflow](#development-workflow)
+  - [1. Create a Feature Branch](#1-create-a-feature-branch)
+  - [2. Make Changes](#2-make-changes)
+  - [3. Run Quality Gates](#3-run-quality-gates)
+  - [4. Commit Changes](#4-commit-changes)
+- [Code Standards](#code-standards)
+  - [Type Safety (ZERO TOLERANCE)](#type-safety-zero-tolerance)
+  - [Railway-Oriented Programming](#railway-oriented-programming)
+  - [Unified Models Pattern](#unified-models-pattern)
+- [Testing](#testing)
+  - [Running Tests](#running-tests)
+  - [Writing Tests](#writing-tests)
+- [Quality Gates](#quality-gates)
+  - [Pre-commit Hooks](#pre-commit-hooks)
+  - [Quality Checks](#quality-checks)
+- [Adding New Projects](#adding-new-projects)
+  - [1. Create Project Structure](#1-create-project-structure)
+  - [2. Implement Core Patterns](#2-implement-core-patterns)
+  - [3. Add to Workspace](#3-add-to-workspace)
+- [Debugging](#debugging)
+  - [Type Errors](#type-errors)
+  - [Test Failures](#test-failures)
+  - [Import Issues](#import-issues)
+- [Documentation](#documentation)
+  - [Code Documentation](#code-documentation)
+  - [README Updates](#readme-updates)
+- [Contributing](#contributing)
+  - [Pull Request Process](#pull-request-process)
+  - [Code Review Guidelines](#code-review-guidelines)
+- [Troubleshooting](#troubleshooting)
+  - [Common Issues](#common-issues)
+- [Resources](#resources)
+- [Support](#support)
 <!-- TOC END -->
 
 This guide covers setting up a development environment for FLEXT contributions and understanding the development workflow.
