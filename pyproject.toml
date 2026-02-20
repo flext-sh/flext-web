@@ -1,12 +1,10 @@
 [build-system]
 build-backend = "poetry.core.masonry.api"
-requires = [
-  "poetry-core>=2",
-]
+requires = [ "poetry-core>=2.0", "poetry-core>=2" ]
 
 [project]
 name = "flext-web"
-version = "0.10.0-dev"
+version = "0.10.0"
 description = "FLEXT Web - Modern Web Interface for FLEXT Platform"
 readme = "README.md"
 keywords = [
@@ -18,19 +16,20 @@ keywords = [
   "web",
 ]
 license = "MIT"
-maintainers = [ { email = "team@flext.sh", name = "FLEXT Team" } ]
-authors = [ { email = "team@flext.sh", name = "FLEXT Team" } ]
+maintainers = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
+authors = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
 requires-python = ">=3.13,<3.14"
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
-  "Framework :: Flask",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.13",
-  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Typing :: Typed",
+  "Development Status :: 5 - Production/Stable",
+  "Framework :: Flask",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
 dependencies = [
   "fastapi>=0.119",
@@ -39,7 +38,7 @@ dependencies = [
   "pydantic-core>=2.41.4",
   "pydantic-settings>=2.11",
   "requests>=2.31",
-  "uvicorn>=0.38"
+  "uvicorn>=0.38",
 ]
 optional-dependencies.dev = [
   "autoflake>=2.3.1",
@@ -99,7 +98,7 @@ group.dev.dependencies.opentelemetry-api = ">=1.39.1"
 group.dev.dependencies.opentelemetry-sdk = ">=1.39.1"
 group.dev.dependencies.prompt-toolkit = ">=3.0.52"
 group.dev.dependencies.sqlparse = ">=0.5.5"
-packages = [ { from = "src", include = "flext_web" } ]
+packages = [ {from = "src", include = "flext_web"} ]
 
 [tool.ruff]
 extend = "../ruff-shared.toml"
@@ -142,7 +141,7 @@ per_rule_ignores.DEP002 = [
   "types-setuptools",
   "types-toml",
   "pydantic-core",
-  "requests"
+  "requests",
 ]
 
 [tool.pytest]
@@ -190,17 +189,13 @@ ini_options.testpaths = [
 ]
 
 [tool.coverage]
-run.source = [ "src/flext_web" ]
 report.fail_under = 100
 report.precision = 2
+run.source = [ "src/flext_web" ]
 
 [tool.pyrefly]
-search-path = [
-  "../typings",
-  "../typings/generated",
-  "src",
-  "tests",
-]
+project-excludes = [ "**/*_pb2*.py", "**/*_pb2_grpc*.py" ]
+search-path = [ "../typings", "../typings/generated", "src", "tests", "examples", "scripts" ]
 
 [tool.bandit]
 skips = [ "B404", "B603", "B607", "B105", "B608" ]
