@@ -132,12 +132,12 @@ class FlextWebTypes(FlextTypes):
         This enables consistent namespace patterns for cross-project type access.
         """
 
-        type ConfigValue = str | int | bool | list[str]
-        type RequestDict = dict[
+        ConfigValue = str | int | bool | list[str]
+        RequestDict = dict[
             str,
             str | int | bool | list[str] | dict[str, str | int | bool],
         ]
-        type ResponseDict = dict[
+        ResponseDict = dict[
             str,
             str | int | bool | list[str] | dict[str, str | int | bool],
         ]
@@ -214,9 +214,17 @@ class FlextWebTypes(FlextTypes):
         # Session cookie SameSite literal - standard HTTP cookie attribute values
         SameSiteLiteral = Literal["Lax", "Strict", "None"]
 
-    # WebCore alias - for compatibility with code using t.WebCore
-    WebCore = Web
-    """Alias for Web class - provides access to t.WebCore.ResponseDict, t.WebCore.RequestDict."""
+    class WebCore:
+        """Compatibility namespace for request/response dict aliases."""
+
+        RequestDict = dict[
+            str,
+            str | int | bool | list[str] | dict[str, str | int | bool],
+        ]
+        ResponseDict = dict[
+            str,
+            str | int | bool | list[str] | dict[str, str | int | bool],
+        ]
 
     # Types alias - for compatibility with code using t.Types.GeneralValueType
     class Types:

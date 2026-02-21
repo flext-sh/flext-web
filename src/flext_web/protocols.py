@@ -35,7 +35,6 @@ from flext_core.result import r
 
 from flext_web.constants import c
 from flext_web.typings import t
-from flext_web.utilities import u
 
 
 class FlextWebProtocols(FlextProtocols):
@@ -302,10 +301,11 @@ class FlextWebProtocols(FlextProtocols):
                     "status": c.Web.WebResponse.STATUS_SUCCESS,
                 }
                 # Use u.filter to merge valid data fields
-                valid_data = u.filter(
-                    data,
-                    lambda v: isinstance(v, (str, int, bool, list, dict)),
-                )
+                valid_data = {
+                    k: v
+                    for k, v in data.items()
+                    if isinstance(v, (str, int, bool, list, dict))
+                }
                 response.update(valid_data)
                 return response
 
@@ -345,10 +345,11 @@ class FlextWebProtocols(FlextProtocols):
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
                 # Use u.filter to merge valid data fields
-                valid_data = u.filter(
-                    data,
-                    lambda v: isinstance(v, (str, int, bool, list, dict)),
-                )
+                valid_data = {
+                    k: v
+                    for k, v in data.items()
+                    if isinstance(v, (str, int, bool, list, dict))
+                }
                 response.update(valid_data)
                 return response
 
@@ -402,10 +403,11 @@ class FlextWebProtocols(FlextProtocols):
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
                 # Use u.filter to merge valid data fields
-                valid_data = u.filter(
-                    data,
-                    lambda v: isinstance(v, (str, int, bool, list, dict)),
-                )
+                valid_data = {
+                    k: v
+                    for k, v in data.items()
+                    if isinstance(v, (str, int, bool, list, dict))
+                }
                 response.update(valid_data)
                 return response
 
@@ -1117,9 +1119,6 @@ class FlextWebProtocols(FlextProtocols):
                     """Get web application metrics."""
                     return FlextWebProtocols.Web.WebMonitoringProtocol.get_web_metrics()
 
-
-# Runtime alias for simplified usage
-p = FlextWebProtocols
 
 __all__ = [
     "FlextWebProtocols",

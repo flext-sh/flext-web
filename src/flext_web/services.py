@@ -170,8 +170,7 @@ class FlextWebServices(FlextService[bool]):
             """
             return FlextResult.ok(list(self._storage.values()))
 
-        @staticmethod
-        def execute(**_kwargs: object) -> FlextResult[m.Web.EntityData]:
+        def execute(self, **_kwargs: object) -> FlextResult[m.Web.EntityData]:
             """Execute entity service - required by FlextService.
 
             Returns:
@@ -552,8 +551,7 @@ class FlextWebServices(FlextService[bool]):
         """
         return cls.create_service(config)
 
-    @staticmethod
-    def execute(**_kwargs: object) -> FlextResult[bool]:
+    def execute(self, **_kwargs: object) -> FlextResult[bool]:
         """Execute web service orchestration (FlextService requirement).
 
         Returns:
