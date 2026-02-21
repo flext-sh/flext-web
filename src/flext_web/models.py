@@ -28,14 +28,6 @@ class FlextWebModels(m):
     Provides Pydantic models for web applications with validation.
     """
 
-    def __init_subclass__(cls, **kwargs: t.GeneralValueType) -> None:
-        """Warn when FlextWebModels is subclassed directly."""
-        super().__init_subclass__(**kwargs)
-        u.Deprecation.warn_once(
-            f"subclass:{cls.__name__}",
-            "Subclassing FlextWebModels is deprecated. Use FlextModels directly with composition instead.",
-        )
-
     class Web:
         """Web application models for HTTP protocol and application entities.
 
@@ -1137,6 +1129,5 @@ class FlextWebModels(m):
 
 
 m = FlextWebModels
-m_web = FlextWebModels
 
-__all__ = ["FlextWebModels", "m", "m_web"]
+__all__ = ["FlextWebModels", "m"]

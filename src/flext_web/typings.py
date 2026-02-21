@@ -12,14 +12,14 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
-
-from flext import (
+from flext_core import (
     FlextResult,
     FlextTypes,
     FlextUtilities,
     t,
 )
+from pydantic import BaseModel, ConfigDict, Field
+
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 
