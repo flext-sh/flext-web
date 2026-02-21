@@ -10,8 +10,8 @@ from __future__ import annotations
 from flext_core import (
     FlextLogger,
     FlextService,
-    FlextTypes as t,
     r,
+    t,
 )
 
 from flext_web.constants import c

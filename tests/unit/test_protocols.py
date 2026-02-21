@@ -5,7 +5,8 @@ Tests the unified FlextWebProtocols class following flext standards.
 
 from __future__ import annotations
 
-from flext_core import FlextResult, FlextTypes as t, p
+from flext_core import FlextResult, p
+from flext_web import t
 
 from flext_web.constants import FlextWebConstants
 from flext_web.protocols import FlextWebProtocols

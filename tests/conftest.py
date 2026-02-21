@@ -21,7 +21,7 @@ from typing import ClassVar
 
 import pytest
 from flask import Flask
-from flext_core import FlextResult, FlextTypes as t
+from flext_core import FlextResult, t
 from flext_tests import (
     FlextTestsDocker,
     FlextTestsFactories,

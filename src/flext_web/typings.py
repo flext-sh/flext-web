@@ -12,14 +12,14 @@ from __future__ import annotations
 
 from typing import Literal
 
-from flext_core import (
-    FlextResult,
-    FlextTypes,
-    FlextTypes as t_core,
-    FlextUtilities,
-)
 from pydantic import BaseModel, ConfigDict, Field
 
+from flext import (
+    FlextResult,
+    FlextTypes,
+    FlextUtilities,
+    t,
+)
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 
@@ -39,9 +39,9 @@ class _WebRequestConfig(BaseModel):
     url: str = Field(default="")
     method: str = Field(default="GET")
     headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, t_core.GeneralValueType] | None = Field(default=None)
+    body: str | dict[str, t.GeneralValueType] | None = Field(default=None)
     timeout: float = Field(default=30.0)
-    query_params: dict[str, t_core.GeneralValueType] | None = Field(default=None)
+    query_params: dict[str, t.GeneralValueType] | None = Field(default=None)
     client_ip: str = Field(default="")
     user_agent: str = Field(default="")
 
@@ -54,7 +54,7 @@ class _WebResponseConfig(BaseModel):
     status_code: int = Field(default=200)
     request_id: str = Field(default="")
     headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, t_core.GeneralValueType] | None = Field(default=None)
+    body: str | dict[str, t.GeneralValueType] | None = Field(default=None)
     elapsed_time: float = Field(default=0.0)
     content_type: str = Field(default="application/json")
     content_length: int = Field(default=0)
@@ -230,7 +230,7 @@ class FlextWebTypes(FlextTypes):
     class Types:
         """Type system aliases for flext-web."""
 
-        GeneralValueType = t_core.GeneralValueType
+        GeneralValueType = t.GeneralValueType
         """General value type - references FlextTypes.GeneralValueType."""
 
     # Core response types - proper inheritance from FlextWebModels
@@ -269,7 +269,7 @@ class FlextWebTypes(FlextTypes):
         url: str,
         method: str = FlextWebConstants.Web.Method.GET,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, t_core.GeneralValueType] | None = None,
+        body: str | dict[str, t.GeneralValueType] | None = None,
         timeout: float = FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
     ) -> FlextResult[FlextWebModels.Web.Request]:
         """Create HTTP request model instance with proper validation.
@@ -329,7 +329,7 @@ class FlextWebTypes(FlextTypes):
         cls,
         status_code: int,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, t_core.GeneralValueType] | None = None,
+        body: str | dict[str, t.GeneralValueType] | None = None,
         elapsed_time: float | None = None,
     ) -> FlextResult[FlextWebModels.Web.Response]:
         """Create HTTP response model instance with proper validation.
@@ -405,7 +405,7 @@ class FlextWebTypes(FlextTypes):
         # Validate headers - must be dict or None
         headers_validated: dict[str, str] = headers or {}
         # Validate query_params - must be dict or None
-        query_params_validated: dict[str, t_core.GeneralValueType] = query_params or {}
+        query_params_validated: dict[str, t.GeneralValueType] = query_params or {}
 
         # Use # Direct validation instead for method validation (DSL pattern)
         method_upper = method.upper()
