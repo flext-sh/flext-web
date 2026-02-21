@@ -12,7 +12,7 @@ import uuid
 from datetime import UTC, datetime
 
 from flext_core import (
-    m,
+    FlextModels,
     r,
     t,
     u,
@@ -22,7 +22,7 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from flext_web.constants import c
 
 
-class FlextWebModels(m):
+class FlextWebModels(FlextModels):
     """Web application models collection.
 
     Provides Pydantic models for web applications with validation.
@@ -38,7 +38,7 @@ class FlextWebModels(m):
         design principles with Pydantic v2 validation.
         """
 
-        class Message(m.Value):
+        class Message(FlextModels.Value):
             """Generic HTTP message base model with protocol validation.
 
             Represents common HTTP message structure with headers, body,
@@ -179,7 +179,7 @@ class FlextWebModels(m):
                 """
                 return self.status_code >= c.Web.ERROR_MIN
 
-        class AppRequest(m.Value):
+        class AppRequest(FlextModels.Value):
             """Web request entity with tracking and context information.
 
             Extends generic HTTP request with web application-specific fields
@@ -280,7 +280,7 @@ class FlextWebModels(m):
                 """
                 return self.url.startswith("https://")
 
-        class AppResponse(m.Value):
+        class AppResponse(FlextModels.Value):
             """Web response entity with tracking and performance metrics.
 
             Extends generic HTTP response with web application-specific fields
@@ -378,7 +378,7 @@ class FlextWebModels(m):
         # EntityStatus removed - use c.Web.Status instead
         # All status values are now centralized in constants.py
 
-        class Entity(m.Entity):
+        class Entity(FlextModels.Entity):
             """Application entity with identity and lifecycle (Aggregate Root).
 
             Represents a web application as a domain entity with identity,
@@ -716,7 +716,7 @@ class FlextWebModels(m):
                 # Import at module level - u is used for ID formatting
                 return u.format_app_id(name)
 
-        class EntityConfig(m.Value):
+        class EntityConfig(FlextModels.Value):
             """Application entity configuration (Value Object).
 
             Represents configuration settings for application entities.
@@ -751,13 +751,13 @@ class FlextWebModels(m):
                 description="Application secret key",
             )
 
-        class Credentials(m.Value):
+        class Credentials(FlextModels.Value):
             """Authentication credentials model."""
 
             username: str = Field(min_length=1, description="Username")
             password: str = Field(min_length=1, description="Password")
 
-        class UserData(m.Value):
+        class UserData(FlextModels.Value):
             """User registration data model."""
 
             username: str = Field(min_length=1, description="Username")
@@ -767,7 +767,7 @@ class FlextWebModels(m):
                 description="Password (empty string if not provided)",
             )
 
-        class AppData(m.Value):
+        class AppData(FlextModels.Value):
             """Application creation data model."""
 
             name: str = Field(
@@ -786,7 +786,7 @@ class FlextWebModels(m):
                 description="Application port",
             )
 
-        class EntityData(m.Value):
+        class EntityData(FlextModels.Value):
             """Generic entity data model."""
 
             data: dict[str, t.GeneralValueType] = Field(
@@ -794,14 +794,14 @@ class FlextWebModels(m):
                 description="Entity data dictionary",
             )
 
-        class AuthResponse(m.Value):
+        class AuthResponse(FlextModels.Value):
             """Authentication response model."""
 
             token: str = Field(description="Authentication token")
             user_id: str = Field(description="User identifier")
             authenticated: bool = Field(description="Authentication status")
 
-        class UserResponse(m.Value):
+        class UserResponse(FlextModels.Value):
             """User registration response model."""
 
             id: str = Field(description="User identifier")
@@ -809,7 +809,7 @@ class FlextWebModels(m):
             email: str = Field(description="Email address")
             created: bool = Field(description="Creation status")
 
-        class ApplicationResponse(m.Value):
+        class ApplicationResponse(FlextModels.Value):
             """Application management response model."""
 
             id: str = Field(description="Application identifier")
@@ -819,20 +819,20 @@ class FlextWebModels(m):
             status: str = Field(description="Application status")
             created_at: str = Field(description="Creation timestamp")
 
-        class HealthResponse(m.Value):
+        class HealthResponse(FlextModels.Value):
             """Health check response model."""
 
             status: str = Field(description="Health status")
             service: str = Field(description="Service name")
             timestamp: str = Field(description="Timestamp")
 
-        class MetricsResponse(m.Value):
+        class MetricsResponse(FlextModels.Value):
             """Metrics response model."""
 
             service_status: str = Field(description="Service status")
             components: list[str] = Field(description="Service components")
 
-        class DashboardResponse(m.Value):
+        class DashboardResponse(FlextModels.Value):
             """Dashboard response model."""
 
             total_applications: int = Field(description="Total applications")
@@ -844,7 +844,7 @@ class FlextWebModels(m):
             )
             timestamp: str = Field(description="Timestamp")
 
-        class ServiceResponse(m.Value):
+        class ServiceResponse(FlextModels.Value):
             """Generic service response model."""
 
             service: str = Field(description="Service name")
@@ -852,7 +852,7 @@ class FlextWebModels(m):
             status: str = Field(description="Service status")
             config: bool = Field(description="Configuration status")
 
-        class WebRequest(m.Value):
+        class WebRequest(FlextModels.Value):
             """Web request model with complete tracking."""
 
             method: c.Web.Literals.HttpMethodLiteral = Field(
@@ -881,7 +881,7 @@ class FlextWebModels(m):
                 description="Request timestamp",
             )
 
-        class WebResponse(m.Value):
+        class WebResponse(FlextModels.Value):
             """Web response model with status tracking."""
 
             request_id: str = Field(description="Associated request identifier")
@@ -907,7 +907,7 @@ class FlextWebModels(m):
                 description="Response timestamp",
             )
 
-        class AppConfig(m.Value):
+        class AppConfig(FlextModels.Value):
             """Application configuration model."""
 
             title: str = Field(
