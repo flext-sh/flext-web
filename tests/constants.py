@@ -27,11 +27,11 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
     2. FlextWebConstants - for domain constants (.Web.*)
 
     Access patterns:
-    - tc.Tests.Docker.* (container testing)
-    - tc.Tests.Matcher.* (assertion messages)
-    - tc.Tests.Factory.* (test data generation)
-    - tc.Web.* (domain constants from production)
-    - tc.TestWeb.* (project-specific test data)
+    - c.Tests.Docker.* (container testing)
+    - c.Tests.Matcher.* (assertion messages)
+    - c.Tests.Factory.* (test data generation)
+    - c.Web.* (domain constants from production)
+    - c.TestWeb.* (project-specific test data)
 
     Rules:
     - NEVER duplicate constants from FlextTestsConstants or FlextWebConstants
