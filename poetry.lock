@@ -2940,4 +2940,4 @@ typings = ["types-psutil", "types-python-dateutil", "types-pyyaml", "types-redis
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.14"
-content-hash = "9a9ec5b7da10194369f3c748f1276dfa3b7d7e31e01c4e00aa7ad3382dd40ac1"
+content-hash = "3accd6ba66085c53ca79e73829d9272fdc349b58092932b5986893a3447eb0e9"
