@@ -17,9 +17,9 @@ class TestsFlextWebProtocols(FlextTestsProtocols, FlextWebProtocols):
     """Test protocols combining FlextTestsProtocols and FlextWebProtocols.
 
     Provides access to:
-    - tp.Tests.Docker.* (from FlextTestsProtocols)
-    - tp.Tests.Factory.* (from FlextTestsProtocols)
-    - tp.Web.* (from FlextWebProtocols)
+    - p.Tests.Docker.* (from FlextTestsProtocols)
+    - p.Tests.Factory.* (from FlextTestsProtocols)
+    - p.Web.* (from FlextWebProtocols)
     """
 
     class Tests:
@@ -34,6 +34,6 @@ class TestsFlextWebProtocols(FlextTestsProtocols, FlextWebProtocols):
 
 # Runtime aliases
 p = TestsFlextWebProtocols
-tp = TestsFlextWebProtocols
+p = TestsFlextWebProtocols
 
-__all__ = ["TestsFlextWebProtocols", "p", "tp"]
+__all__ = ["TestsFlextWebProtocols", "p"]

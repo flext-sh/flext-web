@@ -54,7 +54,7 @@ class FlextWebApp(FlextService[bool]):
         super().__init__()
 
     @override
-    def execute(self, **_kwargs: str | int | float | bool | None) -> r[bool]:
+    def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
         """Execute the web application service.
 
         Main domain operation for the web application service.

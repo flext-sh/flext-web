@@ -8,10 +8,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from tests.constants import TestsFlextWebConstants, c, tc
+from tests.constants import TestsFlextWebConstants, c
 
 __all__ = [
     "TestsFlextWebConstants",
     "c",
-    "tc",
 ]
