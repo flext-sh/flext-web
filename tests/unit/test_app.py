@@ -34,14 +34,14 @@ class TestFlextWebApp:
 
     def test_factory_create_instance_success(self) -> None:
         """Test FastAPIFactory.create_instance with success - REAL FastAPI."""
-        config: FlextWebApp._FastAPIConfig = {
-            "title": "Test API",
-            "version": "1.0.0",
-            "description": "Test Description",
-            "docs_url": FlextWebConstants.Web.WebApi.DOCS_URL,
-            "redoc_url": FlextWebConstants.Web.WebApi.REDOC_URL,
-            "openapi_url": FlextWebConstants.Web.WebApi.OPENAPI_URL,
-        }
+        config = FlextWebApp._FastAPIConfig(
+            title="Test API",
+            version="1.0.0",
+            description="Test Description",
+            docs_url=FlextWebConstants.Web.WebApi.DOCS_URL,
+            redoc_url=FlextWebConstants.Web.WebApi.REDOC_URL,
+            openapi_url=FlextWebConstants.Web.WebApi.OPENAPI_URL,
+        )
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
         assert result.is_success
@@ -54,13 +54,13 @@ class TestFlextWebApp:
     def test_factory_create_instance_with_valid_params(self) -> None:
         """Test FastAPIFactory.create_instance with valid parameters - REAL FastAPI."""
         # FastAPI requires non-empty title - use valid title
-        config: FlextWebApp._FastAPIConfig = {
-            "title": "Valid Test API",
-            "version": "1.0.0",
-            "docs_url": FlextWebConstants.Web.WebApi.DOCS_URL,
-            "redoc_url": FlextWebConstants.Web.WebApi.REDOC_URL,
-            "openapi_url": FlextWebConstants.Web.WebApi.OPENAPI_URL,
-        }
+        config = FlextWebApp._FastAPIConfig(
+            title="Valid Test API",
+            version="1.0.0",
+            docs_url=FlextWebConstants.Web.WebApi.DOCS_URL,
+            redoc_url=FlextWebConstants.Web.WebApi.REDOC_URL,
+            openapi_url=FlextWebConstants.Web.WebApi.OPENAPI_URL,
+        )
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
         # FastAPI validates title - should succeed with valid title
@@ -71,14 +71,14 @@ class TestFlextWebApp:
 
     def test_factory_create_instance_real_fastapi(self) -> None:
         """Test FastAPIFactory.create_instance with REAL FastAPI - no mocks."""
-        config: FlextWebApp._FastAPIConfig = {
-            "title": "Real Test API",
-            "version": "1.0.0",
-            "description": "Real Test Description",
-            "docs_url": FlextWebConstants.Web.WebApi.DOCS_URL,
-            "redoc_url": FlextWebConstants.Web.WebApi.REDOC_URL,
-            "openapi_url": FlextWebConstants.Web.WebApi.OPENAPI_URL,
-        }
+        config = FlextWebApp._FastAPIConfig(
+            title="Real Test API",
+            version="1.0.0",
+            description="Real Test Description",
+            docs_url=FlextWebConstants.Web.WebApi.DOCS_URL,
+            redoc_url=FlextWebConstants.Web.WebApi.REDOC_URL,
+            openapi_url=FlextWebConstants.Web.WebApi.OPENAPI_URL,
+        )
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
         assert result.is_success
@@ -149,7 +149,7 @@ class TestFlextWebApp:
         client = TestClient(app)
         response = client.get("/health")
         assert response.status_code == 200
-        health_data = response.model_dump_json()
+        health_data = response.json()
         assert "status" in health_data
         assert "service" in health_data
         assert "timestamp" in health_data
@@ -283,7 +283,7 @@ class TestFlextWebApp:
         client = TestClient(app)
         response = client.get("/health")
         assert response.status_code == 200
-        health_data = response.model_dump_json()
+        health_data = response.json()
         assert "status" in health_data
         assert "service" in health_data
 
@@ -315,14 +315,14 @@ class TestFlextWebApp:
         )
 
         # Use factory_config to override title
-        factory_config: FlextWebApp._FastAPIConfig = {
-            "title": "Override Title",
-            "version": config.version,
-            "description": config.description,
-            "docs_url": config.docs_url,
-            "redoc_url": config.redoc_url,
-            "openapi_url": config.openapi_url,
-        }
+        factory_config = FlextWebApp._FastAPIConfig(
+            title="Override Title",
+            version=config.version,
+            description=config.description,
+            docs_url=config.docs_url,
+            redoc_url=config.redoc_url,
+            openapi_url=config.openapi_url,
+        )
         result = FlextWebApp.create_fastapi_app(config, factory_config)
 
         assert result.is_success
@@ -339,14 +339,14 @@ class TestFlextWebApp:
             version="1.0.0",
         )
 
-        factory_config: FlextWebApp._FastAPIConfig = {
-            "title": config.title,
-            "version": config.version,
-            "description": config.description,
-            "docs_url": "/override-docs",
-            "redoc_url": "/override-redoc",
-            "openapi_url": "/override-openapi.json",
-        }
+        factory_config = FlextWebApp._FastAPIConfig(
+            title=config.title,
+            version=config.version,
+            description=config.description,
+            docs_url="/override-docs",
+            redoc_url="/override-redoc",
+            openapi_url="/override-openapi.json",
+        )
 
         result = FlextWebApp.create_fastapi_app(config, factory_config)
 
@@ -445,14 +445,14 @@ class TestFlextWebApp:
         )
 
         # Create real FastAPI app
-        fastapi_config: FlextWebApp._FastAPIConfig = {
-            "title": "Test API",
-            "version": "1.0.0",
-            "description": config.description,
-            "docs_url": config.docs_url,
-            "redoc_url": config.redoc_url,
-            "openapi_url": config.openapi_url,
-        }
+        fastapi_config = FlextWebApp._FastAPIConfig(
+            title="Test API",
+            version="1.0.0",
+            description=config.description,
+            docs_url=config.docs_url,
+            redoc_url=config.redoc_url,
+            openapi_url=config.openapi_url,
+        )
         app_result = FlextWebApp.FastAPIFactory.create_instance(fastapi_config)
         assert app_result.is_success
         app = app_result.value
@@ -468,7 +468,7 @@ class TestFlextWebApp:
         # Test info endpoint - REAL HTTP request
         info_response = client.get("/info")
         assert info_response.status_code == 200
-        info_data = info_response.model_dump_json()
+        info_data = info_response.json()
         assert "service" in info_data
         assert "title" in info_data
         assert info_data["title"] == "Test API"

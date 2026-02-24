@@ -7,12 +7,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import MutableMapping
+
 from flext_core import (
     FlextLogger,
     FlextService,
     r,
-    t,
 )
+from pydantic import BaseModel, ConfigDict, Field
 
 from flext_web.constants import c
 from flext_web.models import m
@@ -34,6 +36,29 @@ class FlextWebHandlers(FlextService[bool]):
     # NESTED HANDLER CLASSES
     # =========================================================================
 
+    class HealthStatus(BaseModel):
+        """Health response payload."""
+
+        model_config = ConfigDict(frozen=True, extra="forbid")
+
+        status: str
+        service: str
+        version: str
+        timestamp: str
+        components: MutableMapping[str, str] = Field(default_factory=dict)
+
+    class SystemInfo(BaseModel):
+        """System information payload."""
+
+        model_config = ConfigDict(frozen=True, extra="forbid")
+
+        service_name: str
+        service_type: str
+        architecture: str
+        patterns: list[str] = Field(default_factory=list)
+        integrations: list[str] = Field(default_factory=list)
+        capabilities: list[str] = Field(default_factory=list)
+
     class ApplicationHandler:
         """CQRS command handler for web application lifecycle management.
 
@@ -54,7 +79,7 @@ class FlextWebHandlers(FlextService[bool]):
             """Initialize application handler."""
             super().__init__()
             self.logger = FlextLogger(__name__)
-            self._apps_registry: dict[str, m.Web.Entity] = {}
+            self._apps_registry: MutableMapping[str, m.Web.Entity] = {}
             self.logger.info("WebApp handler initialized")
 
         def create(
@@ -93,14 +118,6 @@ class FlextWebHandlers(FlextService[bool]):
             host: str,
         ) -> r[str]:
             """Validate create inputs - consolidates all validations."""
-            # Basic type validation
-            if not isinstance(name, str):
-                return r[str].fail("Application name must be a string")
-            if not isinstance(host, str):
-                return r[str].fail("Host must be a string")
-            if not isinstance(port, int):
-                return r[str].fail("Port must be an integer")
-
             # Length validation
             if len(name) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
                 return r[str].fail(
@@ -188,53 +205,53 @@ class FlextWebHandlers(FlextService[bool]):
     # =========================================================================
 
     @staticmethod
-    def handle_health_check() -> r[dict[str, t.GeneralValueType]]:
+    def handle_health_check() -> r[FlextWebHandlers.HealthStatus]:
         """Handle health check requests with system status.
 
         Returns:
         r containing health status information.
 
         """
-        return r[dict[str, str]].ok(
-            {
-                "status": c.Web.WebResponse.STATUS_HEALTHY,
-                "service": c.Web.WebService.SERVICE_NAME,
-                "version": "0.9.0",
-                "timestamp": u.Generators.generate_iso_timestamp(),
-                "components": {
+        return r[FlextWebHandlers.HealthStatus].ok(
+            FlextWebHandlers.HealthStatus(
+                status=c.Web.WebResponse.STATUS_HEALTHY,
+                service=c.Web.WebService.SERVICE_NAME,
+                version="0.9.0",
+                timestamp=u.Generators.generate_iso_timestamp(),
+                components={
                     "web_service": c.Web.WebResponse.STATUS_OPERATIONAL,
                     "configuration": "loaded",
                     "handlers": "registered",
                 },
-            },
+            )
         )
 
     @classmethod
-    def handle_system_info(cls) -> r[dict[str, t.GeneralValueType]]:
+    def handle_system_info(cls) -> r[FlextWebHandlers.SystemInfo]:
         """Handle system information requests.
 
         Returns:
         r containing detailed system information.
 
         """
-        return r[dict[str, str]].ok(
-            {
-                "service_name": "FLEXT Web Interface",
-                "service_type": "web_api",
-                "architecture": "flask_clean_architecture",
-                "patterns": [
+        return r[FlextWebHandlers.SystemInfo].ok(
+            FlextWebHandlers.SystemInfo(
+                service_name="FLEXT Web Interface",
+                service_type="web_api",
+                architecture="flask_clean_architecture",
+                patterns=[
                     "CQRS",
                     "Clean Architecture",
                     "Domain-Driven Design",
                 ],
-                "integrations": ["flext-core", "pydantic", "flask"],
-                "capabilities": [
+                integrations=["flext-core", "pydantic", "flask"],
+                capabilities=[
                     "application_management",
                     "health_monitoring",
                     "api_endpoints",
                     "web_dashboard",
                 ],
-            },
+            )
         )
 
     # =========================================================================
@@ -287,12 +304,6 @@ class FlextWebHandlers(FlextService[bool]):
         r containing updated application or error
 
         """
-        # Validate application entity - fast fail
-        if not isinstance(app, m.Web.Entity):
-            return r[m.Web.Entity].fail(
-                "Invalid application entity type",
-            )
-
         # Use entity's start method with monadic pattern
         return app.start()
 
@@ -310,12 +321,6 @@ class FlextWebHandlers(FlextService[bool]):
         r containing updated application or error
 
         """
-        # Validate application entity - fast fail
-        if not isinstance(app, m.Web.Entity):
-            return r[m.Web.Entity].fail(
-                "Invalid application entity type",
-            )
-
         # Use entity's stop method with monadic pattern
         return app.stop()
 
@@ -340,7 +345,7 @@ class FlextWebHandlers(FlextService[bool]):
     # FLEXTSERVICE REQUIRED METHODS
     # =========================================================================
 
-    def execute(self, **_kwargs: object) -> r[bool]:
+    def execute(self, **_kwargs: str | int | float | bool | None) -> r[bool]:
         """Execute web handler service (FlextService requirement).
 
         Returns:

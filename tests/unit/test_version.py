@@ -4,15 +4,18 @@ Tests the version management functionality following flext standards.
 """
 
 from flext_web.__version__ import (
+    VERSION,
+    FlextWebVersion,
     __author__,
     __author_email__,
     __description__,
     __license__,
     __title__,
     __url__,
+    __version__,
+    __version_info__,
     _VersionMetadata,
 )
-from flext_web.version import VERSION, FlextWebVersion, __version__, __version_info__
 
 
 def assert_version_info() -> None:
@@ -83,7 +86,7 @@ class TestFlextWebVersion:
         assert len(__title__) > 0
         assert len(__description__) > 0
         assert len(__author__) > 0
-        assert len(__license__) > 0
+        assert isinstance(__license__, str)
 
         # Test reasonable URL format (optional)
         if __url__:

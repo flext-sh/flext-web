@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
+from collections.abc import MutableMapping
 
 from flext_core import (
     FlextConstants,
@@ -63,19 +64,14 @@ class FlextWebServices(FlextService[bool]):
             # Use u.guard() for unified validation (DSL pattern)
             username_validated = u.guard(
                 credentials.username,
-                lambda un: (
-                    isinstance(un, str)
-                    and un != FlextConstants.Test.NONEXISTENT_USERNAME
-                ),
+                lambda un: un != FlextConstants.Test.NONEXISTENT_USERNAME,
                 return_value=True,
             )
             if username_validated is None:
                 return FlextResult.fail("Authentication failed")
             password_validated = u.guard(
                 credentials.password,
-                lambda pw: (
-                    isinstance(pw, str) and pw == FlextConstants.Test.DEFAULT_PASSWORD
-                ),
+                lambda pw: pw == FlextConstants.Test.DEFAULT_PASSWORD,
                 return_value=True,
             )
             if password_validated is None:
@@ -116,7 +112,7 @@ class FlextWebServices(FlextService[bool]):
         def __init__(self) -> None:
             """Initialize storage."""
             super().__init__()
-            self._storage: dict[str, m.Web.EntityData] = {}
+            self._storage: MutableMapping[str, m.Web.EntityData] = {}
 
         def create(
             self,
@@ -148,8 +144,6 @@ class FlextWebServices(FlextService[bool]):
                                        failure contains error message
 
             """
-            if not isinstance(entity_id, str):
-                return FlextResult.fail("Entity ID must be a string")
             # Use u.ensure_str to simplify validation
             if not u.ensure_str(entity_id):
                 return FlextResult.fail("Entity ID cannot be empty")
@@ -170,7 +164,10 @@ class FlextWebServices(FlextService[bool]):
             """
             return FlextResult.ok(list(self._storage.values()))
 
-        def execute(self, **_kwargs: object) -> FlextResult[m.Web.EntityData]:
+        def execute(
+            self,
+            **_kwargs: str | int | float | bool | None,
+        ) -> FlextResult[m.Web.EntityData]:
             """Execute entity service - required by FlextService.
 
             Returns:
@@ -237,7 +234,7 @@ class FlextWebServices(FlextService[bool]):
         self._service_running = False
 
         # Application registry for web service management
-        self._applications: dict[str, m.Web.ApplicationResponse] = {}
+        self._applications: MutableMapping[str, m.Web.ApplicationResponse] = {}
 
     def authenticate(
         self,
@@ -425,10 +422,6 @@ class FlextWebServices(FlextService[bool]):
 
     def get_app(self, app_id: str) -> FlextResult[m.Web.ApplicationResponse]:
         """Get application by ID - fail fast if not found."""
-        if not isinstance(app_id, str):
-            return FlextResult[m.Web.ApplicationResponse].fail(
-                "Application ID must be a string",
-            )
         # Use u.ensure_str to simplify validation
         if not u.ensure_str(app_id):
             return FlextResult[m.Web.ApplicationResponse].fail(
@@ -444,10 +437,6 @@ class FlextWebServices(FlextService[bool]):
 
     def start_app(self, app_id: str) -> FlextResult[m.Web.ApplicationResponse]:
         """Start application - fail fast if not found."""
-        if not isinstance(app_id, str):
-            return FlextResult[m.Web.ApplicationResponse].fail(
-                "Application ID must be a string",
-            )
         # Use u.ensure_str to simplify validation
         if not u.ensure_str(app_id):
             return FlextResult[m.Web.ApplicationResponse].fail(
@@ -470,10 +459,6 @@ class FlextWebServices(FlextService[bool]):
 
     def stop_app(self, app_id: str) -> FlextResult[m.Web.ApplicationResponse]:
         """Stop application - fail fast if not found."""
-        if not isinstance(app_id, str):
-            return FlextResult[m.Web.ApplicationResponse].fail(
-                "Application ID must be a string",
-            )
         # Use u.ensure_str to simplify validation
         if not u.ensure_str(app_id):
             return FlextResult[m.Web.ApplicationResponse].fail(
@@ -551,7 +536,7 @@ class FlextWebServices(FlextService[bool]):
         """
         return cls.create_service(config)
 
-    def execute(self, **_kwargs: object) -> FlextResult[bool]:
+    def execute(self, **_kwargs: str | int | float | bool | None) -> FlextResult[bool]:
         """Execute web service orchestration (FlextService requirement).
 
         Returns:
@@ -572,10 +557,7 @@ class FlextWebServices(FlextService[bool]):
         # Use u.guard() for unified validation (DSL pattern)
         routes_validated = u.guard(
             self._routes_initialized,
-            lambda routes_init: (
-                isinstance(routes_init, bool)
-                and (not self._service_running or routes_init)
-            ),
+            lambda routes_init: not self._service_running or routes_init,
             return_value=True,
         )
         if routes_validated is None:
@@ -584,9 +566,7 @@ class FlextWebServices(FlextService[bool]):
             )
         middleware_validated = u.guard(
             self._middleware_configured,
-            lambda mw_conf: (
-                isinstance(mw_conf, bool) and (not self._service_running or mw_conf)
-            ),
+            lambda mw_conf: not self._service_running or mw_conf,
             return_value=True,
         )
         if middleware_validated is None:

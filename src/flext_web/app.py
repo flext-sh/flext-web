@@ -54,7 +54,7 @@ class FlextWebApp(FlextService[bool]):
         super().__init__()
 
     @override
-    def execute(self, **_kwargs: t.GeneralValueType) -> r[bool]:
+    def execute(self, **_kwargs: str | int | float | bool | None) -> r[bool]:
         """Execute the web application service.
 
         Main domain operation for the web application service.
@@ -228,12 +228,12 @@ class FlextWebApp(FlextService[bool]):
 
         # Add basic health route
         @app.route("/health")
-        def health_check() -> dict[str, str]:
-            return {
-                "status": c.Web.WebResponse.STATUS_HEALTHY,
-                "service": c.Web.WebService.SERVICE_NAME_FLASK,
-                "timestamp": u.Generators.generate_iso_timestamp(),
-            }
+        def health_check() -> flask.Response:
+            return flask.jsonify(
+                status=c.Web.WebResponse.STATUS_HEALTHY,
+                service=c.Web.WebService.SERVICE_NAME_FLASK,
+                timestamp=u.Generators.generate_iso_timestamp(),
+            )
 
         logger.info(f"Flask application '{flask_config.app_name}' created")
         return r.ok(app)

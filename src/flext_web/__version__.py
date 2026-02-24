@@ -24,7 +24,7 @@ __title__: Final[str] = _metadata["Name"]
 __description__: Final[str] = _metadata["Summary"]
 __author__: Final[str] = _metadata["Author"]
 __author_email__: Final[str] = _metadata["Author-Email"]
-__license__: Final[str] = _metadata["License"]
+__license__: Final[str] = _metadata.get("License", "")
 __url__: Final[str] = _metadata.get("Home-Page", "")
 
 

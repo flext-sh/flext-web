@@ -12,7 +12,7 @@ ARCHITECTURE:
 
 PROTOCOL INHERITANCE:
  Protocols use inheritance to reduce duplication and create logical hierarchies.
- Example: WebAppManagerProtocol extends p.Service[object]
+ Example: WebAppManagerProtocol extends p.Service[t.WebCore.ResponseDict]
 
 USAGE IN WEB PROJECT:
  Web services extend FlextWebProtocols with web-specific protocols:
@@ -59,8 +59,8 @@ class FlextWebProtocols(FlextProtocols):
     1. Method Signatures Matter: Classes satisfy protocols by implementing
     required methods with correct signatures, not by explicit inheritance
 
-    2. isinstance() Works: isinstance(obj, FlextWebProtocols.Web.WebAppManagerProtocol)
-    returns True if obj implements all required methods with correct signatures
+    2. Runtime Protocol Validation: runtime protocol checks validate
+    implementations with the expected signatures
 
     3. Duck Typing Philosophy: "If it walks like a web app manager and manages
     like a web app manager, it's a web app manager"
@@ -78,7 +78,7 @@ class FlextWebProtocols(FlextProtocols):
             pass
 
     service = WebApplicationService()
-    # isinstance(service, FlextWebProtocols.Web.WebAppManagerProtocol) → True (duck typing!)
+    # Runtime protocol validation succeeds for compliant implementations
 
     PROTOCOL HIERARCHY (4 LAYERS)
 
@@ -112,12 +112,12 @@ class FlextWebProtocols(FlextProtocols):
     - Allows type-safe web-specific interface definitions
 
     **3. Protocol inheritance creates logical web hierarchies**
-    - WebAppManagerProtocol extends p.Service[object]
+    - WebAppManagerProtocol extends p.Service[t.WebCore.ResponseDict]
     - WebRepositoryProtocol extends p.Repository
     - Reduces duplication, improves maintainability
 
-    **4. All web protocols are @runtime_checkable for isinstance() validation**
-    - isinstance(obj, FlextWebProtocols.Web.WebAppManagerProtocol) validates compliance
+    **4. All web protocols are @runtime_checkable for runtime validation**
+    - Runtime protocol checks validate compliance
     - Used for runtime type checking and validation in web components
     - Enables duck typing without metaclass conflicts
 
@@ -156,13 +156,13 @@ class FlextWebProtocols(FlextProtocols):
     Integration: All web implementations follow protocol definitions
     No Breaking Changes: Protocol additions backward compatible
     Documentation: Each protocol documents use cases and extensions
-    Performance: isinstance() checks optimized for runtime use
+    Performance: runtime protocol checks optimized for production use
 
     CORE PRINCIPLES:
         1. Web protocols extend p with web-specific interfaces
         2. Web protocols live in their respective web projects
         3. Protocol inheritance creates logical web hierarchies
-        4. All web protocols are @runtime_checkable for isinstance() validation
+        4. All web protocols are @runtime_checkable for runtime validation
 
     ARCHITECTURAL LAYERS:
         - Foundation: Core web building blocks (app management, response formatting)
@@ -195,10 +195,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebAppManagerProtocol(p.Service[object], Protocol):
+        class WebAppManagerProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
             """Protocol for web application lifecycle management.
 
-            Extends p.Service[object] with web-specific application management
+            Extends p.Service[t.WebCore.ResponseDict] with web-specific application management
             operations. Provides standardized interface for creating, starting, stopping,
             and managing web applications.
 
@@ -273,12 +273,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebResponseFormatterProtocol(
-            p.Service[object],
+            p.Service[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Protocol for web response formatting.
 
-            Extends p.Service[object] with web-specific response formatting
+            Extends p.Service[t.WebCore.ResponseDict] with web-specific response formatting
             operations. Provides standardized interface for formatting success and
             error responses for web APIs.
 
@@ -301,12 +301,7 @@ class FlextWebProtocols(FlextProtocols):
                     "status": c.Web.WebResponse.STATUS_SUCCESS,
                 }
                 # Use u.filter to merge valid data fields
-                valid_data = {
-                    k: v
-                    for k, v in data.items()
-                    if isinstance(v, (str, int, bool, list, dict))
-                }
-                response.update(valid_data)
+                response.update(data)
                 return response
 
             @staticmethod
@@ -345,12 +340,7 @@ class FlextWebProtocols(FlextProtocols):
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
                 # Use u.filter to merge valid data fields
-                valid_data = {
-                    k: v
-                    for k, v in data.items()
-                    if isinstance(v, (str, int, bool, list, dict))
-                }
-                response.update(valid_data)
+                response.update(data)
                 return response
 
             @staticmethod
@@ -373,12 +363,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebFrameworkInterfaceProtocol(
-            p.Service[object],
+            p.Service[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Protocol for web framework integration.
 
-            Extends p.Service[object] with web framework integration operations.
+            Extends p.Service[t.WebCore.ResponseDict] with web framework integration operations.
             Provides standardized interface for creating JSON responses, extracting
             request data, and handling JSON requests.
 
@@ -403,12 +393,7 @@ class FlextWebProtocols(FlextProtocols):
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
                 # Use u.filter to merge valid data fields
-                valid_data = {
-                    k: v
-                    for k, v in data.items()
-                    if isinstance(v, (str, int, bool, list, dict))
-                }
-                response.update(valid_data)
+                response.update(data)
                 return response
 
             @staticmethod
@@ -449,10 +434,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebServiceProtocol(p.Service[object], Protocol):
+        class WebServiceProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
             """Base web service protocol.
 
-            Extends p.Service[object] with web-specific service operations.
+            Extends p.Service[t.WebCore.ResponseDict] with web-specific service operations.
             Provides the foundation for all web services in the FLEXT web ecosystem.
 
             Used in: web service implementations
@@ -548,7 +533,7 @@ class FlextWebProtocols(FlextProtocols):
 
             def execute(
                 self,
-                command: t.FlexibleValue,
+                command: t.WebCore.RequestDict,
             ) -> r[t.WebCore.ResponseDict]:
                 """Execute command (extends p.Handler pattern).
 
@@ -583,10 +568,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebConnectionProtocol(p.Service[object], Protocol):
+        class WebConnectionProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
             """Web connection protocol for external systems.
 
-            Extends p.Service[object] with web-specific connection operations.
+            Extends p.Service[t.WebCore.ResponseDict] with web-specific connection operations.
             Provides standardized interface for web service connections.
 
             Used in: web service adapters and external integrations
@@ -604,10 +589,10 @@ class FlextWebProtocols(FlextProtocols):
                 return "http://localhost:8080"  # pragma: no cover
 
         @runtime_checkable
-        class WebLoggerProtocol(p.Service[object], Protocol):
+        class WebLoggerProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
             """Web logging protocol.
 
-            Extends p.Service[object] with web-specific logging operations.
+            Extends p.Service[t.WebCore.ResponseDict] with web-specific logging operations.
             Provides standardized interface for web application logging.
 
             Used in: web logging implementations
@@ -645,12 +630,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateRendererProtocol(
-            p.Service[object],
+            p.Service[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Protocol for web template rendering.
 
-            Extends p.Service[object] with web template rendering operations.
+            Extends p.Service[t.WebCore.ResponseDict] with web template rendering operations.
             Provides standardized interface for template engine integration.
 
             Used in: web template rendering implementations
@@ -694,12 +679,12 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateEngineProtocol(
-            p.Service[object],
+            p.Service[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Protocol for web template engine operations.
 
-            Extends p.Service[object] with template engine management operations.
+            Extends p.Service[t.WebCore.ResponseDict] with template engine management operations.
             Provides interface for loading, validating, and managing templates.
 
             Used in: web template engine implementations
@@ -797,10 +782,10 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebMonitoringProtocol(p.Service[object], Protocol):
+        class WebMonitoringProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
             """Web monitoring protocol for observability.
 
-            Extends p.Service[object] with web-specific monitoring operations.
+            Extends p.Service[t.WebCore.ResponseDict] with web-specific monitoring operations.
             Provides interface for web application metrics and health monitoring.
 
             Used in: web monitoring and observability implementations
