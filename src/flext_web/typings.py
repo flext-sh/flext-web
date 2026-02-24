@@ -19,8 +19,8 @@ from flext_core import (
 )
 from pydantic import BaseModel, ConfigDict, Field
 
-from flext_web.constants import FlextWebConstants
-from flext_web.models import FlextWebModels
+from .constants import FlextWebConstants
+from .models import FlextWebModels
 
 # Import aliases for simplified usage (DSL pattern)
 u = FlextUtilities
@@ -38,9 +38,9 @@ class _WebRequestConfig(BaseModel):
     url: str = Field(default="")
     method: str = Field(default="GET")
     headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, FlextTypes.GeneralValueType] | None = Field(default=None)
+    body: str | dict[str, FlextTypes.ConfigMapValue] | None = Field(default=None)
     timeout: float = Field(default=30.0)
-    query_params: dict[str, FlextTypes.GeneralValueType] | None = Field(default=None)
+    query_params: dict[str, FlextTypes.ConfigMapValue] | None = Field(default=None)
     client_ip: str = Field(default="")
     user_agent: str = Field(default="")
 
@@ -53,7 +53,7 @@ class _WebResponseConfig(BaseModel):
     status_code: int = Field(default=200)
     request_id: str = Field(default="")
     headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, FlextTypes.GeneralValueType] | None = Field(default=None)
+    body: str | dict[str, FlextTypes.ConfigMapValue] | None = Field(default=None)
     elapsed_time: float = Field(default=0.0)
     content_type: str = Field(default="application/json")
     content_length: int = Field(default=0)
@@ -225,12 +225,12 @@ class FlextWebTypes(FlextTypes):
             str | int | bool | list[str] | dict[str, str | int | bool],
         ]
 
-    # Types alias - for compatibility with code using t.Types.GeneralValueType
+    # Types alias - for compatibility with code using t.Types.ConfigMapValue
     class Types:
         """Type system aliases for flext-web."""
 
-        GeneralValueType = FlextTypes.GeneralValueType
-        """General value type - references FlextTypes.GeneralValueType."""
+        ConfigMapValue = FlextTypes.ConfigMapValue
+        """Config map value type - references FlextTypes.ConfigMapValue."""
 
     # Core response types - proper inheritance from FlextWebModels
     SuccessResponse = FlextWebModels.Web.ServiceResponse
@@ -268,7 +268,7 @@ class FlextWebTypes(FlextTypes):
         url: str,
         method: str = FlextWebConstants.Web.Method.GET,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, FlextTypes.GeneralValueType] | None = None,
+        body: str | dict[str, FlextTypes.ConfigMapValue] | None = None,
         timeout: float = FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
     ) -> FlextResult[FlextWebModels.Web.Request]:
         """Create HTTP request model instance with proper validation.
@@ -328,7 +328,7 @@ class FlextWebTypes(FlextTypes):
         cls,
         status_code: int,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, FlextTypes.GeneralValueType] | None = None,
+        body: str | dict[str, FlextTypes.ConfigMapValue] | None = None,
         elapsed_time: float | None = None,
     ) -> FlextResult[FlextWebModels.Web.Response]:
         """Create HTTP response model instance with proper validation.
@@ -404,7 +404,7 @@ class FlextWebTypes(FlextTypes):
         # Validate headers - must be dict or None
         headers_validated: dict[str, str] = headers or {}
         # Validate query_params - must be dict or None
-        query_params_validated: dict[str, FlextTypes.GeneralValueType] = (
+        query_params_validated: dict[str, FlextTypes.ConfigMapValue] = (
             query_params or {}
         )
 
@@ -475,7 +475,7 @@ class FlextWebTypes(FlextTypes):
 
         # Use # Direct validation instead for unified headers validation (DSL pattern)
         # Validate headers - must be dict or None
-        headers_validated: dict[str, str] = headers if isinstance(headers, dict) else {}
+        headers_validated: dict[str, str] = headers or {}
 
         # Use u.try_() for unified error handling (DSL pattern)
         def create_response() -> FlextWebModels.Web.AppResponse:
@@ -524,16 +524,8 @@ class FlextWebTypes(FlextTypes):
         environment: str = (
             config.environment or FlextWebConstants.Web.Name.DEVELOPMENT.value
         )
-        debug_mode: bool = (
-            config.debug_mode
-            if isinstance(config.debug_mode, bool)
-            else FlextWebConstants.Web.WebDefaults.DEBUG_MODE
-        )
-        version: int = (
-            config.version
-            if isinstance(config.version, int)
-            else FlextWebConstants.Web.WebDefaults.VERSION_INT
-        )
+        debug_mode: bool = config.debug_mode
+        version: int = config.version
 
         # Use u.try_() for unified error handling (DSL pattern)
         def create_entity() -> FlextWebModels.Web.Entity:

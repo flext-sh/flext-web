@@ -19,7 +19,7 @@ from flext_core import (
 )
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
-from flext_web.constants import c
+from .constants import c
 
 
 class FlextWebModels(FlextModels):
@@ -55,7 +55,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers for message",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.ConfigMapValue] | None = Field(
                 default=None,
                 description="Message body content (optional for GET/HEAD)",
             )
@@ -97,9 +97,6 @@ class FlextWebModels(FlextModels):
             @classmethod
             def validate_method(cls, v: str) -> str:
                 """Validate HTTP method is one of the allowed values."""
-                if not isinstance(v, str):
-                    msg = "HTTP method must be a string"
-                    raise TypeError(msg)
                 upper = v.upper()
                 valid_methods = {
                     "GET",
@@ -219,9 +216,6 @@ class FlextWebModels(FlextModels):
             @classmethod
             def validate_method(cls, v: str) -> str:
                 """Validate HTTP method is one of the allowed values."""
-                if not isinstance(v, str):
-                    msg = "HTTP method must be a string"
-                    raise TypeError(msg)
                 upper = v.upper()
                 valid_methods = {
                     "GET",
@@ -241,7 +235,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.ConfigMapValue] | None = Field(
                 default=None,
                 description="Request body content (optional for GET/HEAD)",
             )
@@ -253,7 +247,7 @@ class FlextWebModels(FlextModels):
                 default_factory=lambda: str(uuid.uuid4()),
                 description="Unique request identifier",
             )
-            query_params: dict[str, t.GeneralValueType] = Field(
+            query_params: dict[str, t.ConfigMapValue] = Field(
                 default_factory=dict,
                 description="Query string parameters",
             )
@@ -309,7 +303,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.ConfigMapValue] | None = Field(
                 default=None,
                 description="Response body content",
             )
@@ -420,7 +414,7 @@ class FlextWebModels(FlextModels):
                 # Type narrowing: v is str from pydantic validation, use explicit str check
                 name_length_validated = u.guard(
                     v,
-                    lambda s: isinstance(s, str) and min_length <= len(s) <= max_length,
+                    lambda s: min_length <= len(s) <= max_length,
                     return_value=True,
                 )
                 if name_length_validated is None:
@@ -432,7 +426,7 @@ class FlextWebModels(FlextModels):
                 # Use u.guard() + u.in_() for unified membership validation (DSL pattern)
                 name_not_reserved = u.guard(
                     v.lower(),
-                    lambda n: not u.in_(n, reserved_names_set),
+                    lambda n: n not in reserved_names_set,
                     return_value=True,
                 )
                 if name_not_reserved is None:
@@ -490,7 +484,7 @@ class FlextWebModels(FlextModels):
                 default=c.Web.WebDefaults.VERSION_INT,
                 description="Application version",
             )
-            metrics: dict[str, t.GeneralValueType] = Field(
+            metrics: dict[str, t.ConfigMapValue] = Field(
                 default_factory=dict,
                 description="Application metrics",
             )
@@ -530,7 +524,7 @@ class FlextWebModels(FlextModels):
                 stopped = c.Web.Status.STOPPED.value
                 error = c.Web.Status.ERROR.value
                 # Use u.in_() for unified membership check (DSL pattern)
-                return u.in_(self.status, {running, stopped, error})
+                return self.status in {running, stopped, error}
 
             @property
             def url(self) -> str:
@@ -556,7 +550,7 @@ class FlextWebModels(FlextModels):
                 min_name_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
                 name_validated = u.guard(
                     self.name,
-                    lambda s: isinstance(s, str) and len(s) >= min_name_length,
+                    lambda s: len(s) >= min_name_length,
                     return_value=True,
                 )
                 if name_validated is None:
@@ -570,7 +564,7 @@ class FlextWebModels(FlextModels):
                 # Use u.guard() with combined check for unified error message (DSL pattern)
                 port_validated = u.guard(
                     self.port,
-                    lambda p: isinstance(p, int) and min_port <= p <= max_port,
+                    lambda p: min_port <= p <= max_port,
                     return_value=True,
                 )
                 if port_validated is None:
@@ -640,7 +634,7 @@ class FlextWebModels(FlextModels):
 
             def update_metrics(
                 self,
-                new_metrics: dict[str, t.GeneralValueType],
+                new_metrics: dict[str, t.ConfigMapValue],
             ) -> r[bool]:
                 """Update application metrics.
 
@@ -650,8 +644,6 @@ class FlextWebModels(FlextModels):
 
                 """
                 # Validate and update metrics
-                if not isinstance(new_metrics, dict):
-                    return r[bool].fail("Metrics must be a dictionary")
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
                 event_result = self.add_web_event("MetricsUpdated")
@@ -661,7 +653,7 @@ class FlextWebModels(FlextModels):
                     )
                 return r[bool].ok(value=True)
 
-            def get_health_status(self) -> dict[str, t.GeneralValueType]:
+            def get_health_status(self) -> dict[str, t.ConfigMapValue]:
                 """Get comprehensive health status."""
                 return {
                     "status": self.status,
@@ -691,7 +683,7 @@ class FlextWebModels(FlextModels):
 
                 """
                 # Validate event name is non-empty string
-                if not isinstance(event_name, str) or not event_name.strip():
+                if not event_name.strip():
                     return r[bool].fail("Event name cannot be empty")
                 self.web_events.append(event_name)
                 return r[bool].ok(value=True)
@@ -789,7 +781,7 @@ class FlextWebModels(FlextModels):
         class EntityData(FlextModels.Value):
             """Generic entity data model."""
 
-            data: dict[str, t.GeneralValueType] = Field(
+            data: dict[str, t.ConfigMapValue] = Field(
                 default_factory=dict,
                 description="Entity data dictionary",
             )
@@ -868,7 +860,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.ConfigMapValue] | None = Field(
                 default=None,
                 description="Request body (optional for GET/HEAD)",
             )
@@ -894,7 +886,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.ConfigMapValue] | None = Field(
                 default=None,
                 description="Response body (optional for 204 No Content)",
             )
@@ -981,7 +973,7 @@ class FlextWebModels(FlextModels):
             method: c.Web.Literals.HttpMethodLiteral,
             url: str,
             headers: dict[str, str] | None = None,
-            body: str | dict[str, t.GeneralValueType] | None = None,
+            body: str | dict[str, t.ConfigMapValue] | None = None,
         ) -> r[WebRequest]:
             """Create a web request model.
 
@@ -996,13 +988,7 @@ class FlextWebModels(FlextModels):
                                         failure contains validation error
 
             """
-            # Use u.guard() for unified headers validation (DSL pattern)
-            # Validate headers - must be dict or None
-            if headers is not None and not isinstance(headers, dict):
-                return r[FlextWebModels.Web.WebRequest].fail(
-                    "Headers must be a dictionary or None",
-                )
-            headers_validated = headers if isinstance(headers, dict) else {}
+            headers_validated = headers or {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_request() -> FlextWebModels.Web.WebRequest:
@@ -1030,7 +1016,7 @@ class FlextWebModels(FlextModels):
             request_id: str,
             status_code: int,
             headers: dict[str, str] | None = None,
-            body: str | dict[str, t.GeneralValueType] | None = None,
+            body: str | dict[str, t.ConfigMapValue] | None = None,
         ) -> r[WebResponse]:
             """Create a web response model.
 
@@ -1045,13 +1031,7 @@ class FlextWebModels(FlextModels):
                                         failure contains validation error
 
             """
-            # Use u.guard() for unified headers validation (DSL pattern)
-            # Validate headers - must be dict or None
-            if headers is not None and not isinstance(headers, dict):
-                return r[FlextWebModels.Web.WebResponse].fail(
-                    "Headers must be a dictionary or None",
-                )
-            headers_validated = headers if isinstance(headers, dict) else {}
+            headers_validated = headers or {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_response() -> FlextWebModels.Web.WebResponse:
@@ -1110,7 +1090,7 @@ class FlextWebModels(FlextModels):
             )
             debug: bool = Field(default=False, description="FastAPI debug mode")
             testing: bool = Field(default=False, description="FastAPI testing mode")
-            middlewares: list[t.GeneralValueType] = Field(
+            middlewares: list[t.ConfigMapValue] = Field(
                 default_factory=list,
                 description="List of middleware objects",
             )
