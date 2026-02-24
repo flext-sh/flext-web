@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
+from collections.abc import Mapping
 from datetime import UTC, datetime
 
 from flext_core import (
@@ -634,7 +635,7 @@ class FlextWebModels(FlextModels):
 
             def update_metrics(
                 self,
-                new_metrics: dict[str, t.ConfigMapValue],
+                new_metrics: Mapping[str, t.ConfigMapValue],
             ) -> r[bool]:
                 """Update application metrics.
 
@@ -653,7 +654,7 @@ class FlextWebModels(FlextModels):
                     )
                 return r[bool].ok(value=True)
 
-            def get_health_status(self) -> dict[str, t.ConfigMapValue]:
+            def get_health_status(self) -> Mapping[str, t.ConfigMapValue]:
                 """Get comprehensive health status."""
                 return {
                     "status": self.status,

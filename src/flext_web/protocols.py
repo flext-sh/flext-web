@@ -27,7 +27,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from typing import Protocol, runtime_checkable
 
 from flext_core.protocols import FlextProtocols, p
@@ -767,7 +767,7 @@ class FlextWebProtocols(FlextProtocols):
                 self,
                 name: str,
                 *,
-                value: str | int | bool | list[str] | dict[str, str | int | bool],
+                value: str | int | bool | list[str] | Mapping[str, str | int | bool],
             ) -> None:
                 """Add template global variable.
 
@@ -1078,7 +1078,11 @@ class FlextWebProtocols(FlextProtocols):
                     self,
                     name: str,
                     *,
-                    value: str | int | bool | list[str] | dict[str, str | int | bool],
+                    value: str
+                    | int
+                    | bool
+                    | list[str]
+                    | Mapping[str, str | int | bool],
                 ) -> None:
                     """Add template global variable."""
                     # Protocol implementation placeholder - parameters are part of interface contract
