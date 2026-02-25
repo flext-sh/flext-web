@@ -103,7 +103,15 @@ class FlextWebSettings(FlextSettings):
         try:
             config = cls()
             return FlextResult.ok(config)
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             return FlextResult.fail(f"Failed to create web config: {e}")
 
 

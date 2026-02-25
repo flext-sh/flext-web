@@ -957,7 +957,15 @@ class FlextWebModels(FlextModels):
             try:
                 request = create_request()
                 return r[FlextWebModels.Web.WebRequest].ok(request)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as exc:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as exc:
                 # Use u.err() pattern for unified error extraction (DSL pattern)
                 return r[FlextWebModels.Web.WebRequest].fail(
                     f"Failed to create web request: {exc}",
@@ -1000,7 +1008,15 @@ class FlextWebModels(FlextModels):
             try:
                 response = create_response()
                 return r[FlextWebModels.Web.WebResponse].ok(response)
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as exc:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as exc:
                 # Use u.err() pattern for unified error extraction (DSL pattern)
                 return r[FlextWebModels.Web.WebResponse].fail(
                     f"Failed to create web response: {exc}",

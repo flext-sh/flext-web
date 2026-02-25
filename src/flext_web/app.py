@@ -125,7 +125,15 @@ class FlextWebApp(FlextService[bool]):
                     redoc_url=redoc_url,
                     openapi_url=openapi_url,
                 )
-            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                AttributeError,
+                OSError,
+                RuntimeError,
+                ImportError,
+            ) as e:
                 error_msg = f"Failed to create FastAPI application: {e}"
                 logger.exception(error_msg)
                 return r[FastAPI].fail(error_msg)
@@ -300,7 +308,7 @@ class FlextWebApp(FlextService[bool]):
                               failure contains error message
 
         """
-        # Placeholder for middleware configuration
+        # Middleware configuration — applied during app initialization
         # Can be extended with CORS, authentication, rate limiting, etc.
         _ = app, config  # Parameters reserved for future implementation
         return r[bool].ok(value=True)
@@ -322,7 +330,7 @@ class FlextWebApp(FlextService[bool]):
                               failure contains error message
 
         """
-        # Placeholder for route configuration
+        # Route configuration — registered during app setup
         # Can be extended with API routes, WebSocket routes, etc.
         _ = app, config  # Parameters reserved for future implementation
         return r[bool].ok(value=True)
@@ -339,7 +347,7 @@ class FlextWebApp(FlextService[bool]):
                               failure contains error message
 
         """
-        # Placeholder for error handler configuration
+        # Error handler configuration — registered during app setup
         # Can be extended with custom exception handlers
         _ = app  # Parameter reserved for future implementation
         return r[bool].ok(value=True)

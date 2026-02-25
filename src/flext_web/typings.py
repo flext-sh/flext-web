@@ -318,7 +318,15 @@ class FlextWebTypes(FlextTypes):
         try:
             request = create_request()
             return FlextResult[FlextWebModels.Web.Request].ok(request)
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as exc:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
             # Use u.err() pattern for unified error extraction (DSL pattern)
             error_msg = f"Failed to create HTTP request: {exc}"
             return FlextResult[FlextWebModels.Web.Request].fail(error_msg)
@@ -362,7 +370,15 @@ class FlextWebTypes(FlextTypes):
         try:
             response = create_response()
             return FlextResult[FlextWebModels.Web.Response].ok(response)
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as exc:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
             # Use u.err() pattern for unified error extraction (DSL pattern)
             return FlextResult[FlextWebModels.Web.Response].fail(
                 f"Failed to create HTTP response: {exc}",
@@ -440,7 +456,15 @@ class FlextWebTypes(FlextTypes):
         try:
             request = create_request()
             return FlextResult[FlextWebModels.Web.AppRequest].ok(request)
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as exc:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
             # Use u.err() pattern for unified error extraction (DSL pattern)
             return FlextResult[FlextWebModels.Web.AppRequest].fail(
                 f"Failed to create web request: {exc}",
@@ -495,7 +519,15 @@ class FlextWebTypes(FlextTypes):
         try:
             response = create_response()
             return FlextResult[FlextWebModels.Web.AppResponse].ok(response)
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as exc:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
             # Use u.err() pattern for unified error extraction (DSL pattern)
             return FlextResult[FlextWebModels.Web.AppResponse].fail(
                 f"Failed to create web response: {exc}",
@@ -545,7 +577,15 @@ class FlextWebTypes(FlextTypes):
         try:
             entity = create_entity()
             return FlextResult[FlextWebModels.Web.Entity].ok(entity)
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as exc:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
             # Use u.err() pattern for unified error extraction (DSL pattern)
             return FlextResult[FlextWebModels.Web.Entity].fail(
                 f"Failed to create application: {exc}",
@@ -619,7 +659,15 @@ class FlextWebTypes(FlextTypes):
                 ),
             )
             return FlextResult[FlextWebTypes.TypesConfig].ok(config)
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             return FlextResult[FlextWebTypes.TypesConfig].fail(
                 f"Failed to configure web types system: {e}",
             )
@@ -637,7 +685,15 @@ class FlextWebTypes(FlextTypes):
         try:
             config = cls.TypesConfig()
             return FlextResult[FlextWebTypes.TypesConfig].ok(config)
-        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
             return FlextResult[FlextWebTypes.TypesConfig].fail(
                 f"Failed to get web types system config: {e}",
             )
