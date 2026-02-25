@@ -537,7 +537,7 @@ class FlextWebModels(FlextModels):
                 self.status = running_status
                 # Add web lifecycle event
                 event_result = self.add_web_event("ApplicationStarted")
-                if event_result.is_failure:  # pragma: no cover
+                if event_result.is_failure:
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {event_result.error}",
                     )
@@ -555,7 +555,7 @@ class FlextWebModels(FlextModels):
                 self.status = stopped_status
                 # Add web lifecycle event
                 event_result = self.add_web_event("ApplicationStopped")
-                if event_result.is_failure:  # pragma: no cover
+                if event_result.is_failure:
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {event_result.error}",
                     )
@@ -573,13 +573,13 @@ class FlextWebModels(FlextModels):
                 self.status = starting_status
                 # Add web lifecycle events
                 restart_event_result = self.add_web_event("ApplicationRestarting")
-                if restart_event_result.is_failure:  # pragma: no cover
+                if restart_event_result.is_failure:
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {restart_event_result.error}",
                     )
                 self.status = running_status
                 start_event_result = self.add_web_event("ApplicationStarted")
-                if start_event_result.is_failure:  # pragma: no cover
+                if start_event_result.is_failure:
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {start_event_result.error}",
                     )
@@ -600,7 +600,7 @@ class FlextWebModels(FlextModels):
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
                 event_result = self.add_web_event("MetricsUpdated")
-                if event_result.is_failure:  # pragma: no cover
+                if event_result.is_failure:
                     return r[bool].fail(
                         f"Failed to add web event: {event_result.error}"
                     )
@@ -910,15 +910,15 @@ class FlextWebModels(FlextModels):
                     port=port,
                 )
                 return r.ok(entity)
-            except ValidationError as e:  # pragma: no cover
-                error_msg = (  # pragma: no cover
+            except ValidationError as e:
+                error_msg = (
                     f"Validation failed: {e.errors()[0]['msg']}"
                     if e.errors()
-                    else str(e)  # pragma: no cover
+                    else str(e)
                 )
-                return r.fail(error_msg)  # pragma: no cover
-            except ValueError as e:  # pragma: no cover
-                return r.fail(str(e))  # pragma: no cover
+                return r.fail(error_msg)
+            except ValueError as e:
+                return r.fail(str(e))
 
         @classmethod
         def create_web_request(
@@ -957,7 +957,7 @@ class FlextWebModels(FlextModels):
             try:
                 request = create_request()
                 return r[FlextWebModels.Web.WebRequest].ok(request)
-            except Exception as exc:
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as exc:
                 # Use u.err() pattern for unified error extraction (DSL pattern)
                 return r[FlextWebModels.Web.WebRequest].fail(
                     f"Failed to create web request: {exc}",
@@ -1000,7 +1000,7 @@ class FlextWebModels(FlextModels):
             try:
                 response = create_response()
                 return r[FlextWebModels.Web.WebResponse].ok(response)
-            except Exception as exc:
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as exc:
                 # Use u.err() pattern for unified error extraction (DSL pattern)
                 return r[FlextWebModels.Web.WebResponse].fail(
                     f"Failed to create web response: {exc}",

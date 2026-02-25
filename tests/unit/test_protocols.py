@@ -5,12 +5,13 @@ Tests the unified FlextWebProtocols class following flext standards.
 
 from __future__ import annotations
 
+from typing import Any, cast
+
+import pytest
 from flext_core import FlextResult, p
 from flext_web import t
-
 from flext_web.constants import FlextWebConstants
 from flext_web.protocols import FlextWebProtocols
-from flext_web.typings import FlextWebTypes
 
 # Access test base classes via the namespace
 _WebAppManagerBase = FlextWebProtocols.Web.TestBases._WebAppManagerBase
@@ -26,6 +27,57 @@ _WebTemplateRendererBase = FlextWebProtocols.Web.TestBases._WebTemplateRendererB
 
 class TestFlextWebProtocols:
     """Test suite for FlextWebProtocols unified class."""
+
+    @staticmethod
+    def _reset_protocol_state() -> None:
+        FlextWebProtocols.Web._apps_registry.clear()
+        FlextWebProtocols.Web._framework_instances.clear()
+        FlextWebProtocols.Web._app_runtimes.clear()
+        FlextWebProtocols.Web._service_state.update({
+            "routes_initialized": False,
+            "middleware_configured": False,
+            "service_running": False,
+        })
+        FlextWebProtocols.Web._template_config.clear()
+        FlextWebProtocols.Web._template_filters.clear()
+        FlextWebProtocols.Web._template_globals.clear()
+        FlextWebProtocols.Web._web_metrics.update({
+            "requests": 0,
+            "errors": 0,
+            "uptime": "0s",
+            "avg_response_time_ms": 0,
+        })
+
+    @pytest.fixture(autouse=True)
+    def _mock_runtime_lifecycle(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def _start_runtime(
+            app_id: str,
+            app_data: t.WebCore.ResponseDict,
+            app_instance: object,
+        ) -> FlextResult[dict[str, object]]:
+            _ = app_data, app_instance
+            return FlextResult[dict[str, object]].ok({
+                "runner": "mock",
+                "app_id": app_id,
+            })
+
+        def _stop_runtime(
+            app_id: str,
+            runtime: dict[str, object],
+        ) -> FlextResult[bool]:
+            _ = app_id, runtime
+            return FlextResult[bool].ok(True)
+
+        monkeypatch.setattr(
+            FlextWebProtocols.Web,
+            "_start_app_runtime",
+            staticmethod(_start_runtime),
+        )
+        monkeypatch.setattr(
+            FlextWebProtocols.Web,
+            "_stop_app_runtime",
+            staticmethod(_stop_runtime),
+        )
 
     def test_protocols_inheritance(self) -> None:
         """Test that FlextWebProtocols inherits from p."""
@@ -351,71 +403,28 @@ class TestFlextWebProtocols:
         assert validate_app_manager(ValidAppManager())
         assert not validate_app_manager(InvalidAppManager())
 
-    def test_protocol_placeholder_methods_execution(self) -> None:
-        """Test protocol placeholder methods by executing them directly."""
+    def test_app_manager_protocol_real_lifecycle_behavior(self) -> None:
+        """Validate real app lifecycle behavior from protocol base implementation."""
+        self._reset_protocol_state()
+        manager = _WebAppManagerBase()
 
-        # Test WebAppManagerProtocol placeholder methods
-        # Create a real implementation that satisfies the protocol
-        class RealAppManager:
-            def create_app(
-                self,
-                name: str,
-                port: int,
-                host: str,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({
-                    "name": name,
-                    "port": port,
-                    "host": host,
-                })
+        created = manager.create_app("test", 8080, "localhost")
+        assert created.is_success
+        app_id = str(created.value["id"])
+        assert created.value["framework"] in {"fastapi", "flask"}
 
-            def start_app(
-                self, app_id: str
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({
-                    "id": app_id,
-                    "status": "started",
-                })
+        started = manager.start_app(app_id)
+        assert started.is_success
+        assert started.value["status"] == FlextWebConstants.Web.Status.RUNNING.value
 
-            def stop_app(
-                self, app_id: str
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({
-                    "id": app_id,
-                    "status": "stopped",
-                })
+        listed = manager.list_apps()
+        assert listed.is_success
+        assert len(listed.value) == 1
+        assert listed.value[0]["id"] == app_id
 
-            def list_apps(self) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-                return FlextResult[list[dict[str, t.GeneralValueType]]].ok([])
-
-            # Required by p.Service
-            def execute(
-                self,
-                *args: object,
-                **kwargs: object,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
-
-            def validate_business_rules(
-                self,
-                *args: object,
-                **kwargs: object,
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
-
-            def get_service_info(self) -> dict[str, t.GeneralValueType]:
-                return {"name": "AppManager"}
-
-        manager = RealAppManager()
-        # Check that it has all required methods (structural typing)
-        assert hasattr(manager, "create_app")
-        assert hasattr(manager, "start_app")
-        assert hasattr(manager, "stop_app")
-        assert hasattr(manager, "list_apps")
-
-        # Execute methods to cover placeholder code
-        result = manager.create_app("test", 8080, "localhost")
-        assert result.is_success
+        stopped = manager.stop_app(app_id)
+        assert stopped.is_success
+        assert stopped.value["status"] == FlextWebConstants.Web.Status.STOPPED.value
 
     def test_response_formatter_protocol_methods(self) -> None:
         """Test WebResponseFormatterProtocol methods execution."""
@@ -853,102 +862,35 @@ class TestFlextWebProtocols:
         metrics = monitoring.get_web_metrics()
         assert "requests" in metrics
 
-    def test_protocol_placeholder_methods_direct_execution(self) -> None:
-        """Test protocol placeholder methods by using concrete base classes."""
-        # Use concrete base class that implements protocol placeholder methods
+    def test_app_lifecycle_direct_execution_on_protocol_base(self) -> None:
+        """Test real app lifecycle behavior through WebAppManager protocol base."""
+        self._reset_protocol_state()
         manager = _WebAppManagerBase()
 
-        # Execute placeholder methods to cover lines 223-224, 239-240, 253-254, 264
         result = manager.create_app("test", 8080, "localhost")
-        assert result.is_failure
-        assert result.error is not None
-        assert "create_app method not implemented" in result.error
+        assert result.is_success
+        app_id = str(result.value["id"])
+        assert result.value["framework"] in {"fastapi", "flask"}
+        assert result.value["interface"] in {"asgi", "wsgi"}
 
-        result = manager.start_app("app-123")
-        assert result.is_failure
-        assert result.error is not None
-        assert "start_app method not implemented" in result.error
+        started = manager.start_app(app_id)
+        assert started.is_success
+        assert started.value["status"] == FlextWebConstants.Web.Status.RUNNING.value
 
-        result = manager.stop_app("app-123")
-        assert result.is_failure
-        assert result.error is not None
-        assert "stop_app method not implemented" in result.error
+        listed = manager.list_apps()
+        assert listed.is_success
+        assert len(listed.value) == 1
+        assert listed.value[0]["id"] == app_id
 
-        result = manager.list_apps()
-        assert result.is_failure
-        assert result.error is not None
-        assert "list_apps method not implemented" in result.error
+        stopped = manager.stop_app(app_id)
+        assert stopped.is_success
+        assert stopped.value["status"] == FlextWebConstants.Web.Status.STOPPED.value
 
-    def test_protocol_response_formatter_placeholder_methods(self) -> None:
-        """Test WebResponseFormatterProtocol placeholder methods."""
+    def test_response_formatter_real_behavior(self) -> None:
+        """Test response formatter protocol with real implementation behavior."""
+        formatter = FlextWebProtocols.Web.TestBases._WebResponseFormatterBase()
 
-        class ConcreteFormatter:
-            """Concrete implementation using protocol placeholder logic."""
-
-            def format_success(
-                self,
-                data: FlextWebTypes.Core.ResponseDict,
-            ) -> FlextWebTypes.Core.ResponseDict:
-                # Execute placeholder logic from protocol (lines 292-302)
-                response: FlextWebTypes.Core.ResponseDict = {
-                    "status": FlextWebConstants.Web.WebResponse.STATUS_SUCCESS,
-                }
-                for key, value in data.items():
-                    if isinstance(value, (str, int, bool, list, dict)):
-                        response[key] = value
-                return response
-
-            def format_error(self, error: Exception) -> FlextWebTypes.Core.ResponseDict:
-                # Execute placeholder logic from protocol (lines 315-319)
-                result: FlextWebTypes.Core.ResponseDict = {
-                    "status": FlextWebConstants.Web.WebResponse.STATUS_ERROR,
-                    "message": str(error),
-                }
-                return result
-
-            def create_json_response(
-                self,
-                data: FlextWebTypes.Core.ResponseDict,
-            ) -> FlextWebTypes.Core.ResponseDict:
-                # Execute placeholder logic from protocol (lines 335-345)
-                response: FlextWebTypes.Core.ResponseDict = {
-                    FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
-                }
-                for key, value in data.items():
-                    if isinstance(value, (str, int, bool, list, dict)):
-                        response[key] = value
-                return response
-
-            def get_request_data(
-                self,
-                _request: FlextWebTypes.Core.RequestDict,
-            ) -> FlextWebTypes.Core.RequestDict:
-                # Execute placeholder logic from protocol (lines 361-362)
-                empty_result: FlextWebTypes.Core.RequestDict = {}
-                return empty_result
-
-            # Required by p.Service
-            def execute(
-                self,
-                *args: object,
-                **kwargs: object,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
-
-            def validate_business_rules(
-                self,
-                *args: object,
-                **kwargs: object,
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
-
-            def get_service_info(self) -> dict[str, t.GeneralValueType]:
-                return {"name": "Formatter"}
-
-        formatter = ConcreteFormatter()
-
-        # Test format_success with all value types to cover lines 292-302
-        data_with_all_types: FlextWebTypes.Core.ResponseDict = {
+        data_with_all_types: t.WebCore.ResponseDict = {
             "string": "value",
             "int": 42,
             "bool": True,
@@ -976,16 +918,16 @@ class TestFlextWebProtocols:
             == FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
         )
 
-        # Test get_request_data to cover lines 361-362
         request_data = formatter.get_request_data({"test": "data"})
         assert isinstance(request_data, dict)
+        assert request_data["test"] == "data"
 
-    def test_protocol_framework_interface_placeholder_methods(self) -> None:
-        """Test WebFrameworkInterfaceProtocol placeholder methods."""
+    def test_framework_interface_real_behavior(self) -> None:
+        """Test web framework interface protocol with real request behavior."""
         framework = _WebFrameworkInterfaceBase()
 
         # Test create_json_response to cover lines 390-400
-        data: FlextWebTypes.Core.ResponseDict = {
+        data: t.WebCore.ResponseDict = {
             "test": "value",
             "nested": {"key": "value"},
         }
@@ -995,92 +937,174 @@ class TestFlextWebProtocols:
             == FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
         )
 
-        # Test get_request_data to cover lines 416-417
         request_data = framework.get_request_data({"test": "data"})
         assert isinstance(request_data, dict)
+        assert request_data["test"] == "data"
 
-        # Test is_json_request to cover line 431
-        is_json = framework.is_json_request({"test": "data"})
-        assert is_json is False
+        is_json = framework.is_json_request({"content-type": "application/json"})
+        assert is_json is True
 
-    def test_protocol_service_placeholder_methods(self) -> None:
-        """Test WebServiceProtocol placeholder methods."""
+    def test_service_protocol_real_behavior(self) -> None:
+        """Test web service lifecycle protocol behavior."""
+        self._reset_protocol_state()
         service = _WebServiceBase()
 
-        # Execute all placeholder methods to cover lines 456, 466, 476, 486
+        start_without_setup = service.start_service()
+        assert start_without_setup.is_failure
+
         assert service.initialize_routes().is_success
         assert service.configure_middleware().is_success
         assert service.start_service().is_success
         assert service.stop_service().is_success
 
-    def test_protocol_repository_placeholder_methods(self) -> None:
-        """Test WebRepositoryProtocol placeholder methods."""
+    def test_repository_protocol_real_behavior(self) -> None:
+        """Test repository protocol criteria filtering behavior."""
+        self._reset_protocol_state()
+        manager = _WebAppManagerBase()
+        created = manager.create_app("repo-app", 8081, "127.0.0.1")
+        assert created.is_success
+
         repo = _WebRepositoryBase()
-
-        # Execute placeholder method to cover lines 512-513
-        result = repo.find_by_criteria({"key": "value"})
+        result = repo.find_by_criteria({"host": "127.0.0.1"})
         assert result.is_success
-        assert result.value == []
+        assert len(result.value) == 1
 
-    def test_protocol_handler_placeholder_methods(self) -> None:
-        """Test WebHandlerProtocol placeholder methods."""
+    def test_handler_protocol_real_behavior(self) -> None:
+        """Test handler protocol create/list action behavior."""
+        self._reset_protocol_state()
         handler = _WebHandlerBase()
 
-        # Execute placeholder method to cover lines 547-548
-        result = handler.handle_request({"test": "data"})
-        assert result.is_success
-        assert result.value == {}
+        create_result = handler.handle_request({
+            "action": "create",
+            "name": "handler-app",
+            "port": 8082,
+            "host": "localhost",
+        })
+        assert create_result.is_success
 
-    def test_protocol_template_renderer_placeholder_methods(self) -> None:
-        """Test WebTemplateRendererProtocol placeholder methods."""
+        list_result = handler.handle_request({"action": "list"})
+        assert list_result.is_success
+        assert list_result.value["count"] == 1
+
+    def test_template_renderer_real_behavior(self) -> None:
+        """Test template renderer protocol with real template substitution."""
         renderer = _WebTemplateRendererBase()
 
-        # Execute placeholder methods to cover lines 642-643, 658-659
-        result = renderer.render_template("tesFlextWebTypes.html", {"key": "value"})
+        result = renderer.render_template("{{key}}-template", {"key": "value"})
         assert result.is_success
-        assert result.value == ""
+        assert result.value == "value-template"
 
-        result = renderer.render_dashboard({"data": "value"})
+        result = renderer.render_dashboard({
+            "service": "dashboard",
+            "status": "running",
+        })
         assert result.is_success
-        assert "<html>Dashboard</html>" in result.value
+        assert "dashboard" in result.value
 
-    def test_protocol_template_engine_placeholder_methods(self) -> None:
-        """Test WebTemplateEngineProtocol placeholder methods."""
+    def test_template_engine_real_behavior(self) -> None:
+        """Test template engine protocol with config and global/filter handling."""
+        self._reset_protocol_state()
         engine = _WebTemplateEngineBase()
 
-        # Execute placeholder methods to cover lines 685-686, 696, 711-712, 728-729
-        assert engine.load_template_config({"key": "value"}).is_success
+        assert engine.load_template_config({"template_dir": "templates"}).is_success
         assert engine.get_template_config().is_success
-        assert engine.validate_template_config({"key": "value"}).is_success
-        assert engine.render("template", {"key": "value"}).is_success
+        assert engine.validate_template_config({"template_dir": "templates"}).is_success
+        assert engine.validate_template_config({"invalid": "value"}).is_failure
 
-        # Test void methods to cover lines (they don't return anything)
-        engine.add_filter("test", lambda x: x)
+        engine.add_filter("test", lambda x: x.upper())
         engine.add_global("test", value="value")
+        rendered = engine.render("{{test}}|test", {})
+        assert rendered.is_success
+        assert rendered.value == "VALUE"
 
-    def test_protocol_connection_placeholder_methods(self) -> None:
-        """Test WebConnectionProtocol placeholder methods."""
+    def test_connection_protocol_real_behavior(self) -> None:
+        """Test connection protocol endpoint URL from running app."""
+        self._reset_protocol_state()
+        manager = _WebAppManagerBase()
+        created = manager.create_app("endpoint-app", 9090, "127.0.0.1")
+        assert created.is_success
+        app_id = str(created.value["id"])
+        assert manager.start_app(app_id).is_success
+
         connection = _WebConnectionBase()
-
-        # Execute placeholder method to cover line 574
         url = connection.get_endpoint_url()
-        assert url == "http://localhost:8080"
+        assert url == "http://127.0.0.1:9090"
 
-    def test_protocol_monitoring_placeholder_methods(self) -> None:
-        """Test WebMonitoringProtocol placeholder methods."""
+    def test_monitoring_protocol_real_behavior(self) -> None:
+        """Test monitoring protocol metrics recording behavior."""
+        self._reset_protocol_state()
         monitoring = _WebMonitoringBase()
 
-        # Execute placeholder methods to cover lines 789, 802
-        # Test void method
         monitoring.record_web_request({"method": "GET"}, 0.1)
 
-        # Test get_web_health_status
         health = monitoring.get_web_health_status()
-        assert health["status"] == FlextWebConstants.Web.WebResponse.STATUS_HEALTHY
+        assert health["status"] == FlextWebConstants.Web.Status.STOPPED.value
         assert health["service"] == FlextWebConstants.Web.WebService.SERVICE_NAME
 
-        # Test get_web_metrics
         metrics = monitoring.get_web_metrics()
-        assert metrics["requests"] == 0
+        assert metrics["requests"] == 1
         assert metrics["errors"] == 0
         assert metrics["uptime"] == "0s"
+
+    def test_protocol_app_lifecycle_end_to_end(self) -> None:
+        """TDD lifecycle flow: create, start, stop, and list app states."""
+        self._reset_protocol_state()
+        manager = _WebAppManagerBase()
+
+        create_result = manager.create_app("lifecycle-app", 7070, "localhost")
+        assert create_result.is_success
+        app_id = str(create_result.value["id"])
+
+        list_result = manager.list_apps()
+        assert list_result.is_success
+        assert len(list_result.value) == 1
+        assert (
+            list_result.value[0]["status"] == FlextWebConstants.Web.Status.STOPPED.value
+        )
+
+        start_result = manager.start_app(app_id)
+        assert start_result.is_success
+        assert (
+            start_result.value["status"] == FlextWebConstants.Web.Status.RUNNING.value
+        )
+
+        stop_result = manager.stop_app(app_id)
+        assert stop_result.is_success
+        assert stop_result.value["status"] == FlextWebConstants.Web.Status.STOPPED.value
+
+    def test_create_app_configures_protocol_health_route(self) -> None:
+        """TDD create_app must register protocol health endpoint."""
+        self._reset_protocol_state()
+        manager = _WebAppManagerBase()
+
+        create_result = manager.create_app("route-app", 7171, "localhost")
+        assert create_result.is_success
+        app_id = str(create_result.value["id"])
+
+        framework = str(create_result.value["framework"])
+        app_instance = FlextWebProtocols.Web._framework_instances[app_id]
+        if framework == "fastapi":
+            fastapi_app = cast("Any", app_instance)
+            paths = [route.path for route in fastapi_app.routes]
+            assert "/protocol/health" in paths
+        else:
+            flask_app = cast("Any", app_instance)
+            routes = [rule.rule for rule in flask_app.url_map.iter_rules()]
+            assert "/protocol/health" in routes
+
+    def test_start_stop_manage_runtime_registry(self) -> None:
+        """TDD lifecycle must persist and cleanup runtime metadata."""
+        self._reset_protocol_state()
+        manager = _WebAppManagerBase()
+
+        created = manager.create_app("runtime-app", 7272, "localhost")
+        assert created.is_success
+        app_id = str(created.value["id"])
+
+        started = manager.start_app(app_id)
+        assert started.is_success
+        assert app_id in FlextWebProtocols.Web._app_runtimes
+
+        stopped = manager.stop_app(app_id)
+        assert stopped.is_success
+        assert app_id not in FlextWebProtocols.Web._app_runtimes

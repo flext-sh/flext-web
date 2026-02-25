@@ -67,7 +67,7 @@ class FlextWebCliService:
         result = cli_service.run()
 
         # Process result - fast fail on error, no fallback
-        if result.is_failure:  # pragma: no cover
+        if result.is_failure:
             logger.error(f"Service failed: {result.error}")
             sys.exit(1)
 

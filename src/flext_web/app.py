@@ -125,7 +125,7 @@ class FlextWebApp(FlextService[bool]):
                     redoc_url=redoc_url,
                     openapi_url=openapi_url,
                 )
-            except Exception as e:
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError, ImportError) as e:
                 error_msg = f"Failed to create FastAPI application: {e}"
                 logger.exception(error_msg)
                 return r[FastAPI].fail(error_msg)
