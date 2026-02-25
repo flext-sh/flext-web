@@ -83,9 +83,9 @@ class FlextWebModels(FlextModels):
                 max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: str = Field(
+            method: c.Web.Literals.HttpMethodLiteral = Field(
                 default="GET",
-                description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
+                description="HTTP method",
             )
             timeout: float = Field(
                 default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
@@ -93,25 +93,6 @@ class FlextWebModels(FlextModels):
                 le=c.Web.WebValidation.REQUEST_TIMEOUT_MAX,
                 description="Request timeout in seconds",
             )
-
-            @field_validator("method", mode="before")
-            @classmethod
-            def validate_method(cls, v: str) -> str:
-                """Validate HTTP method is one of the allowed values."""
-                upper = v.upper()
-                valid_methods = {
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE",
-                    "PATCH",
-                    "HEAD",
-                    "OPTIONS",
-                }
-                if upper not in valid_methods:
-                    msg = f"Invalid HTTP method: {v}. Must be one of: {valid_methods}"
-                    raise TypeError(msg)
-                return upper
 
             @property
             def has_body(self) -> bool:
@@ -202,9 +183,9 @@ class FlextWebModels(FlextModels):
                 max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
                 description="Request URL",
             )
-            method: str = Field(
+            method: c.Web.Literals.HttpMethodLiteral = Field(
                 default="GET",
-                description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
+                description="HTTP method",
             )
             timeout: float = Field(
                 default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
@@ -212,25 +193,6 @@ class FlextWebModels(FlextModels):
                 le=c.Web.WebValidation.REQUEST_TIMEOUT_MAX,
                 description="Request timeout in seconds",
             )
-
-            @field_validator("method", mode="before")
-            @classmethod
-            def validate_method(cls, v: str) -> str:
-                """Validate HTTP method is one of the allowed values."""
-                upper = v.upper()
-                valid_methods = {
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE",
-                    "PATCH",
-                    "HEAD",
-                    "OPTIONS",
-                }
-                if upper not in valid_methods:
-                    msg = f"Invalid HTTP method: {v}. Must be one of: {valid_methods}"
-                    raise TypeError(msg)
-                return upper
 
             headers: dict[str, str] = Field(
                 default_factory=dict,
@@ -458,20 +420,10 @@ class FlextWebModels(FlextModels):
                 le=c.Web.WebValidation.PORT_RANGE[1],
                 description="Application port number",
             )
-            status: c.Web.Literals.ApplicationStatusLiteral | str = Field(
+            status: c.Web.Literals.ApplicationStatusLiteral = Field(
                 default=c.Web.Status.STOPPED.value,
                 description="Current application status",
             )
-
-            @field_validator("status", mode="before")
-            @classmethod
-            def validate_status(cls, v: str) -> str:
-                """Validate application status against allowed values from constants."""
-                valid_statuses = set(c.Web.STATUSES)
-                if v not in valid_statuses:
-                    msg = f"Invalid status '{v}'. Must be one of: {sorted(valid_statuses)}"
-                    raise TypeError(msg)
-                return v
 
             environment: str = Field(
                 default=c.Web.Name.DEVELOPMENT.value,
