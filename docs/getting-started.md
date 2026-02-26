@@ -80,7 +80,7 @@ See [flext-core README](https://github.com/organization/flext/tree/main/flext-co
 **Next Steps**: See [TODO.md](../TODO.md) for development roadmap
 **Architecture**: See [development.md](development.md) for development patterns
 
-______________________________________________________________________
+---
 
 **Status**: Functional for imports - ready for architectural improvements · 1.0.0 Release Preparation
 

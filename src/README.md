@@ -224,7 +224,7 @@ make security                  # Security scanning
 - **Real-time**: WebSocket or Server-Sent Events for live updates
 - **Ecosystem**: Complete integration with FlexCore and FLEXT Service
 
-______________________________________________________________________
+---
 
 **Maintainers**: FLEXT Development Team\
 **Documentation Standard**: 100% enterprise-grade with business context\

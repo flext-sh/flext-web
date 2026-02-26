@@ -342,7 +342,7 @@ def process_request(data: dict) -> FlextResult[FlextWebApp]:
 - **0.9.9**: Current development version with monolithic architecture
 - **0.9.9**: Target production version with Clean Architecture (planned)
 
-______________________________________________________________________
+---
 
 **Maintainers**: FLEXT Development Team
 **Architecture Review**: Required after Clean Architecture refactoring
