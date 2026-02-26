@@ -539,7 +539,7 @@ kubectl set env deployment/flext-web \
   FLEXT_WEB_SECRET_KEY="new-secret-key"
 ```
 
----
+______________________________________________________________________
 
 **Configuration Standard**: Pydantic Settings + FLEXT patterns\
 **Security**: Validated secrets management and production safety\

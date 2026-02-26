@@ -353,7 +353,7 @@ make test-env-check
 - [ ] **Coverage validation** ensuring new code is tested
 - [ ] **Performance validation** ensuring tests run efficiently
 
----
+______________________________________________________________________
 
 **Maintainers**: FLEXT Development Team\
 **Test Framework**: pytest 7.4+ with enterprise plugins\
