@@ -147,3 +147,6 @@ markers = [
 
 [tool.ruff.lint.per-file-ignores]
 "src/flext_web/protocols.py" = ["SLF001"]
+
+[tool.pyrefly]
+search_path = ["."]
