@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, cast
 
 from flext_core import (
     FlextResult,
@@ -288,10 +288,9 @@ class FlextWebTypes(FlextTypes):
         # Use # Direct validation instead for unified method validation (DSL pattern)
         method_upper = method.upper()
         valid_methods = set(FlextWebConstants.Web.Http.METHODS)
-        method_validated = u.Validation.guard(
+        method_validated = u.guard(
             method_upper,
             lambda m: m in valid_methods,
-            error_message=f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             return_value=True,
         )
         if method_validated is None:
@@ -308,7 +307,7 @@ class FlextWebTypes(FlextTypes):
             """Create request model."""
             return FlextWebModels.Web.Request(
                 url=url,
-                method=method_upper,
+                method=cast("FlextWebTypes.WebCore.HttpMethodLiteral", method_upper),
                 headers=headers_validated or {},
                 body=body,
                 timeout=timeout,
@@ -427,10 +426,9 @@ class FlextWebTypes(FlextTypes):
         # Use # Direct validation instead for method validation (DSL pattern)
         method_upper = method.upper()
         valid_methods = set(FlextWebConstants.Web.Http.METHODS)
-        method_validated = u.Validation.guard(
+        method_validated = u.guard(
             method_upper,
             lambda m: m in valid_methods,
-            error_message=f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             return_value=True,
         )
         if method_validated is None:
@@ -443,7 +441,7 @@ class FlextWebTypes(FlextTypes):
             """Create request model."""
             return FlextWebModels.Web.AppRequest(
                 url=url_validated,
-                method=method_upper,  # method_upper is validated to be HttpMethodLiteral
+                method=cast("FlextWebTypes.WebCore.HttpMethodLiteral", method_upper),
                 headers=headers_validated,
                 body=body,
                 timeout=timeout or FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,

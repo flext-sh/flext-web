@@ -552,8 +552,14 @@ class FlextWebModels(FlextModels):
 
             def stop(self) -> r[FlextWebModels.Web.Entity]:
                 """Stop the application."""
-                running_status = c.Web.Status.RUNNING.value
-                stopped_status = c.Web.Status.STOPPED.value
+                running_status = cast(
+                    "c.Web.Literals.ApplicationStatusLiteral",
+                    c.Web.Status.RUNNING.value,
+                )
+                stopped_status = cast(
+                    "c.Web.Literals.ApplicationStatusLiteral",
+                    c.Web.Status.STOPPED.value,
+                )
                 not_running = self.status != running_status
                 if not_running:
                     return r[FlextWebModels.Web.Entity].fail(
@@ -575,8 +581,14 @@ class FlextWebModels(FlextModels):
                     return r[FlextWebModels.Web.Entity].fail(
                         "Cannot restart in current state",
                     )
-                starting_status = c.Web.Status.STARTING.value
-                running_status = c.Web.Status.RUNNING.value
+                starting_status = cast(
+                    "c.Web.Literals.ApplicationStatusLiteral",
+                    c.Web.Status.STARTING.value,
+                )
+                running_status = cast(
+                    "c.Web.Literals.ApplicationStatusLiteral",
+                    c.Web.Status.RUNNING.value,
+                )
                 self.status = starting_status
                 # Add web lifecycle events
                 restart_event_result = self.add_web_event("ApplicationRestarting")
