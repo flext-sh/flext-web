@@ -31,8 +31,18 @@ from collections.abc import Awaitable, Callable, Mapping
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import Any, Protocol, cast, runtime_checkable
+from typing import Any, ClassVar, Protocol, cast, runtime_checkable
 from uuid import uuid4
+
+try:
+    import uvicorn
+except ImportError:
+    uvicorn = None
+
+try:
+    from werkzeug.serving import make_server
+except ImportError:
+    make_server = None
 
 from flext_core.protocols import FlextProtocols, p
 from flext_core.result import r
@@ -196,22 +206,13 @@ class FlextWebProtocols(FlextProtocols):
         for proper namespace separation and cross-project access.
         """
 
-        _apps_registry: dict[str, t.WebCore.ResponseDict] = {}
-        _framework_instances: dict[str, object] = {}
-        _app_runtimes: dict[str, dict[str, object]] = {}
-        _service_state: dict[str, bool] = {
+        _apps_registry: ClassVar[dict[str, t.WebCore.ResponseDict]] = {}
+        _framework_instances: ClassVar[dict[str, object]] = {}
+        _app_runtimes: ClassVar[dict[str, dict[str, object]]] = {}
+        _service_state: ClassVar[dict[str, bool]] = {
             "routes_initialized": False,
             "middleware_configured": False,
             "service_running": False,
-        }
-        _template_config: t.WebCore.RequestDict = {}
-        _template_filters: dict[str, Callable[[str], str]] = {}
-        _template_globals: t.WebCore.RequestDict = {}
-        _web_metrics: t.WebCore.ResponseDict = {
-            "requests": 0,
-            "errors": 0,
-            "uptime": "0s",
-            "avg_response_time_ms": 0,
         }
 
         @staticmethod
@@ -351,9 +352,7 @@ class FlextWebProtocols(FlextProtocols):
                 )
 
             if interface == "asgi":
-                try:
-                    import uvicorn
-                except ImportError:
+                if uvicorn is None:
                     return r[dict[str, object]].fail(
                         "Cannot start ASGI application: uvicorn dependency is unavailable",
                     )
@@ -375,20 +374,20 @@ class FlextWebProtocols(FlextProtocols):
                         return r[dict[str, object]].fail(
                             f"ASGI runtime exited immediately for app: {app_id}",
                         )
-                    return r[dict[str, object]].ok({
-                        "runner": "uvicorn",
-                        "server": server,
-                        "thread": thread,
-                    })
+                    return r[dict[str, object]].ok(
+                        {
+                            "runner": "uvicorn",
+                            "server": server,
+                            "thread": thread,
+                        }
+                    )
                 except (RuntimeError, OSError, ValueError, TypeError) as exc:
                     return r[dict[str, object]].fail(
                         f"Failed to start ASGI runtime for app {app_id}: {exc}",
                     )
 
             if interface == "wsgi":
-                try:
-                    from werkzeug.serving import make_server
-                except ImportError:
+                if make_server is None:
                     return r[dict[str, object]].fail(
                         "Cannot start WSGI application: werkzeug dependency is unavailable",
                     )
@@ -406,11 +405,13 @@ class FlextWebProtocols(FlextProtocols):
                         return r[dict[str, object]].fail(
                             f"WSGI runtime exited immediately for app: {app_id}",
                         )
-                    return r[dict[str, object]].ok({
-                        "runner": "werkzeug",
-                        "server": server,
-                        "thread": thread,
-                    })
+                    return r[dict[str, object]].ok(
+                        {
+                            "runner": "werkzeug",
+                            "server": server,
+                            "thread": thread,
+                        }
+                    )
                 except (
                     RuntimeError,
                     OSError,
@@ -440,7 +441,7 @@ class FlextWebProtocols(FlextProtocols):
                         return r[bool].fail(
                             f"Missing ASGI server instance for app: {app_id}"
                         )
-                    setattr(server, "should_exit", True)
+                    server.should_exit = True
                 elif runner == "werkzeug":
                     shutdown = getattr(server, "shutdown", None)
                     if callable(shutdown):

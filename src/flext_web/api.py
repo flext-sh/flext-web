@@ -193,17 +193,19 @@ class FlextWebApi:
         FlextResult[t.Core.ResponseDict]: Success contains capabilities info
 
         """
-        return FlextResult.ok({
-            "application_management": ["create_fastapi_app"],
-            "service_management": ["create_http_service"],
-            "configuration_management": [
-                "create_http_config",
-                "validate_http_config",
-            ],
-            "monitoring": ["get_service_status", "get_api_capabilities"],
-            "supported_frameworks": ["fastapi"],
-            "supported_patterns": ["solid", "facade", "dependency_injection"],
-        })
+        return FlextResult.ok(
+            {
+                "application_management": ["create_fastapi_app"],
+                "service_management": ["create_http_service"],
+                "configuration_management": [
+                    "create_http_config",
+                    "validate_http_config",
+                ],
+                "monitoring": ["get_service_status", "get_api_capabilities"],
+                "supported_frameworks": ["fastapi"],
+                "supported_patterns": ["solid", "facade", "dependency_injection"],
+            }
+        )
 
 
 __all__ = ["FlextWebApi"]

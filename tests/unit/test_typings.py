@@ -5,10 +5,7 @@ Tests the unified FlextWebModels class following flext standards.
 
 from __future__ import annotations
 
-
 import pytest
-from pydantic import ValidationError
-
 from flext_web import FlextWebModels
 from flext_web.settings import FlextWebSettings
 from flext_web.typings import (
@@ -17,6 +14,7 @@ from flext_web.typings import (
     _WebRequestConfig,
     _WebResponseConfig,
 )
+from pydantic import ValidationError
 
 
 class TestFlextWebModels:
@@ -307,25 +305,23 @@ class TestFlextWebModels:
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
         # Pydantic rejects invalid types at model construction
-        from pydantic import ValidationError
 
         with pytest.raises(ValidationError):
             _WebRequestConfig(
                 url="http://localhost:8080",
                 method="GET",
-                headers="not_a_dict",  # type: ignore[arg-type]
+                headers="not_a_dict",
             )
 
     def test_create_web_request_invalid_query_params(self) -> None:
         """Test create_web_request with invalid query_params type."""
         # Pydantic rejects invalid types at model construction
-        from pydantic import ValidationError
 
         with pytest.raises(ValidationError):
             _WebRequestConfig(
                 url="http://localhost:8080",
                 method="GET",
-                query_params="not_a_dict",  # type: ignore[arg-type]
+                query_params="not_a_dict",
             )
 
     def test_create_web_request_exception_handling(self) -> None:
@@ -348,16 +344,11 @@ class TestFlextWebModels:
 
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers type."""
-        # Use actual invalid type instead of cast
-        invalid_headers: object = "not_a_dict"
-        # Pydantic rejects invalid types at model construction
-        from pydantic import ValidationError
-
         with pytest.raises(ValidationError):
             _WebResponseConfig(
                 status_code=200,
                 request_id="test-123",
-                headers="not_a_dict",  # type: ignore[arg-type]
+                headers="not_a_dict",
             )
 
     def test_create_web_response_exception_handling(self) -> None:

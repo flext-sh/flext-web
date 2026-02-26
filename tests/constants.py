@@ -13,9 +13,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Final, TypeAlias
+from typing import Final
 
 from flext_tests.constants import FlextTestsConstants
+
 from flext_web.constants import FlextWebConstants
 
 
@@ -72,24 +73,22 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
         """
 
         # Reuse production Literals for consistency (Python 3.13+ best practices)
-        HttpMethodLiteral: TypeAlias = FlextWebConstants.Web.Literals.HttpMethodLiteral
-        EnvironmentNameLiteral: TypeAlias = (
+        type HttpMethodLiteral = FlextWebConstants.Web.Literals.HttpMethodLiteral
+        type EnvironmentNameLiteral = (
             FlextWebConstants.Web.Literals.EnvironmentNameLiteral
         )
-        ApplicationStatusLiteral: TypeAlias = (
+        type ApplicationStatusLiteral = (
             FlextWebConstants.Web.Literals.ApplicationStatusLiteral
         )
-        ApplicationTypeLiteral: TypeAlias = (
+        type ApplicationTypeLiteral = (
             FlextWebConstants.Web.Literals.ApplicationTypeLiteral
         )
-        ResponseStatusLiteral: TypeAlias = (
+        type ResponseStatusLiteral = (
             FlextWebConstants.Web.Literals.ResponseStatusLiteral
         )
-        ProtocolLiteral: TypeAlias = FlextWebConstants.Web.Literals.ProtocolLiteral
-        ContentTypeLiteral: TypeAlias = (
-            FlextWebConstants.Web.Literals.ContentTypeLiteral
-        )
-        SameSiteLiteral: TypeAlias = FlextWebConstants.Web.Literals.SameSiteLiteral
+        type ProtocolLiteral = FlextWebConstants.Web.Literals.ProtocolLiteral
+        type ContentTypeLiteral = FlextWebConstants.Web.Literals.ContentTypeLiteral
+        type SameSiteLiteral = FlextWebConstants.Web.Literals.SameSiteLiteral
 
 
 # Short aliases per FLEXT convention
