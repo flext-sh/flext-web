@@ -6,7 +6,6 @@ Tests the unified FlextWebUtilities class following flext standards.
 from unittest.mock import patch
 
 import pytest
-
 from flext_web.models import FlextWebModels
 from flext_web.utilities import FlextWebUtilities
 
@@ -136,7 +135,9 @@ class TestFlextWebUtilities:
                 "flext_web.utilities.FlextUtilities.Text.safe_string",
                 return_value="   ",
             ),
-            pytest.raises(ValueError, match="Cannot format application name 'test' to valid ID"),
+            pytest.raises(
+                ValueError, match="Cannot format application name 'test' to valid ID"
+            ),
         ):
             FlextWebUtilities.format_app_id("test")
 

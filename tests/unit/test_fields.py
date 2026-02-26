@@ -3,11 +3,10 @@
 Tests the web fields functionality following flext standards.
 """
 
-from pydantic import BaseModel
-
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
 from flext_web.settings import FlextWebSettings
+from pydantic import BaseModel
 
 
 class TestFlextWebFields:

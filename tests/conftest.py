@@ -27,7 +27,6 @@ from flext_tests import (
     FlextTestsFactories,
     FlextTestsMatchers,
 )
-
 from flext_web import FlextWebModels, FlextWebServices, FlextWebSettings
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants
@@ -448,8 +447,7 @@ def production_config() -> dict[str, str]:
 def docker_manager() -> Generator[FlextTestsDocker]:
     """Provide FlextTestsDocker instance for integration tests."""
     try:
-        manager = FlextTestsDocker(workspace_root=Path().absolute())
-        yield manager
+        yield FlextTestsDocker(workspace_root=Path().absolute())
     except ImportError:
         # FlextTestsDocker may not be available in all environments
         pytest.skip("FlextTestsDocker not available")

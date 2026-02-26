@@ -353,7 +353,8 @@ class FlextWebServices(FlextService[bool]):
             return FlextResult[bool].fail("Service is already running")
 
         return (
-            self.initialize_routes()
+            self
+            .initialize_routes()
             .flat_map(lambda _: self.configure_middleware())
             .map(lambda _: self._mark_service_running())
         )

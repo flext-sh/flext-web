@@ -6,11 +6,10 @@ Tests the web models functionality following flext standards.
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
-from tests.conftest import create_entry, create_test_app
-
 from flext_web.constants import FlextWebConstants
 from flext_web.models import FlextWebModels
+from pydantic import ValidationError
+from tests.conftest import create_entry, create_test_app
 
 
 class TestFlextWebModels:
@@ -558,7 +557,6 @@ class TestFlextWebModels:
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
         # Pydantic rejects invalid types at _WebRequestConfig construction
-        from pydantic import ValidationError
 
         with pytest.raises(ValidationError):
             create_entry(
@@ -571,7 +569,6 @@ class TestFlextWebModels:
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers type."""
         # Pydantic rejects invalid types at _WebResponseConfig construction
-        from pydantic import ValidationError
 
         with pytest.raises(ValidationError):
             create_entry(
@@ -588,7 +585,7 @@ class TestFlextWebModels:
             request_id="test-123",
             processing_time_ms=1500.0,
         )
-        assert response.processing_time_seconds == 1.5
+        assert response.processing_time_seconds == pytest.approx(1.5)
 
     def test_application_validate_name_max_length(self) -> None:
         """Test validate_name with max_length validation (lines 404-405)."""

@@ -6,7 +6,6 @@ Tests the web handlers functionality following flext standards.
 from __future__ import annotations
 
 from flext_core import FlextResult
-
 from flext_web.handlers import FlextWebHandlers
 from flext_web.models import FlextWebModels
 
@@ -85,8 +84,8 @@ class TestFlextWebHandlers:
         app = create_result.value
 
         # App should be in registry
-        assert app.id in handler._apps_registry
-        assert handler._apps_registry[app.id] == app
+        assert app.id in handler.apps_registry
+        assert handler.apps_registry[app.id] == app
 
     def test_protocol_implementation(self) -> None:
         """Test protocol implementation - REAL execution."""

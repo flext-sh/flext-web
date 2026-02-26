@@ -10,7 +10,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_tests.protocols import FlextTestsProtocols
-
 from flext_web.protocols import FlextWebProtocols
 
 
@@ -23,7 +22,7 @@ class TestsFlextWebProtocols(FlextTestsProtocols, FlextWebProtocols):
     - p.Web.* (from FlextWebProtocols)
     """
 
-    class Tests:
+    class Tests(FlextTestsProtocols.Tests):
         """Project-specific test protocols.
 
         Extends FlextTestsProtocols.Tests with Web-specific protocols.

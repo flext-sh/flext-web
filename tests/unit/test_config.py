@@ -8,9 +8,8 @@ are not enforced. See: FlextSettings bypasses Field validation constraints.
 """
 
 import pytest
-from pydantic import ValidationError
-
 from flext_web.settings import FlextWebSettings
+from pydantic import ValidationError
 
 
 class TestFlextWebSettings:

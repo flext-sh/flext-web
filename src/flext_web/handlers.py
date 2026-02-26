@@ -79,7 +79,7 @@ class FlextWebHandlers(FlextService[bool]):
             """Initialize application handler."""
             super().__init__()
             self.logger = FlextLogger(__name__)
-            self._apps_registry: MutableMapping[str, m.Web.Entity] = {}
+            self.apps_registry: MutableMapping[str, m.Web.Entity] = {}
             self.logger.info("WebApp handler initialized")
 
         def create(
@@ -141,7 +141,7 @@ class FlextWebHandlers(FlextService[bool]):
             app: m.Web.Entity,
         ) -> r[m.Web.Entity]:
             """Register application in registry."""
-            self._apps_registry[app.id] = app
+            self.apps_registry[app.id] = app
             return r[m.Web.Entity].ok(app)
 
         # =============================================================================
@@ -162,12 +162,12 @@ class FlextWebHandlers(FlextService[bool]):
 
         def start_app(self, app_id: str) -> r[m.Web.Entity]:
             """Start an application - implements WebAppManagerProtocol."""
-            if app_id not in self._apps_registry:
+            if app_id not in self.apps_registry:
                 return r[m.Web.Entity].fail(
                     f"Application {app_id} not found",
                 )
 
-            app = self._apps_registry[app_id]
+            app = self.apps_registry[app_id]
             # Use entity's start method with monadic pattern and update registry
             return app.start().map(
                 lambda updated_app: self._update_app_in_registry(app_id, updated_app),
@@ -179,17 +179,17 @@ class FlextWebHandlers(FlextService[bool]):
             app: m.Web.Entity,
         ) -> m.Web.Entity:
             """Update application in registry."""
-            self._apps_registry[app_id] = app
+            self.apps_registry[app_id] = app
             return app
 
         def stop_app(self, app_id: str) -> r[m.Web.Entity]:
             """Stop an application - implements WebAppManagerProtocol."""
-            if app_id not in self._apps_registry:
+            if app_id not in self.apps_registry:
                 return r[m.Web.Entity].fail(
                     f"Application {app_id} not found",
                 )
 
-            app = self._apps_registry[app_id]
+            app = self.apps_registry[app_id]
             # Use entity's stop method with monadic pattern and update registry
             return app.stop().map(
                 lambda updated_app: self._update_app_in_registry(app_id, updated_app),
@@ -197,7 +197,7 @@ class FlextWebHandlers(FlextService[bool]):
 
         def list_apps(self) -> r[list[m.Web.Entity]]:
             """List all applications - implements WebAppManagerProtocol."""
-            apps_list = list(self._apps_registry.values())
+            apps_list = list(self.apps_registry.values())
             return r[list[m.Web.Entity]].ok(apps_list)
 
     # =========================================================================

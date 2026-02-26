@@ -30,18 +30,18 @@ class TestFlextWebProtocols:
 
     @staticmethod
     def _reset_protocol_state() -> None:
-        FlextWebProtocols.Web._apps_registry.clear()
-        FlextWebProtocols.Web._framework_instances.clear()
-        FlextWebProtocols.Web._app_runtimes.clear()
-        FlextWebProtocols.Web._service_state.update({
+        FlextWebProtocols.Web.apps_registry.clear()
+        FlextWebProtocols.Web.framework_instances.clear()
+        FlextWebProtocols.Web.app_runtimes.clear()
+        FlextWebProtocols.Web.service_state.update({
             "routes_initialized": False,
             "middleware_configured": False,
             "service_running": False,
         })
-        FlextWebProtocols.Web._template_config.clear()
-        FlextWebProtocols.Web._template_filters.clear()
-        FlextWebProtocols.Web._template_globals.clear()
-        FlextWebProtocols.Web._web_metrics.update({
+        FlextWebProtocols.Web.template_config.clear()
+        FlextWebProtocols.Web.template_filters.clear()
+        FlextWebProtocols.Web.template_globals.clear()
+        FlextWebProtocols.Web.web_metrics.update({
             "requests": 0,
             "errors": 0,
             "uptime": "0s",
@@ -1082,7 +1082,7 @@ class TestFlextWebProtocols:
         app_id = str(create_result.value["id"])
 
         framework = str(create_result.value["framework"])
-        app_instance = FlextWebProtocols.Web._framework_instances[app_id]
+        app_instance = FlextWebProtocols.Web.framework_instances[app_id]
         if framework == "fastapi":
             fastapi_app = cast("Any", app_instance)
             paths = [route.path for route in fastapi_app.routes]
@@ -1103,8 +1103,8 @@ class TestFlextWebProtocols:
 
         started = manager.start_app(app_id)
         assert started.is_success
-        assert app_id in FlextWebProtocols.Web._app_runtimes
+        assert app_id in FlextWebProtocols.Web.app_runtimes
 
         stopped = manager.stop_app(app_id)
         assert stopped.is_success
-        assert app_id not in FlextWebProtocols.Web._app_runtimes
+        assert app_id not in FlextWebProtocols.Web.app_runtimes
