@@ -11,6 +11,7 @@ from __future__ import annotations
 import uuid
 from collections.abc import Mapping
 from datetime import UTC, datetime
+from typing import cast
 
 from flext_core import (
     FlextModels,
@@ -377,7 +378,7 @@ class FlextWebModels(FlextModels):
                 # Type narrowing: v is str from pydantic validation, use explicit str check
                 name_length_validated = u.guard(
                     v,
-                    lambda s: min_length <= len(s) <= max_length,
+                    lambda s: min_length <= len(cast("str", s)) <= max_length,
                     return_value=True,
                 )
                 if name_length_validated is None:
@@ -421,7 +422,10 @@ class FlextWebModels(FlextModels):
                 description="Application port number",
             )
             status: c.Web.Literals.ApplicationStatusLiteral = Field(
-                default=c.Web.Status.STOPPED.value,
+                default=cast(
+                    "c.Web.Literals.ApplicationStatusLiteral",
+                    c.Web.Status.STOPPED.value,
+                ),
                 description="Current application status",
             )
 
@@ -503,7 +507,7 @@ class FlextWebModels(FlextModels):
                 min_name_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
                 name_validated = u.guard(
                     self.name,
-                    lambda s: len(s) >= min_name_length,
+                    lambda s: len(cast("str", s)) >= min_name_length,
                     return_value=True,
                 )
                 if name_validated is None:
@@ -517,7 +521,7 @@ class FlextWebModels(FlextModels):
                 # Use u.guard() with combined check for unified error message (DSL pattern)
                 port_validated = u.guard(
                     self.port,
-                    lambda p: min_port <= p <= max_port,
+                    lambda p: min_port <= cast("int", p) <= max_port,
                     return_value=True,
                 )
                 if port_validated is None:
@@ -528,7 +532,10 @@ class FlextWebModels(FlextModels):
 
             def start(self) -> r[FlextWebModels.Web.Entity]:
                 """Start the application."""
-                running_status = c.Web.Status.RUNNING.value
+                running_status = cast(
+                    "c.Web.Literals.ApplicationStatusLiteral",
+                    c.Web.Status.RUNNING.value,
+                )
                 already_running = self.status == running_status
                 if already_running:
                     return r[FlextWebModels.Web.Entity].fail(

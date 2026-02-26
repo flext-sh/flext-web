@@ -214,6 +214,12 @@ class FlextWebProtocols(FlextProtocols):
             "middleware_configured": False,
             "service_running": False,
         }
+        _web_metrics: ClassVar[dict[str, int | float | str]] = {}
+        _template_config: ClassVar[t.WebCore.RequestDict] = {}
+        _template_globals: ClassVar[
+            dict[str, str | int | bool | list[str] | dict[str, str | int | bool]]
+        ] = {}
+        _template_filters: ClassVar[dict[str, Callable[[str], str]]] = {}
 
         @staticmethod
         def _is_valid_port(port: int) -> bool:
@@ -285,7 +291,7 @@ class FlextWebProtocols(FlextProtocols):
         def _configure_framework_app_routes(app_instance: object, app_id: str) -> None:
             add_api_route = getattr(app_instance, "add_api_route", None)
             if callable(add_api_route):
-                route_registrar = cast("Callable[..., object]", add_api_route)
+                route_registrar = add_api_route
 
                 def fastapi_health() -> t.WebCore.ResponseDict:
                     return {
@@ -1328,8 +1334,9 @@ class FlextWebProtocols(FlextProtocols):
                 Web metrics data dictionary
 
                 """
-                return FlextWebProtocols.Web._copy_response_dict(
-                    FlextWebProtocols.Web._web_metrics,
+                return cast(
+                    "t.WebCore.ResponseDict",
+                    deepcopy(FlextWebProtocols.Web._web_metrics),
                 )
 
         @runtime_checkable
