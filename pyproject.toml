@@ -33,7 +33,7 @@ classifiers = [
 dependencies = [
   "fastapi>=0.119",
   "flask>=3",
-  "flext-core @ ../flext-core",
+  "flext-core @ file://../flext-core",
   "pydantic>=2.12.3",
   "pydantic-core>=2.41.4",
   "pydantic-settings>=2.11",
