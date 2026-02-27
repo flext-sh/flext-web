@@ -441,7 +441,7 @@ class FlextWebProtocols(FlextProtocols):
                         return r[bool].fail(
                             f"Missing ASGI server instance for app: {app_id}"
                         )
-                    server.should_exit = True
+                    setattr(server, "should_exit", True)
                 elif runner == "werkzeug":
                     shutdown = getattr(server, "shutdown", None)
                     if callable(shutdown):
@@ -463,6 +463,16 @@ class FlextWebProtocols(FlextProtocols):
                 )
 
             return r[bool].ok(True)
+
+        # Public aliases for private methods
+        record_request_metric = _record_request_metric
+        create_framework_app = _create_framework_app
+        copy_response_dict = _copy_response_dict
+        configure_framework_app_routes = _configure_framework_app_routes
+        configure_framework_app_middleware = _configure_framework_app_middleware
+        start_app_runtime = _start_app_runtime
+        stop_app_runtime = _stop_app_runtime
+        is_valid_port = _is_valid_port
 
         # =========================================================================
         # WEB FOUNDATION LAYER - Core web protocols used within flext-web

@@ -307,7 +307,7 @@ class FlextWebTypes(FlextTypes):
             """Create request model."""
             return FlextWebModels.Web.Request(
                 url=url,
-                method=cast("FlextWebTypes.WebCore.HttpMethodLiteral", method_upper),
+                method=cast("FlextWebTypes.Web.HttpMethodLiteral", method_upper),
                 headers=headers_validated or {},
                 body=body,
                 timeout=timeout,
@@ -441,7 +441,7 @@ class FlextWebTypes(FlextTypes):
             """Create request model."""
             return FlextWebModels.Web.AppRequest(
                 url=url_validated,
-                method=cast("FlextWebTypes.WebCore.HttpMethodLiteral", method_upper),
+                method=cast("FlextWebTypes.Web.HttpMethodLiteral", method_upper),
                 headers=headers_validated,
                 body=body,
                 timeout=timeout or FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
@@ -564,7 +564,7 @@ class FlextWebTypes(FlextTypes):
                 name=name,
                 host=host,
                 port=port,
-                status=status,
+                status=cast("FlextWebTypes.Web.ApplicationStatusLiteral", status),
                 environment=environment,
                 debug_mode=debug_mode,
                 version=version,
