@@ -43,7 +43,7 @@ from uuid import uuid4
 import uvicorn
 from flext_core.protocols import FlextProtocols
 from flext_core.result import FlextResult
-from werkzeug.serving import make_server
+from werkzeug.serving import BaseWSGIServer, make_server
 
 from flext_web.app import FlextWebApp
 from flext_web.constants import c
@@ -205,28 +205,38 @@ class FlextWebProtocols(FlextProtocols):
         """
 
         @runtime_checkable
-        class _FastApiLikeApp(Protocol):
+        class FastApiLikeApp(Protocol):
             """Duck-type protocol for FastAPI-like framework apps."""
 
-            def add_api_route(self, path: str, endpoint: Callable[..., object], **kwargs: object) -> None: ...
-            def middleware(self, middleware_type: str) -> Callable[..., object]: ...
+            def add_api_route(self, path: str, endpoint: Callable[..., object], **kwargs: object) -> None:
+                """Register an API route."""
+                ...
+
+            def middleware(self, middleware_type: str) -> Callable[..., object]:
+                """Register middleware."""
+                ...
 
         @runtime_checkable
-        class _FlaskLikeApp(Protocol):
+        class FlaskLikeApp(Protocol):
             """Duck-type protocol for Flask-like framework apps."""
 
-            def route(self, rule: str, **options: object) -> Callable[..., object]: ...
-            def before_request(self, f: Callable[..., object]) -> Callable[..., object]: ...
+            def route(self, rule: str, **options: object) -> Callable[..., object]:
+                """Register a URL route."""
+                ...
+
+            def before_request(self, f: Callable[..., object]) -> Callable[..., object]:
+                """Register a before-request hook."""
+                ...
 
         apps_registry: ClassVar[dict[str, t.WebCore.ResponseDict]] = {}
-        framework_instances: ClassVar[dict[str, object]] = {}
+        framework_instances: ClassVar[dict[str, Callable[..., object]]] = {}
         app_runtimes: ClassVar[dict[str, dict[str, object]]] = {}
         service_state: ClassVar[dict[str, bool]] = {
             "routes_initialized": False,
             "middleware_configured": False,
             "service_running": False,
         }
-        web_metrics: ClassVar[dict[str, int | float | str]] = {}
+        web_metrics: ClassVar[dict[str, int | str]] = {}
         template_config: ClassVar[t.WebCore.RequestDict] = {}
         template_globals: ClassVar[
             dict[str, str | int | bool | list[str] | dict[str, str | int | bool]]
@@ -279,7 +289,7 @@ class FlextWebProtocols(FlextProtocols):
             FlextWebProtocols.Web.web_metrics["requests"] = next_count
 
             avg_value = FlextWebProtocols.Web.web_metrics.get("avg_response_time_ms", 0)
-            previous_avg = avg_value if isinstance(avg_value, int | float) else 0
+            previous_avg = avg_value if isinstance(avg_value, int) else 0
             average_response_time_ms = (
                 (previous_avg * request_count) + response_time_ms
             ) / next_count
@@ -299,7 +309,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @staticmethod
         def _configure_framework_app_routes(app_instance: object, app_id: str) -> None:
-            if isinstance(app_instance, FlextWebProtocols.Web._FastApiLikeApp):
+            if isinstance(app_instance, FlextWebProtocols.Web.FastApiLikeApp):
                 route_registrar = app_instance.add_api_route
 
                 def fastapi_health() -> t.WebCore.ResponseDict:
@@ -311,7 +321,7 @@ class FlextWebProtocols(FlextProtocols):
 
                 route_registrar("/protocol/health", fastapi_health, methods=["GET"])
 
-            if isinstance(app_instance, FlextWebProtocols.Web._FlaskLikeApp):
+            if isinstance(app_instance, FlextWebProtocols.Web.FlaskLikeApp):
                 route_decorator = app_instance.route
 
                 @route_decorator("/protocol/health")
@@ -324,7 +334,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @staticmethod
         def _configure_framework_app_middleware(app_instance: object) -> None:
-            if isinstance(app_instance, FlextWebProtocols.Web._FastApiLikeApp):
+            if isinstance(app_instance, FlextWebProtocols.Web.FastApiLikeApp):
                 middleware_decorator = app_instance.middleware
 
                 @middleware_decorator("http")
@@ -338,7 +348,7 @@ class FlextWebProtocols(FlextProtocols):
                     FlextWebProtocols.Web.record_request_metric("success", 0)
                     return response
 
-            if isinstance(app_instance, FlextWebProtocols.Web._FlaskLikeApp):
+            if isinstance(app_instance, FlextWebProtocols.Web.FlaskLikeApp):
 
                 @app_instance.before_request
                 def flask_metrics_middleware() -> None:
@@ -348,7 +358,7 @@ class FlextWebProtocols(FlextProtocols):
         def _start_app_runtime(
             app_id: str,
             app_data: t.WebCore.ResponseDict,
-            app_instance: object,
+            app_instance: Callable[..., object],
         ) -> FlextResult[dict[str, object]]:
             host = app_data.get("host")
             port = app_data.get("port")
@@ -389,7 +399,7 @@ class FlextWebProtocols(FlextProtocols):
             if interface == c.Web.WebFramework.INTERFACE_WSGI:
 
                 try:
-                    server = make_server(host, port, app_instance)
+                    server = make_server(host, port, app_instance)  # type: WSGIApplication via Callable
                     thread = Thread(
                         target=server.serve_forever,
                         daemon=True,
@@ -431,16 +441,18 @@ class FlextWebProtocols(FlextProtocols):
 
             try:
                 if runner == c.Web.WebFramework.RUNNER_UVICORN:
-                    if server is None:
+                    if not isinstance(server, uvicorn.Server):
                         return FlextResult[bool].fail(
                             f"Missing ASGI server instance for app: {app_id}"
                         )
-                    server.should_exit = True  # uvicorn.Server has this attribute
+                    server.should_exit = True
                 elif runner == c.Web.WebFramework.RUNNER_WERKZEUG:
-                    if hasattr(server, "shutdown") and callable(server.shutdown):
-                        server.shutdown()
-                    if hasattr(server, "server_close") and callable(server.server_close):
-                        server.server_close()
+                    if not isinstance(server, BaseWSGIServer):
+                        return FlextResult[bool].fail(
+                            f"Missing WSGI server instance for app: {app_id}"
+                        )
+                    server.shutdown()
+                    server.server_close()
                 else:
                     return FlextResult[bool].fail(f"Unsupported runtime runner for app: {app_id}")
 
@@ -1340,7 +1352,7 @@ class FlextWebProtocols(FlextProtocols):
                 """
                 metrics: t.WebCore.ResponseDict = {}
                 for key, val in FlextWebProtocols.Web.web_metrics.items():
-                    metrics[key] = deepcopy(val) if isinstance(val, (dict, list)) else val
+                    metrics[key] = int(val) if isinstance(val, float) else val
                 return metrics
 
         @runtime_checkable

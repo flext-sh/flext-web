@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from typing import override
 
 from flext_core import FlextModels, r, t, u
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -675,6 +676,7 @@ class FlextWebModels(FlextModels):
                     "environment": self.environment,
                 }
 
+            @override
             def __str__(self) -> str:
                 """Return string representation of the application."""
                 return f"{self.name} ({self.url}) - {self.status}"
@@ -1005,7 +1007,7 @@ class FlextWebModels(FlextModels):
                 return r[FlextWebModels.Web.WebRequest].fail(
                     "Headers must be a dictionary or None",
                 )
-            headers_validated = headers if isinstance(headers, dict) else {}
+            headers_validated: dict[str, str] = headers if isinstance(headers, dict) else {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_request() -> FlextWebModels.Web.WebRequest:
@@ -1054,7 +1056,7 @@ class FlextWebModels(FlextModels):
                 return r[FlextWebModels.Web.WebResponse].fail(
                     "Headers must be a dictionary or None",
                 )
-            headers_validated = headers if isinstance(headers, dict) else {}
+            headers_validated: dict[str, str] = headers if isinstance(headers, dict) else {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_response() -> FlextWebModels.Web.WebResponse:
