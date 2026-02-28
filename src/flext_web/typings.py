@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Literal, cast
+from typing import Literal
 
 from flext_core import (
     FlextResult,
@@ -305,7 +305,7 @@ class FlextWebTypes(FlextTypes):
             """Create request model."""
             return m.Web.Request(
                 url=url,
-                method=cast("FlextWebTypes.Web.HttpMethodLiteral", method_upper),
+                method=method_upper,
                 headers=headers_validated or {},
                 body=body,
                 timeout=timeout,
@@ -442,7 +442,7 @@ class FlextWebTypes(FlextTypes):
             """Create request model."""
             return m.Web.AppRequest(
                 url=url_validated,
-                method=cast("FlextWebTypes.Web.HttpMethodLiteral", method_upper),
+                method=method_upper,
                 headers=headers_validated,
                 body=body,
                 timeout=timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
@@ -565,7 +565,7 @@ class FlextWebTypes(FlextTypes):
                 name=name,
                 host=host,
                 port=port,
-                status=cast("FlextWebTypes.Web.ApplicationStatusLiteral", status),
+                status=status,
                 environment=environment,
                 debug_mode=debug_mode,
                 version=version,

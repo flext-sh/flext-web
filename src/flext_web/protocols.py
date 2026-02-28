@@ -37,18 +37,30 @@ from collections.abc import Awaitable, Callable, Mapping
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import ClassVar, Protocol, runtime_checkable
+from typing import ClassVar, Protocol, TypedDict, override, runtime_checkable
 from uuid import uuid4
 
+import flask
 import uvicorn
+from fastapi import FastAPI
 from flext_core.protocols import FlextProtocols
 from flext_core.result import FlextResult
+from starlette.requests import Request as StarletteRequest
+from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer, make_server
 
 from flext_web.app import FlextWebApp
 from flext_web.constants import c
 from flext_web.models import m
 from flext_web.typings import t
+
+
+class AppRuntimeInfo(TypedDict):
+    """Typed structure for app runtime state."""
+
+    runner: str
+    server: uvicorn.Server | BaseWSGIServer
+    thread: Thread
 
 
 class FlextWebProtocols(FlextProtocols):
@@ -208,11 +220,11 @@ class FlextWebProtocols(FlextProtocols):
         class FastApiLikeApp(Protocol):
             """Duck-type protocol for FastAPI-like framework apps."""
 
-            def add_api_route(self, path: str, endpoint: Callable[..., object], **kwargs: object) -> None:
+            def add_api_route(self, path: str, endpoint: Callable[..., t.WebCore.ResponseDict], **kwargs: str | int | bool | None) -> None:
                 """Register an API route."""
                 ...
 
-            def middleware(self, middleware_type: str) -> Callable[..., object]:
+            def middleware(self, middleware_type: str) -> Callable[..., Callable[..., StarletteResponse]]:
                 """Register middleware."""
                 ...
 
@@ -220,17 +232,17 @@ class FlextWebProtocols(FlextProtocols):
         class FlaskLikeApp(Protocol):
             """Duck-type protocol for Flask-like framework apps."""
 
-            def route(self, rule: str, **options: object) -> Callable[..., object]:
+            def route(self, rule: str, **options: str | int | bool | None) -> Callable[..., Callable[..., t.WebCore.ResponseDict]]:
                 """Register a URL route."""
                 ...
 
-            def before_request(self, f: Callable[..., object]) -> Callable[..., object]:
+            def before_request(self, f: Callable[..., None]) -> Callable[..., None]:
                 """Register a before-request hook."""
                 ...
 
         apps_registry: ClassVar[dict[str, t.WebCore.ResponseDict]] = {}
-        framework_instances: ClassVar[dict[str, Callable[..., object]]] = {}
-        app_runtimes: ClassVar[dict[str, dict[str, object]]] = {}
+        framework_instances: ClassVar[dict[str, flask.Flask | FastAPI]] = {}
+        app_runtimes: ClassVar[dict[str, AppRuntimeInfo]] = {}
         service_state: ClassVar[dict[str, bool]] = {
             "routes_initialized": False,
             "middleware_configured": False,
@@ -252,22 +264,22 @@ class FlextWebProtocols(FlextProtocols):
         def _create_framework_app(
             cls,
             name: str,
-        ) -> FlextResult[tuple[object, str, str]]:
+        ) -> FlextResult[tuple[flask.Flask | FastAPI, str, str]]:
             fastapi_result = FlextWebApp.create_fastapi_app(
                 config=m.Web.FastAPIAppConfig(title=name),
             )
             if fastapi_result.is_success:
-                return FlextResult[tuple[object, str, str]].ok(
+                return FlextResult[tuple[flask.Flask | FastAPI, str, str]].ok(
                     (fastapi_result.value, c.Web.WebFramework.FRAMEWORK_FASTAPI, c.Web.WebFramework.INTERFACE_ASGI),
                 )
 
             flask_result = FlextWebApp.create_flask_app()
             if flask_result.is_success:
-                return FlextResult[tuple[object, str, str]].ok(
+                return FlextResult[tuple[flask.Flask | FastAPI, str, str]].ok(
                     (flask_result.value, c.Web.WebFramework.FRAMEWORK_FLASK, c.Web.WebFramework.INTERFACE_WSGI),
                 )
 
-            return FlextResult[tuple[object, str, str]].fail(
+            return FlextResult[tuple[flask.Flask | FastAPI, str, str]].fail(
                 fastapi_result.error
                 if fastapi_result.error is not None
                 else "Failed to create web framework application",
@@ -308,7 +320,7 @@ class FlextWebProtocols(FlextProtocols):
                 FlextWebProtocols.Web.web_metrics["errors"] = error_count + 1
 
         @staticmethod
-        def _configure_framework_app_routes(app_instance: object, app_id: str) -> None:
+        def _configure_framework_app_routes(app_instance: flask.Flask | FastAPI, app_id: str) -> None:
             if isinstance(app_instance, FlextWebProtocols.Web.FastApiLikeApp):
                 route_registrar = app_instance.add_api_route
 
@@ -333,15 +345,15 @@ class FlextWebProtocols(FlextProtocols):
                     }
 
         @staticmethod
-        def _configure_framework_app_middleware(app_instance: object) -> None:
+        def _configure_framework_app_middleware(app_instance: flask.Flask | FastAPI) -> None:
             if isinstance(app_instance, FlextWebProtocols.Web.FastApiLikeApp):
                 middleware_decorator = app_instance.middleware
 
                 @middleware_decorator("http")
                 async def fastapi_metrics_middleware(
-                    request: object,
-                    call_next: Callable[[object], object],
-                ) -> object:
+                    request: StarletteRequest,
+                    call_next: Callable[[StarletteRequest], Awaitable[StarletteResponse]],
+                ) -> StarletteResponse:
                     response = call_next(request)
                     if isinstance(response, Awaitable):
                         response = await response
@@ -358,13 +370,13 @@ class FlextWebProtocols(FlextProtocols):
         def _start_app_runtime(
             app_id: str,
             app_data: t.WebCore.ResponseDict,
-            app_instance: Callable[..., object],
-        ) -> FlextResult[dict[str, object]]:
+            app_instance: flask.Flask | FastAPI,
+        ) -> FlextResult[AppRuntimeInfo]:
             host = app_data.get("host")
             port = app_data.get("port")
             interface = app_data.get("interface")
             if not isinstance(host, str) or not isinstance(port, int):
-                return FlextResult[dict[str, object]].fail(
+                return FlextResult[AppRuntimeInfo].fail(
                     f"Invalid runtime configuration for app: {app_id}",
                 )
 
@@ -383,37 +395,37 @@ class FlextWebProtocols(FlextProtocols):
                     thread.start()
                     sleep(0.05)
                     if not thread.is_alive():
-                        return FlextResult[dict[str, object]].fail(
+                        return FlextResult[AppRuntimeInfo].fail(
                             f"ASGI runtime exited immediately for app: {app_id}",
                         )
-                    return FlextResult[dict[str, object]].ok({
+                    return FlextResult[AppRuntimeInfo].ok({
                         "runner": c.Web.WebFramework.RUNNER_UVICORN,
                         "server": server,
                         "thread": thread,
                     })
                 except (RuntimeError, OSError, ValueError, TypeError) as exc:
-                    return FlextResult[dict[str, object]].fail(
+                    return FlextResult[AppRuntimeInfo].fail(
                         f"Failed to start ASGI runtime for app {app_id}: {exc}",
                     )
 
-            if interface == c.Web.WebFramework.INTERFACE_WSGI:
+            if interface == c.Web.WebFramework.INTERFACE_WSGI and isinstance(app_instance, flask.Flask):
 
                 try:
-                    server = make_server(host, port, app_instance)  # type: WSGIApplication via Callable
+                    wsgi_server = make_server(host, port, app_instance)
                     thread = Thread(
-                        target=server.serve_forever,
+                        target=wsgi_server.serve_forever,
                         daemon=True,
                         name=f"flext-web-{app_id}",
                     )
                     thread.start()
                     sleep(0.05)
                     if not thread.is_alive():
-                        return FlextResult[dict[str, object]].fail(
+                        return FlextResult[AppRuntimeInfo].fail(
                             f"WSGI runtime exited immediately for app: {app_id}",
                         )
-                    return FlextResult[dict[str, object]].ok({
+                    return FlextResult[AppRuntimeInfo].ok({
                         "runner": c.Web.WebFramework.RUNNER_WERKZEUG,
-                        "server": server,
+                        "server": wsgi_server,
                         "thread": thread,
                     })
                 except (
@@ -423,16 +435,16 @@ class FlextWebProtocols(FlextProtocols):
                     TypeError,
                     AttributeError,
                 ) as exc:
-                    return FlextResult[dict[str, object]].fail(
+                    return FlextResult[AppRuntimeInfo].fail(
                         f"Failed to start WSGI runtime for app {app_id}: {exc}",
                     )
 
-            return FlextResult[dict[str, object]].fail(
+            return FlextResult[AppRuntimeInfo].fail(
                 f"Unsupported app interface for runtime start: {interface}",
             )
 
         @staticmethod
-        def _stop_app_runtime(app_id: str, runtime: dict[str, object]) -> FlextResult[bool]:
+        def _stop_app_runtime(app_id: str, runtime: AppRuntimeInfo) -> FlextResult[bool]:
             runner = runtime.get("runner")
             server = runtime.get("server")
             thread = runtime.get("thread")
@@ -469,14 +481,14 @@ class FlextWebProtocols(FlextProtocols):
             return FlextResult[bool].ok(True)
 
         # Public aliases for private methods
-        record_request_metric = _record_request_metric
-        create_framework_app = _create_framework_app
-        copy_response_dict = _copy_response_dict
-        configure_framework_app_routes = _configure_framework_app_routes
-        configure_framework_app_middleware = _configure_framework_app_middleware
-        start_app_runtime = _start_app_runtime
-        stop_app_runtime = _stop_app_runtime
-        is_valid_port = _is_valid_port
+        record_request_metric: ClassVar[Callable[..., None]] = _record_request_metric
+        create_framework_app: ClassVar[Callable[..., FlextResult[tuple[flask.Flask | FastAPI, str, str]]]] = _create_framework_app
+        copy_response_dict: ClassVar[Callable[..., t.WebCore.ResponseDict]] = _copy_response_dict
+        configure_framework_app_routes: ClassVar[Callable[..., None]] = _configure_framework_app_routes
+        configure_framework_app_middleware: ClassVar[Callable[..., None]] = _configure_framework_app_middleware
+        start_app_runtime: ClassVar[Callable[..., FlextResult[AppRuntimeInfo]]] = _start_app_runtime
+        stop_app_runtime: ClassVar[Callable[..., FlextResult[bool]]] = _stop_app_runtime
+        is_valid_port: ClassVar[Callable[[int], bool]] = _is_valid_port
 
         # =========================================================================
         # WEB FOUNDATION LAYER - Core web protocols used within flext-web
@@ -628,7 +640,7 @@ class FlextWebProtocols(FlextProtocols):
                 updated_app = FlextWebProtocols.Web.copy_response_dict(app_data)
                 updated_app["status"] = c.Web.Status.STOPPED.value
                 FlextWebProtocols.Web.apps_registry[app_id] = updated_app
-                FlextWebProtocols.Web.app_runtimes.pop(app_id, None)
+                _ = FlextWebProtocols.Web.app_runtimes.pop(app_id, None)
                 return FlextResult[t.WebCore.ResponseDict].ok(updated_app)
 
             @staticmethod
@@ -1154,12 +1166,13 @@ class FlextWebProtocols(FlextProtocols):
                 """
                 app_name = data.get("service", c.Web.WebService.SERVICE_NAME)
                 status = data.get("status", c.Web.Status.STOPPED.value)
-                return FlextResult[str].ok(
+                html = (
                     "<html><body>"
                     f"<h1>{app_name}</h1>"
                     f"<p>Status: {status}</p>"
-                    "</body></html>",
+                    "</body></html>"
                 )
+                return FlextResult[str].ok(html)
 
         @runtime_checkable
         class WebTemplateEngineProtocol(
@@ -1361,6 +1374,7 @@ class FlextWebProtocols(FlextProtocols):
 
             value: str | int | float | bool | None
 
+            @override
             def __str__(self) -> str:
                 """Convert to string."""
                 return str(self.value) if self.value is not None else ""
@@ -1650,7 +1664,7 @@ class FlextWebProtocols(FlextProtocols):
                         0,
                     )
                     previous_avg = (
-                        avg_value if isinstance(avg_value, int | float) else 0
+                        avg_value if isinstance(avg_value, int) else 0
                     )
                     average_response_time_ms = (
                         (previous_avg * request_count) + (response_time * 1000)
