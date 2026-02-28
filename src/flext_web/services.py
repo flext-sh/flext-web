@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import MutableMapping
+from typing import override
 
 from flext_core import (
     FlextConstants,
@@ -34,6 +35,7 @@ class FlextWebServices(FlextService[bool]):
     """
 
     @classmethod
+    @override
     def _get_service_config_type(cls) -> type[FlextWebSettings]:
         """Get the config type for this service class."""
         return FlextWebSettings
@@ -163,6 +165,7 @@ class FlextWebServices(FlextService[bool]):
             """
             return FlextResult.ok(list(self._storage.values()))
 
+        @override
         def execute(
             self,
             **_kwargs: str | float | bool | None,
@@ -535,6 +538,7 @@ class FlextWebServices(FlextService[bool]):
         """
         return cls.create_service(config)
 
+    @override
     def execute(self, **_kwargs: str | float | bool | None) -> FlextResult[bool]:
         """Execute web service orchestration (FlextService requirement).
 
@@ -546,6 +550,7 @@ class FlextWebServices(FlextService[bool]):
         # Return bool for FlextService compatibility
         return FlextResult[bool].ok(value=True)
 
+    @override
     def validate_business_rules(self) -> FlextResult[bool]:
         """Validate business rules for web services (FlextService requirement).
 

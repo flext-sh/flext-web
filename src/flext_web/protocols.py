@@ -220,7 +220,7 @@ class FlextWebProtocols(FlextProtocols):
         class FastApiLikeApp(Protocol):
             """Duck-type protocol for FastAPI-like framework apps."""
 
-            def add_api_route(self, path: str, endpoint: Callable[..., t.WebCore.ResponseDict], **kwargs: str | int | bool | None) -> None:
+            def add_api_route(self, path: str, endpoint: Callable[..., t.WebCore.ResponseDict], **kwargs: t.GeneralValueType) -> None:
                 """Register an API route."""
                 ...
 
@@ -232,7 +232,7 @@ class FlextWebProtocols(FlextProtocols):
         class FlaskLikeApp(Protocol):
             """Duck-type protocol for Flask-like framework apps."""
 
-            def route(self, rule: str, **options: str | int | bool | None) -> Callable[..., Callable[..., t.WebCore.ResponseDict]]:
+            def route(self, rule: str, **options: t.GeneralValueType) -> Callable[..., Callable[..., t.WebCore.ResponseDict]]:
                 """Register a URL route."""
                 ...
 
@@ -250,9 +250,7 @@ class FlextWebProtocols(FlextProtocols):
         }
         web_metrics: ClassVar[dict[str, int | str]] = {}
         template_config: ClassVar[t.WebCore.RequestDict] = {}
-        template_globals: ClassVar[
-            dict[str, str | int | bool | list[str] | dict[str, str | int | bool]]
-        ] = {}
+        template_globals: ClassVar[dict[str, t.GeneralValueType]] = {}
         template_filters: ClassVar[dict[str, Callable[[str], str]]] = {}
 
         @staticmethod
@@ -1285,7 +1283,7 @@ class FlextWebProtocols(FlextProtocols):
                 self,
                 name: str,
                 *,
-                value: str | int | bool | list[str] | Mapping[str, str | int | bool],
+                value: t.GeneralValueType,
             ) -> None:
                 """Add template global variable.
 
@@ -1372,7 +1370,7 @@ class FlextWebProtocols(FlextProtocols):
         class ConfigValueProtocol(Protocol):
             """Protocol for configuration values."""
 
-            value: str | int | float | bool | None
+            value: t.ScalarValue
 
             @override
             def __str__(self) -> str:
@@ -1624,11 +1622,7 @@ class FlextWebProtocols(FlextProtocols):
                     self,
                     name: str,
                     *,
-                    value: str
-                    | int
-                    | bool
-                    | list[str]
-                    | Mapping[str, str | int | bool],
+                    value: t.GeneralValueType,
                 ) -> None:
                     """Add template global variable."""
                     FlextWebProtocols.Web.template_globals[name] = (

@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import MutableMapping
+from typing import override
 
 from flext_core import (
     FlextLogger,
@@ -345,6 +346,7 @@ class FlextWebHandlers(FlextService[bool]):
     # FLEXTSERVICE REQUIRED METHODS
     # =========================================================================
 
+    @override
     def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
         """Execute web handler service (FlextService requirement).
 
@@ -356,6 +358,7 @@ class FlextWebHandlers(FlextService[bool]):
         # Return bool for FlextService compatibility
         return r[bool].ok(value=True)
 
+    @override
     def validate_business_rules(self) -> r[bool]:
         """Validate business rules for web handlers (FlextService requirement).
 

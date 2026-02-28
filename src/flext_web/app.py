@@ -352,6 +352,7 @@ class FlextWebApp(FlextService[bool]):
         _ = app  # Parameter reserved for future implementation
         return r[bool].ok(value=True)
 
+    @override
     def validate_business_rules(self) -> r[bool]:
         """Validate business rules for web app service (FlextService requirement).
 

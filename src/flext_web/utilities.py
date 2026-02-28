@@ -11,6 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import re
+from typing import override
 
 from flext_core import FlextUtilities
 
@@ -51,6 +52,8 @@ class FlextWebUtilities(FlextUtilities):
         # Join with hyphens
         return "-".join(truthy_words)
 
+    @staticmethod
+    @override
     @staticmethod
     def format_app_id(name: str) -> str:
         """Format app name to valid ID using flext-core utilities.
