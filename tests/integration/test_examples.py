@@ -75,7 +75,7 @@ class ExamplesFullFunctionalityTest:
                     return True
             except Exception as exc:
                 # Log the transient failure but keep waiting
-                logger.debug(f"health check attempt failed: {exc}")
+                logger.debug("health check attempt failed: %s", exc)
             time.sleep(0.5)  # Faster polling
 
         # If we get here, service didn't start - this is a real failure

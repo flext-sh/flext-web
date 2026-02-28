@@ -340,7 +340,10 @@ class TestFlextWebProtocols:
         # Protocols should be usable with isinstance checks
         class MockAppManager:
             def create_app(
-                self, name: str, port: int, host: str
+                self,
+                name: str,
+                port: int,
+                host: str,
             ) -> dict[str, t.GeneralValueType]:
                 return {"name": name, "host": host, "port": port}
 
@@ -429,7 +432,8 @@ class TestFlextWebProtocols:
 
         class RealResponseFormatter:
             def format_success(
-                self, data: dict[str, t.GeneralValueType]
+                self,
+                data: dict[str, t.GeneralValueType],
             ) -> dict[str, t.GeneralValueType]:
                 response: dict[str, t.GeneralValueType] = {
                     "status": FlextWebConstants.Web.WebResponse.STATUS_SUCCESS,
@@ -640,12 +644,14 @@ class TestFlextWebProtocols:
 
             # Required by p.Repository
             def get_by_id(
-                self, entity_id: str
+                self,
+                entity_id: str,
             ) -> FlextResult[dict[str, t.GeneralValueType]]:
                 return FlextResult[dict[str, t.GeneralValueType]].ok({"id": entity_id})
 
             def save(
-                self, entity: dict[str, t.GeneralValueType]
+                self,
+                entity: dict[str, t.GeneralValueType],
             ) -> FlextResult[dict[str, t.GeneralValueType]]:
                 return FlextResult[dict[str, t.GeneralValueType]].ok(entity)
 
@@ -693,7 +699,8 @@ class TestFlextWebProtocols:
                 return FlextResult[str].ok("")
 
             def render_dashboard(
-                self, data: dict[str, t.GeneralValueType]
+                self,
+                data: dict[str, t.GeneralValueType],
             ) -> FlextResult[str]:
                 return FlextResult[str].ok("<html>Dashboard</html>")
 
@@ -722,7 +729,8 @@ class TestFlextWebProtocols:
 
         # Execute methods
         template_result = renderer.render_template(
-            "tesFlextWebTypes.html", {"key": "value"}
+            "tesFlextWebTypes.html",
+            {"key": "value"},
         )
         assert template_result.is_success
 
@@ -849,7 +857,8 @@ class TestFlextWebProtocols:
         monitoring = RealWebMonitoring()
         # WebMonitoringProtocol is @runtime_checkable, so isinstance should work
         if hasattr(
-            FlextWebProtocols.Web.WebMonitoringProtocol, "__runtime_checkable__"
+            FlextWebProtocols.Web.WebMonitoringProtocol,
+            "__runtime_checkable__",
         ):
             assert isinstance(monitoring, FlextWebProtocols.Web.WebMonitoringProtocol)
 

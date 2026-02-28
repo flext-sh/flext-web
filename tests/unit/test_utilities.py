@@ -135,7 +135,8 @@ class TestFlextWebUtilities:
                 return_value="   ",
             ),
             pytest.raises(
-                ValueError, match="Cannot format application name 'test' to valid ID"
+                ValueError,
+                match="Cannot format application name 'test' to valid ID",
             ),
         ):
             FlextWebUtilities.format_app_id("test")

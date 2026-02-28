@@ -222,7 +222,7 @@ class FlextWebHandlers(FlextService[bool]):
                     "configuration": c.Web.WebMessages.CONFIG_LOADED,
                     "handlers": c.Web.WebMessages.HANDLERS_REGISTERED,
                 },
-            )
+            ),
         )
 
     @classmethod
@@ -250,7 +250,7 @@ class FlextWebHandlers(FlextService[bool]):
                     "api_endpoints",
                     "web_dashboard",
                 ],
-            )
+            ),
         )
 
     # =========================================================================

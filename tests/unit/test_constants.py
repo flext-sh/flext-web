@@ -99,10 +99,12 @@ class TestFlextWebConstants:
         """Test that validation constants have correct types."""
         # Test the actual constants that exist
         assert isinstance(
-            FlextWebConstants.Web.WebValidation.CONTENT_LENGTH_RANGE, tuple
+            FlextWebConstants.Web.WebValidation.CONTENT_LENGTH_RANGE,
+            tuple,
         )
         assert isinstance(
-            FlextWebConstants.Web.WebValidation.REQUEST_TIMEOUT_RANGE, tuple
+            FlextWebConstants.Web.WebValidation.REQUEST_TIMEOUT_RANGE,
+            tuple,
         )
         assert isinstance(FlextWebConstants.Web.WebValidation.URL_LENGTH_RANGE, tuple)
         assert isinstance(FlextWebConstants.Web.WebValidation.MIN_URL_LENGTH, int)

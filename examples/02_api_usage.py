@@ -104,7 +104,7 @@ def create_application(
             return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(
-                f"JSON parse failed: {e}"
+                f"JSON parse failed: {e}",
             )
 
     result = _make_request()
@@ -202,7 +202,7 @@ def _execute_app_operation(
             return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(
-                f"JSON parse failed: {e}"
+                f"JSON parse failed: {e}",
             )
 
     # Use existing flext-core monadic chain
@@ -259,7 +259,7 @@ def _execute_list_operation(
             return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(
-                f"JSON parse failed: {e}"
+                f"JSON parse failed: {e}",
             )
 
     result = _make_get_request()

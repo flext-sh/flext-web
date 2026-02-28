@@ -654,7 +654,7 @@ class FlextWebModels(FlextModels):
                 event_result = self.add_web_event("MetricsUpdated")
                 if event_result.is_failure:  # pragma: no cover
                     return r[bool].fail(
-                        f"Failed to add web event: {event_result.error}"
+                        f"Failed to add web event: {event_result.error}",
                     )
                 return r[bool].ok(value=True)
 

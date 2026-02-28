@@ -226,7 +226,8 @@ class FlextWebProtocols(FlextProtocols):
                 ...
 
             def middleware(
-                self, middleware_type: str
+                self,
+                middleware_type: str,
             ) -> Callable[..., Callable[..., StarletteResponse]]:
                 """Register middleware."""
                 ...
@@ -236,7 +237,9 @@ class FlextWebProtocols(FlextProtocols):
             """Duck-type protocol for Flask-like framework apps."""
 
             def route(
-                self, rule: str, **options: t.GeneralValueType
+                self,
+                rule: str,
+                **options: t.GeneralValueType,
             ) -> Callable[..., Callable[..., t.WebCore.ResponseDict]]:
                 """Register a URL route."""
                 ...
@@ -332,7 +335,8 @@ class FlextWebProtocols(FlextProtocols):
 
         @staticmethod
         def _configure_framework_app_routes(
-            app_instance: flask.Flask | FastAPI, app_id: str
+            app_instance: flask.Flask | FastAPI,
+            app_id: str,
         ) -> None:
             if isinstance(app_instance, FlextWebProtocols.Web.FastApiLikeApp):
                 route_registrar = app_instance.add_api_route
@@ -368,7 +372,8 @@ class FlextWebProtocols(FlextProtocols):
                 async def fastapi_metrics_middleware(
                     request: StarletteRequest,
                     call_next: Callable[
-                        [StarletteRequest], Awaitable[StarletteResponse]
+                        [StarletteRequest],
+                        Awaitable[StarletteResponse],
                     ],
                 ) -> StarletteResponse:
                     response = call_next(request)
@@ -407,7 +412,9 @@ class FlextWebProtocols(FlextProtocols):
                     )
                     server = uvicorn.Server(config)
                     thread = Thread(
-                        target=server.run, daemon=True, name=f"flext-web-{app_id}"
+                        target=server.run,
+                        daemon=True,
+                        name=f"flext-web-{app_id}",
                     )
                     thread.start()
                     sleep(0.05)
@@ -426,7 +433,8 @@ class FlextWebProtocols(FlextProtocols):
                     )
 
             if interface == c.Web.WebFramework.INTERFACE_WSGI and isinstance(
-                app_instance, flask.Flask
+                app_instance,
+                flask.Flask,
             ):
                 try:
                     wsgi_server = make_server(host, port, app_instance)
@@ -463,33 +471,34 @@ class FlextWebProtocols(FlextProtocols):
 
         @staticmethod
         def _stop_app_runtime(
-            app_id: str, runtime: AppRuntimeInfo
+            app_id: str,
+            runtime: AppRuntimeInfo,
         ) -> FlextResult[bool]:
             runner = runtime.get("runner")
             server = runtime.get("server")
             thread = runtime.get("thread")
             if not isinstance(thread, Thread):
                 return FlextResult[bool].fail(
-                    f"Missing runtime thread for app: {app_id}"
+                    f"Missing runtime thread for app: {app_id}",
                 )
 
             try:
                 if runner == c.Web.WebFramework.RUNNER_UVICORN:
                     if not isinstance(server, uvicorn.Server):
                         return FlextResult[bool].fail(
-                            f"Missing ASGI server instance for app: {app_id}"
+                            f"Missing ASGI server instance for app: {app_id}",
                         )
                     server.should_exit = True
                 elif runner == c.Web.WebFramework.RUNNER_WERKZEUG:
                     if not isinstance(server, BaseWSGIServer):
                         return FlextResult[bool].fail(
-                            f"Missing WSGI server instance for app: {app_id}"
+                            f"Missing WSGI server instance for app: {app_id}",
                         )
                     server.shutdown()
                     server.server_close()
                 else:
                     return FlextResult[bool].fail(
-                        f"Unsupported runtime runner for app: {app_id}"
+                        f"Unsupported runtime runner for app: {app_id}",
                     )
 
                 thread.join(timeout=2.0)
@@ -530,7 +539,8 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebAppManagerProtocol(
-            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+            FlextProtocols.Service[t.WebCore.ResponseDict],
+            Protocol,
         ):
             """Protocol for web application lifecycle management.
 
@@ -564,7 +574,7 @@ class FlextWebProtocols(FlextProtocols):
                     )
                 if not host.strip():
                     return FlextResult[t.WebCore.ResponseDict].fail(
-                        "Host cannot be empty"
+                        "Host cannot be empty",
                     )
                 if not FlextWebProtocols.Web.is_valid_port(port):
                     min_port, max_port = c.Web.WebValidation.PORT_RANGE
@@ -575,13 +585,14 @@ class FlextWebProtocols(FlextProtocols):
                 framework_result = FlextWebProtocols.Web.create_framework_app(name)
                 if framework_result.is_failure:
                     return FlextResult[t.WebCore.ResponseDict].fail(
-                        framework_result.error
+                        framework_result.error,
                     )
 
                 app_instance, framework_name, interface_type = framework_result.value
                 app_id = str(uuid4())
                 FlextWebProtocols.Web.configure_framework_app_routes(
-                    app_instance, app_id
+                    app_instance,
+                    app_id,
                 )
                 FlextWebProtocols.Web.configure_framework_app_middleware(app_instance)
                 app_data: t.WebCore.ResponseDict = {
@@ -633,7 +644,7 @@ class FlextWebProtocols(FlextProtocols):
                 )
                 if runtime_result.is_failure:
                     return FlextResult[t.WebCore.ResponseDict].fail(
-                        runtime_result.error
+                        runtime_result.error,
                     )
 
                 updated_app = FlextWebProtocols.Web.copy_response_dict(app_data)
@@ -672,11 +683,12 @@ class FlextWebProtocols(FlextProtocols):
                     )
 
                 stop_runtime_result = FlextWebProtocols.Web.stop_app_runtime(
-                    app_id, runtime
+                    app_id,
+                    runtime,
                 )
                 if stop_runtime_result.is_failure:
                     return FlextResult[t.WebCore.ResponseDict].fail(
-                        stop_runtime_result.error
+                        stop_runtime_result.error,
                     )
 
                 updated_app = FlextWebProtocols.Web.copy_response_dict(app_data)
@@ -860,7 +872,8 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebServiceProtocol(
-            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+            FlextProtocols.Service[t.WebCore.ResponseDict],
+            Protocol,
         ):
             """Base web service protocol.
 
@@ -903,11 +916,11 @@ class FlextWebProtocols(FlextProtocols):
                 state = FlextWebProtocols.Web.service_state
                 if not state["routes_initialized"]:
                     return FlextResult[bool].fail(
-                        "Routes must be initialized before starting service"
+                        "Routes must be initialized before starting service",
                     )
                 if not state["middleware_configured"]:
                     return FlextResult[bool].fail(
-                        "Middleware must be configured before starting service"
+                        "Middleware must be configured before starting service",
                     )
                 if state["service_running"]:
                     return FlextResult[bool].fail("Service is already running")
@@ -963,7 +976,7 @@ class FlextWebProtocols(FlextProtocols):
                             break
                     if is_match:
                         matches.append(
-                            FlextWebProtocols.Web.copy_response_dict(app_data)
+                            FlextWebProtocols.Web.copy_response_dict(app_data),
                         )
 
                 return FlextResult[list[t.WebCore.ResponseDict]].ok(matches)
@@ -1035,14 +1048,14 @@ class FlextWebProtocols(FlextProtocols):
                     app_id = request.get("app_id")
                     if not isinstance(app_id, str):
                         return FlextResult[t.WebCore.ResponseDict].fail(
-                            "start action requires app_id(str)"
+                            "start action requires app_id(str)",
                         )
                     return FlextWebProtocols.Web.WebAppManagerProtocol.start_app(app_id)
                 if action == c.Web.WebActions.ACTION_STOP:
                     app_id = request.get("app_id")
                     if not isinstance(app_id, str):
                         return FlextResult[t.WebCore.ResponseDict].fail(
-                            "stop action requires app_id(str)"
+                            "stop action requires app_id(str)",
                         )
                     return FlextWebProtocols.Web.WebAppManagerProtocol.stop_app(app_id)
                 if action == c.Web.WebActions.ACTION_LIST:
@@ -1059,7 +1072,7 @@ class FlextWebProtocols(FlextProtocols):
                     )
 
                 return FlextResult[t.WebCore.ResponseDict].ok(
-                    FlextWebProtocols.Web.copy_response_dict(request)
+                    FlextWebProtocols.Web.copy_response_dict(request),
                 )
 
         # =========================================================================
@@ -1068,7 +1081,8 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebConnectionProtocol(
-            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+            FlextProtocols.Service[t.WebCore.ResponseDict],
+            Protocol,
         ):
             """Web connection protocol for external systems.
 
@@ -1104,7 +1118,8 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebLoggerProtocol(
-            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+            FlextProtocols.Service[t.WebCore.ResponseDict],
+            Protocol,
         ):
             """Web logging protocol.
 
@@ -1349,7 +1364,8 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebMonitoringProtocol(
-            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+            FlextProtocols.Service[t.WebCore.ResponseDict],
+            Protocol,
         ):
             """Web monitoring protocol for observability.
 
@@ -1464,7 +1480,9 @@ class FlextWebProtocols(FlextProtocols):
                 ) -> FlextResult[t.WebCore.ResponseDict]:
                     """Create a new web application."""
                     return FlextWebProtocols.Web.WebAppManagerProtocol.create_app(
-                        name, port, host
+                        name,
+                        port,
+                        host,
                     )
 
                 def start_app(self, app_id: str) -> FlextResult[t.WebCore.ResponseDict]:
@@ -1485,18 +1503,19 @@ class FlextWebProtocols(FlextProtocols):
                 """Base implementation of WebResponseFormatterProtocol for testing."""
 
                 def format_success(
-                    self, data: t.WebCore.ResponseDict
+                    self,
+                    data: t.WebCore.ResponseDict,
                 ) -> t.WebCore.ResponseDict:
                     """Format successful response data."""
                     return FlextWebProtocols.Web.WebResponseFormatterProtocol.format_success(
-                        data
+                        data,
                     )
 
                 def format_error(self, error: Exception) -> t.WebCore.ResponseDict:
                     """Format error response data."""
                     return (
                         FlextWebProtocols.Web.WebResponseFormatterProtocol.format_error(
-                            error
+                            error,
                         )
                     )
 
@@ -1506,7 +1525,7 @@ class FlextWebProtocols(FlextProtocols):
                 ) -> t.WebCore.ResponseDict:
                     """Create a JSON response."""
                     return FlextWebProtocols.Web.WebResponseFormatterProtocol.create_json_response(
-                        data
+                        data,
                     )
 
                 def get_request_data(
@@ -1515,7 +1534,7 @@ class FlextWebProtocols(FlextProtocols):
                 ) -> t.WebCore.RequestDict:
                     """Extract data from web request."""
                     return FlextWebProtocols.Web.WebResponseFormatterProtocol.get_request_data(
-                        _request
+                        _request,
                     )
 
             class _WebFrameworkInterfaceBase:
@@ -1542,7 +1561,7 @@ class FlextWebProtocols(FlextProtocols):
                 def is_json_request(self, _request: t.WebCore.RequestDict) -> bool:
                     """Check if request contains JSON data."""
                     return FlextWebProtocols.Web.WebFrameworkInterfaceProtocol.is_json_request(
-                        _request
+                        _request,
                     )
 
             class _WebServiceBase:
@@ -1575,7 +1594,7 @@ class FlextWebProtocols(FlextProtocols):
                 ) -> FlextResult[list[t.WebCore.ResponseDict]]:
                     """Find entities by criteria."""
                     return FlextWebProtocols.Web.WebRepositoryProtocol.find_by_criteria(
-                        criteria
+                        criteria,
                     )
 
             class _WebHandlerBase:
@@ -1587,7 +1606,7 @@ class FlextWebProtocols(FlextProtocols):
                 ) -> FlextResult[t.WebCore.ResponseDict]:
                     """Handle web request and return response."""
                     return FlextWebProtocols.Web.WebHandlerProtocol.handle_request(
-                        request
+                        request,
                     )
 
             class _WebConnectionBase:
@@ -1619,7 +1638,7 @@ class FlextWebProtocols(FlextProtocols):
                 ) -> FlextResult[str]:
                     """Render dashboard template with data."""
                     return FlextWebProtocols.Web.WebTemplateRendererProtocol.render_dashboard(
-                        data
+                        data,
                     )
 
             class _WebTemplateEngineBase:
@@ -1631,7 +1650,7 @@ class FlextWebProtocols(FlextProtocols):
                 ) -> FlextResult[bool]:
                     """Load template engine configuration."""
                     return FlextWebProtocols.Web.WebTemplateEngineProtocol.load_template_config(
-                        config
+                        config,
                     )
 
                 def get_template_config(
@@ -1656,11 +1675,14 @@ class FlextWebProtocols(FlextProtocols):
                 ) -> FlextResult[str]:
                     """Render template string with context."""
                     return FlextWebProtocols.Web.WebTemplateEngineProtocol.render(
-                        template, context
+                        template,
+                        context,
                     )
 
                 def add_filter(
-                    self, name: str, filter_func: Callable[[str], str]
+                    self,
+                    name: str,
+                    filter_func: Callable[[str], str],
                 ) -> None:
                     """Add template filter function."""
                     FlextWebProtocols.Web.template_filters[name] = filter_func
@@ -1690,7 +1712,8 @@ class FlextWebProtocols(FlextProtocols):
                 ) -> None:
                     """Record web request metrics."""
                     request_count_value = FlextWebProtocols.Web.web_metrics.get(
-                        "requests", 0
+                        "requests",
+                        0,
                     )
                     request_count = (
                         request_count_value
@@ -1718,7 +1741,8 @@ class FlextWebProtocols(FlextProtocols):
                         and status_value.lower() == c.Web.Status.ERROR.value
                     ):
                         error_count_value = FlextWebProtocols.Web.web_metrics.get(
-                            "errors", 0
+                            "errors",
+                            0,
                         )
                         error_count = (
                             error_count_value

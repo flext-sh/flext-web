@@ -318,7 +318,7 @@ def real_config() -> FlextWebSettings:
     Fast fail if secret key cannot be provided - no fallback.
     """
     return FlextWebSettings(
-        secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY
+        secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY,
     )
 
 

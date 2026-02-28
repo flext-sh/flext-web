@@ -116,7 +116,7 @@ class FlextWebApi:
             return FlextResult.fail(f"Configuration validation failed: {error_msg}")
 
         _ = logger.info(
-            f"HTTP config created successfully: {config.host}:{config.port}"
+            f"HTTP config created successfully: {config.host}:{config.port}",
         )
         return FlextResult.ok(config)
 

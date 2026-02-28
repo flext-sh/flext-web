@@ -47,13 +47,15 @@ class TestFlextWebModels:
         """Test Pydantic model functionality."""
         # Test that models can be created and used
         request = FlextWebModels.Web.WebRequest(
-            url="http://localhost:8080", method="GET"
+            url="http://localhost:8080",
+            method="GET",
         )
         assert request.url == "http://localhost:8080"
         assert request.method == "GET"
 
         response = FlextWebModels.Web.AppResponse(
-            status_code=200, request_id="test-123"
+            status_code=200,
+            request_id="test-123",
         )
         assert response.status_code == 200
         assert response.is_success, "HTTP response should be successful"

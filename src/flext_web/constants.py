@@ -382,7 +382,13 @@ class FlextWebConstants(FlextConstants):
 
             # HTTP method literal - references Method StrEnum
             HttpMethodLiteral = Literal[
-                "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "HEAD",
+                "OPTIONS",
             ]
 
             # Content type literal - references Http content types
@@ -390,7 +396,10 @@ class FlextWebConstants(FlextConstants):
 
             # Environment name literal - references Name StrEnum
             EnvironmentNameLiteral = Literal[
-                "development", "staging", "production", "testing"
+                "development",
+                "staging",
+                "production",
+                "testing",
             ]
 
             # Application status literal - references Status StrEnum
@@ -418,7 +427,10 @@ class FlextWebConstants(FlextConstants):
 
             # Response status literal
             ResponseStatusLiteral = Literal[
-                "success", "error", "operational", "healthy"
+                "success",
+                "error",
+                "operational",
+                "healthy",
             ]
 
             # Protocol literal
