@@ -414,7 +414,9 @@ class FlextWebTypes(FlextTypes):
         # Validate headers - must be dict or None
         headers_validated: dict[str, str] = headers or {}
         # Validate query_params - must be dict or None
-        query_params_validated: dict[str, FlextTypes.ConfigMapValue] = query_params or {}
+        query_params_validated: dict[str, FlextTypes.ConfigMapValue] = (
+            query_params or {}
+        )
 
         # Use # Direct validation instead for method validation (DSL pattern)
         method_upper = method.upper()
