@@ -28,9 +28,8 @@ SPDX-License-Identifier: MIT
 # NOTE(architecture): protocols.py contains ~1700 lines of implementation code.
 # (servers, routes, middleware, test bases, metrics tracking). This violates
 # architecture layers — protocols.py should contain ONLY Protocol definitions.
-# Additional violations: try/except ImportError patterns (lines 37-45),
-# cast() usage, getattr() for routing. Refactor implementation to separate
-# modules in a future task. See: https://github.com/flext-sh/flext/issues/1
+# Refactor implementation to separate modules in a future task.
+# See: https://github.com/flext-sh/flext/issues/1
 
 from __future__ import annotations
 
@@ -38,21 +37,13 @@ from collections.abc import Awaitable, Callable, Mapping
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import Any, ClassVar, Protocol, cast, runtime_checkable
+from typing import ClassVar, Protocol, runtime_checkable
 from uuid import uuid4
 
-try:
-    import uvicorn
-except ImportError:
-    uvicorn = None
-
-try:
-    from werkzeug.serving import make_server
-except ImportError:
-    make_server = None
-
+import uvicorn
 from flext_core.protocols import FlextProtocols
 from flext_core.result import FlextResult
+from werkzeug.serving import make_server
 
 from flext_web.app import FlextWebApp
 from flext_web.constants import c
@@ -213,6 +204,20 @@ class FlextWebProtocols(FlextProtocols):
         for proper namespace separation and cross-project access.
         """
 
+        @runtime_checkable
+        class _FastApiLikeApp(Protocol):
+            """Duck-type protocol for FastAPI-like framework apps."""
+
+            def add_api_route(self, path: str, endpoint: Callable[..., object], **kwargs: object) -> None: ...
+            def middleware(self, middleware_type: str) -> Callable[..., object]: ...
+
+        @runtime_checkable
+        class _FlaskLikeApp(Protocol):
+            """Duck-type protocol for Flask-like framework apps."""
+
+            def route(self, rule: str, **options: object) -> Callable[..., object]: ...
+            def before_request(self, f: Callable[..., object]) -> Callable[..., object]: ...
+
         apps_registry: ClassVar[dict[str, t.WebCore.ResponseDict]] = {}
         framework_instances: ClassVar[dict[str, object]] = {}
         app_runtimes: ClassVar[dict[str, dict[str, object]]] = {}
@@ -294,9 +299,8 @@ class FlextWebProtocols(FlextProtocols):
 
         @staticmethod
         def _configure_framework_app_routes(app_instance: object, app_id: str) -> None:
-            add_api_route = getattr(app_instance, "add_api_route", None)
-            if callable(add_api_route):
-                route_registrar = add_api_route
+            if isinstance(app_instance, FlextWebProtocols.Web._FastApiLikeApp):
+                route_registrar = app_instance.add_api_route
 
                 def fastapi_health() -> t.WebCore.ResponseDict:
                     return {
@@ -307,11 +311,8 @@ class FlextWebProtocols(FlextProtocols):
 
                 route_registrar("/protocol/health", fastapi_health, methods=["GET"])
 
-            route = getattr(app_instance, "route", None)
-            if callable(route):
-                route_decorator = cast(
-                    "Callable[..., Callable[[Callable[..., object]], object]]", route
-                )
+            if isinstance(app_instance, FlextWebProtocols.Web._FlaskLikeApp):
+                route_decorator = app_instance.route
 
                 @route_decorator("/protocol/health")
                 def flask_health() -> t.WebCore.ResponseDict:
@@ -323,12 +324,8 @@ class FlextWebProtocols(FlextProtocols):
 
         @staticmethod
         def _configure_framework_app_middleware(app_instance: object) -> None:
-            middleware = getattr(app_instance, "middleware", None)
-            if callable(middleware):
-                middleware_decorator = cast(
-                    "Callable[..., Callable[[Callable[..., object]], object]]",
-                    middleware,
-                )
+            if isinstance(app_instance, FlextWebProtocols.Web._FastApiLikeApp):
+                middleware_decorator = app_instance.middleware
 
                 @middleware_decorator("http")
                 async def fastapi_metrics_middleware(
@@ -336,15 +333,14 @@ class FlextWebProtocols(FlextProtocols):
                     call_next: Callable[[object], object],
                 ) -> object:
                     response = call_next(request)
-                    if hasattr(response, "__await__"):
-                        response = await cast("Awaitable[object]", response)
+                    if isinstance(response, Awaitable):
+                        response = await response
                     FlextWebProtocols.Web.record_request_metric("success", 0)
                     return response
 
-            before_request = getattr(app_instance, "before_request", None)
-            if callable(before_request):
+            if isinstance(app_instance, FlextWebProtocols.Web._FlaskLikeApp):
 
-                @before_request
+                @app_instance.before_request
                 def flask_metrics_middleware() -> None:
                     FlextWebProtocols.Web.record_request_metric("success", 0)
 
@@ -363,14 +359,9 @@ class FlextWebProtocols(FlextProtocols):
                 )
 
             if interface == c.Web.WebFramework.INTERFACE_ASGI:
-                if uvicorn is None:
-                    return FlextResult[dict[str, object]].fail(
-                        "Cannot start ASGI application: uvicorn dependency is unavailable",
-                    )
-
                 try:
                     config = uvicorn.Config(
-                        app=cast("Any", app_instance),
+                        app=app_instance,
                         host=host,
                         port=port,
                         log_level="warning",
@@ -396,13 +387,9 @@ class FlextWebProtocols(FlextProtocols):
                     )
 
             if interface == c.Web.WebFramework.INTERFACE_WSGI:
-                if make_server is None:
-                    return FlextResult[dict[str, object]].fail(
-                        "Cannot start WSGI application: werkzeug dependency is unavailable",
-                    )
 
                 try:
-                    server = make_server(host, port, cast("Any", app_instance))
+                    server = make_server(host, port, app_instance)
                     thread = Thread(
                         target=server.serve_forever,
                         daemon=True,
@@ -448,14 +435,12 @@ class FlextWebProtocols(FlextProtocols):
                         return FlextResult[bool].fail(
                             f"Missing ASGI server instance for app: {app_id}"
                         )
-                    setattr(server, "should_exit", True)
+                    server.should_exit = True  # uvicorn.Server has this attribute
                 elif runner == c.Web.WebFramework.RUNNER_WERKZEUG:
-                    shutdown = getattr(server, "shutdown", None)
-                    if callable(shutdown):
-                        shutdown()
-                    close = getattr(server, "server_close", None)
-                    if callable(close):
-                        close()
+                    if hasattr(server, "shutdown") and callable(server.shutdown):
+                        server.shutdown()
+                    if hasattr(server, "server_close") and callable(server.server_close):
+                        server.server_close()
                 else:
                     return FlextResult[bool].fail(f"Unsupported runtime runner for app: {app_id}")
 
@@ -1353,38 +1338,33 @@ class FlextWebProtocols(FlextProtocols):
                 Web metrics data dictionary
 
                 """
-                return cast(
-                    "t.WebCore.ResponseDict",
-                    deepcopy(FlextWebProtocols.Web.web_metrics),
-                )
+                metrics: t.WebCore.ResponseDict = {}
+                for key, val in FlextWebProtocols.Web.web_metrics.items():
+                    metrics[key] = deepcopy(val) if isinstance(val, (dict, list)) else val
+                return metrics
 
         @runtime_checkable
         class ConfigValueProtocol(Protocol):
             """Protocol for configuration values."""
 
+            value: str | int | float | bool | None
+
             def __str__(self) -> str:
                 """Convert to string."""
-                value = getattr(self, "value", None)
-                if value is None:
-                    value = getattr(self, "_value", "")
-                return str(value)
+                return str(self.value) if self.value is not None else ""
 
             def __int__(self) -> int:
                 """Convert to integer."""
-                value = getattr(self, "value", None)
-                if value is None:
-                    value = getattr(self, "_value", 0)
+                if self.value is None:
+                    return 0
                 try:
-                    return int(value)
+                    return int(self.value)
                 except (ValueError, TypeError):
                     return 0
 
             def __bool__(self) -> bool:
                 """Convert to boolean."""
-                value = getattr(self, "value", None)
-                if value is None:
-                    value = getattr(self, "_value", False)
-                return bool(value)
+                return bool(self.value) if self.value is not None else False
 
         @runtime_checkable
         class ResponseDataProtocol(Protocol):
@@ -1396,13 +1376,7 @@ class FlextWebProtocols(FlextProtocols):
                 default: str | None = None,
             ) -> str | int | bool | list[str] | None:
                 """Get value by key with optional default."""
-                if isinstance(self, dict):
-                    value = self.get(key, default)
-                else:
-                    value = getattr(self, key, default)
-                if isinstance(value, str | int | bool | list):
-                    return value
-                return default
+                ...
 
         # Base implementation classes for testing
         class TestBases:
