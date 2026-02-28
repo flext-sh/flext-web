@@ -309,6 +309,56 @@ class FlextWebConstants(FlextConstants):
             MAX_DESCRIPTION_LENGTH: Final[int] = 500
             MAX_HOST_LENGTH: Final[int] = 255
 
+        class WebFramework:
+            """Web framework and runtime constants."""
+
+            # Interface types
+            INTERFACE_ASGI: Final[str] = "asgi"
+            INTERFACE_WSGI: Final[str] = "wsgi"
+
+            # Runner implementations
+            RUNNER_UVICORN: Final[str] = "uvicorn"
+            RUNNER_WERKZEUG: Final[str] = "werkzeug"
+
+            # Framework names
+            FRAMEWORK_FASTAPI: Final[str] = "fastapi"
+            FRAMEWORK_FLASK: Final[str] = "flask"
+
+            INTERFACES: ClassVar[tuple[str, ...]] = (
+                INTERFACE_ASGI,
+                INTERFACE_WSGI,
+            )
+            RUNNERS: ClassVar[tuple[str, ...]] = (
+                RUNNER_UVICORN,
+                RUNNER_WERKZEUG,
+            )
+            FRAMEWORKS: ClassVar[tuple[str, ...]] = (
+                FRAMEWORK_FASTAPI,
+                FRAMEWORK_FLASK,
+            )
+
+        class WebActions:
+            """Web application management action constants."""
+
+            ACTION_CREATE: Final[str] = "create"
+            ACTION_START: Final[str] = "start"
+            ACTION_STOP: Final[str] = "stop"
+            ACTION_LIST: Final[str] = "list"
+
+            ACTIONS: ClassVar[tuple[str, ...]] = (
+                ACTION_CREATE,
+                ACTION_START,
+                ACTION_STOP,
+                ACTION_LIST,
+            )
+
+        class WebMessages:
+            """Web service message constants."""
+
+            ENTITY_SERVICE_READY: Final[str] = "Entity service ready"
+            CONFIG_LOADED: Final[str] = "loaded"
+            HANDLERS_REGISTERED: Final[str] = "registered"
+
         class WebApi:
             """Web API documentation and endpoint constants."""
 

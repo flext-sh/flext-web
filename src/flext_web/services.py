@@ -56,16 +56,21 @@ class FlextWebServices(FlextService[bool]):
 
             """
             # Use u.guard() for unified validation (DSL pattern)
+            def _validate_username(un: object) -> bool:
+                return isinstance(un, str) and un != FlextConstants.Test.NONEXISTENT_USERNAME
             username_validated = u.guard(
                 credentials.username,
-                lambda un: un != FlextConstants.Test.NONEXISTENT_USERNAME,
+                _validate_username,
                 return_value=True,
             )
             if username_validated is None:
                 return FlextResult.fail("Authentication failed")
+
+            def _validate_password(pw: object) -> bool:
+                return isinstance(pw, str) and pw == FlextConstants.Test.DEFAULT_PASSWORD
             password_validated = u.guard(
                 credentials.password,
-                lambda pw: pw == FlextConstants.Test.DEFAULT_PASSWORD,
+                _validate_password,
                 return_value=True,
             )
             if password_validated is None:
@@ -169,7 +174,7 @@ class FlextWebServices(FlextService[bool]):
 
             """
             ready_response = m.Web.EntityData(
-                data={"message": "Entity service ready"},
+                data={"message": c.Web.WebMessages.ENTITY_SERVICE_READY},
             )
             return FlextResult.ok(ready_response)
 
@@ -337,8 +342,8 @@ class FlextWebServices(FlextService[bool]):
 
     def start_service(
         self,
-        _host: str = "localhost",
-        _port: int = 8080,
+        _host: str = c.Web.WebDefaults.HOST,
+        _port: int = c.Web.WebDefaults.PORT,
         *,
         _debug: bool = False,
     ) -> FlextResult[bool]:
@@ -549,18 +554,23 @@ class FlextWebServices(FlextService[bool]):
 
         """
         # Use u.guard() for unified validation (DSL pattern)
+        def _validate_routes(routes_init: object) -> bool:
+            return isinstance(routes_init, bool) and (not self._service_running or routes_init)
         routes_validated = u.guard(
             self._routes_initialized,
-            lambda routes_init: not self._service_running or routes_init,
+            _validate_routes,
             return_value=True,
         )
         if routes_validated is None:
             return FlextResult[bool].fail(
                 "Service cannot be running without initialized routes",
             )
+
+        def _validate_middleware(mw_conf: object) -> bool:
+            return isinstance(mw_conf, bool) and (not self._service_running or mw_conf)
         middleware_validated = u.guard(
             self._middleware_configured,
-            lambda mw_conf: not self._service_running or mw_conf,
+            _validate_middleware,
             return_value=True,
         )
         if middleware_validated is None:

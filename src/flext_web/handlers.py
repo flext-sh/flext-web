@@ -220,8 +220,8 @@ class FlextWebHandlers(FlextService[bool]):
                 timestamp=u.Generators.generate_iso_timestamp(),
                 components={
                     "web_service": c.Web.WebResponse.STATUS_OPERATIONAL,
-                    "configuration": "loaded",
-                    "handlers": "registered",
+                    "configuration": c.Web.WebMessages.CONFIG_LOADED,
+                    "handlers": c.Web.WebMessages.HANDLERS_REGISTERED,
                 },
             )
         )

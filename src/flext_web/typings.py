@@ -283,9 +283,12 @@ class FlextWebTypes(FlextTypes):
         # Use # Direct validation instead for unified method validation (DSL pattern)
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
+
+        def _validate_method(m: object) -> bool:
+            return isinstance(m, str) and m in valid_methods
         method_validated = u.guard(
             method_upper,
-            lambda m: m in valid_methods,
+            _validate_method,
             return_value=True,
         )
         if method_validated is None:
@@ -421,9 +424,12 @@ class FlextWebTypes(FlextTypes):
         # Use # Direct validation instead for method validation (DSL pattern)
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
+
+        def _validate_method(m: object) -> bool:
+            return isinstance(m, str) and m in valid_methods
         method_validated = u.guard(
             method_upper,
-            lambda m: m in valid_methods,
+            _validate_method,
             return_value=True,
         )
         if method_validated is None:
