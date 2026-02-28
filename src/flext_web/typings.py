@@ -14,7 +14,7 @@ from typing import Literal
 
 from flext_core import (
     FlextResult,
-    FlextTypes as ft,
+    FlextTypes,
     u,
 )
 from pydantic import BaseModel, ConfigDict, Field
@@ -32,9 +32,9 @@ class _WebRequestConfig(BaseModel):
     url: str = Field(default="")
     method: str = Field(default="GET")
     headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, ft.ConfigMapValue] | None = Field(default=None)
+    body: str | dict[str, FlextTypes.ConfigMapValue] | None = Field(default=None)
     timeout: float = Field(default=30.0)
-    query_params: dict[str, ft.ConfigMapValue] | None = Field(default=None)
+    query_params: dict[str, FlextTypes.ConfigMapValue] | None = Field(default=None)
     client_ip: str = Field(default="")
     user_agent: str = Field(default="")
 
@@ -47,7 +47,7 @@ class _WebResponseConfig(BaseModel):
     status_code: int = Field(default=200)
     request_id: str = Field(default="")
     headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, ft.ConfigMapValue] | None = Field(default=None)
+    body: str | dict[str, FlextTypes.ConfigMapValue] | None = Field(default=None)
     elapsed_time: float = Field(default=0.0)
     content_type: str = Field(default="application/json")
     content_length: int = Field(default=0)
@@ -68,7 +68,7 @@ class _ApplicationConfig(BaseModel):
     version: int = Field(default=1)
 
 
-class FlextWebTypes(ft):
+class FlextWebTypes(FlextTypes):
     """Web-specific type definitions using m.
 
     Uses Pydantic 2 models from m for type safety.
@@ -222,8 +222,8 @@ class FlextWebTypes(ft):
     class Types:
         """Type system aliases for flext-web."""
 
-        ConfigMapValue = ft.ConfigMapValue
-        """Config map value type - references ft.ConfigMapValue."""
+        ConfigMapValue = FlextTypes.ConfigMapValue
+        """Config map value type - references FlextTypes.ConfigMapValue."""
 
     # Core response types - proper inheritance from m
     SuccessResponse = m.Web.ServiceResponse
@@ -261,7 +261,7 @@ class FlextWebTypes(ft):
         url: str,
         method: str = c.Web.Method.GET,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, ft.ConfigMapValue] | None = None,
+        body: str | dict[str, FlextTypes.ConfigMapValue] | None = None,
         timeout: float = c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
     ) -> FlextResult[m.Web.Request]:
         """Create HTTP request model instance with proper validation.
@@ -282,7 +282,7 @@ class FlextWebTypes(ft):
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: ft.GeneralValueType) -> bool:
+        def _validate_method(m: FlextTypes.GeneralValueType) -> bool:
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(
@@ -332,7 +332,7 @@ class FlextWebTypes(ft):
         cls,
         status_code: int,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, ft.ConfigMapValue] | None = None,
+        body: str | dict[str, FlextTypes.ConfigMapValue] | None = None,
         elapsed_time: float | None = None,
     ) -> FlextResult[m.Web.Response]:
         """Create HTTP response model instance with proper validation.
@@ -414,13 +414,13 @@ class FlextWebTypes(ft):
         # Validate headers - must be dict or None
         headers_validated: dict[str, str] = headers or {}
         # Validate query_params - must be dict or None
-        query_params_validated: dict[str, ft.ConfigMapValue] = query_params or {}
+        query_params_validated: dict[str, FlextTypes.ConfigMapValue] = query_params or {}
 
         # Use # Direct validation instead for method validation (DSL pattern)
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: ft.GeneralValueType) -> bool:
+        def _validate_method(m: FlextTypes.GeneralValueType) -> bool:
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(
