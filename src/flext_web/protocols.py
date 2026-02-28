@@ -25,6 +25,13 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
+# TODO(architecture): protocols.py contains ~1700 lines of implementation code
+# (servers, routes, middleware, test bases, metrics tracking). This violates
+# architecture layers — protocols.py should contain ONLY Protocol definitions.
+# Additional violations: try/except ImportError patterns (lines 37-45),
+# cast() usage, getattr() for routing. Refactor implementation to separate
+# modules in a future task.
+
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping
@@ -44,7 +51,7 @@ try:
 except ImportError:
     make_server = None
 
-from flext_core import FlextProtocols, p, r
+from flext_core import FlextProtocols, r
 
 from flext_web.app import FlextWebApp
 from flext_web.constants import c
@@ -478,7 +485,9 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebAppManagerProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
+        class WebAppManagerProtocol(
+            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+        ):
             """Protocol for web application lifecycle management.
 
             Extends p.Service[t.WebCore.ResponseDict] with web-specific application management
@@ -640,7 +649,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebResponseFormatterProtocol(
-            p.Service[t.WebCore.ResponseDict],
+            FlextProtocols.Service[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Protocol for web response formatting.
@@ -722,7 +731,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebFrameworkInterfaceProtocol(
-            p.Service[t.WebCore.ResponseDict],
+            FlextProtocols.Service[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Protocol for web framework integration.
@@ -798,7 +807,9 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebServiceProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
+        class WebServiceProtocol(
+            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+        ):
             """Base web service protocol.
 
             Extends p.Service[t.WebCore.ResponseDict] with web-specific service operations.
@@ -867,7 +878,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebRepositoryProtocol(
-            p.Repository[t.WebCore.ResponseDict],
+            FlextProtocols.Repository[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Base web repository protocol for data access.
@@ -910,7 +921,7 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebHandlerProtocol(p.Handler, Protocol):
+        class WebHandlerProtocol(FlextProtocols.Handler, Protocol):
             """Web handler protocol for request/response patterns.
 
             Extends p.Handler with web-specific handler operations.
@@ -1001,7 +1012,9 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebConnectionProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
+        class WebConnectionProtocol(
+            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+        ):
             """Web connection protocol for external systems.
 
             Extends p.Service[t.WebCore.ResponseDict] with web-specific connection operations.
@@ -1035,7 +1048,9 @@ class FlextWebProtocols(FlextProtocols):
                 return "http://localhost:8080"
 
         @runtime_checkable
-        class WebLoggerProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
+        class WebLoggerProtocol(
+            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+        ):
             """Web logging protocol.
 
             Extends p.Service[t.WebCore.ResponseDict] with web-specific logging operations.
@@ -1094,7 +1109,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateRendererProtocol(
-            p.Service[t.WebCore.ResponseDict],
+            FlextProtocols.Service[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Protocol for web template rendering.
@@ -1150,7 +1165,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateEngineProtocol(
-            p.Service[t.WebCore.ResponseDict],
+            FlextProtocols.Service[t.WebCore.ResponseDict],
             Protocol,
         ):
             """Protocol for web template engine operations.
@@ -1277,7 +1292,9 @@ class FlextWebProtocols(FlextProtocols):
         # =========================================================================
 
         @runtime_checkable
-        class WebMonitoringProtocol(p.Service[t.WebCore.ResponseDict], Protocol):
+        class WebMonitoringProtocol(
+            FlextProtocols.Service[t.WebCore.ResponseDict], Protocol
+        ):
             """Web monitoring protocol for observability.
 
             Extends p.Service[t.WebCore.ResponseDict] with web-specific monitoring operations.
@@ -1675,6 +1692,9 @@ class FlextWebProtocols(FlextProtocols):
                     return FlextWebProtocols.Web.WebMonitoringProtocol.get_web_metrics()
 
 
+p = FlextWebProtocols
+
+
 def create_app(name: str, port: int, host: str) -> r[t.WebCore.ResponseDict]:
     """Create a new web application."""
     return FlextWebProtocols.Web.WebAppManagerProtocol.create_app(name, port, host)
@@ -1699,6 +1719,7 @@ __all__ = [
     "FlextWebProtocols",
     "create_app",
     "list_apps",
+    "p",
     "start_app",
     "stop_app",
 ]
