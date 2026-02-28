@@ -8,8 +8,7 @@ from __future__ import annotations
 from typing import Any, cast
 
 import pytest
-from flext_core import r
-from flext_web import c, p, t
+from tests import c, p, r, t
 
 # Access test base classes via the namespace
 _WebAppManagerBase = p.Web.TestBases._WebAppManagerBase
@@ -29,7 +28,8 @@ class TestFlextWebProtocols:
     @staticmethod
     def _reset_protocol_state() -> None:
         p.Web.apps_registry.clear()
-        p.Web.framework_instances.clear()
+        instances: dict[str, Any] = cast("dict[str, Any]", p.Web.framework_instances)
+        instances.clear()
         p.Web.app_runtimes.clear()
         p.Web.service_state.update({
             "routes_initialized": False,
@@ -241,8 +241,9 @@ class TestFlextWebProtocols:
 
         for protocol in protocols:
             # Check if protocol has runtime_checkable attribute (should be True if decorated)
-            if hasattr(protocol, "__runtime_checkable__"):
-                assert protocol.__runtime_checkable__ is True
+            checkable = getattr(protocol, "__runtime_checkable__", None)
+            if checkable is not None:
+                assert checkable is True
             # If not decorated, that's also acceptable for Protocol classes
 
     def test_protocol_method_signatures(self) -> None:
@@ -808,7 +809,10 @@ class TestFlextWebProtocols:
         assert engine.render("template", {"key": "value"}).is_success
 
         # Test add_filter and add_global (void methods)
-        engine.add_filter("test", lambda x: x)
+        def filter_func(x: Any) -> Any:
+            return x
+
+        engine.add_filter("test", filter_func)
         engine.add_global("test", value="value")
         engine.add_global("test_int", value=42)
         engine.add_global("test_bool", value=True)
@@ -1080,13 +1084,13 @@ class TestFlextWebProtocols:
         app_id = str(create_result.value["id"])
 
         framework = str(create_result.value["framework"])
-        app_instance = p.Web.framework_instances[app_id]
+        app_instance: Any = cast("Any", p.Web.framework_instances[app_id])
         if framework == "fastapi":
-            fastapi_app = cast("Any", app_instance)
+            fastapi_app = app_instance
             paths = [route.path for route in fastapi_app.routes]
             assert "/protocol/health" in paths
         else:
-            flask_app = cast("Any", app_instance)
+            flask_app = app_instance
             routes = [rule.rule for rule in flask_app.url_map.iter_rules()]
             assert "/protocol/health" in routes
 

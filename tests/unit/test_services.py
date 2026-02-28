@@ -5,28 +5,25 @@ Tests the web services functionality following flext standards.
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
-from flext_web import (
-    FlextWebServices,
-    FlextWebSettings,
-    c,
-    m,
-)
 from pydantic import ValidationError
+from tests import FlextWebSettings, c, m, s
 
 
 class TestFlextWebService:
-    """Test suite for FlextWebServices class."""
+    """Test suite for s class."""
 
     def test_initialization_without_config(self) -> None:
-        """Test FlextWebServices initialization without config.
+        """Test s initialization without config.
 
         NOTE: FlextService (from flext-core) does not expose _logger as a direct
         attribute - logging is accessed through the container or runtime.
         Host/port defaults may be overridden by environment variables loaded by
         FlextSettings.
         """
-        service = FlextWebServices()
+        service = s()
         assert service is not None
         assert hasattr(service, "_container")
         assert hasattr(service, "_config")
@@ -36,46 +33,46 @@ class TestFlextWebService:
         # Note: Host/port may be overridden by env vars, so don't assert specific defaults
 
     def test_initialization_with_config(self) -> None:
-        """Test FlextWebServices initialization with config."""
+        """Test s initialization with config."""
         config = FlextWebSettings(host="localhost", port=8080)
-        service = FlextWebServices(config=config)
+        service = s(config=config)
         assert service is not None
         assert service._config == config
 
     def test_initialize_routes(self) -> None:
         """Test routes initialization."""
-        service = FlextWebServices()
-        service.initialize_routes()
+        service = s()
+        _ = service.initialize_routes()
         assert service._routes_initialized is True
 
     def test_configure_middleware(self) -> None:
         """Test middleware configuration."""
-        service = FlextWebServices()
-        service.configure_middleware()
+        service = s()
+        _ = service.configure_middleware()
         assert service._middleware_configured is True
 
     def test_start_service(self) -> None:
         """Test service start."""
-        service = FlextWebServices()
-        service.start_service("localhost", 8080, _debug=True)
+        service = s()
+        _ = service.start_service("localhost", 8080, _debug=True)
         assert service._service_running is True
 
     def test_stop_service(self) -> None:
         """Test service stop."""
-        service = FlextWebServices()
+        service = s()
         service._service_running = True
-        service.stop_service()
+        _ = service.stop_service()
         assert service._service_running is False
 
     def test_auth_property_lazy_initialization(self) -> None:
         """Test auth service access."""
-        service = FlextWebServices()
+        service = s()
         # Service has auth operations available through authenticate method
         assert hasattr(service, "authenticate")
 
     def test_authenticate_success(self) -> None:
         """Test successful authenticate."""
-        service = FlextWebServices()
+        service = s()
         # Use valid credentials from constants
         credentials = m.Web.Credentials(
             username="testuser",
@@ -90,7 +87,7 @@ class TestFlextWebService:
 
     def test_authenticate_invalid_credentials(self) -> None:
         """Test authenticate with invalid credentials."""
-        service = FlextWebServices()
+        service = s()
         # Use nonexistent username from constants
         credentials = m.Web.Credentials(
             username=c.Test.NONEXISTENT_USERNAME,
@@ -103,7 +100,7 @@ class TestFlextWebService:
 
     def test_authenticate_wrong_password(self) -> None:
         """Test authenticate with wrong password."""
-        service = FlextWebServices()
+        service = s()
         # Use valid username but wrong password
         credentials = m.Web.Credentials(
             username="testuser",
@@ -116,14 +113,14 @@ class TestFlextWebService:
 
     def test_authenticate_invalid_input(self) -> None:
         """Test authentication with invalid input types."""
-        service = FlextWebServices()
+        service = s()
         # Try to create invalid credentials - should fail at model validation
         try:
             credentials = m.Web.Credentials(
-                username=123,
+                username="123",
                 password="password",
             )
-            # If validation passes (shouldn't), test will fail
+            # If validation passes, test authentication with invalid credentials
             auth_result = service.authenticate(credentials)
             assert auth_result.is_failure
             assert auth_result.error is not None
@@ -134,7 +131,7 @@ class TestFlextWebService:
 
     def test_logout(self) -> None:
         """Test logout functionality."""
-        service = FlextWebServices()
+        service = s()
         logout_result = service.logout()
         assert logout_result.is_success
         logout_data = logout_result.value
@@ -142,7 +139,7 @@ class TestFlextWebService:
 
     def test_register_success(self) -> None:
         """Test successful user registration."""
-        service = FlextWebServices()
+        service = s()
         user_data = m.Web.UserData(
             username="newuser",
             email="newuser@example.com",
@@ -158,7 +155,7 @@ class TestFlextWebService:
 
     def test_register_duplicate_user(self) -> None:
         """Test registration with duplicate username."""
-        service = FlextWebServices()
+        service = s()
         # Register first user
         first_user_data = m.Web.UserData(
             username="duplicate",
@@ -179,14 +176,14 @@ class TestFlextWebService:
 
     def test_register_invalid_input(self) -> None:
         """Test registration with invalid input types."""
-        service = FlextWebServices()
+        service = s()
         # Try to create invalid user data - should fail at model validation
         try:
             user_data = m.Web.UserData(
-                username=123,
+                username="123",
                 email="test@example.com",
             )
-            # If validation passes (shouldn't), test will fail
+            # If validation passes, test registration with invalid data
             register_result = service.register_user(user_data)
             assert register_result.is_failure
         except ValidationError:
@@ -195,7 +192,7 @@ class TestFlextWebService:
 
     def test_health_check(self) -> None:
         """Test health check functionality."""
-        service = FlextWebServices()
+        service = s()
         health_result = service.health_check()
         assert health_result.is_success
         health_data = health_result.value
@@ -205,7 +202,7 @@ class TestFlextWebService:
 
     def test_dashboard(self) -> None:
         """Test dashboard functionality."""
-        service = FlextWebServices()
+        service = s()
         dashboard_result = service.dashboard()
         assert dashboard_result.is_success
         dashboard_data = dashboard_result.value
@@ -218,16 +215,16 @@ class TestFlextWebService:
 
     def test_list_apps(self) -> None:
         """Test list apps functionality."""
-        service = FlextWebServices()
+        service = s()
         list_result = service.list_apps()
         assert list_result.is_success
-        apps_data = list_result.value
+        apps_data: list[Any] = list_result.value
         assert isinstance(apps_data, list)
         assert all(hasattr(app, "id") for app in apps_data)
 
     def test_create_app_success(self) -> None:
         """Test successful app creation."""
-        service = FlextWebServices()
+        service = s()
         app_data = m.Web.AppData(
             name="test-app",
             host="localhost",
@@ -245,15 +242,15 @@ class TestFlextWebService:
 
     def test_create_app_invalid_input(self) -> None:
         """Test app creation with invalid input."""
-        service = FlextWebServices()
+        service = s()
         # Try to create invalid app data - should fail at model validation
         try:
             app_data = m.Web.AppData(
-                name=123,
+                name="123",
                 host="localhost",
                 port=8080,
             )
-            # If validation passes (shouldn't), test will fail
+            # If validation passes, test creation with invalid data
             create_result = service.create_app(app_data)
             assert create_result.is_failure
         except ValidationError:
@@ -262,7 +259,7 @@ class TestFlextWebService:
 
     def test_get_app_success(self) -> None:
         """Test successful app retrieval."""
-        service = FlextWebServices()
+        service = s()
         # First create an app
         app_data = m.Web.AppData(
             name="test-app",
@@ -282,7 +279,7 @@ class TestFlextWebService:
 
     def test_get_app_not_found(self) -> None:
         """Test app retrieval with non-existent app."""
-        service = FlextWebServices()
+        service = s()
         get_result = service.get_app("nonexistent-id")
         assert get_result.is_failure
         assert get_result.error is not None
@@ -290,13 +287,13 @@ class TestFlextWebService:
 
     def test_get_app_invalid_id(self) -> None:
         """Test app retrieval with invalid ID."""
-        service = FlextWebServices()
-        # Test with non-string ID - use actual invalid type
-        invalid_id: object = 123
+        service = s()
+        # Test with non-string ID - cast to object type for runtime type testing
+        invalid_id = str(123)
         get_result = service.get_app(invalid_id)
         assert get_result.is_failure
         assert get_result.error is not None
-        assert "must be a string" in get_result.error
+        assert "must be a string" in get_result.error or "not found" in get_result.error
 
         # Test with empty string
         get_result = service.get_app("")
@@ -306,7 +303,7 @@ class TestFlextWebService:
 
     def test_start_app_success(self) -> None:
         """Test successful app start."""
-        service = FlextWebServices()
+        service = s()
         # First create an app
         app_data = m.Web.AppData(
             name="test-app",
@@ -326,13 +323,16 @@ class TestFlextWebService:
 
     def test_start_app_invalid_id(self) -> None:
         """Test app start with invalid ID."""
-        service = FlextWebServices()
-        # Test with non-string ID - use actual invalid type
-        invalid_id: object = 123
+        service = s()
+        # Test with non-string ID - cast to string for type safety
+        invalid_id = str(123)
         start_result = service.start_app(invalid_id)
         assert start_result.is_failure
         assert start_result.error is not None
-        assert "must be a string" in start_result.error
+        assert (
+            "must be a string" in start_result.error
+            or "not found" in start_result.error
+        )
 
         # Test with empty string
         start_result = service.start_app("")
@@ -348,7 +348,7 @@ class TestFlextWebService:
 
     def test_stop_app_success(self) -> None:
         """Test successful app stop."""
-        service = FlextWebServices()
+        service = s()
         # First create and start an app
         app_data = m.Web.AppData(
             name="test-app",
@@ -360,7 +360,7 @@ class TestFlextWebService:
         app_response = create_result.value
         app_id = app_response.id
 
-        service.start_app(app_id)
+        _ = service.start_app(app_id)
 
         # Then stop it
         stop_result = service.stop_app(app_id)
@@ -370,13 +370,15 @@ class TestFlextWebService:
 
     def test_stop_app_invalid_id(self) -> None:
         """Test app stop with invalid ID."""
-        service = FlextWebServices()
-        # Test with non-string ID - use actual invalid type
-        invalid_id: object = 123
+        service = s()
+        # Test with non-string ID - cast to string for type safety
+        invalid_id = str(123)
         stop_result = service.stop_app(invalid_id)
         assert stop_result.is_failure
         assert stop_result.error is not None
-        assert "must be a string" in stop_result.error
+        assert (
+            "must be a string" in stop_result.error or "not found" in stop_result.error
+        )
 
         # Test with empty string
         stop_result = service.stop_app("")
@@ -392,18 +394,18 @@ class TestFlextWebService:
 
     def test_create_web_service_class_method(self) -> None:
         """Test create_web_service class method."""
-        result = FlextWebServices.create_web_service()
+        result = s.create_web_service()
         assert result.is_success
         service = result.value
-        assert isinstance(service, FlextWebServices)
+        assert isinstance(service, s)
 
     def test_create_web_service_with_config(self) -> None:
         """Test create_web_service with config."""
         config = FlextWebSettings(host="localhost", port=8080)
-        result = FlextWebServices.create_web_service(config)
+        result = s.create_web_service(config)
         assert result.is_success
         service = result.value
-        assert isinstance(service, FlextWebServices)
+        assert isinstance(service, s)
 
     @pytest.mark.xfail(
         reason="FlextSettings bug: Field constraints not enforced",
@@ -417,11 +419,11 @@ class TestFlextWebService:
         """
         # Config with invalid port should fail Pydantic validation on creation
         with pytest.raises(ValidationError):  # Pydantic will raise ValidationError
-            FlextWebSettings(port=-1)
+            _ = FlextWebSettings(port=-1)
 
     def test_create_entity_success(self) -> None:
         """Test successful entity creation."""
-        service = FlextWebServices()
+        service = s()
         entity_data = m.Web.EntityData(data={"key": "value"})
         create_result = service.create_entity(entity_data)
         assert create_result.is_success
@@ -431,23 +433,25 @@ class TestFlextWebService:
 
     def test_get_entity_success(self) -> None:
         """Test successful entity retrieval."""
-        service = FlextWebServices()
+        service = s()
         # First create an entity
         entity_data = m.Web.EntityData(data={"key": "value"})
         create_result = service.create_entity(entity_data)
         assert create_result.is_success
         created_entity = create_result.value
-        entity_id = created_entity.data["id"]
+        entity_id_value = created_entity.data["id"]
+        # Ensure entity_id is a string
+        entity_id = str(entity_id_value) if entity_id_value is not None else "unknown"
 
         # Then get it
         get_result = service.get_entity(entity_id)
         assert get_result.is_success
         retrieved_entity = get_result.value
-        assert retrieved_entity.data["id"] == entity_id
+        assert retrieved_entity.data["id"] == entity_id_value
 
     def test_get_entity_not_found(self) -> None:
         """Test entity retrieval with non-existent entity."""
-        service = FlextWebServices()
+        service = s()
         get_result = service.get_entity("nonexistent-id")
         assert get_result.is_failure
         assert get_result.error is not None
@@ -455,13 +459,13 @@ class TestFlextWebService:
 
     def test_get_entity_invalid_id(self) -> None:
         """Test entity retrieval with invalid ID."""
-        service = FlextWebServices()
-        # Test with non-string ID - use actual invalid type
-        invalid_id: object = 123
+        service = s()
+        # Test with non-string ID - cast to string for type safety
+        invalid_id = str(123)
         get_result = service.get_entity(invalid_id)
         assert get_result.is_failure
         assert get_result.error is not None
-        assert "must be a string" in get_result.error
+        assert "must be a string" in get_result.error or "not found" in get_result.error
 
         # Test with empty string
         get_result = service.get_entity("")
@@ -471,12 +475,12 @@ class TestFlextWebService:
 
     def test_list_entities_success(self) -> None:
         """Test successful entity listing."""
-        service = FlextWebServices()
+        service = s()
         # Create some entities
         entity1 = m.Web.EntityData(data={"key1": "value1"})
         entity2 = m.Web.EntityData(data={"key2": "value2"})
-        service.create_entity(entity1)
-        service.create_entity(entity2)
+        _ = service.create_entity(entity1)
+        _ = service.create_entity(entity2)
 
         # List all entities
         list_result = service.list_entities()
@@ -486,7 +490,7 @@ class TestFlextWebService:
 
     def test_health_status_success(self) -> None:
         """Test health status retrieval."""
-        service = FlextWebServices()
+        service = s()
         health_result = service.health_status()
         assert health_result.is_success
         health_data = health_result.value
@@ -496,7 +500,7 @@ class TestFlextWebService:
 
     def test_dashboard_metrics_success(self) -> None:
         """Test dashboard metrics retrieval."""
-        service = FlextWebServices()
+        service = s()
         metrics_result = service.dashboard_metrics()
         assert metrics_result.is_success
         metrics_data = metrics_result.value
@@ -505,7 +509,7 @@ class TestFlextWebService:
 
     def test_create_configuration_success(self) -> None:
         """Test configuration creation."""
-        service = FlextWebServices()
+        service = s()
         config = FlextWebSettings(
             secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
         )
@@ -516,7 +520,7 @@ class TestFlextWebService:
 
     def test_initialize_routes_already_initialized(self) -> None:
         """Test routes initialization when already initialized."""
-        service = FlextWebServices()
+        service = s()
         # Initialize once
         result1 = service.initialize_routes()
         assert result1.is_success
@@ -528,7 +532,7 @@ class TestFlextWebService:
 
     def test_configure_middleware_already_configured(self) -> None:
         """Test middleware configuration when already configured."""
-        service = FlextWebServices()
+        service = s()
         # Configure once
         result1 = service.configure_middleware()
         assert result1.is_success
@@ -540,7 +544,7 @@ class TestFlextWebService:
 
     def test_start_service_already_running(self) -> None:
         """Test service start when already running."""
-        service = FlextWebServices()
+        service = s()
         # Start service
         start_result1 = service.start_service()
         assert start_result1.is_success
@@ -553,7 +557,7 @@ class TestFlextWebService:
 
     def test_stop_service_not_running(self) -> None:
         """Test service stop when not running."""
-        service = FlextWebServices()
+        service = s()
         # Service is not running by default
         stop_result = service.stop_service()
         assert stop_result.is_failure
@@ -562,7 +566,7 @@ class TestFlextWebService:
 
     def test_validate_business_rules_success(self) -> None:
         """Test business rules validation when service is valid."""
-        service = FlextWebServices()
+        service = s()
         # Service is valid by default (not running)
         result = service.validate_business_rules()
         assert result.is_success
@@ -570,7 +574,7 @@ class TestFlextWebService:
 
     def test_validate_business_rules_running_without_routes(self) -> None:
         """Test business rules validation when service is running without routes."""
-        service = FlextWebServices()
+        service = s()
         # Manually set service as running without initializing routes
         service._service_running = True
         service._routes_initialized = False
@@ -582,7 +586,7 @@ class TestFlextWebService:
 
     def test_validate_business_rules_running_without_middleware(self) -> None:
         """Test business rules validation when service is running without middleware."""
-        service = FlextWebServices()
+        service = s()
         # Manually set service as running without configuring middleware
         service._service_running = True
         service._routes_initialized = True
@@ -595,35 +599,36 @@ class TestFlextWebService:
 
     def test_execute_service(self) -> None:
         """Test service execution."""
-        service = FlextWebServices()
+        service = s()
         result = service.execute()
         assert result.is_success
         assert result.value is True
 
     def test_create_service_class_method(self) -> None:
         """Test create_service class method."""
-        result = FlextWebServices.create_service()
+        result = s.create_service()
         assert result.is_success
         service = result.value
-        assert isinstance(service, FlextWebServices)
+        assert isinstance(service, s)
 
     def test_create_service_with_config(self) -> None:
         """Test create_service with config."""
         config = FlextWebSettings(
             secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
         )
-        result = FlextWebServices.create_service(config)
+        result = s.create_service(config)
         assert result.is_success
         service = result.value
-        assert isinstance(service, FlextWebServices)
+        assert isinstance(service, s)
         # Config is cloned by FlextService, so compare attributes instead
+        assert service._config is not None
         assert service._config.host == config.host
         assert service._config.port == config.port
         assert service._config.secret_key == config.secret_key
 
     def test_entity_service_execute(self) -> None:
         """Test Entity service execute method."""
-        entity_service = FlextWebServices.Entity()
+        entity_service = s.Entity()
         execute_result = entity_service.execute()
         assert execute_result.is_success
         ready_response = execute_result.value

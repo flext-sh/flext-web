@@ -14,17 +14,15 @@ from __future__ import annotations
 import threading
 from typing import ClassVar
 
+from tests.constants import c
+
 
 class TestPortManager:
     """Thread-safe port allocation manager for tests."""
 
-    # Port range constants
-    _PORT_START: ClassVar[int] = 9000
-    _PORT_END: ClassVar[int] = 9999
-
     _lock: ClassVar[threading.Lock] = threading.Lock()
     _allocated_ports: ClassVar[set[int]] = set()
-    _current_port: ClassVar[int] = _PORT_START
+    _current_port: ClassVar[int] = c.Web.Tests.TestPort.PORT_START
 
     @classmethod
     def allocate_port(cls) -> int:
@@ -44,8 +42,8 @@ class TestPortManager:
                 cls._current_port += 1
 
                 # Wrap around if we hit the limit
-                if cls._current_port > cls._PORT_END:
-                    cls._current_port = cls._PORT_START
+                if cls._current_port > c.Web.Tests.TestPort.PORT_END:
+                    cls._current_port = c.Web.Tests.TestPort.PORT_START
 
             port = cls._current_port
             cls._allocated_ports.add(port)
@@ -76,4 +74,4 @@ class TestPortManager:
         """
         with cls._lock:
             cls._allocated_ports.clear()
-            cls._current_port = 9000
+            cls._current_port = c.Web.Tests.TestPort.PORT_START

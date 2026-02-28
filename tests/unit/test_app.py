@@ -5,8 +5,7 @@ Tests the unified FlextWebApp class following flext standards.
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from flask.testing import FlaskClient
-from flext_web import FlextWebApp, FlextWebConstants, FlextWebModels, FlextWebSettings
+from tests import FlextWebApp, FlextWebSettings, c, m
 
 
 class TestFlextWebApp:
@@ -34,9 +33,9 @@ class TestFlextWebApp:
             title="Test API",
             version="1.0.0",
             description="Test Description",
-            docs_url=FlextWebConstants.Web.WebApi.DOCS_URL,
-            redoc_url=FlextWebConstants.Web.WebApi.REDOC_URL,
-            openapi_url=FlextWebConstants.Web.WebApi.OPENAPI_URL,
+            docs_url=c.Web.WebApi.DOCS_URL,
+            redoc_url=c.Web.WebApi.REDOC_URL,
+            openapi_url=c.Web.WebApi.OPENAPI_URL,
         )
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
@@ -53,9 +52,9 @@ class TestFlextWebApp:
         config = FlextWebApp._FastAPIConfig(
             title="Valid Test API",
             version="1.0.0",
-            docs_url=FlextWebConstants.Web.WebApi.DOCS_URL,
-            redoc_url=FlextWebConstants.Web.WebApi.REDOC_URL,
-            openapi_url=FlextWebConstants.Web.WebApi.OPENAPI_URL,
+            docs_url=c.Web.WebApi.DOCS_URL,
+            redoc_url=c.Web.WebApi.REDOC_URL,
+            openapi_url=c.Web.WebApi.OPENAPI_URL,
         )
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
@@ -71,9 +70,9 @@ class TestFlextWebApp:
             title="Real Test API",
             version="1.0.0",
             description="Real Test Description",
-            docs_url=FlextWebConstants.Web.WebApi.DOCS_URL,
-            redoc_url=FlextWebConstants.Web.WebApi.REDOC_URL,
-            openapi_url=FlextWebConstants.Web.WebApi.OPENAPI_URL,
+            docs_url=c.Web.WebApi.DOCS_URL,
+            redoc_url=c.Web.WebApi.REDOC_URL,
+            openapi_url=c.Web.WebApi.OPENAPI_URL,
         )
         result = FlextWebApp.FastAPIFactory.create_instance(config)
 
@@ -87,7 +86,7 @@ class TestFlextWebApp:
 
     def test_create_fastapi_app_success(self) -> None:
         """Test create_fastapi_app with success - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
             description="Test Description",
@@ -104,10 +103,10 @@ class TestFlextWebApp:
 
     def test_create_fastapi_app_with_custom_config(self) -> None:
         """Test create_fastapi_app with custom configuration - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Custom Test API",
             version="2.0.0",
-            description=FlextWebConstants.Web.WebApi.DEFAULT_DESCRIPTION,
+            description=c.Web.WebApi.DEFAULT_DESCRIPTION,
         )
 
         result = FlextWebApp.create_fastapi_app(config)
@@ -132,7 +131,7 @@ class TestFlextWebApp:
 
     def test_create_fastapi_app_health_check_registration(self) -> None:
         """Test create_fastapi_app health check registration - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
         )
@@ -152,7 +151,7 @@ class TestFlextWebApp:
 
     def test_create_fastapi_app_with_custom_urls(self) -> None:
         """Test create_fastapi_app with custom URLs - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
             description="Test Description",
@@ -173,7 +172,7 @@ class TestFlextWebApp:
 
     def test_create_fastapi_app_with_default_description(self) -> None:
         """Test create_fastapi_app with default description from Constants - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
         )
@@ -185,7 +184,7 @@ class TestFlextWebApp:
         # Real FastAPI app - verify default description from Constants
         assert app.title == "Test API"
         assert app.version == "1.0.0"
-        assert app.description == FlextWebConstants.Web.WebApi.DEFAULT_DESCRIPTION
+        assert app.description == c.Web.WebApi.DEFAULT_DESCRIPTION
 
     def test_app_inheritance(self) -> None:
         """Test FlextWebApp inheritance from FlextService."""
@@ -219,7 +218,7 @@ class TestFlextWebApp:
     def test_app_integration_patterns(self) -> None:
         """Test FlextWebApp integration patterns - REAL FastAPI."""
         # All methods should return FlextResult
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
         )
@@ -235,7 +234,7 @@ class TestFlextWebApp:
 
     def test_app_logging_integration(self) -> None:
         """Test FlextWebApp logging integration - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
         )
@@ -249,7 +248,7 @@ class TestFlextWebApp:
 
     def test_app_fastapi_integration(self) -> None:
         """Test FlextWebApp FastAPI integration - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
             description="Test Description",
@@ -266,7 +265,7 @@ class TestFlextWebApp:
 
     def test_app_health_check_endpoint(self) -> None:
         """Test FlextWebApp health check endpoint registration - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
         )
@@ -285,7 +284,7 @@ class TestFlextWebApp:
 
     def test_app_configuration_handling(self) -> None:
         """Test FlextWebApp configuration handling - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Custom API",
             version="2.0.0",
             description="Custom Description",
@@ -305,7 +304,7 @@ class TestFlextWebApp:
 
     def test_create_fastapi_app_with_override_title(self) -> None:
         """Test create_fastapi_app with title override parameter - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Config Title",
             version="1.0.0",
         )
@@ -326,11 +325,11 @@ class TestFlextWebApp:
         # Real FastAPI app - verify title override
         assert app.title == "Override Title"
         assert app.version == "1.0.0"
-        assert app.description == FlextWebConstants.Web.WebApi.DEFAULT_DESCRIPTION
+        assert app.description == c.Web.WebApi.DEFAULT_DESCRIPTION
 
     def test_create_fastapi_app_with_override_urls(self) -> None:
         """Test create_fastapi_app with URL override parameters - REAL FastAPI."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
         )
@@ -351,17 +350,20 @@ class TestFlextWebApp:
         # Real FastAPI app - verify URL overrides
         assert app.title == "Test API"
         assert app.version == "1.0.0"
-        assert app.description == FlextWebConstants.Web.WebApi.DEFAULT_DESCRIPTION
+        assert app.description == c.Web.WebApi.DEFAULT_DESCRIPTION
 
     def test_create_flask_app_success(self) -> None:
         """Test create_flask_app with success."""
         config = FlextWebSettings(
-            secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY,
+            secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
         )
 
         result = FlextWebApp.create_flask_app(config)
 
+        # Result should be successful
         assert result.is_success
+        # Verify result has expected Flask app structure
+        assert hasattr(result, "value")
         assert result.value is not None
         assert hasattr(result.value, "route")
 
@@ -369,7 +371,10 @@ class TestFlextWebApp:
         """Test create_flask_app with None config uses defaults."""
         result = FlextWebApp.create_flask_app(None)
 
+        # Result should be successful
         assert result.is_success
+        # Verify result has expected Flask app structure
+        assert hasattr(result, "value")
         assert result.value is not None
         assert hasattr(result.value, "route")
 
@@ -414,7 +419,7 @@ class TestFlextWebApp:
 
     def test_info_handler_create_handler(self) -> None:
         """Test InfoHandler.create_handler method - REAL execution."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
             description="Test Description",
@@ -435,7 +440,7 @@ class TestFlextWebApp:
 
     def test_configure_fastapi_endpoints_real(self) -> None:
         """Test _configure_fastapi_endpoints with REAL FastAPI app."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
         )
@@ -472,23 +477,26 @@ class TestFlextWebApp:
     def test_create_flask_app_health_endpoint_real(self) -> None:
         """Test create_flask_app health endpoint - REAL Flask app."""
         config = FlextWebSettings(
-            secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY,
+            secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
         )
 
         result = FlextWebApp.create_flask_app(config)
 
+        # Result should be successful
         assert result.is_success
+        # Access app value from successful result
         app = result.value
+        assert app is not None
         # Real Flask app - test health endpoint
         app.config["TESTING"] = True
-        client: FlaskClient = app.test_client()
-        response = client.get("/health")
+        test_cli = app.test_client()
+        response = test_cli.get("/health")
         assert response.status_code == 200
-        health_data = response.get_json()
-        assert health_data is not None
-        assert "status" in health_data
-        assert "service" in health_data
-        assert health_data["status"] == FlextWebConstants.Web.WebResponse.STATUS_HEALTHY
+        health_json = response.get_json()
+        assert health_json is not None
+        assert "status" in health_json
+        assert "service" in health_json
+        assert health_json["status"] == c.Web.WebResponse.STATUS_HEALTHY
 
     def test_validate_business_rules(self) -> None:
         """Test validate_business_rules method (line 352)."""

@@ -11,9 +11,19 @@ This example shows:
 - Usage of new type aliases for better type safety
 """
 
+from typing import TypedDict
+
 import requests
 from flext_core import FlextResult
 from flext_web import t
+
+
+class ResponseDict(TypedDict, total=False):
+    """Typed response dictionary for API responses."""
+
+    success: bool
+    data: dict[str, t.GeneralValueType] | None
+    error: str | None
 
 
 class ExampleConstants:
@@ -45,19 +55,16 @@ def check_service_health() -> bool:
         if response.status_code != ExampleConstants.HTTP_OK:
             return False
 
-        result = response.model_dump_json()
-        # Use ustructure - reduces returns
-        validations = [
-            isinstance(result, dict),
-            result.get("success") is True,
-            "data" in result,
-            isinstance(result.get("data"), dict),
-            result.get("data", {}).get("status") == "healthy",
-        ]
+        result: dict[str, t.GeneralValueType] = response.json()
+        # Validate response structure
+        success_value = result.get("success")
+        data_value = result.get("data")
+        if not isinstance(data_value, dict):
+            return False
 
-        # All validations must pass
-        return all(validations)
-    except requests.RequestException:
+        status_value = data_value.get("status")
+        return success_value is True and "data" in result and status_value == "healthy"
+    except (requests.RequestException, ValueError):
         return False
 
 
@@ -100,7 +107,7 @@ def create_application(
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Parse JSON response."""
         try:
-            json_data = response.model_dump_json()
+            json_data: dict[str, t.GeneralValueType] = response.json()
             return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(
@@ -109,57 +116,54 @@ def create_application(
 
     result = _make_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
-        result = FlextResult[dict[str, t.GeneralValueType]].fail("HTTP request failed")
-    else:
-        result = result.flat_map(_parse_json).flat_map(
-            lambda json_data: (
-                FlextResult[t.AppData].ok(
-                    t.AppData.model_validate(json_data["data"]),
-                )
-                if (
-                    json_data.get("success")
-                    and isinstance(data := json_data.get("data"), dict)
-                    and "id" in data
-                    and "name" in data
-                )
-                else FlextResult[t.AppData].fail("Invalid application data")
-            ),
-        )
+        msg = "HTTP request failed"
+        raise ValueError(msg)
 
-    # Fast fail - no fallback to None
-    if result.is_failure:
-        error_msg = f"Application creation failed: {result.error}"
-        raise ValueError(error_msg)
-    return result.value
+    parsed_result = result.flat_map(_parse_json)
+    if parsed_result.is_failure:
+        raise ValueError(parsed_result.error or "Parse failed")
+
+    json_data: dict[str, t.GeneralValueType] = parsed_result.value
+    if (
+        json_data.get("success")
+        and isinstance(data := json_data.get("data"), dict)
+        and "id" in data
+        and "name" in data
+    ):
+        app_obj: t.AppData = t.AppData.model_validate(json_data["data"])
+        return app_obj
+    msg = "Invalid application data"
+    raise ValueError(msg)
 
 
 def _extract_apps_from_response(
-    response_data: object,
+    response_data: ResponseDict | object,
     data_key: str,
 ) -> list[t.AppData]:
     """Extract apps list from response data with proper type checking."""
     # Fast fail - no fallback, validate structure explicitly
     if not isinstance(response_data, dict):
         return []
-    if "data" not in response_data:
-        return []
-    data_section = response_data["data"]
+
+    # Use explicit None default to suppress type warnings
+    data_section = response_data.get("data")
     if not isinstance(data_section, dict):
         return []
 
-    # Fast fail - no fallback, validate structure explicitly
-    if data_key not in data_section:
-        return []
-    apps_list = data_section[data_key]
-    if not isinstance(apps_list, list):
+    apps_section = data_section.get(data_key)
+    if not isinstance(apps_section, list):
         return []
 
-    return [
-        t.AppData.model_validate(app)
-        for app in apps_list
-        if isinstance(app, dict)
-        and all(k in app and isinstance(app[k], str) for k in ["id", "name"])
-    ]
+    # Process apps safely - assume model_validate will handle validation
+    result_list: list[t.AppData] = []
+    for app_item in apps_section:
+        try:
+            if isinstance(app_item, dict):
+                result_list.append(t.AppData.model_validate(app_item))
+        except Exception:
+            # Skip invalid items
+            continue
+    return result_list
 
 
 def _execute_app_operation(
@@ -198,7 +202,7 @@ def _execute_app_operation(
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Parse JSON from response."""
         try:
-            json_data = response.model_dump_json()
+            json_data: dict[str, t.GeneralValueType] = response.json()
             return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(
@@ -215,8 +219,7 @@ def _execute_app_operation(
                     t.AppData.model_validate(json_data["data"]),
                 )
                 if (
-                    isinstance(json_data, dict)
-                    and "success" in json_data
+                    "success" in json_data
                     and json_data["success"] is True
                     and "data" in json_data
                     and isinstance(data := json_data["data"], dict)
@@ -255,7 +258,7 @@ def _execute_list_operation(
     ) -> FlextResult[dict[str, t.GeneralValueType]]:
         """Parse JSON from response."""
         try:
-            json_data = response.model_dump_json()
+            json_data: dict[str, t.GeneralValueType] = response.json()
             return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
         except Exception as e:
             return FlextResult[dict[str, t.GeneralValueType]].fail(
@@ -264,17 +267,16 @@ def _execute_list_operation(
 
     result = _make_get_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
-        result = FlextResult[dict[str, t.GeneralValueType]].fail("HTTP request failed")
-    else:
-        result = result.flat_map(_parse_response_json).map(
-            lambda d: _extract_apps_from_response(d, data_key),
-        )
+        msg = "HTTP request failed"
+        raise ValueError(msg)
 
-    # Fast fail - no fallback to empty list
-    if result.is_failure:
-        error_msg = f"List operation failed: {result.error}"
-        raise ValueError(error_msg)
-    return result.value
+    parsed_result = result.flat_map(_parse_response_json)
+    if parsed_result.is_failure:
+        raise ValueError(parsed_result.error or "Parse failed")
+
+    response_dict: dict[str, t.GeneralValueType] = parsed_result.value
+    apps_list: list[t.AppData] = _extract_apps_from_response(response_dict, data_key)
+    return apps_list
 
 
 def start_application(app_id: str) -> t.AppData:
@@ -354,12 +356,12 @@ def demo_application_lifecycle() -> None:
     except ValueError:
         return
 
-    list_applications()
+    _ = list_applications()
 
     # Start applications and check results - fast fail on error
     try:
-        start_application(str(app1.id))
-        start_application(str(app2.id))
+        _ = start_application(str(app1.id))
+        _ = start_application(str(app2.id))
     except ValueError:
         return
 
@@ -367,20 +369,20 @@ def demo_application_lifecycle() -> None:
     try:
         for app_data in [app1, app2]:
             app_id = str(app_data.id)
-            get_application_status(app_id)
+            _ = get_application_status(app_id)
     except ValueError:
         return
 
-    list_applications()
+    _ = list_applications()
 
     # Stop applications - fast fail on error
     try:
-        stop_application(str(app1.id))
-        stop_application(str(app2.id))
+        _ = stop_application(str(app1.id))
+        _ = stop_application(str(app2.id))
     except ValueError:
         return
 
-    list_applications()
+    _ = list_applications()
 
 
 if __name__ == "__main__":

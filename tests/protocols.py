@@ -22,18 +22,17 @@ class TestsFlextWebProtocols(FlextTestsProtocols, FlextWebProtocols):
     - p.Web.* (from FlextWebProtocols)
     """
 
-    class Tests(FlextTestsProtocols.Tests):
-        """Project-specific test protocols.
+    class Web(FlextWebProtocols.Web):
+        """Web-specific test protocols."""
 
-        Extends FlextTestsProtocols.Tests with Web-specific protocols.
-        """
+        class Tests:
+            """Project-specific test protocols.
 
-        class Web:
-            """Web-specific test protocols."""
+            Extends Tests Web-specific protocols.
+            """
 
 
-# Runtime aliases
-p = TestsFlextWebProtocols
+# Runtime aliases per FLEXT convention
 p = TestsFlextWebProtocols
 
 __all__ = ["TestsFlextWebProtocols", "p"]

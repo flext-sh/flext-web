@@ -6,7 +6,8 @@ Tests the CLI entry point functionality following flext standards.
 from __future__ import annotations
 
 import pytest
-from flext_web import FlextWebModels, __main__
+from flext_web import __main__
+from tests import m
 
 
 class TestFlextWebCliService:
@@ -24,7 +25,7 @@ class TestFlextWebCliService:
         cli_service = __main__.FlextWebCliService()
 
         # Use real ServiceResponse structure
-        status = FlextWebModels.Web.ServiceResponse(
+        status = m.Web.ServiceResponse(
             service="test-service",
             status="healthy",
             capabilities=["http_services_available"],

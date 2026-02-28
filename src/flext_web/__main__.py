@@ -38,7 +38,8 @@ class FlextWebCliService:
 
         """
         # Use monadic pattern for status check with side-effect logging
-        return self._api.get_service_status().map(self._log_status_and_return)
+        status_result = self._api.get_service_status()
+        return status_result.map(self._log_status_and_return)
 
     def _log_status_and_return(
         self,
@@ -53,7 +54,7 @@ class FlextWebCliService:
             bool: Always True when called (indicates successful status check)
 
         """
-        self._logger.info(f"Service status: {status_data.service}")
+        _ = self._logger.info(f"Service status: {status_data.service}")
         return True
 
     @staticmethod
@@ -64,10 +65,8 @@ class FlextWebCliService:
 
         # Use monadic pattern - handle failure and exit
         result = cli_service.run()
-
-        # Process result - fast fail on error, no fallback
         if result.is_failure:
-            logger.error(f"Service failed: {result.error}")
+            _ = logger.error(f"Service failed: {result.error}")
             sys.exit(1)
 
         # Success - exit normally

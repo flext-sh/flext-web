@@ -9,8 +9,8 @@ which may override Field defaults in test environments.
 """
 
 import pytest
-from flext_web import FlextWebApi, FlextWebConstants, FlextWebModels, FlextWebSettings
 from pydantic import ValidationError
+from tests import FlextWebApi, FlextWebSettings, c, m
 from tests.conftest import create_test_result
 
 
@@ -33,7 +33,7 @@ class TestFlextWebApi:
 
     def test_create_fastapi_app_with_config(self) -> None:
         """Test FastAPI app creation with configuration."""
-        config = FlextWebModels.Web.FastAPIAppConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
         )
@@ -48,7 +48,7 @@ class TestFlextWebApi:
         # Test with invalid config - Pydantic validation should fail
         # FastAPIAppConfig requires valid title (min_length=1)
         try:
-            invalid_config = FlextWebModels.Web.FastAPIAppConfig(
+            invalid_config = m.Web.FastAPIAppConfig(
                 title="",  # Empty title - should fail Pydantic validation
                 version="1.0.0",
             )
@@ -216,7 +216,7 @@ class TestFlextWebApi:
             host="localhost",
             port=8080,
             debug=True,  # Use alias
-            secret_key=FlextWebConstants.Web.WebDefaults.DEV_SECRET_KEY,
+            secret_key=c.Web.WebDefaults.DEV_SECRET_KEY,
         )
 
         result = FlextWebApi.validate_http_config(config)
@@ -235,7 +235,7 @@ class TestFlextWebApi:
         """
         # Config with invalid port should fail Pydantic validation on creation
         with pytest.raises(ValidationError):  # Pydantic will raise ValidationError
-            FlextWebSettings(port=-1)
+            _ = FlextWebSettings(port=-1)
 
     def test_get_service_status(self) -> None:
         """Test service status retrieval."""
@@ -243,7 +243,7 @@ class TestFlextWebApi:
         assert result.is_success
         status = result.value
         # ServiceResponse is now a Pydantic model, not a dict
-        assert isinstance(status, FlextWebModels.Web.ServiceResponse)
+        assert isinstance(status, m.Web.ServiceResponse)
         assert "http_services_available" in status.capabilities
         assert status.service == "flext-web-api"
         assert status.status == "operational"

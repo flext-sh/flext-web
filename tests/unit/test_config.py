@@ -8,8 +8,8 @@ are not enforced. See: FlextSettings bypasses Field validation constraints.
 """
 
 import pytest
-from flext_web import FlextWebSettings
 from pydantic import ValidationError
+from tests import FlextWebSettings
 
 
 class TestFlextWebSettings:
@@ -56,7 +56,7 @@ class TestFlextWebSettings:
         Actual: FlextSettings accepts empty string (bug in flext-core)
         """
         with pytest.raises(ValidationError):
-            FlextWebSettings(host="")
+            _ = FlextWebSettings(host="")
 
     def test_validation_port_range(self) -> None:
         """Test port validation within valid range."""
@@ -74,7 +74,7 @@ class TestFlextWebSettings:
         Actual: FlextSettings accepts out-of-range port (bug in flext-core)
         """
         with pytest.raises(ValidationError):
-            FlextWebSettings(port=70000)
+            _ = FlextWebSettings(port=70000)
 
     @pytest.mark.xfail(
         reason="FlextSettings bug: Field constraints not enforced",
@@ -87,7 +87,7 @@ class TestFlextWebSettings:
         Actual: FlextSettings accepts short secret key (bug in flext-core)
         """
         with pytest.raises(ValidationError):
-            FlextWebSettings(secret_key="short")
+            _ = FlextWebSettings(secret_key="short")
 
     def test_validation_secret_key_valid(self) -> None:
         """Test secret key validation with valid key."""
