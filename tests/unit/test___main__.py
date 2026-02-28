@@ -6,8 +6,7 @@ Tests the CLI entry point functionality following flext standards.
 from __future__ import annotations
 
 import pytest
-from flext_web import __main__
-from flext_web.models import FlextWebModels
+from flext_web import FlextWebModels, __main__
 
 
 class TestFlextWebCliService:

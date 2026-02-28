@@ -9,9 +9,7 @@ from typing import Any, cast
 
 import pytest
 from flext_core import FlextResult, p
-from flext_web import t
-from flext_web.constants import FlextWebConstants
-from flext_web.protocols import FlextWebProtocols
+from flext_web import FlextWebConstants, FlextWebProtocols, t
 
 # Access test base classes via the namespace
 _WebAppManagerBase = FlextWebProtocols.Web.TestBases._WebAppManagerBase

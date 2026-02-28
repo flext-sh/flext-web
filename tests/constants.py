@@ -15,8 +15,8 @@ from __future__ import annotations
 
 from typing import Final
 
-from flext_tests.constants import FlextTestsConstants
-from flext_web.constants import FlextWebConstants
+from flext_tests import FlextTestsConstants
+from flext_web import FlextWebConstants
 
 
 class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):

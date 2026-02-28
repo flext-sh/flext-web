@@ -17,13 +17,10 @@ from flext_core import (
     FlextConstants,
     FlextResult,
     FlextService,
+    u,
 )
-from flext_core.utilities import u
 
-from flext_web.constants import c
-from flext_web.models import m
-from flext_web.settings import FlextWebSettings
-from flext_web.typings import t
+from flext_web import FlextWebSettings, c, m, t
 
 
 class FlextWebServices(FlextService[bool]):
@@ -57,9 +54,14 @@ class FlextWebServices(FlextService[bool]):
                                          failure contains error message
 
             """
+
             # Use u.guard() for unified validation (DSL pattern)
             def _validate_username(un: t.GeneralValueType) -> bool:
-                return isinstance(un, str) and un != FlextConstants.Test.NONEXISTENT_USERNAME
+                return (
+                    isinstance(un, str)
+                    and un != FlextConstants.Test.NONEXISTENT_USERNAME
+                )
+
             username_validated = u.guard(
                 credentials.username,
                 _validate_username,
@@ -69,7 +71,10 @@ class FlextWebServices(FlextService[bool]):
                 return FlextResult.fail("Authentication failed")
 
             def _validate_password(pw: t.GeneralValueType) -> bool:
-                return isinstance(pw, str) and pw == FlextConstants.Test.DEFAULT_PASSWORD
+                return (
+                    isinstance(pw, str) and pw == FlextConstants.Test.DEFAULT_PASSWORD
+                )
+
             password_validated = u.guard(
                 credentials.password,
                 _validate_password,
@@ -556,9 +561,13 @@ class FlextWebServices(FlextService[bool]):
             FlextResult[bool]: Success contains True if valid, failure with error message
 
         """
+
         # Use u.guard() for unified validation (DSL pattern)
         def _validate_routes(routes_init: t.GeneralValueType) -> bool:
-            return isinstance(routes_init, bool) and (not self._service_running or routes_init)
+            return isinstance(routes_init, bool) and (
+                not self._service_running or routes_init
+            )
+
         routes_validated = u.guard(
             self._routes_initialized,
             _validate_routes,
@@ -571,6 +580,7 @@ class FlextWebServices(FlextService[bool]):
 
         def _validate_middleware(mw_conf: t.GeneralValueType) -> bool:
             return isinstance(mw_conf, bool) and (not self._service_running or mw_conf)
+
         middleware_validated = u.guard(
             self._middleware_configured,
             _validate_middleware,

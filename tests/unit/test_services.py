@@ -7,10 +7,12 @@ from __future__ import annotations
 
 import pytest
 from flext_core import FlextConstants
-from flext_web.constants import FlextWebConstants
-from flext_web.models import FlextWebModels
-from flext_web.services import FlextWebServices
-from flext_web.settings import FlextWebSettings
+from flext_web import (
+    FlextWebConstants,
+    FlextWebModels,
+    FlextWebServices,
+    FlextWebSettings,
+)
 from pydantic import ValidationError
 
 

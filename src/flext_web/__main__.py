@@ -13,8 +13,7 @@ import sys
 
 from flext_core import FlextLogger, FlextResult
 
-from flext_web.api import FlextWebApi
-from flext_web.models import FlextWebModels
+from flext_web import FlextWebApi, FlextWebModels
 
 
 class FlextWebCliService:

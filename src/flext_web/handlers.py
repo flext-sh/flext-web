@@ -17,9 +17,7 @@ from flext_core import (
 )
 from pydantic import BaseModel, ConfigDict, Field
 
-from flext_web.constants import c
-from flext_web.models import m
-from flext_web.utilities import u
+from flext_web import c, m, u
 
 
 class FlextWebHandlers(FlextService[bool]):

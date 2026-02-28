@@ -5,7 +5,7 @@ Tests the web constants functionality following flext standards.
 
 from collections.abc import Mapping
 
-from flext_web.constants import FlextWebConstants
+from flext_web import FlextWebConstants
 
 
 class TestFlextWebConstants:

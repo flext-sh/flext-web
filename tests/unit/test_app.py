@@ -6,10 +6,7 @@ Tests the unified FlextWebApp class following flext standards.
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from flask.testing import FlaskClient
-from flext_web.app import FlextWebApp
-from flext_web.constants import FlextWebConstants
-from flext_web.models import FlextWebModels
-from flext_web.settings import FlextWebSettings
+from flext_web import FlextWebApp, FlextWebConstants, FlextWebModels, FlextWebSettings
 
 
 class TestFlextWebApp:

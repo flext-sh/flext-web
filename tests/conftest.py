@@ -27,10 +27,12 @@ from flext_tests import (
     FlextTestsFactories,
     FlextTestsMatchers,
 )
-from flext_web import FlextWebModels, FlextWebServices, FlextWebSettings
-from flext_web.app import FlextWebApp
-from flext_web.constants import FlextWebConstants
-from flext_web.typings import (
+from flext_web import (
+    FlextWebApp,
+    FlextWebConstants,
+    FlextWebModels,
+    FlextWebServices,
+    FlextWebSettings,
     FlextWebTypes,
     _ApplicationConfig,
     _WebRequestConfig,

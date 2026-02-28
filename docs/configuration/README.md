@@ -423,7 +423,7 @@ print(f'Debug: {config.debug}')
 ```bash
 # Test configuration validation
 python -c "
-from flext_web.settings import FlextWebSettings
+from flext_web import FlextWebSettings
 import os
 
 # Test with invalid configuration
@@ -507,7 +507,7 @@ env | grep FLEXT_WEB_
 
 # Test direct configuration
 python -c "
-from flext_web.settings import FlextWebSettings
+from flext_web import FlextWebSettings
 config = FlextWebSettings(host='test', port=9999)
 print(f'Host: {config.host}, Port: {config.port}')
 "

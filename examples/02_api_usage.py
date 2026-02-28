@@ -13,7 +13,7 @@ This example shows:
 
 import requests
 from flext_core import FlextResult
-from flext_web.typings import t
+from flext_web import t
 
 
 class ExampleConstants:

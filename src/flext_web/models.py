@@ -15,7 +15,7 @@ from typing import final, override
 from flext_core import FlextModels, r, t, u
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
-from flext_web.constants import c
+from flext_web import c
 
 
 @final
@@ -24,6 +24,7 @@ class FlextWebModels(FlextModels):
 
     Provides Pydantic models for web applications with validation.
     """
+
     class Web:
         """Web application models for HTTP protocol and application entities.
 
@@ -999,7 +1000,9 @@ class FlextWebModels(FlextModels):
                 return r[FlextWebModels.Web.WebRequest].fail(
                     "Headers must be a dictionary or None",
                 )
-            headers_validated: dict[str, str] = headers if isinstance(headers, dict) else {}
+            headers_validated: dict[str, str] = (
+                headers if isinstance(headers, dict) else {}
+            )
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_request() -> FlextWebModels.Web.WebRequest:
@@ -1048,7 +1051,9 @@ class FlextWebModels(FlextModels):
                 return r[FlextWebModels.Web.WebResponse].fail(
                     "Headers must be a dictionary or None",
                 )
-            headers_validated: dict[str, str] = headers if isinstance(headers, dict) else {}
+            headers_validated: dict[str, str] = (
+                headers if isinstance(headers, dict) else {}
+            )
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_response() -> FlextWebModels.Web.WebResponse:

@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web.typings import FlextWebTypes
+from flext_web import FlextWebTypes
 
 
 class TestsTypings(FlextWebTypes):

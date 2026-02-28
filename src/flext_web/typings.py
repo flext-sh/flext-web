@@ -15,12 +15,11 @@ from typing import Literal
 from flext_core import (
     FlextResult,
     FlextTypes as ft,
-    )
-from flext_core.utilities import u
+    u,
+)
 from pydantic import BaseModel, ConfigDict, Field
 
-from flext_web.constants import c
-from flext_web.models import m
+from flext_web import c, m
 
 HttpMethod = c.Web.Method
 
@@ -285,6 +284,7 @@ class FlextWebTypes(ft):
 
         def _validate_method(m: ft.GeneralValueType) -> bool:
             return isinstance(m, str) and m in valid_methods
+
         method_validated = u.guard(
             method_upper,
             _validate_method,
@@ -400,9 +400,7 @@ class FlextWebTypes(ft):
         method: str = config.method or c.Web.Method.GET
         headers = config.headers
         body = config.body
-        timeout: float = (
-            config.timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS
-        )
+        timeout: float = config.timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS
         query_params = config.query_params
         client_ip: str = config.client_ip or ""
         user_agent: str = config.user_agent or ""
@@ -416,9 +414,7 @@ class FlextWebTypes(ft):
         # Validate headers - must be dict or None
         headers_validated: dict[str, str] = headers or {}
         # Validate query_params - must be dict or None
-        query_params_validated: dict[str, ft.ConfigMapValue] = (
-            query_params or {}
-        )
+        query_params_validated: dict[str, ft.ConfigMapValue] = query_params or {}
 
         # Use # Direct validation instead for method validation (DSL pattern)
         method_upper = method.upper()
@@ -426,6 +422,7 @@ class FlextWebTypes(ft):
 
         def _validate_method(m: ft.GeneralValueType) -> bool:
             return isinstance(m, str) and m in valid_methods
+
         method_validated = u.guard(
             method_upper,
             _validate_method,
@@ -489,9 +486,7 @@ class FlextWebTypes(ft):
         headers = config.headers
         body = config.body
         elapsed_time: float = config.elapsed_time or 0.0
-        content_type: str = (
-            config.content_type or c.Web.Http.CONTENT_TYPE_JSON
-        )
+        content_type: str = config.content_type or c.Web.Http.CONTENT_TYPE_JSON
         content_length: int = config.content_length or 0
         processing_time_ms: float = config.processing_time_ms or 0.0
 
@@ -551,9 +546,7 @@ class FlextWebTypes(ft):
         host: str = config.host or "localhost"
         port: int = config.port or 8080
         status: str = config.status or c.Web.Status.STOPPED.value
-        environment: str = (
-            config.environment or c.Web.Name.DEVELOPMENT.value
-        )
+        environment: str = config.environment or c.Web.Name.DEVELOPMENT.value
         debug_mode: bool = config.debug_mode
         version: int = config.version
 

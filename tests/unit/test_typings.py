@@ -6,9 +6,9 @@ Tests the unified FlextWebModels class following flext standards.
 from __future__ import annotations
 
 import pytest
-from flext_web import FlextWebModels
-from flext_web.settings import FlextWebSettings
-from flext_web.typings import (
+from flext_web import (
+    FlextWebModels,
+    FlextWebSettings,
     FlextWebTypes,
     _ApplicationConfig,
     _WebRequestConfig,

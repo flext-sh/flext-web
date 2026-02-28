@@ -6,8 +6,7 @@ Tests the unified FlextWebUtilities class following flext standards.
 from unittest.mock import patch
 
 import pytest
-from flext_web.models import FlextWebModels
-from flext_web.utilities import FlextWebUtilities
+from flext_web import FlextWebModels, FlextWebUtilities
 
 
 class TestFlextWebUtilities:

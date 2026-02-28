@@ -10,20 +10,28 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_web.__version__ import __version__, __version_info__
-    from flext_web.api import FlextWebApi
-    from flext_web.app import FlextWebApp
-    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
-    from flext_web.handlers import FlextWebHandlers
-    from flext_web.models import FlextWebModels, FlextWebModels as m
-    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
-    from flext_web.services import FlextWebServices
-    from flext_web.settings import FlextWebSettings
-    from flext_web.typings import FlextWebTypes, FlextWebTypes as t
-    from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
+    from flext_web import (
+        FlextWebApi,
+        FlextWebApp,
+        FlextWebConstants,
+        FlextWebConstants as c,
+        FlextWebHandlers,
+        FlextWebModels,
+        FlextWebModels as m,
+        FlextWebProtocols,
+        FlextWebProtocols as p,
+        FlextWebServices,
+        FlextWebSettings,
+        FlextWebTypes,
+        FlextWebTypes as t,
+        FlextWebUtilities,
+        FlextWebUtilities as u,
+        __version__,
+        __version_info__,
+    )
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {

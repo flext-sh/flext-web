@@ -80,7 +80,7 @@ Use lazy imports to break the circular dependency:
 ```python
 # In one of the files, import inside function instead of at module level
 def get_config():
-    from flext_web.settings import FlextWebSettings  # Import inside function
+    from flext_web import FlextWebSettings  # Import inside function
     return FlextWebSettings()
 ```
 

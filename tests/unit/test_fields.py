@@ -3,9 +3,7 @@
 Tests the web fields functionality following flext standards.
 """
 
-from flext_web.constants import FlextWebConstants
-from flext_web.models import FlextWebModels
-from flext_web.settings import FlextWebSettings
+from flext_web import FlextWebConstants, FlextWebModels, FlextWebSettings
 from pydantic import BaseModel
 
 

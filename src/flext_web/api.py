@@ -16,11 +16,7 @@ from flext_core import (
 )
 from pydantic import ValidationError
 
-from flext_web.app import FlextWebApp
-from flext_web.constants import c
-from flext_web.models import m
-from flext_web.settings import FlextWebSettings
-from flext_web.typings import t
+from flext_web import FlextWebApp, FlextWebSettings, c, m, t
 
 
 class FlextWebApi:
@@ -119,7 +115,9 @@ class FlextWebApi:
             _ = logger.exception("HTTP config creation failed: %s", exception=e)
             return FlextResult.fail(f"Configuration validation failed: {error_msg}")
 
-        _ = logger.info(f"HTTP config created successfully: {config.host}:{config.port}")
+        _ = logger.info(
+            f"HTTP config created successfully: {config.host}:{config.port}"
+        )
         return FlextResult.ok(config)
 
     @classmethod

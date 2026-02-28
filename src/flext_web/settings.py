@@ -14,7 +14,7 @@ from flext_core import FlextResult, FlextSettings
 from pydantic import Field, computed_field
 from pydantic_settings import SettingsConfigDict
 
-from flext_web.constants import c
+from flext_web import c
 
 
 @FlextSettings.auto_register("web")
