@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import override
+from typing import final, override
 
 from flext_core import FlextModels, r, t, u
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -18,20 +18,12 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from flext_web.constants import c
 
 
+@final
 class FlextWebModels(FlextModels):
     """Web application models collection.
 
     Provides Pydantic models for web applications with validation.
     """
-
-    def __init_subclass__(cls, **kwargs: t.GeneralValueType) -> None:
-        """Warn when FlextWebModels is subclassed directly."""
-        super().__init_subclass__(**kwargs)
-        u.Deprecation.warn_once(
-            f"subclass:{cls.__name__}",
-            "Subclassing FlextWebModels is deprecated. Use FlextModels directly with composition instead.",
-        )
-
     class Web:
         """Web application models for HTTP protocol and application entities.
 
