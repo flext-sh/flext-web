@@ -16,19 +16,13 @@ from flext_core import (
     FlextConstants,
     FlextResult,
     FlextService,
-    FlextUtilities,
 )
+from flext_core.utilities import u
 
-from flext_web.constants import FlextWebConstants
-from flext_web.models import FlextWebModels
+from flext_web.constants import c
+from flext_web.models import m
 from flext_web.settings import FlextWebSettings
-from flext_web.typings import FlextWebTypes
-
-# Import aliases for simplified usage
-u = FlextUtilities
-c = FlextWebConstants
-m = FlextWebModels
-t = FlextWebTypes
+from flext_web.typings import t
 
 
 class FlextWebServices(FlextService[bool]):

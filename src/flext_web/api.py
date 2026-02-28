@@ -13,21 +13,14 @@ from flext_core import (
     FlextContainer,
     FlextLogger,
     FlextResult,
-    FlextUtilities,
 )
 from pydantic import ValidationError
 
 from flext_web.app import FlextWebApp
-from flext_web.constants import FlextWebConstants
-from flext_web.models import FlextWebModels
+from flext_web.constants import c
+from flext_web.models import m
 from flext_web.settings import FlextWebSettings
 from flext_web.typings import t
-
-# Import aliases for simplified usage
-r = FlextResult
-u = FlextUtilities
-c = FlextWebConstants
-m = FlextWebModels
 
 
 class FlextWebApi:
