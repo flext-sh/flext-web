@@ -44,8 +44,7 @@ try:
 except ImportError:
     make_server = None
 
-from flext_core.protocols import FlextProtocols, p
-from flext_core.result import r
+from flext_core import FlextProtocols, p, r
 
 from flext_web.app import FlextWebApp
 from flext_web.constants import c
