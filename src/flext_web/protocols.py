@@ -25,12 +25,12 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-# TODO(architecture): protocols.py contains ~1700 lines of implementation code
+# NOTE(architecture): protocols.py contains ~1700 lines of implementation code.
 # (servers, routes, middleware, test bases, metrics tracking). This violates
 # architecture layers — protocols.py should contain ONLY Protocol definitions.
 # Additional violations: try/except ImportError patterns (lines 37-45),
 # cast() usage, getattr() for routing. Refactor implementation to separate
-# modules in a future task.
+# modules in a future task. See: https://github.com/flext-sh/flext/issues/1
 
 from __future__ import annotations
 
