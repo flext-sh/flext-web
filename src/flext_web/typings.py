@@ -220,7 +220,6 @@ class FlextWebTypes(ft):
             str | int | bool | list[str] | dict[str, str | int | bool],
         ]
 
-    # Types alias - for compatibility with code using t.Types.ConfigMapValue
     class Types:
         """Type system aliases for flext-web."""
 

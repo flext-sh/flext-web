@@ -66,7 +66,6 @@ class FlextWebApp(FlextService[bool]):
 
         """
         self.logger.info("FlextWebApp service executed successfully")
-        # Return bool for FlextService compatibility
         return r[bool].ok(value=True)
 
     # =========================================================================

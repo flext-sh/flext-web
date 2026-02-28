@@ -355,7 +355,6 @@ class FlextWebHandlers(FlextService[bool]):
             failure contains error message
 
         """
-        # Return bool for FlextService compatibility
         return r[bool].ok(value=True)
 
     @override

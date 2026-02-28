@@ -226,7 +226,6 @@ class FlextWebServices(FlextService[bool]):
         # but we override _config after initialization to use the passed config
         super().__init__()
         # Override _config with web config (FlextService creates default via _get_service_config_type)
-        # Set attribute directly (no PrivateAttr needed, compatible with FlextService)
         self._config = web_config
         self._entity_service: FlextWebServices.Entity | None = None
 
@@ -547,7 +546,6 @@ class FlextWebServices(FlextService[bool]):
         failure contains error message
 
         """
-        # Return bool for FlextService compatibility
         return FlextResult[bool].ok(value=True)
 
     @override
