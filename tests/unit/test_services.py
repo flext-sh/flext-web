@@ -6,12 +6,11 @@ Tests the web services functionality following flext standards.
 from __future__ import annotations
 
 import pytest
-from flext_core import FlextConstants
 from flext_web import (
-    FlextWebConstants,
-    FlextWebModels,
     FlextWebServices,
     FlextWebSettings,
+    c,
+    m,
 )
 from pydantic import ValidationError
 
@@ -78,9 +77,9 @@ class TestFlextWebService:
         """Test successful authenticate."""
         service = FlextWebServices()
         # Use valid credentials from constants
-        credentials = FlextWebModels.Web.Credentials(
+        credentials = m.Web.Credentials(
             username="testuser",
-            password=FlextConstants.Test.DEFAULT_PASSWORD,
+            password=c.Test.DEFAULT_PASSWORD,
         )
         authenticate_result = service.authenticate(credentials)
         assert authenticate_result.is_success, "Authentication should succeed"
@@ -93,8 +92,8 @@ class TestFlextWebService:
         """Test authenticate with invalid credentials."""
         service = FlextWebServices()
         # Use nonexistent username from constants
-        credentials = FlextWebModels.Web.Credentials(
-            username=FlextConstants.Test.NONEXISTENT_USERNAME,
+        credentials = m.Web.Credentials(
+            username=c.Test.NONEXISTENT_USERNAME,
             password="wrongpassword",
         )
         authenticate_result = service.authenticate(credentials)
@@ -106,7 +105,7 @@ class TestFlextWebService:
         """Test authenticate with wrong password."""
         service = FlextWebServices()
         # Use valid username but wrong password
-        credentials = FlextWebModels.Web.Credentials(
+        credentials = m.Web.Credentials(
             username="testuser",
             password="wrongpassword",
         )
@@ -120,7 +119,7 @@ class TestFlextWebService:
         service = FlextWebServices()
         # Try to create invalid credentials - should fail at model validation
         try:
-            credentials = FlextWebModels.Web.Credentials(
+            credentials = m.Web.Credentials(
                 username=123,
                 password="password",
             )
@@ -144,7 +143,7 @@ class TestFlextWebService:
     def test_register_success(self) -> None:
         """Test successful user registration."""
         service = FlextWebServices()
-        user_data = FlextWebModels.Web.UserData(
+        user_data = m.Web.UserData(
             username="newuser",
             email="newuser@example.com",
             password="password123",
@@ -161,7 +160,7 @@ class TestFlextWebService:
         """Test registration with duplicate username."""
         service = FlextWebServices()
         # Register first user
-        first_user_data = FlextWebModels.Web.UserData(
+        first_user_data = m.Web.UserData(
             username="duplicate",
             email="user1@example.com",
             password="password123",
@@ -170,7 +169,7 @@ class TestFlextWebService:
         assert first_result.is_success
 
         # Try to register with same username (service allows it without duplicate checking)
-        second_user_data = FlextWebModels.Web.UserData(
+        second_user_data = m.Web.UserData(
             username="duplicate",
             email="user2@example.com",
             password="password456",
@@ -183,7 +182,7 @@ class TestFlextWebService:
         service = FlextWebServices()
         # Try to create invalid user data - should fail at model validation
         try:
-            user_data = FlextWebModels.Web.UserData(
+            user_data = m.Web.UserData(
                 username=123,
                 email="test@example.com",
             )
@@ -229,7 +228,7 @@ class TestFlextWebService:
     def test_create_app_success(self) -> None:
         """Test successful app creation."""
         service = FlextWebServices()
-        app_data = FlextWebModels.Web.AppData(
+        app_data = m.Web.AppData(
             name="test-app",
             host="localhost",
             port=8080,
@@ -249,7 +248,7 @@ class TestFlextWebService:
         service = FlextWebServices()
         # Try to create invalid app data - should fail at model validation
         try:
-            app_data = FlextWebModels.Web.AppData(
+            app_data = m.Web.AppData(
                 name=123,
                 host="localhost",
                 port=8080,
@@ -265,7 +264,7 @@ class TestFlextWebService:
         """Test successful app retrieval."""
         service = FlextWebServices()
         # First create an app
-        app_data = FlextWebModels.Web.AppData(
+        app_data = m.Web.AppData(
             name="test-app",
             host="localhost",
             port=8080,
@@ -309,7 +308,7 @@ class TestFlextWebService:
         """Test successful app start."""
         service = FlextWebServices()
         # First create an app
-        app_data = FlextWebModels.Web.AppData(
+        app_data = m.Web.AppData(
             name="test-app",
             host="localhost",
             port=8080,
@@ -351,7 +350,7 @@ class TestFlextWebService:
         """Test successful app stop."""
         service = FlextWebServices()
         # First create and start an app
-        app_data = FlextWebModels.Web.AppData(
+        app_data = m.Web.AppData(
             name="test-app",
             host="localhost",
             port=8080,
@@ -423,7 +422,7 @@ class TestFlextWebService:
     def test_create_entity_success(self) -> None:
         """Test successful entity creation."""
         service = FlextWebServices()
-        entity_data = FlextWebModels.Web.EntityData(data={"key": "value"})
+        entity_data = m.Web.EntityData(data={"key": "value"})
         create_result = service.create_entity(entity_data)
         assert create_result.is_success
         created_entity = create_result.value
@@ -434,7 +433,7 @@ class TestFlextWebService:
         """Test successful entity retrieval."""
         service = FlextWebServices()
         # First create an entity
-        entity_data = FlextWebModels.Web.EntityData(data={"key": "value"})
+        entity_data = m.Web.EntityData(data={"key": "value"})
         create_result = service.create_entity(entity_data)
         assert create_result.is_success
         created_entity = create_result.value
@@ -474,8 +473,8 @@ class TestFlextWebService:
         """Test successful entity listing."""
         service = FlextWebServices()
         # Create some entities
-        entity1 = FlextWebModels.Web.EntityData(data={"key1": "value1"})
-        entity2 = FlextWebModels.Web.EntityData(data={"key2": "value2"})
+        entity1 = m.Web.EntityData(data={"key1": "value1"})
+        entity2 = m.Web.EntityData(data={"key2": "value2"})
         service.create_entity(entity1)
         service.create_entity(entity2)
 
@@ -508,7 +507,7 @@ class TestFlextWebService:
         """Test configuration creation."""
         service = FlextWebServices()
         config = FlextWebSettings(
-            secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY,
+            secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
         )
         create_result = service.create_configuration(config)
         assert create_result.is_success
@@ -611,7 +610,7 @@ class TestFlextWebService:
     def test_create_service_with_config(self) -> None:
         """Test create_service with config."""
         config = FlextWebSettings(
-            secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY,
+            secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
         )
         result = FlextWebServices.create_service(config)
         assert result.is_success

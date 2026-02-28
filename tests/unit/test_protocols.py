@@ -1,6 +1,6 @@
 """Comprehensive unit tests for flext_web.protocols module.
 
-Tests the unified FlextWebProtocols class following flext standards.
+Tests the unified p class following flext standards.
 """
 
 from __future__ import annotations
@@ -8,38 +8,38 @@ from __future__ import annotations
 from typing import Any, cast
 
 import pytest
-from flext_core import FlextResult, p
-from flext_web import FlextWebConstants, FlextWebProtocols, t
+from flext_core import r
+from flext_web import c, p, t
 
 # Access test base classes via the namespace
-_WebAppManagerBase = FlextWebProtocols.Web.TestBases._WebAppManagerBase
-_WebConnectionBase = FlextWebProtocols.Web.TestBases._WebConnectionBase
-_WebFrameworkInterfaceBase = FlextWebProtocols.Web.TestBases._WebFrameworkInterfaceBase
-_WebHandlerBase = FlextWebProtocols.Web.TestBases._WebHandlerBase
-_WebMonitoringBase = FlextWebProtocols.Web.TestBases._WebMonitoringBase
-_WebRepositoryBase = FlextWebProtocols.Web.TestBases._WebRepositoryBase
-_WebServiceBase = FlextWebProtocols.Web.TestBases._WebServiceBase
-_WebTemplateEngineBase = FlextWebProtocols.Web.TestBases._WebTemplateEngineBase
-_WebTemplateRendererBase = FlextWebProtocols.Web.TestBases._WebTemplateRendererBase
+_WebAppManagerBase = p.Web.TestBases._WebAppManagerBase
+_WebConnectionBase = p.Web.TestBases._WebConnectionBase
+_WebFrameworkInterfaceBase = p.Web.TestBases._WebFrameworkInterfaceBase
+_WebHandlerBase = p.Web.TestBases._WebHandlerBase
+_WebMonitoringBase = p.Web.TestBases._WebMonitoringBase
+_WebRepositoryBase = p.Web.TestBases._WebRepositoryBase
+_WebServiceBase = p.Web.TestBases._WebServiceBase
+_WebTemplateEngineBase = p.Web.TestBases._WebTemplateEngineBase
+_WebTemplateRendererBase = p.Web.TestBases._WebTemplateRendererBase
 
 
 class TestFlextWebProtocols:
-    """Test suite for FlextWebProtocols unified class."""
+    """Test suite for p unified class."""
 
     @staticmethod
     def _reset_protocol_state() -> None:
-        FlextWebProtocols.Web.apps_registry.clear()
-        FlextWebProtocols.Web.framework_instances.clear()
-        FlextWebProtocols.Web.app_runtimes.clear()
-        FlextWebProtocols.Web.service_state.update({
+        p.Web.apps_registry.clear()
+        p.Web.framework_instances.clear()
+        p.Web.app_runtimes.clear()
+        p.Web.service_state.update({
             "routes_initialized": False,
             "middleware_configured": False,
             "service_running": False,
         })
-        FlextWebProtocols.Web.template_config.clear()
-        FlextWebProtocols.Web.template_filters.clear()
-        FlextWebProtocols.Web.template_globals.clear()
-        FlextWebProtocols.Web.web_metrics.update({
+        p.Web.template_config.clear()
+        p.Web.template_filters.clear()
+        p.Web.template_globals.clear()
+        p.Web.web_metrics.update({
             "requests": 0,
             "errors": 0,
             "uptime": "0s",
@@ -52,9 +52,9 @@ class TestFlextWebProtocols:
             app_id: str,
             app_data: t.WebCore.ResponseDict,
             app_instance: object,
-        ) -> FlextResult[dict[str, object]]:
+        ) -> r[dict[str, object]]:
             _ = app_data, app_instance
-            return FlextResult[dict[str, object]].ok({
+            return r[dict[str, object]].ok({
                 "runner": "mock",
                 "app_id": app_id,
             })
@@ -62,46 +62,46 @@ class TestFlextWebProtocols:
         def _stop_runtime(
             app_id: str,
             runtime: dict[str, object],
-        ) -> FlextResult[bool]:
+        ) -> r[bool]:
             _ = app_id, runtime
-            return FlextResult[bool].ok(True)
+            return r[bool].ok(True)
 
         monkeypatch.setattr(
-            FlextWebProtocols.Web,
+            p.Web,
             "_start_app_runtime",
             staticmethod(_start_runtime),
         )
         monkeypatch.setattr(
-            FlextWebProtocols.Web,
+            p.Web,
             "_stop_app_runtime",
             staticmethod(_stop_runtime),
         )
 
     def test_protocols_inheritance(self) -> None:
-        """Test that FlextWebProtocols inherits from p."""
+        """Test that p inherits from p."""
         # Should inherit from p
-        assert issubclass(FlextWebProtocols, p)
+        assert issubclass(p, p)
 
         # Should have web-specific protocols under Web namespace
-        assert hasattr(FlextWebProtocols.Web, "WebAppManagerProtocol")
-        assert hasattr(FlextWebProtocols.Web, "WebResponseFormatterProtocol")
-        assert hasattr(FlextWebProtocols.Web, "WebFrameworkInterfaceProtocol")
+        assert hasattr(p.Web, "WebAppManagerProtocol")
+        assert hasattr(p.Web, "WebResponseFormatterProtocol")
+        assert hasattr(p.Web, "WebFrameworkInterfaceProtocol")
 
     def test_web_protocols_structure(self) -> None:
-        """Test FlextWebProtocols structure."""
+        """Test p structure."""
         # All web protocols are under the Web namespace
-        assert hasattr(FlextWebProtocols.Web, "WebAppManagerProtocol")
-        assert hasattr(FlextWebProtocols.Web, "WebResponseFormatterProtocol")
-        assert hasattr(FlextWebProtocols.Web, "WebFrameworkInterfaceProtocol")
-        assert hasattr(FlextWebProtocols.Web, "WebTemplateRendererProtocol")
-        assert hasattr(FlextWebProtocols.Web, "WebServiceProtocol")
-        assert hasattr(FlextWebProtocols.Web, "WebRepositoryProtocol")
-        assert hasattr(FlextWebProtocols.Web, "WebTemplateEngineProtocol")
-        assert hasattr(FlextWebProtocols.Web, "WebMonitoringProtocol")
+        assert hasattr(p.Web, "WebAppManagerProtocol")
+        assert hasattr(p.Web, "WebResponseFormatterProtocol")
+        assert hasattr(p.Web, "WebFrameworkInterfaceProtocol")
+        assert hasattr(p.Web, "WebTemplateRendererProtocol")
+        assert hasattr(p.Web, "WebServiceProtocol")
+        assert hasattr(p.Web, "WebRepositoryProtocol")
+        assert hasattr(p.Web, "WebTemplateEngineProtocol")
+        assert hasattr(p.Web, "WebMonitoringProtocol")
 
     def test_web_app_manager_protocol(self) -> None:
         """Test WebAppManagerProtocol definition."""
-        protocol = FlextWebProtocols.Web.WebAppManagerProtocol
+        protocol = p.Web.WebAppManagerProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -115,7 +115,7 @@ class TestFlextWebProtocols:
 
     def test_response_formatter_protocol(self) -> None:
         """Test ResponseFormatterProtocol definition."""
-        protocol = FlextWebProtocols.Web.WebResponseFormatterProtocol
+        protocol = p.Web.WebResponseFormatterProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -127,7 +127,7 @@ class TestFlextWebProtocols:
 
     def test_web_framework_interface_protocol(self) -> None:
         """Test WebFrameworkInterfaceProtocol definition."""
-        protocol = FlextWebProtocols.Web.WebFrameworkInterfaceProtocol
+        protocol = p.Web.WebFrameworkInterfaceProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -140,7 +140,7 @@ class TestFlextWebProtocols:
 
     def test_template_renderer_protocol(self) -> None:
         """Test TemplateRendererProtocol definition."""
-        protocol = FlextWebProtocols.Web.WebTemplateRendererProtocol
+        protocol = p.Web.WebTemplateRendererProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -153,7 +153,7 @@ class TestFlextWebProtocols:
 
     def test_web_service_protocol(self) -> None:
         """Test WebServiceProtocol definition."""
-        protocol = FlextWebProtocols.Web.WebServiceProtocol
+        protocol = p.Web.WebServiceProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -167,7 +167,7 @@ class TestFlextWebProtocols:
 
     def test_web_repository_protocol(self) -> None:
         """Test WebRepositoryProtocol definition."""
-        protocol = FlextWebProtocols.Web.WebRepositoryProtocol
+        protocol = p.Web.WebRepositoryProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -181,7 +181,7 @@ class TestFlextWebProtocols:
 
     def test_web_handler_protocol(self) -> None:
         """Test WebHandlerProtocol definition."""
-        protocol = FlextWebProtocols.Web.WebHandlerProtocol
+        protocol = p.Web.WebHandlerProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -197,7 +197,7 @@ class TestFlextWebProtocols:
 
     def test_web_template_engine_protocol(self) -> None:
         """Test WebTemplateEngineProtocol definition."""
-        protocol = FlextWebProtocols.Web.WebTemplateEngineProtocol
+        protocol = p.Web.WebTemplateEngineProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -213,7 +213,7 @@ class TestFlextWebProtocols:
 
     def test_web_monitoring_protocol(self) -> None:
         """Test WebMonitoringProtocol definition."""
-        protocol = FlextWebProtocols.Web.WebMonitoringProtocol
+        protocol = p.Web.WebMonitoringProtocol
 
         # Should be a Protocol
         assert isinstance(protocol, type)
@@ -228,15 +228,15 @@ class TestFlextWebProtocols:
         """Test that protocols are runtime checkable."""
         # All protocols should be runtime checkable (decorated with @runtime_checkable)
         protocols = [
-            FlextWebProtocols.Web.WebAppManagerProtocol,
-            FlextWebProtocols.Web.WebResponseFormatterProtocol,
-            FlextWebProtocols.Web.WebFrameworkInterfaceProtocol,
-            FlextWebProtocols.Web.WebTemplateRendererProtocol,
-            FlextWebProtocols.Web.WebServiceProtocol,
-            FlextWebProtocols.Web.WebRepositoryProtocol,
-            FlextWebProtocols.Web.WebHandlerProtocol,
-            FlextWebProtocols.Web.WebTemplateEngineProtocol,
-            FlextWebProtocols.Web.WebMonitoringProtocol,
+            p.Web.WebAppManagerProtocol,
+            p.Web.WebResponseFormatterProtocol,
+            p.Web.WebFrameworkInterfaceProtocol,
+            p.Web.WebTemplateRendererProtocol,
+            p.Web.WebServiceProtocol,
+            p.Web.WebRepositoryProtocol,
+            p.Web.WebHandlerProtocol,
+            p.Web.WebTemplateEngineProtocol,
+            p.Web.WebMonitoringProtocol,
         ]
 
         for protocol in protocols:
@@ -248,50 +248,50 @@ class TestFlextWebProtocols:
     def test_protocol_method_signatures(self) -> None:
         """Test that protocol methods have correct signatures."""
         # Test AppManagerProtocol methods
-        protocol = FlextWebProtocols.Web.WebAppManagerProtocol
+        protocol = p.Web.WebAppManagerProtocol
 
-        # create_app should take name, port, host and return FlextResult[WebApp]
+        # create_app should take name, port, host and return r[WebApp]
         create_app_method = protocol.__dict__["create_app"]
         assert callable(create_app_method)
 
-        # start_app should take app_id and return FlextResult[WebApp]
+        # start_app should take app_id and return r[WebApp]
         start_app_method = protocol.__dict__["start_app"]
         assert callable(start_app_method)
 
-        # stop_app should take app_id and return FlextResult[WebApp]
+        # stop_app should take app_id and return r[WebApp]
         stop_app_method = protocol.__dict__["stop_app"]
         assert callable(stop_app_method)
 
-        # list_apps should return FlextResult[list[WebApp]]
+        # list_apps should return r[list[WebApp]]
         list_apps_method = protocol.__dict__["list_apps"]
         assert callable(list_apps_method)
 
     def test_protocol_inheritance_chain(self) -> None:
         """Test that protocols properly inherit from base protocols."""
         # WebServiceInterface should inherit from Service
-        web_service_protocol = FlextWebProtocols.Web.WebServiceProtocol
+        web_service_protocol = p.Web.WebServiceProtocol
         assert hasattr(web_service_protocol, "__bases__")
 
         # AppRepositoryInterface should inherit from Repository
-        app_repo_protocol = FlextWebProtocols.Web.WebRepositoryProtocol
+        app_repo_protocol = p.Web.WebRepositoryProtocol
         assert hasattr(app_repo_protocol, "__bases__")
 
         # MiddlewareInterface should inherit from Extensions.Middleware
-        middleware_protocol = FlextWebProtocols.Web.WebHandlerProtocol
+        middleware_protocol = p.Web.WebHandlerProtocol
         assert hasattr(middleware_protocol, "__bases__")
 
         # TemplateEngineInterface should inherit from Infrastructure.Configurable
-        template_engine_protocol = FlextWebProtocols.Web.WebTemplateEngineProtocol
+        template_engine_protocol = p.Web.WebTemplateEngineProtocol
         assert hasattr(template_engine_protocol, "__bases__")
 
         # MonitoringInterface should inherit from Extensions.Observability
-        monitoring_protocol = FlextWebProtocols.Web.WebMonitoringProtocol
+        monitoring_protocol = p.Web.WebMonitoringProtocol
         assert hasattr(monitoring_protocol, "__bases__")
 
     def test_protocol_type_annotations(self) -> None:
         """Test that protocols have proper type annotations."""
         # Test AppManagerProtocol type annotations
-        protocol = FlextWebProtocols.Web.WebAppManagerProtocol
+        protocol = p.Web.WebAppManagerProtocol
 
         # create_app should have proper type annotations
         create_app_annotations = protocol.__dict__["create_app"].__annotations__
@@ -303,7 +303,7 @@ class TestFlextWebProtocols:
     def test_protocol_documentation(self) -> None:
         """Test that protocols have proper documentation."""
         # Test AppManagerProtocol documentation
-        protocol = FlextWebProtocols.Web.WebAppManagerProtocol
+        protocol = p.Web.WebAppManagerProtocol
         assert hasattr(protocol, "__doc__")
         assert protocol.__doc__ is not None
 
@@ -314,15 +314,15 @@ class TestFlextWebProtocols:
         """Test that protocols are consistent with implementation."""
         # All protocols should be consistent with their expected usage
         protocols = [
-            FlextWebProtocols.Web.WebAppManagerProtocol,
-            FlextWebProtocols.Web.WebResponseFormatterProtocol,
-            FlextWebProtocols.Web.WebFrameworkInterfaceProtocol,
-            FlextWebProtocols.Web.WebTemplateRendererProtocol,
-            FlextWebProtocols.Web.WebServiceProtocol,
-            FlextWebProtocols.Web.WebRepositoryProtocol,
-            FlextWebProtocols.Web.WebHandlerProtocol,
-            FlextWebProtocols.Web.WebTemplateEngineProtocol,
-            FlextWebProtocols.Web.WebMonitoringProtocol,
+            p.Web.WebAppManagerProtocol,
+            p.Web.WebResponseFormatterProtocol,
+            p.Web.WebFrameworkInterfaceProtocol,
+            p.Web.WebTemplateRendererProtocol,
+            p.Web.WebServiceProtocol,
+            p.Web.WebRepositoryProtocol,
+            p.Web.WebHandlerProtocol,
+            p.Web.WebTemplateEngineProtocol,
+            p.Web.WebMonitoringProtocol,
         ]
 
         for protocol in protocols:
@@ -368,7 +368,7 @@ class TestFlextWebProtocols:
         """Test that protocols are extensible."""
 
         # Should be able to create new protocols that inherit from web protocols
-        class CustomProtocol(FlextWebProtocols.Web.WebAppManagerProtocol):
+        class CustomProtocol(p.Web.WebAppManagerProtocol):
             def custom_method(self) -> None:
                 pass
 
@@ -416,7 +416,7 @@ class TestFlextWebProtocols:
 
         started = manager.start_app(app_id)
         assert started.is_success
-        assert started.value["status"] == FlextWebConstants.Web.Status.RUNNING.value
+        assert started.value["status"] == c.Web.Status.RUNNING.value
 
         listed = manager.list_apps()
         assert listed.is_success
@@ -425,7 +425,7 @@ class TestFlextWebProtocols:
 
         stopped = manager.stop_app(app_id)
         assert stopped.is_success
-        assert stopped.value["status"] == FlextWebConstants.Web.Status.STOPPED.value
+        assert stopped.value["status"] == c.Web.Status.STOPPED.value
 
     def test_response_formatter_protocol_methods(self) -> None:
         """Test WebResponseFormatterProtocol methods execution."""
@@ -436,7 +436,7 @@ class TestFlextWebProtocols:
                 data: dict[str, t.GeneralValueType],
             ) -> dict[str, t.GeneralValueType]:
                 response: dict[str, t.GeneralValueType] = {
-                    "status": FlextWebConstants.Web.WebResponse.STATUS_SUCCESS,
+                    "status": c.Web.WebResponse.STATUS_SUCCESS,
                 }
                 response.update({
                     key: value
@@ -447,7 +447,7 @@ class TestFlextWebProtocols:
 
             def format_error(self, error: Exception) -> dict[str, t.GeneralValueType]:
                 result: dict[str, t.GeneralValueType] = {
-                    "status": FlextWebConstants.Web.WebResponse.STATUS_ERROR,
+                    "status": c.Web.WebResponse.STATUS_ERROR,
                     "message": str(error),
                 }
                 return result
@@ -457,7 +457,7 @@ class TestFlextWebProtocols:
                 data: dict[str, t.GeneralValueType],
             ) -> dict[str, t.GeneralValueType]:
                 response: dict[str, t.GeneralValueType] = {
-                    FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
+                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
                 response.update({
                     key: value
@@ -477,15 +477,15 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
+            ) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            ) -> r[bool]:
+                return r[bool].ok(True)
 
             def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "ResponseFormatter"}
@@ -502,22 +502,21 @@ class TestFlextWebProtocols:
             "nested": {"key2": "value2"},
         }
         result = formatter.format_success(data_with_nested)
-        assert result["status"] == FlextWebConstants.Web.WebResponse.STATUS_SUCCESS
+        assert result["status"] == c.Web.WebResponse.STATUS_SUCCESS
         assert result["key1"] == "value1"
         assert isinstance(result["nested"], dict)
 
         # Test format_error
         error = ValueError("Test error")
         error_result = formatter.format_error(error)
-        assert error_result["status"] == FlextWebConstants.Web.WebResponse.STATUS_ERROR
+        assert error_result["status"] == c.Web.WebResponse.STATUS_ERROR
         assert "Test error" in str(error_result["message"])
 
         # Test create_json_response with nested dict
         json_result = formatter.create_json_response(data_with_nested)
-        assert FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE in json_result
+        assert c.Web.Http.HEADER_CONTENT_TYPE in json_result
         assert (
-            json_result[FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE]
-            == FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
+            json_result[c.Web.Http.HEADER_CONTENT_TYPE] == c.Web.Http.CONTENT_TYPE_JSON
         )
 
     def test_web_framework_interface_protocol_methods(self) -> None:
@@ -529,7 +528,7 @@ class TestFlextWebProtocols:
                 data: dict[str, t.GeneralValueType],
             ) -> dict[str, t.GeneralValueType]:
                 response: dict[str, t.GeneralValueType] = {
-                    FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE: FlextWebConstants.Web.Http.CONTENT_TYPE_JSON,
+                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
                 response.update({
                     key: value
@@ -552,15 +551,15 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
+            ) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            ) -> r[bool]:
+                return r[bool].ok(True)
 
             def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "FrameworkInterface"}
@@ -577,7 +576,7 @@ class TestFlextWebProtocols:
             "nested": {"key": "value"},
         }
         json_response = framework.create_json_response(data)
-        assert FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE in json_response
+        assert c.Web.Http.HEADER_CONTENT_TYPE in json_response
 
         request_data = framework.get_request_data({})
         assert isinstance(request_data, dict)
@@ -589,32 +588,32 @@ class TestFlextWebProtocols:
         """Test WebServiceProtocol methods execution."""
 
         class RealWebService:
-            def initialize_routes(self) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            def initialize_routes(self) -> r[bool]:
+                return r[bool].ok(True)
 
-            def configure_middleware(self) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            def configure_middleware(self) -> r[bool]:
+                return r[bool].ok(True)
 
-            def start_service(self) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            def start_service(self) -> r[bool]:
+                return r[bool].ok(True)
 
-            def stop_service(self) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            def stop_service(self) -> r[bool]:
+                return r[bool].ok(True)
 
             # Required by p.Service
             def execute(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
+            ) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            ) -> r[bool]:
+                return r[bool].ok(True)
 
             def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "WebService"}
@@ -639,42 +638,42 @@ class TestFlextWebProtocols:
             def find_by_criteria(
                 self,
                 criteria: dict[str, t.GeneralValueType],
-            ) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-                return FlextResult[list[dict[str, t.GeneralValueType]]].ok([])
+            ) -> r[list[dict[str, t.GeneralValueType]]]:
+                return r[list[dict[str, t.GeneralValueType]]].ok([])
 
             # Required by p.Repository
             def get_by_id(
                 self,
                 entity_id: str,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({"id": entity_id})
+            ) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok({"id": entity_id})
 
             def save(
                 self,
                 entity: dict[str, t.GeneralValueType],
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok(entity)
+            ) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok(entity)
 
-            def delete(self, entity_id: str) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            def delete(self, entity_id: str) -> r[bool]:
+                return r[bool].ok(True)
 
-            def find_all(self) -> FlextResult[list[dict[str, t.GeneralValueType]]]:
-                return FlextResult[list[dict[str, t.GeneralValueType]]].ok([])
+            def find_all(self) -> r[list[dict[str, t.GeneralValueType]]]:
+                return r[list[dict[str, t.GeneralValueType]]].ok([])
 
             # Required by p.Service
             def execute(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
+            ) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            ) -> r[bool]:
+                return r[bool].ok(True)
 
             def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "WebRepository"}
@@ -695,29 +694,29 @@ class TestFlextWebProtocols:
                 self,
                 template_name: str,
                 _context: dict[str, t.GeneralValueType],
-            ) -> FlextResult[str]:
-                return FlextResult[str].ok("")
+            ) -> r[str]:
+                return r[str].ok("")
 
             def render_dashboard(
                 self,
                 data: dict[str, t.GeneralValueType],
-            ) -> FlextResult[str]:
-                return FlextResult[str].ok("<html>Dashboard</html>")
+            ) -> r[str]:
+                return r[str].ok("<html>Dashboard</html>")
 
             # Required by p.Service
             def execute(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
+            ) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            ) -> r[bool]:
+                return r[bool].ok(True)
 
             def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "TemplateRenderer"}
@@ -745,24 +744,24 @@ class TestFlextWebProtocols:
             def load_template_config(
                 self,
                 config: dict[str, t.GeneralValueType],
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            ) -> r[bool]:
+                return r[bool].ok(True)
 
-            def get_template_config(self) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
+            def get_template_config(self) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok({})
 
             def validate_template_config(
                 self,
                 config: dict[str, t.GeneralValueType],
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            ) -> r[bool]:
+                return r[bool].ok(True)
 
             def render(
                 self,
                 template: str,
                 _context: dict[str, t.GeneralValueType],
-            ) -> FlextResult[str]:
-                return FlextResult[str].ok("")
+            ) -> r[str]:
+                return r[str].ok("")
 
             def add_filter(self, name: str, filter_func: object) -> None:
                 pass
@@ -780,15 +779,15 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
+            ) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            ) -> r[bool]:
+                return r[bool].ok(True)
 
             def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "TemplateEngine"}
@@ -829,8 +828,8 @@ class TestFlextWebProtocols:
 
             def get_web_health_status(self) -> dict[str, t.GeneralValueType]:
                 return {
-                    "status": FlextWebConstants.Web.WebResponse.STATUS_HEALTHY,
-                    "service": FlextWebConstants.Web.WebService.SERVICE_NAME,
+                    "status": c.Web.WebResponse.STATUS_HEALTHY,
+                    "service": c.Web.WebService.SERVICE_NAME,
                 }
 
             def get_web_metrics(self) -> dict[str, t.GeneralValueType]:
@@ -841,15 +840,15 @@ class TestFlextWebProtocols:
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[dict[str, t.GeneralValueType]]:
-                return FlextResult[dict[str, t.GeneralValueType]].ok({})
+            ) -> r[dict[str, t.GeneralValueType]]:
+                return r[dict[str, t.GeneralValueType]].ok({})
 
             def validate_business_rules(
                 self,
                 *args: object,
                 **kwargs: object,
-            ) -> FlextResult[bool]:
-                return FlextResult[bool].ok(True)
+            ) -> r[bool]:
+                return r[bool].ok(True)
 
             def get_service_info(self) -> dict[str, t.GeneralValueType]:
                 return {"name": "WebMonitoring"}
@@ -857,15 +856,15 @@ class TestFlextWebProtocols:
         monitoring = RealWebMonitoring()
         # WebMonitoringProtocol is @runtime_checkable, so isinstance should work
         if hasattr(
-            FlextWebProtocols.Web.WebMonitoringProtocol,
+            p.Web.WebMonitoringProtocol,
             "__runtime_checkable__",
         ):
-            assert isinstance(monitoring, FlextWebProtocols.Web.WebMonitoringProtocol)
+            assert isinstance(monitoring, p.Web.WebMonitoringProtocol)
 
         # Execute methods
         monitoring.record_web_request({"method": "GET"}, 0.1)
         health = monitoring.get_web_health_status()
-        assert health["status"] == FlextWebConstants.Web.WebResponse.STATUS_HEALTHY
+        assert health["status"] == c.Web.WebResponse.STATUS_HEALTHY
         metrics = monitoring.get_web_metrics()
         assert "requests" in metrics
 
@@ -882,7 +881,7 @@ class TestFlextWebProtocols:
 
         started = manager.start_app(app_id)
         assert started.is_success
-        assert started.value["status"] == FlextWebConstants.Web.Status.RUNNING.value
+        assert started.value["status"] == c.Web.Status.RUNNING.value
 
         listed = manager.list_apps()
         assert listed.is_success
@@ -891,11 +890,11 @@ class TestFlextWebProtocols:
 
         stopped = manager.stop_app(app_id)
         assert stopped.is_success
-        assert stopped.value["status"] == FlextWebConstants.Web.Status.STOPPED.value
+        assert stopped.value["status"] == c.Web.Status.STOPPED.value
 
     def test_response_formatter_real_behavior(self) -> None:
         """Test response formatter protocol with real implementation behavior."""
-        formatter = FlextWebProtocols.Web.TestBases._WebResponseFormatterBase()
+        formatter = p.Web.TestBases._WebResponseFormatterBase()
 
         data_with_all_types: t.WebCore.ResponseDict = {
             "string": "value",
@@ -905,7 +904,7 @@ class TestFlextWebProtocols:
             "dict": {"nested": "value"},
         }
         result = formatter.format_success(data_with_all_types)
-        assert result["status"] == FlextWebConstants.Web.WebResponse.STATUS_SUCCESS
+        assert result["status"] == c.Web.WebResponse.STATUS_SUCCESS
         assert result["string"] == "value"
         assert result["int"] == 42
         assert result["bool"] is True
@@ -915,14 +914,13 @@ class TestFlextWebProtocols:
         # Test format_error to cover lines 315-319
         error = ValueError("Test error message")
         error_result = formatter.format_error(error)
-        assert error_result["status"] == FlextWebConstants.Web.WebResponse.STATUS_ERROR
+        assert error_result["status"] == c.Web.WebResponse.STATUS_ERROR
         assert "Test error message" in str(error_result["message"])
 
         # Test create_json_response with all value types to cover lines 335-345
         json_result = formatter.create_json_response(data_with_all_types)
         assert (
-            json_result[FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE]
-            == FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
+            json_result[c.Web.Http.HEADER_CONTENT_TYPE] == c.Web.Http.CONTENT_TYPE_JSON
         )
 
         request_data = formatter.get_request_data({"test": "data"})
@@ -939,10 +937,7 @@ class TestFlextWebProtocols:
             "nested": {"key": "value"},
         }
         result = framework.create_json_response(data)
-        assert (
-            result[FlextWebConstants.Web.Http.HEADER_CONTENT_TYPE]
-            == FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
-        )
+        assert result[c.Web.Http.HEADER_CONTENT_TYPE] == c.Web.Http.CONTENT_TYPE_JSON
 
         request_data = framework.get_request_data({"test": "data"})
         assert isinstance(request_data, dict)
@@ -1045,8 +1040,8 @@ class TestFlextWebProtocols:
         monitoring.record_web_request({"method": "GET"}, 0.1)
 
         health = monitoring.get_web_health_status()
-        assert health["status"] == FlextWebConstants.Web.Status.STOPPED.value
-        assert health["service"] == FlextWebConstants.Web.WebService.SERVICE_NAME
+        assert health["status"] == c.Web.Status.STOPPED.value
+        assert health["service"] == c.Web.WebService.SERVICE_NAME
 
         metrics = monitoring.get_web_metrics()
         assert metrics["requests"] == 1
@@ -1065,19 +1060,15 @@ class TestFlextWebProtocols:
         list_result = manager.list_apps()
         assert list_result.is_success
         assert len(list_result.value) == 1
-        assert (
-            list_result.value[0]["status"] == FlextWebConstants.Web.Status.STOPPED.value
-        )
+        assert list_result.value[0]["status"] == c.Web.Status.STOPPED.value
 
         start_result = manager.start_app(app_id)
         assert start_result.is_success
-        assert (
-            start_result.value["status"] == FlextWebConstants.Web.Status.RUNNING.value
-        )
+        assert start_result.value["status"] == c.Web.Status.RUNNING.value
 
         stop_result = manager.stop_app(app_id)
         assert stop_result.is_success
-        assert stop_result.value["status"] == FlextWebConstants.Web.Status.STOPPED.value
+        assert stop_result.value["status"] == c.Web.Status.STOPPED.value
 
     def test_create_app_configures_protocol_health_route(self) -> None:
         """TDD create_app must register protocol health endpoint."""
@@ -1089,7 +1080,7 @@ class TestFlextWebProtocols:
         app_id = str(create_result.value["id"])
 
         framework = str(create_result.value["framework"])
-        app_instance = FlextWebProtocols.Web.framework_instances[app_id]
+        app_instance = p.Web.framework_instances[app_id]
         if framework == "fastapi":
             fastapi_app = cast("Any", app_instance)
             paths = [route.path for route in fastapi_app.routes]
@@ -1110,8 +1101,8 @@ class TestFlextWebProtocols:
 
         started = manager.start_app(app_id)
         assert started.is_success
-        assert app_id in FlextWebProtocols.Web.app_runtimes
+        assert app_id in p.Web.app_runtimes
 
         stopped = manager.stop_app(app_id)
         assert stopped.is_success
-        assert app_id not in FlextWebProtocols.Web.app_runtimes
+        assert app_id not in p.Web.app_runtimes

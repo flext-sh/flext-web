@@ -13,25 +13,35 @@ from typing import TYPE_CHECKING, Any
 from flext_core import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_web import (
-        FlextWebApi,
-        FlextWebApp,
-        FlextWebConstants,
-        FlextWebConstants as c,
-        FlextWebHandlers,
-        FlextWebModels,
-        FlextWebModels as m,
-        FlextWebProtocols,
-        FlextWebProtocols as p,
-        FlextWebServices,
-        FlextWebSettings,
-        FlextWebTypes,
-        FlextWebTypes as t,
-        FlextWebUtilities,
-        FlextWebUtilities as u,
+    from flext_web.__version__ import (
+        VERSION,
+        FlextWebVersion,
+        __author__,
+        __author_email__,
+        __description__,
+        __license__,
+        __title__,
+        __url__,
         __version__,
         __version_info__,
+        _VersionMetadata,
     )
+    from flext_web.api import FlextWebApi
+    from flext_web.app import FlextWebApp
+    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
+    from flext_web.handlers import FlextWebHandlers
+    from flext_web.models import FlextWebModels, FlextWebModels as m
+    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
+    from flext_web.services import FlextWebServices
+    from flext_web.settings import FlextWebSettings
+    from flext_web.typings import (
+        FlextWebTypes,
+        FlextWebTypes as t,
+        _ApplicationConfig,
+        _WebRequestConfig,
+        _WebResponseConfig,
+    )
+    from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -45,6 +55,18 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextWebSettings": ("flext_web.settings", "FlextWebSettings"),
     "FlextWebTypes": ("flext_web.typings", "FlextWebTypes"),
     "FlextWebUtilities": ("flext_web.utilities", "FlextWebUtilities"),
+    "FlextWebVersion": ("flext_web.__version__", "FlextWebVersion"),
+    "VERSION": ("flext_web.__version__", "VERSION"),
+    "_ApplicationConfig": ("flext_web.typings", "_ApplicationConfig"),
+    "_VersionMetadata": ("flext_web.__version__", "_VersionMetadata"),
+    "_WebRequestConfig": ("flext_web.typings", "_WebRequestConfig"),
+    "_WebResponseConfig": ("flext_web.typings", "_WebResponseConfig"),
+    "__author__": ("flext_web.__version__", "__author__"),
+    "__author_email__": ("flext_web.__version__", "__author_email__"),
+    "__description__": ("flext_web.__version__", "__description__"),
+    "__license__": ("flext_web.__version__", "__license__"),
+    "__title__": ("flext_web.__version__", "__title__"),
+    "__url__": ("flext_web.__version__", "__url__"),
     "__version__": ("flext_web.__version__", "__version__"),
     "__version_info__": ("flext_web.__version__", "__version_info__"),
     "c": ("flext_web.constants", "FlextWebConstants"),
@@ -55,6 +77,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
 }
 
 __all__ = [
+    "VERSION",
     "FlextWebApi",
     "FlextWebApp",
     "FlextWebConstants",
@@ -65,6 +88,17 @@ __all__ = [
     "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
+    "FlextWebVersion",
+    "_ApplicationConfig",
+    "_VersionMetadata",
+    "_WebRequestConfig",
+    "_WebResponseConfig",
+    "__author__",
+    "__author_email__",
+    "__description__",
+    "__license__",
+    "__title__",
+    "__url__",
     "__version__",
     "__version_info__",
     "c",

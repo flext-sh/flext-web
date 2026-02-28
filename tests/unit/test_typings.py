@@ -1,35 +1,35 @@
 """Comprehensive unit tests for flext_web.typings module.
 
-Tests the unified FlextWebModels class following flext standards.
+Tests the unified m class following flext standards.
 """
 
 from __future__ import annotations
 
 import pytest
 from flext_web import (
-    FlextWebModels,
     FlextWebSettings,
     FlextWebTypes,
     _ApplicationConfig,
     _WebRequestConfig,
     _WebResponseConfig,
+    m,
 )
 from pydantic import ValidationError
 
 
 class TestFlextWebModels:
-    """Test suite for FlextWebModels unified class."""
+    """Test suite for m unified class."""
 
     def test_typings_structure(self) -> None:
-        """Test that FlextWebModels has proper structure."""
+        """Test that m has proper structure."""
         # Should have Web namespace with model classes
-        assert hasattr(FlextWebModels, "Web")
-        assert hasattr(FlextWebModels.Web, "Message")
-        assert hasattr(FlextWebModels.Web, "Request")
-        assert hasattr(FlextWebModels.Web, "Response")
-        assert hasattr(FlextWebModels.Web, "WebRequest")
-        assert hasattr(FlextWebModels.Web, "WebResponse")
-        assert hasattr(FlextWebModels.Web, "Entity")
+        assert hasattr(m, "Web")
+        assert hasattr(m.Web, "Message")
+        assert hasattr(m.Web, "Request")
+        assert hasattr(m.Web, "Response")
+        assert hasattr(m.Web, "WebRequest")
+        assert hasattr(m.Web, "WebResponse")
+        assert hasattr(m.Web, "Entity")
 
     def test_core_web_types(self) -> None:
         """Test Core web types."""
@@ -41,19 +41,19 @@ class TestFlextWebModels:
     def test_application_types(self) -> None:
         """Test Application types."""
         # Test that Application types exist under Web namespace
-        assert hasattr(FlextWebModels.Web, "Entity")
+        assert hasattr(m.Web, "Entity")
 
     def test_model_functionality(self) -> None:
         """Test Pydantic model functionality."""
         # Test that models can be created and used
-        request = FlextWebModels.Web.WebRequest(
+        request = m.Web.WebRequest(
             url="http://localhost:8080",
             method="GET",
         )
         assert request.url == "http://localhost:8080"
         assert request.method == "GET"
 
-        response = FlextWebModels.Web.AppResponse(
+        response = m.Web.AppResponse(
             status_code=200,
             request_id="test-123",
         )
@@ -115,7 +115,7 @@ class TestFlextWebModels:
         """Test Project types."""
         # Test that project types are defined
         # WebProjectType is a type alias, so we test that the class has the expected structure
-        assert hasattr(FlextWebModels.Web, "Entity")
+        assert hasattr(m.Web, "Entity")
 
     def test_configure_web_types_system(self) -> None:
         """Test configure_web_types_system method."""
@@ -185,9 +185,9 @@ class TestFlextWebModels:
     def test_type_consistency(self) -> None:
         """Test that types are consistent with FlextWebTypes."""
         # Test that core types exist under Web namespace
-        assert hasattr(FlextWebModels.Web, "WebRequest")
-        assert hasattr(FlextWebModels.Web, "WebResponse")
-        assert hasattr(FlextWebModels.Web, "Entity")
+        assert hasattr(m.Web, "WebRequest")
+        assert hasattr(m.Web, "WebResponse")
+        assert hasattr(m.Web, "Entity")
 
         # Test that types can be instantiated
         test_request = FlextWebTypes.WebRequest(url="https://example.com")
@@ -196,9 +196,9 @@ class TestFlextWebModels:
     def test_type_annotations(self) -> None:
         """Test that types have proper annotations."""
         # Test that type annotations are available under Web namespace
-        assert hasattr(FlextWebModels.Web, "WebRequest")
-        assert hasattr(FlextWebModels.Web, "WebResponse")
-        assert hasattr(FlextWebModels.Web, "Entity")
+        assert hasattr(m.Web, "WebRequest")
+        assert hasattr(m.Web, "WebResponse")
+        assert hasattr(m.Web, "Entity")
 
     def test_type_usage_patterns(self) -> None:
         """Test that types follow expected usage patterns."""
