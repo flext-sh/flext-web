@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import final, override
+from typing import override
 
 from flext_core import FlextModels, r, t, u
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -18,7 +18,6 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from flext_web import c
 
 
-@final
 class FlextWebModels(FlextModels):
     """Web application models collection.
 

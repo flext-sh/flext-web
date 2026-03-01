@@ -14,10 +14,27 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from .models import TestsModels, m
-from .protocols import TestsProtocols, p
-from .typings import TestsTypings, t
-from .utilities import TestsUtilities, u
+from typing import TYPE_CHECKING, Any
+
+from flext_core._utilities.lazy import cleanup_submodule_namespace, lazy_getattr
+
+if TYPE_CHECKING:
+    from models import TestsModels, TestsModels as m
+    from protocols import TestsProtocols, TestsProtocols as p
+    from typings import TestsTypings, t
+    from utilities import TestsUtilities, TestsUtilities as u
+
+# Lazy import mapping: export_name -> (module_path, attr_name)
+_LAZY_IMPORTS: dict[str, tuple[str, str]] = {
+    "TestsModels": ("models", "TestsModels"),
+    "TestsProtocols": ("protocols", "TestsProtocols"),
+    "TestsTypings": ("typings", "TestsTypings"),
+    "TestsUtilities": ("utilities", "TestsUtilities"),
+    "m": ("models", "TestsModels"),
+    "p": ("protocols", "TestsProtocols"),
+    "t": ("typings", "t"),
+    "u": ("utilities", "TestsUtilities"),
+}
 
 __all__ = [
     "TestsModels",
@@ -29,3 +46,16 @@ __all__ = [
     "t",
     "u",
 ]
+
+
+def __getattr__(name: str) -> Any:  # noqa: ANN401
+    """Lazy-load module attributes on first access (PEP 562)."""
+    return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
+
+
+def __dir__() -> list[str]:
+    """Return list of available attributes for dir() and autocomplete."""
+    return sorted(__all__)
+
+
+cleanup_submodule_namespace(__name__, _LAZY_IMPORTS)
