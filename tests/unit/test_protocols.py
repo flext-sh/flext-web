@@ -809,7 +809,7 @@ class TestFlextWebProtocols:
         assert engine.render("template", {"key": "value"}).is_success
 
         # Test add_filter and add_global (void methods)
-        def filter_func(x: Any) -> Any:
+        def filter_func(x: str | float | bool) -> str | int | float | bool:
             return x
 
         engine.add_filter("test", filter_func)

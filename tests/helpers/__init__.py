@@ -19,10 +19,10 @@ from typing import TYPE_CHECKING, Any
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from models import TestsModels, TestsModels as m
-    from protocols import TestsProtocols, TestsProtocols as p
-    from typings import TestsTypings, t
-    from utilities import TestsUtilities, TestsUtilities as u
+    from .models import TestsModels, TestsModels as m
+    from .protocols import TestsProtocols, TestsProtocols as p
+    from .typings import TestsTypings, t
+    from .utilities import TestsUtilities, TestsUtilities as u
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {

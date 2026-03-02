@@ -140,20 +140,63 @@ def create_entry(entry_type: str, **kwargs: object) -> r[object]:
             elapsed_time=float(elapsed_time) if elapsed_time else None,
         )
     if entry_type == "web_request":
-        config_dict = dict(kwargs)
-        return t.create_web_request(
-            _WebRequestConfig(**config_dict),
+        url = kwargs.get("url")
+        method = kwargs.get("method")
+        headers = kwargs.get("headers")
+        body = kwargs.get("body")
+        timeout = kwargs.get("timeout")
+        query_params = kwargs.get("query_params")
+        client_ip = kwargs.get("client_ip")
+        user_agent = kwargs.get("user_agent")
+        if not isinstance(url, str) or not isinstance(method, str):
+            return r[object].fail("Invalid parameters for web_request")
+        web_request_config = _WebRequestConfig(
+            url=url,
+            method=method,
+            headers=headers if isinstance(headers, dict) else None,
+            body=body if isinstance(body, (str, dict)) else None,
+            timeout=float(timeout) if isinstance(timeout, (int, float)) else 30.0,
+            query_params=query_params if isinstance(query_params, dict) else None,
+            client_ip=client_ip if isinstance(client_ip, str) else "127.0.0.1",
+            user_agent=user_agent if isinstance(user_agent, str) else "test-client",
         )
+        return t.create_web_request(web_request_config)
     if entry_type == "web_response":
-        config_dict = dict(kwargs)
-        return t.create_web_response(
-            _WebResponseConfig(**config_dict),
+        status_code = kwargs.get("status_code")
+        request_id = kwargs.get("request_id")
+        headers = kwargs.get("headers")
+        body = kwargs.get("body")
+        elapsed_time = kwargs.get("elapsed_time")
+        content_type = kwargs.get("content_type")
+        content_length = kwargs.get("content_length")
+        processing_time_ms = kwargs.get("processing_time_ms")
+        if not isinstance(status_code, int):
+            return r[object].fail("Invalid status_code for web_response")
+        web_response_config = _WebResponseConfig(
+            status_code=status_code,
+            request_id=request_id if isinstance(request_id, str) else "test-request",
+            headers=headers if isinstance(headers, dict) else None,
+            body=body if isinstance(body, (str, dict)) else None,
+            elapsed_time=float(elapsed_time) if isinstance(elapsed_time, (int, float)) else 0.0,
+            content_type=content_type if isinstance(content_type, str) else "application/json",
+            content_length=content_length if isinstance(content_length, int) else 0,
+            processing_time_ms=processing_time_ms if isinstance(processing_time_ms, (int, float)) else 0.0,
         )
+        return t.create_web_response(web_response_config)
     if entry_type == "application":
-        config_dict = dict(kwargs)
-        return t.create_application(
-            _ApplicationConfig(**config_dict),
+        name = kwargs.get("name")
+        host = kwargs.get("host")
+        port = kwargs.get("port")
+        status = kwargs.get("status")
+        if not isinstance(name, str) or not isinstance(host, str) or not isinstance(port, int):
+            return r[object].fail("Invalid parameters for application")
+        app_config = _ApplicationConfig(
+            name=name,
+            host=host,
+            port=port,
+            status=status if isinstance(status, str) else "stopped",
         )
+        return t.create_application(app_config)
     msg = f"Unsupported entry type: {entry_type}"
     raise ValueError(msg)
 
@@ -173,33 +216,53 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.GeneralVal
 
     """
     if data_type == "app_data":
-        return {
+        app_data: dict[str, t.GeneralValueType] = {
             "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
-        } | {k: v for k, v in kwargs.items() if isinstance(v, (str, int))}
+        }
+        for k, v in kwargs.items():
+            if isinstance(v, (str, int, float, bool)):
+                app_data[k] = v
+        return app_data
     if data_type == "entity_data":
-        return {
+        entity_data: dict[str, t.GeneralValueType] = {
             "id": "test-entity",
             "name": "Test Entity",
-        } | {k: v for k, v in kwargs.items() if isinstance(v, (str, int))}
+        }
+        for k, v in kwargs.items():
+            if isinstance(v, (str, int, float, bool)):
+                entity_data[k] = v
+        return entity_data
     if data_type == "config_data":
-        return {
+        config_data: dict[str, t.GeneralValueType] = {
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
             "debug": True,
-        } | {k: v for k, v in kwargs.items() if isinstance(v, (str, int, bool))}
+        }
+        for k, v in kwargs.items():
+            if isinstance(v, (str, int, float, bool)):
+                config_data[k] = v
+        return config_data
     if data_type == "request_data":
-        return {
+        request_data: dict[str, t.GeneralValueType] = {
             "method": c.Web.Tests.TestHttp.TEST_METHOD,
             "url": f"http://{c.Web.Tests.TestWeb.DEFAULT_HOST}:{c.Web.Tests.TestWeb.DEFAULT_PORT}",
             "headers": {"Content-Type": c.Web.Tests.TestHttp.TEST_CONTENT_TYPE},
-        } | {k: v for k, v in kwargs.items() if isinstance(v, (str, dict))}
+        }
+        for k, v in kwargs.items():
+            if isinstance(v, (str, dict)):
+                request_data[k] = v
+        return request_data
     if data_type == "response_data":
-        return {
+        response_data: dict[str, t.GeneralValueType] = {
             "status_code": 200,
             "request_id": "test-123",
-        } | {k: v for k, v in kwargs.items() if isinstance(v, (int, str))}
+        }
+        for k, v in kwargs.items():
+            if isinstance(v, (int, str, float, bool)):
+                response_data[k] = v
+        return response_data
     msg = f"Unsupported data type: {data_type}"
     raise ValueError(msg)
 
@@ -224,11 +287,21 @@ def create_test_app(**kwargs: object) -> m.Web.Entity:
         "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
     }
 
-    defaults.update(
-        {k: v for k, v in kwargs.items() if isinstance(v, (str, int))},
-    )
+    for k, v in kwargs.items():
+        if isinstance(v, (str, int)):
+            defaults[k] = v
 
-    return m.Web.Entity(**defaults)
+    id_val = defaults.get("id", "test-id")
+    name_val = defaults.get("name", c.Web.Tests.TestWeb.TEST_APP_NAME)
+    host_val = defaults.get("host", c.Web.Tests.TestWeb.DEFAULT_HOST)
+    port_val = defaults.get("port", c.Web.Tests.TestWeb.DEFAULT_PORT)
+
+    return m.Web.Entity(
+        id=id_val if isinstance(id_val, str) else "test-id",
+        name=name_val if isinstance(name_val, str) else c.Web.Tests.TestWeb.TEST_APP_NAME,
+        host=host_val if isinstance(host_val, str) else c.Web.Tests.TestWeb.DEFAULT_HOST,
+        port=port_val if isinstance(port_val, int) else c.Web.Tests.TestWeb.DEFAULT_PORT,
+    )
 
 
 def create_test_result(

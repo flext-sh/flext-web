@@ -338,7 +338,7 @@ class FlextWebProtocols(FlextProtocols):
             app_instance: flask.Flask | FastAPI,
             app_id: str,
         ) -> None:
-            if isinstance(app_instance, FlextWebProtocols.Web.FastApiLikeApp):
+            if isinstance(app_instance, FastAPI):
                 route_registrar = app_instance.add_api_route
 
                 def fastapi_health() -> t.WebCore.ResponseDict:
@@ -350,7 +350,7 @@ class FlextWebProtocols(FlextProtocols):
 
                 route_registrar("/protocol/health", fastapi_health, methods=["GET"])
 
-            if isinstance(app_instance, FlextWebProtocols.Web.FlaskLikeApp):
+            elif isinstance(app_instance, flask.Flask):
                 route_decorator = app_instance.route
 
                 @route_decorator("/protocol/health")
@@ -365,7 +365,7 @@ class FlextWebProtocols(FlextProtocols):
         def _configure_framework_app_middleware(
             app_instance: flask.Flask | FastAPI,
         ) -> None:
-            if isinstance(app_instance, FlextWebProtocols.Web.FastApiLikeApp):
+            if isinstance(app_instance, FastAPI):
                 middleware_decorator = app_instance.middleware
 
                 @middleware_decorator("http")
@@ -376,13 +376,11 @@ class FlextWebProtocols(FlextProtocols):
                         Awaitable[StarletteResponse],
                     ],
                 ) -> StarletteResponse:
-                    response = call_next(request)
-                    if isinstance(response, Awaitable):
-                        response = await response
+                    response = await call_next(request)
                     FlextWebProtocols.Web.record_request_metric("success", 0)
                     return response
 
-            if isinstance(app_instance, FlextWebProtocols.Web.FlaskLikeApp):
+            elif isinstance(app_instance, flask.Flask):
 
                 @app_instance.before_request
                 def flask_metrics_middleware() -> None:
@@ -422,11 +420,12 @@ class FlextWebProtocols(FlextProtocols):
                         return FlextResult[AppRuntimeInfo].fail(
                             f"ASGI runtime exited immediately for app: {app_id}",
                         )
-                    return FlextResult[AppRuntimeInfo].ok({
+                    runtime_info: AppRuntimeInfo = {
                         "runner": c.Web.WebFramework.RUNNER_UVICORN,
                         "server": server,
                         "thread": thread,
-                    })
+                    }
+                    return FlextResult[AppRuntimeInfo].ok(runtime_info)
                 except (RuntimeError, OSError, ValueError, TypeError) as exc:
                     return FlextResult[AppRuntimeInfo].fail(
                         f"Failed to start ASGI runtime for app {app_id}: {exc}",
@@ -449,11 +448,12 @@ class FlextWebProtocols(FlextProtocols):
                         return FlextResult[AppRuntimeInfo].fail(
                             f"WSGI runtime exited immediately for app: {app_id}",
                         )
-                    return FlextResult[AppRuntimeInfo].ok({
+                    wsgi_runtime_info: AppRuntimeInfo = {
                         "runner": c.Web.WebFramework.RUNNER_WERKZEUG,
                         "server": wsgi_server,
                         "thread": thread,
-                    })
+                    }
+                    return FlextResult[AppRuntimeInfo].ok(wsgi_runtime_info)
                 except (
                     RuntimeError,
                     OSError,
@@ -1444,10 +1444,18 @@ class FlextWebProtocols(FlextProtocols):
                 """Convert to integer."""
                 if self.value is None:
                     return 0
-                try:
+                if isinstance(self.value, int):
+                    return self.value
+                if isinstance(self.value, float):
                     return int(self.value)
-                except (ValueError, TypeError):
-                    return 0
+                if isinstance(self.value, bool):
+                    return int(self.value)
+                if isinstance(self.value, str):
+                    try:
+                        return int(self.value)
+                    except ValueError:
+                        return 0
+                return 0
 
             def __bool__(self) -> bool:
                 """Convert to boolean."""
