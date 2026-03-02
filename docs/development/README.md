@@ -321,7 +321,6 @@ extend = "../.ruff-shared.toml"
 lint.isort.known-first-party = ["flext_web"]
 ```
 
-
 ### Code Formatting
 
 ```bash
