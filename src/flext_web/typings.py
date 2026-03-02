@@ -32,9 +32,9 @@ class _WebRequestConfig(BaseModel):
     url: str = Field(default="")
     method: str = Field(default="GET")
     headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, FlextTypes.ConfigMapValue] | None = Field(default=None)
+    body: str | dict[str, FlextTypes.JsonValue] | None = Field(default=None)
     timeout: float = Field(default=30.0)
-    query_params: dict[str, FlextTypes.ConfigMapValue] | None = Field(default=None)
+    query_params: dict[str, FlextTypes.JsonValue] | None = Field(default=None)
     client_ip: str = Field(default="")
     user_agent: str = Field(default="")
 
@@ -47,7 +47,7 @@ class _WebResponseConfig(BaseModel):
     status_code: int = Field(default=200)
     request_id: str = Field(default="")
     headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, FlextTypes.ConfigMapValue] | None = Field(default=None)
+    body: str | dict[str, FlextTypes.JsonValue] | None = Field(default=None)
     elapsed_time: float = Field(default=0.0)
     content_type: str = Field(default="application/json")
     content_length: int = Field(default=0)
@@ -220,10 +220,7 @@ class FlextWebTypes(FlextTypes):
         ]
 
     class Types:
-        """Type system aliases for flext-web."""
-
-        ConfigMapValue = FlextTypes.ConfigMapValue
-        """Config map value type - references FlextTypes.ConfigMapValue."""
+        """Type system aliases for flext-web Removed redundant aliases."""
 
     # Core response types - proper inheritance from m
     SuccessResponse = m.Web.ServiceResponse
@@ -261,7 +258,7 @@ class FlextWebTypes(FlextTypes):
         url: str,
         method: str = c.Web.Method.GET,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, FlextTypes.ConfigMapValue] | None = None,
+        body: str | dict[str, FlextTypes.JsonValue] | None = None,
         timeout: float = c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
     ) -> FlextResult[m.Web.Request]:
         """Create HTTP request model instance with proper validation.
@@ -332,7 +329,7 @@ class FlextWebTypes(FlextTypes):
         cls,
         status_code: int,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, FlextTypes.ConfigMapValue] | None = None,
+        body: str | dict[str, FlextTypes.JsonValue] | None = None,
         elapsed_time: float | None = None,
     ) -> FlextResult[m.Web.Response]:
         """Create HTTP response model instance with proper validation.
@@ -414,9 +411,7 @@ class FlextWebTypes(FlextTypes):
         # Validate headers - must be dict or None
         headers_validated: dict[str, str] = headers or {}
         # Validate query_params - must be dict or None
-        query_params_validated: dict[str, FlextTypes.ConfigMapValue] = (
-            query_params or {}
-        )
+        query_params_validated: dict[str, FlextTypes.JsonValue] = query_params or {}
 
         # Use # Direct validation instead for method validation (DSL pattern)
         method_upper = method.upper()
@@ -717,18 +712,4 @@ class FlextWebTypes(FlextTypes):
             """Web pipeline configuration model - inherits from m.Web.EntityConfig."""
 
 
-# Alias for simplified usage
-t = FlextWebTypes
-
-# Namespace composition via class inheritance
-# Web namespace provides access to nested classes through inheritance
-# Access patterns:
-# - t.Web.* for Web-specific types
-# - t.Project.* for project types
-# - t.Core.* for core types (inherited from parent)
-
-
-__all__ = [
-    "FlextWebTypes",
-    "t",
-]
+__all__ = ["FlextWebTypes"]

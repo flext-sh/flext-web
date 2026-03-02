@@ -321,22 +321,6 @@ extend = "../.ruff-shared.toml"
 lint.isort.known-first-party = ["flext_web"]
 ```
 
-### Type Checking (MyPy)
-
-```toml
-# pyproject.toml - MyPy strict configuration
-[tool.mypy]
-strict = true
-python_version = "3.13"
-plugins = ["pydantic.mypy"]
-
-# Strict checks beyond default
-disallow_any_decorated = false
-disallow_any_explicit = true
-disallow_any_generics = true
-warn_return_any = true
-warn_unused_ignores = false
-```
 
 ### Code Formatting
 

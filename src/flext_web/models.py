@@ -51,7 +51,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers for message",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.JsonValue] | None = Field(
                 default=None,
                 description="Message body content (optional for GET/HEAD)",
             )
@@ -237,7 +237,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.JsonValue] | None = Field(
                 default=None,
                 description="Request body content (optional for GET/HEAD)",
             )
@@ -249,7 +249,7 @@ class FlextWebModels(FlextModels):
                 default_factory=lambda: str(uuid.uuid4()),
                 description="Unique request identifier",
             )
-            query_params: dict[str, t.GeneralValueType] = Field(
+            query_params: dict[str, t.JsonValue] = Field(
                 default_factory=dict,
                 description="Query string parameters",
             )
@@ -305,7 +305,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.JsonValue] | None = Field(
                 default=None,
                 description="Response body content",
             )
@@ -486,7 +486,7 @@ class FlextWebModels(FlextModels):
                 default=c.Web.WebDefaults.VERSION_INT,
                 description="Application version",
             )
-            metrics: dict[str, t.GeneralValueType] = Field(
+            metrics: dict[str, t.JsonValue] = Field(
                 default_factory=dict,
                 description="Application metrics",
             )
@@ -636,7 +636,7 @@ class FlextWebModels(FlextModels):
 
             def update_metrics(
                 self,
-                new_metrics: dict[str, t.GeneralValueType],
+                new_metrics: dict[str, t.JsonValue],
             ) -> r[bool]:
                 """Update application metrics.
 
@@ -657,7 +657,7 @@ class FlextWebModels(FlextModels):
                     )
                 return r[bool].ok(value=True)
 
-            def get_health_status(self) -> dict[str, t.GeneralValueType]:
+            def get_health_status(self) -> dict[str, t.JsonValue]:
                 """Get comprehensive health status."""
                 return {
                     "status": self.status,
@@ -786,7 +786,7 @@ class FlextWebModels(FlextModels):
         class EntityData(FlextModels.Value):
             """Generic entity data model."""
 
-            data: dict[str, t.GeneralValueType] = Field(
+            data: dict[str, t.JsonValue] = Field(
                 default_factory=dict,
                 description="Entity data dictionary",
             )
