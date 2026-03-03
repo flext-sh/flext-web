@@ -220,7 +220,7 @@ class FlextWebProtocols(FlextProtocols):
                 self,
                 path: str,
                 endpoint: Callable[..., t.WebCore.ResponseDict],
-                **kwargs: t.GeneralValueType,
+                **kwargs: t.ContainerValue,
             ) -> None:
                 """Register an API route."""
                 ...
@@ -239,7 +239,7 @@ class FlextWebProtocols(FlextProtocols):
             def route(
                 self,
                 rule: str,
-                **options: t.GeneralValueType,
+                **options: t.ContainerValue,
             ) -> Callable[..., Callable[..., t.WebCore.ResponseDict]]:
                 """Register a URL route."""
                 ...
@@ -258,7 +258,7 @@ class FlextWebProtocols(FlextProtocols):
         }
         web_metrics: ClassVar[dict[str, int | str]] = {}
         template_config: ClassVar[t.WebCore.RequestDict] = {}
-        template_globals: ClassVar[dict[str, t.GeneralValueType]] = {}
+        template_globals: ClassVar[dict[str, t.ContainerValue]] = {}
         template_filters: ClassVar[dict[str, Callable[[str], str]]] = {}
 
         @staticmethod
@@ -1345,7 +1345,7 @@ class FlextWebProtocols(FlextProtocols):
                 self,
                 name: str,
                 *,
-                value: t.GeneralValueType,
+                value: t.ContainerValue,
             ) -> None:
                 """Add template global variable.
 
@@ -1699,7 +1699,7 @@ class FlextWebProtocols(FlextProtocols):
                     self,
                     name: str,
                     *,
-                    value: t.GeneralValueType,
+                    value: t.ContainerValue,
                 ) -> None:
                     """Add template global variable."""
                     FlextWebProtocols.Web.template_globals[name] = (

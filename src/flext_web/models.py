@@ -865,7 +865,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.ContainerValue] | None = Field(
                 default=None,
                 description="Request body (optional for GET/HEAD)",
             )
@@ -891,7 +891,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | dict[str, t.GeneralValueType] | None = Field(
+            body: str | dict[str, t.ContainerValue] | None = Field(
                 default=None,
                 description="Response body (optional for 204 No Content)",
             )
@@ -978,7 +978,7 @@ class FlextWebModels(FlextModels):
             method: c.Web.Literals.HttpMethodLiteral,
             url: str,
             headers: dict[str, str] | None = None,
-            body: str | dict[str, t.GeneralValueType] | None = None,
+            body: str | dict[str, t.ContainerValue] | None = None,
         ) -> r[WebRequest]:
             """Create a web request model.
 
@@ -1029,7 +1029,7 @@ class FlextWebModels(FlextModels):
             request_id: str,
             status_code: int,
             headers: dict[str, str] | None = None,
-            body: str | dict[str, t.GeneralValueType] | None = None,
+            body: str | dict[str, t.ContainerValue] | None = None,
         ) -> r[WebResponse]:
             """Create a web response model.
 
@@ -1111,7 +1111,7 @@ class FlextWebModels(FlextModels):
             )
             debug: bool = Field(default=False, description="FastAPI debug mode")
             testing: bool = Field(default=False, description="FastAPI testing mode")
-            middlewares: list[t.GeneralValueType] = Field(
+            middlewares: list[t.ContainerValue] = Field(
                 default_factory=list,
                 description="List of middleware objects",
             )

@@ -279,7 +279,7 @@ class FlextWebTypes(FlextTypes):
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: FlextTypes.GeneralValueType) -> bool:
+        def _validate_method(m: FlextTypes.ContainerValue) -> bool:
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(
@@ -417,7 +417,7 @@ class FlextWebTypes(FlextTypes):
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: FlextTypes.GeneralValueType) -> bool:
+        def _validate_method(m: FlextTypes.ContainerValue) -> bool:
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(

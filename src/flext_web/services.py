@@ -56,7 +56,7 @@ class FlextWebServices(FlextService[bool]):
             """
 
             # Use u.guard() for unified validation (DSL pattern)
-            def _validate_username(un: t.GeneralValueType) -> bool:
+            def _validate_username(un: t.ContainerValue) -> bool:
                 return (
                     isinstance(un, str)
                     and un != FlextConstants.Test.NONEXISTENT_USERNAME
@@ -70,7 +70,7 @@ class FlextWebServices(FlextService[bool]):
             if username_validated is None:
                 return FlextResult.fail("Authentication failed")
 
-            def _validate_password(pw: t.GeneralValueType) -> bool:
+            def _validate_password(pw: t.ContainerValue) -> bool:
                 return (
                     isinstance(pw, str) and pw == FlextConstants.Test.DEFAULT_PASSWORD
                 )
@@ -563,7 +563,7 @@ class FlextWebServices(FlextService[bool]):
         """
 
         # Use u.guard() for unified validation (DSL pattern)
-        def _validate_routes(routes_init: t.GeneralValueType) -> bool:
+        def _validate_routes(routes_init: t.ContainerValue) -> bool:
             return isinstance(routes_init, bool) and (
                 not self._service_running or routes_init
             )
@@ -578,7 +578,7 @@ class FlextWebServices(FlextService[bool]):
                 "Service cannot be running without initialized routes",
             )
 
-        def _validate_middleware(mw_conf: t.GeneralValueType) -> bool:
+        def _validate_middleware(mw_conf: t.ContainerValue) -> bool:
             return isinstance(mw_conf, bool) and (not self._service_running or mw_conf)
 
         middleware_validated = u.guard(

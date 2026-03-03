@@ -23,7 +23,7 @@ class ResponseDict(TypedDict, total=False):
     """Typed response dictionary for API responses."""
 
     success: bool
-    data: dict[str, t.GeneralValueType] | None
+    data: dict[str, t.ContainerValue] | None
     error: str | None
 
 
@@ -56,7 +56,7 @@ def check_service_health() -> bool:
         if response.status_code != ExampleConstants.HTTP_OK:
             return False
 
-        result: dict[str, t.GeneralValueType] = response.json()
+        result: dict[str, t.ContainerValue] = response.json()
         # Validate response structure
         success_value = result.get("success")
         data_value = result.get("data")
@@ -105,13 +105,13 @@ def create_application(
 
     def _parse_json(
         response: requests.Response,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
+    ) -> FlextResult[dict[str, t.ContainerValue]]:
         """Parse JSON response."""
         try:
-            json_data: dict[str, t.GeneralValueType] = response.json()
-            return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
+            json_data: dict[str, t.ContainerValue] = response.json()
+            return FlextResult[dict[str, t.ContainerValue]].ok(json_data)
         except Exception as e:
-            return FlextResult[dict[str, t.GeneralValueType]].fail(
+            return FlextResult[dict[str, t.ContainerValue]].fail(
                 f"JSON parse failed: {e}",
             )
 
@@ -124,7 +124,7 @@ def create_application(
     if parsed_result.is_failure:
         raise ValueError(parsed_result.error or "Parse failed")
 
-    json_data: dict[str, t.GeneralValueType] = parsed_result.value
+    json_data: dict[str, t.ContainerValue] = parsed_result.value
     if (
         json_data.get("success")
         and isinstance(data := json_data.get("data"), dict)
@@ -170,7 +170,7 @@ def _extract_apps_from_response(
 def _execute_app_operation(
     method: str,
     endpoint: str,
-    json_data: dict[str, t.GeneralValueType] | None = None,
+    json_data: dict[str, t.ContainerValue] | None = None,
 ) -> t.AppData:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
@@ -182,7 +182,7 @@ def _execute_app_operation(
         """Make HTTP request using FlextResult for error handling."""
         try:
             request_func = getattr(requests, method.lower())
-            kwargs: dict[str, t.GeneralValueType] = {
+            kwargs: dict[str, t.ContainerValue] = {
                 "url": f"{ExampleConstants.BASE_URL}{endpoint}",
                 "timeout": 5,
             }
@@ -200,13 +200,13 @@ def _execute_app_operation(
 
     def _parse_json_response(
         response: requests.Response,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
+    ) -> FlextResult[dict[str, t.ContainerValue]]:
         """Parse JSON from response."""
         try:
-            json_data: dict[str, t.GeneralValueType] = response.json()
-            return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
+            json_data: dict[str, t.ContainerValue] = response.json()
+            return FlextResult[dict[str, t.ContainerValue]].ok(json_data)
         except Exception as e:
-            return FlextResult[dict[str, t.GeneralValueType]].fail(
+            return FlextResult[dict[str, t.ContainerValue]].fail(
                 f"JSON parse failed: {e}",
             )
 
@@ -256,13 +256,13 @@ def _execute_list_operation(
 
     def _parse_response_json(
         response: requests.Response,
-    ) -> FlextResult[dict[str, t.GeneralValueType]]:
+    ) -> FlextResult[dict[str, t.ContainerValue]]:
         """Parse JSON from response."""
         try:
-            json_data: dict[str, t.GeneralValueType] = response.json()
-            return FlextResult[dict[str, t.GeneralValueType]].ok(json_data)
+            json_data: dict[str, t.ContainerValue] = response.json()
+            return FlextResult[dict[str, t.ContainerValue]].ok(json_data)
         except Exception as e:
-            return FlextResult[dict[str, t.GeneralValueType]].fail(
+            return FlextResult[dict[str, t.ContainerValue]].fail(
                 f"JSON parse failed: {e}",
             )
 
@@ -275,7 +275,7 @@ def _execute_list_operation(
     if parsed_result.is_failure:
         raise ValueError(parsed_result.error or "Parse failed")
 
-    response_dict: dict[str, t.GeneralValueType] = parsed_result.value
+    response_dict: dict[str, t.ContainerValue] = parsed_result.value
     apps_list: list[t.AppData] = _extract_apps_from_response(response_dict, data_key)
     return apps_list
 
