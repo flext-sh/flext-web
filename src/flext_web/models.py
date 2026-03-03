@@ -865,7 +865,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | dict[str, t.ContainerValue] | None = Field(
+            body: str | t.ConfigurationMapping | None = Field(
                 default=None,
                 description="Request body (optional for GET/HEAD)",
             )
@@ -891,7 +891,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | dict[str, t.ContainerValue] | None = Field(
+            body: str | t.ConfigurationMapping | None = Field(
                 default=None,
                 description="Response body (optional for 204 No Content)",
             )
@@ -978,7 +978,7 @@ class FlextWebModels(FlextModels):
             method: c.Web.Literals.HttpMethodLiteral,
             url: str,
             headers: dict[str, str] | None = None,
-            body: str | dict[str, t.ContainerValue] | None = None,
+            body: str | t.ConfigurationMapping | None = None,
         ) -> r[WebRequest]:
             """Create a web request model.
 
@@ -1029,7 +1029,7 @@ class FlextWebModels(FlextModels):
             request_id: str,
             status_code: int,
             headers: dict[str, str] | None = None,
-            body: str | dict[str, t.ContainerValue] | None = None,
+            body: str | t.ConfigurationMapping | None = None,
         ) -> r[WebResponse]:
             """Create a web response model.
 

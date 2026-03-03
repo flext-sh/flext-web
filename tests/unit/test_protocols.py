@@ -479,7 +479,7 @@ class TestFlextWebProtocols:
                 *args: object,
                 **kwargs: object,
             ) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok({})
+                return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
                 self,
@@ -553,7 +553,7 @@ class TestFlextWebProtocols:
                 *args: object,
                 **kwargs: object,
             ) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok({})
+                return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
                 self,
@@ -607,7 +607,7 @@ class TestFlextWebProtocols:
                 *args: object,
                 **kwargs: object,
             ) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok({})
+                return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
                 self,
@@ -640,26 +640,26 @@ class TestFlextWebProtocols:
                 self,
                 criteria: dict[str, t.ContainerValue],
             ) -> r[list[dict[str, t.ContainerValue]]]:
-                return r[list[dict[str, t.ContainerValue]]].ok([])
+                return r[list[t.ConfigurationMapping]].ok([])
 
             # Required by p.Repository
             def get_by_id(
                 self,
                 entity_id: str,
             ) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok({"id": entity_id})
+                return r[t.ConfigurationMapping].ok({"id": entity_id})
 
             def save(
                 self,
                 entity: dict[str, t.ContainerValue],
             ) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok(entity)
+                return r[t.ConfigurationMapping].ok(entity)
 
             def delete(self, entity_id: str) -> r[bool]:
                 return r[bool].ok(True)
 
             def find_all(self) -> r[list[dict[str, t.ContainerValue]]]:
-                return r[list[dict[str, t.ContainerValue]]].ok([])
+                return r[list[t.ConfigurationMapping]].ok([])
 
             # Required by p.Service
             def execute(
@@ -667,7 +667,7 @@ class TestFlextWebProtocols:
                 *args: object,
                 **kwargs: object,
             ) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok({})
+                return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
                 self,
@@ -710,7 +710,7 @@ class TestFlextWebProtocols:
                 *args: object,
                 **kwargs: object,
             ) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok({})
+                return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
                 self,
@@ -749,7 +749,7 @@ class TestFlextWebProtocols:
                 return r[bool].ok(True)
 
             def get_template_config(self) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok({})
+                return r[t.ConfigurationMapping].ok({})
 
             def validate_template_config(
                 self,
@@ -781,7 +781,7 @@ class TestFlextWebProtocols:
                 *args: object,
                 **kwargs: object,
             ) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok({})
+                return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
                 self,
@@ -845,7 +845,7 @@ class TestFlextWebProtocols:
                 *args: object,
                 **kwargs: object,
             ) -> r[dict[str, t.ContainerValue]]:
-                return r[dict[str, t.ContainerValue]].ok({})
+                return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
                 self,

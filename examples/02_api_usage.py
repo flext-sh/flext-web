@@ -109,9 +109,9 @@ def create_application(
         """Parse JSON response."""
         try:
             json_data: dict[str, t.ContainerValue] = response.json()
-            return FlextResult[dict[str, t.ContainerValue]].ok(json_data)
+            return FlextResult[t.ConfigurationMapping].ok(json_data)
         except Exception as e:
-            return FlextResult[dict[str, t.ContainerValue]].fail(
+            return FlextResult[t.ConfigurationMapping].fail(
                 f"JSON parse failed: {e}",
             )
 
@@ -204,9 +204,9 @@ def _execute_app_operation(
         """Parse JSON from response."""
         try:
             json_data: dict[str, t.ContainerValue] = response.json()
-            return FlextResult[dict[str, t.ContainerValue]].ok(json_data)
+            return FlextResult[t.ConfigurationMapping].ok(json_data)
         except Exception as e:
-            return FlextResult[dict[str, t.ContainerValue]].fail(
+            return FlextResult[t.ConfigurationMapping].fail(
                 f"JSON parse failed: {e}",
             )
 
@@ -260,9 +260,9 @@ def _execute_list_operation(
         """Parse JSON from response."""
         try:
             json_data: dict[str, t.ContainerValue] = response.json()
-            return FlextResult[dict[str, t.ContainerValue]].ok(json_data)
+            return FlextResult[t.ConfigurationMapping].ok(json_data)
         except Exception as e:
-            return FlextResult[dict[str, t.ContainerValue]].fail(
+            return FlextResult[t.ConfigurationMapping].fail(
                 f"JSON parse failed: {e}",
             )
 
