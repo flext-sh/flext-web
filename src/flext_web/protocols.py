@@ -1433,7 +1433,7 @@ class FlextWebProtocols(FlextProtocols):
         class ConfigValueProtocol(Protocol):
             """Protocol for configuration values."""
 
-            value: t.ScalarValue
+            value: t.Scalar
 
             @override
             def __str__(self) -> str:
