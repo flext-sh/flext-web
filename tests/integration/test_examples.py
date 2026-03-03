@@ -46,12 +46,6 @@ class ExamplesFullFunctionalityTest:
         #     return False
 
         # Start container using FlextTestsDocker
-        environment = {
-            "FLEXT_WEB_SECRET_KEY": "test-full-functionality-key-32-chars!",
-            "FLEXT_WEB_HOST": "0.0.0.0",
-            "FLEXT_WEB_PORT": "8080",
-            "FLEXT_WEB_DEBUG": "false",
-        }
 
         # run_result = self.docker_manager.run_container(
         #     image="flext-web-full-test",

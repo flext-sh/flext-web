@@ -15,6 +15,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
     from flext_core import r
+
     from flext_web import (
         FlextWebApi,
         FlextWebApp,
@@ -26,7 +27,6 @@ if TYPE_CHECKING:
         _WebRequestConfig,
         _WebResponseConfig,
     )
-
     from tests.constants import TestsFlextWebConstants, TestsFlextWebConstants as c
     from tests.models import TestsFlextWebModels, TestsFlextWebModels as m
     from tests.protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p

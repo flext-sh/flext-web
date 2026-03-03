@@ -177,10 +177,16 @@ def create_entry(entry_type: str, **kwargs: object) -> r[object]:
             request_id=request_id if isinstance(request_id, str) else "test-request",
             headers=headers if isinstance(headers, dict) else None,
             body=body if isinstance(body, (str, dict)) else None,
-            elapsed_time=float(elapsed_time) if isinstance(elapsed_time, (int, float)) else 0.0,
-            content_type=content_type if isinstance(content_type, str) else "application/json",
+            elapsed_time=float(elapsed_time)
+            if isinstance(elapsed_time, (int, float))
+            else 0.0,
+            content_type=content_type
+            if isinstance(content_type, str)
+            else "application/json",
             content_length=content_length if isinstance(content_length, int) else 0,
-            processing_time_ms=processing_time_ms if isinstance(processing_time_ms, (int, float)) else 0.0,
+            processing_time_ms=processing_time_ms
+            if isinstance(processing_time_ms, (int, float))
+            else 0.0,
         )
         return t.create_web_response(web_response_config)
     if entry_type == "application":
@@ -188,7 +194,11 @@ def create_entry(entry_type: str, **kwargs: object) -> r[object]:
         host = kwargs.get("host")
         port = kwargs.get("port")
         status = kwargs.get("status")
-        if not isinstance(name, str) or not isinstance(host, str) or not isinstance(port, int):
+        if (
+            not isinstance(name, str)
+            or not isinstance(host, str)
+            or not isinstance(port, int)
+        ):
             return r[object].fail("Invalid parameters for application")
         app_config = _ApplicationConfig(
             name=name,
@@ -221,18 +231,18 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.GeneralVal
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
         }
-        for k, v in kwargs.items():
-            if isinstance(v, (str, int, float, bool)):
-                app_data[k] = v
+        app_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (str, int, float, bool))
+        })
         return app_data
     if data_type == "entity_data":
         entity_data: dict[str, t.GeneralValueType] = {
             "id": "test-entity",
             "name": "Test Entity",
         }
-        for k, v in kwargs.items():
-            if isinstance(v, (str, int, float, bool)):
-                entity_data[k] = v
+        entity_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (str, int, float, bool))
+        })
         return entity_data
     if data_type == "config_data":
         config_data: dict[str, t.GeneralValueType] = {
@@ -240,9 +250,9 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.GeneralVal
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
             "debug": True,
         }
-        for k, v in kwargs.items():
-            if isinstance(v, (str, int, float, bool)):
-                config_data[k] = v
+        config_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (str, int, float, bool))
+        })
         return config_data
     if data_type == "request_data":
         request_data: dict[str, t.GeneralValueType] = {
@@ -250,18 +260,18 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.GeneralVal
             "url": f"http://{c.Web.Tests.TestWeb.DEFAULT_HOST}:{c.Web.Tests.TestWeb.DEFAULT_PORT}",
             "headers": {"Content-Type": c.Web.Tests.TestHttp.TEST_CONTENT_TYPE},
         }
-        for k, v in kwargs.items():
-            if isinstance(v, (str, dict)):
-                request_data[k] = v
+        request_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (str, dict))
+        })
         return request_data
     if data_type == "response_data":
         response_data: dict[str, t.GeneralValueType] = {
             "status_code": 200,
             "request_id": "test-123",
         }
-        for k, v in kwargs.items():
-            if isinstance(v, (int, str, float, bool)):
-                response_data[k] = v
+        response_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (int, str, float, bool))
+        })
         return response_data
     msg = f"Unsupported data type: {data_type}"
     raise ValueError(msg)
@@ -287,9 +297,7 @@ def create_test_app(**kwargs: object) -> m.Web.Entity:
         "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
     }
 
-    for k, v in kwargs.items():
-        if isinstance(v, (str, int)):
-            defaults[k] = v
+    defaults.update({k: v for k, v in kwargs.items() if isinstance(v, (str, int))})
 
     id_val = defaults.get("id", "test-id")
     name_val = defaults.get("name", c.Web.Tests.TestWeb.TEST_APP_NAME)
@@ -298,9 +306,15 @@ def create_test_app(**kwargs: object) -> m.Web.Entity:
 
     return m.Web.Entity(
         id=id_val if isinstance(id_val, str) else "test-id",
-        name=name_val if isinstance(name_val, str) else c.Web.Tests.TestWeb.TEST_APP_NAME,
-        host=host_val if isinstance(host_val, str) else c.Web.Tests.TestWeb.DEFAULT_HOST,
-        port=port_val if isinstance(port_val, int) else c.Web.Tests.TestWeb.DEFAULT_PORT,
+        name=name_val
+        if isinstance(name_val, str)
+        else c.Web.Tests.TestWeb.TEST_APP_NAME,
+        host=host_val
+        if isinstance(host_val, str)
+        else c.Web.Tests.TestWeb.DEFAULT_HOST,
+        port=port_val
+        if isinstance(port_val, int)
+        else c.Web.Tests.TestWeb.DEFAULT_PORT,
     )
 
 

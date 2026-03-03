@@ -232,7 +232,10 @@ class TestFlextWebModels:
     def test_web_app_metrics_update(self) -> None:
         """Test WebApp metrics update."""
         app = create_test_app()
-        metrics: dict[str, str | int | float | bool | None] = {"requests": 100, "errors": 5}
+        metrics: dict[str, str | int | float | bool | None] = {
+            "requests": 100,
+            "errors": 5,
+        }
         result = app.update_metrics(metrics)
         # The update_metrics method should return FlextResult[bool]
         assert result.is_success
@@ -517,7 +520,9 @@ class TestFlextWebModels:
         )
 
         # Use actual invalid type instead of cast
-        invalid_metrics: Mapping[str, str | int | float | bool | None] = {"not_a_dict": "not_a_dict"}
+        invalid_metrics: Mapping[str, str | int | float | bool | None] = {
+            "not_a_dict": "not_a_dict"
+        }
         result = app.update_metrics(invalid_metrics)
         assert result.is_failure
         assert result.error is not None

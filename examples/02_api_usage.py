@@ -15,6 +15,7 @@ from typing import TypedDict
 
 import requests
 from flext_core import FlextResult
+
 from flext_web import t
 
 
