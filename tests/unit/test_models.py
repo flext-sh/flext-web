@@ -232,7 +232,7 @@ class TestFlextWebModels:
     def test_web_app_metrics_update(self) -> None:
         """Test WebApp metrics update."""
         app = create_test_app()
-        metrics: dict[str, t.JsonPrimitive | None] = {
+        metrics: dict[str, t.Scalar | None] = {
             "requests": 100,
             "errors": 5,
         }
@@ -520,9 +520,7 @@ class TestFlextWebModels:
         )
 
         # Use actual invalid type instead of cast
-        invalid_metrics: Mapping[str, t.JsonPrimitive | None] = {
-            "not_a_dict": "not_a_dict"
-        }
+        invalid_metrics: Mapping[str, t.Scalar | None] = {"not_a_dict": "not_a_dict"}
         result = app.update_metrics(invalid_metrics)
         assert result.is_failure
         assert result.error is not None
