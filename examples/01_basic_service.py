@@ -5,6 +5,8 @@ Simple example demonstrating how to start the FLEXT Web Interface service
 with default configuration for development purposes using the refactored API.
 """
 
+from __future__ import annotations
+
 from flext_web import FlextWebServices, FlextWebSettings
 
 

@@ -25,12 +25,6 @@ Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
 
-# NOTE(architecture): protocols.py contains ~1700 lines of implementation code.
-# (servers, routes, middleware, test bases, metrics tracking). This violates
-# architecture layers — protocols.py should contain ONLY Protocol definitions.
-# Refactor implementation to separate modules in a future task.
-# See: https://github.com/flext-sh/flext/issues/1
-
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping

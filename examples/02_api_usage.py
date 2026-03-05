@@ -11,6 +11,8 @@ This example shows:
 - Usage of new type aliases for better type safety
 """
 
+from __future__ import annotations
+
 from typing import TypedDict
 
 import requests
