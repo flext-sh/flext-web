@@ -137,6 +137,29 @@ class FlextWebApp(FlextService[bool]):
             return r.ok(app)
 
     @classmethod
+    def _configure_fastapi_endpoints(
+        cls,
+        app: FastAPI,
+        config: m.Web.FastAPIAppConfig,
+    ) -> FastAPI:
+        """Configure FastAPI endpoints."""
+
+        # Add health endpoint using flext-core patterns
+        @app.get("/health")
+        def health_check() -> t.WebCore.ResponseDict:
+            # Handler returns ResponseDict directly
+            return cls.HealthHandler.create_handler()()
+
+        # Add info endpoint for API metadata
+        @app.get("/info")
+        def info_endpoint() -> t.WebCore.ResponseDict:
+            return cls.InfoHandler.create_handler(config)()
+
+        logger = FlextLogger(__name__)
+        logger.info(f"FastAPI application '{config.title}' v{config.version} created")
+        return app
+
+    @classmethod
     def create_fastapi_app(
         cls,
         config: m.Web.FastAPIAppConfig | None = None,
@@ -174,29 +197,6 @@ class FlextWebApp(FlextService[bool]):
         return cls.FastAPIFactory.create_instance(factory_config_final).map(
             lambda app: cls._configure_fastapi_endpoints(app, fastapi_config),
         )
-
-    @classmethod
-    def _configure_fastapi_endpoints(
-        cls,
-        app: FastAPI,
-        config: m.Web.FastAPIAppConfig,
-    ) -> FastAPI:
-        """Configure FastAPI endpoints."""
-
-        # Add health endpoint using flext-core patterns
-        @app.get("/health")
-        def health_check() -> t.WebCore.ResponseDict:
-            # Handler returns ResponseDict directly
-            return cls.HealthHandler.create_handler()()
-
-        # Add info endpoint for API metadata
-        @app.get("/info")
-        def info_endpoint() -> t.WebCore.ResponseDict:
-            return cls.InfoHandler.create_handler(config)()
-
-        logger = FlextLogger(__name__)
-        logger.info(f"FastAPI application '{config.title}' v{config.version} created")
-        return app
 
     @classmethod
     def create_flask_app(
@@ -282,6 +282,23 @@ class FlextWebApp(FlextService[bool]):
 
             return info_handler
 
+    @classmethod
+    def configure_error_handlers(cls, app: FastAPI) -> r[bool]:
+        """Configure FastAPI error handlers (extensible for future needs).
+
+        Args:
+            app: FastAPI application instance
+
+        Returns:
+            r[bool]: Success contains True if error handlers configured,
+                              failure contains error message
+
+        """
+        # Error handler configuration — registered during app setup
+        # Can be extended with custom exception handlers
+        _ = app  # Parameter reserved for future implementation
+        return r[bool].ok(value=True)
+
     # =========================================================================
     # APPLICATION MANAGEMENT - SOLID Extension Points
     # =========================================================================
@@ -328,23 +345,6 @@ class FlextWebApp(FlextService[bool]):
         # Route configuration — registered during app setup
         # Can be extended with API routes, WebSocket routes, etc.
         _ = app, config  # Parameters reserved for future implementation
-        return r[bool].ok(value=True)
-
-    @classmethod
-    def configure_error_handlers(cls, app: FastAPI) -> r[bool]:
-        """Configure FastAPI error handlers (extensible for future needs).
-
-        Args:
-            app: FastAPI application instance
-
-        Returns:
-            r[bool]: Success contains True if error handlers configured,
-                              failure contains error message
-
-        """
-        # Error handler configuration — registered during app setup
-        # Can be extended with custom exception handlers
-        _ = app  # Parameter reserved for future implementation
         return r[bool].ok(value=True)
 
     @override

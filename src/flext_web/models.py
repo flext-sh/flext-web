@@ -89,6 +89,26 @@ class FlextWebModels(FlextModels):
                 description="Request timeout in seconds",
             )
 
+            @property
+            def has_body(self) -> bool:
+                """Check if HTTP request has a message body.
+
+                Returns:
+                True if body is not None, False otherwise
+
+                """
+                return self.body is not None
+
+            @property
+            def is_secure(self) -> bool:
+                """Check if HTTP request uses HTTPS protocol.
+
+                Returns:
+                True if URL starts with 'https://', False otherwise
+
+                """
+                return self.url.startswith("https://")
+
             @field_validator("method", mode="before")
             @classmethod
             def validate_method(cls, v: str) -> str:
@@ -110,26 +130,6 @@ class FlextWebModels(FlextModels):
                     msg = f"Invalid HTTP method: {v}. Must be one of: {valid_methods}"
                     raise TypeError(msg)
                 return upper
-
-            @property
-            def has_body(self) -> bool:
-                """Check if HTTP request has a message body.
-
-                Returns:
-                True if body is not None, False otherwise
-
-                """
-                return self.body is not None
-
-            @property
-            def is_secure(self) -> bool:
-                """Check if HTTP request uses HTTPS protocol.
-
-                Returns:
-                True if URL starts with 'https://', False otherwise
-
-                """
-                return self.url.startswith("https://")
 
         class Response(Message):
             """HTTP response model with status validation.
@@ -155,6 +155,16 @@ class FlextWebModels(FlextModels):
             )
 
             @property
+            def is_error(self) -> bool:
+                """Check if HTTP status indicates client or server error.
+
+                Returns:
+                    True if status_code >= c.ERROR_MIN, False otherwise
+
+                """
+                return self.status_code >= c.Web.ERROR_MIN
+
+            @property
             def is_success(self) -> bool:
                 """Check if HTTP status indicates success (2xx range).
 
@@ -164,16 +174,6 @@ class FlextWebModels(FlextModels):
                 """
                 success_min, success_max = c.Web.SUCCESS_RANGE
                 return success_min <= self.status_code <= success_max
-
-            @property
-            def is_error(self) -> bool:
-                """Check if HTTP status indicates client or server error.
-
-                Returns:
-                    True if status_code >= c.ERROR_MIN, False otherwise
-
-                """
-                return self.status_code >= c.Web.ERROR_MIN
 
         class AppRequest(FlextModels.Value):
             """Web request entity with tracking and context information.
@@ -339,6 +339,16 @@ class FlextWebModels(FlextModels):
             )
 
             @property
+            def is_error(self) -> bool:
+                """Check if web response status indicates error.
+
+                Returns:
+                    True if status_code >= c.ERROR_MIN, False otherwise
+
+                """
+                return self.status_code >= c.Web.ERROR_MIN
+
+            @property
             def is_success(self) -> bool:
                 """Check if web response status indicates success.
 
@@ -348,16 +358,6 @@ class FlextWebModels(FlextModels):
                 """
                 success_min, success_max = c.Web.SUCCESS_RANGE
                 return success_min <= self.status_code <= success_max
-
-            @property
-            def is_error(self) -> bool:
-                """Check if web response status indicates error.
-
-                Returns:
-                    True if status_code >= c.ERROR_MIN, False otherwise
-
-                """
-                return self.status_code >= c.Web.ERROR_MIN
 
             @property
             def processing_time_seconds(self) -> float:
@@ -497,17 +497,19 @@ class FlextWebModels(FlextModels):
                 description="Web-specific events (application lifecycle)",
             )
 
-            @property
-            def is_running(self) -> bool:
-                """Check if application is currently running."""
-                return self.status == c.Web.Status.RUNNING.value
+            @override
+            def __str__(self) -> str:
+                """Return string representation of the application."""
+                return f"{self.name} ({self.url}) - {self.status}"
 
             @property
-            def is_healthy(self) -> bool:
-                """Check if application is healthy and operational."""
+            def can_restart(self) -> bool:
+                """Check if application can be restarted using u.in_() DSL pattern."""
                 running = c.Web.Status.RUNNING.value
-                maintenance = c.Web.Status.MAINTENANCE.value
-                return self.status in {running, maintenance}
+                stopped = c.Web.Status.STOPPED.value
+                error = c.Web.Status.ERROR.value
+                # Use u.in_() for unified membership check (DSL pattern)
+                return self.status in {running, stopped, error}
 
             @property
             def can_start(self) -> bool:
@@ -520,13 +522,16 @@ class FlextWebModels(FlextModels):
                 return self.status == c.Web.Status.RUNNING.value
 
             @property
-            def can_restart(self) -> bool:
-                """Check if application can be restarted using u.in_() DSL pattern."""
+            def is_healthy(self) -> bool:
+                """Check if application is healthy and operational."""
                 running = c.Web.Status.RUNNING.value
-                stopped = c.Web.Status.STOPPED.value
-                error = c.Web.Status.ERROR.value
-                # Use u.in_() for unified membership check (DSL pattern)
-                return self.status in {running, stopped, error}
+                maintenance = c.Web.Status.MAINTENANCE.value
+                return self.status in {running, maintenance}
+
+            @property
+            def is_running(self) -> bool:
+                """Check if application is currently running."""
+                return self.status == c.Web.Status.RUNNING.value
 
             @property
             def url(self) -> str:
@@ -539,41 +544,80 @@ class FlextWebModels(FlextModels):
                 )
                 return f"{protocol}://{self.host}:{self.port}"
 
-            def validate_business_rules(self) -> r[bool]:
-                """Validate application business rules (Aggregate validation).
+            @classmethod
+            def format_id_from_name(cls, name: str) -> str:
+                """Format application ID from name using web utilities.
 
-                Fast-fail validation - no fallbacks, explicit checks only.
+                This method uses u.format_app_id directly,
+                ensuring consistent ID formatting across the codebase.
+
+                Args:
+                    name: Application name to format
 
                 Returns:
-                    r[bool]: Success contains True if valid, failure with error message
+                    Formatted application ID
+
+                Raises:
+                    ValueError: If name cannot be formatted to valid ID
 
                 """
-                # Validate name minimum length using lambda-based guard
-                min_name_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
-                name_validated = u.guard(
-                    self.name,
-                    lambda s: isinstance(s, str) and len(s) >= min_name_length,
-                    return_value=True,
-                )
-                if name_validated is None:
-                    return r[bool].fail(
-                        f"App name must be at least {min_name_length} characters",
-                    )
+                # Import at module level - flext_u is used for ID formatting
+                return u.format_app_id(name)
 
-                # Use u.guard() for unified port range validation (DSL pattern)
-                min_port = c.Web.WebValidation.PORT_RANGE[0]
-                max_port = c.Web.WebValidation.PORT_RANGE[1]
-                # Use u.guard() with combined check for unified error message (DSL pattern)
-                port_validated = u.guard(
-                    self.port,
-                    lambda p: isinstance(p, int) and min_port <= p <= max_port,
-                    return_value=True,
-                )
-                if port_validated is None:
-                    return r[bool].fail(
-                        f"Port must be between {min_port} and {max_port}",
-                    )
+            def add_web_event(
+                self,
+                event_name: str,
+            ) -> r[bool]:
+                """Add web-specific event (not domain event).
+
+                This is for web application lifecycle events, not DDD domain events.
+                Use parent's add_domain_event() for actual domain events.
+
+                Returns:
+                    r[bool]: Success contains True if event added,
+                                    failure contains error message
+
+                """
+                # Validate event name is non-empty string
+                if not isinstance(event_name, str) or not event_name.strip():
+                    return r[bool].fail("Event name cannot be empty")
+                self.web_events.append(event_name)
                 return r[bool].ok(value=True)
+
+            def get_health_status(self) -> dict[str, t.JsonValue]:
+                """Get comprehensive health status."""
+                return {
+                    "status": self.status,
+                    "is_running": self.is_running,
+                    "is_healthy": self.is_healthy,
+                    "url": self.url,
+                    "version": self.version,
+                    "environment": self.environment,
+                }
+
+            def restart(self) -> r[FlextWebModels.Web.Entity]:
+                """Restart the application."""
+                can_restart_validated = self.can_restart
+                if not can_restart_validated:
+                    return r[FlextWebModels.Web.Entity].fail(
+                        "Cannot restart in current state",
+                    )
+                starting_status = c.Web.Status.STARTING.value
+                running_status = c.Web.Status.RUNNING.value
+                self.status = starting_status
+                # Add web lifecycle events
+                restart_event_result = self.add_web_event("ApplicationRestarting")
+                if restart_event_result.is_failure:  # pragma: no cover
+                    return r[FlextWebModels.Web.Entity].fail(
+                        f"Failed to add web event: {restart_event_result.error}",
+                    )
+                self.status = running_status
+                start_event_result = self.add_web_event("ApplicationStarted")
+                if start_event_result.is_failure:  # pragma: no cover
+                    return r[FlextWebModels.Web.Entity].fail(
+                        f"Failed to add web event: {start_event_result.error}",
+                    )
+                return r[FlextWebModels.Web.Entity].ok(self)
 
             def start(self) -> r[FlextWebModels.Web.Entity]:
                 """Start the application."""
@@ -610,30 +654,6 @@ class FlextWebModels(FlextModels):
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
-            def restart(self) -> r[FlextWebModels.Web.Entity]:
-                """Restart the application."""
-                can_restart_validated = self.can_restart
-                if not can_restart_validated:
-                    return r[FlextWebModels.Web.Entity].fail(
-                        "Cannot restart in current state",
-                    )
-                starting_status = c.Web.Status.STARTING.value
-                running_status = c.Web.Status.RUNNING.value
-                self.status = starting_status
-                # Add web lifecycle events
-                restart_event_result = self.add_web_event("ApplicationRestarting")
-                if restart_event_result.is_failure:  # pragma: no cover
-                    return r[FlextWebModels.Web.Entity].fail(
-                        f"Failed to add web event: {restart_event_result.error}",
-                    )
-                self.status = running_status
-                start_event_result = self.add_web_event("ApplicationStarted")
-                if start_event_result.is_failure:  # pragma: no cover
-                    return r[FlextWebModels.Web.Entity].fail(
-                        f"Failed to add web event: {start_event_result.error}",
-                    )
-                return r[FlextWebModels.Web.Entity].ok(self)
-
             def update_metrics(
                 self,
                 new_metrics: dict[str, t.JsonValue],
@@ -657,61 +677,41 @@ class FlextWebModels(FlextModels):
                     )
                 return r[bool].ok(value=True)
 
-            def get_health_status(self) -> dict[str, t.JsonValue]:
-                """Get comprehensive health status."""
-                return {
-                    "status": self.status,
-                    "is_running": self.is_running,
-                    "is_healthy": self.is_healthy,
-                    "url": self.url,
-                    "version": self.version,
-                    "environment": self.environment,
-                }
+            def validate_business_rules(self) -> r[bool]:
+                """Validate application business rules (Aggregate validation).
 
-            @override
-            def __str__(self) -> str:
-                """Return string representation of the application."""
-                return f"{self.name} ({self.url}) - {self.status}"
-
-            def add_web_event(
-                self,
-                event_name: str,
-            ) -> r[bool]:
-                """Add web-specific event (not domain event).
-
-                This is for web application lifecycle events, not DDD domain events.
-                Use parent's add_domain_event() for actual domain events.
+                Fast-fail validation - no fallbacks, explicit checks only.
 
                 Returns:
-                    r[bool]: Success contains True if event added,
-                                    failure contains error message
+                    r[bool]: Success contains True if valid, failure with error message
 
                 """
-                # Validate event name is non-empty string
-                if not isinstance(event_name, str) or not event_name.strip():
-                    return r[bool].fail("Event name cannot be empty")
-                self.web_events.append(event_name)
+                # Validate name minimum length using lambda-based guard
+                min_name_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
+                name_validated = u.guard(
+                    self.name,
+                    lambda s: isinstance(s, str) and len(s) >= min_name_length,
+                    return_value=True,
+                )
+                if name_validated is None:
+                    return r[bool].fail(
+                        f"App name must be at least {min_name_length} characters",
+                    )
+
+                # Use u.guard() for unified port range validation (DSL pattern)
+                min_port = c.Web.WebValidation.PORT_RANGE[0]
+                max_port = c.Web.WebValidation.PORT_RANGE[1]
+                # Use u.guard() with combined check for unified error message (DSL pattern)
+                port_validated = u.guard(
+                    self.port,
+                    lambda p: isinstance(p, int) and min_port <= p <= max_port,
+                    return_value=True,
+                )
+                if port_validated is None:
+                    return r[bool].fail(
+                        f"Port must be between {min_port} and {max_port}",
+                    )
                 return r[bool].ok(value=True)
-
-            @classmethod
-            def format_id_from_name(cls, name: str) -> str:
-                """Format application ID from name using web utilities.
-
-                This method uses u.format_app_id directly,
-                ensuring consistent ID formatting across the codebase.
-
-                Args:
-                    name: Application name to format
-
-                Returns:
-                    Formatted application ID
-
-                Raises:
-                    ValueError: If name cannot be formatted to valid ID
-
-                """
-                # Import at module level - flext_u is used for ID formatting
-                return u.format_app_id(name)
 
         class EntityConfig(FlextModels.Value):
             """Application entity configuration (Value Object).

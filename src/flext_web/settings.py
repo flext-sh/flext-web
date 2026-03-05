@@ -77,14 +77,14 @@ class FlextWebSettings(FlextSettings):
     )  # Testing mode is False by default, not in Constants as it's runtime-specific
 
     @computed_field
-    def protocol(self) -> str:
-        """Protocol: https if SSL enabled, http otherwise."""
-        return "https" if self.ssl_enabled else "http"
-
-    @computed_field
     def base_url(self) -> str:
         """Base URL from protocol, host, and port."""
         return f"{self.protocol}://{self.host}:{self.port}"
+
+    @computed_field
+    def protocol(self) -> str:
+        """Protocol: https if SSL enabled, http otherwise."""
+        return "https" if self.ssl_enabled else "http"
 
     @computed_field
     def server_address(self) -> tuple[str, int]:

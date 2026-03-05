@@ -29,30 +29,6 @@ class FlextWebUtilities(FlextUtilities):
         """Web domain namespace."""
 
     @staticmethod
-    def slugify(text: str) -> str:
-        """Convert text to URL-safe slug using standard string operations.
-
-        Implements slugification without relying on non-existent DSL builders.
-        """
-        if not text:
-            return ""
-
-        # Normalize to lowercase
-        normalized = text.lower()
-
-        # Remove special chars, keep word chars, spaces, hyphens
-        cleaned = re.sub(r"[^\w\s-]", "", normalized)
-
-        # Split on hyphens/spaces
-        words = re.split(r"[-\s]+", cleaned)
-
-        # Filter truthy parts
-        truthy_words = [word for word in words if word]
-
-        # Join with hyphens
-        return "-".join(truthy_words)
-
-    @staticmethod
     @override
     @staticmethod
     def format_app_id(name: str) -> str:
@@ -89,6 +65,30 @@ class FlextWebUtilities(FlextUtilities):
 
         # Add app prefix
         return f"app_{slug}"
+
+    @staticmethod
+    def slugify(text: str) -> str:
+        """Convert text to URL-safe slug using standard string operations.
+
+        Implements slugification without relying on non-existent DSL builders.
+        """
+        if not text:
+            return ""
+
+        # Normalize to lowercase
+        normalized = text.lower()
+
+        # Remove special chars, keep word chars, spaces, hyphens
+        cleaned = re.sub(r"[^\w\s-]", "", normalized)
+
+        # Split on hyphens/spaces
+        words = re.split(r"[-\s]+", cleaned)
+
+        # Filter truthy parts
+        truthy_words = [word for word in words if word]
+
+        # Join with hyphens
+        return "-".join(truthy_words)
 
 
 u = FlextWebUtilities

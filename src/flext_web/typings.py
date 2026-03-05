@@ -248,6 +248,62 @@ class FlextWebTypes(FlextTypes):
     class AppConfigDict(m.Web.EntityConfig):
         """Application configuration dictionary model - inherits from m.Web.EntityConfig."""
 
+    @classmethod
+    def create_application(
+        cls,
+        config: _ApplicationConfig,
+    ) -> FlextResult[m.Web.Entity]:
+        """Create application model instance.
+
+        Args:
+            config: Application configuration model
+
+        Returns:
+            FlextResult[Web.Entity]: Success contains application entity,
+                                            failure contains error message
+
+        """
+        # Direct model access with defaults
+        name: str = config.name or ""
+        host: str = config.host or "localhost"
+        port: int = config.port or 8080
+        status: str = config.status or c.Web.Status.STOPPED.value
+        environment: str = config.environment or c.Web.Name.DEVELOPMENT.value
+        debug_mode: bool = config.debug_mode
+        version: int = config.version
+
+        # Use u.try_() for unified error handling (DSL pattern)
+        def create_entity() -> m.Web.Entity:
+            """Create application entity."""
+            return m.Web.Entity(
+                name=name,
+                host=host,
+                port=port,
+                status=status,
+                environment=environment,
+                debug_mode=debug_mode,
+                version=version,
+                domain_events=[],
+            )
+
+        # Use u.try_() with custom exception handling for better error messages
+        try:
+            entity = create_entity()
+            return FlextResult[m.Web.Entity].ok(entity)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
+            # Use u.err() pattern for unified error extraction (DSL pattern)
+            return FlextResult[m.Web.Entity].fail(
+                f"Failed to create application: {exc}",
+            )
+
     # =========================================================================
     # FACTORY METHODS - Create instances of Pydantic models
     # =========================================================================
@@ -521,62 +577,6 @@ class FlextWebTypes(FlextTypes):
             # Use u.err() pattern for unified error extraction (DSL pattern)
             return FlextResult[m.Web.AppResponse].fail(
                 f"Failed to create web response: {exc}",
-            )
-
-    @classmethod
-    def create_application(
-        cls,
-        config: _ApplicationConfig,
-    ) -> FlextResult[m.Web.Entity]:
-        """Create application model instance.
-
-        Args:
-            config: Application configuration model
-
-        Returns:
-            FlextResult[Web.Entity]: Success contains application entity,
-                                            failure contains error message
-
-        """
-        # Direct model access with defaults
-        name: str = config.name or ""
-        host: str = config.host or "localhost"
-        port: int = config.port or 8080
-        status: str = config.status or c.Web.Status.STOPPED.value
-        environment: str = config.environment or c.Web.Name.DEVELOPMENT.value
-        debug_mode: bool = config.debug_mode
-        version: int = config.version
-
-        # Use u.try_() for unified error handling (DSL pattern)
-        def create_entity() -> m.Web.Entity:
-            """Create application entity."""
-            return m.Web.Entity(
-                name=name,
-                host=host,
-                port=port,
-                status=status,
-                environment=environment,
-                debug_mode=debug_mode,
-                version=version,
-                domain_events=[],
-            )
-
-        # Use u.try_() with custom exception handling for better error messages
-        try:
-            entity = create_entity()
-            return FlextResult[m.Web.Entity].ok(entity)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as exc:
-            # Use u.err() pattern for unified error extraction (DSL pattern)
-            return FlextResult[m.Web.Entity].fail(
-                f"Failed to create application: {exc}",
             )
 
     # =========================================================================

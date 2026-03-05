@@ -81,6 +81,31 @@ class FlextWebHandlers(FlextService[bool]):
             self.apps_registry: MutableMapping[str, m.Web.Entity] = {}
             self.logger.info("WebApp handler initialized")
 
+        @staticmethod
+        def _validate_create_inputs(
+            name: str,
+            port: int,
+            host: str,
+        ) -> r[str]:
+            """Validate create inputs - consolidates all validations."""
+            # Length validation
+            if len(name) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
+                return r[str].fail(
+                    f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
+                )
+            if not host:
+                return r[str].fail("Host cannot be empty")
+
+            # Port range validation
+            min_port = c.Web.WebValidation.PORT_RANGE[0]
+            max_port = c.Web.WebValidation.PORT_RANGE[1]
+            if port < min_port:
+                return r[str].fail(f"Port must be at least {min_port}")
+            if port > max_port:
+                return r[str].fail(f"Port must be at most {max_port}")
+
+            return r[str].ok("")
+
         def create(
             self,
             name: str,
@@ -110,39 +135,6 @@ class FlextWebHandlers(FlextService[bool]):
                 lambda _: self._register_app(app),
             )
 
-        @staticmethod
-        def _validate_create_inputs(
-            name: str,
-            port: int,
-            host: str,
-        ) -> r[str]:
-            """Validate create inputs - consolidates all validations."""
-            # Length validation
-            if len(name) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
-                return r[str].fail(
-                    f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
-                )
-            if not host:
-                return r[str].fail("Host cannot be empty")
-
-            # Port range validation
-            min_port = c.Web.WebValidation.PORT_RANGE[0]
-            max_port = c.Web.WebValidation.PORT_RANGE[1]
-            if port < min_port:
-                return r[str].fail(f"Port must be at least {min_port}")
-            if port > max_port:
-                return r[str].fail(f"Port must be at most {max_port}")
-
-            return r[str].ok("")
-
-        def _register_app(
-            self,
-            app: m.Web.Entity,
-        ) -> r[m.Web.Entity]:
-            """Register application in registry."""
-            self.apps_registry[app.id] = app
-            return r[m.Web.Entity].ok(app)
-
         # =============================================================================
         # PROTOCOL IMPLEMENTATION METHODS - WebAppManagerProtocol
         # =============================================================================
@@ -159,6 +151,11 @@ class FlextWebHandlers(FlextService[bool]):
             """
             return self.create(name, port, host)
 
+        def list_apps(self) -> r[list[m.Web.Entity]]:
+            """List all applications - implements WebAppManagerProtocol."""
+            apps_list = list(self.apps_registry.values())
+            return r[list[m.Web.Entity]].ok(apps_list)
+
         def start_app(self, app_id: str) -> r[m.Web.Entity]:
             """Start an application - implements WebAppManagerProtocol."""
             if app_id not in self.apps_registry:
@@ -171,15 +168,6 @@ class FlextWebHandlers(FlextService[bool]):
             return app.start().map(
                 lambda updated_app: self._update_app_in_registry(app_id, updated_app),
             )
-
-        def _update_app_in_registry(
-            self,
-            app_id: str,
-            app: m.Web.Entity,
-        ) -> m.Web.Entity:
-            """Update application in registry."""
-            self.apps_registry[app_id] = app
-            return app
 
         def stop_app(self, app_id: str) -> r[m.Web.Entity]:
             """Stop an application - implements WebAppManagerProtocol."""
@@ -194,64 +182,22 @@ class FlextWebHandlers(FlextService[bool]):
                 lambda updated_app: self._update_app_in_registry(app_id, updated_app),
             )
 
-        def list_apps(self) -> r[list[m.Web.Entity]]:
-            """List all applications - implements WebAppManagerProtocol."""
-            apps_list = list(self.apps_registry.values())
-            return r[list[m.Web.Entity]].ok(apps_list)
+        def _register_app(
+            self,
+            app: m.Web.Entity,
+        ) -> r[m.Web.Entity]:
+            """Register application in registry."""
+            self.apps_registry[app.id] = app
+            return r[m.Web.Entity].ok(app)
 
-    # =========================================================================
-    # HEALTH AND SYSTEM HANDLERS
-    # =========================================================================
-
-    @staticmethod
-    def handle_health_check() -> r[FlextWebHandlers.HealthStatus]:
-        """Handle health check requests with system status.
-
-        Returns:
-        r containing health status information.
-
-        """
-        return r[FlextWebHandlers.HealthStatus].ok(
-            FlextWebHandlers.HealthStatus(
-                status=c.Web.WebResponse.STATUS_HEALTHY,
-                service=c.Web.WebService.SERVICE_NAME,
-                version="0.9.0",
-                timestamp=u.Generators.generate_iso_timestamp(),
-                components={
-                    "web_service": c.Web.WebResponse.STATUS_OPERATIONAL,
-                    "configuration": c.Web.WebMessages.CONFIG_LOADED,
-                    "handlers": c.Web.WebMessages.HANDLERS_REGISTERED,
-                },
-            ),
-        )
-
-    @classmethod
-    def handle_system_info(cls) -> r[FlextWebHandlers.SystemInfo]:
-        """Handle system information requests.
-
-        Returns:
-        r containing detailed system information.
-
-        """
-        return r[FlextWebHandlers.SystemInfo].ok(
-            FlextWebHandlers.SystemInfo(
-                service_name="FLEXT Web Interface",
-                service_type="web_api",
-                architecture="flask_clean_architecture",
-                patterns=[
-                    "CQRS",
-                    "Clean Architecture",
-                    "Domain-Driven Design",
-                ],
-                integrations=["flext-core", "pydantic", "flask"],
-                capabilities=[
-                    "application_management",
-                    "health_monitoring",
-                    "api_endpoints",
-                    "web_dashboard",
-                ],
-            ),
-        )
+        def _update_app_in_registry(
+            self,
+            app_id: str,
+            app: m.Web.Entity,
+        ) -> m.Web.Entity:
+            """Update application in registry."""
+            self.apps_registry[app_id] = app
+            return app
 
     # =========================================================================
     # APPLICATION HANDLERS
@@ -322,6 +268,60 @@ class FlextWebHandlers(FlextService[bool]):
         """
         # Use entity's stop method with monadic pattern
         return app.stop()
+
+    @classmethod
+    def handle_system_info(cls) -> r[FlextWebHandlers.SystemInfo]:
+        """Handle system information requests.
+
+        Returns:
+        r containing detailed system information.
+
+        """
+        return r[FlextWebHandlers.SystemInfo].ok(
+            FlextWebHandlers.SystemInfo(
+                service_name="FLEXT Web Interface",
+                service_type="web_api",
+                architecture="flask_clean_architecture",
+                patterns=[
+                    "CQRS",
+                    "Clean Architecture",
+                    "Domain-Driven Design",
+                ],
+                integrations=["flext-core", "pydantic", "flask"],
+                capabilities=[
+                    "application_management",
+                    "health_monitoring",
+                    "api_endpoints",
+                    "web_dashboard",
+                ],
+            ),
+        )
+
+    # =========================================================================
+    # HEALTH AND SYSTEM HANDLERS
+    # =========================================================================
+
+    @staticmethod
+    def handle_health_check() -> r[FlextWebHandlers.HealthStatus]:
+        """Handle health check requests with system status.
+
+        Returns:
+        r containing health status information.
+
+        """
+        return r[FlextWebHandlers.HealthStatus].ok(
+            FlextWebHandlers.HealthStatus(
+                status=c.Web.WebResponse.STATUS_HEALTHY,
+                service=c.Web.WebService.SERVICE_NAME,
+                version="0.9.0",
+                timestamp=u.Generators.generate_iso_timestamp(),
+                components={
+                    "web_service": c.Web.WebResponse.STATUS_OPERATIONAL,
+                    "configuration": c.Web.WebMessages.CONFIG_LOADED,
+                    "handlers": c.Web.WebMessages.HANDLERS_REGISTERED,
+                },
+            ),
+        )
 
     # =========================================================================
     # RESPONSE FORMATTING - Removed unnecessary helpers

@@ -120,6 +120,28 @@ class FlextWebApi:
         )
         return FlextResult.ok(config)
 
+    # UTILITY METHODS - Supporting Operations
+
+    @classmethod
+    def get_api_capabilities(cls) -> FlextResult[t.WebCore.ResponseDict]:
+        """Get API facade capabilities and supported operations.
+
+        Returns:
+        FlextResult[t.Core.ResponseDict]: Success contains capabilities info
+
+        """
+        return FlextResult.ok({
+            "application_management": ["create_fastapi_app"],
+            "service_management": ["create_http_service"],
+            "configuration_management": [
+                "create_http_config",
+                "validate_http_config",
+            ],
+            "monitoring": ["get_service_status", "get_api_capabilities"],
+            "supported_frameworks": ["fastapi"],
+            "supported_patterns": ["solid", "facade", "dependency_injection"],
+        })
+
     @classmethod
     def get_service_status(cls) -> FlextResult[m.Web.ServiceResponse]:
         """Get complete HTTP service status information.
@@ -173,28 +195,6 @@ class FlextWebApi:
         # Pydantic model is already validated on creation, just confirm it's valid
         _ = logger.info("HTTP configuration validation successful")
         return FlextResult.ok(True)
-
-    # UTILITY METHODS - Supporting Operations
-
-    @classmethod
-    def get_api_capabilities(cls) -> FlextResult[t.WebCore.ResponseDict]:
-        """Get API facade capabilities and supported operations.
-
-        Returns:
-        FlextResult[t.Core.ResponseDict]: Success contains capabilities info
-
-        """
-        return FlextResult.ok({
-            "application_management": ["create_fastapi_app"],
-            "service_management": ["create_http_service"],
-            "configuration_management": [
-                "create_http_config",
-                "validate_http_config",
-            ],
-            "monitoring": ["get_service_status", "get_api_capabilities"],
-            "supported_frameworks": ["fastapi"],
-            "supported_patterns": ["solid", "facade", "dependency_injection"],
-        })
 
 
 __all__ = ["FlextWebApi"]

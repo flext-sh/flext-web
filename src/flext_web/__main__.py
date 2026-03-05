@@ -29,6 +29,21 @@ class FlextWebCliService:
         self._logger = FlextLogger(__name__)
         self._api = FlextWebApi()
 
+    @staticmethod
+    def main() -> None:
+        """CLI entry point - static method following flext-core patterns."""
+        logger = FlextLogger(__name__)
+        cli_service = FlextWebCliService()
+
+        # Use monadic pattern - handle failure and exit
+        result = cli_service.run()
+        if result.is_failure:
+            _ = logger.error(f"Service failed: {result.error}")
+            sys.exit(1)
+
+        # Success - exit normally
+        sys.exit(0)
+
     def run(self) -> FlextResult[bool]:
         """Run HTTP service operations.
 
@@ -56,21 +71,6 @@ class FlextWebCliService:
         """
         _ = self._logger.info(f"Service status: {status_data.service}")
         return True
-
-    @staticmethod
-    def main() -> None:
-        """CLI entry point - static method following flext-core patterns."""
-        logger = FlextLogger(__name__)
-        cli_service = FlextWebCliService()
-
-        # Use monadic pattern - handle failure and exit
-        result = cli_service.run()
-        if result.is_failure:
-            _ = logger.error(f"Service failed: {result.error}")
-            sys.exit(1)
-
-        # Success - exit normally
-        sys.exit(0)
 
 
 if __name__ == "__main__":  # pragma: no cover
