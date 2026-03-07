@@ -20,7 +20,6 @@
   - [Coverage Requirements](#coverage-requirements)
 - [🎨 Code Style & Quality](#code-style-quality)
   - [Linting Configuration (Ruff)](#linting-configuration-ruff)
-  - [Type Checking (MyPy)](#type-checking-mypy)
   - [Code Formatting](#code-formatting)
   - [Quality Metrics](#quality-metrics)
 - [🔌 Development Environment](#development-environment)
