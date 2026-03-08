@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """FLEXT Web Interface - API Usage Example.
 
 Demonstrates how to interact with the FLEXT Web Interface REST API
@@ -26,8 +25,6 @@ class ExampleConstants:
     DEFAULT_HOST = "localhost"
     DEFAULT_PORT = 8080
     BASE_URL = f"http://{DEFAULT_HOST}:{DEFAULT_PORT}"
-
-    # API Endpoints
     APPS_BASE = "/api/v1/apps"
     APP_START = "/api/v1/apps/{app_id}/start"
     APP_DETAIL = "/api/v1/apps/{app_id}"
@@ -47,25 +44,20 @@ def check_service_health() -> bool:
         response = requests.get(f"{ExampleConstants.BASE_URL}/health", timeout=5)
         if response.status_code != ExampleConstants.HTTP_OK:
             return False
-
         result: dict[str, t.ContainerValue] = response.json()
-        # Validate response structure
         success_value = result.get("success")
         data_value = result.get("data")
         if not isinstance(data_value, dict):
             return False
-
         status_value = data_value.get("status")
-        return success_value is True and "data" in result and status_value == "healthy"
+        return (
+            success_value is True and "data" in result and (status_value == "healthy")
+        )
     except (requests.RequestException, ValueError):
         return False
 
 
-def create_application(
-    name: str,
-    port: int,
-    host: str = "localhost",
-) -> t.AppData:
+def create_application(name: str, port: int, host: str = "localhost") -> t.AppData:
     """Create a new application using WebHandlers.
 
     Args:
@@ -82,7 +74,6 @@ def create_application(
     """
     request_data: dict[str, str | int] = {"name": name, "port": port, "host": host}
 
-    # Use FlextResult for error handling - fast fail, no fallback
     def _make_request() -> FlextResult[requests.Response]:
         """Make HTTP request using FlextResult for error handling."""
         try:
@@ -103,25 +94,21 @@ def create_application(
             json_data: dict[str, t.ContainerValue] = response.json()
             return FlextResult[t.ConfigurationMapping].ok(json_data)
         except Exception as e:
-            return FlextResult[t.ConfigurationMapping].fail(
-                f"JSON parse failed: {e}",
-            )
+            return FlextResult[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
 
     result = _make_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
         msg = "HTTP request failed"
         raise ValueError(msg)
-
     parsed_result = result.flat_map(_parse_json)
     if parsed_result.is_failure:
         raise ValueError(parsed_result.error or "Parse failed")
-
     json_data: dict[str, t.ContainerValue] = parsed_result.value
     if (
         json_data.get("success")
-        and isinstance(data := json_data.get("data"), dict)
-        and "id" in data
-        and "name" in data
+        and isinstance((data := json_data.get("data")), dict)
+        and ("id" in data)
+        and ("name" in data)
     ):
         app_obj: t.AppData = t.AppData.model_validate(json_data["data"])
         return app_obj
@@ -130,39 +117,29 @@ def create_application(
 
 
 def _extract_apps_from_response(
-    response_data: ResponseDict | object,
-    data_key: str,
+    response_data: ResponseDict | object, data_key: str
 ) -> list[t.AppData]:
     """Extract apps list from response data with proper type checking."""
-    # Fast fail - no fallback, validate structure explicitly
     if not isinstance(response_data, dict):
         return []
-
-    # Use explicit None default to suppress type warnings
     data_section = response_data.get("data")
     if not isinstance(data_section, dict):
         return []
-
     apps_section = data_section.get(data_key)
     if not isinstance(apps_section, list):
         return []
-
-    # Process apps safely - assume model_validate will handle validation
     result_list: list[t.AppData] = []
     for app_item in apps_section:
         try:
             if isinstance(app_item, dict):
                 result_list.append(t.AppData.model_validate(app_item))
         except Exception:
-            # Skip invalid items
             continue
     return result_list
 
 
 def _execute_app_operation(
-    method: str,
-    endpoint: str,
-    json_data: dict[str, t.ContainerValue] | None = None,
+    method: str, endpoint: str, json_data: dict[str, t.ContainerValue] | None = None
 ) -> t.AppData:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
@@ -180,7 +157,6 @@ def _execute_app_operation(
             }
             if json_data:
                 kwargs["json"] = json_data
-
             response = request_func(**kwargs)
             return (
                 FlextResult[requests.Response].ok(response)
@@ -198,46 +174,33 @@ def _execute_app_operation(
             json_data: dict[str, t.ContainerValue] = response.json()
             return FlextResult[t.ConfigurationMapping].ok(json_data)
         except Exception as e:
-            return FlextResult[t.ConfigurationMapping].fail(
-                f"JSON parse failed: {e}",
-            )
+            return FlextResult[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
 
-    # Use existing flext-core monadic chain
     result = (
         _make_http_request()
         .flat_map(_parse_json_response)
         .flat_map(
             lambda json_data: (
-                FlextResult[t.AppData].ok(
-                    t.AppData.model_validate(json_data["data"]),
-                )
-                if (
-                    "success" in json_data
-                    and json_data["success"] is True
-                    and "data" in json_data
-                    and isinstance(data := json_data["data"], dict)
-                    and "id" in data
-                    and "name" in data
-                )
+                FlextResult[t.AppData].ok(t.AppData.model_validate(json_data["data"]))
+                if "success" in json_data
+                and json_data["success"] is True
+                and ("data" in json_data)
+                and isinstance((data := json_data["data"]), dict)
+                and ("id" in data)
+                and ("name" in data)
                 else FlextResult[t.AppData].fail("Invalid app data")
-            ),
+            )
         )
     )
-
-    # Fast fail - no fallback to None
     if result.is_failure:
         error_msg = f"Operation failed: {result.error}"
         raise ValueError(error_msg)
     return result.value
 
 
-def _execute_list_operation(
-    endpoint: str,
-    data_key: str,
-) -> list[t.AppData]:
+def _execute_list_operation(endpoint: str, data_key: str) -> list[t.AppData]:
     """Advanced Monad Composition using flext-core - eliminates 7 returns with Kleisli composition."""
 
-    # Pure functional Kleisli composition using flext-core patterns
     def _make_get_request() -> FlextResult[requests.Response]:
         """Make GET request."""
         try:
@@ -254,19 +217,15 @@ def _execute_list_operation(
             json_data: dict[str, t.ContainerValue] = response.json()
             return FlextResult[t.ConfigurationMapping].ok(json_data)
         except Exception as e:
-            return FlextResult[t.ConfigurationMapping].fail(
-                f"JSON parse failed: {e}",
-            )
+            return FlextResult[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
 
     result = _make_get_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
         msg = "HTTP request failed"
         raise ValueError(msg)
-
     parsed_result = result.flat_map(_parse_response_json)
     if parsed_result.is_failure:
         raise ValueError(parsed_result.error or "Parse failed")
-
     response_dict: dict[str, t.ContainerValue] = parsed_result.value
     apps_list: list[t.AppData] = _extract_apps_from_response(response_dict, data_key)
     return apps_list
@@ -283,8 +242,7 @@ def start_application(app_id: str) -> t.AppData:
 
     """
     return _execute_app_operation(
-        method="POST",
-        endpoint=ExampleConstants.APP_START.format(app_id=app_id),
+        method="POST", endpoint=ExampleConstants.APP_START.format(app_id=app_id)
     )
 
 
@@ -299,8 +257,7 @@ def get_application_status(app_id: str) -> t.AppData:
 
     """
     return _execute_app_operation(
-        method="GET",
-        endpoint=ExampleConstants.APP_DETAIL.format(app_id=app_id),
+        method="GET", endpoint=ExampleConstants.APP_DETAIL.format(app_id=app_id)
     )
 
 
@@ -315,8 +272,7 @@ def stop_application(app_id: str) -> t.AppData:
 
     """
     return _execute_app_operation(
-        method="POST",
-        endpoint=ExampleConstants.APP_STOP.format(app_id=app_id),
+        method="POST", endpoint=ExampleConstants.APP_STOP.format(app_id=app_id)
     )
 
 
@@ -341,40 +297,29 @@ def demo_application_lifecycle() -> None:
     """
     if not check_service_health():
         return
-
-    # Create applications with different configurations - fast fail on error
     try:
         app1 = create_application("web-service", 3000)
         app2 = create_application("api-gateway", 4000, "127.0.0.1")
     except ValueError:
         return
-
     _ = list_applications()
-
-    # Start applications and check results - fast fail on error
     try:
         _ = start_application(str(app1.id))
         _ = start_application(str(app2.id))
     except ValueError:
         return
-
-    # Check individual status with proper error handling - fast fail on error
     try:
         for app_data in [app1, app2]:
             app_id = str(app_data.id)
             _ = get_application_status(app_id)
     except ValueError:
         return
-
     _ = list_applications()
-
-    # Stop applications - fast fail on error
     try:
         _ = stop_application(str(app1.id))
         _ = stop_application(str(app2.id))
     except ValueError:
         return
-
     _ = list_applications()
 
 

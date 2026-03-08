@@ -50,20 +50,14 @@ class FlextWebUtilities(FlextUtilities):
         if not name:
             msg = f"Invalid application name: {name}"
             raise ValueError(msg)
-
-        # Clean the name using flext-core Text utilities
         cleaned = FlextUtilities.Text.safe_string(name)
         if not cleaned:
             msg = f"Application name cannot be empty: {name}"
             raise ValueError(msg)
-
-        # Slugify the cleaned name
         slug = FlextWebUtilities.slugify(cleaned)
         if not slug:
             msg = f"Cannot format application name '{name}' to valid ID"
             raise ValueError(msg)
-
-        # Add app prefix
         return f"app_{slug}"
 
     @staticmethod
@@ -74,20 +68,10 @@ class FlextWebUtilities(FlextUtilities):
         """
         if not text:
             return ""
-
-        # Normalize to lowercase
         normalized = text.lower()
-
-        # Remove special chars, keep word chars, spaces, hyphens
-        cleaned = re.sub(r"[^\w\s-]", "", normalized)
-
-        # Split on hyphens/spaces
-        words = re.split(r"[-\s]+", cleaned)
-
-        # Filter truthy parts
+        cleaned = re.sub("[^\\w\\s-]", "", normalized)
+        words = re.split("[-\\s]+", cleaned)
         truthy_words = [word for word in words if word]
-
-        # Join with hyphens
         return "-".join(truthy_words)
 
 

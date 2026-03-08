@@ -9,11 +9,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from fastapi import FastAPI
-from flext_core import (
-    FlextContainer,
-    FlextLogger,
-    FlextResult,
-)
+from flext_core import FlextContainer, FlextLogger, FlextResult
 from pydantic import ValidationError
 
 from flext_web import FlextWebApp, FlextWebSettings, c, m, t
@@ -33,8 +29,7 @@ class FlextWebApi:
 
     @classmethod
     def create_fastapi_app(
-        cls,
-        config: m.Web.FastAPIAppConfig | None = None,
+        cls, config: m.Web.FastAPIAppConfig | None = None
     ) -> FlextResult[FastAPI]:
         """Create FastAPI web application with complete validation.
 
@@ -50,16 +45,12 @@ class FlextWebApi:
 
         """
         logger = FlextLogger(__name__)
-
         _ = logger.info("Creating FastAPI application via API facade")
         result = FlextWebApp.create_fastapi_app(config)
-
-        # Log result using monadic pattern
         if result.is_success:
             _ = logger.info("FastAPI application created successfully")
         else:
             _ = logger.error(f"FastAPI application creation failed: {result.error}")
-
         return result
 
     @classmethod
@@ -87,20 +78,16 @@ class FlextWebApi:
 
         """
         logger = FlextLogger(__name__)
-
-        # Use defaults from constants when not provided
         host_val: str = host if host is not None else c.Web.WebDefaults.HOST
         port_val: int = port if port is not None else c.Web.WebDefaults.PORT
         debug_mode_val: bool = (
             debug if debug is not None else c.Web.WebDefaults.DEBUG_MODE
         )
         secret_key_val: str = c.Web.WebDefaults.SECRET_KEY
-
         _ = logger.debug(
             "Creating HTTP config with data",
             config={"host": host_val, "port": port_val, "debug_mode": debug_mode_val},
         )
-
         try:
             config = FlextWebSettings(
                 host=host_val,
@@ -109,18 +96,14 @@ class FlextWebApi:
                 secret_key=secret_key_val,
             )
         except ValidationError as e:
-            # Use u to extract error message - simplifies code
             errors = e.errors()
             error_msg = errors[0]["msg"] if errors else str(e)
             _ = logger.exception("HTTP config creation failed: %s", exception=e)
             return FlextResult.fail(f"Configuration validation failed: {error_msg}")
-
         _ = logger.info(
-            f"HTTP config created successfully: {config.host}:{config.port}",
+            f"HTTP config created successfully: {config.host}:{config.port}"
         )
         return FlextResult.ok(config)
-
-    # UTILITY METHODS - Supporting Operations
 
     @classmethod
     def get_api_capabilities(cls) -> FlextResult[t.WebCore.ResponseDict]:
@@ -133,10 +116,7 @@ class FlextWebApi:
         return FlextResult.ok({
             "application_management": ["create_fastapi_app"],
             "service_management": ["create_http_service"],
-            "configuration_management": [
-                "create_http_config",
-                "validate_http_config",
-            ],
+            "configuration_management": ["create_http_config", "validate_http_config"],
             "monitoring": ["get_service_status", "get_api_capabilities"],
             "supported_frameworks": ["fastapi"],
             "supported_patterns": ["solid", "facade", "dependency_injection"],
@@ -156,9 +136,7 @@ class FlextWebApi:
 
         """
         logger = FlextLogger(__name__)
-
         _container = FlextContainer()
-
         status_info = m.Web.ServiceResponse(
             service=c.Web.WebService.SERVICE_NAME_API,
             capabilities=[
@@ -170,7 +148,6 @@ class FlextWebApi:
             status=c.Web.WebResponse.STATUS_OPERATIONAL,
             config=True,
         )
-
         _ = logger.debug("Service status retrieved successfully")
         return FlextResult.ok(status_info)
 
@@ -190,9 +167,7 @@ class FlextWebApi:
 
         """
         logger = FlextLogger(__name__)
-
         _ = logger.debug(f"Validating HTTP configuration for app: {config.app_name}")
-        # Pydantic model is already validated on creation, just confirm it's valid
         _ = logger.info("HTTP configuration validation successful")
         return FlextResult.ok(True)
 

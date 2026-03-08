@@ -38,28 +38,20 @@ from tests import (
 
 
 def assert_success(
-    result: r[object],
-    message: str = "Operation should succeed",
+    result: r[object], message: str = "Operation should succeed"
 ) -> None:
     """Assert that a r is successful using flext_tests matchers."""
     if not result.is_success:
         raise AssertionError(f"{message}: {result.error}")
 
 
-def assert_failure(
-    result: r[object],
-    message: str = "Operation should fail",
-) -> None:
+def assert_failure(result: r[object], message: str = "Operation should fail") -> None:
     """Assert that a r is a failure using flext_tests matchers."""
     if result.is_success:
         raise AssertionError(message)
 
 
-def assert_result(
-    result: r[object],
-    *,
-    expected_success: bool = True,
-) -> None:
+def assert_result(result: r[object], *, expected_success: bool = True) -> None:
     """Assert r state with appropriate message using flext_tests."""
     if expected_success:
         assert_success(result)
@@ -91,14 +83,10 @@ def create_entry(entry_type: str, **kwargs: object) -> r[object]:
         if (
             not isinstance(name, str)
             or not isinstance(host, str)
-            or not isinstance(port, int)
+            or (not isinstance(port, int))
         ):
             return r[object].fail("Invalid parameters for web_app")
-        return m.Web.create_web_app(
-            name=name,
-            host=host,
-            port=port,
-        )
+        return m.Web.create_web_app(name=name, host=host, port=port)
     if entry_type == "http_request":
         url: object = kwargs.get("url")
         method: object = kwargs.get("method")
@@ -107,9 +95,9 @@ def create_entry(entry_type: str, **kwargs: object) -> r[object]:
         timeout: object = kwargs.get("timeout")
         if not isinstance(url, str) or not isinstance(method, str):
             return r[object].fail("Invalid parameters for http_request")
-        if req_headers is not None and not isinstance(req_headers, dict):
+        if req_headers is not None and (not isinstance(req_headers, dict)):
             return r[object].fail("Invalid headers for http_request")
-        if req_body is not None and not isinstance(req_body, (str, dict)):
+        if req_body is not None and (not isinstance(req_body, (str, dict))):
             return r[object].fail("Invalid body for http_request")
         if not isinstance(timeout, (float, int)):
             return r[object].fail("Invalid timeout for http_request")
@@ -127,11 +115,11 @@ def create_entry(entry_type: str, **kwargs: object) -> r[object]:
         elapsed_time: object = kwargs.get("elapsed_time")
         if not isinstance(status_code, int):
             return r[object].fail("Invalid status_code for http_response")
-        if headers is not None and not isinstance(headers, dict):
+        if headers is not None and (not isinstance(headers, dict)):
             return r[object].fail("Invalid headers for http_response")
-        if body is not None and not isinstance(body, (str, dict)):
+        if body is not None and (not isinstance(body, (str, dict))):
             return r[object].fail("Invalid body for http_response")
-        if elapsed_time is not None and not isinstance(elapsed_time, (float, int)):
+        if elapsed_time is not None and (not isinstance(elapsed_time, (float, int))):
             return r[object].fail("Invalid elapsed_time for http_response")
         return t.create_http_response(
             status_code=status_code,
@@ -197,7 +185,7 @@ def create_entry(entry_type: str, **kwargs: object) -> r[object]:
         if (
             not isinstance(name, str)
             or not isinstance(host, str)
-            or not isinstance(port, int)
+            or (not isinstance(port, int))
         ):
             return r[object].fail("Invalid parameters for application")
         app_config = _ApplicationConfig(
@@ -296,14 +284,11 @@ def create_test_app(**kwargs: object) -> m.Web.Entity:
         "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
         "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
     }
-
     defaults.update({k: v for k, v in kwargs.items() if isinstance(v, (str, int))})
-
     id_val = defaults.get("id", "test-id")
     name_val = defaults.get("name", c.Web.Tests.TestWeb.TEST_APP_NAME)
     host_val = defaults.get("host", c.Web.Tests.TestWeb.DEFAULT_HOST)
     port_val = defaults.get("port", c.Web.Tests.TestWeb.DEFAULT_PORT)
-
     return m.Web.Entity(
         id=id_val if isinstance(id_val, str) else "test-id",
         name=name_val
@@ -318,11 +303,7 @@ def create_test_app(**kwargs: object) -> m.Web.Entity:
     )
 
 
-def create_test_result(
-    *,
-    success: bool = True,
-    **kwargs: object,
-) -> r[object]:
+def create_test_result(*, success: bool = True, **kwargs: object) -> r[object]:
     """Create a test r using r API directly.
 
     This function provides a standardized way to create test results,
@@ -340,10 +321,8 @@ def create_test_result(
 
     """
     if success:
-        # Get value from kwargs (could be 'data' or 'value')
         value = kwargs.get("data") or kwargs.get("value")
         return r[object].ok(value)
-    # Failure case
     error = str(kwargs.get("error", "Test error"))
     return r[object].fail(error)
 
@@ -370,7 +349,7 @@ def run_parameterized_test(
 
     """
     for i, (test_case, expected_success) in enumerate(
-        zip(test_cases, expected_results, strict=True),
+        zip(test_cases, expected_results, strict=True)
     ):
         try:
             result = (
@@ -378,12 +357,10 @@ def run_parameterized_test(
                 if isinstance(test_case, tuple)
                 else test_function(test_case)
             )
-
             if expected_success:
                 assert_success(result, f"{test_name} case {i} should succeed")
             else:
                 assert_failure(result, f"{test_name} case {i} should fail")
-
         except Exception as e:
             pytest.fail(f"{test_name} case {i} raised unexpected exception: {e}")
 
@@ -406,13 +383,10 @@ def create_comprehensive_test_suite(
         test_name_prefix: Prefix for generated test names
 
     """
-    # Test valid cases
     for i, params in enumerate(valid_cases):
         test_name = f"{test_name_prefix}_valid_case_{i}"
         result = create_entry(entity_type, **params)
         assert_success(result, f"{test_name} should succeed")
-
-    # Test invalid cases
     for i, params in enumerate(invalid_cases):
         test_name = f"{test_name_prefix}_invalid_case_{i}"
         result = create_entry(entity_type, **params)
@@ -422,21 +396,15 @@ def create_comprehensive_test_suite(
 @pytest.fixture(autouse=True)
 def setup_test_environment() -> Generator[None]:
     """Set up test environment with real configuration."""
-    # Save original environment
     original_env: dict[str, str] = {
         k: v for k, v in os.environ.items() if isinstance(v, str)
     }
-
-    # Set test environment variables
     os.environ["FLEXT_ENV"] = "test"
-    os.environ["FLEXT_LOG_LEVEL"] = "INFO"  # Reduce noise
+    os.environ["FLEXT_LOG_LEVEL"] = "INFO"
     os.environ["FLEXT_WEB_DEBUG_MODE"] = "true"
     os.environ["FLEXT_WEB_HOST"] = c.Web.WebDefaults.HOST
     os.environ["FLEXT_WEB_SECRET_KEY"] = c.Web.WebDefaults.TEST_SECRET_KEY
-
     yield
-
-    # Restore original environment
     os.environ.clear()
     for key, value in original_env.items():
         os.environ[key] = value
@@ -448,57 +416,39 @@ def real_config() -> FlextWebSettings:
 
     Fast fail if secret key cannot be provided - no fallback.
     """
-    return FlextWebSettings(
-        secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
-    )
+    return FlextWebSettings(secret_key=c.Web.WebDefaults.TEST_SECRET_KEY)
 
 
 @pytest.fixture
-def real_service(
-    real_config: FlextWebSettings,
-) -> FlextWebServices:
+def real_service(real_config: FlextWebSettings) -> FlextWebServices:
     """Create real FlextWebServices instance with clean state."""
-    # Pass config object directly - no dict conversion
     result = FlextWebServices.create_service(real_config)
     assert result.is_success, f"Service creation failed: {result.error}"
     return result.value
-    # Clean up service state after each test
-    # Note: services don't have apps attribute in current implementation
 
 
 @pytest.fixture
 def real_app(real_config: FlextWebSettings) -> Flask:
     """Create real Flask app."""
-    # Create a basic Flask app for testing
     app = Flask(__name__)
-    # secret_key now has default from Constants, no None check needed
-    app.config.update(
-        SECRET_KEY=real_config.secret_key,
-        TESTING=True,
-    )
+    app.config.update(SECRET_KEY=real_config.secret_key, TESTING=True)
     return app
 
 
 @pytest.fixture
-def running_service(
-    real_config: FlextWebSettings,
-) -> Generator[FlextWebServices]:
+def running_service(real_config: FlextWebSettings) -> Generator[FlextWebServices]:
     """Start real service in background thread with clean state."""
-    # Allocate unique port to avoid conflicts
     test_port = TestPortManager.allocate_port()
-
     test_config = FlextWebSettings(
         host=real_config.host,
         port=test_port,
         app_name=real_config.app_name,
         version=real_config.version,
     )
-
     result = FlextWebServices.create_service(test_config)
     assert result.is_success, f"Service creation failed: {result.error}"
     service = result.value
 
-    # Start service in background thread
     def run_service() -> None:
         app_result = FlextWebApp.create_flask_app(test_config)
         if app_result.is_success:
@@ -506,7 +456,7 @@ def running_service(
             app.run(
                 host=test_config.host,
                 port=test_config.port,
-                debug=False,  # Disable debug for clean testing
+                debug=False,
                 use_reloader=False,
                 threaded=True,
             )
@@ -514,7 +464,6 @@ def running_service(
     server_thread = threading.Thread(target=run_service, daemon=True)
     server_thread.start()
 
-    # Wait for service to start (check if port is open)
     def wait_for_port(port: int, timeout: float = 5.0) -> bool:
         """Wait for port to be open."""
         start_time = time.time()
@@ -530,20 +479,14 @@ def running_service(
             time.sleep(0.1)
         return False
 
-    # Wait for the service to be ready
     if not wait_for_port(test_config.port, timeout=5.0):
         pytest.fail(
-            f"Service failed to start on port {test_config.port} within 5 seconds",
+            f"Service failed to start on port {test_config.port} within 5 seconds"
         )
-
     yield service
-
-    # Release the allocated port
     TestPortManager.release_port(test_port)
-    # Service will be killed when thread ends (daemon=True)
 
 
-# Real test data for application testing
 @pytest.fixture
 def test_app_data() -> dict[str, str | int]:
     """Real application data for testing."""
@@ -557,14 +500,9 @@ def test_app_data() -> dict[str, str | int]:
 @pytest.fixture
 def invalid_app_data() -> dict[str, str | int]:
     """Invalid application data for error testing."""
-    return {
-        "name": "",  # Invalid empty name
-        "port": 99999,  # Invalid port
-        "host": "",  # Invalid empty host
-    }
+    return {"name": "", "port": 99999, "host": ""}
 
 
-# Configuration for real environment tests
 @pytest.fixture
 def production_config() -> dict[str, str]:
     """Production-like configuration for testing."""
@@ -582,19 +520,16 @@ def docker_manager() -> Generator[FlextTestsDocker]:
     try:
         yield FlextTestsDocker(workspace_root=Path().absolute())
     except ImportError:
-        # FlextTestsDocker may not be available in all environments
         pytest.skip("FlextTestsDocker not available")
     except Exception as e:
         pytest.skip(f"FlextTestsDocker initialization failed: {e}")
 
 
-# Pytest configuration
 def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers for real testing."""
     config.addinivalue_line("markers", "unit: Unit tests with real execution")
     config.addinivalue_line(
-        "markers",
-        "integration: Integration tests with real services",
+        "markers", "integration: Integration tests with real services"
     )
     config.addinivalue_line("markers", "api: API tests with real HTTP")
     config.addinivalue_line("markers", "web: Web interface tests with real Flask")
@@ -605,10 +540,8 @@ def pytest_configure(config: pytest.Config) -> None:
 class TestPortManager:
     """Thread-safe port allocation manager for tests."""
 
-    # Port range constants
     _PORT_START: ClassVar[int] = 9000
     _PORT_END: ClassVar[int] = 9999
-
     _lock: ClassVar[threading.Lock] = threading.Lock()
     _allocated_ports: ClassVar[set[int]] = set()
     _current_port: ClassVar[int] = _PORT_START
@@ -626,18 +559,13 @@ class TestPortManager:
 
         """
         with cls._lock:
-            # Find next available port
             while cls._current_port in cls._allocated_ports:
                 cls._current_port += 1
-
-                # Wrap around if we hit the limit
                 if cls._current_port > cls._PORT_END:
                     cls._current_port = cls._PORT_START
-
             port = cls._current_port
             cls._allocated_ports.add(port)
             cls._current_port += 1
-
             return port
 
     @classmethod

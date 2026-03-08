@@ -11,7 +11,6 @@ class TestFlextWebInit:
 
     def test_package_imports(self) -> None:
         """Test that all main classes are importable from package."""
-        # Test that all __all__ exports are available
         assert hasattr(flext_web, "FlextWebApi")
         assert hasattr(flext_web, "FlextWebApp")
         assert hasattr(flext_web, "FlextWebSettings")
@@ -33,7 +32,6 @@ class TestFlextWebInit:
     def test_all_exports_match(self) -> None:
         """Test that __all__ contains all expected exports."""
         expected_exports = {
-            # Main classes
             "FlextWebApi",
             "FlextWebApp",
             "FlextWebSettings",
@@ -44,24 +42,18 @@ class TestFlextWebInit:
             "FlextWebServices",
             "FlextWebTypes",
             "FlextWebUtilities",
-            # Version info
             "__version__",
             "__version_info__",
-            # Short aliases (FLEXT namespace pattern)
-            "c",  # FlextWebConstants alias
-            "m",  # FlextWebModels alias
-            "p",  # FlextWebProtocols alias
-            "t",  # FlextWebTypes alias
-            "u",  # FlextWebUtilities alias
+            "c",
+            "m",
+            "p",
+            "t",
+            "u",
         }
-
         assert set(flext_web.__all__) == expected_exports
 
     def test_imports_are_classes_or_modules(self) -> None:
         """Test that imported items are of correct types."""
-        # Test that main classes are classes
-        assert callable(flext_web.FlextWebApi)  # Should be callable class
-        assert callable(flext_web.FlextWebSettings)  # Should be callable class
-
-        # Test that version is string
+        assert callable(flext_web.FlextWebApi)
+        assert callable(flext_web.FlextWebSettings)
         assert isinstance(flext_web.__version__, str)

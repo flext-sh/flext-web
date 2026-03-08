@@ -35,7 +35,6 @@ class TestFlextWebConstants:
 
     def test_web_environment_types(self) -> None:
         """Test web environment type definitions."""
-        # Test that the types are properly defined under Web namespace
         assert hasattr(c.Web, "Name")
         assert hasattr(c.Web, "ApplicationType")
         assert hasattr(c.Web, "Method")
@@ -67,7 +66,6 @@ class TestFlextWebConstants:
 
     def test_constants_are_immutable(self) -> None:
         """Test that constants are properly defined and immutable."""
-        # Test that we can access the constants without errors
         assert isinstance(c.Web.WebDefaults.HOST, str)
         assert isinstance(c.Web.WebDefaults.PORT, int)
         assert isinstance(c.Web.WebValidation.PORT_RANGE, tuple)
@@ -76,7 +74,6 @@ class TestFlextWebConstants:
 
     def test_environment_type_values(self) -> None:
         """Test that environment type values are valid."""
-        # Test that the type literals exist and are accessible
         assert c.Web.Name is not None
         assert c.Web.ApplicationType is not None
         assert c.Web.Method is not None
@@ -84,7 +81,6 @@ class TestFlextWebConstants:
 
     def test_security_constants_types(self) -> None:
         """Test that security constants have correct types."""
-        # Test the actual constants that exist
         assert isinstance(c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH, int)
         assert isinstance(c.Web.WebDefaults.SECRET_KEY, str)
         assert isinstance(c.Web.WebSecurity.SSL_PORTS, tuple)
@@ -92,15 +88,8 @@ class TestFlextWebConstants:
 
     def test_validation_constants_types(self) -> None:
         """Test that validation constants have correct types."""
-        # Test the actual constants that exist
-        assert isinstance(
-            c.Web.WebValidation.CONTENT_LENGTH_RANGE,
-            tuple,
-        )
-        assert isinstance(
-            c.Web.WebValidation.REQUEST_TIMEOUT_RANGE,
-            tuple,
-        )
+        assert isinstance(c.Web.WebValidation.CONTENT_LENGTH_RANGE, tuple)
+        assert isinstance(c.Web.WebValidation.REQUEST_TIMEOUT_RANGE, tuple)
         assert isinstance(c.Web.WebValidation.URL_LENGTH_RANGE, tuple)
         assert isinstance(c.Web.WebValidation.MIN_URL_LENGTH, int)
         assert isinstance(c.Web.WebValidation.MAX_HEADER_LENGTH, int)

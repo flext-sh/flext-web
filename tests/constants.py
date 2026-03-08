@@ -88,7 +88,6 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
                 All Literal types are at FlextWebConstants.Web.Literals namespace.
                 """
 
-                # Reuse production Literals for consistency (Python 3.13+ best practices)
                 type HttpMethodLiteral = (
                     FlextWebConstants.Web.Literals.HttpMethodLiteral
                 )
@@ -111,10 +110,5 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
                 type SameSiteLiteral = FlextWebConstants.Web.Literals.SameSiteLiteral
 
 
-# Short aliases per FLEXT convention
-c = TestsFlextWebConstants  # Primary test constants alias
-
-__all__ = [
-    "TestsFlextWebConstants",
-    "c",
-]
+c = TestsFlextWebConstants
+__all__ = ["TestsFlextWebConstants", "c"]

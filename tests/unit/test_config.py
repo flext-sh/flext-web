@@ -22,12 +22,9 @@ class TestFlextWebSettings:
         can override Field defaults. Therefore we only verify that values are
         present and of correct type, not specific values.
         """
-        # FlextSettings may load defaults from env or use Field defaults
         config = FlextWebSettings()
-        # Don't assert specific default values as they depend on env/config state
-        assert config.host is not None  # May be loaded from env or default
-        assert config.port is not None  # May be loaded from env or default
-        # app_name may be overridden by environment variable
+        assert config.host is not None
+        assert config.port is not None
         assert config.app_name is not None
         assert isinstance(config.app_name, str)
         assert len(config.app_name) > 0
@@ -35,10 +32,7 @@ class TestFlextWebSettings:
     def test_initialization_with_custom_values(self) -> None:
         """Test FlextWebSettings initialization with custom values."""
         config = FlextWebSettings(
-            host="0.0.0.0",
-            port=3000,
-            debug_mode=True,
-            app_name="Test App",
+            host="0.0.0.0", port=3000, debug_mode=True, app_name="Test App"
         )
         assert config.host == "0.0.0.0"
         assert config.port == 3000
@@ -46,8 +40,7 @@ class TestFlextWebSettings:
         assert config.app_name == "Test App"
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced",
-        strict=False,
+        reason="FlextSettings bug: Field constraints not enforced", strict=False
     )
     def test_validation_host_empty(self) -> None:
         """Test host validation with empty string.
@@ -64,8 +57,7 @@ class TestFlextWebSettings:
         assert config.port == 8080
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced",
-        strict=False,
+        reason="FlextSettings bug: Field constraints not enforced", strict=False
     )
     def test_validation_port_out_of_range(self) -> None:
         """Test port validation outside valid range.
@@ -77,8 +69,7 @@ class TestFlextWebSettings:
             _ = FlextWebSettings(port=70000)
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced",
-        strict=False,
+        reason="FlextSettings bug: Field constraints not enforced", strict=False
     )
     def test_validation_secret_key_too_short(self) -> None:
         """Test secret key validation with too short key.
@@ -96,11 +87,8 @@ class TestFlextWebSettings:
 
     def test_ssl_configuration_valid(self) -> None:
         """Test SSL configuration with valid cert and key paths."""
-        # This would need actual cert files in a real test
         config = FlextWebSettings(
-            ssl_enabled=False,
-            ssl_cert_path=None,
-            ssl_key_path=None,
+            ssl_enabled=False, ssl_cert_path=None, ssl_key_path=None
         )
         assert config.ssl_enabled is False
 
@@ -108,8 +96,6 @@ class TestFlextWebSettings:
         """Test computed fields."""
         config = FlextWebSettings(ssl_enabled=False)
         assert config.protocol == "http"
-
-        # Test with SSL disabled (no cert/key required)
         config_https = FlextWebSettings(ssl_enabled=False)
         assert config_https.protocol == "http"
 
@@ -144,6 +130,5 @@ class TestFlextWebSettings:
         assert result.is_success
         config = result.value
         assert isinstance(config, FlextWebSettings)
-        # Don't assert specific defaults as they may be loaded from env
         assert config.host is not None
         assert config.port is not None

@@ -14,20 +14,12 @@ from flext_core import FlextConstants
 class FlextWebConstants(FlextConstants):
     """Immutable project-specific constants organized by domain."""
 
-    # =========================================================================
-    # NAMESPACE: .Web - All Web domain constants
-    # =========================================================================
-
     class Web:
         """Web domain constants namespace.
 
         All web-specific constants are organized here for better namespace
         organization and to enable composition with other domain constants.
         """
-
-        # ═══════════════════════════════════════════════════════════════════
-        # STRENUM: Single declaration needed for automatic validation
-        # ═══════════════════════════════════════════════════════════════════
 
         class Method(StrEnum):
             """Enumeration of supported HTTP methods.
@@ -121,10 +113,6 @@ class FlextWebConstants(FlextConstants):
             MAINTENANCE = "maintenance"
             DEPLOYING = "deploying"
 
-        # ═══════════════════════════════════════════════════════════════════
-        # DERIVED CONSTANTS: Computed from StrEnum members
-        # ═══════════════════════════════════════════════════════════════════
-
         STATUS_CODES: ClassVar[Mapping[str, int]] = MappingProxyType({
             status.name: int(status.value) for status in StatusCode
         })
@@ -137,7 +125,6 @@ class FlextWebConstants(FlextConstants):
         })
         SUCCESS_RANGE: Final[tuple[int, int]] = (200, 299)
         ERROR_MIN: Final[int] = 400
-
         ENVIRONMENTS: ClassVar[tuple[str, ...]] = tuple(
             member.value for member in Name.__members__.values()
         )
@@ -205,17 +192,14 @@ class FlextWebConstants(FlextConstants):
                 "test-environment-key-32-characters-long-for-tests"
             )
             ALL_INTERFACES: Final[str] = str(IPv4Address(0))
-            LOCALHOST_IP: Final[str] = str(IPv4Address(0x7F000001))
+            LOCALHOST_IP: Final[str] = str(IPv4Address(2130706433))
             SYSTEM_PORTS_THRESHOLD: Final[int] = 1023
             PRIVILEGED_PORTS_MAX: Final[int] = 1023
 
         class WebValidation:
             """Validation constants for configuration and HTTP payloads."""
 
-            PORT_RANGE: Final[tuple[int, int]] = (
-                1,
-                65535,
-            )  # Allow system ports for SSL (443, 8443)
+            PORT_RANGE: Final[tuple[int, int]] = (1, 65535)
             NAME_LENGTH_RANGE: Final[tuple[int, int]] = (3, 100)
             MIN_SECRET_KEY_LENGTH: Final[int] = 32
             MAX_CONTENT_LENGTH_DEFAULT: Final[int] = 16 * 1024 * 1024
@@ -240,18 +224,12 @@ class FlextWebConstants(FlextConstants):
         class Http:
             """HTTP protocol constants, methods and status codes."""
 
-            # HTTP Content Types
             CONTENT_TYPE_JSON: Final[str] = "application/json"
             CONTENT_TYPE_TEXT: Final[str] = "text/plain"
             CONTENT_TYPE_HTML: Final[str] = "text/html"
-
-            # HTTP Header Names
             HEADER_CONTENT_TYPE: Final[str] = "content-type"
             HEADER_CONTENT_LENGTH: Final[str] = "content-length"
-
-            # HTTP Default Timeout
             DEFAULT_TIMEOUT_SECONDS: Final[float] = 30.0
-
             METHODS: ClassVar[tuple[str, ...]] = (
                 "GET",
                 "POST",
@@ -261,11 +239,7 @@ class FlextWebConstants(FlextConstants):
                 "HEAD",
                 "OPTIONS",
             )
-            SAFE_METHODS: ClassVar[tuple[str, ...]] = (
-                "GET",
-                "HEAD",
-                "OPTIONS",
-            )
+            SAFE_METHODS: ClassVar[tuple[str, ...]] = ("GET", "HEAD", "OPTIONS")
 
         class WebSecurity:
             """Security settings and safe defaults."""
@@ -304,38 +278,21 @@ class FlextWebConstants(FlextConstants):
             SESSION_COOKIE_SECURE_DEFAULT: Final[bool] = False
             SESSION_COOKIE_HTTPONLY_DEFAULT: Final[bool] = True
             SESSION_COOKIE_SAMESITE_DEFAULT: Final[str] = "Lax"
-
-            # Model field length limits
             MAX_DESCRIPTION_LENGTH: Final[int] = 500
             MAX_HOST_LENGTH: Final[int] = 255
 
         class WebFramework:
             """Web framework and runtime constants."""
 
-            # Interface types
             INTERFACE_ASGI: Final[str] = "asgi"
             INTERFACE_WSGI: Final[str] = "wsgi"
-
-            # Runner implementations
             RUNNER_UVICORN: Final[str] = "uvicorn"
             RUNNER_WERKZEUG: Final[str] = "werkzeug"
-
-            # Framework names
             FRAMEWORK_FASTAPI: Final[str] = "fastapi"
             FRAMEWORK_FLASK: Final[str] = "flask"
-
-            INTERFACES: ClassVar[tuple[str, ...]] = (
-                INTERFACE_ASGI,
-                INTERFACE_WSGI,
-            )
-            RUNNERS: ClassVar[tuple[str, ...]] = (
-                RUNNER_UVICORN,
-                RUNNER_WERKZEUG,
-            )
-            FRAMEWORKS: ClassVar[tuple[str, ...]] = (
-                FRAMEWORK_FASTAPI,
-                FRAMEWORK_FLASK,
-            )
+            INTERFACES: ClassVar[tuple[str, ...]] = (INTERFACE_ASGI, INTERFACE_WSGI)
+            RUNNERS: ClassVar[tuple[str, ...]] = (RUNNER_UVICORN, RUNNER_WERKZEUG)
+            FRAMEWORKS: ClassVar[tuple[str, ...]] = (FRAMEWORK_FASTAPI, FRAMEWORK_FLASK)
 
         class WebActions:
             """Web application management action constants."""
@@ -344,7 +301,6 @@ class FlextWebConstants(FlextConstants):
             ACTION_START: Final[str] = "start"
             ACTION_STOP: Final[str] = "stop"
             ACTION_LIST: Final[str] = "list"
-
             ACTIONS: ClassVar[tuple[str, ...]] = (
                 ACTION_CREATE,
                 ACTION_START,
@@ -367,12 +323,6 @@ class FlextWebConstants(FlextConstants):
             OPENAPI_URL: Final[str] = "/openapi.json"
             DEFAULT_DESCRIPTION: Final[str] = "Generic HTTP Service"
 
-        # ═══════════════════════════════════════════════════════════════════
-        # LITERAL TYPES (PEP 695 - Reference StrEnum Members)
-        # ═══════════════════════════════════════════════════════════════════
-        # All Literal types are defined at Web level to reference StrEnum classes.
-        # They reference StrEnum members to avoid string duplication (DRY principle).
-
         class Literals:
             """Type literals for compile-time type safety.
 
@@ -380,29 +330,13 @@ class FlextWebConstants(FlextConstants):
             Usage: c.Web.Literals.HttpMethodLiteral
             """
 
-            # HTTP method literal - references Method StrEnum
             HttpMethodLiteral = Literal[
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "PATCH",
-                "HEAD",
-                "OPTIONS",
+                "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
             ]
-
-            # Content type literal - references Http content types
             ContentTypeLiteral = Literal["application/json", "text/plain", "text/html"]
-
-            # Environment name literal - references Name StrEnum
             EnvironmentNameLiteral = Literal[
-                "development",
-                "staging",
-                "production",
-                "testing",
+                "development", "staging", "production", "testing"
             ]
-
-            # Application status literal - references Status StrEnum
             ApplicationStatusLiteral = Literal[
                 "stopped",
                 "starting",
@@ -412,8 +346,6 @@ class FlextWebConstants(FlextConstants):
                 "maintenance",
                 "deploying",
             ]
-
-            # Application type literal - references ApplicationType StrEnum
             ApplicationTypeLiteral = Literal[
                 "application",
                 "service",
@@ -424,25 +356,12 @@ class FlextWebConstants(FlextConstants):
                 "dashboard",
                 "REDACTED_LDAP_BIND_PASSWORD-panel",
             ]
-
-            # Response status literal
             ResponseStatusLiteral = Literal[
-                "success",
-                "error",
-                "operational",
-                "healthy",
+                "success", "error", "operational", "healthy"
             ]
-
-            # Protocol literal
             ProtocolLiteral = Literal["http", "https"]
-
-            # SameSite cookie literal
             SameSiteLiteral = Literal["Lax", "Strict", "None"]
 
 
 c = FlextWebConstants
-
-__all__: list[str] = [
-    "FlextWebConstants",
-    "c",
-]
+__all__: list[str] = ["FlextWebConstants", "c"]

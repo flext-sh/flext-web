@@ -14,11 +14,7 @@ from typing import override
 
 import flask
 from fastapi import FastAPI
-from flext_core import (
-    FlextLogger,
-    FlextService,
-    r,
-)
+from flext_core import FlextLogger, FlextService, r
 
 from flext_web import FlextWebSettings, c, m, t, u
 
@@ -51,10 +47,6 @@ class FlextWebApp(FlextService[bool]):
         self.logger.info("FlextWebApp service executed successfully")
         return r[bool].ok(value=True)
 
-    # =========================================================================
-    # FASTAPI APPLICATION FACTORY - Single Responsibility
-    # =========================================================================
-
     class FastAPIFactory:
         """FastAPI application factory with flext-core integration.
 
@@ -77,7 +69,6 @@ class FlextWebApp(FlextService[bool]):
 
             """
             logger = FlextLogger(__name__)
-
             default_config = FlextWebApp._FastAPIConfig(
                 title="FastAPI",
                 version=c.Web.WebDefaults.VERSION_STRING,
@@ -86,7 +77,6 @@ class FlextWebApp(FlextService[bool]):
                 redoc_url=c.Web.WebApi.REDOC_URL,
                 openapi_url=c.Web.WebApi.OPENAPI_URL,
             )
-            # Extract configuration values with defaults
             final_config = config if config is not None else default_config
             title: str = final_config.title or "FastAPI"
             version: str = final_config.version or c.Web.WebDefaults.VERSION_STRING
@@ -96,8 +86,6 @@ class FlextWebApp(FlextService[bool]):
             docs_url: str = final_config.docs_url or c.Web.WebApi.DOCS_URL
             redoc_url: str = final_config.redoc_url or c.Web.WebApi.REDOC_URL
             openapi_url: str = final_config.openapi_url or c.Web.WebApi.OPENAPI_URL
-
-            # Use try/except for error handling with exception message
             try:
                 app = FastAPI(
                     title=title,
@@ -119,25 +107,19 @@ class FlextWebApp(FlextService[bool]):
                 error_msg = f"Failed to create FastAPI application: {e}"
                 logger.exception(error_msg)
                 return r[FastAPI].fail(error_msg)
-
             logger.info("FastAPI application '%s' v%s created", title, version)
             return r.ok(app)
 
     @classmethod
     def _configure_fastapi_endpoints(
-        cls,
-        app: FastAPI,
-        config: m.Web.FastAPIAppConfig,
+        cls, app: FastAPI, config: m.Web.FastAPIAppConfig
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
-        # Add health endpoint using flext-core patterns
         @app.get("/health")
         def health_check() -> t.WebCore.ResponseDict:
-            # Handler returns ResponseDict directly
             return cls.HealthHandler.create_handler()()
 
-        # Add info endpoint for API metadata
         @app.get("/info")
         def info_endpoint() -> t.WebCore.ResponseDict:
             return cls.InfoHandler.create_handler(config)()
@@ -168,7 +150,6 @@ class FlextWebApp(FlextService[bool]):
 
         """
         fastapi_config = config if config is not None else m.Web.FastAPIAppConfig()
-
         factory_config_final = factory_config if factory_config is not None else None
         if factory_config_final is None:
             factory_config_new = FlextWebApp._FastAPIConfig(
@@ -180,16 +161,12 @@ class FlextWebApp(FlextService[bool]):
                 openapi_url=fastapi_config.openapi_url,
             )
             factory_config_final = factory_config_new
-
         return cls.FastAPIFactory.create_instance(factory_config_final).map(
-            lambda app: cls._configure_fastapi_endpoints(app, fastapi_config),
+            lambda app: cls._configure_fastapi_endpoints(app, fastapi_config)
         )
 
     @classmethod
-    def create_flask_app(
-        cls,
-        config: FlextWebSettings | None = None,
-    ) -> r[flask.Flask]:
+    def create_flask_app(cls, config: FlextWebSettings | None = None) -> r[flask.Flask]:
         """Create Flask app with flext-core integration and configuration.
 
         Single Responsibility: Creates and configures Flask application only.
@@ -205,18 +182,12 @@ class FlextWebApp(FlextService[bool]):
 
         """
         logger = FlextLogger(__name__)
-
         flask_config = config if config is not None else FlextWebSettings()
-
-        # Create Flask application
         app = flask.Flask(flask_config.app_name)
-
-        # Configure Flask app
         app.config["SECRET_KEY"] = flask_config.secret_key
         app.config["DEBUG"] = flask_config.debug
         app.config["TESTING"] = flask_config.testing
 
-        # Add basic health route
         @app.route("/health")
         def health_check() -> flask.Response:
             return flask.jsonify(
@@ -227,10 +198,6 @@ class FlextWebApp(FlextService[bool]):
 
         logger.info(f"Flask application '{flask_config.app_name}' created")
         return r.ok(app)
-
-    # =========================================================================
-    # HEALTH AND INFO HANDLERS - Single Responsibility Principle
-    # =========================================================================
 
     class HealthHandler:
         """Health check handler with single responsibility for system health monitoring."""
@@ -281,21 +248,11 @@ class FlextWebApp(FlextService[bool]):
                               failure contains error message
 
         """
-        # Error handler configuration — registered during app setup
-        # Can be extended with custom exception handlers
-        _ = app  # Parameter reserved for future implementation
+        _ = app
         return r[bool].ok(value=True)
 
-    # =========================================================================
-    # APPLICATION MANAGEMENT - SOLID Extension Points
-    # =========================================================================
-
     @classmethod
-    def configure_middleware(
-        cls,
-        app: FastAPI,
-        config: FlextWebSettings,
-    ) -> r[bool]:
+    def configure_middleware(cls, app: FastAPI, config: FlextWebSettings) -> r[bool]:
         """Configure FastAPI middleware (extensible for future needs).
 
         Args:
@@ -307,17 +264,11 @@ class FlextWebApp(FlextService[bool]):
                               failure contains error message
 
         """
-        # Middleware configuration — applied during app initialization
-        # Can be extended with CORS, authentication, rate limiting, etc.
-        _ = app, config  # Parameters reserved for future implementation
+        _ = (app, config)
         return r[bool].ok(value=True)
 
     @classmethod
-    def configure_routes(
-        cls,
-        app: FastAPI,
-        config: FlextWebSettings,
-    ) -> r[bool]:
+    def configure_routes(cls, app: FastAPI, config: FlextWebSettings) -> r[bool]:
         """Configure FastAPI routes (extensible for future needs).
 
         Args:
@@ -329,9 +280,7 @@ class FlextWebApp(FlextService[bool]):
                               failure contains error message
 
         """
-        # Route configuration — registered during app setup
-        # Can be extended with API routes, WebSocket routes, etc.
-        _ = app, config  # Parameters reserved for future implementation
+        _ = (app, config)
         return r[bool].ok(value=True)
 
     @override
@@ -345,6 +294,4 @@ class FlextWebApp(FlextService[bool]):
         return r[bool].ok(value=True)
 
 
-__all__ = [
-    "FlextWebApp",
-]
+__all__ = ["FlextWebApp"]

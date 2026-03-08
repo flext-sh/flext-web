@@ -13,7 +13,6 @@ from importlib.metadata import metadata
 from typing import Final
 
 _metadata = metadata("flext-web")
-
 __version__: Final[str] = _metadata["Version"]
 __version_info__: Final[tuple[int | str, ...]] = tuple(
     int(part) if part.isdigit() else part for part in __version__.split(".")
@@ -67,13 +66,11 @@ class FlextWebVersion:
                 author_email=__author_email__,
                 license_type=__license__,
                 url=__url__,
-            ),
+            )
         )
 
 
 VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
-
-
 __all__ = [
     "VERSION",
     "FlextWebVersion",

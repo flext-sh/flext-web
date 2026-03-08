@@ -37,18 +37,13 @@ class TestPortManager:
 
         """
         with cls._lock:
-            # Find next available port
             while cls._current_port in cls._allocated_ports:
                 cls._current_port += 1
-
-                # Wrap around if we hit the limit
                 if cls._current_port > c.Web.Tests.TestPort.PORT_END:
                     cls._current_port = c.Web.Tests.TestPort.PORT_START
-
             port = cls._current_port
             cls._allocated_ports.add(port)
             cls._current_port += 1
-
             return port
 
     @classmethod

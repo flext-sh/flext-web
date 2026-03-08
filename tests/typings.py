@@ -32,7 +32,5 @@ class TestsFlextWebTypes(FlextTestsTypes, FlextWebTypes):
             """Test-specific web typings (add aliases when needed)."""
 
 
-# Runtime alias per FLEXT convention
 t = TestsFlextWebTypes
-
 __all__ = ["TestsFlextWebTypes", "t"]

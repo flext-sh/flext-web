@@ -88,64 +88,44 @@ class TestFlextWebFields:
 
     def test_field_constraints(self) -> None:
         """Test field constraints are properly set."""
-        # Test that Pydantic models have proper field constraints
-        # Create a test model instance to check constraints
-        test_model = m.Web.Request(
-            url="http://localhost:8080",
-            method="GET",
-        )
+        test_model = m.Web.Request(url="http://localhost:8080", method="GET")
         assert test_model.url == "http://localhost:8080"
         assert test_model.method == "GET"
 
     def test_field_descriptions(self) -> None:
         """Test field descriptions are properly set."""
-        # Test that Pydantic models have proper field definitions
-        # Create test model instances to check field behavior
         host_model = m.Web.Request(url="http://localhost:8080")
         port_model = m.Web.Request(url="http://localhost:3000")
-
-        # Models should be created successfully
         assert host_model is not None
         assert port_model is not None
 
     def test_http_status_field_with_kwargs(self) -> None:
         """Test HTTP status field with additional kwargs."""
-        # Test that Pydantic models handle status codes properly
-        response_model = m.Web.Response(
-            status_code=200,
-        )
+        response_model = m.Web.Response(status_code=200)
         assert response_model.status_code == 200
         assert response_model.is_success is True
 
     def test_field_creation_with_kwargs(self) -> None:
         """Test field creation with additional kwargs."""
-        # Test that Pydantic models handle custom parameters
         request_model = m.Web.Request(
             url="http://localhost:8080",
             method="POST",
             headers={"Content-Type": "application/json"},
         )
-
         assert request_model.url == "http://localhost:8080"
         assert request_model.method == "POST"
         assert request_model.headers["Content-Type"] == "application/json"
 
     def test_http_status_field_factory_methods(self) -> None:
         """Test all HTTP status field factory methods."""
-        # Test that Pydantic models handle different status codes
         status_codes = [200, 201, 400, 404, 500]
-
         for status_code in status_codes:
-            response_model = m.Web.Response(
-                status_code=status_code,
-            )
+            response_model = m.Web.Response(status_code=status_code)
             assert response_model.status_code == status_code
             assert isinstance(response_model, m.Web.Response)
 
     def test_field_validation_integration(self) -> None:
         """Test field validation integration."""
-        # Test that Pydantic models work with default values
-
         model = TestModel()
         assert model.host == c.Web.WebDefaults.HOST
         assert model.port == c.Web.WebDefaults.PORT

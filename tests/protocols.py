@@ -33,7 +33,5 @@ class TestsFlextWebProtocols(FlextTestsProtocols, FlextWebProtocols):
             """
 
 
-# Runtime aliases per FLEXT convention
 p = TestsFlextWebProtocols
-
 __all__ = ["TestsFlextWebProtocols", "p"]

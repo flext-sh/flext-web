@@ -32,7 +32,5 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             """Test-specific web utilities (add helpers when needed)."""
 
 
-# Runtime alias per FLEXT convention
 u = TestsFlextWebUtilities
-
 __all__ = ["TestsFlextWebUtilities", "u"]
