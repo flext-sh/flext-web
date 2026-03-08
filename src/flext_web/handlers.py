@@ -15,7 +15,6 @@ from flext_core import (
     FlextService,
     r,
 )
-from pydantic import BaseModel, ConfigDict, Field
 
 from flext_web import c, m, u
 
@@ -34,29 +33,6 @@ class FlextWebHandlers(FlextService[bool]):
     # =========================================================================
     # NESTED HANDLER CLASSES
     # =========================================================================
-
-    class HealthStatus(BaseModel):
-        """Health response payload."""
-
-        model_config = ConfigDict(frozen=True, extra="forbid")
-
-        status: str
-        service: str
-        version: str
-        timestamp: str
-        components: MutableMapping[str, str] = Field(default_factory=dict)
-
-    class SystemInfo(BaseModel):
-        """System information payload."""
-
-        model_config = ConfigDict(frozen=True, extra="forbid")
-
-        service_name: str
-        service_type: str
-        architecture: str
-        patterns: list[str] = Field(default_factory=list)
-        integrations: list[str] = Field(default_factory=list)
-        capabilities: list[str] = Field(default_factory=list)
 
     class ApplicationHandler:
         """CQRS command handler for web application lifecycle management.

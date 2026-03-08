@@ -12,8 +12,6 @@ from __future__ import annotations
 from importlib.metadata import metadata
 from typing import Final
 
-from pydantic import BaseModel, ConfigDict, Field
-
 _metadata = metadata("flext-web")
 
 __version__: Final[str] = _metadata["Version"]
@@ -26,21 +24,6 @@ __author__: Final[str] = _metadata["Author"]
 __author_email__: Final[str] = _metadata["Author-Email"]
 __license__: Final[str] = _metadata.get("License", "")
 __url__: Final[str] = _metadata.get("Home-Page", "")
-
-
-class _VersionMetadata(BaseModel):
-    """Version metadata model for constructor."""
-
-    model_config = ConfigDict(frozen=False, extra="forbid")
-
-    version: str = Field(default="")
-    version_info: tuple[int | str, ...] = Field(default=())
-    title: str = Field(default="")
-    description: str = Field(default="")
-    author: str = Field(default="")
-    author_email: str = Field(default="")
-    license_type: str = Field(default="")
-    url: str = Field(default="")
 
 
 class FlextWebVersion:

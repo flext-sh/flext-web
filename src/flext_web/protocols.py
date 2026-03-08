@@ -31,7 +31,7 @@ from collections.abc import Awaitable, Callable, Mapping
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import ClassVar, Protocol, TypedDict, override, runtime_checkable
+from typing import ClassVar, Protocol, override, runtime_checkable
 from uuid import uuid4
 
 import flask
@@ -43,14 +43,6 @@ from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer, make_server
 
 from flext_web import FlextWebApp, c, m, t
-
-
-class AppRuntimeInfo(TypedDict):
-    """Typed structure for app runtime state."""
-
-    runner: str
-    server: uvicorn.Server | BaseWSGIServer
-    thread: Thread
 
 
 class FlextWebProtocols(FlextProtocols):

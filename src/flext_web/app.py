@@ -19,7 +19,6 @@ from flext_core import (
     FlextService,
     r,
 )
-from pydantic import BaseModel, ConfigDict, Field
 
 from flext_web import FlextWebSettings, c, m, t, u
 
@@ -32,18 +31,6 @@ class FlextWebApp(FlextService[bool]):
     Uses flext-web config models for type-safe configuration management.
     Delegates to flext-core for logging, container management, and error handling.
     """
-
-    class _FastAPIConfig(BaseModel):
-        """FastAPI configuration model."""
-
-        model_config = ConfigDict(frozen=False, extra="forbid")
-
-        title: str = Field(default="FastAPI")
-        version: str = Field(default="1.0.0")
-        description: str = Field(default="")
-        docs_url: str = Field(default="/docs")
-        redoc_url: str = Field(default="/redoc")
-        openapi_url: str = Field(default="/openapi.json")
 
     def __init__(self) -> None:
         """Initialize with flext-core container and logger."""

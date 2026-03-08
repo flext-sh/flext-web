@@ -3,7 +3,6 @@
 Tests the web fields functionality following flext standards.
 """
 
-from pydantic import BaseModel
 from tests import FlextWebSettings, c, m
 
 
@@ -146,10 +145,6 @@ class TestFlextWebFields:
     def test_field_validation_integration(self) -> None:
         """Test field validation integration."""
         # Test that Pydantic models work with default values
-
-        class TestModel(BaseModel):
-            host: str = c.Web.WebDefaults.HOST
-            port: int = c.Web.WebDefaults.PORT
 
         model = TestModel()
         assert model.host == c.Web.WebDefaults.HOST

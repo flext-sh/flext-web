@@ -17,55 +17,10 @@ from flext_core import (
     FlextTypes,
     u,
 )
-from pydantic import BaseModel, ConfigDict, Field
 
 from flext_web import c, m
 
 HttpMethod = c.Web.Method
-
-
-class _WebRequestConfig(BaseModel):
-    """Web request configuration model."""
-
-    model_config = ConfigDict(frozen=False, extra="forbid")
-
-    url: str = Field(default="")
-    method: str = Field(default="GET")
-    headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, FlextTypes.JsonValue] | None = Field(default=None)
-    timeout: float = Field(default=30.0)
-    query_params: dict[str, FlextTypes.JsonValue] | None = Field(default=None)
-    client_ip: str = Field(default="")
-    user_agent: str = Field(default="")
-
-
-class _WebResponseConfig(BaseModel):
-    """Web response configuration model."""
-
-    model_config = ConfigDict(frozen=False, extra="forbid")
-
-    status_code: int = Field(default=200)
-    request_id: str = Field(default="")
-    headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, FlextTypes.JsonValue] | None = Field(default=None)
-    elapsed_time: float = Field(default=0.0)
-    content_type: str = Field(default="application/json")
-    content_length: int = Field(default=0)
-    processing_time_ms: float = Field(default=0.0)
-
-
-class _ApplicationConfig(BaseModel):
-    """Application configuration model."""
-
-    model_config = ConfigDict(frozen=False, extra="forbid")
-
-    name: str = Field(default="")
-    host: str = Field(default="localhost")
-    port: int = Field(default=8080)
-    status: str = Field(default="stopped")
-    environment: str = Field(default="development")
-    debug_mode: bool = Field(default=False)
-    version: int = Field(default=1)
 
 
 class FlextWebTypes(FlextTypes):

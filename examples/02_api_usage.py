@@ -13,20 +13,10 @@ This example shows:
 
 from __future__ import annotations
 
-from typing import TypedDict
-
 import requests
 from flext_core import FlextResult
 
 from flext_web import t
-
-
-class ResponseDict(TypedDict, total=False):
-    """Typed response dictionary for API responses."""
-
-    success: bool
-    data: dict[str, t.ContainerValue] | None
-    error: str | None
 
 
 class ExampleConstants:
