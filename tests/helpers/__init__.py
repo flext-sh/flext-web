@@ -19,7 +19,6 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-
     from .models import TestsModels, TestsModels as m
     from .protocols import TestsProtocols, TestsProtocols as p
     from .typings import TestsTypings, t
