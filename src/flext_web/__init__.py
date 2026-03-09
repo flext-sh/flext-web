@@ -8,13 +8,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core.typings import FlextTypes
-
     from flext_web.__version__ import (
         VERSION,
         FlextWebVersion,
@@ -44,6 +42,8 @@ if TYPE_CHECKING:
         _WebResponseConfig,
     )
     from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
+
+# Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextWebApi": ("flext_web.api", "FlextWebApi"),
     "FlextWebApp": ("flext_web.app", "FlextWebApp"),
@@ -75,6 +75,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "t": ("flext_web.typings", "FlextWebTypes"),
     "u": ("flext_web.utilities", "FlextWebUtilities"),
 }
+
 __all__ = [
     "VERSION",
     "FlextWebApi",
@@ -108,7 +109,7 @@ __all__ = [
 ]
 
 
-def __getattr__(name: str) -> FlextTypes.ModuleExport:
+def __getattr__(name: str) -> Any:  # noqa: ANN401  # JUSTIFIED: Ruff (any-type) with PEP 562 dynamic module exports — https://docs.astral.sh/ruff/rules/any-type/
     """Lazy-load module attributes on first access (PEP 562)."""
     return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
 
