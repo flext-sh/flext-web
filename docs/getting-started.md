@@ -53,7 +53,7 @@ handlers = FlextWebHandlers()
 models = FlextWebModels()
 
 # Check available methods
-methods = [m for m in dir(service) if not m.startswith('_')]
+methods = [m for m in dir(service) if not m.startswith("_")]
 print(f"Available methods: {methods}")
 ```
 

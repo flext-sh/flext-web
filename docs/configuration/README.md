@@ -233,6 +233,7 @@ reset_web_settings()
 
 # Create service with custom configuration
 from flext_web import create_service
+
 custom_config = FlextWebSettings(port=9000, debug=False)
 service = create_service(custom_config)
 ```
@@ -341,6 +342,7 @@ import os
 import pytest
 from flext_web import reset_web_settings
 
+
 @pytest.fixture(autouse=True)
 def setup_test_environment():
     """Setup test environment configuration"""
@@ -398,7 +400,7 @@ print(f"Debug Mode: {config.debug}")
 
 # View all settings (excluding secrets)
 config_dict = config.dict()
-config_dict.pop('secret_key', None)  # Remove secret from output
+config_dict.pop("secret_key", None)  # Remove secret from output
 print(config_dict)
 ```
 

@@ -99,12 +99,7 @@ Rich domain entity implementing application lifecycle management with state mach
 ```python
 from flext_web import FlextWebApp, FlextWebAppStatus
 
-app = FlextWebApp(
-    id="app_web-service",
-    name="web-service",
-    host="localhost",
-    port=3000
-)
+app = FlextWebApp(id="app_web-service", name="web-service", host="localhost", port=3000)
 
 # Start application with validation
 result = app.start()
@@ -259,6 +254,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
 
 def process_request(data: dict) -> FlextResult[FlextWebApp]:
     return (

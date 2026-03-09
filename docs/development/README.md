@@ -300,7 +300,7 @@ markers = [
     "unit: Unit tests",
     "integration: Integration tests",
     "slow: Slow tests",
-    "e2e: End-to-end tests"
+    "e2e: End-to-end tests",
 ]
 ```
 
@@ -428,15 +428,18 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 class FlextWebApp(FlextModels.Entity):
     """Domain entity with business rules"""
 
-    def start(self) -> FlextResult['FlextWebApp']:
+    def start(self) -> FlextResult["FlextWebApp"]:
         """Business logic for starting application"""
         if self.status == FlextWebAppStatus.RUNNING:
             return FlextResult[bool].fail("Application already running")
         # Business validation here
-        return FlextResult[bool].ok(self.model_copy(update={"status": FlextWebAppStatus.RUNNING}))
+        return FlextResult[bool].ok(
+            self.model_copy(update={"status": FlextWebAppStatus.RUNNING})
+        )
 ```
 
 #### Application Layer Development
@@ -464,6 +467,7 @@ from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 class FlextWebAppHandler(FlextProcessors.Handler):
     """CQRS command handlers"""
 
@@ -476,7 +480,7 @@ class FlextWebAppHandler(FlextProcessors.Handler):
             id=f"app_{command.name}",
             name=command.name,
             port=command.port,
-            host=command.host
+            host=command.host,
         )
 
         validation = app.validate_domain_rules()
@@ -493,16 +497,17 @@ class FlextWebAppHandler(FlextProcessors.Handler):
 from flask import Blueprint, request, jsonify
 from ...application.handlers import FlextWebAppHandler
 
-api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
+api_v1 = Blueprint("api_v1", __name__, url_prefix="/api/v1")
 
-@api_v1.route('/apps', methods=['POST'])
+
+@api_v1.route("/apps", methods=["POST"])
 def create_app():
     """Create application endpoint"""
     data = request.get_json()
     command = CreateAppCommand(
-        name=data.get('name'),
-        port=data.get('port', 8000),
-        host=data.get('host', 'localhost')
+        name=data.get("name"),
+        port=data.get("port", 8000),
+        host=data.get("host", "localhost"),
     )
 
     result = app_handler.create_app(command)
@@ -511,13 +516,10 @@ def create_app():
         return jsonify({
             "success": True,
             "message": "Application created successfully",
-            "data": result.data.dict()
+            "data": result.data.dict(),
         })
 
-    return jsonify({
-        "success": False,
-        "message": f"Failed: {result.error}"
-    }), 400
+    return jsonify({"success": False, "message": f"Failed: {result.error}"}), 400
 ```
 
 ### FLEXT Core Integration

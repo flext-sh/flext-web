@@ -81,6 +81,7 @@ Use lazy imports to break the circular dependency:
 # In one of the files, import inside function instead of at module level
 def get_config():
     from flext_web import FlextWebSettings  # Import inside function
+
     return FlextWebSettings()
 ```
 
@@ -110,6 +111,7 @@ from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
 container = FlextContainer.get_global()
 # Register and retrieve components through container
 ```

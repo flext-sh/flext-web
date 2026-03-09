@@ -94,6 +94,7 @@ def test_successful_operation():
     assert result.data is not None
     assert result.error is None
 
+
 def test_failure_operation():
     """Test failure operation returns FlextResult[bool].fail()"""
     result = handler.create_app("", 0)  # Invalid input
@@ -126,16 +127,14 @@ def test_domain_business_rules():
 def test_api_endpoint_success():
     """Test API endpoint handles valid requests"""
     client = app.test_client()
-    response = client.post('/api/v1/apps', json={
-        'name': 'test-app',
-        'port': 3000,
-        'host': 'localhost'
-    })
+    response = client.post(
+        "/api/v1/apps", json={"name": "test-app", "port": 3000, "host": "localhost"}
+    )
 
     assert response.status_code == 200
     data = response.get_json()
-    assert data['success'] is True
-    assert 'test-app' in data['data']['name']
+    assert data["success"] is True
+    assert "test-app" in data["data"]["name"]
 ```
 
 ## Running Tests
@@ -201,13 +200,13 @@ SAMPLE_APP_DATA = {
     "name": "test-app",
     "host": "localhost",
     "port": 3000,
-    "status": "stopped"
+    "status": "stopped",
 }
 
 INVALID_APP_DATA = {
     "name": "",  # Invalid empty name
     "port": 70000,  # Invalid port range
-    "host": ""  # Invalid empty host
+    "host": "",  # Invalid empty host
 }
 ```
 
