@@ -69,8 +69,8 @@ class FlextWebUtilities(FlextUtilities):
         if not text:
             return ""
         normalized = text.lower()
-        cleaned = re.sub("[^\\w\\s-]", "", normalized)
-        words = re.split("[-\\s]+", cleaned)
+        cleaned = re.sub(r"[^\\w\\s-]", "", normalized)
+        words = re.split(r"[-\\s]+", cleaned)
         truthy_words = [word for word in words if word]
         return "-".join(truthy_words)
 

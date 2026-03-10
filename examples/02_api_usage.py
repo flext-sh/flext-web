@@ -16,6 +16,7 @@ import requests
 from flext_core import FlextResult
 
 from flext_web import t
+from flext_web.protocols import ResponseDict
 
 
 class ExampleConstants:
