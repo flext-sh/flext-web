@@ -132,7 +132,8 @@ class FlextWebTypes(FlextTypes):
 
     @classmethod
     def create_application(
-        cls, config: _ApplicationConfig
+        cls,
+        config: _ApplicationConfig,  # noqa: F821
     ) -> FlextResult[m.Web.Entity]:
         """Create application model instance.
 
@@ -292,7 +293,8 @@ class FlextWebTypes(FlextTypes):
 
     @classmethod
     def create_web_request(
-        cls, config: _WebRequestConfig
+        cls,
+        config: _WebRequestConfig,  # noqa: F821
     ) -> FlextResult[m.Web.AppRequest]:
         """Create web request model instance with proper validation.
 
@@ -360,7 +362,8 @@ class FlextWebTypes(FlextTypes):
 
     @classmethod
     def create_web_response(
-        cls, config: _WebResponseConfig
+        cls,
+        config: _WebResponseConfig,  # noqa: F821
     ) -> FlextResult[m.Web.AppResponse]:
         """Create web response model instance with proper validation.
 

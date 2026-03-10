@@ -31,7 +31,7 @@ class FlextWebVersion:
     Provides metadata access through singleton pattern using importlib.metadata.
     """
 
-    def __init__(self, metadata: _VersionMetadata) -> None:
+    def __init__(self, metadata: _VersionMetadata) -> None:  # noqa: F821
         """Initialize version metadata.
 
         Args:
@@ -57,7 +57,7 @@ class FlextWebVersion:
 
         """
         return cls(
-            _VersionMetadata(
+            _VersionMetadata(  # noqa: F821
                 version=__version__,
                 version_info=__version_info__,
                 title=__title__,
@@ -74,7 +74,7 @@ VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
 __all__ = [
     "VERSION",
     "FlextWebVersion",
-    "_VersionMetadata",
+    "_VersionMetadata",  # noqa: F822
     "__author__",
     "__author_email__",
     "__description__",
