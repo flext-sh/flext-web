@@ -42,7 +42,12 @@ from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer, make_server
 
-from flext_web import FlextWebApp, c, m, t
+from flext_web.app import FlextWebApp
+from flext_web.constants import FlextWebConstants as c
+from flext_web.models import FlextWebModels as m
+from flext_web.typings import FlextWebTypes as t
+
+AppRuntimeInfo = t.ConfigurationMapping
 
 
 class FlextWebProtocols(FlextProtocols):
@@ -229,7 +234,7 @@ class FlextWebProtocols(FlextProtocols):
 
         apps_registry: ClassVar[dict[str, t.WebCore.ResponseDict]] = {}
         framework_instances: ClassVar[dict[str, flask.Flask | FastAPI]] = {}
-        app_runtimes: ClassVar[dict[str, AppRuntimeInfo]] = {}  # noqa: F821
+        app_runtimes: ClassVar[dict[str, AppRuntimeInfo]] = {}
         service_state: ClassVar[dict[str, bool]] = {
             "routes_initialized": False,
             "middleware_configured": False,
@@ -358,12 +363,12 @@ class FlextWebProtocols(FlextProtocols):
             app_id: str,
             app_data: t.WebCore.ResponseDict,
             app_instance: flask.Flask | FastAPI,
-        ) -> FlextResult[AppRuntimeInfo]:  # noqa: F821
+        ) -> FlextResult[AppRuntimeInfo]:
             host = app_data.get("host")
             port = app_data.get("port")
             interface = app_data.get("interface")
             if not isinstance(host, str) or not isinstance(port, int):
-                return FlextResult[AppRuntimeInfo].fail(  # noqa: F821
+                return FlextResult[AppRuntimeInfo].fail(
                     f"Invalid runtime configuration for app: {app_id}"
                 )
             if interface == c.Web.WebFramework.INTERFACE_ASGI:
@@ -378,17 +383,17 @@ class FlextWebProtocols(FlextProtocols):
                     thread.start()
                     sleep(0.05)
                     if not thread.is_alive():
-                        return FlextResult[AppRuntimeInfo].fail(  # noqa: F821
+                        return FlextResult[AppRuntimeInfo].fail(
                             f"ASGI runtime exited immediately for app: {app_id}"
                         )
-                    runtime_info: AppRuntimeInfo = {  # noqa: F821
+                    runtime_info: AppRuntimeInfo = {
                         "runner": c.Web.WebFramework.RUNNER_UVICORN,
                         "server": server,
                         "thread": thread,
                     }
-                    return FlextResult[AppRuntimeInfo].ok(runtime_info)  # noqa: F821
+                    return FlextResult[AppRuntimeInfo].ok(runtime_info)
                 except (RuntimeError, OSError, ValueError, TypeError) as exc:
-                    return FlextResult[AppRuntimeInfo].fail(  # noqa: F821
+                    return FlextResult[AppRuntimeInfo].fail(
                         f"Failed to start ASGI runtime for app {app_id}: {exc}"
                     )
             if interface == c.Web.WebFramework.INTERFACE_WSGI and isinstance(
@@ -404,15 +409,15 @@ class FlextWebProtocols(FlextProtocols):
                     thread.start()
                     sleep(0.05)
                     if not thread.is_alive():
-                        return FlextResult[AppRuntimeInfo].fail(  # noqa: F821
+                        return FlextResult[AppRuntimeInfo].fail(
                             f"WSGI runtime exited immediately for app: {app_id}"
                         )
-                    wsgi_runtime_info: AppRuntimeInfo = {  # noqa: F821
+                    wsgi_runtime_info: AppRuntimeInfo = {
                         "runner": c.Web.WebFramework.RUNNER_WERKZEUG,
                         "server": wsgi_server,
                         "thread": thread,
                     }
-                    return FlextResult[AppRuntimeInfo].ok(wsgi_runtime_info)  # noqa: F821
+                    return FlextResult[AppRuntimeInfo].ok(wsgi_runtime_info)
                 except (
                     RuntimeError,
                     OSError,
@@ -420,17 +425,17 @@ class FlextWebProtocols(FlextProtocols):
                     TypeError,
                     AttributeError,
                 ) as exc:
-                    return FlextResult[AppRuntimeInfo].fail(  # noqa: F821
+                    return FlextResult[AppRuntimeInfo].fail(
                         f"Failed to start WSGI runtime for app {app_id}: {exc}"
                     )
-            return FlextResult[AppRuntimeInfo].fail(  # noqa: F821
+            return FlextResult[AppRuntimeInfo].fail(
                 f"Unsupported app interface for runtime start: {interface}"
             )
 
         @staticmethod
         def _stop_app_runtime(
             app_id: str,
-            runtime: AppRuntimeInfo,  # noqa: F821
+            runtime: AppRuntimeInfo,
         ) -> FlextResult[bool]:
             runner = runtime.get("runner")
             server = runtime.get("server")
@@ -481,7 +486,7 @@ class FlextWebProtocols(FlextProtocols):
         configure_framework_app_middleware: ClassVar[Callable[..., None]] = (
             _configure_framework_app_middleware
         )
-        start_app_runtime: ClassVar[Callable[..., FlextResult[AppRuntimeInfo]]] = (  # noqa: F821
+        start_app_runtime: ClassVar[Callable[..., FlextResult[AppRuntimeInfo]]] = (
             _start_app_runtime
         )
         stop_app_runtime: ClassVar[Callable[..., FlextResult[bool]]] = _stop_app_runtime

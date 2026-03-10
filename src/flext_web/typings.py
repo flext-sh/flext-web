@@ -13,10 +13,31 @@ from __future__ import annotations
 from typing import Literal
 
 from flext_core import FlextResult, FlextTypes, u
+from pydantic import Field
 
-from flext_web import c, m
+from flext_web.constants import FlextWebConstants as c
+from flext_web.models import FlextWebModels as m
 
 HttpMethod = c.Web.Method
+
+
+class _ApplicationConfig(m.Web.EntityConfig):
+    name: str = Field(default=c.Web.WebDefaults.APP_NAME, description="App name")
+    status: str = Field(default=c.Web.Status.STOPPED.value, description="App status")
+    environment: str = Field(
+        default=c.Web.Name.DEVELOPMENT.value,
+        description="Environment",
+    )
+    debug_mode: bool = Field(default=c.Web.WebDefaults.DEBUG_MODE, description="Debug")
+    version: int = Field(default=c.Web.WebDefaults.VERSION_INT, description="Version")
+
+
+class _WebRequestConfig(m.Web.AppRequest):
+    pass
+
+
+class _WebResponseConfig(m.Web.AppResponse):
+    pass
 
 
 class FlextWebTypes(FlextTypes):
@@ -133,7 +154,7 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_application(
         cls,
-        config: _ApplicationConfig,  # noqa: F821
+        config: _ApplicationConfig,
     ) -> FlextResult[m.Web.Entity]:
         """Create application model instance.
 
@@ -294,7 +315,7 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_web_request(
         cls,
-        config: _WebRequestConfig,  # noqa: F821
+        config: _WebRequestConfig,
     ) -> FlextResult[m.Web.AppRequest]:
         """Create web request model instance with proper validation.
 
@@ -363,7 +384,7 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_web_response(
         cls,
-        config: _WebResponseConfig,  # noqa: F821
+        config: _WebResponseConfig,
     ) -> FlextResult[m.Web.AppResponse]:
         """Create web response model instance with proper validation.
 
@@ -534,4 +555,9 @@ class FlextWebTypes(FlextTypes):
             """Web pipeline configuration model - inherits from m.Web.EntityConfig."""
 
 
-__all__ = ["FlextWebTypes"]
+__all__ = [
+    "FlextWebTypes",
+    "_ApplicationConfig",
+    "_WebRequestConfig",
+    "_WebResponseConfig",
+]

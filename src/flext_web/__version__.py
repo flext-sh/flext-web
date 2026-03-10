@@ -12,6 +12,9 @@ from __future__ import annotations
 from importlib.metadata import metadata
 from typing import Final
 
+from flext_core import FlextModels
+from pydantic import Field
+
 _metadata = metadata("flext-web")
 __version__: Final[str] = _metadata["Version"]
 __version_info__: Final[tuple[int | str, ...]] = tuple(
@@ -25,13 +28,24 @@ __license__: Final[str] = _metadata.get("License", "")
 __url__: Final[str] = _metadata.get("Home-Page", "")
 
 
+class _VersionMetadata(FlextModels.Value):
+    version: str = Field(description="Package version")
+    version_info: tuple[int | str, ...] = Field(description="Version tuple")
+    title: str = Field(description="Package title")
+    description: str = Field(description="Package description")
+    author: str = Field(description="Package author")
+    author_email: str = Field(description="Package author email")
+    license_type: str = Field(description="Package license")
+    url: str = Field(description="Package URL")
+
+
 class FlextWebVersion:
     """Structured package metadata.
 
     Provides metadata access through singleton pattern using importlib.metadata.
     """
 
-    def __init__(self, metadata: _VersionMetadata) -> None:  # noqa: F821
+    def __init__(self, metadata: _VersionMetadata) -> None:
         """Initialize version metadata.
 
         Args:
@@ -57,7 +71,7 @@ class FlextWebVersion:
 
         """
         return cls(
-            _VersionMetadata(  # noqa: F821
+            _VersionMetadata(
                 version=__version__,
                 version_info=__version_info__,
                 title=__title__,
@@ -74,7 +88,7 @@ VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
 __all__ = [
     "VERSION",
     "FlextWebVersion",
-    "_VersionMetadata",  # noqa: F822
+    "_VersionMetadata",
     "__author__",
     "__author_email__",
     "__description__",

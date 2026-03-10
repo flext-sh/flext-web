@@ -13,9 +13,9 @@ from datetime import UTC, datetime
 from typing import override
 
 from flext_core import FlextModels, r, t, u
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import BaseModel, Field, field_validator
 
-from flext_web import c
+from flext_web.constants import FlextWebConstants as c
 
 
 class FlextWebModels(FlextModels):
@@ -113,9 +113,6 @@ class FlextWebModels(FlextModels):
             @classmethod
             def validate_method(cls, v: str) -> str:
                 """Validate HTTP method is one of the allowed values."""
-                if not isinstance(v, str):
-                    msg = "HTTP method must be a string"
-                    raise TypeError(msg)
                 upper = v.upper()
                 valid_methods = {
                     "GET",
@@ -215,9 +212,6 @@ class FlextWebModels(FlextModels):
             @classmethod
             def validate_method(cls, v: str) -> str:
                 """Validate HTTP method is one of the allowed values."""
-                if not isinstance(v, str):
-                    msg = "HTTP method must be a string"
-                    raise TypeError(msg)
                 upper = v.upper()
                 valid_methods = {
                     "GET",
@@ -407,43 +401,26 @@ class FlextWebModels(FlextModels):
             @field_validator("name", mode="before")
             @classmethod
             def validate_name(cls, v: str) -> str:
-                """Validate application name using u.guard() DSL pattern."""
+                """Validate application name."""
                 min_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
                 max_length = c.Web.WebValidation.NAME_LENGTH_RANGE[1]
                 reserved_names = c.Web.WebSecurity.RESERVED_NAMES
 
-                # Validate name length using lambda-based guard
-                # Type narrowing: v is str from pydantic validation, use explicit str check
-                name_length_validated = u.guard(
-                    v,
-                    lambda s: isinstance(s, str) and min_length <= len(s) <= max_length,
-                    return_value=True,
-                )
-                if name_length_validated is None:
-                    error_msg = (
+                if not (min_length <= len(v) <= max_length):
+                    msg = (
                         f"Name must be between {min_length} and {max_length} characters"
                     )
-                    raise ValueError(error_msg)
+                    raise ValueError(msg)
 
-                # Use u.guard() + u.in_() for unified membership validation (DSL pattern)
-                name_not_reserved = u.guard(
-                    v.lower(),
-                    lambda n: not u.in_(n, reserved_names),
-                    return_value=True,
-                )
-                if name_not_reserved is None:
-                    error_msg = f"Name '{v}' is reserved and cannot be used"
-                    raise ValueError(error_msg)
+                if v.lower() in reserved_names:
+                    msg = f"Name '{v}' is reserved and cannot be used"
+                    raise ValueError(msg)
 
-                # Use u.find() for unified pattern validation (DSL pattern)
                 dangerous_patterns = c.Web.WebSecurity.DANGEROUS_PATTERNS
-                dangerous_found = u.find(
-                    dangerous_patterns,
-                    lambda value: value.lower() in v.lower(),
-                )
-                if dangerous_found:
-                    error_msg = f"Name contains dangerous pattern: {dangerous_found}"
-                    raise ValueError(error_msg)
+                for pattern in dangerous_patterns:
+                    if pattern.lower() in v.lower():
+                        msg = f"Name contains dangerous pattern: {pattern}"
+                        raise ValueError(msg)
 
                 return v
 
@@ -578,8 +555,7 @@ class FlextWebModels(FlextModels):
                                     failure contains error message
 
                 """
-                # Validate event name is non-empty string
-                if not isinstance(event_name, str) or not event_name.strip():
+                if not event_name.strip():
                     return r[bool].fail("Event name cannot be empty")
                 self.web_events.append(event_name)
                 return r[bool].ok(value=True)
@@ -665,9 +641,6 @@ class FlextWebModels(FlextModels):
                                     failure contains error message
 
                 """
-                # Validate and update metrics
-                if not isinstance(new_metrics, dict):
-                    return r[bool].fail("Metrics must be a dictionary")
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
                 event_result = self.add_web_event("MetricsUpdated")
@@ -686,28 +659,15 @@ class FlextWebModels(FlextModels):
                     r[bool]: Success contains True if valid, failure with error message
 
                 """
-                # Validate name minimum length using lambda-based guard
                 min_name_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
-                name_validated = u.guard(
-                    self.name,
-                    lambda s: isinstance(s, str) and len(s) >= min_name_length,
-                    return_value=True,
-                )
-                if name_validated is None:
+                if len(self.name) < min_name_length:
                     return r[bool].fail(
                         f"App name must be at least {min_name_length} characters",
                     )
 
-                # Use u.guard() for unified port range validation (DSL pattern)
                 min_port = c.Web.WebValidation.PORT_RANGE[0]
                 max_port = c.Web.WebValidation.PORT_RANGE[1]
-                # Use u.guard() with combined check for unified error message (DSL pattern)
-                port_validated = u.guard(
-                    self.port,
-                    lambda p: isinstance(p, int) and min_port <= p <= max_port,
-                    return_value=True,
-                )
-                if port_validated is None:
+                if not (min_port <= self.port <= max_port):
                     return r[bool].fail(
                         f"Port must be between {min_port} and {max_port}",
                     )
@@ -955,22 +915,12 @@ class FlextWebModels(FlextModels):
                                             failure contains validation error
 
             """
-            try:
-                entity = cls.Entity(
-                    name=name,
-                    host=host,
-                    port=port,
-                )
-                return r.ok(entity)
-            except ValidationError as e:  # pragma: no cover
-                error_msg = (  # pragma: no cover
-                    f"Validation failed: {e.errors()[0]['msg']}"
-                    if e.errors()
-                    else str(e)  # pragma: no cover
-                )
-                return r.fail(error_msg)  # pragma: no cover
-            except ValueError as e:  # pragma: no cover
-                return r.fail(str(e))  # pragma: no cover
+            entity = cls.Entity(
+                name=name,
+                host=host,
+                port=port,
+            )
+            return r[FlextWebModels.Web.Entity].ok(entity)
 
         @classmethod
         def create_web_request(
@@ -993,15 +943,7 @@ class FlextWebModels(FlextModels):
                                         failure contains validation error
 
             """
-            # Use u.guard() for unified headers validation (DSL pattern)
-            # Validate headers - must be dict or None
-            if headers is not None and not isinstance(headers, dict):
-                return r[FlextWebModels.Web.WebRequest].fail(
-                    "Headers must be a dictionary or None",
-                )
-            headers_validated: dict[str, str] = (
-                headers if isinstance(headers, dict) else {}
-            )
+            headers_validated: dict[str, str] = headers or {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_request() -> FlextWebModels.Web.WebRequest:
@@ -1040,19 +982,11 @@ class FlextWebModels(FlextModels):
                 body: Response body
 
             Returns:
-                r[WebResponse]: Success contains response model,
-                                        failure contains validation error
+                 r[WebResponse]: Success contains response model,
+                                          failure contains validation error
 
             """
-            # Use u.guard() for unified headers validation (DSL pattern)
-            # Validate headers - must be dict or None
-            if headers is not None and not isinstance(headers, dict):
-                return r[FlextWebModels.Web.WebResponse].fail(
-                    "Headers must be a dictionary or None",
-                )
-            headers_validated: dict[str, str] = (
-                headers if isinstance(headers, dict) else {}
-            )
+            headers_validated: dict[str, str] = headers or {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_response() -> FlextWebModels.Web.WebResponse:
@@ -1111,7 +1045,7 @@ class FlextWebModels(FlextModels):
             )
             debug: bool = Field(default=False, description="FastAPI debug mode")
             testing: bool = Field(default=False, description="FastAPI testing mode")
-            middlewares: list[t.ContainerValue] = Field(
+            middlewares: list[str] = Field(
                 default_factory=list,
                 description="List of middleware objects",
             )

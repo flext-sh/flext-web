@@ -8,8 +8,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
+from flext_core import t
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
@@ -24,7 +25,6 @@ if TYPE_CHECKING:
         __url__,
         __version__,
         __version_info__,
-        _VersionMetadata,
     )
     from flext_web.api import FlextWebApi
     from flext_web.app import FlextWebApp
@@ -37,9 +37,6 @@ if TYPE_CHECKING:
     from flext_web.typings import (
         FlextWebTypes,
         FlextWebTypes as t,
-        _ApplicationConfig,
-        _WebRequestConfig,
-        _WebResponseConfig,
     )
     from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 
@@ -57,10 +54,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextWebUtilities": ("flext_web.utilities", "FlextWebUtilities"),
     "FlextWebVersion": ("flext_web.__version__", "FlextWebVersion"),
     "VERSION": ("flext_web.__version__", "VERSION"),
-    "_ApplicationConfig": ("flext_web.typings", "_ApplicationConfig"),
-    "_VersionMetadata": ("flext_web.__version__", "_VersionMetadata"),
-    "_WebRequestConfig": ("flext_web.typings", "_WebRequestConfig"),
-    "_WebResponseConfig": ("flext_web.typings", "_WebResponseConfig"),
     "__author__": ("flext_web.__version__", "__author__"),
     "__author_email__": ("flext_web.__version__", "__author_email__"),
     "__description__": ("flext_web.__version__", "__description__"),
@@ -89,10 +82,6 @@ __all__ = [
     "FlextWebTypes",
     "FlextWebUtilities",
     "FlextWebVersion",
-    "_ApplicationConfig",
-    "_VersionMetadata",
-    "_WebRequestConfig",
-    "_WebResponseConfig",
     "__author__",
     "__author_email__",
     "__description__",
@@ -109,9 +98,7 @@ __all__ = [
 ]
 
 
-def __getattr__(
-    name: str,
-) -> Any:  # JUSTIFIED: Ruff (any-type) with PEP 562 dynamic module exports — https://docs.astral.sh/ruff/rules/any-type/
+def __getattr__(name: str):
     """Lazy-load module attributes on first access (PEP 562)."""
     return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
 

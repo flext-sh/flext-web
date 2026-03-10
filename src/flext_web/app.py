@@ -16,7 +16,11 @@ import flask
 from fastapi import FastAPI
 from flext_core import FlextLogger, FlextService, r
 
-from flext_web import FlextWebSettings, c, m, t, u
+from flext_web.constants import FlextWebConstants as c
+from flext_web.models import FlextWebModels as m
+from flext_web.settings import FlextWebSettings
+from flext_web.typings import FlextWebTypes as t
+from flext_web.utilities import FlextWebUtilities as u
 
 
 class FlextWebApp(FlextService[bool]):
@@ -56,7 +60,7 @@ class FlextWebApp(FlextService[bool]):
 
         @staticmethod
         def create_instance(
-            config: FlextWebApp._FastAPIConfig | None = None,
+            config: m.Web.FastAPIAppConfig | None = None,
         ) -> r[FastAPI]:
             """Create FastAPI application instance with validated configuration.
 
@@ -69,7 +73,7 @@ class FlextWebApp(FlextService[bool]):
 
             """
             logger = FlextLogger(__name__)
-            default_config = FlextWebApp._FastAPIConfig(
+            default_config = m.Web.FastAPIAppConfig(
                 title="FastAPI",
                 version=c.Web.WebDefaults.VERSION_STRING,
                 description="FlextWeb FastAPI Application",
@@ -117,11 +121,11 @@ class FlextWebApp(FlextService[bool]):
         """Configure FastAPI endpoints."""
 
         @app.get("/health")
-        def health_check() -> t.WebCore.ResponseDict:
+        def health_check() -> t.WebCore.ResponseDict:  # type: ignore[reportUnusedFunction]
             return cls.HealthHandler.create_handler()()
 
         @app.get("/info")
-        def info_endpoint() -> t.WebCore.ResponseDict:
+        def info_endpoint() -> t.WebCore.ResponseDict:  # type: ignore[reportUnusedFunction]
             return cls.InfoHandler.create_handler(config)()
 
         logger = FlextLogger(__name__)
@@ -132,7 +136,7 @@ class FlextWebApp(FlextService[bool]):
     def create_fastapi_app(
         cls,
         config: m.Web.FastAPIAppConfig | None = None,
-        factory_config: FlextWebApp._FastAPIConfig | None = None,
+        factory_config: m.Web.FastAPIAppConfig | None = None,
     ) -> r[FastAPI]:
         """Create FastAPI app with flext-core integration and Pydantic validation.
 
@@ -152,7 +156,7 @@ class FlextWebApp(FlextService[bool]):
         fastapi_config = config if config is not None else m.Web.FastAPIAppConfig()
         factory_config_final = factory_config if factory_config is not None else None
         if factory_config_final is None:
-            factory_config_new = FlextWebApp._FastAPIConfig(
+            factory_config_new = m.Web.FastAPIAppConfig(
                 title=fastapi_config.title,
                 version=fastapi_config.version,
                 description=fastapi_config.description,
@@ -189,8 +193,8 @@ class FlextWebApp(FlextService[bool]):
         app.config["TESTING"] = flask_config.testing
 
         @app.route("/health")
-        def health_check() -> flask.Response:
-            return flask.jsonify(
+        def health_check() -> flask.Response:  # type: ignore[reportUnusedFunction]
+            return flask.jsonify(  # type: ignore[no-any-return]
                 status=c.Web.WebResponse.STATUS_HEALTHY,
                 service=c.Web.WebService.SERVICE_NAME_FLASK,
                 timestamp=u.Generators.generate_iso_timestamp(),

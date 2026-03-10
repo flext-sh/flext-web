@@ -9,10 +9,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from fastapi import FastAPI
-from flext_core import FlextContainer, FlextLogger, FlextResult
+from flext_core import FlextContainer, FlextLogger, r
 from pydantic import ValidationError
 
-from flext_web import FlextWebApp, FlextWebSettings, c, m, t
+from flext_web.app import FlextWebApp
+from flext_web.constants import FlextWebConstants as c
+from flext_web.models import FlextWebModels as m
+from flext_web.settings import FlextWebSettings
+from flext_web.typings import FlextWebTypes as t
 
 
 class FlextWebApi:
@@ -30,7 +34,7 @@ class FlextWebApi:
     @classmethod
     def create_fastapi_app(
         cls, config: m.Web.FastAPIAppConfig | None = None
-    ) -> FlextResult[FastAPI]:
+    ) -> r[FastAPI]:
         """Create FastAPI web application with complete validation.
 
         Delegates to FlextWebApp for actual app creation while providing facade-level
@@ -60,7 +64,7 @@ class FlextWebApi:
         port: int | None = None,
         *,
         debug: bool | None = None,
-    ) -> FlextResult[FlextWebSettings]:
+    ) -> r[FlextWebSettings]:
         """Create HTTP configuration with defaults and validation.
 
         Single Responsibility: Creates and validates HTTP configurations only.
@@ -99,21 +103,24 @@ class FlextWebApi:
             errors = e.errors()
             error_msg = errors[0]["msg"] if errors else str(e)
             _ = logger.exception("HTTP config creation failed: %s", exception=e)
-            return FlextResult.fail(f"Configuration validation failed: {error_msg}")
+            failure_result: r[FlextWebSettings] = r[FlextWebSettings].fail(
+                f"Configuration validation failed: {error_msg}"
+            )
+            return failure_result
         _ = logger.info(
             f"HTTP config created successfully: {config.host}:{config.port}"
         )
-        return FlextResult.ok(config)
+        return r[FlextWebSettings].ok(config)
 
     @classmethod
-    def get_api_capabilities(cls) -> FlextResult[t.WebCore.ResponseDict]:
+    def get_api_capabilities(cls) -> r[t.WebCore.ResponseDict]:
         """Get API facade capabilities and supported operations.
 
         Returns:
         FlextResult[t.Core.ResponseDict]: Success contains capabilities info
 
         """
-        return FlextResult.ok({
+        return r[t.WebCore.ResponseDict].ok({
             "application_management": ["create_fastapi_app"],
             "service_management": ["create_http_service"],
             "configuration_management": ["create_http_config", "validate_http_config"],
@@ -123,7 +130,7 @@ class FlextWebApi:
         })
 
     @classmethod
-    def get_service_status(cls) -> FlextResult[m.Web.ServiceResponse]:
+    def get_service_status(cls) -> r[m.Web.ServiceResponse]:
         """Get complete HTTP service status information.
 
         Single Responsibility: Provides system status and health information only.
@@ -149,10 +156,10 @@ class FlextWebApi:
             config=True,
         )
         _ = logger.debug("Service status retrieved successfully")
-        return FlextResult.ok(status_info)
+        return r[m.Web.ServiceResponse].ok(status_info)
 
     @classmethod
-    def validate_http_config(cls, config: FlextWebSettings) -> FlextResult[bool]:
+    def validate_http_config(cls, config: FlextWebSettings) -> r[bool]:
         """Validate HTTP configuration for correctness and security.
 
         Single Responsibility: Validates HTTP configurations only.
@@ -169,7 +176,7 @@ class FlextWebApi:
         logger = FlextLogger(__name__)
         _ = logger.debug(f"Validating HTTP configuration for app: {config.app_name}")
         _ = logger.info("HTTP configuration validation successful")
-        return FlextResult.ok(True)
+        return r[bool].ok(True)
 
 
 __all__ = ["FlextWebApi"]

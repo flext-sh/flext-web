@@ -49,35 +49,18 @@ class FlextWebServices(FlextService[bool]):
                                          failure contains error message
 
             """
+            if credentials.username == FlextConstants.Test.NONEXISTENT_USERNAME:
+                return FlextResult[m.Web.AuthResponse].fail("Authentication failed")
 
-            def _validate_username(un: t.ContainerValue) -> bool:
-                return (
-                    isinstance(un, str)
-                    and un != FlextConstants.Test.NONEXISTENT_USERNAME
-                )
+            if credentials.password != FlextConstants.Test.DEFAULT_PASSWORD:
+                return FlextResult[m.Web.AuthResponse].fail("Authentication failed")
 
-            username_validated = u.guard(
-                credentials.username, _validate_username, return_value=True
-            )
-            if username_validated is None:
-                return FlextResult.fail("Authentication failed")
-
-            def _validate_password(pw: t.ContainerValue) -> bool:
-                return (
-                    isinstance(pw, str) and pw == FlextConstants.Test.DEFAULT_PASSWORD
-                )
-
-            password_validated = u.guard(
-                credentials.password, _validate_password, return_value=True
-            )
-            if password_validated is None:
-                return FlextResult.fail("Authentication failed")
             auth_response = m.Web.AuthResponse(
                 token=f"token_{credentials.username}",
                 user_id=credentials.username,
                 authenticated=True,
             )
-            return FlextResult.ok(auth_response)
+            return FlextResult[m.Web.AuthResponse].ok(auth_response)
 
         @staticmethod
         def register_user(user_data: m.Web.UserData) -> FlextResult[m.Web.UserResponse]:
@@ -150,10 +133,12 @@ class FlextWebServices(FlextService[bool]):
 
             """
             if not u.ensure_str(entity_id):
-                return FlextResult.fail("Entity ID cannot be empty")
+                return FlextResult[m.Web.EntityData].fail("Entity ID cannot be empty")
             if entity_id not in self._storage:
-                return FlextResult.fail(f"Entity not found: {entity_id}")
-            return FlextResult.ok(self._storage[entity_id])
+                return FlextResult[m.Web.EntityData].fail(
+                    f"Entity not found: {entity_id}"
+                )
+            return FlextResult[m.Web.EntityData].ok(self._storage[entity_id])
 
         def list_all(self) -> FlextResult[list[m.Web.EntityData]]:
             """List all entities.

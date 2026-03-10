@@ -11,8 +11,11 @@ from collections.abc import MutableMapping
 from typing import override
 
 from flext_core import FlextLogger, FlextService, r
+from pydantic import BaseModel, Field
 
 from flext_web import c, m, u
+
+__all__ = ["FlextWebHandlers"]
 
 
 class FlextWebHandlers(FlextService[bool]):
@@ -25,6 +28,25 @@ class FlextWebHandlers(FlextService[bool]):
     All handler functionality is accessible through this single class following the
     "one class per module" architectural requirement.
     """
+
+    class SystemInfo(BaseModel):
+        """System information response model."""
+
+        service_name: str = Field(description="Service name")
+        service_type: str = Field(description="Service type")
+        architecture: str = Field(description="Architecture pattern")
+        patterns: list[str] = Field(description="Design patterns used")
+        integrations: list[str] = Field(description="Integrated components")
+        capabilities: list[str] = Field(description="Service capabilities")
+
+    class HealthStatus(BaseModel):
+        """Health status response model."""
+
+        status: str = Field(description="Health status")
+        service: str = Field(description="Service name")
+        version: str = Field(description="Service version")
+        timestamp: str = Field(description="Status timestamp")
+        components: dict[str, str] = Field(description="Component statuses")
 
     class ApplicationHandler:
         """CQRS command handler for web application lifecycle management.
@@ -246,6 +268,3 @@ class FlextWebHandlers(FlextService[bool]):
 
         """
         return r[bool].ok(value=True)
-
-
-__all__ = ["FlextWebHandlers"]
