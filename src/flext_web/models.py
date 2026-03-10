@@ -955,15 +955,10 @@ class FlextWebModels(FlextModels):
                     body=body,
                 )
 
-            # Use u.try_() with custom exception handling for better error messages
-            try:
-                request = create_request()
-                return r[FlextWebModels.Web.WebRequest].ok(request)
-            except Exception as exc:
-                # Use u.err() pattern for unified error extraction (DSL pattern)
-                return r[FlextWebModels.Web.WebRequest].fail(
-                    f"Failed to create web request: {exc}",
-                )
+            return u.try_(
+                create_request,
+                catch=Exception,
+            ).map_error(lambda e: f"Failed to create web request: {e}")
 
         @classmethod
         def create_web_response(
@@ -998,15 +993,10 @@ class FlextWebModels(FlextModels):
                     body=body,
                 )
 
-            # Use u.try_() with custom exception handling for better error messages
-            try:
-                response = create_response()
-                return r[FlextWebModels.Web.WebResponse].ok(response)
-            except Exception as exc:
-                # Use u.err() pattern for unified error extraction (DSL pattern)
-                return r[FlextWebModels.Web.WebResponse].fail(
-                    f"Failed to create web response: {exc}",
-                )
+            return u.try_(
+                create_response,
+                catch=Exception,
+            ).map_error(lambda e: f"Failed to create web response: {e}")
 
         class FastAPIAppConfig(BaseModel):
             """FastAPI application configuration model (Value Object).
