@@ -31,7 +31,7 @@ from collections.abc import Awaitable, Callable, Mapping
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import ClassVar, Protocol, override, runtime_checkable
+from typing import Any, ClassVar, Protocol, TypedDict, override, runtime_checkable
 from uuid import uuid4
 
 import flask
@@ -47,7 +47,13 @@ from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
 from flext_web.typings import FlextWebTypes as t
 
-AppRuntimeInfo = t.ConfigurationMapping
+
+class AppRuntimeInfo(TypedDict):
+    """Runtime information for a running application."""
+
+    runner: str
+    server: Any
+    thread: Thread
 
 
 class FlextWebProtocols(FlextProtocols):
@@ -279,7 +285,7 @@ class FlextWebProtocols(FlextProtocols):
                 middleware_decorator = app_instance.middleware
 
                 @middleware_decorator("http")
-                async def fastapi_metrics_middleware(
+                async def _fastapi_metrics_middleware(  # type: ignore[unused-ignore]
                     request: StarletteRequest,
                     call_next: Callable[
                         [StarletteRequest], Awaitable[StarletteResponse]
@@ -289,10 +295,10 @@ class FlextWebProtocols(FlextProtocols):
                     FlextWebProtocols.Web.record_request_metric("success", 0)
                     return response
 
-            elif isinstance(app_instance, flask.Flask):
-
+            else:
+                # app_instance is flask.Flask (from the if/elif chain above)
                 @app_instance.before_request
-                def flask_metrics_middleware() -> None:
+                def _flask_metrics_middleware() -> None:  # type: ignore[unused-ignore]
                     FlextWebProtocols.Web.record_request_metric("success", 0)
 
         @staticmethod
@@ -310,11 +316,12 @@ class FlextWebProtocols(FlextProtocols):
                     }
 
                 route_registrar("/protocol/health", fastapi_health, methods=["GET"])
-            elif isinstance(app_instance, flask.Flask):
+            else:
+                # app_instance is flask.Flask (from the if/elif chain above)
                 route_decorator = app_instance.route
 
                 @route_decorator("/protocol/health")
-                def flask_health() -> t.WebCore.ResponseDict:
+                def _flask_health() -> t.WebCore.ResponseDict:  # type: ignore[unused-ignore]
                     return {
                         "status": c.Web.WebResponse.STATUS_HEALTHY,
                         "service": c.Web.WebService.SERVICE_NAME_FLASK,
@@ -400,7 +407,7 @@ class FlextWebProtocols(FlextProtocols):
                 app_instance, flask.Flask
             ):
                 try:
-                    wsgi_server = make_server(host, port, app_instance)
+                    wsgi_server: BaseWSGIServer = make_server(host, port, app_instance)  # type: ignore[assignment]
                     thread = Thread(
                         target=wsgi_server.serve_forever,
                         daemon=True,
@@ -437,13 +444,9 @@ class FlextWebProtocols(FlextProtocols):
             app_id: str,
             runtime: AppRuntimeInfo,
         ) -> FlextResult[bool]:
-            runner = runtime.get("runner")
-            server = runtime.get("server")
-            thread = runtime.get("thread")
-            if not isinstance(thread, Thread):
-                return FlextResult[bool].fail(
-                    f"Missing runtime thread for app: {app_id}"
-                )
+            runner = runtime["runner"]
+            server = runtime["server"]
+            thread = runtime["thread"]
             try:
                 if runner == c.Web.WebFramework.RUNNER_UVICORN:
                     if not isinstance(server, uvicorn.Server):
@@ -1315,28 +1318,26 @@ class FlextWebProtocols(FlextProtocols):
             @override
             def __str__(self) -> str:
                 """Convert to string."""
-                return str(self.value) if self.value is not None else ""
+                return str(self.value)
 
             def __bool__(self) -> bool:
                 """Convert to boolean."""
-                return bool(self.value) if self.value is not None else False
+                return bool(self.value)
 
             def __int__(self) -> int:
                 """Convert to integer."""
-                if self.value is None:
-                    return 0
+                if isinstance(self.value, bool):
+                    return int(self.value)
                 if isinstance(self.value, int):
                     return self.value
                 if isinstance(self.value, float):
-                    return int(self.value)
-                if isinstance(self.value, bool):
                     return int(self.value)
                 if isinstance(self.value, str):
                     try:
                         return int(self.value)
                     except ValueError:
                         return 0
-                return 0
+                return 0  # datetime case
 
         @runtime_checkable
         class ResponseDataProtocol(Protocol):

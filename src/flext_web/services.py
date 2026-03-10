@@ -26,12 +26,6 @@ class FlextWebServices(FlextService[bool]):
     Uses monadic patterns with FlextResult for error handling.
     """
 
-    @classmethod
-    @override
-    def _get_service_config_type(cls) -> type[FlextWebSettings]:
-        """Get the config type for this service class."""
-        return FlextWebSettings
-
     class Auth:
         """User authentication service."""
 
@@ -189,9 +183,7 @@ class FlextWebServices(FlextService[bool]):
                    If None, uses FlextWebSettings() with Constants defaults.
 
         """
-        web_config = config if config is not None else FlextWebSettings()
         super().__init__()
-        self._config = web_config
         self._entity_service: FlextWebServices.Entity | None = None
         self._routes_initialized = False
         self._middleware_configured = False
