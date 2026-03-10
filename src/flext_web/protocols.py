@@ -31,8 +31,9 @@ from collections.abc import Awaitable, Callable, Mapping
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import Any, ClassVar, Protocol, TypedDict, override, runtime_checkable
+from typing import ClassVar, Protocol, TypedDict, override, runtime_checkable
 from uuid import uuid4
+from wsgiref.simple_server import WSGIServer, make_server
 
 import flask
 import uvicorn
@@ -40,7 +41,7 @@ from fastapi import FastAPI
 from flext_core import FlextProtocols, FlextResult
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
-from werkzeug.serving import BaseWSGIServer, make_server
+from werkzeug.serving import BaseWSGIServer
 
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants as c
@@ -52,7 +53,7 @@ class AppRuntimeInfo(TypedDict):
     """Runtime information for a running application."""
 
     runner: str
-    server: Any
+    server: uvicorn.Server | WSGIServer
     thread: Thread
 
 
@@ -407,7 +408,7 @@ class FlextWebProtocols(FlextProtocols):
                 app_instance, flask.Flask
             ):
                 try:
-                    wsgi_server: BaseWSGIServer = make_server(host, port, app_instance)  # type: ignore[assignment]
+                    wsgi_server: WSGIServer = make_server(host, port, app_instance)
                     thread = Thread(
                         target=wsgi_server.serve_forever,
                         daemon=True,
@@ -444,9 +445,9 @@ class FlextWebProtocols(FlextProtocols):
             app_id: str,
             runtime: AppRuntimeInfo,
         ) -> FlextResult[bool]:
-            runner = runtime["runner"]
-            server = runtime["server"]
-            thread = runtime["thread"]
+            runner: str = runtime["runner"]
+            server: uvicorn.Server | WSGIServer = runtime["server"]
+            thread: Thread = runtime["thread"]
             try:
                 if runner == c.Web.WebFramework.RUNNER_UVICORN:
                     if not isinstance(server, uvicorn.Server):
