@@ -175,12 +175,12 @@ class FlextWebServices(FlextService[bool]):
             )
             return FlextResult.ok(health_response)
 
-    def __init__(self, config: FlextWebSettings | None = None) -> None:
+    def __init__(self, _config: FlextWebSettings | None = None) -> None:
         """Initialize with config.
 
         Args:
-            config: Service configuration model or None for defaults.
-                   If None, uses FlextWebSettings() with Constants defaults.
+            _config: Service configuration model or None for defaults.
+                    If None, uses FlextWebSettings() with Constants defaults.
 
         """
         super().__init__()
@@ -206,7 +206,7 @@ class FlextWebServices(FlextService[bool]):
 
         """
         service_config = config if config is not None else FlextWebSettings()
-        return FlextResult.ok(cls(config=service_config))
+        return FlextResult.ok(cls(_config=service_config))
 
     @classmethod
     def create_web_service(
