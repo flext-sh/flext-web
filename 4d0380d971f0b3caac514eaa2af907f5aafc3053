@@ -1,0 +1,40 @@
+src/flext_web/protocols.py
+  e11633816007ce26 287,297,301,304,319,324,331-333
+src/flext_web/app.py
+  e11633816007ce26 130-131,198-205,208
+src/flext_web/__init__.py
+  0d3e5eafd1c4d9d8 100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "4d0380d971f0b3caac514eaa2af907f5aafc3053",
+  "prompts": {
+    "0d3e5eafd1c4d9d8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_32697f3bbffeJYW8HyihR5eo0B",
+        "model": "anthropic/claude-haiku-4-5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    },
+    "e11633816007ce26": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_325eefa50ffebOJTEEN0nT78Wz",
+        "model": "anthropic/claude-haiku-4-5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 46,
+      "total_deletions": 37,
+      "accepted_lines": 25,
+      "overriden_lines": 0
+    }
+  }
+}
