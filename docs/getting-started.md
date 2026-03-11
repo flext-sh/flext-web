@@ -61,7 +61,7 @@ print(f"Available methods: {methods}")
 
 flext-web uses patterns from flext-core:
 
-- **FlextResult[T]** for error handling
+- **r[T]** for error handling
 - **FlextModels** for domain entities
 - **Clean Architecture** layer separation
 

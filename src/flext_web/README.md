@@ -92,7 +92,7 @@ Rich domain entity implementing application lifecycle management with state mach
 - State management (STOPPED, STARTING, RUNNING, STOPPING, ERROR)
 - Business rule validation using flext-core patterns
 - State transition validation with error handling
-- Integration with FlextResult for railway-oriented programming
+- Integration with r for railway-oriented programming
 
 **Usage**:
 
@@ -224,14 +224,14 @@ python -m flext_web --no-debug --host 0.0.0.0 --port 8080
 
 The module extensively uses flext-core foundation patterns for consistency across the FLEXT ecosystem:
 
-- **FlextResult**: Railway-oriented programming for error handling
+- **r**: Railway-oriented programming for error handling
 - **FlextModels.Entity**: Domain entity base class with validation
 - **FlextSettings**: Configuration management with validation
 - **FlextProcessors**: CQRS command handler patterns
 
 ### Error Handling
 
-All operations use FlextResult for consistent error handling:
+All operations use r for consistent error handling:
 
 ```python
 from flext_core import FlextBus
@@ -249,14 +249,14 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
 
-def process_request(data: dict) -> FlextResult[FlextWebApp]:
+def process_request(data: dict) -> r[FlextWebApp]:
     return (
         validate_input(data)
         .flat_map(create_application)
@@ -298,7 +298,7 @@ def process_request(data: dict) -> FlextResult[FlextWebApp]:
 - **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
 - **Test Coverage**: 90%+ coverage required for all code
 - **Documentation**: Comprehensive docstrings for all public APIs
-- **Error Handling**: FlextResult patterns for all operations
+- **Error Handling**: r patterns for all operations
 - **Validation**: Domain rule validation for all entities
 
 ### Testing Approach

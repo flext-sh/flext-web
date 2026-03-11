@@ -79,7 +79,7 @@ class TestFlextWebApi:
     def test_create_http_config_invalid_cases(self) -> None:
         """Test HTTP configuration creation with invalid inputs.
 
-        Expected: FlextResult.fail() for invalid port/host values
+        Expected: r.fail() for invalid port/host values
         Actual: FlextSettings accepts invalid values (bug in flext-core)
         """
         result = FlextWebApi.create_http_config(host="localhost", port=-1, debug=True)
@@ -92,7 +92,7 @@ class TestFlextWebApi:
         assert result.is_failure
 
     def test_http_config_result_consistency(self) -> None:
-        """Test that HTTP config results follow FlextResult patterns.
+        """Test that HTTP config results follow r patterns.
 
         NOTE: The empty host validation test is removed because FlextSettings
         does not enforce Field constraints due to a bug in flext-core.
@@ -149,7 +149,7 @@ class TestFlextWebApi:
     def test_http_config_parametrized_validation(self, host: str, port: int) -> None:
         """Test HTTP configuration creation with invalid inputs (parametrized).
 
-        Expected: FlextResult.fail() for invalid port/host values
+        Expected: r.fail() for invalid port/host values
         Actual: FlextSettings accepts invalid values (bug in flext-core)
         """
         result = FlextWebApi.create_http_config(host=host, port=port, debug=True)

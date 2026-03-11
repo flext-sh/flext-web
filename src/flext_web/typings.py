@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import Literal, TypeAlias
 
-from flext_core import FlextResult, FlextTypes, u
+from flext_core import FlextTypes, r, u
 from pydantic import Field
 
 from flext_web.constants import FlextWebConstants as c
@@ -153,14 +153,14 @@ class FlextWebTypes(FlextTypes):
     def create_application(
         cls,
         config: _ApplicationConfig,
-    ) -> FlextResult[m.Web.Entity]:
+    ) -> r[m.Web.Entity]:
         """Create application model instance.
 
         Args:
             config: Application configuration model
 
         Returns:
-            FlextResult[Web.Entity]: Success contains application entity,
+            r[Web.Entity]: Success contains application entity,
                                             failure contains error message
 
         """
@@ -187,7 +187,7 @@ class FlextWebTypes(FlextTypes):
 
         try:
             entity = create_entity()
-            return FlextResult[m.Web.Entity].ok(entity)
+            return r[m.Web.Entity].ok(entity)
         except (
             ValueError,
             TypeError,
@@ -197,9 +197,7 @@ class FlextWebTypes(FlextTypes):
             RuntimeError,
             ImportError,
         ) as exc:
-            return FlextResult[m.Web.Entity].fail(
-                f"Failed to create application: {exc}"
-            )
+            return r[m.Web.Entity].fail(f"Failed to create application: {exc}")
 
     @classmethod
     def create_http_request(
@@ -209,7 +207,7 @@ class FlextWebTypes(FlextTypes):
         headers: dict[str, str] | None = None,
         body: str | dict[str, FlextTypes.JsonValue] | None = None,
         timeout: float = c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
-    ) -> FlextResult[m.Web.Request]:
+    ) -> r[m.Web.Request]:
         """Create HTTP request model instance with proper validation.
 
         Args:
@@ -220,7 +218,7 @@ class FlextWebTypes(FlextTypes):
             timeout: Request timeout in seconds
 
         Returns:
-            FlextResult[Web.Request]: Success contains request model,
+            r[Web.Request]: Success contains request model,
                                      failure contains validation error
 
         """
@@ -232,7 +230,7 @@ class FlextWebTypes(FlextTypes):
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
         if method_validated is None:
-            return FlextResult[m.Web.Request].fail(
+            return r[m.Web.Request].fail(
                 f"Invalid HTTP method: {method}. Must be one of: {valid_methods}"
             )
         headers_validated = headers or {}
@@ -249,7 +247,7 @@ class FlextWebTypes(FlextTypes):
 
         try:
             request = create_request()
-            return FlextResult[m.Web.Request].ok(request)
+            return r[m.Web.Request].ok(request)
         except (
             ValueError,
             TypeError,
@@ -260,7 +258,7 @@ class FlextWebTypes(FlextTypes):
             ImportError,
         ) as exc:
             error_msg = f"Failed to create HTTP request: {exc}"
-            return FlextResult[m.Web.Request].fail(error_msg)
+            return r[m.Web.Request].fail(error_msg)
 
     @classmethod
     def create_http_response(
@@ -269,7 +267,7 @@ class FlextWebTypes(FlextTypes):
         headers: dict[str, str] | None = None,
         body: str | dict[str, FlextTypes.JsonValue] | None = None,
         elapsed_time: float | None = None,
-    ) -> FlextResult[m.Web.Response]:
+    ) -> r[m.Web.Response]:
         """Create HTTP response model instance with proper validation.
 
         Args:
@@ -279,7 +277,7 @@ class FlextWebTypes(FlextTypes):
             elapsed_time: Response processing time
 
         Returns:
-            FlextResult[Web.Response]: Success contains response model,
+            r[Web.Response]: Success contains response model,
                                       failure contains validation error
 
         """
@@ -296,7 +294,7 @@ class FlextWebTypes(FlextTypes):
 
         try:
             response = create_response()
-            return FlextResult[m.Web.Response].ok(response)
+            return r[m.Web.Response].ok(response)
         except (
             ValueError,
             TypeError,
@@ -306,22 +304,20 @@ class FlextWebTypes(FlextTypes):
             RuntimeError,
             ImportError,
         ) as exc:
-            return FlextResult[m.Web.Response].fail(
-                f"Failed to create HTTP response: {exc}"
-            )
+            return r[m.Web.Response].fail(f"Failed to create HTTP response: {exc}")
 
     @classmethod
     def create_web_request(
         cls,
         config: _WebRequestConfig,
-    ) -> FlextResult[m.Web.AppRequest]:
+    ) -> r[m.Web.AppRequest]:
         """Create web request model instance with proper validation.
 
         Args:
             config: Web request configuration model
 
         Returns:
-            FlextResult[Web.AppRequest]: Success contains request model,
+            r[Web.AppRequest]: Success contains request model,
                                         failure contains validation error
 
         """
@@ -334,7 +330,7 @@ class FlextWebTypes(FlextTypes):
         client_ip: str = config.client_ip or ""
         user_agent: str = config.user_agent or ""
         if not url or not url.strip():
-            return FlextResult[m.Web.AppRequest].fail("URL is required")
+            return r[m.Web.AppRequest].fail("URL is required")
         url_validated = url.strip()
         headers_validated: dict[str, str] = headers or {}
         query_params_validated: dict[str, FlextTypes.JsonValue] = query_params or {}
@@ -346,7 +342,7 @@ class FlextWebTypes(FlextTypes):
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
         if method_validated is None:
-            return FlextResult[m.Web.AppRequest].fail(
+            return r[m.Web.AppRequest].fail(
                 f"Invalid HTTP method: {method}. Must be one of: {valid_methods}"
             )
 
@@ -365,7 +361,7 @@ class FlextWebTypes(FlextTypes):
 
         try:
             request = create_request()
-            return FlextResult[m.Web.AppRequest].ok(request)
+            return r[m.Web.AppRequest].ok(request)
         except (
             ValueError,
             TypeError,
@@ -375,22 +371,20 @@ class FlextWebTypes(FlextTypes):
             RuntimeError,
             ImportError,
         ) as exc:
-            return FlextResult[m.Web.AppRequest].fail(
-                f"Failed to create web request: {exc}"
-            )
+            return r[m.Web.AppRequest].fail(f"Failed to create web request: {exc}")
 
     @classmethod
     def create_web_response(
         cls,
         config: _WebResponseConfig,
-    ) -> FlextResult[m.Web.AppResponse]:
+    ) -> r[m.Web.AppResponse]:
         """Create web response model instance with proper validation.
 
         Args:
             config: Web response configuration model
 
         Returns:
-            FlextResult[Web.AppResponse]: Success contains response model,
+            r[Web.AppResponse]: Success contains response model,
                                          failure contains validation error
 
         """
@@ -419,7 +413,7 @@ class FlextWebTypes(FlextTypes):
 
         try:
             response = create_response()
-            return FlextResult[m.Web.AppResponse].ok(response)
+            return r[m.Web.AppResponse].ok(response)
         except (
             ValueError,
             TypeError,
@@ -429,9 +423,7 @@ class FlextWebTypes(FlextTypes):
             RuntimeError,
             ImportError,
         ) as exc:
-            return FlextResult[m.Web.AppResponse].fail(
-                f"Failed to create web response: {exc}"
-            )
+            return r[m.Web.AppResponse].fail(f"Failed to create web response: {exc}")
 
     class TypesConfig:
         """Configuration model for web types system."""
@@ -467,7 +459,7 @@ class FlextWebTypes(FlextTypes):
         use_pydantic_models: bool = True,
         enable_runtime_validation: bool = True,
         models_available: list[str] | None = None,
-    ) -> FlextResult[FlextWebTypes.TypesConfig]:
+    ) -> r[FlextWebTypes.TypesConfig]:
         """Configure web types system to use Pydantic models.
 
         Args:
@@ -476,7 +468,7 @@ class FlextWebTypes(FlextTypes):
             models_available: List of available model names
 
         Returns:
-            FlextResult[TypesConfig]: Configuration result
+            r[TypesConfig]: Configuration result
 
         """
         try:
@@ -494,7 +486,7 @@ class FlextWebTypes(FlextTypes):
                 if models_available is None
                 else models_available,
             )
-            return FlextResult[FlextWebTypes.TypesConfig].ok(config)
+            return r[FlextWebTypes.TypesConfig].ok(config)
         except (
             ValueError,
             TypeError,
@@ -504,21 +496,21 @@ class FlextWebTypes(FlextTypes):
             RuntimeError,
             ImportError,
         ) as e:
-            return FlextResult[FlextWebTypes.TypesConfig].fail(
+            return r[FlextWebTypes.TypesConfig].fail(
                 f"Failed to configure web types system: {e}"
             )
 
     @classmethod
-    def get_web_types_system_config(cls) -> FlextResult[FlextWebTypes.TypesConfig]:
+    def get_web_types_system_config(cls) -> r[FlextWebTypes.TypesConfig]:
         """Get current web types system configuration.
 
         Returns:
-            FlextResult[TypesConfig]: Current configuration
+            r[TypesConfig]: Current configuration
 
         """
         try:
             config = cls.TypesConfig()
-            return FlextResult[FlextWebTypes.TypesConfig].ok(config)
+            return r[FlextWebTypes.TypesConfig].ok(config)
         except (
             ValueError,
             TypeError,
@@ -528,7 +520,7 @@ class FlextWebTypes(FlextTypes):
             RuntimeError,
             ImportError,
         ) as e:
-            return FlextResult[FlextWebTypes.TypesConfig].fail(
+            return r[FlextWebTypes.TypesConfig].fail(
                 f"Failed to get web types system config: {e}"
             )
 

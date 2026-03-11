@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import sys
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, r
 
 from flext_web import FlextWebApi, FlextWebModels
 
@@ -40,11 +40,11 @@ class FlextWebCliService:
             sys.exit(1)
         sys.exit(0)
 
-    def run(self) -> FlextResult[bool]:
+    def run(self) -> r[bool]:
         """Run HTTP service operations.
 
         Returns:
-            FlextResult[bool]: Success contains True if service is operational,
+            r[bool]: Success contains True if service is operational,
                              failure contains error message
 
         """

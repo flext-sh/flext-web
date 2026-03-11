@@ -44,7 +44,7 @@ class FlextWebApi:
             config: Application configuration model or None for defaults
 
         Returns:
-            FlextResult[FastAPI]: Success contains configured FastAPI app,
+            r[FastAPI]: Success contains configured FastAPI app,
                                   failure contains detailed error message
 
         """
@@ -77,7 +77,7 @@ class FlextWebApi:
         debug: Debug mode flag
 
         Returns:
-        FlextResult[FlextWebSettings]: Success contains validated config,
+        r[FlextWebSettings]: Success contains validated config,
         failure contains validation error
 
         """
@@ -117,7 +117,7 @@ class FlextWebApi:
         """Get API facade capabilities and supported operations.
 
         Returns:
-        FlextResult[t.Core.ResponseDict]: Success contains capabilities info
+        r[t.Core.ResponseDict]: Success contains capabilities info
 
         """
         return r[t.WebCore.ResponseDict].ok({
@@ -138,7 +138,7 @@ class FlextWebApi:
         status reporting for monitoring and debugging.
 
         Returns:
-        FlextResult[ServiceResponse]: Success contains detailed status info,
+        r[ServiceResponse]: Success contains detailed status info,
         failure contains error message
 
         """
@@ -170,7 +170,7 @@ class FlextWebApi:
         config: Configuration model to validate
 
         Returns:
-        FlextResult[bool]: Success contains True if valid, failure contains error
+        r[bool]: Success contains True if valid, failure contains error
 
         """
         logger = FlextLogger(__name__)

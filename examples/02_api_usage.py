@@ -6,14 +6,14 @@ for application lifecycle management using the refactored architecture.
 This example shows:
 - Health check using WebHandlers
 - Application lifecycle management
-- Error handling with FlextResult patterns
+- Error handling with r patterns
 - Usage of new type aliases for better type safety
 """
 
 from __future__ import annotations
 
 import requests
-from flext_core import FlextResult
+from flext_core import r
 
 from flext_web import t
 from flext_web.protocols import ResponseDict
@@ -75,27 +75,27 @@ def create_application(name: str, port: int, host: str = "localhost") -> t.AppDa
     """
     request_data: dict[str, str | int] = {"name": name, "port": port, "host": host}
 
-    def _make_request() -> FlextResult[requests.Response]:
-        """Make HTTP request using FlextResult for error handling."""
+    def _make_request() -> r[requests.Response]:
+        """Make HTTP request using r for error handling."""
         try:
             response = requests.post(
                 f"{ExampleConstants.BASE_URL}{ExampleConstants.APPS_BASE}",
                 json=request_data,
                 timeout=5,
             )
-            return FlextResult[requests.Response].ok(response)
+            return r[requests.Response].ok(response)
         except requests.RequestException as e:
-            return FlextResult[requests.Response].fail(f"Request failed: {e}")
+            return r[requests.Response].fail(f"Request failed: {e}")
 
     def _parse_json(
         response: requests.Response,
-    ) -> FlextResult[dict[str, t.ContainerValue]]:
+    ) -> r[dict[str, t.ContainerValue]]:
         """Parse JSON response."""
         try:
             json_data: dict[str, t.ContainerValue] = response.json()
-            return FlextResult[t.ConfigurationMapping].ok(json_data)
+            return r[t.ConfigurationMapping].ok(json_data)
         except Exception as e:
-            return FlextResult[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
+            return r[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
 
     result = _make_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
@@ -144,12 +144,12 @@ def _execute_app_operation(
 ) -> t.AppData:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
-    Reduces from 9 returns to single monadic chain using FlextResult from flext-core.
+    Reduces from 9 returns to single monadic chain using r from flext-core.
     Leverages existing framework instead of recreating functionality.
     """
 
-    def _make_http_request() -> FlextResult[requests.Response]:
-        """Make HTTP request using FlextResult for error handling."""
+    def _make_http_request() -> r[requests.Response]:
+        """Make HTTP request using r for error handling."""
         try:
             request_func = getattr(requests, method.lower())
             kwargs: dict[str, t.ContainerValue] = {
@@ -160,36 +160,36 @@ def _execute_app_operation(
                 kwargs["json"] = json_data
             response = request_func(**kwargs)
             return (
-                FlextResult[requests.Response].ok(response)
+                r[requests.Response].ok(response)
                 if response.status_code == ExampleConstants.HTTP_OK
-                else FlextResult[requests.Response].fail(f"HTTP {response.status_code}")
+                else r[requests.Response].fail(f"HTTP {response.status_code}")
             )
         except requests.RequestException as e:
-            return FlextResult[requests.Response].fail(f"Request failed: {e}")
+            return r[requests.Response].fail(f"Request failed: {e}")
 
     def _parse_json_response(
         response: requests.Response,
-    ) -> FlextResult[dict[str, t.ContainerValue]]:
+    ) -> r[dict[str, t.ContainerValue]]:
         """Parse JSON from response."""
         try:
             json_data: dict[str, t.ContainerValue] = response.json()
-            return FlextResult[t.ConfigurationMapping].ok(json_data)
+            return r[t.ConfigurationMapping].ok(json_data)
         except Exception as e:
-            return FlextResult[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
+            return r[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
 
     result = (
         _make_http_request()
         .flat_map(_parse_json_response)
         .flat_map(
             lambda json_data: (
-                FlextResult[t.AppData].ok(t.AppData.model_validate(json_data["data"]))
+                r[t.AppData].ok(t.AppData.model_validate(json_data["data"]))
                 if "success" in json_data
                 and json_data["success"] is True
                 and ("data" in json_data)
                 and isinstance((data := json_data["data"]), dict)
                 and ("id" in data)
                 and ("name" in data)
-                else FlextResult[t.AppData].fail("Invalid app data")
+                else r[t.AppData].fail("Invalid app data")
             )
         )
     )
@@ -202,23 +202,23 @@ def _execute_app_operation(
 def _execute_list_operation(endpoint: str, data_key: str) -> list[t.AppData]:
     """Advanced Monad Composition using flext-core - eliminates 7 returns with Kleisli composition."""
 
-    def _make_get_request() -> FlextResult[requests.Response]:
+    def _make_get_request() -> r[requests.Response]:
         """Make GET request."""
         try:
             response = requests.get(f"{ExampleConstants.BASE_URL}{endpoint}", timeout=5)
-            return FlextResult[requests.Response].ok(response)
+            return r[requests.Response].ok(response)
         except requests.RequestException as e:
-            return FlextResult[requests.Response].fail(f"Request failed: {e}")
+            return r[requests.Response].fail(f"Request failed: {e}")
 
     def _parse_response_json(
         response: requests.Response,
-    ) -> FlextResult[dict[str, t.ContainerValue]]:
+    ) -> r[dict[str, t.ContainerValue]]:
         """Parse JSON from response."""
         try:
             json_data: dict[str, t.ContainerValue] = response.json()
-            return FlextResult[t.ConfigurationMapping].ok(json_data)
+            return r[t.ConfigurationMapping].ok(json_data)
         except Exception as e:
-            return FlextResult[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
+            return r[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
 
     result = _make_get_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
@@ -291,7 +291,7 @@ def demo_application_lifecycle() -> None:
     """Demonstrate complete application lifecycle using the refactored API.
 
     Shows the full workflow:
-    1. Health check using standardized FlextResult responses
+    1. Health check using standardized r responses
     2. Application creation with WebFields validation
     3. Lifecycle management via FlextWebAppHandler
     4. Status monitoring through FlextWebApp entities

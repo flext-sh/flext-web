@@ -83,11 +83,11 @@ tests/
 
 ### Testing Patterns
 
-#### FlextResult Testing
+#### r Testing
 
 ```python
 def test_successful_operation():
-    """Test successful operation returns FlextResult[bool].ok()"""
+    """Test successful operation returns r[bool].ok()"""
     result = handler.create_app("test-app", 3000)
 
     assert result.success
@@ -96,7 +96,7 @@ def test_successful_operation():
 
 
 def test_failure_operation():
-    """Test failure operation returns FlextResult[bool].fail()"""
+    """Test failure operation returns r[bool].fail()"""
     result = handler.create_app("", 0)  # Invalid input
 
     assert result.is_failure
