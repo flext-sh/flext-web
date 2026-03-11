@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, TypeAlias
 
 from flext_core import FlextResult, FlextTypes, u
 from pydantic import Field
@@ -19,6 +19,12 @@ from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
 
 HttpMethod = c.Web.Method
+WebRequestDict: TypeAlias = dict[
+    str, str | int | bool | list[str] | dict[str, str | int | bool]
+]
+WebResponseDict: TypeAlias = dict[
+    str, str | int | bool | list[str] | dict[str, str | int | bool]
+]
 
 
 class _ApplicationConfig(m.Web.EntityConfig):
@@ -82,12 +88,8 @@ class FlextWebTypes(FlextTypes):
         """
 
         ConfigValue = str | int | bool | list[str]
-        RequestDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
-        ]
-        ResponseDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
-        ]
+        RequestDict: TypeAlias = WebRequestDict
+        ResponseDict: TypeAlias = WebResponseDict
         HttpMethodLiteral = Literal[
             "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
         ]
@@ -121,12 +123,8 @@ class FlextWebTypes(FlextTypes):
     class WebCore:
         """Compatibility namespace for request/response dict aliases."""
 
-        RequestDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
-        ]
-        ResponseDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
-        ]
+        RequestDict: TypeAlias = WebRequestDict
+        ResponseDict: TypeAlias = WebResponseDict
 
     class Types:
         """Type system aliases for flext-web Removed redundant aliases."""

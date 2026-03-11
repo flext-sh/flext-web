@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from typing import override
 
@@ -120,13 +121,14 @@ class FlextWebApp(FlextService[bool]):
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
-        @app.get("/health")
-        def health_check() -> t.WebCore.ResponseDict:  # type: ignore[reportUnusedFunction]
+        def health_check() -> t.WebCore.ResponseDict:
             return cls.HealthHandler.create_handler()()
 
-        @app.get("/info")
-        def info_endpoint() -> t.WebCore.ResponseDict:  # type: ignore[reportUnusedFunction]
+        def info_endpoint() -> t.WebCore.ResponseDict:
             return cls.InfoHandler.create_handler(config)()
+
+        app.add_api_route("/health", health_check, methods=["GET"])
+        app.add_api_route("/info", info_endpoint, methods=["GET"])
 
         logger = FlextLogger(__name__)
         logger.info(f"FastAPI application '{config.title}' v{config.version} created")
@@ -192,13 +194,18 @@ class FlextWebApp(FlextService[bool]):
         app.config["DEBUG"] = flask_config.debug
         app.config["TESTING"] = flask_config.testing
 
-        @app.route("/health")
-        def health_check() -> flask.Response:  # type: ignore[reportUnusedFunction]
-            return flask.jsonify(  # type: ignore[no-any-return]
-                status=c.Web.WebResponse.STATUS_HEALTHY,
-                service=c.Web.WebService.SERVICE_NAME_FLASK,
-                timestamp=u.Generators.generate_iso_timestamp(),
+        def health_check() -> flask.Response:
+            json_data = {
+                "status": c.Web.WebResponse.STATUS_HEALTHY,
+                "service": c.Web.WebService.SERVICE_NAME_FLASK,
+                "timestamp": u.Generators.generate_iso_timestamp(),
+            }
+            return flask.Response(
+                json.dumps(json_data),
+                mimetype="application/json",
             )
+
+        app.add_url_rule("/health", "health_check", health_check)
 
         logger.info(f"Flask application '{flask_config.app_name}' created")
         return r.ok(app)

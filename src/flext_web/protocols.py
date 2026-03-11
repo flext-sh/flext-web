@@ -283,10 +283,8 @@ class FlextWebProtocols(FlextProtocols):
             app_instance: flask.Flask | FastAPI,
         ) -> None:
             if isinstance(app_instance, FastAPI):
-                middleware_decorator = app_instance.middleware
 
-                @middleware_decorator("http")
-                async def _fastapi_metrics_middleware(  # type: ignore[unused-ignore]
+                async def fastapi_metrics_middleware(
                     request: StarletteRequest,
                     call_next: Callable[
                         [StarletteRequest], Awaitable[StarletteResponse]
@@ -296,18 +294,20 @@ class FlextWebProtocols(FlextProtocols):
                     FlextWebProtocols.Web.record_request_metric("success", 0)
                     return response
 
+                app_instance.middleware("http")(fastapi_metrics_middleware)
+
             else:
                 # app_instance is flask.Flask (from the if/elif chain above)
-                @app_instance.before_request
-                def _flask_metrics_middleware() -> None:  # type: ignore[unused-ignore]
+                def flask_metrics_middleware() -> None:
                     FlextWebProtocols.Web.record_request_metric("success", 0)
+
+                app_instance.before_request(flask_metrics_middleware)
 
         @staticmethod
         def _configure_framework_app_routes(
             app_instance: flask.Flask | FastAPI, app_id: str
         ) -> None:
             if isinstance(app_instance, FastAPI):
-                route_registrar = app_instance.add_api_route
 
                 def fastapi_health() -> t.WebCore.ResponseDict:
                     return {
@@ -316,18 +316,21 @@ class FlextWebProtocols(FlextProtocols):
                         "app_id": app_id,
                     }
 
-                route_registrar("/protocol/health", fastapi_health, methods=["GET"])
+                app_instance.add_api_route(
+                    "/protocol/health", fastapi_health, methods=["GET"]
+                )
             else:
                 # app_instance is flask.Flask (from the if/elif chain above)
-                route_decorator = app_instance.route
-
-                @route_decorator("/protocol/health")
-                def _flask_health() -> t.WebCore.ResponseDict:  # type: ignore[unused-ignore]
+                def flask_health() -> t.WebCore.ResponseDict:
                     return {
                         "status": c.Web.WebResponse.STATUS_HEALTHY,
                         "service": c.Web.WebService.SERVICE_NAME_FLASK,
                         "app_id": app_id,
                     }
+
+                app_instance.add_url_rule(
+                    "/protocol/health", "flask_health", flask_health
+                )
 
         @staticmethod
         def _copy_response_dict(
