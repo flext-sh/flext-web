@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from flext_web.__version__ import (
         VERSION,
         FlextWebVersion,
+        _VersionMetadata,
         __author__,
         __author_email__,
         __description__,
@@ -36,6 +37,9 @@ if TYPE_CHECKING:
     from flext_web.typings import (
         FlextWebTypes,
         FlextWebTypes as t,
+        _ApplicationConfig,
+        _WebRequestConfig,
+        _WebResponseConfig,
     )
     from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 
@@ -51,6 +55,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextWebSettings": ("flext_web.settings", "FlextWebSettings"),
     "FlextWebTypes": ("flext_web.typings", "FlextWebTypes"),
     "FlextWebUtilities": ("flext_web.utilities", "FlextWebUtilities"),
+    "_ApplicationConfig": ("flext_web.typings", "_ApplicationConfig"),
+    "_WebRequestConfig": ("flext_web.typings", "_WebRequestConfig"),
+    "_WebResponseConfig": ("flext_web.typings", "_WebResponseConfig"),
+    "_VersionMetadata": ("flext_web.__version__", "_VersionMetadata"),
     "FlextWebVersion": ("flext_web.__version__", "FlextWebVersion"),
     "VERSION": ("flext_web.__version__", "VERSION"),
     "__author__": ("flext_web.__version__", "__author__"),
@@ -70,6 +78,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
 
 __all__ = [
     "VERSION",
+    "_ApplicationConfig",
+    "_VersionMetadata",
+    "_WebRequestConfig",
+    "_WebResponseConfig",
     "FlextWebApi",
     "FlextWebApp",
     "FlextWebConstants",

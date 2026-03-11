@@ -13,12 +13,12 @@ import uuid
 from collections.abc import MutableMapping
 from typing import override
 
-from flext_core import FlextConstants, FlextService, r, u
+from flext_core import r, s
 
-from flext_web import FlextWebSettings, c, m, t
+from flext_web import FlextWebSettings, c, m, t, u
 
 
-class FlextWebServices(FlextService[bool]):
+class FlextWebServices(s[bool]):
     """HTTP service orchestration layer.
 
     Delegates all operations to focused nested services.
@@ -43,10 +43,10 @@ class FlextWebServices(FlextService[bool]):
                                          failure contains error message
 
             """
-            if credentials.username == FlextConstants.Test.NONEXISTENT_USERNAME:
+            if credentials.username == c.Test.NONEXISTENT_USERNAME:
                 return r[m.Web.AuthResponse].fail("Authentication failed")
 
-            if credentials.password != FlextConstants.Test.DEFAULT_PASSWORD:
+            if credentials.password != c.Test.DEFAULT_PASSWORD:
                 return r[m.Web.AuthResponse].fail("Authentication failed")
 
             auth_response = m.Web.AuthResponse(
@@ -74,9 +74,9 @@ class FlextWebServices(FlextService[bool]):
                 email=user_data.email,
                 created=True,
             )
-            return r.ok(user_response)
+            return r[m.Web.UserResponse].ok(user_response)
 
-    class Entity(FlextService[m.Web.EntityData]):
+    class Entity(s[m.Web.EntityData]):
         """Entity CRUD service with monadic patterns."""
 
         def __init__(self) -> None:
@@ -98,11 +98,11 @@ class FlextWebServices(FlextService[bool]):
             entity_id = str(uuid.uuid4())
             entity = m.Web.EntityData(data={"id": entity_id, **data.data})
             self._storage[entity_id] = entity
-            return r.ok(entity)
+            return r[m.Web.EntityData].ok(entity)
 
         @override
         def execute(self, **_kwargs: str | float | bool | None) -> r[m.Web.EntityData]:
-            """Execute entity service - required by FlextService.
+            """Execute entity service - required by s.
 
             Returns:
                 r[EntityData]: Service ready response
@@ -111,7 +111,7 @@ class FlextWebServices(FlextService[bool]):
             ready_response = m.Web.EntityData(
                 data={"message": c.Web.WebMessages.ENTITY_SERVICE_READY}
             )
-            return r.ok(ready_response)
+            return r[m.Web.EntityData].ok(ready_response)
 
         def get(self, entity_id: str) -> r[m.Web.EntityData]:
             """Get entity - fail fast if not found.
@@ -137,7 +137,7 @@ class FlextWebServices(FlextService[bool]):
                 r[list[EntityData]]: Success contains list of entities
 
             """
-            return r.ok(list(self._storage.values()))
+            return r[list[m.Web.EntityData]].ok(list(self._storage.values()))
 
     class Health:
         """Health check service."""
@@ -154,7 +154,7 @@ class FlextWebServices(FlextService[bool]):
                 service_status=c.Web.WebResponse.STATUS_OPERATIONAL,
                 components=["auth", "entities", "health"],
             )
-            return r.ok(metrics_response)
+            return r[m.Web.MetricsResponse].ok(metrics_response)
 
         @staticmethod
         def status() -> r[m.Web.HealthResponse]:
@@ -169,7 +169,7 @@ class FlextWebServices(FlextService[bool]):
                 service=c.Web.WebService.SERVICE_NAME,
                 timestamp=u.Generators.generate_iso_timestamp(),
             )
-            return r.ok(health_response)
+            return r[m.Web.HealthResponse].ok(health_response)
 
     def __init__(self, _config: FlextWebSettings | None = None) -> None:
         """Initialize with config.
@@ -202,7 +202,7 @@ class FlextWebServices(FlextService[bool]):
 
         """
         service_config = config if config is not None else FlextWebSettings()
-        return r.ok(cls(_config=service_config))
+        return r[FlextWebServices].ok(cls(_config=service_config))
 
     @classmethod
     def create_web_service(
@@ -232,7 +232,7 @@ class FlextWebServices(FlextService[bool]):
                                         failure contains error message
 
         """
-        return r.ok(config)
+        return r[FlextWebSettings].ok(config)
 
     @staticmethod
     def logout() -> r[m.Web.EntityData]:
@@ -243,7 +243,7 @@ class FlextWebServices(FlextService[bool]):
 
         """
         logout_response = m.Web.EntityData(data={"success": True})
-        return r.ok(logout_response)
+        return r[m.Web.EntityData].ok(logout_response)
 
     def authenticate(self, credentials: m.Web.Credentials) -> r[m.Web.AuthResponse]:
         """Authenticate user with explicit validation - no fallbacks.
@@ -286,7 +286,7 @@ class FlextWebServices(FlextService[bool]):
             created_at=u.Generators.generate_iso_timestamp(),
         )
         self._applications[app_id] = app_response
-        return r.ok(app_response)
+        return r[m.Web.ApplicationResponse].ok(app_response)
 
     def create_entity(self, data: m.Web.EntityData) -> r[m.Web.EntityData]:
         """Delegate to Entity using monadic pattern."""
@@ -325,7 +325,7 @@ class FlextWebServices(FlextService[bool]):
 
     @override
     def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
-        """Execute web service orchestration (FlextService requirement).
+        """Execute web service orchestration (s requirement).
 
         Returns:
         r[bool]: Success contains True if service is operational,
@@ -377,7 +377,7 @@ class FlextWebServices(FlextService[bool]):
 
         """
         apps_list = list(self._applications.values())
-        return r.ok(apps_list)
+        return r[list[m.Web.ApplicationResponse]].ok(apps_list)
 
     def list_entities(self) -> r[list[m.Web.EntityData]]:
         """Delegate to Entity using monadic pattern."""
@@ -446,7 +446,7 @@ class FlextWebServices(FlextService[bool]):
 
     @override
     def validate_business_rules(self) -> r[bool]:
-        """Validate business rules for web services (FlextService requirement).
+        """Validate business rules for web services (s requirement).
 
         Returns:
             r[bool]: Success contains True if valid, failure with error message
@@ -480,7 +480,7 @@ class FlextWebServices(FlextService[bool]):
         """Ensure entity service is initialized - fail fast if not available."""
         if self._entity_service is None:
             self._entity_service = self.Entity()
-        return r.ok(self._entity_service)
+        return r[FlextWebServices.Entity].ok(self._entity_service)
 
     def _mark_service_running(self) -> bool:
         """Mark service as running state - internal state management."""

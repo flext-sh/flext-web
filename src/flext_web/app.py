@@ -113,7 +113,7 @@ class FlextWebApp(FlextService[bool]):
                 logger.exception(error_msg)
                 return r[FastAPI].fail(error_msg)
             logger.info("FastAPI application '%s' v%s created", title, version)
-            return r.ok(app)
+            return r[FastAPI].ok(app)
 
     @classmethod
     def _configure_fastapi_endpoints(
@@ -208,7 +208,7 @@ class FlextWebApp(FlextService[bool]):
         app.add_url_rule("/health", "health_check", health_check)
 
         logger.info(f"Flask application '{flask_config.app_name}' created")
-        return r.ok(app)
+        return r[flask.Flask].ok(app)
 
     class HealthHandler:
         """Health check handler with single responsibility for system health monitoring."""
