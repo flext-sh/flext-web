@@ -553,9 +553,12 @@ class FlextWebTypes(FlextTypes):
             """Web pipeline configuration model - inherits from m.Web.EntityConfig."""
 
 
+t = FlextWebTypes
+
 __all__ = [
     "FlextWebTypes",
     "_ApplicationConfig",
     "_WebRequestConfig",
     "_WebResponseConfig",
+    "t",
 ]

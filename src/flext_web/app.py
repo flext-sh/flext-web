@@ -20,7 +20,7 @@ from flext_core import FlextLogger, FlextService, r
 from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
 from flext_web.settings import FlextWebSettings
-from flext_web.typings import FlextWebTypes as t
+from flext_web.typings import t
 from flext_web.utilities import FlextWebUtilities as u
 
 
