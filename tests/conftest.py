@@ -59,7 +59,7 @@ def assert_result(result: r[object], *, expected_success: bool = True) -> None:
         assert_failure(result)
 
 
-def create_entry(entry_type: str, **kwargs: object) -> r[object]:
+def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[object]:
     """Generalized entry creation function using flext-core patterns.
 
     This function replaces multiple specific create_* methods by providing
@@ -199,7 +199,7 @@ def create_entry(entry_type: str, **kwargs: object) -> r[object]:
     raise ValueError(msg)
 
 
-def create_test_data(data_type: str, **kwargs: object) -> dict[str, object]:
+def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, object]:
     """Create test data for tests.
 
     This function provides a standardized way to create test data,
@@ -265,7 +265,7 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, object]:
     raise ValueError(msg)
 
 
-def create_test_app(**kwargs: object) -> m.Web.Entity:
+def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:
     """Create a test application entity using flext-core patterns.
 
     This function provides a standardized way to create test applications,
@@ -303,7 +303,7 @@ def create_test_app(**kwargs: object) -> m.Web.Entity:
     )
 
 
-def create_test_result(*, success: bool = True, **kwargs: object) -> r[object]:
+def create_test_result(*, success: bool = True, **kwargs: t.Scalar) -> r[object]:
     """Create a test r using r API directly.
 
     This function provides a standardized way to create test results,

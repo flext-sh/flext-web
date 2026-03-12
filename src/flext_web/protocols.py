@@ -214,7 +214,7 @@ class FlextWebProtocols(FlextProtocols):
                 self,
                 path: str,
                 endpoint: Callable[..., t.WebCore.ResponseDict],
-                **kwargs: object,
+                **kwargs: t.Scalar,
             ) -> None:
                 """Register an API route."""
                 ...
@@ -234,7 +234,7 @@ class FlextWebProtocols(FlextProtocols):
                 ...
 
             def route(
-                self, rule: str, **options: object
+                self, rule: str, **options: t.Scalar
             ) -> Callable[..., Callable[..., t.WebCore.ResponseDict]]:
                 """Register a URL route."""
                 ...

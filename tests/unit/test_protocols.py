@@ -362,11 +362,13 @@ class TestFlextWebProtocols:
             ) -> dict[str, object]:
                 return {}
 
-            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
+            def execute(
+                self, *args: object, **kwargs: t.Scalar
+            ) -> r[dict[str, object]]:
                 return r[object].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self, *args: object, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -420,11 +422,13 @@ class TestFlextWebProtocols:
             def is_json_request(self, _request: dict[str, object]) -> bool:
                 return False
 
-            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
+            def execute(
+                self, *args: object, **kwargs: t.Scalar
+            ) -> r[dict[str, object]]:
                 return r[object].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self, *args: object, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -462,11 +466,13 @@ class TestFlextWebProtocols:
             def stop_service(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
+            def execute(
+                self, *args: object, **kwargs: t.Scalar
+            ) -> r[dict[str, object]]:
                 return r[object].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self, *args: object, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -504,11 +510,13 @@ class TestFlextWebProtocols:
             def find_all(self) -> r[list[dict[str, object]]]:
                 return r[list[object]].ok([])
 
-            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
+            def execute(
+                self, *args: object, **kwargs: t.Scalar
+            ) -> r[dict[str, object]]:
                 return r[object].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self, *args: object, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -532,11 +540,13 @@ class TestFlextWebProtocols:
             def render_dashboard(self, data: dict[str, object]) -> r[str]:
                 return r[str].ok("<html>Dashboard</html>")
 
-            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
+            def execute(
+                self, *args: object, **kwargs: t.Scalar
+            ) -> r[dict[str, object]]:
                 return r[object].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self, *args: object, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -581,11 +591,13 @@ class TestFlextWebProtocols:
             ) -> None:
                 pass
 
-            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
+            def execute(
+                self, *args: object, **kwargs: t.Scalar
+            ) -> r[dict[str, object]]:
                 return r[object].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self, *args: object, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -632,11 +644,13 @@ class TestFlextWebProtocols:
             def get_web_metrics(self) -> dict[str, object]:
                 return {"requests": 0, "errors": 0, "uptime": "0s"}
 
-            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
+            def execute(
+                self, *args: object, **kwargs: t.Scalar
+            ) -> r[dict[str, object]]:
                 return r[object].ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: object
+                self, *args: object, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
