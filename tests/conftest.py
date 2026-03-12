@@ -199,7 +199,7 @@ def create_entry(entry_type: str, **kwargs: object) -> r[object]:
     raise ValueError(msg)
 
 
-def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.ContainerValue]:
+def create_test_data(data_type: str, **kwargs: object) -> dict[str, object]:
     """Create test data for tests.
 
     This function provides a standardized way to create test data,
@@ -214,7 +214,7 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.ContainerV
 
     """
     if data_type == "app_data":
-        app_data: dict[str, t.ContainerValue] = {
+        app_data: dict[str, object] = {
             "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
@@ -224,7 +224,7 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.ContainerV
         })
         return app_data
     if data_type == "entity_data":
-        entity_data: dict[str, t.ContainerValue] = {
+        entity_data: dict[str, object] = {
             "id": "test-entity",
             "name": "Test Entity",
         }
@@ -233,7 +233,7 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.ContainerV
         })
         return entity_data
     if data_type == "config_data":
-        config_data: dict[str, t.ContainerValue] = {
+        config_data: dict[str, object] = {
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
             "debug": True,
@@ -243,7 +243,7 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.ContainerV
         })
         return config_data
     if data_type == "request_data":
-        request_data: dict[str, t.ContainerValue] = {
+        request_data: dict[str, object] = {
             "method": c.Web.Tests.TestHttp.TEST_METHOD,
             "url": f"http://{c.Web.Tests.TestWeb.DEFAULT_HOST}:{c.Web.Tests.TestWeb.DEFAULT_PORT}",
             "headers": {"Content-Type": c.Web.Tests.TestHttp.TEST_CONTENT_TYPE},
@@ -253,7 +253,7 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.ContainerV
         })
         return request_data
     if data_type == "response_data":
-        response_data: dict[str, t.ContainerValue] = {
+        response_data: dict[str, object] = {
             "status_code": 200,
             "request_id": "test-123",
         }

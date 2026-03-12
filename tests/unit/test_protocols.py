@@ -249,18 +249,16 @@ class TestFlextWebProtocols:
         """Test that protocols follow expected usage patterns."""
 
         class MockAppManager:
-            def create_app(
-                self, name: str, port: int, host: str
-            ) -> dict[str, t.ContainerValue]:
+            def create_app(self, name: str, port: int, host: str) -> dict[str, object]:
                 return {"name": name, "host": host, "port": port}
 
-            def start_app(self, app_id: str) -> dict[str, t.ContainerValue]:
+            def start_app(self, app_id: str) -> dict[str, object]:
                 return {"name": "test", "host": "localhost", "port": 8080}
 
-            def stop_app(self, app_id: str) -> dict[str, t.ContainerValue]:
+            def stop_app(self, app_id: str) -> dict[str, object]:
                 return {"name": "test", "host": "localhost", "port": 8080}
 
-            def list_apps(self) -> list[dict[str, t.ContainerValue]]:
+            def list_apps(self) -> list[dict[str, object]]:
                 return [{"name": "test", "host": "localhost", "port": 8080}]
 
         mock_manager = MockAppManager()
@@ -328,10 +326,8 @@ class TestFlextWebProtocols:
         """Test WebResponseFormatterProtocol methods execution."""
 
         class RealResponseFormatter:
-            def format_success(
-                self, data: dict[str, t.ContainerValue]
-            ) -> dict[str, t.ContainerValue]:
-                response: dict[str, t.ContainerValue] = {
+            def format_success(self, data: dict[str, object]) -> dict[str, object]:
+                response: dict[str, object] = {
                     "status": c.Web.WebResponse.STATUS_SUCCESS
                 }
                 response.update({
@@ -341,17 +337,17 @@ class TestFlextWebProtocols:
                 })
                 return response
 
-            def format_error(self, error: Exception) -> dict[str, t.ContainerValue]:
-                result: dict[str, t.ContainerValue] = {
+            def format_error(self, error: Exception) -> dict[str, object]:
+                result: dict[str, object] = {
                     "status": c.Web.WebResponse.STATUS_ERROR,
                     "message": str(error),
                 }
                 return result
 
             def create_json_response(
-                self, data: dict[str, t.ContainerValue]
-            ) -> dict[str, t.ContainerValue]:
-                response: dict[str, t.ContainerValue] = {
+                self, data: dict[str, object]
+            ) -> dict[str, object]:
+                response: dict[str, object] = {
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON
                 }
                 response.update({
@@ -362,13 +358,11 @@ class TestFlextWebProtocols:
                 return response
 
             def get_request_data(
-                self, _request: dict[str, t.ContainerValue]
-            ) -> dict[str, t.ContainerValue]:
+                self, _request: dict[str, object]
+            ) -> dict[str, object]:
                 return {}
 
-            def execute(
-                self, *args: object, **kwargs: object
-            ) -> r[dict[str, t.ContainerValue]]:
+            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
@@ -376,14 +370,14 @@ class TestFlextWebProtocols:
             ) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, t.ContainerValue]:
+            def get_service_info(self) -> dict[str, object]:
                 return {"name": "ResponseFormatter"}
 
         formatter = RealResponseFormatter()
         assert hasattr(formatter, "format_success")
         assert hasattr(formatter, "format_error")
         assert hasattr(formatter, "create_json_response")
-        data_with_nested: dict[str, t.ContainerValue] = {
+        data_with_nested: dict[str, object] = {
             "key1": "value1",
             "nested": {"key2": "value2"},
         }
@@ -406,9 +400,9 @@ class TestFlextWebProtocols:
 
         class RealFrameworkInterface:
             def create_json_response(
-                self, data: dict[str, t.ContainerValue]
-            ) -> dict[str, t.ContainerValue]:
-                response: dict[str, t.ContainerValue] = {
+                self, data: dict[str, object]
+            ) -> dict[str, object]:
+                response: dict[str, object] = {
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON
                 }
                 response.update({
@@ -419,16 +413,14 @@ class TestFlextWebProtocols:
                 return response
 
             def get_request_data(
-                self, _request: dict[str, t.ContainerValue]
-            ) -> dict[str, t.ContainerValue]:
+                self, _request: dict[str, object]
+            ) -> dict[str, object]:
                 return {}
 
-            def is_json_request(self, _request: dict[str, t.ContainerValue]) -> bool:
+            def is_json_request(self, _request: dict[str, object]) -> bool:
                 return False
 
-            def execute(
-                self, *args: object, **kwargs: object
-            ) -> r[dict[str, t.ContainerValue]]:
+            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
@@ -436,14 +428,14 @@ class TestFlextWebProtocols:
             ) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, t.ContainerValue]:
+            def get_service_info(self) -> dict[str, object]:
                 return {"name": "FrameworkInterface"}
 
         framework = RealFrameworkInterface()
         assert hasattr(framework, "create_json_response")
         assert hasattr(framework, "get_request_data")
         assert hasattr(framework, "is_json_request")
-        data: dict[str, t.ContainerValue] = {
+        data: dict[str, object] = {
             "test": "value",
             "nested": {"key": "value"},
         }
@@ -470,9 +462,7 @@ class TestFlextWebProtocols:
             def stop_service(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def execute(
-                self, *args: object, **kwargs: object
-            ) -> r[dict[str, t.ContainerValue]]:
+            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
@@ -480,7 +470,7 @@ class TestFlextWebProtocols:
             ) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, t.ContainerValue]:
+            def get_service_info(self) -> dict[str, object]:
                 return {"name": "WebService"}
 
         service = RealWebService()
@@ -498,27 +488,23 @@ class TestFlextWebProtocols:
 
         class RealWebRepository:
             def find_by_criteria(
-                self, criteria: dict[str, t.ContainerValue]
-            ) -> r[list[dict[str, t.ContainerValue]]]:
+                self, criteria: dict[str, object]
+            ) -> r[list[dict[str, object]]]:
                 return r[list[t.ConfigurationMapping]].ok([])
 
-            def get_by_id(self, entity_id: str) -> r[dict[str, t.ContainerValue]]:
+            def get_by_id(self, entity_id: str) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok({"id": entity_id})
 
-            def save(
-                self, entity: dict[str, t.ContainerValue]
-            ) -> r[dict[str, t.ContainerValue]]:
+            def save(self, entity: dict[str, object]) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok(entity)
 
             def delete(self, entity_id: str) -> r[bool]:
                 return r[bool].ok(True)
 
-            def find_all(self) -> r[list[dict[str, t.ContainerValue]]]:
+            def find_all(self) -> r[list[dict[str, object]]]:
                 return r[list[t.ConfigurationMapping]].ok([])
 
-            def execute(
-                self, *args: object, **kwargs: object
-            ) -> r[dict[str, t.ContainerValue]]:
+            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
@@ -526,7 +512,7 @@ class TestFlextWebProtocols:
             ) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, t.ContainerValue]:
+            def get_service_info(self) -> dict[str, object]:
                 return {"name": "WebRepository"}
 
         repo = RealWebRepository()
@@ -539,16 +525,14 @@ class TestFlextWebProtocols:
 
         class RealTemplateRenderer:
             def render_template(
-                self, template_name: str, _context: dict[str, t.ContainerValue]
+                self, template_name: str, _context: dict[str, object]
             ) -> r[str]:
                 return r[str].ok("")
 
-            def render_dashboard(self, data: dict[str, t.ContainerValue]) -> r[str]:
+            def render_dashboard(self, data: dict[str, object]) -> r[str]:
                 return r[str].ok("<html>Dashboard</html>")
 
-            def execute(
-                self, *args: object, **kwargs: object
-            ) -> r[dict[str, t.ContainerValue]]:
+            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
@@ -556,7 +540,7 @@ class TestFlextWebProtocols:
             ) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, t.ContainerValue]:
+            def get_service_info(self) -> dict[str, object]:
                 return {"name": "TemplateRenderer"}
 
         renderer = RealTemplateRenderer()
@@ -574,22 +558,16 @@ class TestFlextWebProtocols:
         """Test WebTemplateEngineProtocol methods execution."""
 
         class RealTemplateEngine:
-            def load_template_config(
-                self, config: dict[str, t.ContainerValue]
-            ) -> r[bool]:
+            def load_template_config(self, config: dict[str, object]) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_template_config(self) -> r[dict[str, t.ContainerValue]]:
+            def get_template_config(self) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok({})
 
-            def validate_template_config(
-                self, config: dict[str, t.ContainerValue]
-            ) -> r[bool]:
+            def validate_template_config(self, config: dict[str, object]) -> r[bool]:
                 return r[bool].ok(True)
 
-            def render(
-                self, template: str, _context: dict[str, t.ContainerValue]
-            ) -> r[str]:
+            def render(self, template: str, _context: dict[str, object]) -> r[str]:
                 return r[str].ok("")
 
             def add_filter(self, name: str, filter_func: object) -> None:
@@ -603,9 +581,7 @@ class TestFlextWebProtocols:
             ) -> None:
                 pass
 
-            def execute(
-                self, *args: object, **kwargs: object
-            ) -> r[dict[str, t.ContainerValue]]:
+            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
@@ -613,7 +589,7 @@ class TestFlextWebProtocols:
             ) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, t.ContainerValue]:
+            def get_service_info(self) -> dict[str, object]:
                 return {"name": "TemplateEngine"}
 
         engine = RealTemplateEngine()
@@ -643,22 +619,20 @@ class TestFlextWebProtocols:
 
         class RealWebMonitoring:
             def record_web_request(
-                self, request: dict[str, t.ContainerValue], response_time: float
+                self, request: dict[str, object], response_time: float
             ) -> None:
                 pass
 
-            def get_web_health_status(self) -> dict[str, t.ContainerValue]:
+            def get_web_health_status(self) -> dict[str, object]:
                 return {
                     "status": c.Web.WebResponse.STATUS_HEALTHY,
                     "service": c.Web.WebService.SERVICE_NAME,
                 }
 
-            def get_web_metrics(self) -> dict[str, t.ContainerValue]:
+            def get_web_metrics(self) -> dict[str, object]:
                 return {"requests": 0, "errors": 0, "uptime": "0s"}
 
-            def execute(
-                self, *args: object, **kwargs: object
-            ) -> r[dict[str, t.ContainerValue]]:
+            def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
                 return r[t.ConfigurationMapping].ok({})
 
             def validate_business_rules(
@@ -666,7 +640,7 @@ class TestFlextWebProtocols:
             ) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, t.ContainerValue]:
+            def get_service_info(self) -> dict[str, object]:
                 return {"name": "WebMonitoring"}
 
         monitoring = RealWebMonitoring()

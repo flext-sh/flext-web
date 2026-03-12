@@ -214,7 +214,7 @@ class FlextWebProtocols(FlextProtocols):
                 self,
                 path: str,
                 endpoint: Callable[..., t.WebCore.ResponseDict],
-                **kwargs: t.ContainerValue,
+                **kwargs: object,
             ) -> None:
                 """Register an API route."""
                 ...
@@ -234,7 +234,7 @@ class FlextWebProtocols(FlextProtocols):
                 ...
 
             def route(
-                self, rule: str, **options: t.ContainerValue
+                self, rule: str, **options: object
             ) -> Callable[..., Callable[..., t.WebCore.ResponseDict]]:
                 """Register a URL route."""
                 ...
@@ -249,7 +249,7 @@ class FlextWebProtocols(FlextProtocols):
         }
         web_metrics: ClassVar[dict[str, int | str]] = {}
         template_config: ClassVar[t.WebCore.RequestDict] = {}
-        template_globals: ClassVar[dict[str, t.ContainerValue]] = {}
+        template_globals: ClassVar[dict[str, object]] = {}
         template_filters: ClassVar[dict[str, Callable[[str], str]]] = {}
 
         @classmethod
@@ -1225,7 +1225,7 @@ class FlextWebProtocols(FlextProtocols):
                 """
                 FlextWebProtocols.Web.template_filters[name] = filter_func
 
-            def add_global(self, name: str, *, value: t.ContainerValue) -> None:
+            def add_global(self, name: str, *, value: object) -> None:
                 """Add template global variable.
 
                 Args:
@@ -1503,7 +1503,7 @@ class FlextWebProtocols(FlextProtocols):
                     """Add template filter function."""
                     FlextWebProtocols.Web.template_filters[name] = filter_func
 
-                def add_global(self, name: str, *, value: t.ContainerValue) -> None:
+                def add_global(self, name: str, *, value: object) -> None:
                     """Add template global variable."""
                     FlextWebProtocols.Web.template_globals[name] = (
                         dict(value) if isinstance(value, Mapping) else value
