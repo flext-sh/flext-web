@@ -61,7 +61,7 @@ class TestFlextWebUtilities:
     def test_utilities_logging_integration(self) -> None:
         """Test u logging integration."""
         assert hasattr(u, "Generators")
-        assert hasattr(u.Generators, "generate_iso_timestamp")
+        assert hasattr(u, "generate_iso_timestamp")
 
     def test_utilities_edge_cases(self) -> None:
         """Test u edge cases."""

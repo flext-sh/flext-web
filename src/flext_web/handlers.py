@@ -239,7 +239,7 @@ class FlextWebHandlers(FlextService[bool]):
                 status=c.Web.WebResponse.STATUS_HEALTHY,
                 service=c.Web.WebService.SERVICE_NAME,
                 version="0.9.0",
-                timestamp=u.Generators.generate_iso_timestamp(),
+                timestamp=u.generate_iso_timestamp(),
                 components={
                     "web_service": c.Web.WebResponse.STATUS_OPERATIONAL,
                     "configuration": c.Web.WebMessages.CONFIG_LOADED,

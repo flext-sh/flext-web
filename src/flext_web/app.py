@@ -198,7 +198,7 @@ class FlextWebApp(FlextService[bool]):
             json_data = {
                 "status": c.Web.WebResponse.STATUS_HEALTHY,
                 "service": c.Web.WebService.SERVICE_NAME_FLASK,
-                "timestamp": u.Generators.generate_iso_timestamp(),
+                "timestamp": u.generate_iso_timestamp(),
             }
             return flask.Response(
                 json.dumps(json_data),
@@ -221,7 +221,7 @@ class FlextWebApp(FlextService[bool]):
                 return {
                     "status": c.Web.WebResponse.STATUS_HEALTHY,
                     "service": c.Web.WebService.SERVICE_NAME,
-                    "timestamp": u.Generators.generate_iso_timestamp(),
+                    "timestamp": u.generate_iso_timestamp(),
                 }
 
             return health_check
@@ -242,7 +242,7 @@ class FlextWebApp(FlextService[bool]):
                     "version": config.version,
                     "description": config.description,
                     "debug": config.debug,
-                    "timestamp": u.Generators.generate_iso_timestamp(),
+                    "timestamp": u.generate_iso_timestamp(),
                 }
 
             return info_handler

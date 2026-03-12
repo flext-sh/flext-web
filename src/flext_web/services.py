@@ -167,7 +167,7 @@ class FlextWebServices(s[bool]):
             health_response = m.Web.HealthResponse(
                 status=c.Web.WebResponse.STATUS_HEALTHY,
                 service=c.Web.WebService.SERVICE_NAME,
-                timestamp=u.Generators.generate_iso_timestamp(),
+                timestamp=u.generate_iso_timestamp(),
             )
             return r[m.Web.HealthResponse].ok(health_response)
 
@@ -283,7 +283,7 @@ class FlextWebServices(s[bool]):
             host=app_data.host,
             port=app_data.port,
             status=c.Web.Status.STOPPED.value,
-            created_at=u.Generators.generate_iso_timestamp(),
+            created_at=u.generate_iso_timestamp(),
         )
         self._applications[app_id] = app_response
         return r[m.Web.ApplicationResponse].ok(app_response)
@@ -315,7 +315,7 @@ class FlextWebServices(s[bool]):
             service_status=service_status,
             routes_initialized=self._routes_initialized,
             middleware_configured=self._middleware_configured,
-            timestamp=u.Generators.generate_iso_timestamp(),
+            timestamp=u.generate_iso_timestamp(),
         )
         return r[m.Web.DashboardResponse].ok(dashboard_response)
 
