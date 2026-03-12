@@ -641,6 +641,10 @@ class FlextWebModels(FlextModels):
                                     failure contains error message
 
                 """
+                if not isinstance(new_metrics, dict):
+                    return r[bool].fail(
+                        "Metrics must be a dict",
+                    )
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
                 event_result = self.add_web_event("MetricsUpdated")

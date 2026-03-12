@@ -5,7 +5,7 @@ Tests the unified p class following flext standards.
 
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import cast
 
 import pytest
 from tests import c, p, r, t
@@ -27,7 +27,9 @@ class TestFlextWebProtocols:
     @staticmethod
     def _reset_protocol_state() -> None:
         p.Web.apps_registry.clear()
-        instances: dict[str, Any] = cast("dict[str, Any]", p.Web.framework_instances)
+        instances: dict[str, object] = cast(
+            "dict[str, object]", p.Web.framework_instances
+        )
         instances.clear()
         p.Web.app_runtimes.clear()
         p.Web.service_state.update({
@@ -852,7 +854,7 @@ class TestFlextWebProtocols:
         assert create_result.is_success
         app_id = str(create_result.value["id"])
         framework = str(create_result.value["framework"])
-        app_instance: Any = cast("Any", p.Web.framework_instances[app_id])
+        app_instance: object = cast("object", p.Web.framework_instances[app_id])
         if framework == "fastapi":
             fastapi_app = app_instance
             paths = [route.path for route in fastapi_app.routes]
