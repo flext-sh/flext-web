@@ -363,7 +363,7 @@ class TestFlextWebProtocols:
                 return {}
 
             def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok({})
+                return r[object].ok({})
 
             def validate_business_rules(
                 self, *args: object, **kwargs: object
@@ -421,7 +421,7 @@ class TestFlextWebProtocols:
                 return False
 
             def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok({})
+                return r[object].ok({})
 
             def validate_business_rules(
                 self, *args: object, **kwargs: object
@@ -463,7 +463,7 @@ class TestFlextWebProtocols:
                 return r[bool].ok(True)
 
             def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok({})
+                return r[object].ok({})
 
             def validate_business_rules(
                 self, *args: object, **kwargs: object
@@ -490,22 +490,22 @@ class TestFlextWebProtocols:
             def find_by_criteria(
                 self, criteria: dict[str, object]
             ) -> r[list[dict[str, object]]]:
-                return r[list[t.ConfigurationMapping]].ok([])
+                return r[list[object]].ok([])
 
             def get_by_id(self, entity_id: str) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok({"id": entity_id})
+                return r[object].ok({"id": entity_id})
 
             def save(self, entity: dict[str, object]) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok(entity)
+                return r[object].ok(entity)
 
             def delete(self, entity_id: str) -> r[bool]:
                 return r[bool].ok(True)
 
             def find_all(self) -> r[list[dict[str, object]]]:
-                return r[list[t.ConfigurationMapping]].ok([])
+                return r[list[object]].ok([])
 
             def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok({})
+                return r[object].ok({})
 
             def validate_business_rules(
                 self, *args: object, **kwargs: object
@@ -533,7 +533,7 @@ class TestFlextWebProtocols:
                 return r[str].ok("<html>Dashboard</html>")
 
             def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok({})
+                return r[object].ok({})
 
             def validate_business_rules(
                 self, *args: object, **kwargs: object
@@ -562,7 +562,7 @@ class TestFlextWebProtocols:
                 return r[bool].ok(True)
 
             def get_template_config(self) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok({})
+                return r[object].ok({})
 
             def validate_template_config(self, config: dict[str, object]) -> r[bool]:
                 return r[bool].ok(True)
@@ -582,7 +582,7 @@ class TestFlextWebProtocols:
                 pass
 
             def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok({})
+                return r[object].ok({})
 
             def validate_business_rules(
                 self, *args: object, **kwargs: object
@@ -633,7 +633,7 @@ class TestFlextWebProtocols:
                 return {"requests": 0, "errors": 0, "uptime": "0s"}
 
             def execute(self, *args: object, **kwargs: object) -> r[dict[str, object]]:
-                return r[t.ConfigurationMapping].ok({})
+                return r[object].ok({})
 
             def validate_business_rules(
                 self, *args: object, **kwargs: object

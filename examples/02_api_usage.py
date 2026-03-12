@@ -93,9 +93,9 @@ def create_application(name: str, port: int, host: str = "localhost") -> t.AppDa
         """Parse JSON response."""
         try:
             json_data: dict[str, object] = response.json()
-            return r[t.ConfigurationMapping].ok(json_data)
+            return r[object].ok(json_data)
         except Exception as e:
-            return r[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
+            return r[object].fail(f"JSON parse failed: {e}")
 
     result = _make_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
@@ -173,9 +173,9 @@ def _execute_app_operation(
         """Parse JSON from response."""
         try:
             json_data: dict[str, object] = response.json()
-            return r[t.ConfigurationMapping].ok(json_data)
+            return r[object].ok(json_data)
         except Exception as e:
-            return r[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
+            return r[object].fail(f"JSON parse failed: {e}")
 
     result = (
         _make_http_request()
@@ -216,9 +216,9 @@ def _execute_list_operation(endpoint: str, data_key: str) -> list[t.AppData]:
         """Parse JSON from response."""
         try:
             json_data: dict[str, object] = response.json()
-            return r[t.ConfigurationMapping].ok(json_data)
+            return r[object].ok(json_data)
         except Exception as e:
-            return r[t.ConfigurationMapping].fail(f"JSON parse failed: {e}")
+            return r[object].fail(f"JSON parse failed: {e}")
 
     result = _make_get_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:

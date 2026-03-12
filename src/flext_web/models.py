@@ -51,7 +51,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers for message",
             )
-            body: str | dict[str, t.JsonValue] | None = Field(
+            body: str | dict[str, objectone = Field(
                 default=None,
                 description="Message body content (optional for GET/HEAD)",
             )
@@ -231,7 +231,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | dict[str, t.JsonValue] | None = Field(
+            body: str | dict[str, objectone = Field(
                 default=None,
                 description="Request body content (optional for GET/HEAD)",
             )
@@ -243,7 +243,7 @@ class FlextWebModels(FlextModels):
                 default_factory=lambda: str(uuid.uuid4()),
                 description="Unique request identifier",
             )
-            query_params: dict[str, t.JsonValue] = Field(
+            query_params: dict[str, objectield(
                 default_factory=dict,
                 description="Query string parameters",
             )
@@ -299,7 +299,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | dict[str, t.JsonValue] | None = Field(
+            body: str | dict[str, objectone = Field(
                 default=None,
                 description="Response body content",
             )
@@ -463,7 +463,7 @@ class FlextWebModels(FlextModels):
                 default=c.Web.WebDefaults.VERSION_INT,
                 description="Application version",
             )
-            metrics: dict[str, t.JsonValue] = Field(
+            metrics: dict[str, objectield(
                 default_factory=dict,
                 description="Application metrics",
             )
@@ -560,7 +560,7 @@ class FlextWebModels(FlextModels):
                 self.web_events.append(event_name)
                 return r[bool].ok(value=True)
 
-            def get_health_status(self) -> dict[str, t.JsonValue]:
+            def get_health_status(self) -> dict[str, object
                 """Get comprehensive health status."""
                 return {
                     "status": self.status,
@@ -632,7 +632,7 @@ class FlextWebModels(FlextModels):
 
             def update_metrics(
                 self,
-                new_metrics: dict[str, t.JsonValue],
+                new_metrics: dict[str, object
             ) -> r[bool]:
                 """Update application metrics.
 
@@ -750,7 +750,7 @@ class FlextWebModels(FlextModels):
         class EntityData(FlextModels.Value):
             """Generic entity data model."""
 
-            data: dict[str, t.JsonValue] = Field(
+            data: dict[str, objectield(
                 default_factory=dict,
                 description="Entity data dictionary",
             )
@@ -829,7 +829,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | t.ConfigurationMapping | None = Field(
+            body: str | object | None = Field(
                 default=None,
                 description="Request body (optional for GET/HEAD)",
             )
@@ -855,7 +855,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | t.ConfigurationMapping | None = Field(
+            body: str | object | None = Field(
                 default=None,
                 description="Response body (optional for 204 No Content)",
             )
@@ -932,7 +932,7 @@ class FlextWebModels(FlextModels):
             method: c.Web.Literals.HttpMethodLiteral,
             url: str,
             headers: dict[str, str] | None = None,
-            body: str | t.ConfigurationMapping | None = None,
+            body: str | object | None = None,
         ) -> r[WebRequest]:
             """Create a web request model.
 
@@ -970,7 +970,7 @@ class FlextWebModels(FlextModels):
             request_id: str,
             status_code: int,
             headers: dict[str, str] | None = None,
-            body: str | t.ConfigurationMapping | None = None,
+            body: str | object | None = None,
         ) -> r[WebResponse]:
             """Create a web response model.
 

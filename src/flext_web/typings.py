@@ -205,7 +205,7 @@ class FlextWebTypes(FlextTypes):
         url: str,
         method: str = c.Web.Method.GET,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, FlextTypes.JsonValue] | None = None,
+        body: str | dict[str, object] | None = None,
         timeout: float = c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
     ) -> r[m.Web.Request]:
         """Create HTTP request model instance with proper validation.
@@ -225,7 +225,7 @@ class FlextWebTypes(FlextTypes):
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: FlextTypes.ContainerValue) -> bool:
+        def _validate_method(m: object) -> bool:
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
@@ -265,7 +265,7 @@ class FlextWebTypes(FlextTypes):
         cls,
         status_code: int,
         headers: dict[str, str] | None = None,
-        body: str | dict[str, FlextTypes.JsonValue] | None = None,
+        body: str | dict[str, object] | None = None,
         elapsed_time: float | None = None,
     ) -> r[m.Web.Response]:
         """Create HTTP response model instance with proper validation.
@@ -333,11 +333,11 @@ class FlextWebTypes(FlextTypes):
             return r[m.Web.AppRequest].fail("URL is required")
         url_validated = url.strip()
         headers_validated: dict[str, str] = headers or {}
-        query_params_validated: dict[str, FlextTypes.JsonValue] = query_params or {}
+        query_params_validated: dict[str, object] = query_params or {}
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: FlextTypes.ContainerValue) -> bool:
+        def _validate_method(m: object) -> bool:
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
