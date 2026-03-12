@@ -51,7 +51,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers for message",
             )
-            body: str | dict[str, objectone = Field(
+            body: str | dict[str, t.Scalar] | None = Field(
                 default=None,
                 description="Message body content (optional for GET/HEAD)",
             )
@@ -231,7 +231,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP headers",
             )
-            body: str | dict[str, objectone = Field(
+            body: str | dict[str, t.Scalar] | None = Field(
                 default=None,
                 description="Request body content (optional for GET/HEAD)",
             )
@@ -243,7 +243,7 @@ class FlextWebModels(FlextModels):
                 default_factory=lambda: str(uuid.uuid4()),
                 description="Unique request identifier",
             )
-            query_params: dict[str, objectield(
+            query_params: dict[str, t.Scalar] = Field(
                 default_factory=dict,
                 description="Query string parameters",
             )
@@ -299,7 +299,7 @@ class FlextWebModels(FlextModels):
                 default_factory=dict,
                 description="HTTP response headers",
             )
-            body: str | dict[str, objectone = Field(
+            body: str | dict[str, t.Scalar] | None = Field(
                 default=None,
                 description="Response body content",
             )
@@ -463,7 +463,7 @@ class FlextWebModels(FlextModels):
                 default=c.Web.WebDefaults.VERSION_INT,
                 description="Application version",
             )
-            metrics: dict[str, objectield(
+            metrics: dict[str, t.Scalar] = Field(
                 default_factory=dict,
                 description="Application metrics",
             )
@@ -560,7 +560,7 @@ class FlextWebModels(FlextModels):
                 self.web_events.append(event_name)
                 return r[bool].ok(value=True)
 
-            def get_health_status(self) -> dict[str, object
+            def get_health_status(self) -> dict[str, t.Scalar]:
                 """Get comprehensive health status."""
                 return {
                     "status": self.status,
@@ -630,10 +630,7 @@ class FlextWebModels(FlextModels):
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
-            def update_metrics(
-                self,
-                new_metrics: dict[str, object
-            ) -> r[bool]:
+            def update_metrics(self, new_metrics: dict[str, t.Scalar]) -> r[bool]:
                 """Update application metrics.
 
                 Returns:
@@ -641,10 +638,6 @@ class FlextWebModels(FlextModels):
                                     failure contains error message
 
                 """
-                if not isinstance(new_metrics, dict):
-                    return r[bool].fail(
-                        "Metrics must be a dict",
-                    )
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
                 event_result = self.add_web_event("MetricsUpdated")
@@ -750,7 +743,7 @@ class FlextWebModels(FlextModels):
         class EntityData(FlextModels.Value):
             """Generic entity data model."""
 
-            data: dict[str, objectield(
+            data: dict[str, t.Scalar] = Field(
                 default_factory=dict,
                 description="Entity data dictionary",
             )
