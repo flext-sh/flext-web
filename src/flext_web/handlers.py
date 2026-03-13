@@ -113,19 +113,19 @@ class FlextWebHandlers(FlextService[bool]):
             port: int = c.Web.WebDefaults.PORT,
             host: str = c.Web.WebDefaults.HOST,
         ) -> r[m.Web.Entity]:
-            """Create a new application - implements WebAppManagerProtocol.
+            """Create a new application - implements WebAppManager.
 
             This method delegates to the create method for protocol compliance.
             """
             return self.create(name, port, host)
 
         def list_apps(self) -> r[list[m.Web.Entity]]:
-            """List all applications - implements WebAppManagerProtocol."""
+            """List all applications - implements WebAppManager."""
             apps_list = list(self.apps_registry.values())
             return r[list[m.Web.Entity]].ok(apps_list)
 
         def start_app(self, app_id: str) -> r[m.Web.Entity]:
-            """Start an application - implements WebAppManagerProtocol."""
+            """Start an application - implements WebAppManager."""
             if app_id not in self.apps_registry:
                 return r[m.Web.Entity].fail(f"Application {app_id} not found")
             app = self.apps_registry[app_id]
@@ -134,7 +134,7 @@ class FlextWebHandlers(FlextService[bool]):
             )
 
         def stop_app(self, app_id: str) -> r[m.Web.Entity]:
-            """Stop an application - implements WebAppManagerProtocol."""
+            """Stop an application - implements WebAppManager."""
             if app_id not in self.apps_registry:
                 return r[m.Web.Entity].fail(f"Application {app_id} not found")
             app = self.apps_registry[app_id]

@@ -66,24 +66,24 @@ class TestFlextWebProtocols:
     def test_protocols_inheritance(self) -> None:
         """Test that p inherits from p."""
         assert issubclass(p, p)
-        assert hasattr(p.Web, "WebAppManagerProtocol")
-        assert hasattr(p.Web, "WebResponseFormatterProtocol")
-        assert hasattr(p.Web, "WebFrameworkInterfaceProtocol")
+        assert hasattr(p.Web, "WebAppManager")
+        assert hasattr(p.Web, "WebResponseFormatter")
+        assert hasattr(p.Web, "WebFrameworkInterface")
 
     def test_web_protocols_structure(self) -> None:
         """Test p structure."""
-        assert hasattr(p.Web, "WebAppManagerProtocol")
-        assert hasattr(p.Web, "WebResponseFormatterProtocol")
-        assert hasattr(p.Web, "WebFrameworkInterfaceProtocol")
-        assert hasattr(p.Web, "WebTemplateRendererProtocol")
-        assert hasattr(p.Web, "WebServiceProtocol")
-        assert hasattr(p.Web, "WebRepositoryProtocol")
-        assert hasattr(p.Web, "WebTemplateEngineProtocol")
-        assert hasattr(p.Web, "WebMonitoringProtocol")
+        assert hasattr(p.Web, "WebAppManager")
+        assert hasattr(p.Web, "WebResponseFormatter")
+        assert hasattr(p.Web, "WebFrameworkInterface")
+        assert hasattr(p.Web, "WebTemplateRenderer")
+        assert hasattr(p.Web, "WebService")
+        assert hasattr(p.Web, "WebRepository")
+        assert hasattr(p.Web, "WebTemplateEngine")
+        assert hasattr(p.Web, "WebMonitoring")
 
     def test_web_app_manager_protocol(self) -> None:
-        """Test WebAppManagerProtocol definition."""
-        protocol = p.Web.WebAppManagerProtocol
+        """Test WebAppManager definition."""
+        protocol = p.Web.WebAppManager
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
         assert hasattr(protocol, "create_app")
@@ -92,16 +92,16 @@ class TestFlextWebProtocols:
         assert hasattr(protocol, "list_apps")
 
     def test_response_formatter_protocol(self) -> None:
-        """Test ResponseFormatterProtocol definition."""
-        protocol = p.Web.WebResponseFormatterProtocol
+        """Test ResponseFormatter definition."""
+        protocol = p.Web.WebResponseFormatter
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
         assert hasattr(protocol, "format_success")
         assert hasattr(protocol, "format_error")
 
     def test_web_framework_interface_protocol(self) -> None:
-        """Test WebFrameworkInterfaceProtocol definition."""
-        protocol = p.Web.WebFrameworkInterfaceProtocol
+        """Test WebFrameworkInterface definition."""
+        protocol = p.Web.WebFrameworkInterface
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
         assert hasattr(protocol, "create_json_response")
@@ -109,16 +109,16 @@ class TestFlextWebProtocols:
         assert hasattr(protocol, "is_json_request")
 
     def test_template_renderer_protocol(self) -> None:
-        """Test TemplateRendererProtocol definition."""
-        protocol = p.Web.WebTemplateRendererProtocol
+        """Test TemplateRenderer definition."""
+        protocol = p.Web.WebTemplateRenderer
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
         assert hasattr(protocol, "render_template")
         assert hasattr(protocol, "render_dashboard")
 
     def test_web_service_protocol(self) -> None:
-        """Test WebServiceProtocol definition."""
-        protocol = p.Web.WebServiceProtocol
+        """Test WebService definition."""
+        protocol = p.Web.WebService
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
         assert hasattr(protocol, "initialize_routes")
@@ -127,8 +127,8 @@ class TestFlextWebProtocols:
         assert hasattr(protocol, "stop_service")
 
     def test_web_repository_protocol(self) -> None:
-        """Test WebRepositoryProtocol definition."""
-        protocol = p.Web.WebRepositoryProtocol
+        """Test WebRepository definition."""
+        protocol = p.Web.WebRepository
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
         assert hasattr(protocol, "get_by_id")
@@ -137,8 +137,8 @@ class TestFlextWebProtocols:
         assert hasattr(protocol, "find_all")
 
     def test_web_handler_protocol(self) -> None:
-        """Test WebHandlerProtocol definition."""
-        protocol = p.Web.WebHandlerProtocol
+        """Test WebHandler definition."""
+        protocol = p.Web.WebHandler
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
         assert hasattr(protocol, "handle")
@@ -148,8 +148,8 @@ class TestFlextWebProtocols:
         assert hasattr(protocol, "handle_request")
 
     def test_web_template_engine_protocol(self) -> None:
-        """Test WebTemplateEngineProtocol definition."""
-        protocol = p.Web.WebTemplateEngineProtocol
+        """Test WebTemplateEngine definition."""
+        protocol = p.Web.WebTemplateEngine
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
         assert hasattr(protocol, "load_template_config")
@@ -160,8 +160,8 @@ class TestFlextWebProtocols:
         assert hasattr(protocol, "add_global")
 
     def test_web_monitoring_protocol(self) -> None:
-        """Test WebMonitoringProtocol definition."""
-        protocol = p.Web.WebMonitoringProtocol
+        """Test WebMonitoring definition."""
+        protocol = p.Web.WebMonitoring
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
         assert hasattr(protocol, "record_web_request")
@@ -171,15 +171,15 @@ class TestFlextWebProtocols:
     def test_protocol_runtime_checkable(self) -> None:
         """Test that protocols are runtime checkable."""
         protocols = [
-            p.Web.WebAppManagerProtocol,
-            p.Web.WebResponseFormatterProtocol,
-            p.Web.WebFrameworkInterfaceProtocol,
-            p.Web.WebTemplateRendererProtocol,
-            p.Web.WebServiceProtocol,
-            p.Web.WebRepositoryProtocol,
-            p.Web.WebHandlerProtocol,
-            p.Web.WebTemplateEngineProtocol,
-            p.Web.WebMonitoringProtocol,
+            p.Web.WebAppManager,
+            p.Web.WebResponseFormatter,
+            p.Web.WebFrameworkInterface,
+            p.Web.WebTemplateRenderer,
+            p.Web.WebService,
+            p.Web.WebRepository,
+            p.Web.WebHandler,
+            p.Web.WebTemplateEngine,
+            p.Web.WebMonitoring,
         ]
         for protocol in protocols:
             checkable = getattr(protocol, "__runtime_checkable__", None)
@@ -188,7 +188,7 @@ class TestFlextWebProtocols:
 
     def test_protocol_method_signatures(self) -> None:
         """Test that protocol methods have correct signatures."""
-        protocol = p.Web.WebAppManagerProtocol
+        protocol = p.Web.WebAppManager
         create_app_method = protocol.__dict__["create_app"]
         assert callable(create_app_method)
         start_app_method = protocol.__dict__["start_app"]
@@ -200,20 +200,20 @@ class TestFlextWebProtocols:
 
     def test_protocol_inheritance_chain(self) -> None:
         """Test that protocols properly inherit from base protocols."""
-        web_service_protocol = p.Web.WebServiceProtocol
+        web_service_protocol = p.Web.WebService
         assert hasattr(web_service_protocol, "__bases__")
-        app_repo_protocol = p.Web.WebRepositoryProtocol
+        app_repo_protocol = p.Web.WebRepository
         assert hasattr(app_repo_protocol, "__bases__")
-        middleware_protocol = p.Web.WebHandlerProtocol
+        middleware_protocol = p.Web.WebHandler
         assert hasattr(middleware_protocol, "__bases__")
-        template_engine_protocol = p.Web.WebTemplateEngineProtocol
+        template_engine_protocol = p.Web.WebTemplateEngine
         assert hasattr(template_engine_protocol, "__bases__")
-        monitoring_protocol = p.Web.WebMonitoringProtocol
+        monitoring_protocol = p.Web.WebMonitoring
         assert hasattr(monitoring_protocol, "__bases__")
 
     def test_protocol_type_annotations(self) -> None:
         """Test that protocols have proper type annotations."""
-        protocol = p.Web.WebAppManagerProtocol
+        protocol = p.Web.WebAppManager
         create_app_annotations = protocol.__dict__["create_app"].__annotations__
         assert "name" in create_app_annotations
         assert "port" in create_app_annotations
@@ -222,22 +222,22 @@ class TestFlextWebProtocols:
 
     def test_protocol_documentation(self) -> None:
         """Test that protocols have proper documentation."""
-        protocol = p.Web.WebAppManagerProtocol
+        protocol = p.Web.WebAppManager
         assert hasattr(protocol, "__doc__")
         assert protocol.__doc__ is not None
 
     def test_protocol_consistency(self) -> None:
         """Test that protocols are consistent with implementation."""
         protocols = [
-            p.Web.WebAppManagerProtocol,
-            p.Web.WebResponseFormatterProtocol,
-            p.Web.WebFrameworkInterfaceProtocol,
-            p.Web.WebTemplateRendererProtocol,
-            p.Web.WebServiceProtocol,
-            p.Web.WebRepositoryProtocol,
-            p.Web.WebHandlerProtocol,
-            p.Web.WebTemplateEngineProtocol,
-            p.Web.WebMonitoringProtocol,
+            p.Web.WebAppManager,
+            p.Web.WebResponseFormatter,
+            p.Web.WebFrameworkInterface,
+            p.Web.WebTemplateRenderer,
+            p.Web.WebService,
+            p.Web.WebRepository,
+            p.Web.WebHandler,
+            p.Web.WebTemplateEngine,
+            p.Web.WebMonitoring,
         ]
         for protocol in protocols:
             assert isinstance(protocol, type)
@@ -270,12 +270,12 @@ class TestFlextWebProtocols:
     def test_protocol_extensibility(self) -> None:
         """Test that protocols are extensible."""
 
-        class CustomProtocol(p.Web.WebAppManagerProtocol):
+        class Custom(p.Web.WebAppManager):
             def custom_method(self) -> None:
                 pass
 
-        assert hasattr(CustomProtocol, "create_app")
-        assert hasattr(CustomProtocol, "custom_method")
+        assert hasattr(Custom, "create_app")
+        assert hasattr(Custom, "custom_method")
 
     def test_protocol_validation(self) -> None:
         """Test that protocols can be used for validation."""
@@ -323,7 +323,7 @@ class TestFlextWebProtocols:
         assert stopped.value["status"] == c.Web.Status.STOPPED.value
 
     def test_response_formatter_protocol_methods(self) -> None:
-        """Test WebResponseFormatterProtocol methods execution."""
+        """Test WebResponseFormatter methods execution."""
 
         class RealResponseFormatter:
             def format_success(self, data: dict[str, object]) -> dict[str, object]:
@@ -398,7 +398,7 @@ class TestFlextWebProtocols:
         )
 
     def test_web_framework_interface_protocol_methods(self) -> None:
-        """Test WebFrameworkInterfaceProtocol methods execution."""
+        """Test WebFrameworkInterface methods execution."""
 
         class RealFrameworkInterface:
             def create_json_response(
@@ -451,7 +451,7 @@ class TestFlextWebProtocols:
         assert is_json is False
 
     def test_web_service_protocol_methods(self) -> None:
-        """Test WebServiceProtocol methods execution."""
+        """Test WebService methods execution."""
 
         class RealWebService:
             def initialize_routes(self) -> r[bool]:
@@ -490,7 +490,7 @@ class TestFlextWebProtocols:
         assert service.stop_service().is_success
 
     def test_web_repository_protocol_methods(self) -> None:
-        """Test WebRepositoryProtocol methods execution."""
+        """Test WebRepository methods execution."""
 
         class RealWebRepository:
             def find_by_criteria(
@@ -529,7 +529,7 @@ class TestFlextWebProtocols:
         assert result.is_success
 
     def test_web_template_renderer_protocol_methods(self) -> None:
-        """Test WebTemplateRendererProtocol methods execution."""
+        """Test WebTemplateRenderer methods execution."""
 
         class RealTemplateRenderer:
             def render_template(
@@ -565,7 +565,7 @@ class TestFlextWebProtocols:
         assert "<html>Dashboard</html>" in dashboard_result.value
 
     def test_web_template_engine_protocol_methods(self) -> None:
-        """Test WebTemplateEngineProtocol methods execution."""
+        """Test WebTemplateEngine methods execution."""
 
         class RealTemplateEngine:
             def load_template_config(self, config: dict[str, object]) -> r[bool]:
@@ -627,7 +627,7 @@ class TestFlextWebProtocols:
         engine.add_global("test_dict", value={"key": "value"})
 
     def test_web_monitoring_protocol_methods(self) -> None:
-        """Test WebMonitoringProtocol methods execution."""
+        """Test WebMonitoring methods execution."""
 
         class RealWebMonitoring:
             def record_web_request(
@@ -658,8 +658,8 @@ class TestFlextWebProtocols:
                 return {"name": "WebMonitoring"}
 
         monitoring = RealWebMonitoring()
-        if hasattr(p.Web.WebMonitoringProtocol, "__runtime_checkable__"):
-            assert isinstance(monitoring, p.Web.WebMonitoringProtocol)
+        if hasattr(p.Web.WebMonitoring, "__runtime_checkable__"):
+            assert isinstance(monitoring, p.Web.WebMonitoring)
         monitoring.record_web_request({"method": "GET"}, 0.1)
         health = monitoring.get_web_health_status()
         assert health["status"] == c.Web.WebResponse.STATUS_HEALTHY
