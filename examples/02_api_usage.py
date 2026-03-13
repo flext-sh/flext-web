@@ -111,7 +111,7 @@ def create_application(name: str, port: int, host: str = "localhost") -> t.AppDa
         and ("id" in data)
         and ("name" in data)
     ):
-        app_obj: t.AppData = t.AppData.model_validate(json_data["data"])
+        app_obj: t.AppData = t.AppData(json_data["data"])
         return app_obj
     msg = "Invalid application data"
     raise ValueError(msg)
@@ -133,7 +133,7 @@ def _extract_apps_from_response(
     for app_item in apps_section:
         try:
             if isinstance(app_item, dict):
-                result_list.append(t.AppData.model_validate(app_item))
+                result_list.append(t.AppData(app_item))
         except Exception:
             continue
     return result_list
@@ -182,7 +182,7 @@ def _execute_app_operation(
         .flat_map(_parse_json_response)
         .flat_map(
             lambda json_data: (
-                r[t.AppData].ok(t.AppData.model_validate(json_data["data"]))
+                r[t.AppData].ok(t.AppData(json_data["data"]))
                 if "success" in json_data
                 and json_data["success"] is True
                 and ("data" in json_data)
