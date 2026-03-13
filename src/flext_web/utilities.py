@@ -50,7 +50,7 @@ class FlextWebUtilities(FlextUtilities):
         if not name:
             msg = f"Invalid application name: {name}"
             raise ValueError(msg)
-        cleaned = FlextUtilities.Text.safe_string(name)
+        cleaned = FlextWebUtilities.safe_string(name)
         if not cleaned:
             msg = f"Application name cannot be empty: {name}"
             raise ValueError(msg)

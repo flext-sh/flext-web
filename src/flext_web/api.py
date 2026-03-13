@@ -90,7 +90,11 @@ class FlextWebApi:
         secret_key_val: str = c.Web.WebDefaults.SECRET_KEY
         _ = logger.debug(
             "Creating HTTP config with data",
-            config={"host": host_val, "port": port_val, "debug_mode": debug_mode_val},
+            config=str({
+                "host": host_val,
+                "port": port_val,
+                "debug_mode": debug_mode_val,
+            }),
         )
         try:
             config = FlextWebSettings(

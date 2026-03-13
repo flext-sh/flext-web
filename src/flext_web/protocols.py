@@ -902,10 +902,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[list[t.WebCore.ResponseDict]].ok(matches)
 
         @runtime_checkable
-        class WebHandlerProtocol(
-            FlextProtocols.Handler[t.WebCore.RequestDict, t.WebCore.ResponseDict],
-            Protocol,
-        ):
+        class WebHandlerProtocol(Protocol):
             """Web handler protocol for request/response patterns.
 
             Extends p.Handler with web-specific handler operations.
