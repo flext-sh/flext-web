@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from importlib.metadata import metadata
-from typing import Final
+from typing import Annotated, Final
 
 from flext_core import FlextModels
 from pydantic import Field
@@ -29,14 +29,14 @@ __url__: Final[str] = _metadata.get("Home-Page", "")
 
 
 class _VersionMetadata(FlextModels.Value):
-    version: str = Field(description="Package version")
-    version_info: tuple[int | str, ...] = Field(description="Version tuple")
-    title: str = Field(description="Package title")
-    description: str = Field(description="Package description")
-    author: str = Field(description="Package author")
-    author_email: str = Field(description="Package author email")
-    license_type: str = Field(description="Package license")
-    url: str = Field(description="Package URL")
+    version: Annotated[str, Field(description="Package version")]
+    version_info: Annotated[tuple[int | str, ...], Field(description="Version tuple")]
+    title: Annotated[str, Field(description="Package title")]
+    description: Annotated[str, Field(description="Package description")]
+    author: Annotated[str, Field(description="Package author")]
+    author_email: Annotated[str, Field(description="Package author email")]
+    license_type: Annotated[str, Field(description="Package license")]
+    url: Annotated[str, Field(description="Package URL")]
 
 
 class FlextWebVersion:

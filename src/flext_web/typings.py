@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Literal, TypeAlias
+from typing import Annotated, Literal, TypeAlias
 
 from flext_core import FlextTypes, r, u
 from pydantic import Field
@@ -28,14 +28,25 @@ WebResponseDict: TypeAlias = dict[
 
 
 class _ApplicationConfig(m.Web.EntityConfig):
-    name: str = Field(default=c.Web.WebDefaults.APP_NAME, description="App name")
-    status: str = Field(default=c.Web.Status.STOPPED.value, description="App status")
-    environment: str = Field(
-        default=c.Web.Name.DEVELOPMENT.value,
-        description="Environment",
-    )
-    debug_mode: bool = Field(default=c.Web.WebDefaults.DEBUG_MODE, description="Debug")
-    version: int = Field(default=c.Web.WebDefaults.VERSION_INT, description="Version")
+    name: Annotated[
+        str, Field(default=c.Web.WebDefaults.APP_NAME, description="App name")
+    ]
+    status: Annotated[
+        str, Field(default=c.Web.Status.STOPPED.value, description="App status")
+    ]
+    environment: Annotated[
+        str,
+        Field(
+            default=c.Web.Name.DEVELOPMENT.value,
+            description="Environment",
+        ),
+    ]
+    debug_mode: Annotated[
+        bool, Field(default=c.Web.WebDefaults.DEBUG_MODE, description="Debug")
+    ]
+    version: Annotated[
+        int, Field(default=c.Web.WebDefaults.VERSION_INT, description="Version")
+    ]
 
 
 class _WebRequestConfig(m.Web.AppRequest):

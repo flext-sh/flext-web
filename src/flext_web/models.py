@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import override
+from typing import Annotated, override
 
 from flext_core import FlextModels, r, t, u
 from pydantic import BaseModel, Field, field_validator
@@ -47,18 +47,27 @@ class FlextWebModels(FlextModels):
 
             """
 
-            headers: dict[str, str] = Field(
-                default_factory=dict,
-                description="HTTP headers for message",
-            )
-            body: str | dict[str, t.Scalar] | None = Field(
-                default=None,
-                description="Message body content (optional for GET/HEAD)",
-            )
-            timestamp: datetime = Field(
-                default_factory=lambda: datetime.now(UTC),
-                description="UTC timestamp of message creation",
-            )
+            headers: Annotated[
+                dict[str, str],
+                Field(
+                    default_factory=dict,
+                    description="HTTP headers for message",
+                ),
+            ]
+            body: Annotated[
+                str | dict[str, t.Scalar] | None,
+                Field(
+                    default=None,
+                    description="Message body content (optional for GET/HEAD)",
+                ),
+            ]
+            timestamp: Annotated[
+                datetime,
+                Field(
+                    default_factory=lambda: datetime.now(UTC),
+                    description="UTC timestamp of message creation",
+                ),
+            ]
 
         class Request(Message):
             """HTTP request model with complete validation.
@@ -73,21 +82,30 @@ class FlextWebModels(FlextModels):
 
             """
 
-            url: str = Field(
-                min_length=1,
-                max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
-                description="Request URL",
-            )
-            method: str = Field(
-                default="GET",
-                description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
-            )
-            timeout: float = Field(
-                default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
-                ge=0.0,
-                le=c.Web.WebValidation.REQUEST_TIMEOUT_MAX,
-                description="Request timeout in seconds",
-            )
+            url: Annotated[
+                str,
+                Field(
+                    min_length=1,
+                    max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
+                    description="Request URL",
+                ),
+            ]
+            method: Annotated[
+                str,
+                Field(
+                    default="GET",
+                    description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
+                ),
+            ]
+            timeout: Annotated[
+                float,
+                Field(
+                    default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
+                    ge=0.0,
+                    le=c.Web.WebValidation.REQUEST_TIMEOUT_MAX,
+                    description="Request timeout in seconds",
+                ),
+            ]
 
             @property
             def has_body(self) -> bool:
@@ -140,16 +158,22 @@ class FlextWebModels(FlextModels):
 
             """
 
-            status_code: int = Field(
-                ge=c.Web.StatusCode.CONTINUE.value,
-                le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
-                description="HTTP status code",
-            )
-            elapsed_time: float | None = Field(
-                default=None,
-                ge=0.0,
-                description="Response processing time in seconds",
-            )
+            status_code: Annotated[
+                int,
+                Field(
+                    ge=c.Web.StatusCode.CONTINUE.value,
+                    le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
+                    description="HTTP status code",
+                ),
+            ]
+            elapsed_time: Annotated[
+                float | None,
+                Field(
+                    default=None,
+                    ge=0.0,
+                    description="Response processing time in seconds",
+                ),
+            ]
 
             @property
             def is_error(self) -> bool:
@@ -192,21 +216,30 @@ class FlextWebModels(FlextModels):
 
             """
 
-            url: str = Field(
-                min_length=1,
-                max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
-                description="Request URL",
-            )
-            method: str = Field(
-                default="GET",
-                description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
-            )
-            timeout: float = Field(
-                default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
-                ge=0.0,
-                le=c.Web.WebValidation.REQUEST_TIMEOUT_MAX,
-                description="Request timeout in seconds",
-            )
+            url: Annotated[
+                str,
+                Field(
+                    min_length=1,
+                    max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
+                    description="Request URL",
+                ),
+            ]
+            method: Annotated[
+                str,
+                Field(
+                    default="GET",
+                    description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
+                ),
+            ]
+            timeout: Annotated[
+                float,
+                Field(
+                    default=c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
+                    ge=0.0,
+                    le=c.Web.WebValidation.REQUEST_TIMEOUT_MAX,
+                    description="Request timeout in seconds",
+                ),
+            ]
 
             @field_validator("method", mode="before")
             @classmethod
@@ -227,28 +260,47 @@ class FlextWebModels(FlextModels):
                     raise TypeError(msg)
                 return upper
 
-            headers: dict[str, str] = Field(
-                default_factory=dict,
-                description="HTTP headers",
-            )
-            body: str | dict[str, t.Scalar] | None = Field(
-                default=None,
-                description="Request body content (optional for GET/HEAD)",
-            )
-            timestamp: datetime = Field(
-                default_factory=lambda: datetime.now(UTC),
-                description="Request timestamp",
-            )
-            request_id: str = Field(
-                default_factory=lambda: str(uuid.uuid4()),
-                description="Unique request identifier",
-            )
-            query_params: dict[str, t.Scalar] = Field(
-                default_factory=dict,
-                description="Query string parameters",
-            )
-            client_ip: str = Field(default="", description="Client IP address")
-            user_agent: str = Field(default="", description="Client user agent")
+            headers: Annotated[
+                dict[str, str],
+                Field(
+                    default_factory=dict,
+                    description="HTTP headers",
+                ),
+            ]
+            body: Annotated[
+                str | dict[str, t.Scalar] | None,
+                Field(
+                    default=None,
+                    description="Request body content (optional for GET/HEAD)",
+                ),
+            ]
+            timestamp: Annotated[
+                datetime,
+                Field(
+                    default_factory=lambda: datetime.now(UTC),
+                    description="Request timestamp",
+                ),
+            ]
+            request_id: Annotated[
+                str,
+                Field(
+                    default_factory=lambda: str(uuid.uuid4()),
+                    description="Unique request identifier",
+                ),
+            ]
+            query_params: Annotated[
+                dict[str, t.Scalar],
+                Field(
+                    default_factory=dict,
+                    description="Query string parameters",
+                ),
+            ]
+            client_ip: Annotated[
+                str, Field(default="", description="Client IP address")
+            ]
+            user_agent: Annotated[
+                str, Field(default="", description="Client user agent")
+            ]
 
             @property
             def has_body(self) -> bool:
@@ -290,47 +342,76 @@ class FlextWebModels(FlextModels):
 
             """
 
-            status_code: int = Field(
-                ge=c.Web.StatusCode.CONTINUE.value,
-                le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
-                description="HTTP status code",
-            )
-            headers: dict[str, str] = Field(
-                default_factory=dict,
-                description="HTTP response headers",
-            )
-            body: str | dict[str, t.Scalar] | None = Field(
-                default=None,
-                description="Response body content",
-            )
-            timestamp: datetime = Field(
-                default_factory=lambda: datetime.now(UTC),
-                description="Response timestamp",
-            )
-            elapsed_time: float = Field(
-                default=0.0,
-                ge=0.0,
-                description="Response elapsed time in seconds",
-            )
-            response_id: str = Field(
-                default_factory=lambda: str(uuid.uuid4()),
-                description="Unique response identifier",
-            )
-            request_id: str = Field(description="Associated request identifier")
-            content_type: c.Web.Literals.ContentTypeLiteral | str = Field(
-                default=c.Web.Http.CONTENT_TYPE_JSON,
-                description="Response content type",
-            )
-            content_length: int = Field(
-                default=0,
-                ge=0,
-                description="Response body length in bytes",
-            )
-            processing_time_ms: float = Field(
-                default=0.0,
-                ge=0.0,
-                description="Processing time in milliseconds",
-            )
+            status_code: Annotated[
+                int,
+                Field(
+                    ge=c.Web.StatusCode.CONTINUE.value,
+                    le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
+                    description="HTTP status code",
+                ),
+            ]
+            headers: Annotated[
+                dict[str, str],
+                Field(
+                    default_factory=dict,
+                    description="HTTP response headers",
+                ),
+            ]
+            body: Annotated[
+                str | dict[str, t.Scalar] | None,
+                Field(
+                    default=None,
+                    description="Response body content",
+                ),
+            ]
+            timestamp: Annotated[
+                datetime,
+                Field(
+                    default_factory=lambda: datetime.now(UTC),
+                    description="Response timestamp",
+                ),
+            ]
+            elapsed_time: Annotated[
+                float,
+                Field(
+                    default=0.0,
+                    ge=0.0,
+                    description="Response elapsed time in seconds",
+                ),
+            ]
+            response_id: Annotated[
+                str,
+                Field(
+                    default_factory=lambda: str(uuid.uuid4()),
+                    description="Unique response identifier",
+                ),
+            ]
+            request_id: Annotated[
+                str, Field(description="Associated request identifier")
+            ]
+            content_type: Annotated[
+                c.Web.Literals.ContentTypeLiteral | str,
+                Field(
+                    default=c.Web.Http.CONTENT_TYPE_JSON,
+                    description="Response content type",
+                ),
+            ]
+            content_length: Annotated[
+                int,
+                Field(
+                    default=0,
+                    ge=0,
+                    description="Response body length in bytes",
+                ),
+            ]
+            processing_time_ms: Annotated[
+                float,
+                Field(
+                    default=0.0,
+                    ge=0.0,
+                    description="Processing time in milliseconds",
+                ),
+            ]
 
             @property
             def is_error(self) -> bool:
@@ -388,15 +469,21 @@ class FlextWebModels(FlextModels):
 
             """
 
-            id: str = Field(
-                default_factory=lambda: str(uuid.uuid4()),
-                description="Unique application identifier",
-            )
-            name: str = Field(
-                min_length=1,
-                max_length=c.Web.WebServer.MAX_APP_NAME_LENGTH,
-                description="Application name",
-            )
+            id: Annotated[
+                str,
+                Field(
+                    default_factory=lambda: str(uuid.uuid4()),
+                    description="Unique application identifier",
+                ),
+            ]
+            name: Annotated[
+                str,
+                Field(
+                    min_length=1,
+                    max_length=c.Web.WebServer.MAX_APP_NAME_LENGTH,
+                    description="Application name",
+                ),
+            ]
 
             @field_validator("name", mode="before")
             @classmethod
@@ -424,22 +511,31 @@ class FlextWebModels(FlextModels):
 
                 return v
 
-            host: str = Field(
-                default=c.Web.WebDefaults.HOST,
-                min_length=1,
-                max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
-                description="Application host address",
-            )
-            port: int = Field(
-                default=c.Web.WebDefaults.PORT,
-                ge=c.Web.WebValidation.PORT_RANGE[0],
-                le=c.Web.WebValidation.PORT_RANGE[1],
-                description="Application port number",
-            )
-            status: c.Web.Literals.ApplicationStatusLiteral | str = Field(
-                default=c.Web.Status.STOPPED.value,
-                description="Current application status",
-            )
+            host: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebDefaults.HOST,
+                    min_length=1,
+                    max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
+                    description="Application host address",
+                ),
+            ]
+            port: Annotated[
+                int,
+                Field(
+                    default=c.Web.WebDefaults.PORT,
+                    ge=c.Web.WebValidation.PORT_RANGE[0],
+                    le=c.Web.WebValidation.PORT_RANGE[1],
+                    description="Application port number",
+                ),
+            ]
+            status: Annotated[
+                c.Web.Literals.ApplicationStatusLiteral | str,
+                Field(
+                    default=c.Web.Status.STOPPED.value,
+                    description="Current application status",
+                ),
+            ]
 
             @field_validator("status", mode="before")
             @classmethod
@@ -451,28 +547,43 @@ class FlextWebModels(FlextModels):
                     raise TypeError(msg)
                 return v
 
-            environment: str = Field(
-                default=c.Web.Name.DEVELOPMENT.value,
-                description="Deployment environment",
-            )
-            debug_mode: bool = Field(
-                default=c.Web.WebDefaults.DEBUG_MODE,
-                description="Debug mode enabled flag",
-            )
-            version: int = Field(
-                default=c.Web.WebDefaults.VERSION_INT,
-                description="Application version",
-            )
-            metrics: dict[str, t.Scalar] = Field(
-                default_factory=dict,
-                description="Application metrics",
-            )
+            environment: Annotated[
+                str,
+                Field(
+                    default=c.Web.Name.DEVELOPMENT.value,
+                    description="Deployment environment",
+                ),
+            ]
+            debug_mode: Annotated[
+                bool,
+                Field(
+                    default=c.Web.WebDefaults.DEBUG_MODE,
+                    description="Debug mode enabled flag",
+                ),
+            ]
+            version: Annotated[
+                int,
+                Field(
+                    default=c.Web.WebDefaults.VERSION_INT,
+                    description="Application version",
+                ),
+            ]
+            metrics: Annotated[
+                dict[str, t.Scalar],
+                Field(
+                    default_factory=dict,
+                    description="Application metrics",
+                ),
+            ]
             # Note: domain_events is inherited from Entry with type list[DomainEvent]
             # Use add_event() method to add events instead of direct list manipulation
-            web_events: list[str] = Field(
-                default_factory=list,
-                description="Web-specific events (application lifecycle)",
-            )
+            web_events: Annotated[
+                list[str],
+                Field(
+                    default_factory=list,
+                    description="Web-specific events (application lifecycle)",
+                ),
+            ]
 
             @override
             def __str__(self) -> str:
@@ -677,216 +788,305 @@ class FlextWebModels(FlextModels):
             Uses Constants for defaults - Config has priority when provided.
             """
 
-            app_name: str = Field(
-                default=c.Web.WebDefaults.APP_NAME,
-                min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
-                max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
-                description="Application name",
-            )
-            host: str = Field(
-                default=c.Web.WebDefaults.HOST,
-                min_length=1,
-                max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
-                description="Application host address",
-            )
-            port: int = Field(
-                default=c.Web.WebDefaults.PORT,
-                ge=c.Web.WebValidation.PORT_RANGE[0],
-                le=c.Web.WebValidation.PORT_RANGE[1],
-                description="Application port number",
-            )
-            debug: bool = Field(
-                default=c.Web.WebDefaults.DEBUG_MODE,
-                description="Debug mode flag",
-            )
-            secret_key: str = Field(
-                default=c.Web.WebDefaults.SECRET_KEY,
-                min_length=c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
-                description="Application secret key",
-            )
+            app_name: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebDefaults.APP_NAME,
+                    min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
+                    max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
+                    description="Application name",
+                ),
+            ]
+            host: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebDefaults.HOST,
+                    min_length=1,
+                    max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
+                    description="Application host address",
+                ),
+            ]
+            port: Annotated[
+                int,
+                Field(
+                    default=c.Web.WebDefaults.PORT,
+                    ge=c.Web.WebValidation.PORT_RANGE[0],
+                    le=c.Web.WebValidation.PORT_RANGE[1],
+                    description="Application port number",
+                ),
+            ]
+            debug: Annotated[
+                bool,
+                Field(
+                    default=c.Web.WebDefaults.DEBUG_MODE,
+                    description="Debug mode flag",
+                ),
+            ]
+            secret_key: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebDefaults.SECRET_KEY,
+                    min_length=c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
+                    description="Application secret key",
+                ),
+            ]
 
         class Credentials(FlextModels.Value):
             """Authentication credentials model."""
 
-            username: str = Field(min_length=1, description="Username")
-            password: str = Field(min_length=1, description="Password")
+            username: Annotated[str, Field(min_length=1, description="Username")]
+            password: Annotated[str, Field(min_length=1, description="Password")]
 
         class UserData(FlextModels.Value):
             """User registration data model."""
 
-            username: str = Field(min_length=1, description="Username")
-            email: str = Field(min_length=1, description="Email address")
-            password: str = Field(
-                default="",
-                description="Password (empty string if not provided)",
-            )
+            username: Annotated[str, Field(min_length=1, description="Username")]
+            email: Annotated[str, Field(min_length=1, description="Email address")]
+            password: Annotated[
+                str,
+                Field(
+                    default="",
+                    description="Password (empty string if not provided)",
+                ),
+            ]
 
         class AppData(FlextModels.Value):
             """Application creation data model."""
 
-            name: str = Field(
-                min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
-                max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
-                description="Application name",
-            )
-            host: str = Field(
-                min_length=1,
-                max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
-                description="Application host",
-            )
-            port: int = Field(
-                ge=c.Web.WebValidation.PORT_RANGE[0],
-                le=c.Web.WebValidation.PORT_RANGE[1],
-                description="Application port",
-            )
+            name: Annotated[
+                str,
+                Field(
+                    min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
+                    max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
+                    description="Application name",
+                ),
+            ]
+            host: Annotated[
+                str,
+                Field(
+                    min_length=1,
+                    max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
+                    description="Application host",
+                ),
+            ]
+            port: Annotated[
+                int,
+                Field(
+                    ge=c.Web.WebValidation.PORT_RANGE[0],
+                    le=c.Web.WebValidation.PORT_RANGE[1],
+                    description="Application port",
+                ),
+            ]
 
         class EntityData(FlextModels.Value):
             """Generic entity data model."""
 
-            data: dict[str, t.Scalar] = Field(
-                default_factory=dict,
-                description="Entity data dictionary",
-            )
+            data: Annotated[
+                dict[str, t.Scalar],
+                Field(
+                    default_factory=dict,
+                    description="Entity data dictionary",
+                ),
+            ]
 
         class AuthResponse(FlextModels.Value):
             """Authentication response model."""
 
-            token: str = Field(description="Authentication token")
-            user_id: str = Field(description="User identifier")
-            authenticated: bool = Field(description="Authentication status")
+            token: Annotated[str, Field(description="Authentication token")]
+            user_id: Annotated[str, Field(description="User identifier")]
+            authenticated: Annotated[bool, Field(description="Authentication status")]
 
         class UserResponse(FlextModels.Value):
             """User registration response model."""
 
-            id: str = Field(description="User identifier")
-            username: str = Field(description="Username")
-            email: str = Field(description="Email address")
-            created: bool = Field(description="Creation status")
+            id: Annotated[str, Field(description="User identifier")]
+            username: Annotated[str, Field(description="Username")]
+            email: Annotated[str, Field(description="Email address")]
+            created: Annotated[bool, Field(description="Creation status")]
 
         class ApplicationResponse(FlextModels.Value):
             """Application management response model."""
 
-            id: str = Field(description="Application identifier")
-            name: str = Field(description="Application name")
-            host: str = Field(description="Application host")
-            port: int = Field(description="Application port")
-            status: str = Field(description="Application status")
-            created_at: str = Field(description="Creation timestamp")
+            id: Annotated[str, Field(description="Application identifier")]
+            name: Annotated[str, Field(description="Application name")]
+            host: Annotated[str, Field(description="Application host")]
+            port: Annotated[int, Field(description="Application port")]
+            status: Annotated[str, Field(description="Application status")]
+            created_at: Annotated[str, Field(description="Creation timestamp")]
 
         class HealthResponse(FlextModels.Value):
             """Health check response model."""
 
-            status: str = Field(description="Health status")
-            service: str = Field(description="Service name")
-            timestamp: str = Field(description="Timestamp")
+            status: Annotated[str, Field(description="Health status")]
+            service: Annotated[str, Field(description="Service name")]
+            timestamp: Annotated[str, Field(description="Timestamp")]
 
         class MetricsResponse(FlextModels.Value):
             """Metrics response model."""
 
-            service_status: str = Field(description="Service status")
-            components: list[str] = Field(description="Service components")
+            service_status: Annotated[str, Field(description="Service status")]
+            components: Annotated[list[str], Field(description="Service components")]
 
         class DashboardResponse(FlextModels.Value):
             """Dashboard response model."""
 
-            total_applications: int = Field(description="Total applications")
-            running_applications: int = Field(description="Running applications")
-            service_status: str = Field(description="Service status")
-            routes_initialized: bool = Field(description="Routes initialization status")
-            middleware_configured: bool = Field(
-                description="Middleware configuration status",
-            )
-            timestamp: str = Field(description="Timestamp")
+            total_applications: Annotated[int, Field(description="Total applications")]
+            running_applications: Annotated[
+                int, Field(description="Running applications")
+            ]
+            service_status: Annotated[str, Field(description="Service status")]
+            routes_initialized: Annotated[
+                bool, Field(description="Routes initialization status")
+            ]
+            middleware_configured: Annotated[
+                bool,
+                Field(
+                    description="Middleware configuration status",
+                ),
+            ]
+            timestamp: Annotated[str, Field(description="Timestamp")]
 
         class ServiceResponse(FlextModels.Value):
             """Generic service response model."""
 
-            service: str = Field(description="Service name")
-            capabilities: list[str] = Field(description="Service capabilities")
-            status: str = Field(description="Service status")
-            config: bool = Field(description="Configuration status")
+            service: Annotated[str, Field(description="Service name")]
+            capabilities: Annotated[
+                list[str], Field(description="Service capabilities")
+            ]
+            status: Annotated[str, Field(description="Service status")]
+            config: Annotated[bool, Field(description="Configuration status")]
 
         class WebRequest(FlextModels.Value):
             """Web request model with complete tracking."""
 
-            method: c.Web.Literals.HttpMethodLiteral = Field(
-                default="GET",  # Default HTTP method
-                description="HTTP method",
-            )
-            url: str = Field(
-                min_length=1,
-                max_length=c.Web.WebValidation.MAX_URL_LENGTH,
-                description="Request URL",
-            )
-            headers: dict[str, str] = Field(
-                default_factory=dict,
-                description="HTTP headers",
-            )
-            body: str | object | None = Field(
-                default=None,
-                description="Request body (optional for GET/HEAD)",
-            )
-            request_id: str = Field(
-                default_factory=lambda: str(uuid.uuid4()),
-                description="Unique request identifier",
-            )
-            timestamp: datetime = Field(
-                default_factory=lambda: datetime.now(UTC),
-                description="Request timestamp",
-            )
+            method: Annotated[
+                c.Web.Literals.HttpMethodLiteral,
+                Field(
+                    default="GET",  # Default HTTP method
+                    description="HTTP method",
+                ),
+            ]
+            url: Annotated[
+                str,
+                Field(
+                    min_length=1,
+                    max_length=c.Web.WebValidation.MAX_URL_LENGTH,
+                    description="Request URL",
+                ),
+            ]
+            headers: Annotated[
+                dict[str, str],
+                Field(
+                    default_factory=dict,
+                    description="HTTP headers",
+                ),
+            ]
+            body: Annotated[
+                str | object | None,
+                Field(
+                    default=None,
+                    description="Request body (optional for GET/HEAD)",
+                ),
+            ]
+            request_id: Annotated[
+                str,
+                Field(
+                    default_factory=lambda: str(uuid.uuid4()),
+                    description="Unique request identifier",
+                ),
+            ]
+            timestamp: Annotated[
+                datetime,
+                Field(
+                    default_factory=lambda: datetime.now(UTC),
+                    description="Request timestamp",
+                ),
+            ]
 
         class WebResponse(FlextModels.Value):
             """Web response model with status tracking."""
 
-            request_id: str = Field(description="Associated request identifier")
-            status_code: int = Field(
-                ge=c.Web.StatusCode.CONTINUE.value,
-                le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
-                description="HTTP status code",
-            )
-            headers: dict[str, str] = Field(
-                default_factory=dict,
-                description="HTTP response headers",
-            )
-            body: str | object | None = Field(
-                default=None,
-                description="Response body (optional for 204 No Content)",
-            )
-            response_id: str = Field(
-                default_factory=lambda: str(uuid.uuid4()),
-                description="Unique response identifier",
-            )
-            timestamp: datetime = Field(
-                default_factory=lambda: datetime.now(UTC),
-                description="Response timestamp",
-            )
+            request_id: Annotated[
+                str, Field(description="Associated request identifier")
+            ]
+            status_code: Annotated[
+                int,
+                Field(
+                    ge=c.Web.StatusCode.CONTINUE.value,
+                    le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
+                    description="HTTP status code",
+                ),
+            ]
+            headers: Annotated[
+                dict[str, str],
+                Field(
+                    default_factory=dict,
+                    description="HTTP response headers",
+                ),
+            ]
+            body: Annotated[
+                str | object | None,
+                Field(
+                    default=None,
+                    description="Response body (optional for 204 No Content)",
+                ),
+            ]
+            response_id: Annotated[
+                str,
+                Field(
+                    default_factory=lambda: str(uuid.uuid4()),
+                    description="Unique response identifier",
+                ),
+            ]
+            timestamp: Annotated[
+                datetime,
+                Field(
+                    default_factory=lambda: datetime.now(UTC),
+                    description="Response timestamp",
+                ),
+            ]
 
         class AppConfig(FlextModels.Value):
             """Application configuration model."""
 
-            title: str = Field(
-                min_length=1,
-                max_length=c.Web.WebServer.MAX_APP_NAME_LENGTH,
-                description="Application title",
-            )
-            version: str = Field(description="Application version")
-            description: str = Field(
-                min_length=1,
-                max_length=c.Web.WebSecurity.MAX_DESCRIPTION_LENGTH,
-                description="Application description",
-            )
-            docs_url: str = Field(
-                default=c.Web.WebApi.DOCS_URL,
-                description="Documentation URL",
-            )
-            redoc_url: str = Field(
-                default=c.Web.WebApi.REDOC_URL,
-                description="ReDoc URL",
-            )
-            openapi_url: str = Field(
-                default=c.Web.WebApi.OPENAPI_URL,
-                description="OpenAPI URL",
-            )
+            title: Annotated[
+                str,
+                Field(
+                    min_length=1,
+                    max_length=c.Web.WebServer.MAX_APP_NAME_LENGTH,
+                    description="Application title",
+                ),
+            ]
+            version: Annotated[str, Field(description="Application version")]
+            description: Annotated[
+                str,
+                Field(
+                    min_length=1,
+                    max_length=c.Web.WebSecurity.MAX_DESCRIPTION_LENGTH,
+                    description="Application description",
+                ),
+            ]
+            docs_url: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebApi.DOCS_URL,
+                    description="Documentation URL",
+                ),
+            ]
+            redoc_url: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebApi.REDOC_URL,
+                    description="ReDoc URL",
+                ),
+            ]
+            openapi_url: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebApi.OPENAPI_URL,
+                    description="OpenAPI URL",
+                ),
+            ]
 
         # FACTORY METHODS (Creation patterns)
 
@@ -1014,40 +1214,65 @@ class FlextWebModels(FlextModels):
 
             """
 
-            title: str = Field(
-                default=c.Web.WebDefaults.APP_NAME,
-                min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
-                max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
-                description="FastAPI application title",
-            )
-            version: str = Field(
-                default=c.Web.WebDefaults.VERSION_STRING,
-                description="Application version",
-            )
-            description: str = Field(
-                default=c.Web.WebApi.DEFAULT_DESCRIPTION,
-                min_length=1,
-                max_length=c.Web.WebSecurity.MAX_DESCRIPTION_LENGTH,
-                description="Application description",
-            )
-            debug: bool = Field(default=False, description="FastAPI debug mode")
-            testing: bool = Field(default=False, description="FastAPI testing mode")
-            middlewares: list[str] = Field(
-                default_factory=list,
-                description="List of middleware objects",
-            )
-            docs_url: str = Field(
-                default=c.Web.WebApi.DOCS_URL,
-                description="Documentation URL",
-            )
-            redoc_url: str = Field(
-                default=c.Web.WebApi.REDOC_URL,
-                description="ReDoc URL",
-            )
-            openapi_url: str = Field(
-                default=c.Web.WebApi.OPENAPI_URL,
-                description="OpenAPI URL",
-            )
+            title: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebDefaults.APP_NAME,
+                    min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
+                    max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
+                    description="FastAPI application title",
+                ),
+            ]
+            version: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebDefaults.VERSION_STRING,
+                    description="Application version",
+                ),
+            ]
+            description: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebApi.DEFAULT_DESCRIPTION,
+                    min_length=1,
+                    max_length=c.Web.WebSecurity.MAX_DESCRIPTION_LENGTH,
+                    description="Application description",
+                ),
+            ]
+            debug: Annotated[
+                bool, Field(default=False, description="FastAPI debug mode")
+            ]
+            testing: Annotated[
+                bool, Field(default=False, description="FastAPI testing mode")
+            ]
+            middlewares: Annotated[
+                list[str],
+                Field(
+                    default_factory=list,
+                    description="List of middleware objects",
+                ),
+            ]
+            docs_url: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebApi.DOCS_URL,
+                    description="Documentation URL",
+                ),
+            ]
+            redoc_url: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebApi.REDOC_URL,
+                    description="ReDoc URL",
+                ),
+            ]
+            openapi_url: Annotated[
+                str,
+                Field(
+                    default=c.Web.WebApi.OPENAPI_URL,
+                    description="OpenAPI URL",
+                ),
+            ]
 
 
 m = FlextWebModels

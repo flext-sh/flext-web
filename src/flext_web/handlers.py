@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import MutableMapping
-from typing import override
+from typing import Annotated, override
 
 from flext_core import FlextLogger, FlextService, r
 from pydantic import BaseModel, Field
@@ -32,21 +32,21 @@ class FlextWebHandlers(FlextService[bool]):
     class SystemInfo(BaseModel):
         """System information response model."""
 
-        service_name: str = Field(description="Service name")
-        service_type: str = Field(description="Service type")
-        architecture: str = Field(description="Architecture pattern")
-        patterns: list[str] = Field(description="Design patterns used")
-        integrations: list[str] = Field(description="Integrated components")
-        capabilities: list[str] = Field(description="Service capabilities")
+        service_name: Annotated[str, Field(description="Service name")]
+        service_type: Annotated[str, Field(description="Service type")]
+        architecture: Annotated[str, Field(description="Architecture pattern")]
+        patterns: Annotated[list[str], Field(description="Design patterns used")]
+        integrations: Annotated[list[str], Field(description="Integrated components")]
+        capabilities: Annotated[list[str], Field(description="Service capabilities")]
 
     class HealthStatus(BaseModel):
         """Health status response model."""
 
-        status: str = Field(description="Health status")
-        service: str = Field(description="Service name")
-        version: str = Field(description="Service version")
-        timestamp: str = Field(description="Status timestamp")
-        components: dict[str, str] = Field(description="Component statuses")
+        status: Annotated[str, Field(description="Health status")]
+        service: Annotated[str, Field(description="Service name")]
+        version: Annotated[str, Field(description="Service version")]
+        timestamp: Annotated[str, Field(description="Status timestamp")]
+        components: Annotated[dict[str, str], Field(description="Component statuses")]
 
     class ApplicationHandler:
         """CQRS command handler for web application lifecycle management.
