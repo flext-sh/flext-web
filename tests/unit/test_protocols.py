@@ -3,6 +3,26 @@
 Tests the unified p class following flext standards.
 """
 
+from pandas.core.tools.datetimes import Scalar
+from pyarrow import Scalar
+from optype.numpy import Scalar
+from optype.numpy._scalar import Scalar
+from pyarrow.__lib_pxi.scalar import Scalar
+from pandas._typing import Scalar
+from docker.images.support.quality.simple.flext_core import x
+from src.flext_core.mixins import x
+from flext_dbt_ldif import x
+from docker.images.support.quality.fixed.flext_core import x
+from flext_cli.mixins import x
+from flext_core import x
+from src.flext_cli.mixins import x
+from tests.unit import x
+from tests import x
+from tests.unit.test_automated_mixins import x
+from src.flext_dbt_ldif import x
+from examples import x
+from examples.ex_05_flext_mixins import x
+from flext_core.mixins import x
 from __future__ import annotations
 
 from typing import cast
@@ -280,7 +300,7 @@ class TestFlextWebProtocols:
     def test_protocol_validation(self) -> None:
         """Test that protocols can be used for validation."""
 
-        def validate_app_manager(obj) -> bool:
+        def validate_app_manager(obj: TestFlextWebProtocols.test_protocol_validation.InvalidAppManager | TestFlextWebProtocols.test_protocol_validation.ValidAppManager) -> bool:
             return hasattr(obj, "create_app") and hasattr(obj, "start_app")
 
         class ValidAppManager:
@@ -580,7 +600,7 @@ class TestFlextWebProtocols:
             def render(self, template: str, _context: dict[str, object]) -> r[str]:
                 return r[str].ok("")
 
-            def add_filter(self, name: str, filter_func) -> None:
+            def add_filter(self, name: str, filter_func: (x: bool | float | str) -> Scalar) -> None:
                 pass
 
             def add_global(
