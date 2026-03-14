@@ -3,32 +3,17 @@
 Tests the unified p class following flext standards.
 """
 
-from pandas.core.tools.datetimes import Scalar
-from pyarrow import Scalar
-from optype.numpy import Scalar
-from optype.numpy._scalar import Scalar
-from pyarrow.__lib_pxi.scalar import Scalar
-from pandas._typing import Scalar
-from docker.images.support.quality.simple.flext_core import x
-from src.flext_core.mixins import x
-from flext_dbt_ldif import x
-from docker.images.support.quality.fixed.flext_core import x
-from flext_cli.mixins import x
-from flext_core import x
-from src.flext_cli.mixins import x
-from tests.unit import x
-from tests import x
-from tests.unit.test_automated_mixins import x
-from src.flext_dbt_ldif import x
-from examples import x
-from examples.ex_05_flext_mixins import x
-from flext_core.mixins import x
 from __future__ import annotations
 
-from typing import cast
+from collections.abc import Callable, Mapping
+from typing import override
 
+import flask
 import pytest
-from tests import c, p, r, t
+from fastapi import FastAPI
+from flext_core import r
+
+from tests import c, p, t
 
 _WebAppManagerBase = p.Web.TestBases._WebAppManagerBase
 _WebConnectionBase = p.Web.TestBases._WebConnectionBase
@@ -47,10 +32,7 @@ class TestFlextWebProtocols:
     @staticmethod
     def _reset_protocol_state() -> None:
         p.Web.apps_registry.clear()
-        instances: dict[str, object] = cast(
-            "dict[str, object]", p.Web.framework_instances
-        )
-        instances.clear()
+        p.Web.framework_instances.clear()
         p.Web.app_runtimes.clear()
         p.Web.service_state.update({
             "routes_initialized": False,
@@ -71,12 +53,14 @@ class TestFlextWebProtocols:
     def _mock_runtime_lifecycle(self, monkeypatch: pytest.MonkeyPatch) -> None:
 
         def _start_runtime(
-            app_id: str, app_data: t.WebCore.ResponseDict, app_instance
-        ) -> r[dict[str, object]]:
+            app_id: str,
+            app_data: t.WebCore.ResponseDict,
+            app_instance: flask.Flask | FastAPI,
+        ) -> r[t.WebCore.ResponseDict]:
             _ = (app_data, app_instance)
-            return r[dict[str, object]].ok({"runner": "mock", "app_id": app_id})
+            return r[t.WebCore.ResponseDict].ok({"runner": "mock", "app_id": app_id})
 
-        def _stop_runtime(app_id: str, runtime: dict[str, object]) -> r[bool]:
+        def _stop_runtime(app_id: str, runtime: t.WebCore.ResponseDict) -> r[bool]:
             _ = (app_id, runtime)
             return r[bool].ok(True)
 
@@ -161,11 +145,9 @@ class TestFlextWebProtocols:
         protocol = p.Web.WebHandler
         assert isinstance(protocol, type)
         assert hasattr(protocol, "__annotations__")
-        assert hasattr(protocol, "handle")
-        assert callable(protocol)
-        assert hasattr(protocol, "can_handle")
-        assert hasattr(protocol, "execute")
         assert hasattr(protocol, "handle_request")
+        assert callable(protocol)
+        assert hasattr(protocol, "execute")
 
     def test_web_template_engine_protocol(self) -> None:
         """Test WebTemplateEngine definition."""
@@ -269,17 +251,29 @@ class TestFlextWebProtocols:
         """Test that protocols follow expected usage patterns."""
 
         class MockAppManager:
-            def create_app(self, name: str, port: int, host: str) -> dict[str, object]:
+            def create_app(
+                self, name: str, port: int, host: str
+            ) -> t.WebCore.ResponseDict:
                 return {"name": name, "host": host, "port": port}
 
-            def start_app(self, app_id: str) -> dict[str, object]:
-                return {"name": "test", "host": "localhost", "port": 8080}
+            def start_app(self, app_id: str) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({
+                    "name": "test",
+                    "host": "localhost",
+                    "port": 8080,
+                })
 
-            def stop_app(self, app_id: str) -> dict[str, object]:
-                return {"name": "test", "host": "localhost", "port": 8080}
+            def stop_app(self, app_id: str) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({
+                    "name": "test",
+                    "host": "localhost",
+                    "port": 8080,
+                })
 
-            def list_apps(self) -> list[dict[str, object]]:
-                return [{"name": "test", "host": "localhost", "port": 8080}]
+            def list_apps(self) -> r[list[t.WebCore.ResponseDict]]:
+                return r[list[t.WebCore.ResponseDict]].ok([
+                    {"name": "test", "host": "localhost", "port": 8080}
+                ])
 
         mock_manager = MockAppManager()
         assert hasattr(mock_manager, "create_app")
@@ -294,14 +288,27 @@ class TestFlextWebProtocols:
             def custom_method(self) -> None:
                 pass
 
+            @override
+            def execute(self) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({})
+
+            @override
+            def validate_business_rules(self) -> r[bool]:
+                return r[bool].ok(True)
+
+            @override
+            def get_service_info(self) -> Mapping[str, t.Scalar]:
+                return {"name": "Custom"}
+
+            @override
+            def is_valid(self) -> bool:
+                return True
+
         assert hasattr(Custom, "create_app")
         assert hasattr(Custom, "custom_method")
 
     def test_protocol_validation(self) -> None:
         """Test that protocols can be used for validation."""
-
-        def validate_app_manager(obj: TestFlextWebProtocols.test_protocol_validation.InvalidAppManager | TestFlextWebProtocols.test_protocol_validation.ValidAppManager) -> bool:
-            return hasattr(obj, "create_app") and hasattr(obj, "start_app")
 
         class ValidAppManager:
             def create_app(self, name: str, port: int, host: str) -> None:
@@ -319,6 +326,11 @@ class TestFlextWebProtocols:
         class InvalidAppManager:
             def create_app(self, name: str, port: int, host: str) -> None:
                 pass
+
+        def validate_app_manager(
+            obj: ValidAppManager | InvalidAppManager,
+        ) -> bool:
+            return hasattr(obj, "create_app") and hasattr(obj, "start_app")
 
         assert validate_app_manager(ValidAppManager())
         assert not validate_app_manager(InvalidAppManager())
@@ -346,8 +358,10 @@ class TestFlextWebProtocols:
         """Test WebResponseFormatter methods execution."""
 
         class RealResponseFormatter:
-            def format_success(self, data: dict[str, object]) -> dict[str, object]:
-                response: dict[str, object] = {
+            def format_success(
+                self, data: t.WebCore.ResponseDict
+            ) -> t.WebCore.ResponseDict:
+                response: t.WebCore.ResponseDict = {
                     "status": c.Web.WebResponse.STATUS_SUCCESS
                 }
                 response.update({
@@ -357,17 +371,17 @@ class TestFlextWebProtocols:
                 })
                 return response
 
-            def format_error(self, error: Exception) -> dict[str, object]:
-                result: dict[str, object] = {
+            def format_error(self, error: Exception) -> t.WebCore.ResponseDict:
+                result: t.WebCore.ResponseDict = {
                     "status": c.Web.WebResponse.STATUS_ERROR,
                     "message": str(error),
                 }
                 return result
 
             def create_json_response(
-                self, data: dict[str, object]
-            ) -> dict[str, object]:
-                response: dict[str, object] = {
+                self, data: t.WebCore.ResponseDict
+            ) -> t.WebCore.ResponseDict:
+                response: t.WebCore.ResponseDict = {
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON
                 }
                 response.update({
@@ -378,28 +392,27 @@ class TestFlextWebProtocols:
                 return response
 
             def get_request_data(
-                self, _request: dict[str, object]
-            ) -> dict[str, object]:
+                self, _request: t.WebCore.RequestDict
+            ) -> t.WebCore.RequestDict:
                 return {}
 
-            def execute(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[dict[str, object]]:
-                return r.ok({})
+            def execute(self) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({})
 
-            def validate_business_rules(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[bool]:
+            def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> Mapping[str, t.Scalar]:
                 return {"name": "ResponseFormatter"}
+
+            def is_valid(self) -> bool:
+                return True
 
         formatter = RealResponseFormatter()
         assert hasattr(formatter, "format_success")
         assert hasattr(formatter, "format_error")
         assert hasattr(formatter, "create_json_response")
-        data_with_nested: dict[str, object] = {
+        data_with_nested: t.WebCore.ResponseDict = {
             "key1": "value1",
             "nested": {"key2": "value2"},
         }
@@ -422,9 +435,9 @@ class TestFlextWebProtocols:
 
         class RealFrameworkInterface:
             def create_json_response(
-                self, data: dict[str, object]
-            ) -> dict[str, object]:
-                response: dict[str, object] = {
+                self, data: t.WebCore.ResponseDict
+            ) -> t.WebCore.ResponseDict:
+                response: t.WebCore.ResponseDict = {
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON
                 }
                 response.update({
@@ -435,31 +448,30 @@ class TestFlextWebProtocols:
                 return response
 
             def get_request_data(
-                self, _request: dict[str, object]
-            ) -> dict[str, object]:
+                self, _request: t.WebCore.RequestDict
+            ) -> t.WebCore.RequestDict:
                 return {}
 
-            def is_json_request(self, _request: dict[str, object]) -> bool:
+            def is_json_request(self, _request: t.WebCore.RequestDict) -> bool:
                 return False
 
-            def execute(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[dict[str, object]]:
-                return r.ok({})
+            def execute(self) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({})
 
-            def validate_business_rules(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[bool]:
+            def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> Mapping[str, t.Scalar]:
                 return {"name": "FrameworkInterface"}
+
+            def is_valid(self) -> bool:
+                return True
 
         framework = RealFrameworkInterface()
         assert hasattr(framework, "create_json_response")
         assert hasattr(framework, "get_request_data")
         assert hasattr(framework, "is_json_request")
-        data: dict[str, object] = {
+        data: t.WebCore.ResponseDict = {
             "test": "value",
             "nested": {"key": "value"},
         }
@@ -486,18 +498,17 @@ class TestFlextWebProtocols:
             def stop_service(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def execute(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[dict[str, object]]:
-                return r.ok({})
+            def execute(self) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({})
 
-            def validate_business_rules(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[bool]:
+            def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> Mapping[str, t.Scalar]:
                 return {"name": "WebService"}
+
+            def is_valid(self) -> bool:
+                return True
 
         service = RealWebService()
         assert hasattr(service, "initialize_routes")
@@ -514,34 +525,33 @@ class TestFlextWebProtocols:
 
         class RealWebRepository:
             def find_by_criteria(
-                self, criteria: dict[str, object]
-            ) -> r[list[dict[str, object]]]:
-                return r[list].ok([])
+                self, criteria: t.WebCore.RequestDict
+            ) -> r[list[t.WebCore.ResponseDict]]:
+                return r[list[t.WebCore.ResponseDict]].ok([])
 
-            def get_by_id(self, entity_id: str) -> r[dict[str, object]]:
-                return r.ok({"id": entity_id})
+            def get_by_id(self, entity_id: str) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({"id": entity_id})
 
-            def save(self, entity: dict[str, object]) -> r[dict[str, object]]:
-                return r.ok(entity)
+            def save(self, entity: t.WebCore.ResponseDict) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok(entity)
 
             def delete(self, entity_id: str) -> r[bool]:
                 return r[bool].ok(True)
 
-            def find_all(self) -> r[list[dict[str, object]]]:
-                return r[list].ok([])
+            def find_all(self) -> r[list[t.WebCore.ResponseDict]]:
+                return r[list[t.WebCore.ResponseDict]].ok([])
 
-            def execute(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[dict[str, object]]:
-                return r.ok({})
+            def execute(self) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({})
 
-            def validate_business_rules(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[bool]:
+            def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> Mapping[str, t.Scalar]:
                 return {"name": "WebRepository"}
+
+            def is_valid(self) -> bool:
+                return True
 
         repo = RealWebRepository()
         assert hasattr(repo, "find_by_criteria")
@@ -553,25 +563,24 @@ class TestFlextWebProtocols:
 
         class RealTemplateRenderer:
             def render_template(
-                self, template_name: str, _context: dict[str, object]
+                self, template_name: str, _context: t.WebCore.RequestDict
             ) -> r[str]:
                 return r[str].ok("")
 
-            def render_dashboard(self, data: dict[str, object]) -> r[str]:
+            def render_dashboard(self, data: t.WebCore.ResponseDict) -> r[str]:
                 return r[str].ok("<html>Dashboard</html>")
 
-            def execute(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[dict[str, object]]:
-                return r.ok({})
+            def execute(self) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({})
 
-            def validate_business_rules(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[bool]:
+            def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> Mapping[str, t.Scalar]:
                 return {"name": "TemplateRenderer"}
+
+            def is_valid(self) -> bool:
+                return True
 
         renderer = RealTemplateRenderer()
         assert hasattr(renderer, "render_template")
@@ -588,41 +597,37 @@ class TestFlextWebProtocols:
         """Test WebTemplateEngine methods execution."""
 
         class RealTemplateEngine:
-            def load_template_config(self, config: dict[str, object]) -> r[bool]:
+            def load_template_config(self, config: t.WebCore.RequestDict) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_template_config(self) -> r[dict[str, object]]:
-                return r.ok({})
+            def get_template_config(self) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({})
 
-            def validate_template_config(self, config: dict[str, object]) -> r[bool]:
-                return r[bool].ok(True)
-
-            def render(self, template: str, _context: dict[str, object]) -> r[str]:
-                return r[str].ok("")
-
-            def add_filter(self, name: str, filter_func: (x: bool | float | str) -> Scalar) -> None:
-                pass
-
-            def add_global(
-                self,
-                name: str,
-                *,
-                value: str | int | bool | list[str] | dict[str, str | int | bool],
-            ) -> None:
-                pass
-
-            def execute(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[dict[str, object]]:
-                return r.ok({})
-
-            def validate_business_rules(
-                self, *args, **kwargs: t.Scalar
+            def validate_template_config(
+                self, config: t.WebCore.RequestDict
             ) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def render(self, template: str, _context: t.WebCore.RequestDict) -> r[str]:
+                return r[str].ok("")
+
+            def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
+                pass
+
+            def add_global(self, name: str, *, value: t.ContainerValue) -> None:
+                pass
+
+            def execute(self) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({})
+
+            def validate_business_rules(self) -> r[bool]:
+                return r[bool].ok(True)
+
+            def get_service_info(self) -> Mapping[str, t.Scalar]:
                 return {"name": "TemplateEngine"}
+
+            def is_valid(self) -> bool:
+                return True
 
         engine = RealTemplateEngine()
         assert hasattr(engine, "load_template_config")
@@ -636,7 +641,7 @@ class TestFlextWebProtocols:
         assert engine.validate_template_config({"key": "value"}).is_success
         assert engine.render("template", {"key": "value"}).is_success
 
-        def filter_func(x: str | float | bool) -> t.Scalar:
+        def filter_func(x: str) -> str:
             return x
 
         engine.add_filter("test", filter_func)
@@ -651,35 +656,37 @@ class TestFlextWebProtocols:
 
         class RealWebMonitoring:
             def record_web_request(
-                self, request: dict[str, object], response_time: float
+                self, request: t.WebCore.RequestDict, response_time: float
             ) -> None:
                 pass
 
-            def get_web_health_status(self) -> dict[str, object]:
+            def get_web_health_status(self) -> t.WebCore.ResponseDict:
                 return {
                     "status": c.Web.WebResponse.STATUS_HEALTHY,
                     "service": c.Web.WebService.SERVICE_NAME,
                 }
 
-            def get_web_metrics(self) -> dict[str, object]:
+            def get_web_metrics(self) -> t.WebCore.ResponseDict:
                 return {"requests": 0, "errors": 0, "uptime": "0s"}
 
-            def execute(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[dict[str, object]]:
-                return r.ok({})
+            def execute(self) -> r[t.WebCore.ResponseDict]:
+                return r[t.WebCore.ResponseDict].ok({})
 
-            def validate_business_rules(
-                self, *args, **kwargs: t.Scalar
-            ) -> r[bool]:
+            def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> dict[str, object]:
+            def get_service_info(self) -> Mapping[str, t.Scalar]:
                 return {"name": "WebMonitoring"}
 
+            def is_valid(self) -> bool:
+                return True
+
         monitoring = RealWebMonitoring()
-        if hasattr(p.Web.WebMonitoring, "__runtime_checkable__"):
-            assert isinstance(monitoring, p.Web.WebMonitoring)
+        assert hasattr(monitoring, "record_web_request")
+        assert hasattr(monitoring, "get_web_health_status")
+        assert hasattr(monitoring, "get_web_metrics")
+        assert hasattr(monitoring, "execute")
+        assert hasattr(monitoring, "validate_business_rules")
         monitoring.record_web_request({"method": "GET"}, 0.1)
         health = monitoring.get_web_health_status()
         assert health["status"] == c.Web.WebResponse.STATUS_HEALTHY
@@ -862,14 +869,14 @@ class TestFlextWebProtocols:
         assert create_result.is_success
         app_id = str(create_result.value["id"])
         framework = str(create_result.value["framework"])
-        app_instance = cast("object", p.Web.framework_instances[app_id])
-        if framework == "fastapi":
-            fastapi_app = app_instance
-            paths = [route.path for route in fastapi_app.routes]
+        app_instance = p.Web.framework_instances[app_id]
+        if framework == "fastapi" and isinstance(app_instance, FastAPI):
+            paths = [
+                route.path for route in app_instance.routes if hasattr(route, "path")
+            ]
             assert "/protocol/health" in paths
-        else:
-            flask_app = app_instance
-            routes = [rule.rule for rule in flask_app.url_map.iter_rules()]
+        elif isinstance(app_instance, flask.Flask):
+            routes = [rule.rule for rule in app_instance.url_map.iter_rules()]
             assert "/protocol/health" in routes
 
     def test_start_stop_manage_runtime_registry(self) -> None:

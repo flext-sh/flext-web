@@ -21,20 +21,18 @@ from typing import ClassVar
 
 import pytest
 from flask import Flask
+from flext_core import r
 from flext_tests import FlextTestsDocker
 
-from tests import (
+from flext_web import (
     FlextWebApp,
     FlextWebServices,
     FlextWebSettings,
     _ApplicationConfig,
     _WebRequestConfig,
     _WebResponseConfig,
-    c,
-    m,
-    r,
-    t,
 )
+from tests import c, m, t
 
 
 def assert_success(
@@ -307,7 +305,9 @@ def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:
     )
 
 
-def create_test_result(*, success: bool = True, **kwargs: t.Scalar) -> r:
+def create_test_result(
+    *, success: bool = True, **kwargs: t.Scalar
+) -> r[t.Scalar | None]:
     """Create a test r using r API directly.
 
     This function provides a standardized way to create test results,
@@ -333,7 +333,7 @@ def create_test_result(*, success: bool = True, **kwargs: t.Scalar) -> r:
 
 def run_parameterized_test(
     test_cases: list[tuple[object, ...]],
-    test_function: Callable[..., r],
+    test_function: Callable[..., r[t.ContainerValue]],
     expected_results: list[bool],
     test_name: str = "parameterized_test",
 ) -> None:
@@ -371,8 +371,8 @@ def run_parameterized_test(
 
 def create_comprehensive_test_suite(
     entity_type: str,
-    valid_cases: list[dict[str, object]],
-    invalid_cases: list[dict[str, object]],
+    valid_cases: list[dict[str, t.Scalar]],
+    invalid_cases: list[dict[str, t.Scalar]],
     test_name_prefix: str = "comprehensive",
 ) -> None:
     """Create comprehensive test suite using flext_tests patterns.
@@ -447,7 +447,6 @@ def running_service(real_config: FlextWebSettings) -> Generator[FlextWebServices
         host=real_config.host,
         port=test_port,
         app_name=real_config.app_name,
-        version=real_config.version,
     )
     result = FlextWebServices.create_service(test_config)
     assert result.is_success, f"Service creation failed: {result.error}"
