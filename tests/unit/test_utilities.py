@@ -6,6 +6,7 @@ Tests the unified u class following flext standards.
 from unittest.mock import patch
 
 import pytest
+
 from tests import m, u
 
 

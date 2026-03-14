@@ -5,6 +5,7 @@ Tests the unified FlextWebApp class following flext standards.
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
 from tests import FlextWebApp, FlextWebSettings, c, m
 
 

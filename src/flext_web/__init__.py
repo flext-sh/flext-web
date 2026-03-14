@@ -1,3 +1,6 @@
+# AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
+# Regenerate with: make codegen
+#
 """FLEXT Web framework integration.
 
 Provides web framework integration and HTTP handling for FLEXT applications.
@@ -13,35 +16,30 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_web.__version__ import (
-        VERSION,
-        FlextWebVersion,
-        __author__,
-        __author_email__,
-        __description__,
-        __license__,
-        __title__,
-        __url__,
-        __version__,
-        __version_info__,
-        _VersionMetadata,
-    )
+    from flext_web.__version__ import __all__
     from flext_web.api import FlextWebApi
     from flext_web.app import FlextWebApp
-    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
-    from flext_web.handlers import FlextWebHandlers
-    from flext_web.models import FlextWebModels, FlextWebModels as m
-    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
+    from flext_web.constants import FlextWebConstants, c
+    from flext_web.handlers import FlextWebHandlers, FlextWebHandlers as h
+    from flext_web.models import FlextWebModels, m
+    from flext_web.protocols import (
+        FlextWebProtocols,
+        create_app,
+        list_apps,
+        p,
+        start_app,
+        stop_app,
+    )
     from flext_web.services import FlextWebServices
     from flext_web.settings import FlextWebSettings
     from flext_web.typings import (
         FlextWebTypes,
-        FlextWebTypes as t,
         _ApplicationConfig,
         _WebRequestConfig,
         _WebResponseConfig,
+        t,
     )
-    from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
+    from flext_web.utilities import FlextWebUtilities, u
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -58,26 +56,20 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "_ApplicationConfig": ("flext_web.typings", "_ApplicationConfig"),
     "_WebRequestConfig": ("flext_web.typings", "_WebRequestConfig"),
     "_WebResponseConfig": ("flext_web.typings", "_WebResponseConfig"),
-    "_VersionMetadata": ("flext_web.__version__", "_VersionMetadata"),
-    "FlextWebVersion": ("flext_web.__version__", "FlextWebVersion"),
-    "VERSION": ("flext_web.__version__", "VERSION"),
-    "__author__": ("flext_web.__version__", "__author__"),
-    "__author_email__": ("flext_web.__version__", "__author_email__"),
-    "__description__": ("flext_web.__version__", "__description__"),
-    "__license__": ("flext_web.__version__", "__license__"),
-    "__title__": ("flext_web.__version__", "__title__"),
-    "__url__": ("flext_web.__version__", "__url__"),
-    "__version__": ("flext_web.__version__", "__version__"),
-    "__version_info__": ("flext_web.__version__", "__version_info__"),
-    "c": ("flext_web.constants", "FlextWebConstants"),
-    "m": ("flext_web.models", "FlextWebModels"),
-    "p": ("flext_web.protocols", "FlextWebProtocols"),
-    "t": ("flext_web.typings", "FlextWebTypes"),
-    "u": ("flext_web.utilities", "FlextWebUtilities"),
+    "__all__": ("flext_web.__version__", "__all__"),
+    "c": ("flext_web.constants", "c"),
+    "create_app": ("flext_web.protocols", "create_app"),
+    "h": ("flext_web.handlers", "FlextWebHandlers"),
+    "list_apps": ("flext_web.protocols", "list_apps"),
+    "m": ("flext_web.models", "m"),
+    "p": ("flext_web.protocols", "p"),
+    "start_app": ("flext_web.protocols", "start_app"),
+    "stop_app": ("flext_web.protocols", "stop_app"),
+    "t": ("flext_web.typings", "t"),
+    "u": ("flext_web.utilities", "u"),
 }
 
 __all__ = [
-    "VERSION",
     "FlextWebApi",
     "FlextWebApp",
     "FlextWebConstants",
@@ -88,28 +80,24 @@ __all__ = [
     "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
-    "FlextWebVersion",
     "_ApplicationConfig",
-    "_VersionMetadata",
     "_WebRequestConfig",
     "_WebResponseConfig",
-    "__author__",
-    "__author_email__",
-    "__description__",
-    "__license__",
-    "__title__",
-    "__url__",
-    "__version__",
-    "__version_info__",
+    "__all__",
     "c",
+    "create_app",
+    "h",
+    "list_apps",
     "m",
     "p",
+    "start_app",
+    "stop_app",
     "t",
     "u",
 ]
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> t.ModuleExport:
     """Lazy-load module attributes on first access (PEP 562)."""
     return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
 

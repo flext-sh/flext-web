@@ -9,6 +9,7 @@ from collections.abc import Mapping
 
 import pytest
 from pydantic import ValidationError
+
 from tests import c, m, t
 from tests.conftest import create_entry, create_test_app
 

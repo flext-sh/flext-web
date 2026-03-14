@@ -1,3 +1,6 @@
+# AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
+# Regenerate with: make codegen
+#
 """Test helpers for flext-web tests.
 
 Provides reusable test utilities and helpers for all test modules.
@@ -19,20 +22,23 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from .models import TestsModels, TestsModels as m
-    from .protocols import TestsProtocols, TestsProtocols as p
-    from .typings import TestsTypings, t
-    from .utilities import TestsUtilities, TestsUtilities as u
+    from tests.helpers.models import TestsModels, m
+    from tests.helpers.protocols import TestsProtocols, p
+    from tests.helpers.typings import TestsTypings, t
+    from tests.helpers.utilities import TestsUtilities, u
+
+# Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
-    "TestsModels": ("models", "TestsModels"),
-    "TestsProtocols": ("protocols", "TestsProtocols"),
-    "TestsTypings": ("typings", "TestsTypings"),
-    "TestsUtilities": ("utilities", "TestsUtilities"),
-    "m": ("models", "TestsModels"),
-    "p": ("protocols", "TestsProtocols"),
-    "t": ("typings", "t"),
-    "u": ("utilities", "TestsUtilities"),
+    "TestsModels": ("tests.helpers.models", "TestsModels"),
+    "TestsProtocols": ("tests.helpers.protocols", "TestsProtocols"),
+    "TestsTypings": ("tests.helpers.typings", "TestsTypings"),
+    "TestsUtilities": ("tests.helpers.utilities", "TestsUtilities"),
+    "m": ("tests.helpers.models", "m"),
+    "p": ("tests.helpers.protocols", "p"),
+    "t": ("tests.helpers.typings", "t"),
+    "u": ("tests.helpers.utilities", "u"),
 }
+
 __all__ = [
     "TestsModels",
     "TestsProtocols",
@@ -45,7 +51,7 @@ __all__ = [
 ]
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> t.ModuleExport:
     """Lazy-load module attributes on first access (PEP 562)."""
     return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
 

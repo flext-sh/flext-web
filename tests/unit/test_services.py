@@ -9,6 +9,7 @@ from typing import Any
 
 import pytest
 from pydantic import ValidationError
+
 from tests import FlextWebSettings, c, m, s
 
 

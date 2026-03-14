@@ -333,7 +333,7 @@ def create_test_result(*, success: bool = True, **kwargs: t.Scalar) -> r:
 
 def run_parameterized_test(
     test_cases: list[tuple[object, ...]],
-    test_function: Callable[, r],
+    test_function: Callable[..., r],
     expected_results: list[bool],
     test_name: str = "parameterized_test",
 ) -> None:
