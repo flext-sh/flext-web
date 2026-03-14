@@ -177,7 +177,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
@@ -207,12 +207,12 @@ class FlextWebSettings(BaseSettings, FlextSettings):
         description="Secret key for cryptographic operations"
     )
 
-    def validate_config(self) -> FlextResult[bool]:
+    def validate_config(self) -> r[bool]:
         """Validate configuration"""
         # Implementation includes business rules and security validation
         if not self.debug and "change-in-production" in self.secret_key:
-            return FlextResult[bool].fail("Secret key must be changed")
-        return FlextResult[bool].| ok(value=True)
+            return r[bool].fail("Secret key must be changed")
+        return r[bool].| ok(value=True)
 
     def get_server_url(self) -> str:
         """Get complete server URL"""
@@ -233,6 +233,7 @@ reset_web_settings()
 
 # Create service with custom configuration
 from flext_web import create_service
+
 custom_config = FlextWebSettings(port=9000, debug=False)
 service = create_service(custom_config)
 ```
@@ -290,27 +291,27 @@ aws ssm put-parameter \
 The configuration includes several security validation rules:
 
 ```python
-def validate_config(self) -> FlextResult[bool]:
+def validate_config(self) -> r[bool]:
     """Security validation rules"""
 
     # Production secret key validation
     if not self.debug and "change-in-production" in self.secret_key:
-        return FlextResult[bool].fail("Secret key must be changed in production")
+        return r[bool].fail("Secret key must be changed in production")
 
     # Secret key length validation
     if len(self.secret_key) < 32:
-        return FlextResult[bool].fail("Secret key must be at least 32 characters")
+        return r[bool].fail("Secret key must be at least 32 characters")
 
     # Port range validation
     if not (1 <= self.port <= 65535):
-        return FlextResult[bool].fail("Port must be between 1 and 65535")
+        return r[bool].fail("Port must be between 1 and 65535")
 
     # Host validation for production
     if not self.debug and self.host == "0.0.0.0":
         # Log warning for production binding to all interfaces
         logger.warning("Production service binding to all interfaces")
 
-    return FlextResult[bool].| ok(value=True)
+    return r[bool].| ok(value=True)
 ```
 
 ## 🏗️ Environment-Specific Configuration
@@ -340,6 +341,7 @@ python -m flext_web
 import os
 import pytest
 from flext_web import reset_web_settings
+
 
 @pytest.fixture(autouse=True)
 def setup_test_environment():
@@ -398,7 +400,7 @@ print(f"Debug Mode: {config.debug}")
 
 # View all settings (excluding secrets)
 config_dict = config.dict()
-config_dict.pop('secret_key', None)  # Remove secret from output
+config_dict.pop("secret_key", None)  # Remove secret from output
 print(config_dict)
 ```
 
@@ -423,7 +425,7 @@ print(f'Debug: {config.debug}')
 ```bash
 # Test configuration validation
 python -c "
-from flext_web.settings import FlextWebSettings
+from flext_web import FlextWebSettings
 import os
 
 # Test with invalid configuration
@@ -507,7 +509,7 @@ env | grep FLEXT_WEB_
 
 # Test direct configuration
 python -c "
-from flext_web.settings import FlextWebSettings
+from flext_web import FlextWebSettings
 config = FlextWebSettings(host='test', port=9999)
 print(f'Host: {config.host}, Port: {config.port}')
 "

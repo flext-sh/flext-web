@@ -20,7 +20,6 @@
   - [Coverage Requirements](#coverage-requirements)
 - [🎨 Code Style & Quality](#code-style-quality)
   - [Linting Configuration (Ruff)](#linting-configuration-ruff)
-  - [Type Checking (MyPy)](#type-checking-mypy)
   - [Code Formatting](#code-formatting)
   - [Quality Metrics](#quality-metrics)
 - [🔌 Development Environment](#development-environment)
@@ -243,7 +242,7 @@ make doctor              # Health check (diagnose + check)
 make t                    # test
 make l                    # lint
 make f                    # format
-make tc
+make c
 make c                    # clean
 make i                    # install
 make v                    # validate
@@ -301,7 +300,7 @@ markers = [
     "unit: Unit tests",
     "integration: Integration tests",
     "slow: Slow tests",
-    "e2e: End-to-end tests"
+    "e2e: End-to-end tests",
 ]
 ```
 
@@ -319,23 +318,6 @@ markers = [
 # pyproject.toml - Ruff configuration
 extend = "../.ruff-shared.toml"
 lint.isort.known-first-party = ["flext_web"]
-```
-
-### Type Checking (MyPy)
-
-```toml
-# pyproject.toml - MyPy strict configuration
-[tool.mypy]
-strict = true
-python_version = "3.13"
-plugins = ["pydantic.mypy"]
-
-# Strict checks beyond default
-disallow_any_decorated = false
-disallow_any_explicit = true
-disallow_any_generics = true
-warn_return_any = true
-warn_unused_ignores = false
 ```
 
 ### Code Formatting
@@ -440,21 +422,22 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
 
+
 class FlextWebApp(FlextModels.Entity):
     """Domain entity with business rules"""
 
-    def start(self) -> FlextResult['FlextWebApp']:
+    def start(self) -> r["FlextWebApp"]:
         """Business logic for starting application"""
         if self.status == FlextWebAppStatus.RUNNING:
-            return FlextResult[bool].fail("Application already running")
+            return r[bool].fail("Application already running")
         # Business validation here
-        return FlextResult[bool].ok(self.model_copy(update={"status": FlextWebAppStatus.RUNNING}))
+        return r[bool].ok(self.model_copy(update={"status": FlextWebAppStatus.RUNNING}))
 ```
 
 #### Application Layer Development
@@ -476,11 +459,12 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t
 from flext_core import u
+
 
 class FlextWebAppHandler(FlextProcessors.Handler):
     """CQRS command handlers"""
@@ -488,13 +472,13 @@ class FlextWebAppHandler(FlextProcessors.Handler):
     def __init__(self, repository: FlextWebAppRepository):
         self.repository = repository
 
-    def create_app(self, command: CreateAppCommand) -> FlextResult[FlextWebApp]:
+    def create_app(self, command: CreateAppCommand) -> r[FlextWebApp]:
         """Handle create app command"""
         app = FlextWebApp(
             id=f"app_{command.name}",
             name=command.name,
             port=command.port,
-            host=command.host
+            host=command.host,
         )
 
         validation = app.validate_domain_rules()
@@ -511,16 +495,17 @@ class FlextWebAppHandler(FlextProcessors.Handler):
 from flask import Blueprint, request, jsonify
 from ...application.handlers import FlextWebAppHandler
 
-api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
+api_v1 = Blueprint("api_v1", __name__, url_prefix="/api/v1")
 
-@api_v1.route('/apps', methods=['POST'])
+
+@api_v1.route("/apps", methods=["POST"])
 def create_app():
     """Create application endpoint"""
     data = request.get_json()
     command = CreateAppCommand(
-        name=data.get('name'),
-        port=data.get('port', 8000),
-        host=data.get('host', 'localhost')
+        name=data.get("name"),
+        port=data.get("port", 8000),
+        host=data.get("host", "localhost"),
     )
 
     result = app_handler.create_app(command)
@@ -529,13 +514,10 @@ def create_app():
         return jsonify({
             "success": True,
             "message": "Application created successfully",
-            "data": result.data.dict()
+            "data": result.data.dict(),
         })
 
-    return jsonify({
-        "success": False,
-        "message": f"Failed: {result.error}"
-    }), 400
+    return jsonify({"success": False, "message": f"Failed: {result.error}"}), 400
 ```
 
 ### FLEXT Core Integration
@@ -543,23 +525,23 @@ def create_app():
 ```python
 # Using flext-core patterns
 from flext_core import (
-    FlextResult,      # Railway-oriented programming
+    r,      # Railway-oriented programming
     FlextModels.Entity,      # Domain entity base class
     FlextSettings,      # Configuration management
     FlextProcessors,    # CQRS handlers
     FlextLogger        # Structured logging
 )
 
-# Example: Error handling with FlextResult
-def create_application(name: str, port: int) -> FlextResult[FlextWebApp]:
+# Example: Error handling with r
+def create_application(name: str, port: int) -> r[FlextWebApp]:
     """Create application with proper error handling"""
     try:
         # Validation
         if not name:
-            return FlextResult[bool].fail("Application name is required")
+            return r[bool].fail("Application name is required")
 
         if not (1 <= port <= 65535):
-            return FlextResult[bool].fail("Port must be between 1 and 65535")
+            return r[bool].fail("Port must be between 1 and 65535")
 
         # Create entity
         app = FlextWebApp(id=f"app_{name}", name=name, port=port)
@@ -570,10 +552,10 @@ def create_application(name: str, port: int) -> FlextResult[FlextWebApp]:
             return validation
 
         # Success
-        return FlextResult[bool].ok(app)
+        return r[bool].ok(app)
 
     except Exception as e:
-        return FlextResult[bool].fail(f"Unexpected error: {e}")
+        return r[bool].fail(f"Unexpected error: {e}")
 ```
 
 ## 🔍 Debugging
@@ -623,7 +605,7 @@ from flext_core import FlextModels
 from flext_core import FlextProcessors
 from flext_core import p
 from flext_core import FlextRegistry
-from flext_core import FlextResult
+from flext_core import r
 from flext_core import FlextRuntime
 from flext_core import FlextService
 from flext_core import t

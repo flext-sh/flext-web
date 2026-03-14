@@ -1,6 +1,6 @@
 """FLEXT Web Types - Domain-specific web type definitions using Pydantic models.
 
-This module provides web-specific type definitions using FlextWebModels.
+This module provides web-specific type definitions using m.
 Uses Pydantic 2 models instead of dict types for better type safety and validation.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -10,120 +10,86 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal, TypeAlias
 
-from flext_core import (
-    FlextResult,
-    FlextTypes,
-    FlextTypes as t_core,
-    FlextUtilities,
-)
-from pydantic import BaseModel, ConfigDict, Field
+from flext_core import FlextTypes, r, u
+from pydantic import Field
 
-from flext_web.constants import FlextWebConstants
-from flext_web.models import FlextWebModels
+from flext_web.constants import FlextWebConstants as c
+from flext_web.models import FlextWebModels as m
 
-# Import aliases for simplified usage (DSL pattern)
-u = FlextUtilities
-c = FlextWebConstants
-m = FlextWebModels
-
-HttpMethod = FlextWebConstants.Web.Method
+HttpMethod = c.Web.Method
+WebRequestDict: TypeAlias = dict[
+    str, str | int | bool | list[str] | dict[str, str | int | bool]
+]
+WebResponseDict: TypeAlias = dict[
+    str, str | int | bool | list[str] | dict[str, str | int | bool]
+]
 
 
-class _WebRequestConfig(BaseModel):
-    """Web request configuration model."""
-
-    model_config = ConfigDict(frozen=False, extra="forbid")
-
-    url: str = Field(default="")
-    method: str = Field(default="GET")
-    headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, t_core.GeneralValueType] | None = Field(default=None)
-    timeout: float = Field(default=30.0)
-    query_params: dict[str, t_core.GeneralValueType] | None = Field(default=None)
-    client_ip: str = Field(default="")
-    user_agent: str = Field(default="")
-
-
-class _WebResponseConfig(BaseModel):
-    """Web response configuration model."""
-
-    model_config = ConfigDict(frozen=False, extra="forbid")
-
-    status_code: int = Field(default=200)
-    request_id: str = Field(default="")
-    headers: dict[str, str] | None = Field(default=None)
-    body: str | dict[str, t_core.GeneralValueType] | None = Field(default=None)
-    elapsed_time: float = Field(default=0.0)
-    content_type: str = Field(default="application/json")
-    content_length: int = Field(default=0)
-    processing_time_ms: float = Field(default=0.0)
+class _ApplicationConfig(m.Web.EntityConfig):
+    name: Annotated[
+        str, Field(default=c.Web.WebDefaults.APP_NAME, description="App name")
+    ]
+    status: Annotated[
+        str, Field(default=c.Web.Status.STOPPED.value, description="App status")
+    ]
+    environment: Annotated[
+        str,
+        Field(
+            default=c.Web.Name.DEVELOPMENT.value,
+            description="Environment",
+        ),
+    ]
+    debug_mode: Annotated[
+        bool, Field(default=c.Web.WebDefaults.DEBUG_MODE, description="Debug")
+    ]
+    version: Annotated[
+        int, Field(default=c.Web.WebDefaults.VERSION_INT, description="Version")
+    ]
 
 
-class _ApplicationConfig(BaseModel):
-    """Application configuration model."""
+class _WebRequestConfig(m.Web.AppRequest):
+    pass
 
-    model_config = ConfigDict(frozen=False, extra="forbid")
 
-    name: str = Field(default="")
-    host: str = Field(default="localhost")
-    port: int = Field(default=8080)
-    status: str = Field(default="stopped")
-    environment: str = Field(default="development")
-    debug_mode: bool = Field(default=False)
-    version: int = Field(default=1)
+class _WebResponseConfig(m.Web.AppResponse):
+    pass
 
 
 class FlextWebTypes(FlextTypes):
-    """Web-specific type definitions using FlextWebModels.
+    """Web-specific type definitions using m.
 
-    Uses Pydantic 2 models from FlextWebModels for type safety.
+    Uses Pydantic 2 models from m for type safety.
     Provides type aliases and factory methods for web operations.
     Follows single unified class per module pattern.
     """
 
-    # =========================================================================
-    # PYDANTIC MODEL CLASSES - Use inheritance instead of aliases
-    # =========================================================================
+    class HttpMessage(m.Web.Message):
+        """HTTP message model - inherits from m.Web.Message."""
 
-    # HTTP protocol models - proper inheritance from FlextWebModels
-    class HttpMessage(FlextWebModels.Web.Message):
-        """HTTP message model - inherits from FlextWebModels.Web.Message."""
+    class HttpRequest(m.Web.Request):
+        """HTTP request model - inherits from m.Web.Request."""
 
-    class HttpRequest(FlextWebModels.Web.Request):
-        """HTTP request model - inherits from FlextWebModels.Web.Request."""
+    class HttpResponse(m.Web.Response):
+        """HTTP response model - inherits from m.Web.Response."""
 
-    class HttpResponse(FlextWebModels.Web.Response):
-        """HTTP response model - inherits from FlextWebModels.Web.Response."""
+    WebRequest = m.Web.AppRequest
+    "Web request model - references m.Web.AppRequest."
+    WebResponse = m.Web.AppResponse
+    "Web response model - references m.Web.AppResponse."
 
-    # Web-specific models - reference existing models
-    WebRequest = FlextWebModels.Web.AppRequest
-    """Web request model - references FlextWebModels.Web.AppRequest."""
+    class ApplicationEntity(m.Web.Entity):
+        """Application entity model - inherits from m.Web.Entity."""
 
-    WebResponse = FlextWebModels.Web.AppResponse
-    """Web response model - references FlextWebModels.Web.AppResponse."""
+    ApplicationStatus = c.Web.Status
 
-    # Application models - proper inheritance from FlextWebModels
-    class ApplicationEntity(FlextWebModels.Web.Entity):
-        """Application entity model - inherits from FlextWebModels.Web.Entity."""
+    class AppData(m.Web.ApplicationResponse):
+        """Application data model - inherits from m.Web.ApplicationResponse."""
 
-    # ApplicationStatus - StrEnum cannot be inherited (Python limitation)
-    ApplicationStatus = FlextWebConstants.Web.Status
+    HealthResponse = m.Web.HealthResponse
+    "Health response model - references m.Web.HealthResponse."
 
-    # Application data types - proper inheritance from FlextWebModels
-    class AppData(FlextWebModels.Web.ApplicationResponse):
-        """Application data model - inherits from FlextWebModels.Web.ApplicationResponse."""
-
-    # Health response type - proper inheritance from FlextWebModels
-    HealthResponse = FlextWebModels.Web.HealthResponse
-    """Health response model - references FlextWebModels.Web.HealthResponse."""
-
-    # =========================================================================
-    # TYPE ALIASES - Using Pydantic models and Protocols
-    # =========================================================================
-
-    # Core data types - use Protocols and specific types
     class Web:
         """Web core type aliases for request/response data.
 
@@ -132,42 +98,15 @@ class FlextWebTypes(FlextTypes):
         This enables consistent namespace patterns for cross-project type access.
         """
 
-        type ConfigValue = str | int | bool | list[str]
-        type RequestDict = dict[
-            str,
-            str | int | bool | list[str] | dict[str, str | int | bool],
-        ]
-        type ResponseDict = dict[
-            str,
-            str | int | bool | list[str] | dict[str, str | int | bool],
-        ]
-
-        # ============================================================================
-        # LITERAL TYPE DEFINITIONS
-        # ============================================================================
-        # These Literal types provide compile-time safety for string literals
-        # All Literal[] definitions belong in typings.py under the t.* namespace
-
-        # HTTP method literal - references Http.Method StrEnum members
+        ConfigValue = str | int | bool | list[str]
+        RequestDict: TypeAlias = WebRequestDict
+        ResponseDict: TypeAlias = WebResponseDict
         HttpMethodLiteral = Literal[
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "PATCH",
-            "HEAD",
-            "OPTIONS",
+            "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
         ]
-
-        # Environment name literal - references WebEnvironment.Name StrEnum members
         EnvironmentNameLiteral = Literal[
-            "development",
-            "staging",
-            "production",
-            "testing",
+            "development", "staging", "production", "testing"
         ]
-
-        # Application status literal - references WebEnvironment.Status StrEnum members
         ApplicationStatusLiteral = Literal[
             "stopped",
             "starting",
@@ -177,8 +116,6 @@ class FlextWebTypes(FlextTypes):
             "maintenance",
             "deploying",
         ]
-
-        # Application type literal - references WebEnvironment.ApplicationType StrEnum members
         ApplicationTypeLiteral = Literal[
             "application",
             "service",
@@ -189,347 +126,66 @@ class FlextWebTypes(FlextTypes):
             "dashboard",
             "REDACTED_LDAP_BIND_PASSWORD_panel",
         ]
-
-        # Response status literal - uses string literals matching WebResponse constants
-        ResponseStatusLiteral = Literal[
-            "success",
-            "error",
-            "operational",
-            "healthy",
-        ]
-
-        # Protocol literal - uses string literals matching WebDefaults constants
-        ProtocolLiteral = Literal[
-            "http",
-            "https",
-        ]
-
-        # Content type literal - uses string literals matching Http constants
-        ContentTypeLiteral = Literal[
-            "application/json",
-            "text/plain",
-            "text/html",
-        ]
-
-        # Session cookie SameSite literal - standard HTTP cookie attribute values
+        ResponseStatusLiteral = Literal["success", "error", "operational", "healthy"]
+        ProtocolLiteral = Literal["http", "https"]
+        ContentTypeLiteral = Literal["application/json", "text/plain", "text/html"]
         SameSiteLiteral = Literal["Lax", "Strict", "None"]
 
-    # WebCore alias - for compatibility with code using t.WebCore
-    WebCore = Web
-    """Alias for Web class - provides access to t.WebCore.ResponseDict, t.WebCore.RequestDict."""
+    class WebCore:
+        """Compatibility namespace for request/response dict aliases."""
 
-    # Types alias - for compatibility with code using t.Types.GeneralValueType
+        RequestDict: TypeAlias = WebRequestDict
+        ResponseDict: TypeAlias = WebResponseDict
+
     class Types:
-        """Type system aliases for flext-web."""
+        """Type system aliases for flext-web Removed redundant aliases."""
 
-        GeneralValueType = t_core.GeneralValueType
-        """General value type - references FlextTypes.GeneralValueType."""
+    SuccessResponse = m.Web.ServiceResponse
+    "Success response model - references m.Web.ServiceResponse."
+    BaseResponse = m.Web.ServiceResponse
+    "Base response model - references m.Web.ServiceResponse."
+    ErrorResponse = m.Web.ServiceResponse
+    "Error response model - references m.Web.ServiceResponse."
 
-    # Core response types - proper inheritance from FlextWebModels
-    SuccessResponse = FlextWebModels.Web.ServiceResponse
-    """Success response model - references FlextWebModels.Web.ServiceResponse."""
-
-    BaseResponse = FlextWebModels.Web.ServiceResponse
-    """Base response model - references FlextWebModels.Web.ServiceResponse."""
-
-    ErrorResponse = FlextWebModels.Web.ServiceResponse
-    """Error response model - references FlextWebModels.Web.ServiceResponse."""
-
-    # ResponseDict wrapper for FlextService - use PEP 695 type keyword
     class Data:
         """Data type definitions for FlextService compatibility."""
 
         type WebResponseDict = dict[
-            str,
-            str | int | bool | list[str] | dict[str, str | int | bool],
+            str, str | int | bool | list[str] | dict[str, str | int | bool]
         ]
 
-    # Configuration types - proper inheritance from FlextWebModels
-    class WebConfigDict(FlextWebModels.Web.EntityConfig):
-        """Web configuration dictionary model - inherits from FlextWebModels.Web.EntityConfig."""
+    class WebConfigDict(m.Web.EntityConfig):
+        """Web configuration dictionary model - inherits from m.Web.EntityConfig."""
 
-    class AppConfigDict(FlextWebModels.Web.EntityConfig):
-        """Application configuration dictionary model - inherits from FlextWebModels.Web.EntityConfig."""
-
-    # =========================================================================
-    # FACTORY METHODS - Create instances of Pydantic models
-    # =========================================================================
-
-    @classmethod
-    def create_http_request(
-        cls,
-        url: str,
-        method: str = FlextWebConstants.Web.Method.GET,
-        headers: dict[str, str] | None = None,
-        body: str | dict[str, t_core.GeneralValueType] | None = None,
-        timeout: float = FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
-    ) -> FlextResult[FlextWebModels.Web.Request]:
-        """Create HTTP request model instance with proper validation.
-
-        Args:
-            url: Request URL
-            method: HTTP method (must be valid from constants)
-            headers: Request headers (validated, no fallback)
-            body: Request body
-            timeout: Request timeout in seconds
-
-        Returns:
-            FlextResult[Web.Request]: Success contains request model,
-                                     failure contains validation error
-
-        """
-        # Use # Direct validation instead for unified method validation (DSL pattern)
-        method_upper = method.upper()
-        valid_methods = set(FlextWebConstants.Web.Http.METHODS)
-        method_validated = u.Validation.guard(
-            method_upper,
-            lambda m: m in valid_methods,
-            error_message=f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
-            return_value=True,
-        )
-        if method_validated is None:
-            return FlextResult[FlextWebModels.Web.Request].fail(
-                f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
-            )
-
-        # Use # Direct validation instead for unified headers validation (DSL pattern)
-        # Validate headers - must be dict or None
-        headers_validated = headers or {}
-
-        # Use u.try_() for unified error handling (DSL pattern)
-        def create_request() -> FlextWebModels.Web.Request:
-            """Create request model."""
-            return FlextWebModels.Web.Request(
-                url=url,
-                method=method_upper,
-                headers=headers_validated or {},
-                body=body,
-                timeout=timeout,
-            )
-
-        # Use u.try_() with custom exception handling for better error messages
-        try:
-            request = create_request()
-            return FlextResult[FlextWebModels.Web.Request].ok(request)
-        except Exception as exc:
-            # Use u.err() pattern for unified error extraction (DSL pattern)
-            error_msg = f"Failed to create HTTP request: {exc}"
-            return FlextResult[FlextWebModels.Web.Request].fail(error_msg)
-
-    @classmethod
-    def create_http_response(
-        cls,
-        status_code: int,
-        headers: dict[str, str] | None = None,
-        body: str | dict[str, t_core.GeneralValueType] | None = None,
-        elapsed_time: float | None = None,
-    ) -> FlextResult[FlextWebModels.Web.Response]:
-        """Create HTTP response model instance with proper validation.
-
-        Args:
-            status_code: HTTP status code
-            headers: Response headers (validated, no fallback)
-            body: Response body
-            elapsed_time: Response processing time
-
-        Returns:
-            FlextResult[Web.Response]: Success contains response model,
-                                      failure contains validation error
-
-        """
-        # Use # Direct validation instead for unified headers validation (DSL pattern)
-        # Validate headers - must be dict or None
-        headers_validated = headers or {}
-
-        # Use u.try_() for unified error handling (DSL pattern)
-        def create_response() -> FlextWebModels.Web.Response:
-            """Create response model."""
-            return FlextWebModels.Web.Response(
-                status_code=status_code,
-                headers=headers_validated or {},
-                body=body,
-                elapsed_time=elapsed_time,
-            )
-
-        # Use u.try_() with custom exception handling for better error messages
-        try:
-            response = create_response()
-            return FlextResult[FlextWebModels.Web.Response].ok(response)
-        except Exception as exc:
-            # Use u.err() pattern for unified error extraction (DSL pattern)
-            return FlextResult[FlextWebModels.Web.Response].fail(
-                f"Failed to create HTTP response: {exc}",
-            )
-
-    @classmethod
-    def create_web_request(
-        cls,
-        config: _WebRequestConfig,
-    ) -> FlextResult[m.Web.AppRequest]:
-        """Create web request model instance with proper validation.
-
-        Args:
-            config: Web request configuration model
-
-        Returns:
-            FlextResult[Web.AppRequest]: Success contains request model,
-                                        failure contains validation error
-
-        """
-        # Direct model access with defaults
-        url: str = config.url or ""
-        method: str = config.method or FlextWebConstants.Web.Method.GET
-        headers = config.headers
-        body = config.body
-        timeout: float = (
-            config.timeout or FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS
-        )
-        query_params = config.query_params
-        client_ip: str = config.client_ip or ""
-        user_agent: str = config.user_agent or ""
-
-        # Validate URL - must be non-empty string
-        if not url or not url.strip():
-            return FlextResult[FlextWebModels.Web.AppRequest].fail("URL is required")
-        url_validated = url.strip()
-
-        # Use # Direct validation instead for headers and query_params validation (DSL pattern)
-        # Validate headers - must be dict or None
-        headers_validated: dict[str, str] = headers or {}
-        # Validate query_params - must be dict or None
-        query_params_validated: dict[str, t_core.GeneralValueType] = query_params or {}
-
-        # Use # Direct validation instead for method validation (DSL pattern)
-        method_upper = method.upper()
-        valid_methods = set(FlextWebConstants.Web.Http.METHODS)
-        method_validated = u.Validation.guard(
-            method_upper,
-            lambda m: m in valid_methods,
-            error_message=f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
-            return_value=True,
-        )
-        if method_validated is None:
-            return FlextResult[FlextWebModels.Web.AppRequest].fail(
-                f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
-            )
-
-        # Use u.try_() for unified error handling (DSL pattern)
-        def create_request() -> FlextWebModels.Web.AppRequest:
-            """Create request model."""
-            return FlextWebModels.Web.AppRequest(
-                url=url_validated,
-                method=method_upper,  # method_upper is validated to be HttpMethodLiteral
-                headers=headers_validated,
-                body=body,
-                timeout=timeout or FlextWebConstants.Web.Http.DEFAULT_TIMEOUT_SECONDS,
-                query_params=query_params_validated,
-                client_ip=client_ip,
-                user_agent=user_agent,
-            )
-
-        # Use u.try_() with custom exception handling for better error messages
-        try:
-            request = create_request()
-            return FlextResult[FlextWebModels.Web.AppRequest].ok(request)
-        except Exception as exc:
-            # Use u.err() pattern for unified error extraction (DSL pattern)
-            return FlextResult[FlextWebModels.Web.AppRequest].fail(
-                f"Failed to create web request: {exc}",
-            )
-
-    @classmethod
-    def create_web_response(
-        cls,
-        config: _WebResponseConfig,
-    ) -> FlextResult[m.Web.AppResponse]:
-        """Create web response model instance with proper validation.
-
-        Args:
-            config: Web response configuration model
-
-        Returns:
-            FlextResult[Web.AppResponse]: Success contains response model,
-                                         failure contains validation error
-
-        """
-        # Direct model access with defaults
-        status_code: int = config.status_code or 200
-        request_id: str = config.request_id or ""
-        headers = config.headers
-        body = config.body
-        elapsed_time: float = config.elapsed_time or 0.0
-        content_type: str = (
-            config.content_type or FlextWebConstants.Web.Http.CONTENT_TYPE_JSON
-        )
-        content_length: int = config.content_length or 0
-        processing_time_ms: float = config.processing_time_ms or 0.0
-
-        # Use # Direct validation instead for unified headers validation (DSL pattern)
-        # Validate headers - must be dict or None
-        headers_validated: dict[str, str] = headers if isinstance(headers, dict) else {}
-
-        # Use u.try_() for unified error handling (DSL pattern)
-        def create_response() -> FlextWebModels.Web.AppResponse:
-            """Create response model."""
-            return FlextWebModels.Web.AppResponse(
-                status_code=status_code or 200,
-                request_id=request_id,
-                headers=headers_validated,
-                body=body,
-                elapsed_time=elapsed_time or 0.0,
-                content_type=content_type,
-                content_length=content_length or 0,
-                processing_time_ms=processing_time_ms or 0.0,
-            )
-
-        # Use u.try_() with custom exception handling for better error messages
-        try:
-            response = create_response()
-            return FlextResult[FlextWebModels.Web.AppResponse].ok(response)
-        except Exception as exc:
-            # Use u.err() pattern for unified error extraction (DSL pattern)
-            return FlextResult[FlextWebModels.Web.AppResponse].fail(
-                f"Failed to create web response: {exc}",
-            )
+    class AppConfigDict(m.Web.EntityConfig):
+        """Application configuration dictionary model - inherits from m.Web.EntityConfig."""
 
     @classmethod
     def create_application(
         cls,
         config: _ApplicationConfig,
-    ) -> FlextResult[m.Web.Entity]:
+    ) -> r[m.Web.Entity]:
         """Create application model instance.
 
         Args:
             config: Application configuration model
 
         Returns:
-            FlextResult[Web.Entity]: Success contains application entity,
+            r[Web.Entity]: Success contains application entity,
                                             failure contains error message
 
         """
-        # Direct model access with defaults
         name: str = config.name or ""
         host: str = config.host or "localhost"
         port: int = config.port or 8080
-        status: str = config.status or FlextWebConstants.Web.Status.STOPPED.value
-        environment: str = (
-            config.environment or FlextWebConstants.Web.Name.DEVELOPMENT.value
-        )
-        debug_mode: bool = (
-            config.debug_mode
-            if isinstance(config.debug_mode, bool)
-            else FlextWebConstants.Web.WebDefaults.DEBUG_MODE
-        )
-        version: int = (
-            config.version
-            if isinstance(config.version, int)
-            else FlextWebConstants.Web.WebDefaults.VERSION_INT
-        )
+        status: str = config.status or c.Web.Status.STOPPED.value
+        environment: str = config.environment or c.Web.Name.DEVELOPMENT.value
+        debug_mode: bool = config.debug_mode
+        version: int = config.version
 
-        # Use u.try_() for unified error handling (DSL pattern)
-        def create_entity() -> FlextWebModels.Web.Entity:
+        def create_entity() -> m.Web.Entity:
             """Create application entity."""
-            return FlextWebModels.Web.Entity(
+            return m.Web.Entity(
                 name=name,
                 host=host,
                 port=port,
@@ -540,19 +196,245 @@ class FlextWebTypes(FlextTypes):
                 domain_events=[],
             )
 
-        # Use u.try_() with custom exception handling for better error messages
         try:
             entity = create_entity()
-            return FlextResult[FlextWebModels.Web.Entity].ok(entity)
-        except Exception as exc:
-            # Use u.err() pattern for unified error extraction (DSL pattern)
-            return FlextResult[FlextWebModels.Web.Entity].fail(
-                f"Failed to create application: {exc}",
+            return r[m.Web.Entity].ok(entity)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
+            return r[m.Web.Entity].fail(f"Failed to create application: {exc}")
+
+    @classmethod
+    def create_http_request(
+        cls,
+        url: str,
+        method: str = c.Web.Method.GET,
+        headers: dict[str, str] | None = None,
+        body: str | dict[str, FlextTypes.Scalar] | None = None,
+        timeout: float = c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
+    ) -> r[m.Web.Request]:
+        """Create HTTP request model instance with proper validation.
+
+        Args:
+            url: Request URL
+            method: HTTP method (must be valid from constants)
+            headers: Request headers (validated, no fallback)
+            body: Request body
+            timeout: Request timeout in seconds
+
+        Returns:
+            r[Web.Request]: Success contains request model,
+                                     failure contains validation error
+
+        """
+        method_upper = method.upper()
+        valid_methods = set(c.Web.Http.METHODS)
+
+        def _validate_method(m: object) -> bool:
+            return isinstance(m, str) and m in valid_methods
+
+        method_validated = u.guard(method_upper, _validate_method, return_value=True)
+        if method_validated is None:
+            return r[m.Web.Request].fail(
+                f"Invalid HTTP method: {method}. Must be one of: {valid_methods}"
+            )
+        headers_validated = headers or {}
+
+        def create_request() -> m.Web.Request:
+            """Create request model."""
+            return m.Web.Request(
+                url=url,
+                method=method_upper,
+                headers=headers_validated or {},
+                body=body,
+                timeout=timeout,
             )
 
-    # =========================================================================
-    # TYPE SYSTEM CONFIGURATION
-    # =========================================================================
+        try:
+            request = create_request()
+            return r[m.Web.Request].ok(request)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
+            error_msg = f"Failed to create HTTP request: {exc}"
+            return r[m.Web.Request].fail(error_msg)
+
+    @classmethod
+    def create_http_response(
+        cls,
+        status_code: int,
+        headers: dict[str, str] | None = None,
+        body: str | dict[str, FlextTypes.Scalar] | None = None,
+        elapsed_time: float | None = None,
+    ) -> r[m.Web.Response]:
+        """Create HTTP response model instance with proper validation.
+
+        Args:
+            status_code: HTTP status code
+            headers: Response headers (validated, no fallback)
+            body: Response body
+            elapsed_time: Response processing time
+
+        Returns:
+            r[Web.Response]: Success contains response model,
+                                      failure contains validation error
+
+        """
+        headers_validated = headers or {}
+
+        def create_response() -> m.Web.Response:
+            """Create response model."""
+            return m.Web.Response(
+                status_code=status_code,
+                headers=headers_validated or {},
+                body=body,
+                elapsed_time=elapsed_time,
+            )
+
+        try:
+            response = create_response()
+            return r[m.Web.Response].ok(response)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
+            return r[m.Web.Response].fail(f"Failed to create HTTP response: {exc}")
+
+    @classmethod
+    def create_web_request(
+        cls,
+        config: _WebRequestConfig,
+    ) -> r[m.Web.AppRequest]:
+        """Create web request model instance with proper validation.
+
+        Args:
+            config: Web request configuration model
+
+        Returns:
+            r[Web.AppRequest]: Success contains request model,
+                                        failure contains validation error
+
+        """
+        url: str = config.url or ""
+        method: str = config.method or c.Web.Method.GET
+        headers = config.headers
+        body = config.body
+        timeout: float = config.timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS
+        query_params = config.query_params
+        client_ip: str = config.client_ip or ""
+        user_agent: str = config.user_agent or ""
+        if not url or not url.strip():
+            return r[m.Web.AppRequest].fail("URL is required")
+        url_validated = url.strip()
+        headers_validated: dict[str, str] = headers or {}
+        query_params_validated: dict[str, FlextTypes.Scalar] = query_params or {}
+        method_upper = method.upper()
+        valid_methods = set(c.Web.Http.METHODS)
+
+        def _validate_method(m: object) -> bool:
+            return isinstance(m, str) and m in valid_methods
+
+        method_validated = u.guard(method_upper, _validate_method, return_value=True)
+        if method_validated is None:
+            return r[m.Web.AppRequest].fail(
+                f"Invalid HTTP method: {method}. Must be one of: {valid_methods}"
+            )
+
+        def create_request() -> m.Web.AppRequest:
+            """Create request model."""
+            return m.Web.AppRequest(
+                url=url_validated,
+                method=method_upper,
+                headers=headers_validated,
+                body=body,
+                timeout=timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
+                query_params=query_params_validated,
+                client_ip=client_ip,
+                user_agent=user_agent,
+            )
+
+        try:
+            request = create_request()
+            return r[m.Web.AppRequest].ok(request)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
+            return r[m.Web.AppRequest].fail(f"Failed to create web request: {exc}")
+
+    @classmethod
+    def create_web_response(
+        cls,
+        config: _WebResponseConfig,
+    ) -> r[m.Web.AppResponse]:
+        """Create web response model instance with proper validation.
+
+        Args:
+            config: Web response configuration model
+
+        Returns:
+            r[Web.AppResponse]: Success contains response model,
+                                         failure contains validation error
+
+        """
+        status_code: int = config.status_code or 200
+        request_id: str = config.request_id or ""
+        headers = config.headers
+        body = config.body
+        elapsed_time: float = config.elapsed_time or 0.0
+        content_type: str = config.content_type or c.Web.Http.CONTENT_TYPE_JSON
+        content_length: int = config.content_length or 0
+        processing_time_ms: float = config.processing_time_ms or 0.0
+        headers_validated: dict[str, str] = headers or {}
+
+        def create_response() -> m.Web.AppResponse:
+            """Create response model."""
+            return m.Web.AppResponse(
+                status_code=status_code or 200,
+                request_id=request_id,
+                headers=headers_validated,
+                body=body,
+                elapsed_time=elapsed_time or 0.0,
+                content_type=content_type,
+                content_length=content_length or 0,
+                processing_time_ms=processing_time_ms or 0.0,
+            )
+
+        try:
+            response = create_response()
+            return r[m.Web.AppResponse].ok(response)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as exc:
+            return r[m.Web.AppResponse].fail(f"Failed to create web response: {exc}")
 
     class TypesConfig:
         """Configuration model for web types system."""
@@ -588,7 +470,7 @@ class FlextWebTypes(FlextTypes):
         use_pydantic_models: bool = True,
         enable_runtime_validation: bool = True,
         models_available: list[str] | None = None,
-    ) -> FlextResult[FlextWebTypes.TypesConfig]:
+    ) -> r[FlextWebTypes.TypesConfig]:
         """Configure web types system to use Pydantic models.
 
         Args:
@@ -597,53 +479,61 @@ class FlextWebTypes(FlextTypes):
             models_available: List of available model names
 
         Returns:
-            FlextResult[TypesConfig]: Configuration result
+            r[TypesConfig]: Configuration result
 
         """
         try:
             config = cls.TypesConfig(
                 use_pydantic_models=use_pydantic_models,
                 enable_runtime_validation=enable_runtime_validation,
-                models_available=(
-                    [
-                        "Web.Message",
-                        "Web.Request",
-                        "Web.Response",
-                        "Web.Request",
-                        "Web.Response",
-                        "Web.Entity",
-                    ]
-                    if models_available is None
-                    else models_available
-                ),
+                models_available=[
+                    "Web.Message",
+                    "Web.Request",
+                    "Web.Response",
+                    "Web.Request",
+                    "Web.Response",
+                    "Web.Entity",
+                ]
+                if models_available is None
+                else models_available,
             )
-            return FlextResult[FlextWebTypes.TypesConfig].ok(config)
-        except Exception as e:  # pragma: no cover
-            return FlextResult[FlextWebTypes.TypesConfig].fail(
-                f"Failed to configure web types system: {e}",
+            return r[FlextWebTypes.TypesConfig].ok(config)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            return r[FlextWebTypes.TypesConfig].fail(
+                f"Failed to configure web types system: {e}"
             )
 
     @classmethod
-    def get_web_types_system_config(
-        cls,
-    ) -> FlextResult[FlextWebTypes.TypesConfig]:
+    def get_web_types_system_config(cls) -> r[FlextWebTypes.TypesConfig]:
         """Get current web types system configuration.
 
         Returns:
-            FlextResult[TypesConfig]: Current configuration
+            r[TypesConfig]: Current configuration
 
         """
         try:
             config = cls.TypesConfig()
-            return FlextResult[FlextWebTypes.TypesConfig].ok(config)
-        except Exception as e:  # pragma: no cover
-            return FlextResult[FlextWebTypes.TypesConfig].fail(
-                f"Failed to get web types system config: {e}",
+            return r[FlextWebTypes.TypesConfig].ok(config)
+        except (
+            ValueError,
+            TypeError,
+            KeyError,
+            AttributeError,
+            OSError,
+            RuntimeError,
+            ImportError,
+        ) as e:
+            return r[FlextWebTypes.TypesConfig].fail(
+                f"Failed to get web types system config: {e}"
             )
-
-    # =========================================================================
-    # WEB PROJECT TYPES - Domain-specific project types extending t
-    # =========================================================================
 
     class Project:
         """Web-specific project types.
@@ -653,32 +543,25 @@ class FlextWebTypes(FlextTypes):
         Web domain owns web application-specific types.
         """
 
-        # Web-specific project configurations - proper inheritance from FlextWebModels
-        class WebProjectConfig(FlextWebModels.Web.EntityConfig):
-            """Web project configuration model - inherits from FlextWebModels.Web.EntityConfig."""
+        class WebProjectConfig(m.Web.EntityConfig):
+            """Web project configuration model - inherits from m.Web.EntityConfig."""
 
-        class ApplicationConfig(FlextWebModels.Web.EntityConfig):
-            """Application configuration model - inherits from FlextWebModels.Web.EntityConfig."""
+        class ApplicationConfig(m.Web.EntityConfig):
+            """Application configuration model - inherits from m.Web.EntityConfig."""
 
-        class WebServerConfig(FlextWebModels.Web.EntityConfig):
-            """Web server configuration model - inherits from FlextWebModels.Web.EntityConfig."""
+        class WebServerConfig(m.Web.EntityConfig):
+            """Web server configuration model - inherits from m.Web.EntityConfig."""
 
-        class WebPipelineConfig(FlextWebModels.Web.EntityConfig):
-            """Web pipeline configuration model - inherits from FlextWebModels.Web.EntityConfig."""
+        class WebPipelineConfig(m.Web.EntityConfig):
+            """Web pipeline configuration model - inherits from m.Web.EntityConfig."""
 
 
-# Alias for simplified usage
 t = FlextWebTypes
-
-# Namespace composition via class inheritance
-# Web namespace provides access to nested classes through inheritance
-# Access patterns:
-# - t.Web.* for Web-specific types
-# - t.Project.* for project types
-# - t.Core.* for core types (inherited from parent)
-
 
 __all__ = [
     "FlextWebTypes",
+    "_ApplicationConfig",
+    "_WebRequestConfig",
+    "_WebResponseConfig",
     "t",
 ]

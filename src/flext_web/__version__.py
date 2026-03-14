@@ -10,12 +10,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from importlib.metadata import metadata
-from typing import Final
+from typing import Annotated, Final
 
-from pydantic import BaseModel, ConfigDict, Field
+from flext_core import FlextModels
+from pydantic import Field
 
 _metadata = metadata("flext-web")
-
 __version__: Final[str] = _metadata["Version"]
 __version_info__: Final[tuple[int | str, ...]] = tuple(
     int(part) if part.isdigit() else part for part in __version__.split(".")
@@ -24,23 +24,19 @@ __title__: Final[str] = _metadata["Name"]
 __description__: Final[str] = _metadata["Summary"]
 __author__: Final[str] = _metadata["Author"]
 __author_email__: Final[str] = _metadata["Author-Email"]
-__license__: Final[str] = _metadata["License"]
+__license__: Final[str] = _metadata.get("License", "")
 __url__: Final[str] = _metadata.get("Home-Page", "")
 
 
-class _VersionMetadata(BaseModel):
-    """Version metadata model for constructor."""
-
-    model_config = ConfigDict(frozen=False, extra="forbid")
-
-    version: str = Field(default="")
-    version_info: tuple[int | str, ...] = Field(default=())
-    title: str = Field(default="")
-    description: str = Field(default="")
-    author: str = Field(default="")
-    author_email: str = Field(default="")
-    license_type: str = Field(default="")
-    url: str = Field(default="")
+class _VersionMetadata(FlextModels.Value):
+    version: Annotated[str, Field(description="Package version")]
+    version_info: Annotated[tuple[int | str, ...], Field(description="Version tuple")]
+    title: Annotated[str, Field(description="Package title")]
+    description: Annotated[str, Field(description="Package description")]
+    author: Annotated[str, Field(description="Package author")]
+    author_email: Annotated[str, Field(description="Package author email")]
+    license_type: Annotated[str, Field(description="Package license")]
+    url: Annotated[str, Field(description="Package URL")]
 
 
 class FlextWebVersion:
@@ -84,13 +80,11 @@ class FlextWebVersion:
                 author_email=__author_email__,
                 license_type=__license__,
                 url=__url__,
-            ),
+            )
         )
 
 
 VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
-
-
 __all__ = [
     "VERSION",
     "FlextWebVersion",

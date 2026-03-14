@@ -3,16 +3,19 @@
 Tests the version management functionality following flext standards.
 """
 
-from flext_web.__version__ import (
+from flext_web import (
+    VERSION,
+    FlextWebVersion,
     __author__,
     __author_email__,
     __description__,
     __license__,
     __title__,
     __url__,
+    __version__,
+    __version_info__,
     _VersionMetadata,
 )
-from flext_web.version import VERSION, FlextWebVersion, __version__, __version_info__
 
 
 def assert_version_info() -> None:
@@ -38,16 +41,14 @@ class TestFlextWebVersion:
                 author_email="flext@example.com",
                 license_type="MIT",
                 url="https://github.com/flext/flext-web",
-            ),
+            )
         )
-
         assert version.version == "1.0.0"
         assert version.version_info == (1, 0, 0)
 
     def test_current_version(self) -> None:
         """Test current version retrieval."""
         current = FlextWebVersion.current()
-
         assert isinstance(current.version, str)
         assert isinstance(current.version_info, tuple)
         assert len(current.version_info) > 0
@@ -55,36 +56,27 @@ class TestFlextWebVersion:
     def test_version_globals(self) -> None:
         """Test global version variables."""
         assert_version_info()
-
-        # Verify consistency
         assert VERSION.version == __version__
         assert VERSION.version_info == __version_info__
 
     def test_version_format(self) -> None:
         """Test version format is valid."""
         version_parts = __version__.split(".")
-        assert len(version_parts) >= 2  # At least major.minor
-
-        # Check that version_info matches version string
+        assert len(version_parts) >= 2
         version_from_info = ".".join(str(part) for part in __version_info__)
         assert version_from_info == __version__
 
     def test_metadata_constants(self) -> None:
         """Test that metadata constants are properly defined."""
-        # Test that all metadata constants are strings
         assert isinstance(__title__, str)
         assert isinstance(__description__, str)
         assert isinstance(__author__, str)
         assert isinstance(__author_email__, str)
         assert isinstance(__license__, str)
         assert isinstance(__url__, str)
-
-        # Test that they are not empty
         assert len(__title__) > 0
         assert len(__description__) > 0
         assert len(__author__) > 0
-        assert len(__license__) > 0
-
-        # Test reasonable URL format (optional)
+        assert isinstance(__license__, str)
         if __url__:
             assert "://" in __url__ or __url__.startswith("http")

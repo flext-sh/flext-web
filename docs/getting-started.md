@@ -53,7 +53,7 @@ handlers = FlextWebHandlers()
 models = FlextWebModels()
 
 # Check available methods
-methods = [m for m in dir(service) if not m.startswith('_')]
+methods = [m for m in dir(service) if not m.startswith("_")]
 print(f"Available methods: {methods}")
 ```
 
@@ -61,7 +61,7 @@ print(f"Available methods: {methods}")
 
 flext-web uses patterns from flext-core:
 
-- **FlextResult[T]** for error handling
+- **r[T]** for error handling
 - **FlextModels** for domain entities
 - **Clean Architecture** layer separation
 
@@ -96,7 +96,7 @@ ______________________________________________________________________
 
 - [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
 - [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-api HTTP Framework](https://github.com/organization/flext/tree/main/flext-api/CLAUDE.md) - HTTP foundation patterns
+- [flext-api HTTP Framework](https://github.com/organization/flext/tree/main/flext-api/AGENTS.md) - HTTP foundation patterns
 
 **External Resources**:
 

@@ -11,6 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import re
+from typing import override
 
 from flext_core import FlextUtilities
 
@@ -28,29 +29,7 @@ class FlextWebUtilities(FlextUtilities):
         """Web domain namespace."""
 
     @staticmethod
-    def slugify(text: str) -> str:
-        """Convert text to URL-safe slug using standard string operations.
-
-        Implements slugification without relying on non-existent DSL builders.
-        """
-        if not text:
-            return ""
-
-        # Normalize to lowercase
-        normalized = text.lower()
-
-        # Remove special chars, keep word chars, spaces, hyphens
-        cleaned = re.sub(r"[^\w\s-]", "", normalized)
-
-        # Split on hyphens/spaces
-        words = re.split(r"[-\s]+", cleaned)
-
-        # Filter truthy parts
-        truthy_words = [word for word in words if word]
-
-        # Join with hyphens
-        return "-".join(truthy_words)
-
+    @override
     @staticmethod
     def format_app_id(name: str) -> str:
         """Format app name to valid ID using flext-core utilities.
@@ -71,21 +50,29 @@ class FlextWebUtilities(FlextUtilities):
         if not name:
             msg = f"Invalid application name: {name}"
             raise ValueError(msg)
-
-        # Clean the name using flext-core Text utilities
-        cleaned = FlextUtilities.Text.safe_string(name)
+        cleaned = FlextWebUtilities.safe_string(name)
         if not cleaned:
             msg = f"Application name cannot be empty: {name}"
             raise ValueError(msg)
-
-        # Slugify the cleaned name
         slug = FlextWebUtilities.slugify(cleaned)
         if not slug:
             msg = f"Cannot format application name '{name}' to valid ID"
             raise ValueError(msg)
-
-        # Add app prefix
         return f"app_{slug}"
+
+    @staticmethod
+    def slugify(text: str) -> str:
+        """Convert text to URL-safe slug using standard string operations.
+
+        Implements slugification without relying on non-existent DSL builders.
+        """
+        if not text:
+            return ""
+        normalized = text.lower()
+        cleaned = re.sub(r"[^\\w\\s-]", "", normalized)
+        words = re.split(r"[-\\s]+", cleaned)
+        truthy_words = [word for word in words if word]
+        return "-".join(truthy_words)
 
 
 u = FlextWebUtilities

@@ -138,7 +138,7 @@ class FlextWebApp(FlextModels.Entity):
 #### **Method Documentation**
 
 ```python
-def start(self) -> FlextResult[FlextWebApp]:
+def start(self) -> r[FlextWebApp]:
     """Start application with state transition validation.
 
     [Detailed business rules, pre/post conditions, examples]:
@@ -170,7 +170,7 @@ def create_service(config: FlextWebSettings | None = None) -> FlextWebServices:
 - **Clean Architecture**: Clear layer separation and dependency inversion
 - **Domain-Driven Design**: Rich domain models with business logic encapsulation
 - **CQRS**: Command Query Responsibility Segregation patterns
-- **Railway-Oriented Programming**: FlextResult patterns for error handling
+- **Railway-Oriented Programming**: r patterns for error handling
 - **Enterprise Patterns**: Professional documentation and code organization
 
 ## Development Workflow
@@ -196,7 +196,7 @@ make security                  # Security scanning
 
 ### **FLEXT Core Integration**
 
-- **FlextResult**: Railway-oriented programming for all operations
+- **r**: Railway-oriented programming for all operations
 - **FlextModels.Entity**: Domain entity base classes with validation
 - **FlextSettings**: Configuration management with environment integration
 - **FlextProcessors**: CQRS command handler patterns

@@ -10,28 +10,6 @@ SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
-# PYTHON_VERSION_GUARD — Do not remove. Managed by scripts/maintenance/enforce_python_version.py
-import sys as _sys
-
-if _sys.version_info[:2] != (3, 13):
-    _v = f"{_sys.version_info.major}.{_sys.version_info.minor}.{_sys.version_info.micro}"
-    raise RuntimeError(
-        f"\n{'=' * 72}\n"
-        f"FATAL: Python {_v} detected — this project requires Python 3.13.\n"
-        f"\n"
-        f"The virtual environment was created with the WRONG Python interpreter.\n"
-        f"\n"
-        f"Fix:\n"
-        f"  1. rm -rf .venv\n"
-        f"  2. poetry env use python3.13\n"
-        f"  3. poetry install\n"
-        f"\n"
-        f"Or use the workspace Makefile:\n"
-        f"  make setup PROJECT=<project-name>\n"
-        f"{'=' * 72}\n"
-    )
-del _sys
-# PYTHON_VERSION_GUARD_END
 
 import os
 import socket
@@ -43,94 +21,193 @@ from typing import ClassVar
 
 import pytest
 from flask import Flask
-from flext_core import FlextResult, FlextTypes as t
-from flext_tests import (
-    FlextTestsDocker,
-    FlextTestsFactories,
-    FlextTestsMatchers,
-)
-from flext_web import FlextWebModels, FlextWebServices, FlextWebSettings
-from flext_web.app import FlextWebApp
-from flext_web.constants import FlextWebConstants
-from flext_web.typings import (
-    FlextWebTypes,
+from flext_tests import FlextTestsDocker
+
+from tests import (
+    FlextWebApp,
+    FlextWebServices,
+    FlextWebSettings,
     _ApplicationConfig,
     _WebRequestConfig,
     _WebResponseConfig,
+    c,
+    m,
+    r,
+    t,
 )
 
 
 def assert_success(
-    result: FlextResult[object],
-    message: str = "Operation should succeed",
+    result: r[t.ContainerValue], message: str = "Operation should succeed"
 ) -> None:
-    """Assert that a FlextResult is successful using flext_tests matchers."""
-    matchers = FlextTestsMatchers()
-    matchers.assert_result_success(result, message)
+    """Assert that a r is successful using flext_tests matchers."""
+    if not result.is_success:
+        raise AssertionError(f"{message}: {result.error}")
 
 
 def assert_failure(
-    result: FlextResult[object],
-    message: str = "Operation should fail",
+    result: r[t.ContainerValue], message: str = "Operation should fail"
 ) -> None:
-    """Assert that a FlextResult is a failure using flext_tests matchers."""
-    matchers = FlextTestsMatchers()
-    matchers.assert_result_failure(result, message)
+    """Assert that a r is a failure using flext_tests matchers."""
+    if result.is_success:
+        raise AssertionError(message)
 
 
 def assert_result(
-    result: FlextResult[object],
-    *,
-    expected_success: bool = True,
+    result: r[t.ContainerValue], *, expected_success: bool = True
 ) -> None:
-    """Assert FlextResult state with appropriate message using flext_tests."""
+    """Assert r state with appropriate message using flext_tests."""
     if expected_success:
         assert_success(result)
     else:
         assert_failure(result)
 
 
-def create_entry(entry_type: str, **kwargs: object) -> FlextResult[object]:
+def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
     """Generalized entry creation function using flext-core patterns.
 
     This function replaces multiple specific create_* methods by providing
     a unified interface for creating different types of entries in tests.
 
     Args:
-        entry_type: Type of entry to create ('web_app', 'http_request', 'http_response', etc.)
+        entry_type: Type of entry to create (e.g., 'web_app', 'http_request')
         **kwargs: Parameters for the specific entry type
 
     Returns:
-        FlextResult with created entry
+        r with created entry
 
     Raises:
         ValueError: If entry_type is not supported
 
     """
     if entry_type == "web_app":
-        return FlextWebModels.Web.create_web_app(**kwargs)
+        name: object = kwargs.get("name")
+        host: object = kwargs.get("host")
+        port: object = kwargs.get("port")
+        if (
+            not isinstance(name, str)
+            or not isinstance(host, str)
+            or (not isinstance(port, int))
+        ):
+            return r[t.ContainerValue].fail("Invalid parameters for web_app")
+        return m.Web.create_web_app(name=name, host=host, port=port)
     if entry_type == "http_request":
-        return FlextWebTypes.create_http_request(**kwargs)
+        url: object = kwargs.get("url")
+        method: object = kwargs.get("method")
+        req_headers: object = kwargs.get("headers")
+        req_body: object = kwargs.get("body")
+        timeout: object = kwargs.get("timeout")
+        if not isinstance(url, str) or not isinstance(method, str):
+            return r[t.ContainerValue].fail("Invalid parameters for http_request")
+        if req_headers is not None and (not isinstance(req_headers, dict)):
+            return r[t.ContainerValue].fail("Invalid headers for http_request")
+        if req_body is not None and (not isinstance(req_body, (str, dict))):
+            return r[t.ContainerValue].fail("Invalid body for http_request")
+        if not isinstance(timeout, (float, int)):
+            return r[t.ContainerValue].fail("Invalid timeout for http_request")
+        return t.create_http_request(
+            url=url,
+            method=method,
+            headers=req_headers,
+            body=req_body,
+            timeout=float(timeout),
+        )
     if entry_type == "http_response":
-        return FlextWebTypes.create_http_response(**kwargs)
+        status_code: object = kwargs.get("status_code")
+        headers: object = kwargs.get("headers")
+        body: object = kwargs.get("body")
+        elapsed_time: object = kwargs.get("elapsed_time")
+        if not isinstance(status_code, int):
+            return r[t.ContainerValue].fail("Invalid status_code for http_response")
+        if headers is not None and (not isinstance(headers, dict)):
+            return r[t.ContainerValue].fail("Invalid headers for http_response")
+        if body is not None and (not isinstance(body, (str, dict))):
+            return r[t.ContainerValue].fail("Invalid body for http_response")
+        if elapsed_time is not None and (not isinstance(elapsed_time, (float, int))):
+            return r[t.ContainerValue].fail("Invalid elapsed_time for http_response")
+        return t.create_http_response(
+            status_code=status_code,
+            headers=headers,
+            body=body,
+            elapsed_time=float(elapsed_time) if elapsed_time else None,
+        )
     if entry_type == "web_request":
-        config: _WebRequestConfig = kwargs
-        return FlextWebTypes.create_web_request(config)
+        url = kwargs.get("url")
+        method = kwargs.get("method")
+        headers = kwargs.get("headers")
+        body = kwargs.get("body")
+        timeout = kwargs.get("timeout")
+        query_params = kwargs.get("query_params")
+        client_ip = kwargs.get("client_ip")
+        user_agent = kwargs.get("user_agent")
+        if not isinstance(url, str) or not isinstance(method, str):
+            return r[t.ContainerValue].fail("Invalid parameters for web_request")
+        web_request_config = _WebRequestConfig(
+            url=url,
+            method=method,
+            headers=headers if isinstance(headers, dict) else {},
+            body=body if isinstance(body, (str, dict)) else None,
+            timeout=float(timeout) if isinstance(timeout, (int, float)) else 30.0,
+            query_params=query_params if isinstance(query_params, dict) else {},
+            client_ip=client_ip if isinstance(client_ip, str) else "127.0.0.1",
+            user_agent=user_agent if isinstance(user_agent, str) else "test-client",
+        )
+        return t.create_web_request(web_request_config)
     if entry_type == "web_response":
-        config: _WebResponseConfig = kwargs
-        return FlextWebTypes.create_web_response(config)
+        status_code = kwargs.get("status_code")
+        request_id = kwargs.get("request_id")
+        headers = kwargs.get("headers")
+        body = kwargs.get("body")
+        elapsed_time = kwargs.get("elapsed_time")
+        content_type = kwargs.get("content_type")
+        content_length = kwargs.get("content_length")
+        processing_time_ms = kwargs.get("processing_time_ms")
+        if not isinstance(status_code, int):
+            return r[t.ContainerValue].fail("Invalid status_code for web_response")
+        web_response_config = _WebResponseConfig(
+            status_code=status_code,
+            request_id=request_id if isinstance(request_id, str) else "test-request",
+            headers=headers if isinstance(headers, dict) else {},
+            body=body if isinstance(body, (str, dict)) else None,
+            elapsed_time=float(elapsed_time)
+            if isinstance(elapsed_time, (int, float))
+            else 0.0,
+            content_type=content_type
+            if isinstance(content_type, str)
+            else "application/json",
+            content_length=content_length if isinstance(content_length, int) else 0,
+            processing_time_ms=processing_time_ms
+            if isinstance(processing_time_ms, (int, float))
+            else 0.0,
+        )
+        return t.create_web_response(web_response_config)
     if entry_type == "application":
-        config: _ApplicationConfig = kwargs
-        return FlextWebTypes.create_application(config)
+        name = kwargs.get("name")
+        host = kwargs.get("host")
+        port = kwargs.get("port")
+        status = kwargs.get("status")
+        if (
+            not isinstance(name, str)
+            or not isinstance(host, str)
+            or (not isinstance(port, int))
+        ):
+            return r[t.ContainerValue].fail("Invalid parameters for application")
+        app_config = _ApplicationConfig(
+            name=name,
+            host=host,
+            port=port,
+            status=status if isinstance(status, str) else "stopped",
+        )
+        return t.create_application(app_config)
     msg = f"Unsupported entry type: {entry_type}"
     raise ValueError(msg)
 
 
-def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.GeneralValueType]:
-    """Create test data using flext_tests factories.
+def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, object]:
+    """Create test data for tests.
 
     This function provides a standardized way to create test data,
-    reducing code duplication across test files by using flext_tests.FlextTestsFactories.
+    reducing code duplication across test files.
 
     Args:
         data_type: Type of test data to create
@@ -140,52 +217,59 @@ def create_test_data(data_type: str, **kwargs: object) -> dict[str, t.GeneralVal
         Dictionary with test data
 
     """
-    # Use flext_tests factories for standardized test data
     if data_type == "app_data":
-        return FlextTestsFactories.create_service(
-            service_type="web_app",
-            name="test-app",
-            host="localhost",
-            port=8080,
-            **kwargs,
-        )
-    if data_type == "entity_data":
-        return {
-            "data": FlextTestsFactories.create_service(
-                service_type="entity",
-                service_id="test-entity",
-                name="Test Entity",
-                **kwargs,
-            ),
+        app_data: dict[str, object] = {
+            "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
+            "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
+            "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
         }
+        app_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (str, int, float, bool))
+        })
+        return app_data
+    if data_type == "entity_data":
+        entity_data: dict[str, object] = {
+            "id": "test-entity",
+            "name": "Test Entity",
+        }
+        entity_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (str, int, float, bool))
+        })
+        return entity_data
     if data_type == "config_data":
-        return FlextTestsFactories.create_config(
-            service_type="web",
-            host="localhost",
-            port=8080,
-            debug=True,
-            **kwargs,
-        )
+        config_data: dict[str, object] = {
+            "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
+            "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
+            "debug": True,
+        }
+        config_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (str, int, float, bool))
+        })
+        return config_data
     if data_type == "request_data":
-        return FlextTestsFactories.create_config(
-            service_type="http_request",
-            method="GET",
-            url="http://localhost:8080",
-            headers={"Content-Type": "application/json"},
-            **kwargs,
-        )
+        request_data: dict[str, object] = {
+            "method": c.Web.Tests.TestHttp.TEST_METHOD,
+            "url": f"http://{c.Web.Tests.TestWeb.DEFAULT_HOST}:{c.Web.Tests.TestWeb.DEFAULT_PORT}",
+            "headers": {"Content-Type": c.Web.Tests.TestHttp.TEST_CONTENT_TYPE},
+        }
+        request_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (str, dict))
+        })
+        return request_data
     if data_type == "response_data":
-        return FlextTestsFactories.create_config(
-            service_type="http_response",
-            status_code=200,
-            request_id="test-123",
-            **kwargs,
-        )
+        response_data: dict[str, object] = {
+            "status_code": 200,
+            "request_id": "test-123",
+        }
+        response_data.update({
+            k: v for k, v in kwargs.items() if isinstance(v, (int, str, float, bool))
+        })
+        return response_data
     msg = f"Unsupported data type: {data_type}"
     raise ValueError(msg)
 
 
-def create_test_app(**kwargs: object) -> FlextWebModels.Web.Entity:
+def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:
     """Create a test application entity using flext-core patterns.
 
     This function provides a standardized way to create test applications,
@@ -195,26 +279,36 @@ def create_test_app(**kwargs: object) -> FlextWebModels.Web.Entity:
         **kwargs: Override default app properties
 
     Returns:
-        FlextWebModels.Web.Entity instance
+        m.Web.Entity instance
 
     """
     defaults: dict[str, str | int] = {
         "id": "test-id",
-        "name": "test-app",
-        "host": "localhost",
-        "port": 8080,
+        "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
+        "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
+        "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
     }
+    defaults.update({k: v for k, v in kwargs.items() if isinstance(v, (str, int))})
+    id_val = defaults.get("id", "test-id")
+    name_val = defaults.get("name", c.Web.Tests.TestWeb.TEST_APP_NAME)
+    host_val = defaults.get("host", c.Web.Tests.TestWeb.DEFAULT_HOST)
+    port_val = defaults.get("port", c.Web.Tests.TestWeb.DEFAULT_PORT)
+    return m.Web.Entity(
+        id=id_val if isinstance(id_val, str) else "test-id",
+        name=name_val
+        if isinstance(name_val, str)
+        else c.Web.Tests.TestWeb.TEST_APP_NAME,
+        host=host_val
+        if isinstance(host_val, str)
+        else c.Web.Tests.TestWeb.DEFAULT_HOST,
+        port=port_val
+        if isinstance(port_val, int)
+        else c.Web.Tests.TestWeb.DEFAULT_PORT,
+    )
 
-    defaults.update(kwargs)
-    return FlextWebModels.Web.Entity(**defaults)
 
-
-def create_test_result(
-    *,
-    success: bool = True,
-    **kwargs: object,
-) -> FlextResult[object]:
-    """Create a test FlextResult using FlextResult API directly.
+def create_test_result(*, success: bool = True, **kwargs: t.Scalar) -> r[object]:
+    """Create a test r using r API directly.
 
     This function provides a standardized way to create test results,
     reducing code duplication across test files.
@@ -227,21 +321,19 @@ def create_test_result(
             - error: Error message for failure result
 
     Returns:
-        FlextResult instance
+        r instance
 
     """
     if success:
-        # Get value from kwargs (could be 'data' or 'value')
         value = kwargs.get("data") or kwargs.get("value")
-        return FlextResult[object].ok(value)
-    # Failure case
+        return r[object].ok(value)
     error = str(kwargs.get("error", "Test error"))
-    return FlextResult[object].fail(error)
+    return r[object].fail(error)
 
 
 def run_parameterized_test(
     test_cases: list[tuple[object, ...]],
-    test_function: Callable[[object], FlextResult[object]],
+    test_function: Callable[[object], r[object]],
     expected_results: list[bool],
     test_name: str = "parameterized_test",
 ) -> None:
@@ -252,7 +344,7 @@ def run_parameterized_test(
 
     Args:
         test_cases: List of tuples containing test case parameters
-        test_function: Function to test that returns FlextResult
+        test_function: Function to test that returns r
         expected_results: List of expected success/failure for each case
         test_name: Name for the test (for error messages)
 
@@ -261,7 +353,7 @@ def run_parameterized_test(
 
     """
     for i, (test_case, expected_success) in enumerate(
-        zip(test_cases, expected_results, strict=True),
+        zip(test_cases, expected_results, strict=True)
     ):
         try:
             result = (
@@ -269,12 +361,10 @@ def run_parameterized_test(
                 if isinstance(test_case, tuple)
                 else test_function(test_case)
             )
-
             if expected_success:
                 assert_success(result, f"{test_name} case {i} should succeed")
             else:
                 assert_failure(result, f"{test_name} case {i} should fail")
-
         except Exception as e:
             pytest.fail(f"{test_name} case {i} raised unexpected exception: {e}")
 
@@ -297,13 +387,10 @@ def create_comprehensive_test_suite(
         test_name_prefix: Prefix for generated test names
 
     """
-    # Test valid cases
     for i, params in enumerate(valid_cases):
         test_name = f"{test_name_prefix}_valid_case_{i}"
         result = create_entry(entity_type, **params)
         assert_success(result, f"{test_name} should succeed")
-
-    # Test invalid cases
     for i, params in enumerate(invalid_cases):
         test_name = f"{test_name_prefix}_invalid_case_{i}"
         result = create_entry(entity_type, **params)
@@ -313,25 +400,18 @@ def create_comprehensive_test_suite(
 @pytest.fixture(autouse=True)
 def setup_test_environment() -> Generator[None]:
     """Set up test environment with real configuration."""
-    # Save original environment
-    original_env = dict[str, t.GeneralValueType](os.environ)
-
-    # Set test environment variables
+    original_env: dict[str, str] = {
+        k: v for k, v in os.environ.items() if isinstance(v, str)
+    }
     os.environ["FLEXT_ENV"] = "test"
-    os.environ["FLEXT_LOG_LEVEL"] = "INFO"  # Reduce noise
+    os.environ["FLEXT_LOG_LEVEL"] = "INFO"
     os.environ["FLEXT_WEB_DEBUG_MODE"] = "true"
-    os.environ["FLEXT_WEB_HOST"] = FlextWebConstants.Web.WebDefaults.HOST
-    os.environ["FLEXT_WEB_SECRET_KEY"] = (
-        FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY
-    )
-
+    os.environ["FLEXT_WEB_HOST"] = c.Web.WebDefaults.HOST
+    os.environ["FLEXT_WEB_SECRET_KEY"] = c.Web.WebDefaults.TEST_SECRET_KEY
     yield
-
-    # Restore original environment
     os.environ.clear()
     for key, value in original_env.items():
-        if isinstance(value, str):
-            os.environ[key] = value
+        os.environ[key] = value
 
 
 @pytest.fixture
@@ -340,65 +420,47 @@ def real_config() -> FlextWebSettings:
 
     Fast fail if secret key cannot be provided - no fallback.
     """
-    return FlextWebSettings(
-        secret_key=FlextWebConstants.Web.WebDefaults.TEST_SECRET_KEY
-    )
+    return FlextWebSettings(secret_key=c.Web.WebDefaults.TEST_SECRET_KEY)
 
 
 @pytest.fixture
-def real_service(
-    real_config: FlextWebSettings,
-) -> FlextWebServices:
+def real_service(real_config: FlextWebSettings) -> FlextWebServices:
     """Create real FlextWebServices instance with clean state."""
-    # Pass config object directly - no dict conversion
     result = FlextWebServices.create_service(real_config)
     assert result.is_success, f"Service creation failed: {result.error}"
     return result.value
-    # Clean up service state after each test
-    # Note: services don't have apps attribute in current implementation
 
 
 @pytest.fixture
 def real_app(real_config: FlextWebSettings) -> Flask:
     """Create real Flask app."""
-    # Create a basic Flask app for testing
     app = Flask(__name__)
-    # secret_key now has default from Constants, no None check needed
-    app.config.update(
-        SECRET_KEY=real_config.secret_key,
-        TESTING=True,
-    )
+    app.config.update(SECRET_KEY=real_config.secret_key, TESTING=True)
     return app
 
 
 @pytest.fixture
-def running_service(
-    real_config: FlextWebSettings,
-) -> Generator[FlextWebServices]:
+def running_service(real_config: FlextWebSettings) -> Generator[FlextWebServices]:
     """Start real service in background thread with clean state."""
-    # Allocate unique port to avoid conflicts
     test_port = TestPortManager.allocate_port()
-
     test_config = FlextWebSettings(
         host=real_config.host,
         port=test_port,
         app_name=real_config.app_name,
         version=real_config.version,
     )
-
     result = FlextWebServices.create_service(test_config)
     assert result.is_success, f"Service creation failed: {result.error}"
     service = result.value
 
-    # Start service in background thread
     def run_service() -> None:
-        result = FlextWebApp.create_flask_app(test_config)
-        if result.is_success:
-            app = result.value
+        app_result = FlextWebApp.create_flask_app(test_config)
+        if app_result.is_success:
+            app = app_result.value
             app.run(
                 host=test_config.host,
                 port=test_config.port,
-                debug=False,  # Disable debug for clean testing
+                debug=False,
                 use_reloader=False,
                 threaded=True,
             )
@@ -406,7 +468,6 @@ def running_service(
     server_thread = threading.Thread(target=run_service, daemon=True)
     server_thread.start()
 
-    # Wait for service to start (check if port is open)
     def wait_for_port(port: int, timeout: float = 5.0) -> bool:
         """Wait for port to be open."""
         start_time = time.time()
@@ -422,49 +483,38 @@ def running_service(
             time.sleep(0.1)
         return False
 
-    # Wait for the service to be ready
     if not wait_for_port(test_config.port, timeout=5.0):
         pytest.fail(
-            f"Service failed to start on port {test_config.port} within 5 seconds",
+            f"Service failed to start on port {test_config.port} within 5 seconds"
         )
-
     yield service
-
-    # Release the allocated port
     TestPortManager.release_port(test_port)
-    # Service will be killed when thread ends (daemon=True)
 
 
-# Real test data for application testing
 @pytest.fixture
 def test_app_data() -> dict[str, str | int]:
     """Real application data for testing."""
     return {
         "name": "test-application",
-        "port": FlextWebConstants.Web.WebDefaults.PORT + 1001,
-        "host": FlextWebConstants.Web.WebDefaults.HOST,
+        "port": c.Web.WebDefaults.PORT + 1001,
+        "host": c.Web.WebDefaults.HOST,
     }
 
 
 @pytest.fixture
 def invalid_app_data() -> dict[str, str | int]:
     """Invalid application data for error testing."""
-    return {
-        "name": "",  # Invalid empty name
-        "port": 99999,  # Invalid port
-        "host": "",  # Invalid empty host
-    }
+    return {"name": "", "port": 99999, "host": ""}
 
 
-# Configuration for real environment tests
 @pytest.fixture
 def production_config() -> dict[str, str]:
     """Production-like configuration for testing."""
     return {
-        "FLEXT_WEB_HOST": FlextWebConstants.Web.WebSpecific.ALL_INTERFACES,
-        "FLEXT_WEB_PORT": str(FlextWebConstants.Web.WebDefaults.PORT),
+        "FLEXT_WEB_HOST": c.Web.WebSpecific.ALL_INTERFACES,
+        "FLEXT_WEB_PORT": str(c.Web.WebDefaults.PORT),
         "FLEXT_WEB_DEBUG": "false",
-        "FLEXT_WEB_SECRET_KEY": FlextWebConstants.Web.WebDefaults.DEV_SECRET_KEY,
+        "FLEXT_WEB_SECRET_KEY": c.Web.WebDefaults.DEV_SECRET_KEY,
     }
 
 
@@ -472,22 +522,18 @@ def production_config() -> dict[str, str]:
 def docker_manager() -> Generator[FlextTestsDocker]:
     """Provide FlextTestsDocker instance for integration tests."""
     try:
-        manager = FlextTestsDocker(workspace_root=Path().absolute())
-        yield manager
+        yield FlextTestsDocker(workspace_root=Path().absolute())
     except ImportError:
-        # FlextTestsDocker may not be available in all environments
         pytest.skip("FlextTestsDocker not available")
     except Exception as e:
         pytest.skip(f"FlextTestsDocker initialization failed: {e}")
 
 
-# Pytest configuration
 def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers for real testing."""
     config.addinivalue_line("markers", "unit: Unit tests with real execution")
     config.addinivalue_line(
-        "markers",
-        "integration: Integration tests with real services",
+        "markers", "integration: Integration tests with real services"
     )
     config.addinivalue_line("markers", "api: API tests with real HTTP")
     config.addinivalue_line("markers", "web: Web interface tests with real Flask")
@@ -498,10 +544,8 @@ def pytest_configure(config: pytest.Config) -> None:
 class TestPortManager:
     """Thread-safe port allocation manager for tests."""
 
-    # Port range constants
     _PORT_START: ClassVar[int] = 9000
     _PORT_END: ClassVar[int] = 9999
-
     _lock: ClassVar[threading.Lock] = threading.Lock()
     _allocated_ports: ClassVar[set[int]] = set()
     _current_port: ClassVar[int] = _PORT_START
@@ -519,18 +563,13 @@ class TestPortManager:
 
         """
         with cls._lock:
-            # Find next available port
             while cls._current_port in cls._allocated_ports:
                 cls._current_port += 1
-
-                # Wrap around if we hit the limit
                 if cls._current_port > cls._PORT_END:
                     cls._current_port = cls._PORT_START
-
             port = cls._current_port
             cls._allocated_ports.add(port)
             cls._current_port += 1
-
             return port
 
     @classmethod

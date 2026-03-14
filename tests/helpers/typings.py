@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web.typings import FlextWebTypes
+from flext_web import FlextWebTypes
 
 
 class TestsTypings(FlextWebTypes):
@@ -21,11 +21,6 @@ class TestsTypings(FlextWebTypes):
     the full hierarchy without duplication.
     """
 
-    # Test-specific types can be added here as nested classes
-    # All parent types are accessible via inheritance
 
-
-# Standardized short name for use in tests (same pattern as flext-core)
 t = TestsTypings
-
 __all__ = ["TestsTypings", "t"]

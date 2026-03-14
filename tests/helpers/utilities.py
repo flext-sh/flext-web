@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web.utilities import FlextWebUtilities
+from flext_web import FlextWebUtilities
 
 
 class TestsUtilities(FlextWebUtilities):
@@ -21,11 +21,6 @@ class TestsUtilities(FlextWebUtilities):
     the full hierarchy without duplication.
     """
 
-    # Test-specific utilities can be added here
-    # All parent utilities are accessible via inheritance
 
-
-# Standardized short name for use in tests (same pattern as flext-core)
 u = TestsUtilities
-
 __all__ = ["TestsUtilities", "u"]

@@ -13,10 +13,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Final, TypeAlias
+from typing import Final
 
-from flext_tests.constants import FlextTestsConstants
-from flext_web.constants import FlextWebConstants
+from flext_tests import FlextTestsConstants
+
+from flext_web import FlextWebConstants
 
 
 class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
@@ -27,11 +28,12 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
     2. FlextWebConstants - for domain constants (.Web.*)
 
     Access patterns:
-    - tc.Tests.Docker.* (container testing)
-    - tc.Tests.Matcher.* (assertion messages)
-    - tc.Tests.Factory.* (test data generation)
-    - tc.Web.* (domain constants from production)
-    - tc.TestWeb.* (project-specific test data)
+    - c.Tests.Docker.* (container testing)
+    - c.Tests.Matcher.* (assertion messages)
+    - c.Tests.Factory.* (test data generation)
+    - c.Web.* (domain constants from production)
+    - c.Web.Tests.TestWeb.* (project-specific test data)
+    - c.Web.Tests.TestPort.* (port allocation for test isolation)
 
     Rules:
     - NEVER duplicate constants from FlextTestsConstants or FlextWebConstants
@@ -40,64 +42,73 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
     - All production constants come from FlextWebConstants
     """
 
-    class Paths:
-        """Test path constants."""
+    class Web(FlextWebConstants.Web):
+        """Project-specific test protocols.
 
-        TEST_INPUT_DIR: Final[str] = "tests/fixtures/data/input"
-        TEST_OUTPUT_DIR: Final[str] = "tests/fixtures/data/output"
-        TEST_TEMP_PREFIX: Final[str] = "flext_web_test_"
-
-    class TestWeb:
-        """Web test server constants."""
-
-        DEFAULT_HOST: Final[str] = "localhost"
-        DEFAULT_PORT: Final[int] = 8080
-        TEST_APP_NAME: Final[str] = "TestApplication"
-        CONNECTION_TIMEOUT: Final[float] = 5.0
-        OPERATION_TIMEOUT: Final[float] = 10.0
-
-    class TestHttp:
-        """HTTP test constants."""
-
-        TEST_ENDPOINT: Final[str] = "/test"
-        TEST_METHOD: Final[str] = "GET"
-        TEST_CONTENT_TYPE: Final[str] = "application/json"
-
-    class Literals:
-        """Literal type aliases for test constants (Python 3.13 pattern).
-
-        These type aliases reuse production Literals from FlextWebConstants.Web
-        to ensure consistency between tests and production code.
-        All Literal types are at FlextWebConstants.Web.Literals namespace.
+        Extends FlextTestsProtocols.Tests with Web-specific protocols.
         """
 
-        # Reuse production Literals for consistency (Python 3.13+ best practices)
-        HttpMethodLiteral: TypeAlias = FlextWebConstants.Web.Literals.HttpMethodLiteral
-        EnvironmentNameLiteral: TypeAlias = (
-            FlextWebConstants.Web.Literals.EnvironmentNameLiteral
-        )
-        ApplicationStatusLiteral: TypeAlias = (
-            FlextWebConstants.Web.Literals.ApplicationStatusLiteral
-        )
-        ApplicationTypeLiteral: TypeAlias = (
-            FlextWebConstants.Web.Literals.ApplicationTypeLiteral
-        )
-        ResponseStatusLiteral: TypeAlias = (
-            FlextWebConstants.Web.Literals.ResponseStatusLiteral
-        )
-        ProtocolLiteral: TypeAlias = FlextWebConstants.Web.Literals.ProtocolLiteral
-        ContentTypeLiteral: TypeAlias = (
-            FlextWebConstants.Web.Literals.ContentTypeLiteral
-        )
-        SameSiteLiteral: TypeAlias = FlextWebConstants.Web.Literals.SameSiteLiteral
+        class Tests:
+            """Tests Web-specific test protocols."""
+
+            class Paths:
+                """Test path constants."""
+
+                TEST_INPUT_DIR: Final[str] = "tests/fixtures/data/input"
+                TEST_OUTPUT_DIR: Final[str] = "tests/fixtures/data/output"
+                TEST_TEMP_PREFIX: Final[str] = "flext_web_test_"
+
+            class TestWeb:
+                """Web test server constants."""
+
+                DEFAULT_HOST: Final[str] = "localhost"
+                DEFAULT_PORT: Final[int] = 8080
+                TEST_APP_NAME: Final[str] = "TestApplication"
+                CONNECTION_TIMEOUT: Final[float] = 5.0
+                OPERATION_TIMEOUT: Final[float] = 10.0
+
+            class TestPort:
+                """Port allocation constants for test isolation."""
+
+                PORT_START: Final[int] = 9000
+                PORT_END: Final[int] = 9999
+
+            class TestHttp:
+                """HTTP test constants."""
+
+                TEST_ENDPOINT: Final[str] = "/test"
+                TEST_METHOD: Final[str] = "GET"
+                TEST_CONTENT_TYPE: Final[str] = "application/json"
+
+            class Literals:
+                """Literal type aliases for test constants (Python 3.13 pattern).
+
+                These type aliases reuse production Literals from FlextWebConstants.Web
+                to ensure consistency between tests and production code.
+                All Literal types are at FlextWebConstants.Web.Literals namespace.
+                """
+
+                type HttpMethodLiteral = (
+                    FlextWebConstants.Web.Literals.HttpMethodLiteral
+                )
+                type EnvironmentNameLiteral = (
+                    FlextWebConstants.Web.Literals.EnvironmentNameLiteral
+                )
+                type ApplicationStatusLiteral = (
+                    FlextWebConstants.Web.Literals.ApplicationStatusLiteral
+                )
+                type ApplicationTypeLiteral = (
+                    FlextWebConstants.Web.Literals.ApplicationTypeLiteral
+                )
+                type ResponseStatusLiteral = (
+                    FlextWebConstants.Web.Literals.ResponseStatusLiteral
+                )
+                type ProtocolLiteral = FlextWebConstants.Web.Literals.ProtocolLiteral
+                type ContentTypeLiteral = (
+                    FlextWebConstants.Web.Literals.ContentTypeLiteral
+                )
+                type SameSiteLiteral = FlextWebConstants.Web.Literals.SameSiteLiteral
 
 
-# Short aliases per FLEXT convention
-tc = TestsFlextWebConstants  # Primary test constants alias
-c = TestsFlextWebConstants  # Alternative alias for compatibility
-
-__all__ = [
-    "TestsFlextWebConstants",
-    "c",
-    "tc",
-]
+c = TestsFlextWebConstants
+__all__ = ["TestsFlextWebConstants", "c"]

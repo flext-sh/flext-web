@@ -11,10 +11,9 @@ from __future__ import annotations
 
 import sys
 
-from flext_core import FlextLogger, FlextResult
+from flext_core import FlextLogger, r
 
-from flext_web.api import FlextWebApi
-from flext_web.models import FlextWebModels
+from flext_web import FlextWebApi, FlextWebModels
 
 
 class FlextWebCliService:
@@ -30,20 +29,30 @@ class FlextWebCliService:
         self._logger = FlextLogger(__name__)
         self._api = FlextWebApi()
 
-    def run(self) -> FlextResult[bool]:
+    @staticmethod
+    def main() -> None:
+        """CLI entry point - static method following flext-core patterns."""
+        logger = FlextLogger(__name__)
+        cli_service = FlextWebCliService()
+        result = cli_service.run()
+        if result.is_failure:
+            _ = logger.error(f"Service failed: {result.error}")
+            sys.exit(1)
+        sys.exit(0)
+
+    def run(self) -> r[bool]:
         """Run HTTP service operations.
 
         Returns:
-            FlextResult[bool]: Success contains True if service is operational,
+            r[bool]: Success contains True if service is operational,
                              failure contains error message
 
         """
-        # Use monadic pattern for status check with side-effect logging
-        return self._api.get_service_status().map(self._log_status_and_return)
+        status_result = self._api.get_service_status()
+        return status_result.map(self._log_status_and_return)
 
     def _log_status_and_return(
-        self,
-        status_data: FlextWebModels.Web.ServiceResponse,
+        self, status_data: FlextWebModels.Web.ServiceResponse
     ) -> bool:
         """Log service status and return True for success - internal state management.
 
@@ -54,29 +63,10 @@ class FlextWebCliService:
             bool: Always True when called (indicates successful status check)
 
         """
-        self._logger.info(f"Service status: {status_data.service}")
+        _ = self._logger.info(f"Service status: {status_data.service}")
         return True
 
-    @staticmethod
-    def main() -> None:
-        """CLI entry point - static method following flext-core patterns."""
-        logger = FlextLogger(__name__)
-        cli_service = FlextWebCliService()
 
-        # Use monadic pattern - handle failure and exit
-        result = cli_service.run()
-
-        # Process result - fast fail on error, no fallback
-        if result.is_failure:  # pragma: no cover
-            logger.error(f"Service failed: {result.error}")
-            sys.exit(1)
-
-        # Success - exit normally
-        sys.exit(0)
-
-
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     FlextWebCliService.main()
-
-
 __all__ = ["FlextWebCliService"]
