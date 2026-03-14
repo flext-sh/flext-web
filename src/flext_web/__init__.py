@@ -43,7 +43,6 @@ if TYPE_CHECKING:
     )
     from flext_web.utilities import FlextWebUtilities, u
 
-# Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextWebApi": ("flext_web.api", "FlextWebApi"),
     "FlextWebApp": ("flext_web.app", "FlextWebApp"),

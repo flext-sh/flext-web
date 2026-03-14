@@ -35,7 +35,6 @@ if TYPE_CHECKING:
     )
     from tests.unit.test_version import TestFlextWebVersion, assert_version_info
 
-# Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextWebApi": ("tests.unit.test_api", "TestFlextWebApi"),
     "TestFlextWebApp": ("tests.unit.test_app", "TestFlextWebApp"),

@@ -29,7 +29,6 @@ if TYPE_CHECKING:
     from tests.helpers.typings import TestsTypings, t
     from tests.helpers.utilities import TestsUtilities, u
 
-# Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestsModels": ("tests.helpers.models", "TestsModels"),
     "TestsProtocols": ("tests.helpers.protocols", "TestsProtocols"),
