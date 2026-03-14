@@ -453,7 +453,7 @@ class FlextWebServices(s[bool]):
 
         """
 
-        def _validate_routes(routes_init: object) -> bool:
+        def _validate_routes(routes_init: bool) -> bool:
             return isinstance(routes_init, bool) and (
                 not self._service_running or routes_init
             )
@@ -464,7 +464,7 @@ class FlextWebServices(s[bool]):
         if routes_validated is None:
             return r[bool].fail("Service cannot be running without initialized routes")
 
-        def _validate_middleware(mw_conf: object) -> bool:
+        def _validate_middleware(mw_conf: bool) -> bool:
             return isinstance(mw_conf, bool) and (not self._service_running or mw_conf)
 
         middleware_validated = u.guard(
