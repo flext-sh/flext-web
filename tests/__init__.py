@@ -70,10 +70,7 @@ if TYPE_CHECKING:
 
 # Lazy import mapping: export_name -> (module_path, attr_name)
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
-    "ExamplesFullFunctionalityTest": (
-        "tests.integration.test_examples",
-        "ExamplesFullFunctionalityTest",
-    ),
+    "ExamplesFullFunctionalityTest": ("tests.integration.test_examples", "ExamplesFullFunctionalityTest"),
     "TestFlextWebApi": ("tests.unit.test_api", "TestFlextWebApi"),
     "TestFlextWebApp": ("tests.unit.test_app", "TestFlextWebApp"),
     "TestFlextWebCliService": ("tests.unit.test___main__", "TestFlextWebCliService"),
@@ -102,10 +99,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "assert_success": ("tests.conftest", "assert_success"),
     "assert_version_info": ("tests.unit.test_version", "assert_version_info"),
     "c": ("tests.constants", "c"),
-    "create_comprehensive_test_suite": (
-        "tests.conftest",
-        "create_comprehensive_test_suite",
-    ),
+    "create_comprehensive_test_suite": ("tests.conftest", "create_comprehensive_test_suite"),
     "create_entry": ("tests.conftest", "create_entry"),
     "create_test_app": ("tests.conftest", "create_test_app"),
     "create_test_data": ("tests.conftest", "create_test_data"),
