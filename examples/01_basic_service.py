@@ -11,16 +11,21 @@ from flext_web import FlextWebServices, FlextWebSettings
 
 def main() -> None:
     """Start FLEXT Web Interface with default configuration."""
-    config_result = FlextWebSettings.create_web_config()
-    if config_result.is_failure:
-        return
-    config = config_result.value
+    config = FlextWebSettings(
+        app_name="flext-web",
+        host="127.0.0.1",
+        port=8000,
+        debug_mode=True,
+        debug=True,
+        testing=False,
+        secret_key="dev-secret-key-32-characters-long",
+    )
     service_result = FlextWebServices.create_web_service(config)
     if service_result.is_failure:
         return
     service = service_result.value
     try:
-        service.start_service("127.0.0.1", 8000, debug=True)
+        _ = service.start_service("127.0.0.1", 8000, _debug=True)
     except KeyboardInterrupt:
         return
     except Exception:

@@ -126,6 +126,6 @@ class TestFlextWebFields:
 
     def test_field_validation_integration(self) -> None:
         """Test field validation integration."""
-        model = TestModel()
+        model = FlextWebSettings()
         assert model.host == c.Web.WebDefaults.HOST
         assert model.port == c.Web.WebDefaults.PORT

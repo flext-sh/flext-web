@@ -38,20 +38,24 @@ from tests import (
 
 
 def assert_success(
-    result: r[object], message: str = "Operation should succeed"
+    result: r[t.ContainerValue], message: str = "Operation should succeed"
 ) -> None:
     """Assert that a r is successful using flext_tests matchers."""
     if not result.is_success:
         raise AssertionError(f"{message}: {result.error}")
 
 
-def assert_failure(result: r[object], message: str = "Operation should fail") -> None:
+def assert_failure(
+    result: r[t.ContainerValue], message: str = "Operation should fail"
+) -> None:
     """Assert that a r is a failure using flext_tests matchers."""
     if result.is_success:
         raise AssertionError(message)
 
 
-def assert_result(result: r[object], *, expected_success: bool = True) -> None:
+def assert_result(
+    result: r[t.ContainerValue], *, expected_success: bool = True
+) -> None:
     """Assert r state with appropriate message using flext_tests."""
     if expected_success:
         assert_success(result)
@@ -59,7 +63,7 @@ def assert_result(result: r[object], *, expected_success: bool = True) -> None:
         assert_failure(result)
 
 
-def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[object]:
+def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
     """Generalized entry creation function using flext-core patterns.
 
     This function replaces multiple specific create_* methods by providing
@@ -85,7 +89,7 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[object]:
             or not isinstance(host, str)
             or (not isinstance(port, int))
         ):
-            return r[object].fail("Invalid parameters for web_app")
+            return r[t.ContainerValue].fail("Invalid parameters for web_app")
         return m.Web.create_web_app(name=name, host=host, port=port)
     if entry_type == "http_request":
         url: object = kwargs.get("url")
@@ -94,13 +98,13 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[object]:
         req_body: object = kwargs.get("body")
         timeout: object = kwargs.get("timeout")
         if not isinstance(url, str) or not isinstance(method, str):
-            return r[object].fail("Invalid parameters for http_request")
+            return r[t.ContainerValue].fail("Invalid parameters for http_request")
         if req_headers is not None and (not isinstance(req_headers, dict)):
-            return r[object].fail("Invalid headers for http_request")
+            return r[t.ContainerValue].fail("Invalid headers for http_request")
         if req_body is not None and (not isinstance(req_body, (str, dict))):
-            return r[object].fail("Invalid body for http_request")
+            return r[t.ContainerValue].fail("Invalid body for http_request")
         if not isinstance(timeout, (float, int)):
-            return r[object].fail("Invalid timeout for http_request")
+            return r[t.ContainerValue].fail("Invalid timeout for http_request")
         return t.create_http_request(
             url=url,
             method=method,
@@ -114,13 +118,13 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[object]:
         body: object = kwargs.get("body")
         elapsed_time: object = kwargs.get("elapsed_time")
         if not isinstance(status_code, int):
-            return r[object].fail("Invalid status_code for http_response")
+            return r[t.ContainerValue].fail("Invalid status_code for http_response")
         if headers is not None and (not isinstance(headers, dict)):
-            return r[object].fail("Invalid headers for http_response")
+            return r[t.ContainerValue].fail("Invalid headers for http_response")
         if body is not None and (not isinstance(body, (str, dict))):
-            return r[object].fail("Invalid body for http_response")
+            return r[t.ContainerValue].fail("Invalid body for http_response")
         if elapsed_time is not None and (not isinstance(elapsed_time, (float, int))):
-            return r[object].fail("Invalid elapsed_time for http_response")
+            return r[t.ContainerValue].fail("Invalid elapsed_time for http_response")
         return t.create_http_response(
             status_code=status_code,
             headers=headers,
@@ -137,14 +141,14 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[object]:
         client_ip = kwargs.get("client_ip")
         user_agent = kwargs.get("user_agent")
         if not isinstance(url, str) or not isinstance(method, str):
-            return r[object].fail("Invalid parameters for web_request")
+            return r[t.ContainerValue].fail("Invalid parameters for web_request")
         web_request_config = _WebRequestConfig(
             url=url,
             method=method,
-            headers=headers if isinstance(headers, dict) else None,
+            headers=headers if isinstance(headers, dict) else {},
             body=body if isinstance(body, (str, dict)) else None,
             timeout=float(timeout) if isinstance(timeout, (int, float)) else 30.0,
-            query_params=query_params if isinstance(query_params, dict) else None,
+            query_params=query_params if isinstance(query_params, dict) else {},
             client_ip=client_ip if isinstance(client_ip, str) else "127.0.0.1",
             user_agent=user_agent if isinstance(user_agent, str) else "test-client",
         )
@@ -159,11 +163,11 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[object]:
         content_length = kwargs.get("content_length")
         processing_time_ms = kwargs.get("processing_time_ms")
         if not isinstance(status_code, int):
-            return r[object].fail("Invalid status_code for web_response")
+            return r[t.ContainerValue].fail("Invalid status_code for web_response")
         web_response_config = _WebResponseConfig(
             status_code=status_code,
             request_id=request_id if isinstance(request_id, str) else "test-request",
-            headers=headers if isinstance(headers, dict) else None,
+            headers=headers if isinstance(headers, dict) else {},
             body=body if isinstance(body, (str, dict)) else None,
             elapsed_time=float(elapsed_time)
             if isinstance(elapsed_time, (int, float))
@@ -187,7 +191,7 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[object]:
             or not isinstance(host, str)
             or (not isinstance(port, int))
         ):
-            return r[object].fail("Invalid parameters for application")
+            return r[t.ContainerValue].fail("Invalid parameters for application")
         app_config = _ApplicationConfig(
             name=name,
             host=host,
