@@ -81,9 +81,9 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
 
     """
     if entry_type == "web_app":
-        name: object = kwargs.get("name")
-        host: object = kwargs.get("host")
-        port: object = kwargs.get("port")
+        name = kwargs.get("name")
+        host = kwargs.get("host")
+        port = kwargs.get("port")
         if (
             not isinstance(name, str)
             or not isinstance(host, str)
@@ -92,11 +92,11 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
             return r[t.ContainerValue].fail("Invalid parameters for web_app")
         return m.Web.create_web_app(name=name, host=host, port=port)
     if entry_type == "http_request":
-        url: object = kwargs.get("url")
-        method: object = kwargs.get("method")
-        req_headers: object = kwargs.get("headers")
-        req_body: object = kwargs.get("body")
-        timeout: object = kwargs.get("timeout")
+        url = kwargs.get("url")
+        method = kwargs.get("method")
+        req_headers = kwargs.get("headers")
+        req_body = kwargs.get("body")
+        timeout = kwargs.get("timeout")
         if not isinstance(url, str) or not isinstance(method, str):
             return r[t.ContainerValue].fail("Invalid parameters for http_request")
         if req_headers is not None and (not isinstance(req_headers, dict)):
@@ -113,10 +113,10 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
             timeout=float(timeout),
         )
     if entry_type == "http_response":
-        status_code: object = kwargs.get("status_code")
-        headers: object = kwargs.get("headers")
-        body: object = kwargs.get("body")
-        elapsed_time: object = kwargs.get("elapsed_time")
+        status_code = kwargs.get("status_code")
+        headers = kwargs.get("headers")
+        body = kwargs.get("body")
+        elapsed_time = kwargs.get("elapsed_time")
         if not isinstance(status_code, int):
             return r[t.ContainerValue].fail("Invalid status_code for http_response")
         if headers is not None and (not isinstance(headers, dict)):
@@ -307,7 +307,7 @@ def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:
     )
 
 
-def create_test_result(*, success: bool = True, **kwargs: t.Scalar) -> r[object]:
+def create_test_result(*, success: bool = True, **kwargs: t.Scalar) -> r:
     """Create a test r using r API directly.
 
     This function provides a standardized way to create test results,
@@ -326,14 +326,14 @@ def create_test_result(*, success: bool = True, **kwargs: t.Scalar) -> r[object]
     """
     if success:
         value = kwargs.get("data") or kwargs.get("value")
-        return r[object].ok(value)
+        return r.ok(value)
     error = str(kwargs.get("error", "Test error"))
-    return r[object].fail(error)
+    return r.fail(error)
 
 
 def run_parameterized_test(
     test_cases: list[tuple[object, ...]],
-    test_function: Callable[[object], r[object]],
+    test_function: Callable[, r],
     expected_results: list[bool],
     test_name: str = "parameterized_test",
 ) -> None:

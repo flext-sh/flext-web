@@ -51,7 +51,7 @@ class TestFlextWebProtocols:
     def _mock_runtime_lifecycle(self, monkeypatch: pytest.MonkeyPatch) -> None:
 
         def _start_runtime(
-            app_id: str, app_data: t.WebCore.ResponseDict, app_instance: object
+            app_id: str, app_data: t.WebCore.ResponseDict, app_instance
         ) -> r[dict[str, object]]:
             _ = (app_data, app_instance)
             return r[dict[str, object]].ok({"runner": "mock", "app_id": app_id})
@@ -280,7 +280,7 @@ class TestFlextWebProtocols:
     def test_protocol_validation(self) -> None:
         """Test that protocols can be used for validation."""
 
-        def validate_app_manager(obj: object) -> bool:
+        def validate_app_manager(obj) -> bool:
             return hasattr(obj, "create_app") and hasattr(obj, "start_app")
 
         class ValidAppManager:
@@ -363,12 +363,12 @@ class TestFlextWebProtocols:
                 return {}
 
             def execute(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[dict[str, object]]:
-                return r[object].ok({})
+                return r.ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -423,12 +423,12 @@ class TestFlextWebProtocols:
                 return False
 
             def execute(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[dict[str, object]]:
-                return r[object].ok({})
+                return r.ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -467,12 +467,12 @@ class TestFlextWebProtocols:
                 return r[bool].ok(True)
 
             def execute(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[dict[str, object]]:
-                return r[object].ok({})
+                return r.ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -496,27 +496,27 @@ class TestFlextWebProtocols:
             def find_by_criteria(
                 self, criteria: dict[str, object]
             ) -> r[list[dict[str, object]]]:
-                return r[list[object]].ok([])
+                return r[list].ok([])
 
             def get_by_id(self, entity_id: str) -> r[dict[str, object]]:
-                return r[object].ok({"id": entity_id})
+                return r.ok({"id": entity_id})
 
             def save(self, entity: dict[str, object]) -> r[dict[str, object]]:
-                return r[object].ok(entity)
+                return r.ok(entity)
 
             def delete(self, entity_id: str) -> r[bool]:
                 return r[bool].ok(True)
 
             def find_all(self) -> r[list[dict[str, object]]]:
-                return r[list[object]].ok([])
+                return r[list].ok([])
 
             def execute(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[dict[str, object]]:
-                return r[object].ok({})
+                return r.ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -541,12 +541,12 @@ class TestFlextWebProtocols:
                 return r[str].ok("<html>Dashboard</html>")
 
             def execute(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[dict[str, object]]:
-                return r[object].ok({})
+                return r.ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -572,7 +572,7 @@ class TestFlextWebProtocols:
                 return r[bool].ok(True)
 
             def get_template_config(self) -> r[dict[str, object]]:
-                return r[object].ok({})
+                return r.ok({})
 
             def validate_template_config(self, config: dict[str, object]) -> r[bool]:
                 return r[bool].ok(True)
@@ -580,7 +580,7 @@ class TestFlextWebProtocols:
             def render(self, template: str, _context: dict[str, object]) -> r[str]:
                 return r[str].ok("")
 
-            def add_filter(self, name: str, filter_func: object) -> None:
+            def add_filter(self, name: str, filter_func) -> None:
                 pass
 
             def add_global(
@@ -592,12 +592,12 @@ class TestFlextWebProtocols:
                 pass
 
             def execute(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[dict[str, object]]:
-                return r[object].ok({})
+                return r.ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -645,12 +645,12 @@ class TestFlextWebProtocols:
                 return {"requests": 0, "errors": 0, "uptime": "0s"}
 
             def execute(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[dict[str, object]]:
-                return r[object].ok({})
+                return r.ok({})
 
             def validate_business_rules(
-                self, *args: object, **kwargs: t.Scalar
+                self, *args, **kwargs: t.Scalar
             ) -> r[bool]:
                 return r[bool].ok(True)
 
@@ -842,7 +842,7 @@ class TestFlextWebProtocols:
         assert create_result.is_success
         app_id = str(create_result.value["id"])
         framework = str(create_result.value["framework"])
-        app_instance: object = cast("object", p.Web.framework_instances[app_id])
+        app_instance = cast("object", p.Web.framework_instances[app_id])
         if framework == "fastapi":
             fastapi_app = app_instance
             paths = [route.path for route in fastapi_app.routes]
