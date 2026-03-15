@@ -1,14 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make codegen
 #
-"""FLEXT Web Tests - Test infrastructure and utilities.
-
-Provides TestsFlextWeb classes extending FlextTests and FlextWeb for comprehensive testing.
-Centralized runtime aliases: c, p, m, r, t, u, s from tests and flext_web.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+"""Tests package."""
 
 from __future__ import annotations
 
@@ -19,6 +12,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
+    from tests import helpers, integration, unit
     from tests.conftest import (
         assert_failure,
         assert_result,
@@ -113,6 +107,8 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "create_test_result": ("tests.conftest", "create_test_result"),
     "docker_manager": ("tests.conftest", "docker_manager"),
     "h": ("tests.unit.test_handlers", "TestFlextWebHandlers"),
+    "helpers": ("tests.helpers", ""),
+    "integration": ("tests.integration", ""),
     "invalid_app_data": ("tests.conftest", "invalid_app_data"),
     "logger": ("tests.integration.test_examples", "logger"),
     "m": ("tests.models", "m"),
@@ -129,6 +125,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "t": ("tests.typings", "t"),
     "test_app_data": ("tests.conftest", "test_app_data"),
     "u": ("tests.utilities", "u"),
+    "unit": ("tests.unit", ""),
 }
 
 __all__ = [
@@ -169,6 +166,8 @@ __all__ = [
     "create_test_result",
     "docker_manager",
     "h",
+    "helpers",
+    "integration",
     "invalid_app_data",
     "logger",
     "m",
@@ -185,6 +184,7 @@ __all__ = [
     "t",
     "test_app_data",
     "u",
+    "unit",
 ]
 
 
