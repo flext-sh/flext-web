@@ -62,6 +62,7 @@ if TYPE_CHECKING:
     from tests.unit.test_constants import TestFlextWebConstants
     from tests.unit.test_fields import TestFlextWebFields
     from tests.unit.test_handlers import TestFlextWebHandlers, TestFlextWebHandlers as h
+    from tests.unit.test_protocols import TestFlextWebProtocols
     from tests.unit.test_services import TestFlextWebService
     from tests.unit.test_typings import TestFlextWebModels
     from tests.unit.test_utilities import TestFlextWebUtilities
@@ -81,6 +82,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextWebHandlers": ("tests.unit.test_handlers", "TestFlextWebHandlers"),
     "TestFlextWebInit": ("tests.unit.test___init__", "TestFlextWebInit"),
     "TestFlextWebModels": ("tests.unit.test_typings", "TestFlextWebModels"),
+    "TestFlextWebProtocols": ("tests.unit.test_protocols", "TestFlextWebProtocols"),
     "TestFlextWebService": ("tests.unit.test_services", "TestFlextWebService"),
     "TestFlextWebSettings": ("tests.unit.test_config", "TestFlextWebSettings"),
     "TestFlextWebUtilities": ("tests.unit.test_utilities", "TestFlextWebUtilities"),
@@ -139,6 +141,7 @@ __all__ = [
     "TestFlextWebHandlers",
     "TestFlextWebInit",
     "TestFlextWebModels",
+    "TestFlextWebProtocols",
     "TestFlextWebService",
     "TestFlextWebSettings",
     "TestFlextWebUtilities",

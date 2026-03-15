@@ -27,6 +27,10 @@ if TYPE_CHECKING:
     )
     from tests.unit.test_fields import TestFlextWebFields
     from tests.unit.test_handlers import TestFlextWebHandlers, TestFlextWebHandlers as h
+    from tests.unit.test_protocols import (
+        TestFlextWebProtocols,
+        TestFlextWebProtocols as p,
+    )
     from tests.unit.test_services import TestFlextWebService
     from tests.unit.test_typings import TestFlextWebModels, TestFlextWebModels as m
     from tests.unit.test_utilities import (
@@ -44,6 +48,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextWebHandlers": ("tests.unit.test_handlers", "TestFlextWebHandlers"),
     "TestFlextWebInit": ("tests.unit.test___init__", "TestFlextWebInit"),
     "TestFlextWebModels": ("tests.unit.test_typings", "TestFlextWebModels"),
+    "TestFlextWebProtocols": ("tests.unit.test_protocols", "TestFlextWebProtocols"),
     "TestFlextWebService": ("tests.unit.test_services", "TestFlextWebService"),
     "TestFlextWebSettings": ("tests.unit.test_config", "TestFlextWebSettings"),
     "TestFlextWebUtilities": ("tests.unit.test_utilities", "TestFlextWebUtilities"),
@@ -53,6 +58,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "c": ("tests.unit.test_constants", "TestFlextWebConstants"),
     "h": ("tests.unit.test_handlers", "TestFlextWebHandlers"),
     "m": ("tests.unit.test_typings", "TestFlextWebModels"),
+    "p": ("tests.unit.test_protocols", "TestFlextWebProtocols"),
     "s": ("tests.unit.test___main__", "TestFlextWebCliService"),
     "u": ("tests.unit.test_utilities", "TestFlextWebUtilities"),
 }
@@ -66,6 +72,7 @@ __all__ = [
     "TestFlextWebHandlers",
     "TestFlextWebInit",
     "TestFlextWebModels",
+    "TestFlextWebProtocols",
     "TestFlextWebService",
     "TestFlextWebSettings",
     "TestFlextWebUtilities",
@@ -75,6 +82,7 @@ __all__ = [
     "c",
     "h",
     "m",
+    "p",
     "s",
     "u",
 ]
