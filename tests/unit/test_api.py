@@ -8,6 +8,8 @@ enforced. Additionally, FlextWebSettings loads from environment variables,
 which may override Field defaults in test environments.
 """
 
+from __future__ import annotations
+
 import pytest
 from pydantic import ValidationError
 

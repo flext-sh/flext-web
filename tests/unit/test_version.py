@@ -3,6 +3,8 @@
 Tests the version management functionality following flext standards.
 """
 
+from __future__ import annotations
+
 from flext_web import (
     VERSION,
     FlextWebVersion,

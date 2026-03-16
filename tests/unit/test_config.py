@@ -7,6 +7,8 @@ FlextSettings (flext-core) where Pydantic Field constraints (ge, le, min_length)
 are not enforced. See: FlextSettings bypasses Field validation constraints.
 """
 
+from __future__ import annotations
+
 import pytest
 from pydantic import ValidationError
 

@@ -3,6 +3,8 @@
 Tests the web fields functionality following flext standards.
 """
 
+from __future__ import annotations
+
 from tests import FlextWebSettings, c, m
 
 
