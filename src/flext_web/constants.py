@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from enum import IntEnum, StrEnum
+from enum import IntEnum, StrEnum, unique
 from ipaddress import IPv4Address
 from types import MappingProxyType
 from typing import ClassVar, Final, Literal
@@ -21,6 +21,7 @@ class FlextWebConstants(FlextConstants):
         organization and to enable composition with other domain constants.
         """
 
+        @unique
         class Method(StrEnum):
             """Enumeration of supported HTTP methods.
 
@@ -67,6 +68,7 @@ class FlextWebConstants(FlextConstants):
             SERVICE_UNAVAILABLE = 503
             GATEWAY_TIMEOUT = 504
 
+        @unique
         class Name(StrEnum):
             """Allowed deployment environments.
 
@@ -80,6 +82,7 @@ class FlextWebConstants(FlextConstants):
             PRODUCTION = "production"
             TESTING = "testing"
 
+        @unique
         class ApplicationType(StrEnum):
             """Supported application classifications.
 
@@ -97,6 +100,7 @@ class FlextWebConstants(FlextConstants):
             DASHBOARD = "dashboard"
             ADMIN_PANEL = "REDACTED_LDAP_BIND_PASSWORD-panel"
 
+        @unique
         class Status(StrEnum):
             """Lifecycle status values for web applications.
 
