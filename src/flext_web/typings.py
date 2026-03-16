@@ -10,19 +10,18 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Annotated, Literal, TypeAlias
+from typing import Annotated, Literal
 
 from flext_core import FlextTypes, r, u
 from pydantic import Field
 
-from flext_web.constants import FlextWebConstants as c
-from flext_web.models import FlextWebModels as m
+from flext_web import c, m
 
 HttpMethod = c.Web.Method
-WebRequestDict: TypeAlias = dict[
+type WebRequestDict = dict[
     str, str | int | bool | list[str] | dict[str, str | int | bool]
 ]
-WebResponseDict: TypeAlias = dict[
+type WebResponseDict = dict[
     str, str | int | bool | list[str] | dict[str, str | int | bool]
 ]
 
@@ -99,8 +98,8 @@ class FlextWebTypes(FlextTypes):
         """
 
         ConfigValue = str | int | bool | list[str]
-        RequestDict: TypeAlias = WebRequestDict
-        ResponseDict: TypeAlias = WebResponseDict
+        type RequestDict = WebRequestDict
+        type ResponseDict = WebResponseDict
         HttpMethodLiteral = Literal[
             "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
         ]
@@ -134,8 +133,8 @@ class FlextWebTypes(FlextTypes):
     class WebCore:
         """Compatibility namespace for request/response dict aliases."""
 
-        RequestDict: TypeAlias = WebRequestDict
-        ResponseDict: TypeAlias = WebResponseDict
+        type RequestDict = WebRequestDict
+        type ResponseDict = WebResponseDict
 
     class Types:
         """Type system aliases for flext-web Removed redundant aliases."""
