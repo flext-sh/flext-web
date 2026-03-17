@@ -12,32 +12,23 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
-    from tests.unit.test___init__ import TestFlextWebInit
-    from tests.unit.test___main__ import (
+    from .test___init__ import TestFlextWebInit
+    from .test___main__ import (
         TestFlextWebCliService,
         TestFlextWebCliService as s,
         TestMainFunction,
     )
-    from tests.unit.test_api import TestFlextWebApi
-    from tests.unit.test_app import TestFlextWebApp
-    from tests.unit.test_config import TestFlextWebSettings
-    from tests.unit.test_constants import (
-        TestFlextWebConstants,
-        TestFlextWebConstants as c,
-    )
-    from tests.unit.test_fields import TestFlextWebFields
-    from tests.unit.test_handlers import TestFlextWebHandlers, TestFlextWebHandlers as h
-    from tests.unit.test_protocols import (
-        TestFlextWebProtocols,
-        TestFlextWebProtocols as p,
-    )
-    from tests.unit.test_services import TestFlextWebService
-    from tests.unit.test_typings import TestFlextWebModels, TestFlextWebModels as m
-    from tests.unit.test_utilities import (
-        TestFlextWebUtilities,
-        TestFlextWebUtilities as u,
-    )
-    from tests.unit.test_version import TestFlextWebVersion, assert_version_info
+    from .test_api import TestFlextWebApi
+    from .test_app import TestFlextWebApp
+    from .test_config import TestFlextWebSettings
+    from .test_constants import TestFlextWebConstants, TestFlextWebConstants as c
+    from .test_fields import TestFlextWebFields
+    from .test_handlers import TestFlextWebHandlers, TestFlextWebHandlers as h
+    from .test_protocols import TestFlextWebProtocols, TestFlextWebProtocols as p
+    from .test_services import TestFlextWebService
+    from .test_typings import TestFlextWebModels, TestFlextWebModels as m
+    from .test_utilities import TestFlextWebUtilities, TestFlextWebUtilities as u
+    from .test_version import TestFlextWebVersion, assert_version_info
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextWebApi": ("tests.unit.test_api", "TestFlextWebApi"),

@@ -12,8 +12,8 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
-    from tests import helpers, integration, unit
-    from tests.conftest import (
+    from . import helpers as helpers, integration as integration, unit as unit
+    from .conftest import (
         assert_failure,
         assert_result,
         assert_success,
@@ -34,34 +34,34 @@ if TYPE_CHECKING:
         setup_test_environment,
         test_app_data,
     )
-    from tests.constants import TestsFlextWebConstants, c
-    from tests.helpers.models import TestsModels
-    from tests.helpers.protocols import TestsProtocols
-    from tests.helpers.typings import TestsTypings
-    from tests.helpers.utilities import TestsUtilities
-    from tests.integration.test_examples import ExamplesFullFunctionalityTest, logger
-    from tests.models import TestsFlextWebModels, m
-    from tests.port_manager import TestPortManager
-    from tests.protocols import TestsFlextWebProtocols, p
-    from tests.typings import TestsFlextWebTypes, t
-    from tests.unit.test___init__ import TestFlextWebInit
-    from tests.unit.test___main__ import (
+    from .constants import TestsFlextWebConstants, c
+    from .helpers.models import TestsModels
+    from .helpers.protocols import TestsProtocols
+    from .helpers.typings import TestsTypings
+    from .helpers.utilities import TestsUtilities
+    from .integration.test_examples import ExamplesFullFunctionalityTest, logger
+    from .models import TestsFlextWebModels, m
+    from .port_manager import TestPortManager
+    from .protocols import TestsFlextWebProtocols, p
+    from .typings import TestsFlextWebTypes, t
+    from .unit.test___init__ import TestFlextWebInit
+    from .unit.test___main__ import (
         TestFlextWebCliService,
         TestFlextWebCliService as s,
         TestMainFunction,
     )
-    from tests.unit.test_api import TestFlextWebApi
-    from tests.unit.test_app import TestFlextWebApp
-    from tests.unit.test_config import TestFlextWebSettings
-    from tests.unit.test_constants import TestFlextWebConstants
-    from tests.unit.test_fields import TestFlextWebFields
-    from tests.unit.test_handlers import TestFlextWebHandlers, TestFlextWebHandlers as h
-    from tests.unit.test_protocols import TestFlextWebProtocols
-    from tests.unit.test_services import TestFlextWebService
-    from tests.unit.test_typings import TestFlextWebModels
-    from tests.unit.test_utilities import TestFlextWebUtilities
-    from tests.unit.test_version import TestFlextWebVersion, assert_version_info
-    from tests.utilities import TestsFlextWebUtilities, u
+    from .unit.test_api import TestFlextWebApi
+    from .unit.test_app import TestFlextWebApp
+    from .unit.test_config import TestFlextWebSettings
+    from .unit.test_constants import TestFlextWebConstants
+    from .unit.test_fields import TestFlextWebFields
+    from .unit.test_handlers import TestFlextWebHandlers, TestFlextWebHandlers as h
+    from .unit.test_protocols import TestFlextWebProtocols
+    from .unit.test_services import TestFlextWebService
+    from .unit.test_typings import TestFlextWebModels
+    from .unit.test_utilities import TestFlextWebUtilities
+    from .unit.test_version import TestFlextWebVersion, assert_version_info
+    from .utilities import TestsFlextWebUtilities, u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "ExamplesFullFunctionalityTest": (
