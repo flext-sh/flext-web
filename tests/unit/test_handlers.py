@@ -6,6 +6,7 @@ Tests the web handlers functionality following flext standards.
 from __future__ import annotations
 
 from flext_core import r
+
 from flext_web import FlextWebHandlers
 from tests import m
 

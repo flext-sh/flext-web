@@ -10,8 +10,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from flext_web import FlextWebServices as s
-from flext_web import FlextWebSettings
+from flext_web import FlextWebServices as s, FlextWebSettings
 from tests import c, m
 
 
