@@ -257,7 +257,17 @@ class FlextWebProtocols(FlextProtocols):
             cls, name: str
         ) -> r[tuple[flask.Flask | FastAPI, str, str]]:
             fastapi_result = FlextWebApp.create_fastapi_app(
-                config=m.Web.FastAPIAppConfig(title=name)
+                config=m.Web.FastAPIAppConfig(
+                    title=name,
+                    version=c.Web.WebDefaults.VERSION_STRING,
+                    description=c.Web.WebDefaults.APP_DESCRIPTION,
+                    debug=c.Web.WebDefaults.DEBUG_MODE,
+                    testing=False,
+                    middlewares=[],
+                    docs_url=c.Web.WebDefaults.DOCS_URL,
+                    redoc_url=c.Web.WebDefaults.REDOC_URL,
+                    openapi_url=c.Web.WebDefaults.OPENAPI_URL,
+                )
             )
             if fastapi_result.is_success:
                 return r[tuple[flask.Flask | FastAPI, str, str]].ok((
@@ -860,9 +870,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[bool].ok(value=True)
 
         @runtime_checkable
-        class WebRepository(
-            FlextProtocols.Repository[t.WebCore.ResponseDict], Protocol
-        ):
+        class WebRepository(Protocol):
             """Base web repository protocol for data access.
 
             Extends p.Repository with web-specific data access operations.
@@ -1169,7 +1177,12 @@ class FlextWebProtocols(FlextProtocols):
 
                 """
                 full_context = deepcopy(FlextWebProtocols.Web.template_globals)
-                full_context.update(context)
+                for context_key, context_value in context.items():
+                    full_context[context_key] = (
+                        context_value
+                        if isinstance(context_value, (str, int, float, bool))
+                        else str(context_value)
+                    )
                 rendered = template
                 for key, value in full_context.items():
                     if isinstance(value, (str, int, bool)):
