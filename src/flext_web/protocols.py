@@ -47,6 +47,7 @@ from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
 from flext_web.typings import t
+from flext_web.utilities import u
 
 
 class AppRuntimeInfo(TypedDict):
@@ -1180,7 +1181,7 @@ class FlextWebProtocols(FlextProtocols):
                 for context_key, context_value in context.items():
                     full_context[context_key] = (
                         context_value
-                        if isinstance(context_value, (str, int, float, bool))
+                        if u.is_primitive(context_value)
                         else str(context_value)
                     )
                 rendered = template
