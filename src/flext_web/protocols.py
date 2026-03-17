@@ -260,13 +260,13 @@ class FlextWebProtocols(FlextProtocols):
                 config=m.Web.FastAPIAppConfig(
                     title=name,
                     version=c.Web.WebDefaults.VERSION_STRING,
-                    description=c.Web.WebDefaults.APP_DESCRIPTION,
+                    description=c.Web.WebApi.DEFAULT_DESCRIPTION,
                     debug=c.Web.WebDefaults.DEBUG_MODE,
                     testing=False,
                     middlewares=[],
-                    docs_url=c.Web.WebDefaults.DOCS_URL,
-                    redoc_url=c.Web.WebDefaults.REDOC_URL,
-                    openapi_url=c.Web.WebDefaults.OPENAPI_URL,
+                    docs_url=c.Web.WebApi.DOCS_URL,
+                    redoc_url=c.Web.WebApi.REDOC_URL,
+                    openapi_url=c.Web.WebApi.OPENAPI_URL,
                 )
             )
             if fastapi_result.is_success:
