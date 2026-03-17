@@ -10,8 +10,8 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_core import FlextModels
-from pydantic import Field
+from flext_core import FlextModels, r
+from pydantic import Field, computed_field
 
 from flext_web.constants import FlextWebConstants as c
 
@@ -63,6 +63,36 @@ class FlextWebSettings(FlextModels.Value):
             description="Application secret key",
         ),
     ]
+    ssl_enabled: Annotated[
+        bool,
+        Field(default=False, description="Enable TLS endpoints"),
+    ]
+    ssl_cert_path: Annotated[
+        str | None,
+        Field(default=None, description="TLS certificate file path"),
+    ]
+    ssl_key_path: Annotated[
+        str | None,
+        Field(default=None, description="TLS key file path"),
+    ]
+
+    @computed_field
+    @property
+    def protocol(self) -> str:
+        return (
+            c.Web.WebDefaults.HTTPS_PROTOCOL
+            if self.ssl_enabled
+            else c.Web.WebDefaults.HTTP_PROTOCOL
+        )
+
+    @computed_field
+    @property
+    def base_url(self) -> str:
+        return f"{self.protocol}://{self.host}:{self.port}"
+
+    @classmethod
+    def create_web_config(cls) -> r[FlextWebSettings]:
+        return r["FlextWebSettings"].ok(cls())
 
 
 __all__ = ["FlextWebSettings"]

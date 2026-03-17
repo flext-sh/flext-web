@@ -12,7 +12,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from tests import FlextWebSettings
+from flext_web import FlextWebSettings
 
 
 class TestFlextWebSettings:

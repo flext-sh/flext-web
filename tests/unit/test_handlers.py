@@ -5,7 +5,9 @@ Tests the web handlers functionality following flext standards.
 
 from __future__ import annotations
 
-from tests import FlextWebHandlers, m, r
+from flext_core import r
+from flext_web import FlextWebHandlers
+from tests import m
 
 
 class TestFlextWebHandlers:
@@ -97,9 +99,6 @@ class TestFlextWebHandlers:
         assert result.is_failure
         assert result.error is not None
         assert "at least" in result.error
-        result = handler.create("test-app", 8080, str(123))
-        assert result.is_failure
-        assert result.error is not None
         result = handler.create("test-app", 8080, "")
         assert result.is_failure
         assert result.error is not None

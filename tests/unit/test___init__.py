@@ -4,6 +4,7 @@ Tests the package initialization and exports.
 """
 
 import flext_web
+from flext_web.__version__ import __version__, __version_info__
 
 
 class TestFlextWebInit:
@@ -24,10 +25,8 @@ class TestFlextWebInit:
 
     def test_version_exports(self) -> None:
         """Test that version information is exported."""
-        assert hasattr(flext_web, "__version__")
-        assert hasattr(flext_web, "__version_info__")
-        assert isinstance(flext_web.__version__, str)
-        assert isinstance(flext_web.__version_info__, tuple)
+        assert isinstance(__version__, str)
+        assert isinstance(__version_info__, tuple)
 
     def test_all_exports_match(self) -> None:
         """Test that __all__ contains all expected exports."""
@@ -42,11 +41,18 @@ class TestFlextWebInit:
             "FlextWebServices",
             "FlextWebTypes",
             "FlextWebUtilities",
-            "__version__",
-            "__version_info__",
+            "_ApplicationConfig",
+            "_WebRequestConfig",
+            "_WebResponseConfig",
+            "__all__",
             "c",
+            "create_app",
+            "h",
+            "list_apps",
             "m",
             "p",
+            "start_app",
+            "stop_app",
             "t",
             "u",
         }
@@ -56,4 +62,4 @@ class TestFlextWebInit:
         """Test that imported items are of correct types."""
         assert callable(flext_web.FlextWebApi)
         assert callable(flext_web.FlextWebSettings)
-        assert isinstance(flext_web.__version__, str)
+        assert isinstance(__version__, str)

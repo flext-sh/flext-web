@@ -8,7 +8,8 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from tests import FlextWebApp, FlextWebSettings, c, m
+from flext_web import FlextWebApp, FlextWebSettings
+from tests import c, m
 
 
 class TestFlextWebApp:
@@ -28,7 +29,7 @@ class TestFlextWebApp:
 
     def test_factory_create_instance_success(self) -> None:
         """Test FastAPIFactory.create_instance with success - REAL FastAPI."""
-        config = FlextWebApp._FastAPIConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
             description="Test Description",
@@ -45,7 +46,7 @@ class TestFlextWebApp:
 
     def test_factory_create_instance_with_valid_params(self) -> None:
         """Test FastAPIFactory.create_instance with valid parameters - REAL FastAPI."""
-        config = FlextWebApp._FastAPIConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Valid Test API",
             version="1.0.0",
             docs_url=c.Web.WebApi.DOCS_URL,
@@ -60,7 +61,7 @@ class TestFlextWebApp:
 
     def test_factory_create_instance_real_fastapi(self) -> None:
         """Test FastAPIFactory.create_instance with REAL FastAPI - no mocks."""
-        config = FlextWebApp._FastAPIConfig(
+        config = m.Web.FastAPIAppConfig(
             title="Real Test API",
             version="1.0.0",
             description="Real Test Description",
@@ -236,7 +237,7 @@ class TestFlextWebApp:
     def test_create_fastapi_app_with_override_title(self) -> None:
         """Test create_fastapi_app with title override parameter - REAL FastAPI."""
         config = m.Web.FastAPIAppConfig(title="Config Title", version="1.0.0")
-        factory_config = FlextWebApp._FastAPIConfig(
+        factory_config = m.Web.FastAPIAppConfig(
             title="Override Title",
             version=config.version,
             description=config.description,
@@ -254,7 +255,7 @@ class TestFlextWebApp:
     def test_create_fastapi_app_with_override_urls(self) -> None:
         """Test create_fastapi_app with URL override parameters - REAL FastAPI."""
         config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
-        factory_config = FlextWebApp._FastAPIConfig(
+        factory_config = m.Web.FastAPIAppConfig(
             title=config.title,
             version=config.version,
             description=config.description,
@@ -338,7 +339,7 @@ class TestFlextWebApp:
     def test_configure_fastapi_endpoints_real(self) -> None:
         """Test _configure_fastapi_endpoints with REAL FastAPI app."""
         config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
-        fastapi_config = FlextWebApp._FastAPIConfig(
+        fastapi_config = m.Web.FastAPIAppConfig(
             title="Test API",
             version="1.0.0",
             description=config.description,

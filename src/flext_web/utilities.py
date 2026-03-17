@@ -30,7 +30,6 @@ class FlextWebUtilities(FlextUtilities):
 
     @staticmethod
     @override
-    @staticmethod
     def format_app_id(name: str) -> str:
         """Format app name to valid ID using flext-core utilities.
 
@@ -54,7 +53,8 @@ class FlextWebUtilities(FlextUtilities):
         if not cleaned:
             msg = f"Application name cannot be empty: {name}"
             raise ValueError(msg)
-        slug = FlextWebUtilities.slugify(cleaned)
+        normalized_for_id = re.sub(r"[^\w\s-]+", "", cleaned)
+        slug = FlextWebUtilities.slugify(normalized_for_id)
         if not slug:
             msg = f"Cannot format application name '{name}' to valid ID"
             raise ValueError(msg)
@@ -69,8 +69,8 @@ class FlextWebUtilities(FlextUtilities):
         if not text:
             return ""
         normalized = text.lower()
-        cleaned = re.sub(r"[^\\w\\s-]", "", normalized)
-        words = re.split(r"[-\\s]+", cleaned)
+        cleaned = re.sub(r"[^\w\s-]+", " ", normalized)
+        words = re.split(r"[-\s]+", cleaned)
         truthy_words = [word for word in words if word]
         return "-".join(truthy_words)
 

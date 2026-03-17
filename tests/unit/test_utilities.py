@@ -17,15 +17,15 @@ class TestFlextWebUtilities:
 
     def test_utilities_inheritance(self) -> None:
         """Test that u inherits from u."""
-        assert hasattr(u, "Generators")
-        assert hasattr(u, "Text")
+        assert hasattr(u, "generate_iso_timestamp")
+        assert hasattr(u, "safe_string")
 
     def test_slugify_method(self) -> None:
         """Test slugify method."""
         result = u.slugify("Test App Name")
         assert result == "test-app-name"
         result = u.slugify("Test@App#Name!")
-        assert result == "testappname"
+        assert result == "test-app-name"
         result = u.slugify("Test   App    Name")
         assert result == "test-app-name"
         result = u.slugify("  Test App Name  ")
@@ -63,7 +63,6 @@ class TestFlextWebUtilities:
 
     def test_utilities_logging_integration(self) -> None:
         """Test u logging integration."""
-        assert hasattr(u, "Generators")
         assert hasattr(u, "generate_iso_timestamp")
 
     def test_utilities_edge_cases(self) -> None:
@@ -88,7 +87,7 @@ class TestFlextWebUtilities:
         """Test format_app_id when safe_string fails."""
         with (
             patch(
-                "flext_web.utilities.FlextUtilities.Text.safe_string",
+                "flext_web.utilities.FlextWebUtilities.safe_string",
                 side_effect=ValueError("Invalid string"),
             ),
             pytest.raises(ValueError, match="Invalid string"),
@@ -99,7 +98,7 @@ class TestFlextWebUtilities:
         """Test format_app_id when name becomes empty after stripping."""
         with (
             patch(
-                "flext_web.utilities.FlextUtilities.Text.safe_string",
+                "flext_web.utilities.FlextWebUtilities.safe_string",
                 return_value="   ",
             ),
             pytest.raises(
@@ -112,7 +111,7 @@ class TestFlextWebUtilities:
         """Test format_app_id when slugify results in empty string."""
         with (
             patch(
-                "flext_web.utilities.FlextUtilities.Text.safe_string",
+                "flext_web.utilities.FlextWebUtilities.safe_string",
                 return_value="test",
             ),
             patch("flext_web.utilities.u.slugify", return_value=""),

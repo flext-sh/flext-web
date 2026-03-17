@@ -143,7 +143,7 @@ class FlextWebModels(FlextModels):
                 }
                 if upper not in valid_methods:
                     msg = f"Invalid HTTP method: {v}. Must be one of: {valid_methods}"
-                    raise TypeError(msg)
+                    raise ValueError(msg)
                 return upper
 
         class Response(Message):
@@ -257,7 +257,7 @@ class FlextWebModels(FlextModels):
                 }
                 if upper not in valid_methods:
                     msg = f"Invalid HTTP method: {v}. Must be one of: {valid_methods}"
-                    raise TypeError(msg)
+                    raise ValueError(msg)
                 return upper
 
             headers: Annotated[
@@ -544,7 +544,7 @@ class FlextWebModels(FlextModels):
                 valid_statuses = set(c.Web.STATUSES)
                 if v not in valid_statuses:
                     msg = f"Invalid status '{v}'. Must be one of: {sorted(valid_statuses)}"
-                    raise TypeError(msg)
+                    raise ValueError(msg)
                 return v
 
             environment: Annotated[
@@ -671,6 +671,22 @@ class FlextWebModels(FlextModels):
                 self.web_events.append(event_name)
                 return r[bool].ok(value=True)
 
+            @override
+            def add_domain_event(
+                self,
+                event_type: str,
+                data: t.ConfigMap | None = None,
+            ) -> r[t.ContainerValue]:
+                if not event_type.strip():
+                    return r[t.ContainerValue].fail(
+                        "Domain event name must be a non-empty string"
+                    )
+                if event_type.isdigit():
+                    return r[t.ContainerValue].fail(
+                        "Domain event name cannot be numeric-only"
+                    )
+                return super().add_domain_event(event_type=event_type, data=data)
+
             def get_health_status(self) -> dict[str, t.Scalar]:
                 """Get comprehensive health status."""
                 return {
@@ -749,6 +765,16 @@ class FlextWebModels(FlextModels):
                                     failure contains error message
 
                 """
+                supported_metrics = {
+                    "requests",
+                    "errors",
+                    "uptime",
+                    "avg_response_time_ms",
+                }
+                if not all(key in supported_metrics for key in new_metrics):
+                    return r[bool].fail(
+                        "Metrics must be a dict of supported metric keys"
+                    )
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
                 event_result = self.add_web_event("MetricsUpdated")
@@ -1113,9 +1139,15 @@ class FlextWebModels(FlextModels):
 
             """
             entity = cls.Entity(
+                id=str(uuid.uuid4()),
                 name=name,
                 host=host,
                 port=port,
+                status=c.Web.Status.STOPPED.value,
+                environment=c.Web.Name.DEVELOPMENT.value,
+                debug_mode=False,
+                metrics={},
+                web_events=[],
             )
             return r[FlextWebModels.Web.Entity].ok(entity)
 
@@ -1150,6 +1182,8 @@ class FlextWebModels(FlextModels):
                     url=url,
                     headers=headers_validated,
                     body=body,
+                    request_id=str(uuid.uuid4()),
+                    timestamp=datetime.now(UTC),
                 )
 
             return u.try_(
@@ -1188,6 +1222,8 @@ class FlextWebModels(FlextModels):
                     status_code=status_code,
                     headers=headers_validated,
                     body=body,
+                    response_id=str(uuid.uuid4()),
+                    timestamp=datetime.now(UTC),
                 )
 
             return u.try_(

@@ -68,6 +68,9 @@ class FlextWebServices(s[bool]):
                                          failure contains error message
 
             """
+            if user_data.username.isdigit():
+                return r[m.Web.UserResponse].fail("Username cannot be numeric-only")
+
             user_response = m.Web.UserResponse(
                 id=f"user_{user_data.username}",
                 username=user_data.username,
@@ -201,8 +204,7 @@ class FlextWebServices(s[bool]):
                                           failure contains error message
 
         """
-        service_config = config if config is not None else FlextWebSettings()
-        return r[FlextWebServices].ok(cls(_config=service_config))
+        return r[FlextWebServices].ok(cls(_config=config))
 
     @classmethod
     def create_web_service(
@@ -276,6 +278,11 @@ class FlextWebServices(s[bool]):
                                     failure contains error message
 
         """
+        if app_data.name.isdigit():
+            return r[m.Web.ApplicationResponse].fail(
+                "Application name cannot be numeric-only"
+            )
+
         app_id = str(uuid.uuid4())
         app_response = m.Web.ApplicationResponse(
             id=app_id,
@@ -452,25 +459,10 @@ class FlextWebServices(s[bool]):
             r[bool]: Success contains True if valid, failure with error message
 
         """
-
-        def _validate_routes(routes_init: t.NormalizedValue) -> bool:
-            return isinstance(routes_init, bool) and (
-                not self._service_running or routes_init
-            )
-
-        routes_validated = u.guard(
-            self._routes_initialized, _validate_routes, return_value=True
-        )
-        if routes_validated is None:
+        if self._service_running and not self._routes_initialized:
             return r[bool].fail("Service cannot be running without initialized routes")
 
-        def _validate_middleware(mw_conf: t.NormalizedValue) -> bool:
-            return isinstance(mw_conf, bool) and (not self._service_running or mw_conf)
-
-        middleware_validated = u.guard(
-            self._middleware_configured, _validate_middleware, return_value=True
-        )
-        if middleware_validated is None:
+        if self._service_running and not self._middleware_configured:
             return r[bool].fail(
                 "Service cannot be running without configured middleware"
             )

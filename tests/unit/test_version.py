@@ -5,7 +5,7 @@ Tests the version management functionality following flext standards.
 
 from __future__ import annotations
 
-from flext_web import (
+from flext_web.__version__ import (
     VERSION,
     FlextWebVersion,
     __author__,

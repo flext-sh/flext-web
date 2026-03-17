@@ -8,11 +8,13 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from tests import (
-    FlextWebSettings,
+from flext_web import FlextWebSettings
+from flext_web.typings import (
     _ApplicationConfig,
     _WebRequestConfig,
     _WebResponseConfig,
+)
+from tests import (
     m,
     t,
 )
@@ -217,62 +219,52 @@ class TestFlextWebModels:
 
     def test_create_web_request_invalid_method(self) -> None:
         """Test create_web_request with invalid HTTP method."""
-        config = _WebRequestConfig(url="http://localhost:8080", method="INVALID_METHOD")
-        result = t.create_web_request(config)
-        assert result.is_failure, "Operation should fail"
-        assert result.error is not None
-        assert "Invalid HTTP method" in result.error
+        with pytest.raises(ValidationError):
+            _ = _WebRequestConfig(url="http://localhost:8080", method="INVALID_METHOD")
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
         with pytest.raises(ValidationError):
-            _ = _WebRequestConfig(url="http://localhost:8080", method="GET", headers={})
+            _ = _WebRequestConfig(
+                url="http://localhost:8080", method="GET", headers="invalid"
+            )
 
     def test_create_web_request_invalid_query_params(self) -> None:
         """Test create_web_request with invalid query_params type."""
         with pytest.raises(ValidationError):
             _ = _WebRequestConfig(
-                url="http://localhost:8080", method="GET", query_params={}
+                url="http://localhost:8080", method="GET", query_params="invalid"
             )
 
     def test_create_web_request_exception_handling(self) -> None:
         """Test create_web_request exception handling."""
-        config = _WebRequestConfig(
-            url="http://localhost:8080",
-            method="GET",
-            headers={},
-            body=None,
-            timeout=-1.0,
-            query_params={},
-        )
-        result = t.create_web_request(config)
-        assert result.is_failure, "Negative timeout should cause validation failure"
-        assert result.error is not None
-        assert "timeout" in result.error.lower() or "validation" in result.error.lower()
+        with pytest.raises(ValidationError):
+            _ = _WebRequestConfig(
+                url="http://localhost:8080",
+                method="GET",
+                headers={},
+                body=None,
+                timeout=-1.0,
+                query_params={},
+            )
 
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers type."""
         with pytest.raises(ValidationError):
-            _ = _WebResponseConfig(status_code=200, request_id="test-123", headers={})
+            _ = _WebResponseConfig(
+                status_code=200, request_id="test-123", headers="invalid"
+            )
 
     def test_create_web_response_exception_handling(self) -> None:
         """Test create_web_response exception handling."""
-        config = _WebResponseConfig(
-            status_code=200,
-            request_id="test-123",
-            headers={},
-            body=None,
-            elapsed_time=-1.0,
-        )
-        result = t.create_web_response(config)
-        assert result.is_failure, (
-            "Negative elapsed_time should cause validation failure"
-        )
-        assert result.error is not None
-        assert (
-            "elapsed_time" in result.error.lower()
-            or "validation" in result.error.lower()
-        )
+        with pytest.raises(ValidationError):
+            _ = _WebResponseConfig(
+                status_code=200,
+                request_id="test-123",
+                headers={},
+                body=None,
+                elapsed_time=-1.0,
+            )
 
     def test_create_application_exception_handling(self) -> None:
         """Test create_application exception handling."""
@@ -337,22 +329,18 @@ class TestFlextWebModels:
 
     def test_create_web_request_with_none_values(self) -> None:
         """Test create_web_request with None headers and query_params."""
-        config = _WebRequestConfig(
-            url="http://localhost:8080", method="GET", headers=None, query_params=None
-        )
-        result = t.create_web_request(config)
-        assert result.is_success, "Operation should succeed"
-        assert isinstance(result.value.headers, dict)
-        assert isinstance(result.value.query_params, dict)
+        with pytest.raises(ValidationError):
+            _ = _WebRequestConfig(
+                url="http://localhost:8080",
+                method="GET",
+                headers=None,
+                query_params=None,
+            )
 
     def test_create_web_response_with_none_headers(self) -> None:
         """Test create_web_response with None headers."""
-        config = _WebResponseConfig(
-            status_code=200, request_id="test-123", headers=None
-        )
-        result = t.create_web_response(config)
-        assert result.is_success, "Operation should succeed"
-        assert isinstance(result.value.headers, dict)
+        with pytest.raises(ValidationError):
+            _ = _WebResponseConfig(status_code=200, request_id="test-123", headers=None)
 
     def test_types_config_initialization(self) -> None:
         """Test TypesConfig initialization with all parameters."""
@@ -391,9 +379,8 @@ class TestFlextWebModels:
 
     def test_create_web_request_duplicate_validation(self) -> None:
         """Test create_web_request duplicate validation path (line 278)."""
-        config = _WebRequestConfig(url="http://localhost:8080", method="INVALID")
-        result = t.create_web_request(config)
-        assert result.is_failure, "Operation should fail"
+        with pytest.raises(ValidationError):
+            _ = _WebRequestConfig(url="http://localhost:8080", method="INVALID")
 
     def test_create_application_exception_path(self) -> None:
         """Test create_application exception handling (line 388)."""

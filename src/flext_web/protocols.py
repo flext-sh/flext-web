@@ -881,6 +881,43 @@ class FlextWebProtocols(FlextProtocols):
             """
 
             @staticmethod
+            def get_by_id(entity_id: str) -> r[t.WebCore.ResponseDict]:
+                app_data = FlextWebProtocols.Web.apps_registry.get(entity_id)
+                if app_data is None:
+                    return r[t.WebCore.ResponseDict].fail(
+                        f"Application not found: {entity_id}"
+                    )
+                return r[t.WebCore.ResponseDict].ok(
+                    FlextWebProtocols.Web.copy_response_dict(app_data)
+                )
+
+            @staticmethod
+            def save(entity: t.WebCore.ResponseDict) -> r[t.WebCore.ResponseDict]:
+                entity_id = entity.get("id")
+                if not isinstance(entity_id, str):
+                    return r[t.WebCore.ResponseDict].fail("Entity id(str) is required")
+                FlextWebProtocols.Web.apps_registry[entity_id] = (
+                    FlextWebProtocols.Web.copy_response_dict(entity)
+                )
+                return r[t.WebCore.ResponseDict].ok(
+                    FlextWebProtocols.Web.copy_response_dict(entity)
+                )
+
+            @staticmethod
+            def delete(entity_id: str) -> r[bool]:
+                removed = FlextWebProtocols.Web.apps_registry.pop(entity_id, None)
+                if removed is None:
+                    return r[bool].fail(f"Application not found: {entity_id}")
+                return r[bool].ok(True)
+
+            @staticmethod
+            def find_all() -> r[list[t.WebCore.ResponseDict]]:
+                return r[list[t.WebCore.ResponseDict]].ok([
+                    FlextWebProtocols.Web.copy_response_dict(app)
+                    for app in FlextWebProtocols.Web.apps_registry.values()
+                ])
+
+            @staticmethod
             def find_by_criteria(
                 criteria: t.WebCore.RequestDict,
             ) -> r[list[t.WebCore.ResponseDict]]:

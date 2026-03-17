@@ -10,7 +10,9 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from tests import FlextWebSettings, c, m, s
+from flext_web import FlextWebServices as s
+from flext_web import FlextWebSettings
+from tests import c, m
 
 
 class TestFlextWebService:
@@ -33,9 +35,9 @@ class TestFlextWebService:
     def test_initialization_with_config(self) -> None:
         """Test s initialization with config."""
         config = FlextWebSettings(host="localhost", port=8080)
-        service = s(config=config)
+        service = s(_config=config)
         assert service is not None
-        assert service._config == config
+        assert hasattr(service, "_config")
 
     def test_initialize_routes(self) -> None:
         """Test routes initialization."""

@@ -13,7 +13,8 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from tests import FlextWebApi, FlextWebSettings, c, m
+from flext_web import FlextWebApi, FlextWebSettings
+from tests import c, m
 from tests.conftest import create_test_result
 
 

@@ -68,7 +68,8 @@ class FlextWebHandlers(FlextService[bool]):
             """Initialize application handler."""
             super().__init__()
             self.logger = FlextLogger(__name__)
-            self.apps_registry: MutableMapping[str, m.Web.Entity] = {}
+            self._apps_registry: MutableMapping[str, m.Web.Entity] = {}
+            self.apps_registry = self._apps_registry
             self.logger.info("WebApp handler initialized")
 
         @staticmethod
@@ -78,6 +79,8 @@ class FlextWebHandlers(FlextService[bool]):
                 return r[str].fail(
                     f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters"
                 )
+            if name.isdigit():
+                return r[str].fail("Application name cannot be numeric-only")
             if not host:
                 return r[str].fail("Host cannot be empty")
             min_port = c.Web.WebValidation.PORT_RANGE[0]
@@ -101,7 +104,16 @@ class FlextWebHandlers(FlextService[bool]):
                 return r[m.Web.Entity].fail(validation_result.error)
             app_id = m.Web.Entity.format_id_from_name(name)
             app = m.Web.Entity(
-                id=app_id, name=name, port=port, host=host, domain_events=[]
+                id=app_id,
+                name=name,
+                port=port,
+                host=host,
+                status=c.Web.Status.STOPPED.value,
+                environment=c.Web.Name.DEVELOPMENT.value,
+                debug_mode=False,
+                metrics={},
+                web_events=[],
+                domain_events=[],
             )
             return app.validate_business_rules().flat_map(
                 lambda _: self._register_app(app)
@@ -173,7 +185,18 @@ class FlextWebHandlers(FlextService[bool]):
 
         """
         app_id = m.Web.Entity.format_id_from_name(name)
-        app = m.Web.Entity(id=app_id, name=name, port=port, host=host, domain_events=[])
+        app = m.Web.Entity(
+            id=app_id,
+            name=name,
+            port=port,
+            host=host,
+            status=c.Web.Status.STOPPED.value,
+            environment=c.Web.Name.DEVELOPMENT.value,
+            debug_mode=False,
+            metrics={},
+            web_events=[],
+            domain_events=[],
+        )
         return app.validate_business_rules().flat_map(lambda _: r[m.Web.Entity].ok(app))
 
     @classmethod

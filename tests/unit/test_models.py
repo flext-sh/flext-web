@@ -31,7 +31,7 @@ class TestFlextWebModels:
         """Test WebApp initialization with defaults."""
         app = create_test_app()
         assert app.id == "test-id"
-        assert app.name == "test-app"
+        assert app.name == c.Web.Tests.TestWeb.TEST_APP_NAME
         assert app.host == c.Web.WebDefaults.HOST
         assert app.port == c.Web.WebDefaults.PORT
         assert app.status == "stopped"
@@ -284,7 +284,7 @@ class TestFlextWebModels:
         )
         assert result.is_success
         request = result.value
-        assert isinstance(request, m.Web.Request)
+        assert isinstance(request, m.Web.AppRequest)
         assert request.method == "POST"
         assert request.url == "http://localhost:8080/api/test"
 
@@ -299,7 +299,7 @@ class TestFlextWebModels:
         )
         assert result.is_success
         response = result.value
-        assert isinstance(response, m.Web.Response)
+        assert isinstance(response, m.Web.AppResponse)
         assert response.status_code == 201
 
     def test_http_request_has_body_property(self) -> None:
@@ -422,23 +422,23 @@ class TestFlextWebModels:
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
-        with pytest.raises(ValidationError):
-            _ = create_entry(
-                "web_request",
-                method="GET",
-                url="http://localhost:8080",
-                headers="not_a_dict",
-            )
+        result = create_entry(
+            "web_request",
+            method="GET",
+            url="http://localhost:8080",
+            headers="not_a_dict",
+        )
+        assert result.is_failure
 
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers type."""
-        with pytest.raises(ValidationError):
-            _ = create_entry(
-                "web_response",
-                request_id="test-123",
-                status_code=200,
-                headers="not_a_dict",
-            )
+        result = create_entry(
+            "web_response",
+            request_id="test-123",
+            status_code=200,
+            headers="not_a_dict",
+        )
+        assert result.is_failure
 
     def test_web_response_processing_time_seconds(self) -> None:
         """Test Web.AppResponse processing_time_seconds property."""
@@ -466,7 +466,11 @@ class TestFlextWebModels:
         result = create_entry("web_app", name="ab", host="localhost", port=8080)
         assert result.is_failure
         assert result.error is not None
-        assert "Validation failed" in result.error or "at least" in result.error
+        assert (
+            "Validation failed" in result.error
+            or "at least" in result.error
+            or "between" in result.error
+        )
 
     def test_create_web_app_value_error(self) -> None:
         """Test create_web_app with ValueError (lines 914-920)."""

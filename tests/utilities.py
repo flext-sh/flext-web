@@ -18,7 +18,7 @@ from flext_tests import FlextTestsUtilities
 from flext_web import FlextWebUtilities
 
 
-class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
+class TestsFlextWebUtilities(FlextWebUtilities, FlextTestsUtilities):
     """Test utilities combining FlextTestsUtilities and FlextWebUtilities.
 
     Access: u.Tests.* (from FlextTestsUtilities), u.Web.* (from FlextWebUtilities)

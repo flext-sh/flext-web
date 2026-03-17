@@ -23,6 +23,7 @@ import pytest
 from flask import Flask
 from flext_core import r
 from flext_tests import FlextTestsDocker
+from pydantic import ValidationError
 
 from flext_web import (
     FlextWebApp,
@@ -88,7 +89,10 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
             or (not isinstance(port, int))
         ):
             return r[t.ContainerValue].fail("Invalid parameters for web_app")
-        return m.Web.create_web_app(name=name, host=host, port=port)
+        try:
+            return m.Web.create_web_app(name=name, host=host, port=port)
+        except (ValidationError, ValueError, TypeError) as exc:
+            return r[t.ContainerValue].fail(str(exc))
     if entry_type == "http_request":
         url = kwargs.get("url")
         method = kwargs.get("method")
@@ -140,17 +144,20 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
         user_agent = kwargs.get("user_agent")
         if not isinstance(url, str) or not isinstance(method, str):
             return r[t.ContainerValue].fail("Invalid parameters for web_request")
-        web_request_config = _WebRequestConfig(
-            url=url,
-            method=method,
-            headers=headers if isinstance(headers, dict) else {},
-            body=body if isinstance(body, (str, dict)) else None,
-            timeout=float(timeout) if isinstance(timeout, (int, float)) else 30.0,
-            query_params=query_params if isinstance(query_params, dict) else {},
-            client_ip=client_ip if isinstance(client_ip, str) else "127.0.0.1",
-            user_agent=user_agent if isinstance(user_agent, str) else "test-client",
-        )
-        return t.create_web_request(web_request_config)
+        try:
+            web_request_config = _WebRequestConfig(
+                url=url,
+                method=method,
+                headers={} if headers is None else headers,
+                body=body if isinstance(body, (str, dict)) or body is None else body,
+                timeout=float(timeout) if isinstance(timeout, (int, float)) else 30.0,
+                query_params={} if query_params is None else query_params,
+                client_ip=client_ip if isinstance(client_ip, str) else "127.0.0.1",
+                user_agent=user_agent if isinstance(user_agent, str) else "test-client",
+            )
+            return t.create_web_request(web_request_config)
+        except (ValidationError, ValueError, TypeError) as exc:
+            return r[t.ContainerValue].fail(str(exc))
     if entry_type == "web_response":
         status_code = kwargs.get("status_code")
         request_id = kwargs.get("request_id")
@@ -162,23 +169,28 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
         processing_time_ms = kwargs.get("processing_time_ms")
         if not isinstance(status_code, int):
             return r[t.ContainerValue].fail("Invalid status_code for web_response")
-        web_response_config = _WebResponseConfig(
-            status_code=status_code,
-            request_id=request_id if isinstance(request_id, str) else "test-request",
-            headers=headers if isinstance(headers, dict) else {},
-            body=body if isinstance(body, (str, dict)) else None,
-            elapsed_time=float(elapsed_time)
-            if isinstance(elapsed_time, (int, float))
-            else 0.0,
-            content_type=content_type
-            if isinstance(content_type, str)
-            else "application/json",
-            content_length=content_length if isinstance(content_length, int) else 0,
-            processing_time_ms=processing_time_ms
-            if isinstance(processing_time_ms, (int, float))
-            else 0.0,
-        )
-        return t.create_web_response(web_response_config)
+        try:
+            web_response_config = _WebResponseConfig(
+                status_code=status_code,
+                request_id=request_id
+                if isinstance(request_id, str)
+                else "test-request",
+                headers={} if headers is None else headers,
+                body=body if isinstance(body, (str, dict)) or body is None else body,
+                elapsed_time=float(elapsed_time)
+                if isinstance(elapsed_time, (int, float))
+                else 0.0,
+                content_type=content_type
+                if isinstance(content_type, str)
+                else "application/json",
+                content_length=content_length if isinstance(content_length, int) else 0,
+                processing_time_ms=processing_time_ms
+                if isinstance(processing_time_ms, (int, float))
+                else 0.0,
+            )
+            return t.create_web_response(web_response_config)
+        except (ValidationError, ValueError, TypeError) as exc:
+            return r[t.ContainerValue].fail(str(exc))
     if entry_type == "application":
         name = kwargs.get("name")
         host = kwargs.get("host")
