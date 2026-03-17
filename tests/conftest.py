@@ -149,7 +149,7 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
                 url=url,
                 method=method,
                 headers={} if headers is None else headers,
-                body=body if isinstance(body, (str, dict)) or body is None else body,
+                body=body,
                 timeout=float(timeout) if isinstance(timeout, (int, float)) else 30.0,
                 query_params={} if query_params is None else query_params,
                 client_ip=client_ip if isinstance(client_ip, str) else "127.0.0.1",
@@ -176,7 +176,7 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
                 if isinstance(request_id, str)
                 else "test-request",
                 headers={} if headers is None else headers,
-                body=body if isinstance(body, (str, dict)) or body is None else body,
+                body=body,
                 elapsed_time=float(elapsed_time)
                 if isinstance(elapsed_time, (int, float))
                 else 0.0,
