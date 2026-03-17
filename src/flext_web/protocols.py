@@ -882,6 +882,7 @@ class FlextWebProtocols(FlextProtocols):
 
             @staticmethod
             def get_by_id(entity_id: str) -> r[t.WebCore.ResponseDict]:
+                """Return a single app by ID or failure when not found."""
                 app_data = FlextWebProtocols.Web.apps_registry.get(entity_id)
                 if app_data is None:
                     return r[t.WebCore.ResponseDict].fail(
@@ -893,6 +894,7 @@ class FlextWebProtocols(FlextProtocols):
 
             @staticmethod
             def save(entity: t.WebCore.ResponseDict) -> r[t.WebCore.ResponseDict]:
+                """Persist an app entity and return a defensive copy."""
                 entity_id = entity.get("id")
                 if not isinstance(entity_id, str):
                     return r[t.WebCore.ResponseDict].fail("Entity id(str) is required")
@@ -905,6 +907,7 @@ class FlextWebProtocols(FlextProtocols):
 
             @staticmethod
             def delete(entity_id: str) -> r[bool]:
+                """Delete an app entity by ID."""
                 removed = FlextWebProtocols.Web.apps_registry.pop(entity_id, None)
                 if removed is None:
                     return r[bool].fail(f"Application not found: {entity_id}")
@@ -912,6 +915,7 @@ class FlextWebProtocols(FlextProtocols):
 
             @staticmethod
             def find_all() -> r[list[t.WebCore.ResponseDict]]:
+                """Return all registered app entities as defensive copies."""
                 return r[list[t.WebCore.ResponseDict]].ok([
                     FlextWebProtocols.Web.copy_response_dict(app)
                     for app in FlextWebProtocols.Web.apps_registry.values()

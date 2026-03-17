@@ -79,6 +79,7 @@ class FlextWebSettings(FlextModels.Value):
     @computed_field
     @property
     def protocol(self) -> str:
+        """Return active URL protocol based on TLS setting."""
         return (
             c.Web.WebDefaults.HTTPS_PROTOCOL
             if self.ssl_enabled
@@ -88,10 +89,12 @@ class FlextWebSettings(FlextModels.Value):
     @computed_field
     @property
     def base_url(self) -> str:
+        """Build base URL from protocol, host, and port."""
         return f"{self.protocol}://{self.host}:{self.port}"
 
     @classmethod
     def create_web_config(cls) -> r[FlextWebSettings]:
+        """Create and wrap web settings using r result type."""
         return r["FlextWebSettings"].ok(cls())
 
 
