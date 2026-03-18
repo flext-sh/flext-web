@@ -1624,9 +1624,6 @@ class FlextWebProtocols(FlextProtocols):
                         FlextWebProtocols.Web.web_metrics["errors"] = error_count + 1
 
 
-p = FlextWebProtocols
-
-
 def create_app(name: str, port: int, host: str) -> r[t.WebCore.ResponseDict]:
     """Create a new web application."""
     return FlextWebProtocols.Web.WebAppManager.create_app(name, port, host)
@@ -1645,6 +1642,9 @@ def stop_app(app_id: str) -> r[t.WebCore.ResponseDict]:
 def list_apps() -> r[list[t.WebCore.ResponseDict]]:
     """List all web applications."""
     return FlextWebProtocols.Web.WebAppManager.list_apps()
+
+
+p = FlextWebProtocols
 
 
 __all__ = ["FlextWebProtocols", "create_app", "list_apps", "p", "start_app", "stop_app"]
