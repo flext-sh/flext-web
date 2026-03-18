@@ -1,0 +1,21 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.15",
+  "base_commit_sha": "c3a32f3be99de4ecec184023ac5c711d819947ae",
+  "prompts": {
+    "7e4bd68f4a321035": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_2febe79e4ffeDXNStRSxM8Kvcu",
+        "model": "openai/gpt-5.3-codex"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 0,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
