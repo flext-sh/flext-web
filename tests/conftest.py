@@ -398,7 +398,7 @@ def run_parameterized_test(
                 assert_success(result, f"{test_name} case {i} should succeed")
             else:
                 assert_failure(result, f"{test_name} case {i} should fail")
-        except Exception as e:
+        except (ValidationError, ValueError, TypeError, RuntimeError) as e:
             pytest.fail(f"{test_name} case {i} raised unexpected exception: {e}")
 
 
@@ -557,7 +557,7 @@ def docker_manager() -> Generator[tk]:
         yield tk(workspace_root=Path().absolute())
     except ImportError:
         pytest.skip("tk not available")
-    except Exception as e:
+    except (ConnectionError, TimeoutError, OSError, RuntimeError) as e:
         pytest.skip(f"tk initialization failed: {e}")
 
 
