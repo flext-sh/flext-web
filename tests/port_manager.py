@@ -14,7 +14,7 @@ from __future__ import annotations
 import threading
 from typing import ClassVar
 
-from tests.constants import c
+from tests import c
 
 
 class TestPortManager:

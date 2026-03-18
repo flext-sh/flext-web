@@ -22,7 +22,6 @@ from typing import ClassVar
 import pytest
 from flask import Flask
 from flext_core import r
-from flext_tests import FlextTestsDocker
 from pydantic import ValidationError
 
 from flext_web import (
@@ -530,14 +529,14 @@ def production_config() -> dict[str, str]:
 
 
 @pytest.fixture(scope="session")
-def docker_manager() -> Generator[FlextTestsDocker]:
-    """Provide FlextTestsDocker instance for integration tests."""
+def docker_manager() -> Generator[tk]:
+    """Provide tk instance for integration tests."""
     try:
-        yield FlextTestsDocker(workspace_root=Path().absolute())
+        yield tk(workspace_root=Path().absolute())
     except ImportError:
-        pytest.skip("FlextTestsDocker not available")
+        pytest.skip("tk not available")
     except Exception as e:
-        pytest.skip(f"FlextTestsDocker initialization failed: {e}")
+        pytest.skip(f"tk initialization failed: {e}")
 
 
 def pytest_configure(config: pytest.Config) -> None:

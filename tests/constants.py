@@ -1,10 +1,10 @@
 """Constants for flext-web tests.
 
-Provides TestsFlextWebConstants, extending FlextTestsConstants with flext-web-specific
+Provides TestsFlextWebConstants, extending c with flext-web-specific
 constants using COMPOSITION INHERITANCE.
 
 Inheritance hierarchy:
-- FlextTestsConstants (flext_tests) - Provides .Tests.* namespace
+- c (flext_tests) - Provides .Tests.* namespace
 - FlextWebConstants (production) - Provides .Web.* namespace
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -15,16 +15,16 @@ from __future__ import annotations
 
 from typing import Final
 
-from flext_tests import FlextTestsConstants
+from flext_tests import c
 
 from flext_web import FlextWebConstants
 
 
-class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
+class TestsFlextWebConstants(c, FlextWebConstants):
     """Constants for flext-web tests using COMPOSITION INHERITANCE.
 
     MANDATORY: Inherits from BOTH:
-    1. FlextTestsConstants - for test infrastructure (.Tests.*)
+    1. c - for test infrastructure (.Tests.*)
     2. FlextWebConstants - for domain constants (.Web.*)
 
     Access patterns:
@@ -36,16 +36,16 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
     - c.Web.Tests.TestPort.* (port allocation for test isolation)
 
     Rules:
-    - NEVER duplicate constants from FlextTestsConstants or FlextWebConstants
+    - NEVER duplicate constants from c or FlextWebConstants
     - Only flext-web-specific test constants allowed (not generic for other projects)
-    - All generic constants come from FlextTestsConstants
+    - All generic constants come from c
     - All production constants come from FlextWebConstants
     """
 
     class Web(FlextWebConstants.Web):
         """Project-specific test protocols.
 
-        Extends FlextTestsProtocols.Tests with Web-specific protocols.
+        Extends p.Tests with Web-specific protocols.
         """
 
         class Tests:

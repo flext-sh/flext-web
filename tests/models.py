@@ -1,10 +1,10 @@
 """Test model definitions for flext-web.
 
-Provides TestsFlextWebModels, extending FlextTestsModels and FlextWebModels
+Provides TestsFlextWebModels, extending m and FlextWebModels
 for test-specific model definitions. Pattern established for future test fixtures.
 
 Inheritance hierarchy:
-- FlextTestsModels (flext_tests) - Provides .Tests.* namespace
+- m (flext_tests) - Provides .Tests.* namespace
 - FlextWebModels (production) - Provides .Web.* namespace
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -13,15 +13,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsModels
+from flext_tests import m
 
 from flext_web import FlextWebModels
 
 
-class TestsFlextWebModels(FlextTestsModels):
-    """Test models combining FlextTestsModels and FlextWebModels.Web.
+class TestsFlextWebModels(m):
+    """Test models combining m and FlextWebModels.Web.
 
-    Access: m.Tests.* (from FlextTestsModels), m.Web.* (from FlextWebModels.Web)
+    Access: m.Tests.* (from m), m.Web.* (from FlextWebModels.Web)
     Add test-specific models under m.Web.Tests when needed.
     """
 

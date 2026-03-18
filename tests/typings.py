@@ -1,10 +1,10 @@
 """Test typing definitions for flext-web.
 
-Provides TestsFlextWebTypes, extending FlextTestsTypes and FlextWebTypes
+Provides TestsFlextWebTypes, extending t and FlextWebTypes
 for test-specific type aliases and factory functions. Pattern established.
 
 Inheritance hierarchy:
-- FlextTestsTypes (flext_tests) - Provides .Tests.* namespace
+- t (flext_tests) - Provides .Tests.* namespace
 - FlextWebTypes (production) - Provides .Web.* namespace
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -13,15 +13,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import FlextTestsTypes
+from flext_tests import t
 
 from flext_web import FlextWebTypes
 
 
-class TestsFlextWebTypes(FlextTestsTypes, FlextWebTypes):
-    """Test typings combining FlextTestsTypes and FlextWebTypes.
+class TestsFlextWebTypes(t, FlextWebTypes):
+    """Test typings combining t and FlextWebTypes.
 
-    Access: t.Tests.* (from FlextTestsTypes), t.Web.* (from FlextWebTypes)
+    Access: t.Tests.* (from t), t.Web.* (from FlextWebTypes)
     Add test-specific type aliases under t.Web.Tests when needed.
     """
 
