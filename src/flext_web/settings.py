@@ -95,7 +95,7 @@ class FlextWebSettings(FlextModels.Value):
     @classmethod
     def create_web_config(cls) -> r[FlextWebSettings]:
         """Create and wrap web settings using r result type."""
-        return r["FlextWebSettings"].ok(cls())
+        return r[FlextWebSettings].ok(cls.model_validate({}))
 
 
 __all__ = ["FlextWebSettings"]

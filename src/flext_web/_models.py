@@ -2,7 +2,15 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from pydantic import BaseModel, ConfigDict, RootModel
+
+if TYPE_CHECKING:
+    from threading import Thread
+    from wsgiref.simple_server import WSGIServer
+
+    import uvicorn
 
 
 class FlextAutoConstants:
