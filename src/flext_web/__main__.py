@@ -52,7 +52,8 @@ class FlextWebCliService:
         return status_result.map(self._log_status_and_return)
 
     def _log_status_and_return(
-        self, status_data: FlextWebModels.Web.ServiceResponse
+        self,
+        status_data: FlextWebModels.Web.ServiceResponse,
     ) -> bool:
         """Log service status and return True for success - internal state management.
 

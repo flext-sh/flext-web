@@ -80,7 +80,7 @@ class FlextWebVersion:
                 author_email=__author_email__,
                 license_type=__license__,
                 url=__url__,
-            )
+            ),
         )
 
 

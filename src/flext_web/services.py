@@ -112,7 +112,7 @@ class FlextWebServices(s[bool]):
 
             """
             ready_response = m.Web.EntityData(
-                data={"message": c.Web.WebMessages.ENTITY_SERVICE_READY}
+                data={"message": c.Web.WebMessages.ENTITY_SERVICE_READY},
             )
             return r[m.Web.EntityData].ok(ready_response)
 
@@ -191,7 +191,8 @@ class FlextWebServices(s[bool]):
 
     @classmethod
     def create_service(
-        cls, config: FlextWebSettings | None = None
+        cls,
+        config: FlextWebSettings | None = None,
     ) -> r[FlextWebServices]:
         """Create service instance with explicit validation.
 
@@ -208,7 +209,8 @@ class FlextWebServices(s[bool]):
 
     @classmethod
     def create_web_service(
-        cls, config: FlextWebSettings | None = None
+        cls,
+        config: FlextWebSettings | None = None,
     ) -> r[FlextWebServices]:
         """Create web service with explicit validation.
 
@@ -280,7 +282,7 @@ class FlextWebServices(s[bool]):
         """
         if app_data.name.isdigit():
             return r[m.Web.ApplicationResponse].fail(
-                "Application name cannot be numeric-only"
+                "Application name cannot be numeric-only",
             )
 
         app_id = str(uuid.uuid4())
@@ -298,7 +300,7 @@ class FlextWebServices(s[bool]):
     def create_entity(self, data: m.Web.EntityData) -> r[m.Web.EntityData]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
-            lambda service: service.create(data)
+            lambda service: service.create(data),
         )
 
     def dashboard(self) -> r[m.Web.DashboardResponse]:
@@ -308,7 +310,8 @@ class FlextWebServices(s[bool]):
         running_status = c.Web.Status.RUNNING.value
         stopped_status = c.Web.Status.STOPPED.value
         running_apps_filtered = u.filter(
-            apps_list, lambda app: app.status == running_status
+            apps_list,
+            lambda app: app.status == running_status,
         )
         running_apps = u.count(running_apps_filtered)
         service_status = (
@@ -352,7 +355,7 @@ class FlextWebServices(s[bool]):
     def get_entity(self, entity_id: str) -> r[m.Web.EntityData]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
-            lambda service: service.get(entity_id)
+            lambda service: service.get(entity_id),
         )
 
     def health_check(self) -> r[t.WebCore.ResponseDict]:
@@ -362,7 +365,7 @@ class FlextWebServices(s[bool]):
                 "status": health_response.status,
                 "service": health_response.service,
                 "timestamp": health_response.timestamp,
-            }
+            },
         )
 
     def health_status(self) -> r[m.Web.HealthResponse]:
@@ -389,7 +392,7 @@ class FlextWebServices(s[bool]):
     def list_entities(self) -> r[list[m.Web.EntityData]]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
-            lambda service: service.list_all()
+            lambda service: service.list_all(),
         )
 
     def register_user(self, user_data: m.Web.UserData) -> r[m.Web.UserResponse]:
@@ -464,7 +467,7 @@ class FlextWebServices(s[bool]):
 
         if self._service_running and not self._middleware_configured:
             return r[bool].fail(
-                "Service cannot be running without configured middleware"
+                "Service cannot be running without configured middleware",
             )
         return r[bool].ok(value=True)
 

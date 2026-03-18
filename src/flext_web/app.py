@@ -116,7 +116,9 @@ class FlextWebApp(FlextService[bool]):
 
     @classmethod
     def _configure_fastapi_endpoints(
-        cls, app: FastAPI, config: m.Web.FastAPIAppConfig
+        cls,
+        app: FastAPI,
+        config: m.Web.FastAPIAppConfig,
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
@@ -167,7 +169,7 @@ class FlextWebApp(FlextService[bool]):
             )
             factory_config_final = factory_config_new
         return cls.FastAPIFactory.create_instance(factory_config_final).map(
-            lambda app: cls._configure_fastapi_endpoints(app, fastapi_config)
+            lambda app: cls._configure_fastapi_endpoints(app, fastapi_config),
         )
 
     @classmethod

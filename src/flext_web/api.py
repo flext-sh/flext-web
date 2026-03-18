@@ -33,7 +33,8 @@ class FlextWebApi:
 
     @classmethod
     def create_fastapi_app(
-        cls, config: m.Web.FastAPIAppConfig | None = None
+        cls,
+        config: m.Web.FastAPIAppConfig | None = None,
     ) -> r[FastAPI]:
         """Create FastAPI web application with complete validation.
 
@@ -108,11 +109,11 @@ class FlextWebApi:
             error_msg = errors[0]["msg"] if errors else str(e)
             _ = logger.exception("HTTP config creation failed: %s", exception=e)
             failure_result: r[FlextWebSettings] = r[FlextWebSettings].fail(
-                f"Configuration validation failed: {error_msg}"
+                f"Configuration validation failed: {error_msg}",
             )
             return failure_result
         _ = logger.info(
-            f"HTTP config created successfully: {config.host}:{config.port}"
+            f"HTTP config created successfully: {config.host}:{config.port}",
         )
         return r[FlextWebSettings].ok(config)
 

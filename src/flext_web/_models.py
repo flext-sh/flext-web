@@ -40,12 +40,12 @@ class AppRuntimeInfo(BaseModel):
 
 
 class WebRequestDict(
-    RootModel[dict[str, str | int | bool | list[str] | dict[str, str | int | bool]]]
+    RootModel[dict[str, str | int | bool | list[str] | dict[str, str | int | bool]]],
 ):
     pass
 
 
 class WebResponseDict(
-    RootModel[dict[str, str | int | bool | list[str] | dict[str, str | int | bool]]]
+    RootModel[dict[str, str | int | bool | list[str] | dict[str, str | int | bool]]],
 ):
     pass

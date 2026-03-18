@@ -296,10 +296,12 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             client_ip: Annotated[
-                str, Field(default="", description="Client IP address")
+                str,
+                Field(default="", description="Client IP address"),
             ]
             user_agent: Annotated[
-                str, Field(default="", description="Client user agent")
+                str,
+                Field(default="", description="Client user agent"),
             ]
 
             @property
@@ -387,7 +389,8 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             request_id: Annotated[
-                str, Field(description="Associated request identifier")
+                str,
+                Field(description="Associated request identifier"),
             ]
             content_type: Annotated[
                 c.Web.Literals.ContentTypeLiteral | str,
@@ -679,11 +682,11 @@ class FlextWebModels(FlextModels):
             ) -> r[t.ContainerValue]:
                 if not event_type.strip():
                     return r[t.ContainerValue].fail(
-                        "Domain event name must be a non-empty string"
+                        "Domain event name must be a non-empty string",
                     )
                 if event_type.isdigit():
                     return r[t.ContainerValue].fail(
-                        "Domain event name cannot be numeric-only"
+                        "Domain event name cannot be numeric-only",
                     )
                 return super().add_domain_event(event_type=event_type, data=data)
 
@@ -773,7 +776,7 @@ class FlextWebModels(FlextModels):
                 }
                 if not all(key in supported_metrics for key in new_metrics):
                     return r[bool].fail(
-                        "Metrics must be a dict of supported metric keys"
+                        "Metrics must be a dict of supported metric keys",
                     )
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
@@ -958,11 +961,13 @@ class FlextWebModels(FlextModels):
 
             total_applications: Annotated[int, Field(description="Total applications")]
             running_applications: Annotated[
-                int, Field(description="Running applications")
+                int,
+                Field(description="Running applications"),
             ]
             service_status: Annotated[str, Field(description="Service status")]
             routes_initialized: Annotated[
-                bool, Field(description="Routes initialization status")
+                bool,
+                Field(description="Routes initialization status"),
             ]
             middleware_configured: Annotated[
                 bool,
@@ -977,7 +982,8 @@ class FlextWebModels(FlextModels):
 
             service: Annotated[str, Field(description="Service name")]
             capabilities: Annotated[
-                list[str], Field(description="Service capabilities")
+                list[str],
+                Field(description="Service capabilities"),
             ]
             status: Annotated[str, Field(description="Service status")]
             config: Annotated[bool, Field(description="Configuration status")]
@@ -1033,7 +1039,8 @@ class FlextWebModels(FlextModels):
             """Web response model with status tracking."""
 
             request_id: Annotated[
-                str, Field(description="Associated request identifier")
+                str,
+                Field(description="Associated request identifier"),
             ]
             status_code: Annotated[
                 int,
@@ -1276,10 +1283,12 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             debug: Annotated[
-                bool, Field(default=False, description="FastAPI debug mode")
+                bool,
+                Field(default=False, description="FastAPI debug mode"),
             ]
             testing: Annotated[
-                bool, Field(default=False, description="FastAPI testing mode")
+                bool,
+                Field(default=False, description="FastAPI testing mode"),
             ]
             middlewares: Annotated[
                 list[str],

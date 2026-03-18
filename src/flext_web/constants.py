@@ -335,11 +335,20 @@ class FlextWebConstants(FlextConstants):
             """
 
             HttpMethodLiteral = Literal[
-                "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "HEAD",
+                "OPTIONS",
             ]
             ContentTypeLiteral = Literal["application/json", "text/plain", "text/html"]
             EnvironmentNameLiteral = Literal[
-                "development", "staging", "production", "testing"
+                "development",
+                "staging",
+                "production",
+                "testing",
             ]
             ApplicationStatusLiteral = Literal[
                 "stopped",
@@ -361,7 +370,10 @@ class FlextWebConstants(FlextConstants):
                 "REDACTED_LDAP_BIND_PASSWORD-panel",
             ]
             ResponseStatusLiteral = Literal[
-                "success", "error", "operational", "healthy"
+                "success",
+                "error",
+                "operational",
+                "healthy",
             ]
             ProtocolLiteral = Literal["http", "https"]
             SameSiteLiteral = Literal["Lax", "Strict", "None"]

@@ -22,6 +22,7 @@ from typing import ClassVar
 import pytest
 from flask import Flask
 from flext_core import r
+from flext_tests.docker import tk
 from pydantic import ValidationError
 
 from flext_web import (

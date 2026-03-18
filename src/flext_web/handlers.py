@@ -77,7 +77,7 @@ class FlextWebHandlers(FlextService[bool]):
             """Validate create inputs - consolidates all validations."""
             if len(name) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
                 return r[str].fail(
-                    f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters"
+                    f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
                 )
             if name.isdigit():
                 return r[str].fail("Application name cannot be numeric-only")
@@ -116,7 +116,7 @@ class FlextWebHandlers(FlextService[bool]):
                 domain_events=[],
             )
             return app.validate_business_rules().flat_map(
-                lambda _: self._register_app(app)
+                lambda _: self._register_app(app),
             )
 
         def create_app(
@@ -142,7 +142,7 @@ class FlextWebHandlers(FlextService[bool]):
                 return r[m.Web.Entity].fail(f"Application {app_id} not found")
             app = self.apps_registry[app_id]
             return app.start().map(
-                lambda updated_app: self._update_app_in_registry(app_id, updated_app)
+                lambda updated_app: self._update_app_in_registry(app_id, updated_app),
             )
 
         def stop_app(self, app_id: str) -> r[m.Web.Entity]:
@@ -151,7 +151,7 @@ class FlextWebHandlers(FlextService[bool]):
                 return r[m.Web.Entity].fail(f"Application {app_id} not found")
             app = self.apps_registry[app_id]
             return app.stop().map(
-                lambda updated_app: self._update_app_in_registry(app_id, updated_app)
+                lambda updated_app: self._update_app_in_registry(app_id, updated_app),
             )
 
         def _register_app(self, app: m.Web.Entity) -> r[m.Web.Entity]:
@@ -160,7 +160,9 @@ class FlextWebHandlers(FlextService[bool]):
             return r[m.Web.Entity].ok(app)
 
         def _update_app_in_registry(
-            self, app_id: str, app: m.Web.Entity
+            self,
+            app_id: str,
+            app: m.Web.Entity,
         ) -> m.Web.Entity:
             """Update application in registry."""
             self.apps_registry[app_id] = app
@@ -246,7 +248,7 @@ class FlextWebHandlers(FlextService[bool]):
                     "api_endpoints",
                     "web_dashboard",
                 ],
-            )
+            ),
         )
 
     @staticmethod
@@ -268,7 +270,7 @@ class FlextWebHandlers(FlextService[bool]):
                     "configuration": c.Web.WebMessages.CONFIG_LOADED,
                     "handlers": c.Web.WebMessages.HANDLERS_REGISTERED,
                 },
-            )
+            ),
         )
 
     @override

@@ -19,19 +19,23 @@ from flext_web import c, m
 
 HttpMethod = c.Web.Method
 type WebRequestDict = dict[
-    str, str | int | bool | list[str] | dict[str, str | int | bool]
+    str,
+    str | int | bool | list[str] | dict[str, str | int | bool],
 ]
 type WebResponseDict = dict[
-    str, str | int | bool | list[str] | dict[str, str | int | bool]
+    str,
+    str | int | bool | list[str] | dict[str, str | int | bool],
 ]
 
 
 class _ApplicationConfig(m.Web.EntityConfig):
     name: Annotated[
-        str, Field(default=c.Web.WebDefaults.APP_NAME, description="App name")
+        str,
+        Field(default=c.Web.WebDefaults.APP_NAME, description="App name"),
     ]
     status: Annotated[
-        str, Field(default=c.Web.Status.STOPPED.value, description="App status")
+        str,
+        Field(default=c.Web.Status.STOPPED.value, description="App status"),
     ]
     environment: Annotated[
         str,
@@ -41,10 +45,12 @@ class _ApplicationConfig(m.Web.EntityConfig):
         ),
     ]
     debug_mode: Annotated[
-        bool, Field(default=c.Web.WebDefaults.DEBUG_MODE, description="Debug")
+        bool,
+        Field(default=c.Web.WebDefaults.DEBUG_MODE, description="Debug"),
     ]
     version: Annotated[
-        int, Field(default=c.Web.WebDefaults.VERSION_INT, description="Version")
+        int,
+        Field(default=c.Web.WebDefaults.VERSION_INT, description="Version"),
     ]
 
 
@@ -101,10 +107,19 @@ class FlextWebTypes(FlextTypes):
         type RequestDict = WebRequestDict
         type ResponseDict = WebResponseDict
         HttpMethodLiteral = Literal[
-            "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "HEAD",
+            "OPTIONS",
         ]
         EnvironmentNameLiteral = Literal[
-            "development", "staging", "production", "testing"
+            "development",
+            "staging",
+            "production",
+            "testing",
         ]
         ApplicationStatusLiteral = Literal[
             "stopped",
@@ -150,7 +165,8 @@ class FlextWebTypes(FlextTypes):
         """Data type definitions for FlextService compatibility."""
 
         type WebResponseDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
+            str,
+            str | int | bool | list[str] | dict[str, str | int | bool],
         ]
 
     class WebConfigDict(m.Web.EntityConfig):
@@ -241,7 +257,7 @@ class FlextWebTypes(FlextTypes):
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
         if method_validated is None:
             return r[m.Web.Request].fail(
-                f"Invalid HTTP method: {method}. Must be one of: {valid_methods}"
+                f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             )
         headers_validated = headers or {}
 
@@ -353,7 +369,7 @@ class FlextWebTypes(FlextTypes):
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
         if method_validated is None:
             return r[m.Web.AppRequest].fail(
-                f"Invalid HTTP method: {method}. Must be one of: {valid_methods}"
+                f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             )
 
         def create_request() -> m.Web.AppRequest:
@@ -507,7 +523,7 @@ class FlextWebTypes(FlextTypes):
             ImportError,
         ) as e:
             return r[FlextWebTypes.TypesConfig].fail(
-                f"Failed to configure web types system: {e}"
+                f"Failed to configure web types system: {e}",
             )
 
     @classmethod
@@ -531,7 +547,7 @@ class FlextWebTypes(FlextTypes):
             ImportError,
         ) as e:
             return r[FlextWebTypes.TypesConfig].fail(
-                f"Failed to get web types system config: {e}"
+                f"Failed to get web types system config: {e}",
             )
 
     class Project:
