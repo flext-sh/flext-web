@@ -6,6 +6,7 @@ Tests the unified m class following flext standards.
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 from pydantic import ValidationError
 
 from flext_web import FlextWebSettings
@@ -25,44 +26,44 @@ class TestFlextWebModels:
 
     def test_typings_structure(self) -> None:
         """Test that m has proper structure."""
-        assert hasattr(m, "Web")
-        assert hasattr(m.Web, "Message")
-        assert hasattr(m.Web, "Request")
-        assert hasattr(m.Web, "Response")
-        assert hasattr(m.Web, "WebRequest")
-        assert hasattr(m.Web, "WebResponse")
-        assert hasattr(m.Web, "Entity")
+        tm.that(hasattr(m, "Web"), eq=True)
+        tm.that(hasattr(m.Web, "Message"), eq=True)
+        tm.that(hasattr(m.Web, "Request"), eq=True)
+        tm.that(hasattr(m.Web, "Response"), eq=True)
+        tm.that(hasattr(m.Web, "WebRequest"), eq=True)
+        tm.that(hasattr(m.Web, "WebResponse"), eq=True)
+        tm.that(hasattr(m.Web, "Entity"), eq=True)
 
     def test_core_web_types(self) -> None:
         """Test Core web types."""
-        assert hasattr(t, "SuccessResponse")
-        assert hasattr(t, "BaseResponse")
-        assert hasattr(t, "ErrorResponse")
+        tm.that(hasattr(t, "SuccessResponse"), eq=True)
+        tm.that(hasattr(t, "BaseResponse"), eq=True)
+        tm.that(hasattr(t, "ErrorResponse"), eq=True)
 
     def test_application_types(self) -> None:
         """Test Application types."""
-        assert hasattr(m.Web, "Entity")
+        tm.that(hasattr(m.Web, "Entity"), eq=True)
 
     def test_model_functionality(self) -> None:
         """Test Pydantic model functionality."""
         request = m.Web.WebRequest(url="http://localhost:8080", method="GET")
-        assert request.url == "http://localhost:8080"
-        assert request.method == "GET"
+        tm.that(request.url, eq="http://localhost:8080")
+        tm.that(request.method, eq="GET")
         response = m.Web.AppResponse(status_code=200, request_id="test-123")
-        assert response.status_code == 200
-        assert response.is_success, "HTTP response should be successful"
+        tm.that(response.status_code, eq=200)
+        tm.ok(response), "HTTP response should be successful"
 
     def test_app_data_functionality(self) -> None:
         """Test app data functionality."""
         app = t.ApplicationEntity(
             id="test-id", name="test-app", host="localhost", port=8080, status="running"
         )
-        assert app.id == "test-id"
-        assert app.name == "test-app"
-        assert app.host == "localhost"
-        assert app.port == 8080
-        assert app.status == "running"
-        assert app.is_running is True
+        tm.that(app.id, eq="test-id")
+        tm.that(app.name, eq="test-app")
+        tm.that(app.host, eq="localhost")
+        tm.that(app.port, eq=8080)
+        tm.that(app.status, eq="running")
+        tm.that(app.is_running is True, eq=True)
 
     def test_health_response_functionality(self) -> None:
         """Test health response functionality."""
@@ -74,8 +75,8 @@ class TestFlextWebModels:
             "timestamp": "2025-01-01T00:00:00Z",
             "service_id": "test-service-123",
         }
-        assert isinstance(health_data, dict)
-        assert health_data["status"] == "healthy"
+        tm.that(isinstance(health_data, dict), eq=True)
+        tm.that(health_data["status"], eq="healthy")
 
     def test_request_context_functionality(self) -> None:
         """Test request context functionality."""
@@ -85,76 +86,76 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             query_params={"param1": "value1"},
         )
-        assert request.method == "GET"
-        assert request.url == "http://localhost:8080/api/test"
-        assert request.headers["Content-Type"] == "application/json"
-        assert request.query_params["param1"] == "value1"
+        tm.that(request.method, eq="GET")
+        tm.that(request.url, eq="http://localhost:8080/api/test")
+        tm.that(request.headers["Content-Type"], eq="application/json")
+        tm.that(request.query_params["param1"], eq="value1")
 
     def test_project_types(self) -> None:
         """Test Project types."""
-        assert hasattr(m.Web, "Entity")
+        tm.that(hasattr(m.Web, "Entity"), eq=True)
 
     def test_configure_web_types_system(self) -> None:
         """Test configure_web_types_system method."""
         result = t.configure_web_types_system(
             use_pydantic_models=True, enable_runtime_validation=True
         )
-        assert result.is_success, "Operation should succeed"
+        tm.ok(result), "Operation should succeed"
         config = result.value
-        assert config.use_pydantic_models is True
-        assert config.enable_runtime_validation is True
+        tm.that(config.use_pydantic_models is True, eq=True)
+        tm.that(config.enable_runtime_validation is True, eq=True)
 
     def test_configure_web_types_system_invalid_config(self) -> None:
         """Test configure_web_types_system with invalid config."""
         result = t.configure_web_types_system(
             use_pydantic_models=False, enable_runtime_validation=False
         )
-        assert result.is_success, "Operation should succeed"
+        tm.ok(result), "Operation should succeed"
         config = result.value
-        assert config.use_pydantic_models is False
-        assert config.enable_runtime_validation is False
+        tm.that(config.use_pydantic_models is False, eq=True)
+        tm.that(config.enable_runtime_validation is False, eq=True)
 
     def test_get_web_types_system_config(self) -> None:
         """Test get_web_types_system_config method."""
         result = t.get_web_types_system_config()
-        assert result.is_success, "Operation should succeed"
+        tm.ok(result), "Operation should succeed"
         config = result.value
-        assert hasattr(config, "use_pydantic_models")
-        assert hasattr(config, "enable_runtime_validation")
-        assert hasattr(config, "models_available")
-        assert config.use_pydantic_models is True
-        assert config.enable_runtime_validation is True
-        assert isinstance(config.models_available, list)
+        tm.that(hasattr(config, "use_pydantic_models"), eq=True)
+        tm.that(hasattr(config, "enable_runtime_validation"), eq=True)
+        tm.that(hasattr(config, "models_available"), eq=True)
+        tm.that(config.use_pydantic_models is True, eq=True)
+        tm.that(config.enable_runtime_validation is True, eq=True)
+        tm.that(isinstance(config.models_available, list), eq=True)
 
     def test_model_creation(self) -> None:
         """Test model creation functionality."""
         app = t.ApplicationEntity(
             id="test-id", name="test-app", host="localhost", port=8080
         )
-        assert app.id == "test-id"
-        assert app.name == "test-app"
-        assert app.host == "localhost"
-        assert app.port == 8080
+        tm.that(app.id, eq="test-id")
+        tm.that(app.name, eq="test-app")
+        tm.that(app.host, eq="localhost")
+        tm.that(app.port, eq=8080)
 
     def test_config_validation(self) -> None:
         """Test config validation functionality."""
         config = FlextWebSettings(host="localhost", port=8080)
-        assert config.host == "localhost"
-        assert config.port == 8080
+        tm.that(config.host, eq="localhost")
+        tm.that(config.port, eq=8080)
 
     def test_type_consistency(self) -> None:
         """Test that types are consistent with t."""
-        assert hasattr(m.Web, "WebRequest")
-        assert hasattr(m.Web, "WebResponse")
-        assert hasattr(m.Web, "Entity")
+        tm.that(hasattr(m.Web, "WebRequest"), eq=True)
+        tm.that(hasattr(m.Web, "WebResponse"), eq=True)
+        tm.that(hasattr(m.Web, "Entity"), eq=True)
         test_request = t.WebRequest(url="https://example.com")
-        assert hasattr(test_request, "is_secure")
+        tm.that(hasattr(test_request, "is_secure"), eq=True)
 
     def test_type_annotations(self) -> None:
         """Test that types have proper annotations."""
-        assert hasattr(m.Web, "WebRequest")
-        assert hasattr(m.Web, "WebResponse")
-        assert hasattr(m.Web, "Entity")
+        tm.that(hasattr(m.Web, "WebRequest"), eq=True)
+        tm.that(hasattr(m.Web, "WebResponse"), eq=True)
+        tm.that(hasattr(m.Web, "Entity"), eq=True)
 
     def test_type_usage_patterns(self) -> None:
         """Test that types follow expected usage patterns."""
@@ -164,26 +165,26 @@ class TestFlextWebModels:
 
         request = t.HttpRequest(url="http://localhost:8080/api/test", method="GET")
         result = process_request_data(request)
-        assert isinstance(result, dict)
-        assert result["processed"] is True
-        assert result["method"] == "GET"
-        assert result["url"] == "http://localhost:8080/api/test"
+        tm.that(isinstance(result, dict), eq=True)
+        tm.that(result["processed"] is True, eq=True)
+        tm.that(result["method"], eq="GET")
+        tm.that(result["url"], eq="http://localhost:8080/api/test")
 
     def test_create_http_request_invalid_method(self) -> None:
         """Test create_http_request with invalid HTTP method."""
         result = t.create_http_request(
             url="http://localhost:8080", method="INVALID_METHOD"
         )
-        assert result.is_failure, "Operation should fail"
-        assert result.error is not None
-        assert "Invalid HTTP method" in result.error
+        tm.fail(result), "Operation should fail"
+        tm.that(result.error is not None, eq=True)
+        tm.that("Invalid HTTP method" in result.error, eq=True)
 
     def test_create_http_request_invalid_headers(self) -> None:
         """Test create_http_request with invalid headers type."""
         result = t.create_http_request(
             url="http://localhost:8080", method="GET", headers=None
         )
-        assert result.is_success or result.is_failure
+        tm.that(result.is_success or result.is_failure, eq=True)
 
     def test_create_http_request_exception_handling(self) -> None:
         """Test create_http_request exception handling."""
@@ -194,27 +195,32 @@ class TestFlextWebModels:
             body=None,
             timeout=-1.0,
         )
-        assert result.is_failure, "Negative timeout should cause validation failure"
-        assert result.error is not None
-        assert "timeout" in result.error.lower() or "validation" in result.error.lower()
+        tm.fail(result), "Negative timeout should cause validation failure"
+        tm.that(result.error is not None, eq=True)
+        tm.that(
+            "timeout" in (result.error or "").lower()
+            or "validation" in (result.error or "").lower(),
+            eq=True,
+        )
 
     def test_create_http_response_invalid_headers(self) -> None:
         """Test create_http_response with invalid headers type."""
         result = t.create_http_response(status_code=200, headers=None)
-        assert result.is_success or result.is_failure
+        tm.that(result.is_success or result.is_failure, eq=True)
 
     def test_create_http_response_exception_handling(self) -> None:
         """Test create_http_response exception handling."""
         result = t.create_http_response(
             status_code=200, headers={}, body=None, elapsed_time=-1.0
         )
-        assert result.is_failure, (
-            "Negative elapsed_time should cause validation failure"
-        )
-        assert result.error is not None
-        assert (
-            "elapsed_time" in result.error.lower()
-            or "validation" in result.error.lower()
+        tm.fail(result), ("Negative elapsed_time should cause validation failure")
+        tm.that(result.error is not None, eq=True)
+        tm.that(
+            (
+                "elapsed_time" in (result.error or "").lower()
+                or "validation" in (result.error or "").lower()
+            ),
+            eq=True,
         )
 
     def test_create_web_request_invalid_method(self) -> None:
@@ -272,9 +278,13 @@ class TestFlextWebModels:
             name="test-app", host="localhost", port=8080, status="invalid_status"
         )
         result = t.create_application(config)
-        assert result.is_failure, "Invalid status should cause validation failure"
-        assert result.error is not None
-        assert "status" in result.error.lower() or "validation" in result.error.lower()
+        tm.fail(result), "Invalid status should cause validation failure"
+        tm.that(result.error is not None, eq=True)
+        tm.that(
+            "status" in (result.error or "").lower()
+            or "validation" in (result.error or "").lower(),
+            eq=True,
+        )
 
     def test_configure_web_types_system_exception_handling(self) -> None:
         """Test configure_web_types_system exception handling."""
@@ -283,26 +293,26 @@ class TestFlextWebModels:
             enable_runtime_validation=True,
             models_available=["Custom.Model"],
         )
-        assert result.is_success, "Operation should succeed"
+        tm.ok(result), "Operation should succeed"
         config = result.value
-        assert "Custom.Model" in config.models_available
+        tm.that("Custom.Model" in config.models_available, eq=True)
 
     def test_get_web_types_system_config_exception_handling(self) -> None:
         """Test get_web_types_system_config exception handling."""
         result = t.get_web_types_system_config()
-        assert result.is_success, "Operation should succeed"
+        tm.ok(result), "Operation should succeed"
         config = result.value
-        assert hasattr(config, "use_pydantic_models")
-        assert hasattr(config, "enable_runtime_validation")
-        assert hasattr(config, "models_available")
+        tm.that(hasattr(config, "use_pydantic_models"), eq=True)
+        tm.that(hasattr(config, "enable_runtime_validation"), eq=True)
+        tm.that(hasattr(config, "models_available"), eq=True)
 
     def test_create_http_request_all_methods(self) -> None:
         """Test create_http_request with all valid HTTP methods."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
             result = t.create_http_request(url="http://localhost:8080", method=method)
-            assert result.is_success, f"Operation should succeed for method {method}"
-            assert result.value.method == method
+            tm.ok(result), f"Operation should succeed for method {method}"
+            tm.that(result.value.method, eq=method)
 
     def test_create_web_request_all_methods(self) -> None:
         """Test create_web_request with all valid HTTP methods."""
@@ -310,22 +320,22 @@ class TestFlextWebModels:
         for method in valid_methods:
             config = _WebRequestConfig(url="http://localhost:8080", method=method)
             result = t.create_web_request(config)
-            assert result.is_success, f"Operation should succeed for method {method}"
-            assert result.value.method == method
+            tm.ok(result), f"Operation should succeed for method {method}"
+            tm.that(result.value.method, eq=method)
 
     def test_create_http_request_with_none_headers(self) -> None:
         """Test create_http_request with None headers."""
         result = t.create_http_request(
             url="http://localhost:8080", method="GET", headers=None
         )
-        assert result.is_success, "Operation should succeed"
-        assert isinstance(result.value.headers, dict)
+        tm.ok(result), "Operation should succeed"
+        tm.that(isinstance(result.value.headers, dict), eq=True)
 
     def test_create_http_response_with_none_headers(self) -> None:
         """Test create_http_response with None headers."""
         result = t.create_http_response(status_code=200, headers=None)
-        assert result.is_success, "Operation should succeed"
-        assert isinstance(result.value.headers, dict)
+        tm.ok(result), "Operation should succeed"
+        tm.that(isinstance(result.value.headers, dict), eq=True)
 
     def test_create_web_request_with_none_values(self) -> None:
         """Test create_web_request with None headers and query_params."""
@@ -349,33 +359,33 @@ class TestFlextWebModels:
             enable_runtime_validation=False,
             models_available=["Custom.Model"],
         )
-        assert config.use_pydantic_models is False
-        assert config.enable_runtime_validation is False
-        assert config.models_available == ["Custom.Model"]
+        tm.that(config.use_pydantic_models is False, eq=True)
+        tm.that(config.enable_runtime_validation is False, eq=True)
+        tm.that(config.models_available, eq=["Custom.Model"])
 
     def test_types_config_default_initialization(self) -> None:
         """Test TypesConfig initialization with defaults."""
         config = t.TypesConfig()
-        assert config.use_pydantic_models is True
-        assert config.enable_runtime_validation is True
-        assert isinstance(config.models_available, list)
-        assert len(config.models_available) > 0
+        tm.that(config.use_pydantic_models is True, eq=True)
+        tm.that(config.enable_runtime_validation is True, eq=True)
+        tm.that(isinstance(config.models_available, list), eq=True)
+        tm.that(len(config.models_available) > 0, eq=True)
 
     def test_create_http_request_match_case_default(self) -> None:
         """Test create_http_request match/case default branch (line 174-175)."""
         result = t.create_http_request(url="http://localhost:8080", method="GET")
-        assert result.is_success, "Operation should succeed"
+        tm.ok(result), "Operation should succeed"
 
     def test_create_http_request_duplicate_validation(self) -> None:
         """Test create_http_request duplicate validation path (line 157)."""
         result = t.create_http_request(url="http://localhost:8080", method="INVALID")
-        assert result.is_failure, "Operation should fail"
+        tm.fail(result), "Operation should fail"
 
     def test_create_web_request_match_case_default(self) -> None:
         """Test create_web_request match/case default branch (line 301-302)."""
         config = _WebRequestConfig(url="http://localhost:8080", method="GET")
         result = t.create_web_request(config)
-        assert result.is_success, "Operation should succeed"
+        tm.ok(result), "Operation should succeed"
 
     def test_create_web_request_duplicate_validation(self) -> None:
         """Test create_web_request duplicate validation path (line 278)."""
@@ -386,16 +396,16 @@ class TestFlextWebModels:
         """Test create_application exception handling (line 388)."""
         config = _ApplicationConfig(name="test-app", host="localhost", port=8080)
         result = t.create_application(config)
-        assert result.is_success, "Configuration with defaults should succeed"
+        tm.ok(result), "Configuration with defaults should succeed"
 
     def test_configure_web_types_system_exception_path(self) -> None:
         """Test configure_web_types_system exception handling (lines 461-462)."""
         result = t.configure_web_types_system(
             use_pydantic_models=True, enable_runtime_validation=True
         )
-        assert result.is_success, "Operation should succeed"
+        tm.ok(result), "Operation should succeed"
 
     def test_get_web_types_system_config_exception_path(self) -> None:
         """Test get_web_types_system_config exception handling (lines 479-480)."""
         result = t.get_web_types_system_config()
-        assert result.is_success, "Operation should succeed"
+        tm.ok(result), "Operation should succeed"

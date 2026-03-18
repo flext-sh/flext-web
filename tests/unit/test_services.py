@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
+from flext_tests import tm
 from pydantic import ValidationError
 
 from flext_web import FlextWebServices as s, FlextWebSettings
@@ -26,47 +27,47 @@ class TestFlextWebService:
         FlextSettings.
         """
         service = s()
-        assert service is not None
-        assert hasattr(service, "_container")
-        assert hasattr(service, "_config")
-        assert service._config is not None
+        tm.that(service is not None, eq=True)
+        tm.that(hasattr(service, "_container"), eq=True)
+        tm.that(hasattr(service, "_config"), eq=True)
+        tm.that(service._config is not None, eq=True)
 
     def test_initialization_with_config(self) -> None:
         """Test s initialization with config."""
         config = FlextWebSettings(host="localhost", port=8080)
         service = s(_config=config)
-        assert service is not None
-        assert hasattr(service, "_config")
+        tm.that(service is not None, eq=True)
+        tm.that(hasattr(service, "_config"), eq=True)
 
     def test_initialize_routes(self) -> None:
         """Test routes initialization."""
         service = s()
         _ = service.initialize_routes()
-        assert service._routes_initialized is True
+        tm.that(service._routes_initialized is True, eq=True)
 
     def test_configure_middleware(self) -> None:
         """Test middleware configuration."""
         service = s()
         _ = service.configure_middleware()
-        assert service._middleware_configured is True
+        tm.that(service._middleware_configured is True, eq=True)
 
     def test_start_service(self) -> None:
         """Test service start."""
         service = s()
         _ = service.start_service("localhost", 8080, _debug=True)
-        assert service._service_running is True
+        tm.that(service._service_running is True, eq=True)
 
     def test_stop_service(self) -> None:
         """Test service stop."""
         service = s()
         service._service_running = True
         _ = service.stop_service()
-        assert service._service_running is False
+        tm.that(service._service_running is False, eq=True)
 
     def test_auth_property_lazy_initialization(self) -> None:
         """Test auth service access."""
         service = s()
-        assert hasattr(service, "authenticate")
+        tm.that(hasattr(service, "authenticate"), eq=True)
 
     def test_authenticate_success(self) -> None:
         """Test successful authenticate."""
@@ -75,11 +76,11 @@ class TestFlextWebService:
             username="testuser", password=c.Test.DEFAULT_PASSWORD
         )
         authenticate_result = service.authenticate(credentials)
-        assert authenticate_result.is_success, "Authentication should succeed"
+        tm.ok(authenticate_result), "Authentication should succeed"
         authenticate_data = authenticate_result.value
-        assert authenticate_data.authenticated is True
-        assert authenticate_data.token is not None
-        assert authenticate_data.user_id == "testuser"
+        tm.that(authenticate_data.authenticated is True, eq=True)
+        tm.that(authenticate_data.token is not None, eq=True)
+        tm.that(authenticate_data.user_id, eq="testuser")
 
     def test_authenticate_invalid_credentials(self) -> None:
         """Test authenticate with invalid credentials."""
@@ -88,18 +89,18 @@ class TestFlextWebService:
             username=c.Test.NONEXISTENT_USERNAME, password="wrongpassword"
         )
         authenticate_result = service.authenticate(credentials)
-        assert authenticate_result.is_failure
-        assert authenticate_result.error is not None
-        assert "Authentication failed" in authenticate_result.error
+        tm.fail(authenticate_result)
+        tm.that(authenticate_result.error is not None, eq=True)
+        tm.that("Authentication failed" in authenticate_result.error, eq=True)
 
     def test_authenticate_wrong_password(self) -> None:
         """Test authenticate with wrong password."""
         service = s()
         credentials = m.Web.Credentials(username="testuser", password="wrongpassword")
         authenticate_result = service.authenticate(credentials)
-        assert authenticate_result.is_failure
-        assert authenticate_result.error is not None
-        assert "Authentication failed" in authenticate_result.error
+        tm.fail(authenticate_result)
+        tm.that(authenticate_result.error is not None, eq=True)
+        tm.that("Authentication failed" in authenticate_result.error, eq=True)
 
     def test_authenticate_invalid_input(self) -> None:
         """Test authentication with invalid input types."""
@@ -107,8 +108,8 @@ class TestFlextWebService:
         try:
             credentials = m.Web.Credentials(username="123", password="password")
             auth_result = service.authenticate(credentials)
-            assert auth_result.is_failure
-            assert auth_result.error is not None
+            tm.fail(auth_result)
+            tm.that(auth_result.error is not None, eq=True)
         except ValidationError:
             pass
 
@@ -116,9 +117,9 @@ class TestFlextWebService:
         """Test logout functionality."""
         service = s()
         logout_result = service.logout()
-        assert logout_result.is_success
+        tm.ok(logout_result)
         logout_data = logout_result.value
-        assert logout_data.data["success"] is True
+        tm.that(logout_data.data["success"] is True, eq=True)
 
     def test_register_success(self) -> None:
         """Test successful user registration."""
@@ -127,12 +128,12 @@ class TestFlextWebService:
             username="newuser", email="newuser@example.com", password="password123"
         )
         register_result = service.register_user(user_data)
-        assert register_result.is_success
+        tm.ok(register_result)
         user_response = register_result.value
-        assert user_response.id is not None
-        assert user_response.username == "newuser"
-        assert user_response.email == "newuser@example.com"
-        assert user_response.created is True
+        tm.that(user_response.id is not None, eq=True)
+        tm.that(user_response.username, eq="newuser")
+        tm.that(user_response.email, eq="newuser@example.com")
+        tm.that(user_response.created is True, eq=True)
 
     def test_register_duplicate_user(self) -> None:
         """Test registration with duplicate username."""
@@ -141,12 +142,12 @@ class TestFlextWebService:
             username="duplicate", email="user1@example.com", password="password123"
         )
         first_result = service.register_user(first_user_data)
-        assert first_result.is_success
+        tm.ok(first_result)
         second_user_data = m.Web.UserData(
             username="duplicate", email="user2@example.com", password="password456"
         )
         register_result = service.register_user(second_user_data)
-        assert register_result.is_success
+        tm.ok(register_result)
 
     def test_register_invalid_input(self) -> None:
         """Test registration with invalid input types."""
@@ -154,7 +155,7 @@ class TestFlextWebService:
         try:
             user_data = m.Web.UserData(username="123", email="test@example.com")
             register_result = service.register_user(user_data)
-            assert register_result.is_failure
+            tm.fail(register_result)
         except ValidationError:
             pass
 
@@ -162,47 +163,47 @@ class TestFlextWebService:
         """Test health check functionality."""
         service = s()
         health_result = service.health_check()
-        assert health_result.is_success
+        tm.ok(health_result)
         health_data = health_result.value
-        assert health_data["status"] == "healthy"
-        assert health_data["service"] == "flext-web"
-        assert "timestamp" in health_data
+        tm.that(health_data["status"], eq="healthy")
+        tm.that(health_data["service"], eq="flext-web")
+        tm.that("timestamp" in health_data, eq=True)
 
     def test_dashboard(self) -> None:
         """Test dashboard functionality."""
         service = s()
         dashboard_result = service.dashboard()
-        assert dashboard_result.is_success
+        tm.ok(dashboard_result)
         dashboard_data = dashboard_result.value
-        assert dashboard_data.total_applications >= 0
-        assert dashboard_data.running_applications >= 0
-        assert dashboard_data.service_status in {"operational", "stopped"}
-        assert isinstance(dashboard_data.routes_initialized, bool)
-        assert isinstance(dashboard_data.middleware_configured, bool)
-        assert dashboard_data.timestamp is not None
+        tm.that(dashboard_data.total_applications >= 0, eq=True)
+        tm.that(dashboard_data.running_applications >= 0, eq=True)
+        tm.that(dashboard_data.service_status in {"operational", "stopped"}, eq=True)
+        tm.that(isinstance(dashboard_data.routes_initialized, bool), eq=True)
+        tm.that(isinstance(dashboard_data.middleware_configured, bool), eq=True)
+        tm.that(dashboard_data.timestamp is not None, eq=True)
 
     def test_list_apps(self) -> None:
         """Test list apps functionality."""
         service = s()
         list_result = service.list_apps()
-        assert list_result.is_success
+        tm.ok(list_result)
         apps_data: list[Any] = list_result.value
-        assert isinstance(apps_data, list)
-        assert all(hasattr(app, "id") for app in apps_data)
+        tm.that(isinstance(apps_data, list), eq=True)
+        tm.that(all(hasattr(app, "id") for app in apps_data), eq=True)
 
     def test_create_app_success(self) -> None:
         """Test successful app creation."""
         service = s()
         app_data = m.Web.AppData(name="test-app", host="localhost", port=8080)
         create_result = service.create_app(app_data)
-        assert create_result.is_success
+        tm.ok(create_result)
         app_response = create_result.value
-        assert app_response.name == "test-app"
-        assert app_response.host == "localhost"
-        assert app_response.port == 8080
-        assert app_response.id is not None
-        assert app_response.status == "stopped"
-        assert app_response.created_at is not None
+        tm.that(app_response.name, eq="test-app")
+        tm.that(app_response.host, eq="localhost")
+        tm.that(app_response.port, eq=8080)
+        tm.that(app_response.id is not None, eq=True)
+        tm.that(app_response.status, eq="stopped")
+        tm.that(app_response.created_at is not None, eq=True)
 
     def test_create_app_invalid_input(self) -> None:
         """Test app creation with invalid input."""
@@ -210,7 +211,7 @@ class TestFlextWebService:
         try:
             app_data = m.Web.AppData(name="123", host="localhost", port=8080)
             create_result = service.create_app(app_data)
-            assert create_result.is_failure
+            tm.fail(create_result)
         except ValidationError:
             pass
 
@@ -219,115 +220,125 @@ class TestFlextWebService:
         service = s()
         app_data = m.Web.AppData(name="test-app", host="localhost", port=8080)
         create_result = service.create_app(app_data)
-        assert create_result.is_success
+        tm.ok(create_result)
         app_response = create_result.value
         app_id = app_response.id
         get_result = service.get_app(app_id)
-        assert get_result.is_success
+        tm.ok(get_result)
         retrieved_app = get_result.value
-        assert retrieved_app.id == app_id
+        tm.that(retrieved_app.id, eq=app_id)
 
     def test_get_app_not_found(self) -> None:
         """Test app retrieval with non-existent app."""
         service = s()
         get_result = service.get_app("nonexistent-id")
-        assert get_result.is_failure
-        assert get_result.error is not None
-        assert "not found" in get_result.error
+        tm.fail(get_result)
+        tm.that(get_result.error is not None, eq=True)
+        tm.that("not found" in get_result.error, eq=True)
 
     def test_get_app_invalid_id(self) -> None:
         """Test app retrieval with invalid ID."""
         service = s()
         invalid_id = str(123)
         get_result = service.get_app(invalid_id)
-        assert get_result.is_failure
-        assert get_result.error is not None
-        assert "must be a string" in get_result.error or "not found" in get_result.error
+        tm.fail(get_result)
+        tm.that(get_result.error is not None, eq=True)
+        tm.that(
+            "must be a string" in get_result.error or "not found" in get_result.error,
+            eq=True,
+        )
         get_result = service.get_app("")
-        assert get_result.is_failure
-        assert get_result.error is not None
-        assert "cannot be empty" in get_result.error
+        tm.fail(get_result)
+        tm.that(get_result.error is not None, eq=True)
+        tm.that("cannot be empty" in get_result.error, eq=True)
 
     def test_start_app_success(self) -> None:
         """Test successful app start."""
         service = s()
         app_data = m.Web.AppData(name="test-app", host="localhost", port=8080)
         create_result = service.create_app(app_data)
-        assert create_result.is_success
+        tm.ok(create_result)
         app_response = create_result.value
         app_id = app_response.id
         start_result = service.start_app(app_id)
-        assert start_result.is_success
+        tm.ok(start_result)
         started_app = start_result.value
-        assert started_app.status == "running"
+        tm.that(started_app.status, eq="running")
 
     def test_start_app_invalid_id(self) -> None:
         """Test app start with invalid ID."""
         service = s()
         invalid_id = str(123)
         start_result = service.start_app(invalid_id)
-        assert start_result.is_failure
-        assert start_result.error is not None
-        assert (
-            "must be a string" in start_result.error
-            or "not found" in start_result.error
+        tm.fail(start_result)
+        tm.that(start_result.error is not None, eq=True)
+        tm.that(
+            (
+                "must be a string" in start_result.error
+                or "not found" in start_result.error
+            ),
+            eq=True,
         )
         start_result = service.start_app("")
-        assert start_result.is_failure
-        assert start_result.error is not None
-        assert "cannot be empty" in start_result.error
+        tm.fail(start_result)
+        tm.that(start_result.error is not None, eq=True)
+        tm.that("cannot be empty" in start_result.error, eq=True)
         start_result = service.start_app("nonexistent-id")
-        assert start_result.is_failure
-        assert start_result.error is not None
-        assert "not found" in start_result.error
+        tm.fail(start_result)
+        tm.that(start_result.error is not None, eq=True)
+        tm.that("not found" in start_result.error, eq=True)
 
     def test_stop_app_success(self) -> None:
         """Test successful app stop."""
         service = s()
         app_data = m.Web.AppData(name="test-app", host="localhost", port=8080)
         create_result = service.create_app(app_data)
-        assert create_result.is_success
+        tm.ok(create_result)
         app_response = create_result.value
         app_id = app_response.id
         _ = service.start_app(app_id)
         stop_result = service.stop_app(app_id)
-        assert stop_result.is_success
+        tm.ok(stop_result)
         stopped_app = stop_result.value
-        assert stopped_app.status == "stopped"
+        tm.that(stopped_app.status, eq="stopped")
 
     def test_stop_app_invalid_id(self) -> None:
         """Test app stop with invalid ID."""
         service = s()
         invalid_id = str(123)
         stop_result = service.stop_app(invalid_id)
-        assert stop_result.is_failure
-        assert stop_result.error is not None
-        assert (
-            "must be a string" in stop_result.error or "not found" in stop_result.error
+        tm.fail(stop_result)
+        tm.that(stop_result.error is not None, eq=True)
+        tm.that(
+            (
+                "must be a string" in stop_result.error
+                or "not found" in stop_result.error
+            ),
+            eq=True,
         )
         stop_result = service.stop_app("")
-        assert stop_result.is_failure
-        assert stop_result.error is not None
-        assert "cannot be empty" in stop_result.error
+        tm.fail(stop_result)
+        tm.that(stop_result.error is not None, eq=True)
+        tm.that("cannot be empty" in stop_result.error, eq=True)
         stop_result = service.stop_app("nonexistent-id")
-        assert stop_result.is_failure
-        assert stop_result.error is not None
-        assert "not found" in stop_result.error
+        tm.fail(stop_result)
+        tm.that(stop_result.error is not None, eq=True)
+        tm.that("not found" in stop_result.error, eq=True)
 
     def test_create_web_service_class_method(self) -> None:
         """Test create_web_service class method."""
         result = s.create_web_service()
-        assert result.is_success
+        tm.ok(result)
         service = result.value
-        assert isinstance(service, s)
+        tm.that(isinstance(service, s), eq=True)
 
     def test_create_web_service_with_config(self) -> None:
         """Test create_web_service with config."""
         config = FlextWebSettings(host="localhost", port=8080)
         result = s.create_web_service(config)
-        assert result.is_success
+        tm.ok(result)
         service = result.value
-        assert isinstance(service, s)
+        tm.that(isinstance(service, s), eq=True)
 
     @pytest.mark.xfail(
         reason="FlextSettings bug: Field constraints not enforced", strict=False
@@ -346,45 +357,48 @@ class TestFlextWebService:
         service = s()
         entity_data = m.Web.EntityData(data={"key": "value"})
         create_result = service.create_entity(entity_data)
-        assert create_result.is_success
+        tm.ok(create_result)
         created_entity = create_result.value
-        assert "id" in created_entity.data
-        assert created_entity.data["key"] == "value"
+        tm.that("id" in created_entity.data, eq=True)
+        tm.that(created_entity.data["key"], eq="value")
 
     def test_get_entity_success(self) -> None:
         """Test successful entity retrieval."""
         service = s()
         entity_data = m.Web.EntityData(data={"key": "value"})
         create_result = service.create_entity(entity_data)
-        assert create_result.is_success
+        tm.ok(create_result)
         created_entity = create_result.value
         entity_id_value = created_entity.data["id"]
         entity_id = str(entity_id_value) if entity_id_value is not None else "unknown"
         get_result = service.get_entity(entity_id)
-        assert get_result.is_success
+        tm.ok(get_result)
         retrieved_entity = get_result.value
-        assert retrieved_entity.data["id"] == entity_id_value
+        tm.that(retrieved_entity.data["id"], eq=entity_id_value)
 
     def test_get_entity_not_found(self) -> None:
         """Test entity retrieval with non-existent entity."""
         service = s()
         get_result = service.get_entity("nonexistent-id")
-        assert get_result.is_failure
-        assert get_result.error is not None
-        assert "not found" in get_result.error
+        tm.fail(get_result)
+        tm.that(get_result.error is not None, eq=True)
+        tm.that("not found" in get_result.error, eq=True)
 
     def test_get_entity_invalid_id(self) -> None:
         """Test entity retrieval with invalid ID."""
         service = s()
         invalid_id = str(123)
         get_result = service.get_entity(invalid_id)
-        assert get_result.is_failure
-        assert get_result.error is not None
-        assert "must be a string" in get_result.error or "not found" in get_result.error
+        tm.fail(get_result)
+        tm.that(get_result.error is not None, eq=True)
+        tm.that(
+            "must be a string" in get_result.error or "not found" in get_result.error,
+            eq=True,
+        )
         get_result = service.get_entity("")
-        assert get_result.is_failure
-        assert get_result.error is not None
-        assert "cannot be empty" in get_result.error
+        tm.fail(get_result)
+        tm.that(get_result.error is not None, eq=True)
+        tm.that("cannot be empty" in get_result.error, eq=True)
 
     def test_list_entities_success(self) -> None:
         """Test successful entity listing."""
@@ -394,80 +408,80 @@ class TestFlextWebService:
         _ = service.create_entity(entity1)
         _ = service.create_entity(entity2)
         list_result = service.list_entities()
-        assert list_result.is_success
+        tm.ok(list_result)
         entities = list_result.value
-        assert len(entities) >= 2
+        tm.that(len(entities) >= 2, eq=True)
 
     def test_health_status_success(self) -> None:
         """Test health status retrieval."""
         service = s()
         health_result = service.health_status()
-        assert health_result.is_success
+        tm.ok(health_result)
         health_data = health_result.value
-        assert health_data.status == "healthy"
-        assert health_data.service == "flext-web"
-        assert health_data.timestamp is not None
+        tm.that(health_data.status, eq="healthy")
+        tm.that(health_data.service, eq="flext-web")
+        tm.that(health_data.timestamp is not None, eq=True)
 
     def test_dashboard_metrics_success(self) -> None:
         """Test dashboard metrics retrieval."""
         service = s()
         metrics_result = service.dashboard_metrics()
-        assert metrics_result.is_success
+        tm.ok(metrics_result)
         metrics_data = metrics_result.value
-        assert metrics_data.service_status == "operational"
-        assert isinstance(metrics_data.components, list)
+        tm.that(metrics_data.service_status, eq="operational")
+        tm.that(isinstance(metrics_data.components, list), eq=True)
 
     def test_create_configuration_success(self) -> None:
         """Test configuration creation."""
         service = s()
         config = FlextWebSettings(secret_key=c.Web.WebDefaults.TEST_SECRET_KEY)
         create_result = service.create_configuration(config)
-        assert create_result.is_success
+        tm.ok(create_result)
         created_config = create_result.value
-        assert created_config == config
+        tm.that(created_config, eq=config)
 
     def test_initialize_routes_already_initialized(self) -> None:
         """Test routes initialization when already initialized."""
         service = s()
         result1 = service.initialize_routes()
-        assert result1.is_success
-        assert service._routes_initialized is True
+        tm.ok(result1)
+        tm.that(service._routes_initialized is True, eq=True)
         result2 = service.initialize_routes()
-        assert result2.is_success
+        tm.ok(result2)
 
     def test_configure_middleware_already_configured(self) -> None:
         """Test middleware configuration when already configured."""
         service = s()
         result1 = service.configure_middleware()
-        assert result1.is_success
-        assert service._middleware_configured is True
+        tm.ok(result1)
+        tm.that(service._middleware_configured is True, eq=True)
         result2 = service.configure_middleware()
-        assert result2.is_success
+        tm.ok(result2)
 
     def test_start_service_already_running(self) -> None:
         """Test service start when already running."""
         service = s()
         start_result1 = service.start_service()
-        assert start_result1.is_success
+        tm.ok(start_result1)
         start_result2 = service.start_service()
-        assert start_result2.is_failure
-        assert start_result2.error is not None
-        assert "already running" in start_result2.error
+        tm.fail(start_result2)
+        tm.that(start_result2.error is not None, eq=True)
+        tm.that("already running" in start_result2.error, eq=True)
 
     def test_stop_service_not_running(self) -> None:
         """Test service stop when not running."""
         service = s()
         stop_result = service.stop_service()
-        assert stop_result.is_failure
-        assert stop_result.error is not None
-        assert "not running" in stop_result.error
+        tm.fail(stop_result)
+        tm.that(stop_result.error is not None, eq=True)
+        tm.that("not running" in stop_result.error, eq=True)
 
     def test_validate_business_rules_success(self) -> None:
         """Test business rules validation when service is valid."""
         service = s()
         result = service.validate_business_rules()
-        assert result.is_success
-        assert result.value is True
+        tm.ok(result)
+        tm.that(result.value is True, eq=True)
 
     def test_validate_business_rules_running_without_routes(self) -> None:
         """Test business rules validation when service is running without routes."""
@@ -475,9 +489,9 @@ class TestFlextWebService:
         service._service_running = True
         service._routes_initialized = False
         result = service.validate_business_rules()
-        assert result.is_failure
-        assert result.error is not None
-        assert "cannot be running without initialized routes" in result.error
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that("cannot be running without initialized routes" in result.error, eq=True)
 
     def test_validate_business_rules_running_without_middleware(self) -> None:
         """Test business rules validation when service is running without middleware."""
@@ -486,37 +500,39 @@ class TestFlextWebService:
         service._routes_initialized = True
         service._middleware_configured = False
         result = service.validate_business_rules()
-        assert result.is_failure
-        assert result.error is not None
-        assert "cannot be running without configured middleware" in result.error
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that(
+            "cannot be running without configured middleware" in result.error, eq=True
+        )
 
     def test_execute_service(self) -> None:
         """Test service execution."""
         service = s()
         result = service.execute()
-        assert result.is_success
-        assert result.value is True
+        tm.ok(result)
+        tm.that(result.value is True, eq=True)
 
     def test_create_service_class_method(self) -> None:
         """Test create_service class method."""
         result = s.create_service()
-        assert result.is_success
+        tm.ok(result)
         service = result.value
-        assert isinstance(service, s)
+        tm.that(isinstance(service, s), eq=True)
 
     def test_create_service_with_config(self) -> None:
         """Test create_service with config."""
         config = FlextWebSettings(secret_key=c.Web.WebDefaults.TEST_SECRET_KEY)
         result = s.create_service(config)
-        assert result.is_success
+        tm.ok(result)
         service = result.value
-        assert isinstance(service, s)
-        assert service._config is not None
+        tm.that(isinstance(service, s), eq=True)
+        tm.that(service._config is not None, eq=True)
 
     def test_entity_service_execute(self) -> None:
         """Test Entity service execute method."""
         entity_service = s.Entity()
         execute_result = entity_service.execute()
-        assert execute_result.is_success
+        tm.ok(execute_result)
         ready_response = execute_result.value
-        assert ready_response.data["message"] == "Entity service ready"
+        tm.that(ready_response.data["message"], eq="Entity service ready")

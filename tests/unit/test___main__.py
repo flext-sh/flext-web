@@ -6,6 +6,7 @@ Tests the CLI entry point functionality following flext standards.
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 
 from flext_web import __main__
 from tests import m
@@ -17,9 +18,9 @@ class TestFlextWebCliService:
     def test_initialization(self) -> None:
         """Test FlextWebCliService initialization."""
         cli_service = __main__.FlextWebCliService()
-        assert cli_service is not None
-        assert hasattr(cli_service, "_logger")
-        assert hasattr(cli_service, "_api")
+        tm.that(cli_service is not None, eq=True)
+        tm.that(hasattr(cli_service, "_logger"), eq=True)
+        tm.that(hasattr(cli_service, "_api"), eq=True)
 
     def test_log_status_and_return(self) -> None:
         """Test _log_status_and_return method."""
@@ -31,7 +32,7 @@ class TestFlextWebCliService:
             config=True,
         )
         result = cli_service._log_status_and_return(status)
-        assert result is True
+        tm.that(result is True, eq=True)
 
 
 class TestMainFunction:
@@ -39,11 +40,11 @@ class TestMainFunction:
 
     def test_main_structure(self) -> None:
         """Test main function structure and imports."""
-        assert callable(__main__.FlextWebCliService.main)
-        assert hasattr(__main__.FlextWebCliService, "main")
+        tm.that(callable(__main__.FlextWebCliService.main), eq=True)
+        tm.that(hasattr(__main__.FlextWebCliService, "main"), eq=True)
 
     def test_main_module_execution(self) -> None:
         """Test __main__ module execution (line 78)."""
         with pytest.raises(SystemExit) as exc_info:
             __main__.FlextWebCliService.main()
-        assert exc_info.value.code == 0
+        tm.that(exc_info.value.code, eq=0)

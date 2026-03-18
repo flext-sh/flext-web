@@ -8,10 +8,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 import pytest
+from flext_tests import tm
 from pydantic import ValidationError
 
-from tests import c, m, t
-from tests.conftest import create_entry, create_test_app
+from tests import c, create_entry, create_test_app, m, t
 
 
 class TestFlextWebModels:
@@ -19,25 +19,25 @@ class TestFlextWebModels:
 
     def test_web_app_status_enum(self) -> None:
         """Test WebAppStatus enum values from constants."""
-        assert c.Web.Status.STOPPED.value == "stopped"
-        assert c.Web.Status.STARTING.value == "starting"
-        assert c.Web.Status.RUNNING.value == "running"
-        assert c.Web.Status.STOPPING.value == "stopping"
-        assert c.Web.Status.ERROR.value == "error"
-        assert c.Web.Status.MAINTENANCE.value == "maintenance"
-        assert c.Web.Status.DEPLOYING.value == "deploying"
+        tm.that(c.Web.Status.STOPPED.value, eq="stopped")
+        tm.that(c.Web.Status.STARTING.value, eq="starting")
+        tm.that(c.Web.Status.RUNNING.value, eq="running")
+        tm.that(c.Web.Status.STOPPING.value, eq="stopping")
+        tm.that(c.Web.Status.ERROR.value, eq="error")
+        tm.that(c.Web.Status.MAINTENANCE.value, eq="maintenance")
+        tm.that(c.Web.Status.DEPLOYING.value, eq="deploying")
 
     def test_web_app_initialization_with_defaults(self) -> None:
         """Test WebApp initialization with defaults."""
         app = create_test_app()
-        assert app.id == "test-id"
-        assert app.name == c.Web.Tests.TestWeb.TEST_APP_NAME
-        assert app.host == c.Web.WebDefaults.HOST
-        assert app.port == c.Web.WebDefaults.PORT
-        assert app.status == "stopped"
-        assert app.version == 1
-        assert app.environment == "development"
-        assert app.debug_mode is False
+        tm.that(app.id, eq="test-id")
+        tm.that(app.name, eq=c.Web.Tests.TestWeb.TEST_APP_NAME)
+        tm.that(app.host, eq=c.Web.WebDefaults.HOST)
+        tm.that(app.port, eq=c.Web.WebDefaults.PORT)
+        tm.that(app.status, eq="stopped")
+        tm.that(app.version, eq=1)
+        tm.that(app.environment, eq="development")
+        tm.that(app.debug_mode is False, eq=True)
 
     def test_web_app_initialization_with_custom_values(self) -> None:
         """Test WebApp initialization with custom values."""
@@ -51,17 +51,17 @@ class TestFlextWebModels:
             environment="production",
             debug_mode=True,
         )
-        assert app.host == "0.0.0.0"
-        assert app.port == 3000
-        assert app.status == "running"
-        assert app.version == 2
-        assert app.environment == "production"
-        assert app.debug_mode is True
+        tm.that(app.host, eq="0.0.0.0")
+        tm.that(app.port, eq=3000)
+        tm.that(app.status, eq="running")
+        tm.that(app.version, eq=2)
+        tm.that(app.environment, eq="production")
+        tm.that(app.debug_mode is True, eq=True)
 
     def test_web_app_name_validation(self) -> None:
         """Test WebApp name validation."""
         app = m.Web.Entity(id="test-id", name="valid-app-name")
-        assert app.name == "valid-app-name"
+        tm.that(app.name, eq="valid-app-name")
         with pytest.raises(ValidationError):
             _ = m.Web.Entity(id="test-id", name="ab")
         with pytest.raises(ValidationError):
@@ -89,7 +89,7 @@ class TestFlextWebModels:
     def test_web_app_port_validation(self) -> None:
         """Test WebApp port validation."""
         app = m.Web.Entity(id="test-id", name="test-app", port=8080)
-        assert app.port == 8080
+        tm.that(app.port, eq=8080)
         with pytest.raises(ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", port=0)
         with pytest.raises(ValidationError):
@@ -98,113 +98,113 @@ class TestFlextWebModels:
     def test_web_app_status_validation(self) -> None:
         """Test WebApp status validation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
-        assert app.status == "running"
+        tm.that(app.status, eq="running")
         with pytest.raises((ValidationError, TypeError)):
             _ = m.Web.Entity(id="test-id", name="test-app", status="invalid")
 
     def test_web_app_computed_fields(self) -> None:
         """Test WebApp computed fields."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
-        assert app.is_running is True
-        assert app.is_healthy is True
-        assert app.can_start is False
-        assert app.can_stop is True
-        assert app.can_restart is True
+        tm.that(app.is_running is True, eq=True)
+        tm.that(app.is_healthy is True, eq=True)
+        tm.that(app.can_start is False, eq=True)
+        tm.that(app.can_stop is True, eq=True)
+        tm.that(app.can_restart is True, eq=True)
 
     def test_web_app_url_generation(self) -> None:
         """Test WebApp URL generation."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
-        assert app.url == "http://localhost:8080"
+        tm.that(app.url, eq="http://localhost:8080")
         app_https = m.Web.Entity(
             id="test-id", name="test-app", host="localhost", port=443
         )
-        assert app_https.url == "https://localhost:443"
+        tm.that(app_https.url, eq="https://localhost:443")
 
     def test_web_app_business_rules_validation(self) -> None:
         """Test WebApp business rules validation."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.validate_business_rules()
-        assert result.is_success
+        tm.ok(result)
 
     def test_web_app_start_success(self) -> None:
         """Test WebApp start operation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="stopped")
         result = app.start()
-        assert result.is_success
+        tm.ok(result)
         started_app = result.value
-        assert started_app.status == "running"
+        tm.that(started_app.status, eq="running")
 
     def test_web_app_start_already_running(self) -> None:
         """Test WebApp start when already running."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         result = app.start()
-        assert result.is_failure
-        assert result.error is not None
-        assert "already running" in result.error
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that("already running" in result.error, eq=True)
 
     def test_web_app_stop_success(self) -> None:
         """Test WebApp stop operation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         result = app.stop()
-        assert result.is_success
+        tm.ok(result)
         stopped_app = result.value
-        assert stopped_app.status == "stopped"
+        tm.that(stopped_app.status, eq="stopped")
 
     def test_web_app_stop_not_running(self) -> None:
         """Test WebApp stop when not running."""
         app = m.Web.Entity(id="test-id", name="test-app", status="stopped")
         result = app.stop()
-        assert result.is_failure
-        assert result.error is not None
-        assert "not running" in result.error
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that("not running" in result.error, eq=True)
 
     def test_web_app_restart_success(self) -> None:
         """Test WebApp restart operation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         result = app.restart()
-        assert result.is_success
+        tm.ok(result)
         restarted_app = result.value
-        assert restarted_app.status == "running"
+        tm.that(restarted_app.status, eq="running")
 
     def test_web_app_metrics_update(self) -> None:
         """Test WebApp metrics update."""
         app = create_test_app()
         metrics: dict[str, t.Scalar | None] = {"requests": 100, "errors": 5}
         result = app.update_metrics(metrics)
-        assert result.is_success
-        assert result.value is True
-        assert "requests" in app.metrics
-        assert "errors" in app.metrics
-        assert app.metrics["requests"] == 100
-        assert app.metrics["errors"] == 5
+        tm.ok(result)
+        tm.that(result.value is True, eq=True)
+        tm.that("requests" in app.metrics, eq=True)
+        tm.that("errors" in app.metrics, eq=True)
+        tm.that(app.metrics["requests"], eq=100)
+        tm.that(app.metrics["errors"], eq=5)
 
     def test_web_app_health_status(self) -> None:
         """Test WebApp health status."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         health = app.get_health_status()
-        assert "status" in health
-        assert "is_running" in health
-        assert "is_healthy" in health
-        assert "url" in health
-        assert health["status"] == "running"
+        tm.that("status" in health, eq=True)
+        tm.that("is_running" in health, eq=True)
+        tm.that("is_healthy" in health, eq=True)
+        tm.that("url" in health, eq=True)
+        tm.that(health["status"], eq="running")
 
     def test_web_app_to_dict(self) -> None:
         """Test WebApp to_dict conversion."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         app_dict = app.model_dump()
-        assert app_dict["id"] == "test-id"
-        assert app_dict["name"] == "test-app"
-        assert app_dict["host"] == "localhost"
-        assert app_dict["port"] == 8080
+        tm.that(app_dict["id"], eq="test-id")
+        tm.that(app_dict["name"], eq="test-app")
+        tm.that(app_dict["host"], eq="localhost")
+        tm.that(app_dict["port"], eq=8080)
 
     def test_web_app_string_representation(self) -> None:
         """Test WebApp string representation."""
         app = m.Web.Entity(
             id="test-id", name="test-app", host="localhost", port=8080, status="running"
         )
-        assert "test-app" in str(app)
-        assert "localhost:8080" in str(app)
-        assert "running" in str(app)
+        tm.that("test-app" in str(app), eq=True)
+        tm.that("localhost:8080" in str(app), eq=True)
+        tm.that("running" in str(app), eq=True)
 
     def test_web_request_initialization(self) -> None:
         """Test WebRequest initialization."""
@@ -214,12 +214,12 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"test": "data"}',
         )
-        assert request.method == "GET"
-        assert request.url == "http://localhost:8080/api/test"
-        assert request.headers["Content-Type"] == "application/json"
-        assert request.body == '{"test": "data"}'
-        assert request.request_id is not None
-        assert request.timestamp is not None
+        tm.that(request.method, eq="GET")
+        tm.that(request.url, eq="http://localhost:8080/api/test")
+        tm.that(request.headers["Content-Type"], eq="application/json")
+        tm.that(request.body, eq='{"test": "data"}')
+        tm.that(request.request_id is not None, eq=True)
+        tm.that(request.timestamp is not None, eq=True)
 
     def test_web_response_initialization(self) -> None:
         """Test WebResponse initialization."""
@@ -229,12 +229,12 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"result": "success"}',
         )
-        assert response.request_id == "req-123"
-        assert response.status_code == 200
-        assert response.headers["Content-Type"] == "application/json"
-        assert response.body == '{"result": "success"}'
-        assert response.response_id is not None
-        assert response.timestamp is not None
+        tm.that(response.request_id, eq="req-123")
+        tm.that(response.status_code, eq=200)
+        tm.that(response.headers["Content-Type"], eq="application/json")
+        tm.that(response.body, eq='{"result": "success"}')
+        tm.that(response.response_id is not None, eq=True)
+        tm.that(response.timestamp is not None, eq=True)
 
     def test_web_app_config_initialization(self) -> None:
         """Test WebAppConfig initialization."""
@@ -245,33 +245,33 @@ class TestFlextWebModels:
             debug=True,
             secret_key="test-secret-key-32-characters-long",
         )
-        assert config.app_name == "Test App"
-        assert config.host == "localhost"
-        assert config.port == 8080
-        assert config.debug is True
-        assert config.secret_key == "test-secret-key-32-characters-long"
+        tm.that(config.app_name, eq="Test App")
+        tm.that(config.host, eq="localhost")
+        tm.that(config.port, eq=8080)
+        tm.that(config.debug is True, eq=True)
+        tm.that(config.secret_key, eq="test-secret-key-32-characters-long")
 
     def test_app_config_initialization(self) -> None:
         """Test AppConfig initialization."""
         config = m.Web.AppConfig(
             title="Test API", version="1.0.0", description="Test API Description"
         )
-        assert config.title == "Test API"
-        assert config.version == "1.0.0"
-        assert config.description == "Test API Description"
-        assert config.docs_url == "/docs"
-        assert config.redoc_url == "/redoc"
-        assert config.openapi_url == "/openapi.json"
+        tm.that(config.title, eq="Test API")
+        tm.that(config.version, eq="1.0.0")
+        tm.that(config.description, eq="Test API Description")
+        tm.that(config.docs_url, eq="/docs")
+        tm.that(config.redoc_url, eq="/redoc")
+        tm.that(config.openapi_url, eq="/openapi.json")
 
     def test_create_web_app_factory(self) -> None:
         """Test create_web_app factory method."""
         result = create_entry("web_app", name="test-app", host="localhost", port=8080)
-        assert result.is_success
+        tm.ok(result)
         app = result.value
-        assert isinstance(app, m.Web.Entity)
-        assert app.name == "test-app"
-        assert app.host == "localhost"
-        assert app.port == 8080
+        tm.that(isinstance(app, m.Web.Entity), eq=True)
+        tm.that(app.name, eq="test-app")
+        tm.that(app.host, eq="localhost")
+        tm.that(app.port, eq=8080)
 
     def test_create_web_request_factory(self) -> None:
         """Test create_web_request factory method."""
@@ -282,11 +282,11 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"test": "data"}',
         )
-        assert result.is_success
+        tm.ok(result)
         request = result.value
-        assert isinstance(request, m.Web.AppRequest)
-        assert request.method == "POST"
-        assert request.url == "http://localhost:8080/api/test"
+        tm.that(isinstance(request, m.Web.AppRequest), eq=True)
+        tm.that(request.method, eq="POST")
+        tm.that(request.url, eq="http://localhost:8080/api/test")
 
     def test_create_web_response_factory(self) -> None:
         """Test create_web_response factory method."""
@@ -297,53 +297,53 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"id": 1}',
         )
-        assert result.is_success
+        tm.ok(result)
         response = result.value
-        assert isinstance(response, m.Web.AppResponse)
-        assert response.status_code == 201
+        tm.that(isinstance(response, m.Web.AppResponse), eq=True)
+        tm.that(response.status_code, eq=201)
 
     def test_http_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
         request_with_body = m.Web.Request(
             url="http://localhost:8080", method="POST", body='{"data": "test"}'
         )
-        assert request_with_body.has_body is True
+        tm.that(request_with_body.has_body is True, eq=True)
         request_without_body = m.Web.Request(
             url="http://localhost:8080", method="GET", body=None
         )
-        assert request_without_body.has_body is False
+        tm.that(request_without_body.has_body is False, eq=True)
 
     def test_http_request_is_secure_property(self) -> None:
         """Test Web.Request is_secure property."""
         https_request = m.Web.Request(url="https://localhost:8080", method="GET")
-        assert https_request.is_secure is True
+        tm.that(https_request.is_secure is True, eq=True)
         http_request = m.Web.Request(url="http://localhost:8080", method="GET")
-        assert http_request.is_secure is False
+        tm.that(http_request.is_secure is False, eq=True)
 
     def test_http_response_is_success_property(self) -> None:
         """Test Web.Response is_success property."""
         success_response = m.Web.Response(status_code=200)
-        assert success_response.is_success is True
+        tm.that(success_response.is_success is True, eq=True)
         error_response = m.Web.Response(status_code=404)
-        assert error_response.is_success is False
+        tm.that(error_response.is_success is False, eq=True)
 
     def test_http_response_is_error_property(self) -> None:
         """Test Web.Response is_error property."""
         error_response = m.Web.Response(status_code=500)
-        assert error_response.is_error is True
+        tm.that(error_response.is_error is True, eq=True)
         success_response = m.Web.Response(status_code=200)
-        assert success_response.is_error is False
+        tm.that(success_response.is_error is False, eq=True)
 
     def test_web_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
         request_with_body = m.Web.Request(
             url="http://localhost:8080", method="POST", body='{"data": "test"}'
         )
-        assert request_with_body.has_body is True
+        tm.that(request_with_body.has_body is True, eq=True)
         request_without_body = m.Web.Request(
             url="http://localhost:8080", method="GET", body=None
         )
-        assert request_without_body.has_body is False
+        tm.that(request_without_body.has_body is False, eq=True)
 
     def test_application_validate_business_rules_short_name(self) -> None:
         """Test validate_business_rules with name too short."""
@@ -358,9 +358,13 @@ class TestFlextWebModels:
             debug_mode=False,
         )
         result = app.validate_business_rules()
-        assert result.is_failure
-        assert result.error is not None
-        assert "name" in result.error.lower() or "at least" in result.error.lower()
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that(
+            "name" in (result.error or "").lower()
+            or "at least" in (result.error or "").lower(),
+            eq=True,
+        )
 
     def test_application_validate_business_rules_invalid_port_low(self) -> None:
         """Test validate_business_rules with port too low."""
@@ -375,9 +379,13 @@ class TestFlextWebModels:
             debug_mode=False,
         )
         result = app.validate_business_rules()
-        assert result.is_failure
-        assert result.error is not None
-        assert "port" in result.error.lower() or "between" in result.error.lower()
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that(
+            "port" in (result.error or "").lower()
+            or "between" in (result.error or "").lower(),
+            eq=True,
+        )
 
     def test_application_validate_business_rules_invalid_port_high(self) -> None:
         """Test validate_business_rules with port too high."""
@@ -392,33 +400,37 @@ class TestFlextWebModels:
             debug_mode=False,
         )
         result = app.validate_business_rules()
-        assert result.is_failure
-        assert result.error is not None
-        assert "port" in result.error.lower() or "between" in result.error.lower()
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that(
+            "port" in (result.error or "").lower()
+            or "between" in (result.error or "").lower(),
+            eq=True,
+        )
 
     def test_application_update_metrics_invalid_type(self) -> None:
         """Test update_metrics with invalid type."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         invalid_metrics: Mapping[str, t.Scalar | None] = {"not_a_dict": "not_a_dict"}
         result = app.update_metrics(invalid_metrics)
-        assert result.is_failure
-        assert result.error is not None
-        assert "dict" in result.error.lower()
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that("dict" in (result.error or "").lower(), eq=True)
 
     def test_application_add_domain_event_invalid_type(self) -> None:
         """Test add_domain_event with invalid type raises ValidationError."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         invalid_event_type: str = str(123)
         result = app.add_domain_event(invalid_event_type)
-        assert result.is_failure
+        tm.fail(result)
 
     def test_application_add_domain_event_empty_string(self) -> None:
         """Test add_domain_event with empty string."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.add_domain_event("")
-        assert result.is_failure
-        assert result.error is not None
-        assert "empty" in result.error.lower()
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that("empty" in (result.error or "").lower(), eq=True)
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
@@ -428,7 +440,7 @@ class TestFlextWebModels:
             url="http://localhost:8080",
             headers="not_a_dict",
         )
-        assert result.is_failure
+        tm.fail(result)
 
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers type."""
@@ -438,14 +450,14 @@ class TestFlextWebModels:
             status_code=200,
             headers="not_a_dict",
         )
-        assert result.is_failure
+        tm.fail(result)
 
     def test_web_response_processing_time_seconds(self) -> None:
         """Test Web.AppResponse processing_time_seconds property."""
         response = m.Web.AppResponse(
             status_code=200, request_id="test-123", processing_time_ms=1500.0
         )
-        assert response.processing_time_seconds == pytest.approx(1.5)
+        tm.that(abs(response.processing_time_seconds - 1.5), lt=1e-9)
 
     def test_application_validate_name_max_length(self) -> None:
         """Test validate_name with max_length validation (lines 404-405)."""
@@ -458,59 +470,62 @@ class TestFlextWebModels:
         """Test validate_business_rules with valid data (line 525)."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.validate_business_rules()
-        assert result.is_success
-        assert result.value is True
+        tm.ok(result)
+        tm.that(result.value is True, eq=True)
 
     def test_create_web_app_validation_error(self) -> None:
         """Test create_web_app with validation error (lines 914-920)."""
         result = create_entry("web_app", name="ab", host="localhost", port=8080)
-        assert result.is_failure
-        assert result.error is not None
-        assert (
-            "Validation failed" in result.error
-            or "at least" in result.error
-            or "between" in result.error
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that(
+            (
+                "Validation failed" in result.error
+                or "at least" in result.error
+                or "between" in result.error
+            ),
+            eq=True,
         )
 
     def test_create_web_app_value_error(self) -> None:
         """Test create_web_app with ValueError (lines 914-920)."""
         result = create_entry("web_app", name="root", host="localhost", port=8080)
-        assert result.is_failure
+        tm.fail(result)
 
     def test_create_web_request_validation_error(self) -> None:
         """Test create_web_request with validation error (lines 961-967)."""
         result = create_entry("web_request", method="GET", url="")
-        assert result.is_failure, "Empty URL should cause validation failure"
-        assert result.error is not None
+        tm.fail(result), "Empty URL should cause validation failure"
+        tm.that(result.error is not None, eq=True)
 
     def test_create_web_response_validation_error(self) -> None:
         """Test create_web_response with validation error (lines 1008-1014)."""
         result = create_entry("web_response", request_id="test-123", status_code=999)
-        assert result.is_failure, "Invalid status code should cause validation failure"
-        assert result.error is not None
+        tm.fail(result), "Invalid status code should cause validation failure"
+        tm.that(result.error is not None, eq=True)
 
     def test_application_edge_cases(self) -> None:
         """Test Application model with edge cases."""
         max_name = "a" * 100
         result = create_entry("web_app", name=max_name, host="localhost", port=8080)
-        assert result.is_success
+        tm.ok(result)
         result = create_entry("web_app", name="a", host="localhost", port=8080)
-        assert result.is_failure
+        tm.fail(result)
         result = create_entry(
             "web_app", name="test_app-123_special", host="localhost", port=8080
         )
-        assert result.is_success
+        tm.ok(result)
 
     def test_application_invalid_cases(self) -> None:
         """Test Application model with invalid inputs."""
         result = create_entry("web_app", name="", host="localhost", port=8080)
-        assert result.is_failure
+        tm.fail(result)
         result = create_entry("web_app", name=None, host="localhost", port=8080)
-        assert result.is_failure
+        tm.fail(result)
         result = create_entry("web_app", name="test", host="localhost", port=0)
-        assert result.is_failure
+        tm.fail(result)
         result = create_entry("web_app", name="test", host="", port=8080)
-        assert result.is_failure
+        tm.fail(result)
 
     @pytest.mark.parametrize(
         ("name", "host", "port", "should_succeed"),
@@ -534,43 +549,39 @@ class TestFlextWebModels:
         """Test application creation with parametrized edge cases."""
         result = create_entry("web_app", name=name, host=host, port=port)
         if should_succeed:
-            assert result.is_success, (
-                f"Expected success for app '{name}', got: {result.error}"
-            )
+            tm.ok(result), (f"Expected success for app '{name}', got: {result.error}")
             app = result.value
-            assert isinstance(app, m.Web.Entity)
-            assert app.name == name
-            assert app.host == host
-            assert app.port == port
+            tm.that(isinstance(app, m.Web.Entity), eq=True)
+            tm.that(app.name, eq=name)
+            tm.that(app.host, eq=host)
+            tm.that(app.port, eq=port)
         else:
-            assert result.is_failure, (
-                f"Expected failure for app '{name}', but succeeded"
-            )
-            assert result.error is not None
+            tm.fail(result), (f"Expected failure for app '{name}', but succeeded")
+            tm.that(result.error is not None, eq=True)
 
     def test_extreme_edge_cases(self) -> None:
         """Test absolute extreme edge cases that might reveal bugs."""
         unicode_name = "测试应用_🚀_123"
         result = create_entry("web_app", name=unicode_name, host="localhost", port=8080)
-        assert result.is_success
+        tm.ok(result)
         result = create_entry("web_app", name="test", host="localhost", port=65535)
-        assert result.is_success
+        tm.ok(result)
         ipv6_host = "2001:db8::1"
         result = create_entry("web_app", name="test", host=ipv6_host, port=8080)
-        assert result.is_success or result.is_failure
+        tm.that(result.is_success or result.is_failure, eq=True)
         long_hostname = "a" * 253
         result = create_entry("web_app", name="test", host=long_hostname, port=8080)
-        assert result.is_success
+        tm.ok(result)
         result = create_entry("web_app", name="x", host="localhost", port=8080)
-        assert result.is_failure
+        tm.fail(result)
         max_name = "x" * 100
         result = create_entry("web_app", name=max_name, host="localhost", port=8080)
-        assert result.is_success
+        tm.ok(result)
         too_long_name = "x" * 101
         result = create_entry(
             "web_app", name=too_long_name, host="localhost", port=8080
         )
-        assert result.is_failure
+        tm.fail(result)
 
     def test_dangerous_patterns_rejection(self) -> None:
         """Test that dangerous patterns in names are properly rejected."""
@@ -588,32 +599,35 @@ class TestFlextWebModels:
             result = create_entry(
                 "web_app", name=dangerous_name, host="localhost", port=8080
             )
-            assert result.is_failure, (
-                f"Dangerous pattern '{dangerous_name}' should be rejected"
+            (
+                tm.fail(result),
+                (f"Dangerous pattern '{dangerous_name}' should be rejected"),
             )
 
     def test_application_add_domain_event_success(self) -> None:
         """Test add_domain_event with valid input."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.add_domain_event("TestEvent")
-        assert result.is_success
-        assert result.value is not None
-        assert hasattr(result.value, "event_type")
+        tm.ok(result)
+        tm.that(result.value is not None, eq=True)
+        tm.that(hasattr(result.value, "event_type"), eq=True)
 
     def test_application_add_domain_event_empty(self) -> None:
         """Test add_domain_event with empty string."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.add_domain_event("")
-        assert result.is_failure
-        assert result.error and "empty" in result.error.lower()
+        tm.fail(result)
+        tm.that(result.error and "empty" in (result.error or "").lower(), eq=True)
 
     def test_application_name_too_long(self) -> None:
         """Test application creation with name too long."""
         long_name = "a" * 101
         result = create_entry("web_app", name=long_name, host="localhost", port=8080)
-        assert result.is_failure
-        assert result.error and (
-            "100" in result.error or "between" in result.error.lower()
+        tm.fail(result)
+        tm.that(
+            result.error
+            and ("100" in result.error or "between" in (result.error or "").lower()),
+            eq=True,
         )
 
     def test_application_restart_invalid_state(self) -> None:
@@ -626,5 +640,7 @@ class TestFlextWebModels:
             status="maintenance",
         )
         result = app.restart()
-        assert result.is_failure
-        assert result.error and "Cannot restart in current state" in result.error
+        tm.fail(result)
+        tm.that(
+            result.error and "Cannot restart in current state" in result.error, eq=True
+        )

@@ -8,6 +8,7 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
+from flext_tests import tm
 
 from tests import m, u
 
@@ -17,36 +18,36 @@ class TestFlextWebUtilities:
 
     def test_utilities_inheritance(self) -> None:
         """Test that u inherits from u."""
-        assert hasattr(u, "generate_iso_timestamp")
-        assert hasattr(u, "safe_string")
+        tm.that(hasattr(u, "generate_iso_timestamp"), eq=True)
+        tm.that(hasattr(u, "safe_string"), eq=True)
 
     def test_slugify_method(self) -> None:
         """Test slugify method."""
         result = u.slugify("Test App Name")
-        assert result == "test-app-name"
+        tm.that(result, eq="test-app-name")
         result = u.slugify("Test@App#Name!")
-        assert result == "test-app-name"
+        tm.that(result, eq="test-app-name")
         result = u.slugify("Test   App    Name")
-        assert result == "test-app-name"
+        tm.that(result, eq="test-app-name")
         result = u.slugify("  Test App Name  ")
-        assert result == "test-app-name"
+        tm.that(result, eq="test-app-name")
 
     def test_format_app_id(self) -> None:
         """Test format_app_id method."""
         result = u.format_app_id("Test App")
-        assert result == "app_test-app"
+        tm.that(result, eq="app_test-app")
         result = u.format_app_id("Test@App#Name!")
-        assert result == "app_testappname"
+        tm.that(result, eq="app_testappname")
         with pytest.raises(ValueError):
             _ = u.format_app_id("")
 
     def test_app_creation_functionality(self) -> None:
         """Test app creation functionality."""
         app = m.Web.Entity(name="test-app", host="localhost", port=8080)
-        assert app.name == "test-app"
-        assert app.host == "localhost"
-        assert app.port == 8080
-        assert app.id is not None
+        tm.that(app.name, eq="test-app")
+        tm.that(app.host, eq="localhost")
+        tm.that(app.port, eq=8080)
+        tm.that(app.id is not None, eq=True)
 
     def test_validation_error_handling(self) -> None:
         """Test validation error handling."""
@@ -58,12 +59,12 @@ class TestFlextWebUtilities:
     def test_slugify_functionality(self) -> None:
         """Test slugify functionality."""
         slug = u.slugify("Test App Name")
-        assert isinstance(slug, str)
-        assert slug == "test-app-name"
+        tm.that(isinstance(slug, str), eq=True)
+        tm.that(slug, eq="test-app-name")
 
     def test_utilities_logging_integration(self) -> None:
         """Test u logging integration."""
-        assert hasattr(u, "generate_iso_timestamp")
+        tm.that(hasattr(u, "generate_iso_timestamp"), eq=True)
 
     def test_utilities_edge_cases(self) -> None:
         """Test u edge cases."""
@@ -72,16 +73,16 @@ class TestFlextWebUtilities:
         with pytest.raises(ValueError):
             _ = u.format_app_id("   ")
         result = u.format_app_id("Test@App#Name!")
-        assert result == "app_testappname"
+        tm.that(result, eq="app_testappname")
 
     def test_utilities_consistency(self) -> None:
         """Test u consistency."""
         result1 = u.format_app_id("Test App")
         result2 = u.format_app_id("Test App")
-        assert result1 == result2
+        tm.that(result1, eq=result2)
         result1 = u.format_app_id("Test App")
         result2 = u.format_app_id("Different App")
-        assert result1 != result2
+        tm.that(result1 != result2, eq=True)
 
     def test_format_app_id_safe_string_failure(self) -> None:
         """Test format_app_id when safe_string fails."""

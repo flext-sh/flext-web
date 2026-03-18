@@ -10,6 +10,7 @@ are not enforced. See: FlextSettings bypasses Field validation constraints.
 from __future__ import annotations
 
 import pytest
+from flext_tests import tm
 from pydantic import ValidationError
 
 from flext_web import FlextWebSettings
@@ -26,21 +27,21 @@ class TestFlextWebSettings:
         present and of correct type, not specific values.
         """
         config = FlextWebSettings()
-        assert config.host is not None
-        assert config.port is not None
-        assert config.app_name is not None
-        assert isinstance(config.app_name, str)
-        assert len(config.app_name) > 0
+        tm.that(config.host is not None, eq=True)
+        tm.that(config.port is not None, eq=True)
+        tm.that(config.app_name is not None, eq=True)
+        tm.that(isinstance(config.app_name, str), eq=True)
+        tm.that(len(config.app_name) > 0, eq=True)
 
     def test_initialization_with_custom_values(self) -> None:
         """Test FlextWebSettings initialization with custom values."""
         config = FlextWebSettings(
             host="0.0.0.0", port=3000, debug_mode=True, app_name="Test App"
         )
-        assert config.host == "0.0.0.0"
-        assert config.port == 3000
-        assert config.debug_mode is True
-        assert config.app_name == "Test App"
+        tm.that(config.host, eq="0.0.0.0")
+        tm.that(config.port, eq=3000)
+        tm.that(config.debug_mode is True, eq=True)
+        tm.that(config.app_name, eq="Test App")
 
     @pytest.mark.xfail(
         reason="FlextSettings bug: Field constraints not enforced", strict=False
@@ -57,7 +58,7 @@ class TestFlextWebSettings:
     def test_validation_port_range(self) -> None:
         """Test port validation within valid range."""
         config = FlextWebSettings(port=8080)
-        assert config.port == 8080
+        tm.that(config.port, eq=8080)
 
     @pytest.mark.xfail(
         reason="FlextSettings bug: Field constraints not enforced", strict=False
@@ -86,52 +87,52 @@ class TestFlextWebSettings:
     def test_validation_secret_key_valid(self) -> None:
         """Test secret key validation with valid key."""
         config = FlextWebSettings(secret_key="valid-secret-key-32-characters-long")
-        assert config.secret_key is not None
+        tm.that(config.secret_key is not None, eq=True)
 
     def test_ssl_configuration_valid(self) -> None:
         """Test SSL configuration with valid cert and key paths."""
         config = FlextWebSettings(
             ssl_enabled=False, ssl_cert_path=None, ssl_key_path=None
         )
-        assert config.ssl_enabled is False
+        tm.that(config.ssl_enabled is False, eq=True)
 
     def test_computed_fields(self) -> None:
         """Test computed fields."""
         config = FlextWebSettings(ssl_enabled=False)
-        assert config.protocol == "http"
+        tm.that(config.protocol, eq="http")
         config_https = FlextWebSettings(ssl_enabled=False)
-        assert config_https.protocol == "http"
+        tm.that(config_https.protocol, eq="http")
 
     def test_base_url_generation(self) -> None:
         """Test base URL generation."""
         config = FlextWebSettings(host="localhost", port=8080, ssl_enabled=False)
-        assert config.base_url == "http://localhost:8080"
+        tm.that(config.base_url, eq="http://localhost:8080")
 
     def test_validate_config_success(self) -> None:
         """Test config validation with Pydantic."""
         config = FlextWebSettings()
-        assert config.host is not None
-        assert config.port is not None
+        tm.that(config.host is not None, eq=True)
+        tm.that(config.port is not None, eq=True)
 
     def test_to_dict_method(self) -> None:
         """Test config to dict conversion using Pydantic model_dump."""
         config = FlextWebSettings(host="localhost", port=8080)
         config_dict = config.model_dump()
-        assert config_dict["host"] == "localhost"
-        assert config_dict["port"] == 8080
-        assert "debug_mode" in config_dict
+        tm.that(config_dict["host"], eq="localhost")
+        tm.that(config_dict["port"], eq=8080)
+        tm.that("debug_mode" in config_dict, eq=True)
 
     def test_create_web_config_factory(self) -> None:
         """Test web config direct instantiation with Pydantic."""
         config = FlextWebSettings(host="test", port=9000)
-        assert config.host == "test"
-        assert config.port == 9000
+        tm.that(config.host, eq="test")
+        tm.that(config.port, eq=9000)
 
     def test_create_web_config_class_method(self) -> None:
         """Test create_web_config class method."""
         result = FlextWebSettings.create_web_config()
-        assert result.is_success
+        tm.ok(result)
         config = result.value
-        assert isinstance(config, FlextWebSettings)
-        assert config.host is not None
-        assert config.port is not None
+        tm.that(isinstance(config, FlextWebSettings), eq=True)
+        tm.that(config.host is not None, eq=True)
+        tm.that(config.port is not None, eq=True)
