@@ -63,7 +63,7 @@ class TestFlextWebHandlers:
         error = ValueError("Invalid input")
         result: r[str] = r[str].fail(f"Validation error: {error}")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("Validation error" in result.error, eq=True)
 
     def test_processing_error_with_flext_result(self) -> None:
@@ -71,7 +71,7 @@ class TestFlextWebHandlers:
         error = RuntimeError("Processing failed")
         result: r[str] = r[str].fail(f"Operation failed: {error}")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("Operation failed" in result.error, eq=True)
 
     def test_app_registry_integration(self) -> None:
@@ -96,24 +96,24 @@ class TestFlextWebHandlers:
         handler = FlextWebHandlers.ApplicationHandler()
         result = handler.create("123", 8080, "localhost")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         result = handler.create("ab", 8080, "localhost")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("at least" in result.error, eq=True)
         result = handler.create("test-app", 8080, "")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("cannot be empty" in result.error, eq=True)
         result = handler.create("test-app", 8080, "localhost")
         tm.that(result.is_success or result.is_failure, eq=True)
         result = handler.create("test-app", 0, "localhost")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("at least" in result.error, eq=True)
         result = handler.create("test-app", 70000, "localhost")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("at most" in result.error, eq=True)
 
     def test_application_handler_start_app_not_found(self) -> None:
@@ -121,7 +121,7 @@ class TestFlextWebHandlers:
         handler = FlextWebHandlers.ApplicationHandler()
         result = handler.start_app("nonexistent-id")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("not found" in result.error, eq=True)
 
     def test_application_handler_stop_app_not_found(self) -> None:
@@ -129,7 +129,7 @@ class TestFlextWebHandlers:
         handler = FlextWebHandlers.ApplicationHandler()
         result = handler.stop_app("nonexistent-id")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("not found" in result.error, eq=True)
 
     def test_application_handler_start_stop_cycle(self) -> None:

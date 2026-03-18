@@ -62,7 +62,7 @@ def assert_result(
         assert_failure(result)
 
 
-def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
+def create_entry(entry_type: str, **kwargs: object) -> r[t.ContainerValue]:
     """Generalized entry creation function using flext-core patterns.
 
     This function replaces multiple specific create_* methods by providing
@@ -145,13 +145,26 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
         if not isinstance(url, str) or not isinstance(method, str):
             return r[t.ContainerValue].fail("Invalid parameters for web_request")
         try:
+            headers_dict: dict[str, str] = (
+                {}
+                if headers is None
+                else (headers if isinstance(headers, dict) else {})
+            )
+            body_value: dict[str, t.Scalar] | str | None = (
+                body if isinstance(body, (dict, str)) or body is None else None
+            )
+            query_params_dict: dict[str, t.Scalar] = (
+                {}
+                if query_params is None
+                else (query_params if isinstance(query_params, dict) else {})
+            )
             web_request_config = _WebRequestConfig(
                 url=url,
                 method=method,
-                headers={} if headers is None else headers,
-                body=body,
+                headers=headers_dict,
+                body=body_value,
                 timeout=float(timeout) if isinstance(timeout, (int, float)) else 30.0,
-                query_params={} if query_params is None else query_params,
+                query_params=query_params_dict,
                 client_ip=client_ip if isinstance(client_ip, str) else "127.0.0.1",
                 user_agent=user_agent if isinstance(user_agent, str) else "test-client",
             )
@@ -170,13 +183,21 @@ def create_entry(entry_type: str, **kwargs: t.Scalar) -> r[t.ContainerValue]:
         if not isinstance(status_code, int):
             return r[t.ContainerValue].fail("Invalid status_code for web_response")
         try:
+            headers_dict: dict[str, str] = (
+                {}
+                if headers is None
+                else (headers if isinstance(headers, dict) else {})
+            )
+            body_value: dict[str, t.Scalar] | str | None = (
+                body if isinstance(body, (dict, str)) or body is None else None
+            )
             web_response_config = _WebResponseConfig(
                 status_code=status_code,
                 request_id=request_id
                 if isinstance(request_id, str)
                 else "test-request",
-                headers={} if headers is None else headers,
-                body=body,
+                headers=headers_dict,
+                body=body_value,
                 elapsed_time=float(elapsed_time)
                 if isinstance(elapsed_time, (int, float))
                 else 0.0,

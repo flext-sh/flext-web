@@ -90,7 +90,8 @@ class TestFlextWebService:
         )
         authenticate_result = service.authenticate(credentials)
         tm.fail(authenticate_result)
-        tm.that(authenticate_result.error is not None, eq=True)
+        assert authenticate_result.error is not None
+        assert authenticate_result.error is not None
         tm.that("Authentication failed" in authenticate_result.error, eq=True)
 
     def test_authenticate_wrong_password(self) -> None:
@@ -99,7 +100,8 @@ class TestFlextWebService:
         credentials = m.Web.Credentials(username="testuser", password="wrongpassword")
         authenticate_result = service.authenticate(credentials)
         tm.fail(authenticate_result)
-        tm.that(authenticate_result.error is not None, eq=True)
+        assert authenticate_result.error is not None
+        assert authenticate_result.error is not None
         tm.that("Authentication failed" in authenticate_result.error, eq=True)
 
     def test_authenticate_invalid_input(self) -> None:
@@ -234,6 +236,7 @@ class TestFlextWebService:
         get_result = service.get_app("nonexistent-id")
         tm.fail(get_result)
         tm.that(get_result.error is not None, eq=True)
+        assert get_result.error is not None
         tm.that("not found" in get_result.error, eq=True)
 
     def test_get_app_invalid_id(self) -> None:
@@ -242,14 +245,14 @@ class TestFlextWebService:
         invalid_id = str(123)
         get_result = service.get_app(invalid_id)
         tm.fail(get_result)
-        tm.that(get_result.error is not None, eq=True)
+        assert get_result.error is not None
         tm.that(
             "must be a string" in get_result.error or "not found" in get_result.error,
             eq=True,
         )
         get_result = service.get_app("")
         tm.fail(get_result)
-        tm.that(get_result.error is not None, eq=True)
+        assert get_result.error is not None
         tm.that("cannot be empty" in get_result.error, eq=True)
 
     def test_start_app_success(self) -> None:
@@ -271,21 +274,19 @@ class TestFlextWebService:
         invalid_id = str(123)
         start_result = service.start_app(invalid_id)
         tm.fail(start_result)
-        tm.that(start_result.error is not None, eq=True)
+        assert start_result.error is not None
         tm.that(
-            (
-                "must be a string" in start_result.error
-                or "not found" in start_result.error
-            ),
+            "must be a string" in start_result.error
+            or "not found" in start_result.error,
             eq=True,
         )
         start_result = service.start_app("")
         tm.fail(start_result)
-        tm.that(start_result.error is not None, eq=True)
+        assert start_result.error is not None
         tm.that("cannot be empty" in start_result.error, eq=True)
         start_result = service.start_app("nonexistent-id")
         tm.fail(start_result)
-        tm.that(start_result.error is not None, eq=True)
+        assert start_result.error is not None
         tm.that("not found" in start_result.error, eq=True)
 
     def test_stop_app_success(self) -> None:
@@ -308,21 +309,18 @@ class TestFlextWebService:
         invalid_id = str(123)
         stop_result = service.stop_app(invalid_id)
         tm.fail(stop_result)
-        tm.that(stop_result.error is not None, eq=True)
+        assert stop_result.error is not None
         tm.that(
-            (
-                "must be a string" in stop_result.error
-                or "not found" in stop_result.error
-            ),
+            "must be a string" in stop_result.error or "not found" in stop_result.error,
             eq=True,
         )
         stop_result = service.stop_app("")
         tm.fail(stop_result)
-        tm.that(stop_result.error is not None, eq=True)
+        assert stop_result.error is not None
         tm.that("cannot be empty" in stop_result.error, eq=True)
         stop_result = service.stop_app("nonexistent-id")
         tm.fail(stop_result)
-        tm.that(stop_result.error is not None, eq=True)
+        assert stop_result.error is not None
         tm.that("not found" in stop_result.error, eq=True)
 
     def test_create_web_service_class_method(self) -> None:
@@ -382,6 +380,7 @@ class TestFlextWebService:
         get_result = service.get_entity("nonexistent-id")
         tm.fail(get_result)
         tm.that(get_result.error is not None, eq=True)
+        assert get_result.error is not None
         tm.that("not found" in get_result.error, eq=True)
 
     def test_get_entity_invalid_id(self) -> None:
@@ -390,14 +389,14 @@ class TestFlextWebService:
         invalid_id = str(123)
         get_result = service.get_entity(invalid_id)
         tm.fail(get_result)
-        tm.that(get_result.error is not None, eq=True)
+        assert get_result.error is not None
         tm.that(
             "must be a string" in get_result.error or "not found" in get_result.error,
             eq=True,
         )
         get_result = service.get_entity("")
         tm.fail(get_result)
-        tm.that(get_result.error is not None, eq=True)
+        assert get_result.error is not None
         tm.that("cannot be empty" in get_result.error, eq=True)
 
     def test_list_entities_success(self) -> None:
@@ -465,7 +464,7 @@ class TestFlextWebService:
         tm.ok(start_result1)
         start_result2 = service.start_service()
         tm.fail(start_result2)
-        tm.that(start_result2.error is not None, eq=True)
+        assert start_result2.error is not None
         tm.that("already running" in start_result2.error, eq=True)
 
     def test_stop_service_not_running(self) -> None:
@@ -474,6 +473,7 @@ class TestFlextWebService:
         stop_result = service.stop_service()
         tm.fail(stop_result)
         tm.that(stop_result.error is not None, eq=True)
+        assert stop_result.error is not None
         tm.that("not running" in stop_result.error, eq=True)
 
     def test_validate_business_rules_success(self) -> None:
@@ -490,7 +490,7 @@ class TestFlextWebService:
         service._routes_initialized = False
         result = service.validate_business_rules()
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("cannot be running without initialized routes" in result.error, eq=True)
 
     def test_validate_business_rules_running_without_middleware(self) -> None:
@@ -501,7 +501,7 @@ class TestFlextWebService:
         service._middleware_configured = False
         result = service.validate_business_rules()
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that(
             "cannot be running without configured middleware" in result.error, eq=True
         )

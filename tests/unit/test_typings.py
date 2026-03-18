@@ -51,7 +51,6 @@ class TestFlextWebModels:
         tm.that(request.method, eq="GET")
         response = m.Web.AppResponse(status_code=200, request_id="test-123")
         tm.that(response.status_code, eq=200)
-        tm.ok(response), "HTTP response should be successful"
 
     def test_app_data_functionality(self) -> None:
         """Test app data functionality."""
@@ -167,7 +166,9 @@ class TestFlextWebModels:
         result = process_request_data(request)
         tm.that(isinstance(result, dict), eq=True)
         tm.that(result["processed"] is True, eq=True)
+        assert isinstance(result["method"], str)
         tm.that(result["method"], eq="GET")
+        assert isinstance(result["url"], str)
         tm.that(result["url"], eq="http://localhost:8080/api/test")
 
     def test_create_http_request_invalid_method(self) -> None:
@@ -175,8 +176,8 @@ class TestFlextWebModels:
         result = t.create_http_request(
             url="http://localhost:8080", method="INVALID_METHOD"
         )
-        tm.fail(result), "Operation should fail"
-        tm.that(result.error is not None, eq=True)
+        tm.fail(result)
+        assert result.error is not None
         tm.that("Invalid HTTP method" in result.error, eq=True)
 
     def test_create_http_request_invalid_headers(self) -> None:

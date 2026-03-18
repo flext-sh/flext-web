@@ -5,8 +5,6 @@ Tests the web models functionality following flext standards.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-
 import pytest
 from flext_tests import tm
 from pydantic import ValidationError
@@ -99,7 +97,7 @@ class TestFlextWebModels:
         """Test WebApp status validation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         tm.that(app.status, eq="running")
-        with pytest.raises((ValidationError, TypeError)):
+        with pytest.raises(ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", status="invalid")
 
     def test_web_app_computed_fields(self) -> None:
@@ -139,7 +137,7 @@ class TestFlextWebModels:
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         result = app.start()
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("already running" in result.error, eq=True)
 
     def test_web_app_stop_success(self) -> None:
@@ -155,7 +153,7 @@ class TestFlextWebModels:
         app = m.Web.Entity(id="test-id", name="test-app", status="stopped")
         result = app.stop()
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that("not running" in result.error, eq=True)
 
     def test_web_app_restart_success(self) -> None:
@@ -169,7 +167,7 @@ class TestFlextWebModels:
     def test_web_app_metrics_update(self) -> None:
         """Test WebApp metrics update."""
         app = create_test_app()
-        metrics: dict[str, t.Scalar | None] = {"requests": 100, "errors": 5}
+        metrics: dict[str, t.Scalar] = {"requests": 100, "errors": 5}
         result = app.update_metrics(metrics)
         tm.ok(result)
         tm.that(result.value is True, eq=True)
@@ -217,6 +215,7 @@ class TestFlextWebModels:
         tm.that(request.method, eq="GET")
         tm.that(request.url, eq="http://localhost:8080/api/test")
         tm.that(request.headers["Content-Type"], eq="application/json")
+        assert isinstance(request.body, str)
         tm.that(request.body, eq='{"test": "data"}')
         tm.that(request.request_id is not None, eq=True)
         tm.that(request.timestamp is not None, eq=True)
@@ -232,6 +231,7 @@ class TestFlextWebModels:
         tm.that(response.request_id, eq="req-123")
         tm.that(response.status_code, eq=200)
         tm.that(response.headers["Content-Type"], eq="application/json")
+        assert isinstance(response.body, str)
         tm.that(response.body, eq='{"result": "success"}')
         tm.that(response.response_id is not None, eq=True)
         tm.that(response.timestamp is not None, eq=True)
@@ -411,7 +411,7 @@ class TestFlextWebModels:
     def test_application_update_metrics_invalid_type(self) -> None:
         """Test update_metrics with invalid type."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
-        invalid_metrics: Mapping[str, t.Scalar | None] = {"not_a_dict": "not_a_dict"}
+        invalid_metrics: dict[str, t.Scalar] = {"not_a_dict": "not_a_dict"}
         result = app.update_metrics(invalid_metrics)
         tm.fail(result)
         tm.that(result.error is not None, eq=True)
@@ -477,7 +477,7 @@ class TestFlextWebModels:
         """Test create_web_app with validation error (lines 914-920)."""
         result = create_entry("web_app", name="ab", host="localhost", port=8080)
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        assert result.error is not None
         tm.that(
             (
                 "Validation failed" in result.error
