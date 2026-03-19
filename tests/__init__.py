@@ -12,12 +12,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
-    from flext_web.decorators import d
-    from flext_web.exceptions import e
-    from flext_web.handlers import h
-    from flext_web.mixins import x
-    from flext_web.result import r
-    from flext_web.service import s
+    from flext_web import d, e, h, r, s, x
 
     from . import helpers as helpers, integration as integration, unit as unit
     from .conftest import (
@@ -108,10 +103,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "create_test_app": ("tests.conftest", "create_test_app"),
     "create_test_data": ("tests.conftest", "create_test_data"),
     "create_test_result": ("tests.conftest", "create_test_result"),
-    "d": ("flext_web.decorators", "d"),
+    "d": ("flext_web", "d"),
     "docker_manager": ("tests.conftest", "docker_manager"),
-    "e": ("flext_web.exceptions", "e"),
-    "h": ("flext_web.handlers", "h"),
+    "e": ("flext_web", "e"),
+    "h": ("flext_web", "h"),
     "helpers": ("tests.helpers", ""),
     "integration": ("tests.integration", ""),
     "invalid_app_data": ("tests.conftest", "invalid_app_data"),
@@ -120,19 +115,19 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "p": ("tests.protocols", "p"),
     "production_config": ("tests.conftest", "production_config"),
     "pytest_configure": ("tests.conftest", "pytest_configure"),
-    "r": ("flext_web.result", "r"),
+    "r": ("flext_web", "r"),
     "real_app": ("tests.conftest", "real_app"),
     "real_config": ("tests.conftest", "real_config"),
     "real_service": ("tests.conftest", "real_service"),
     "run_parameterized_test": ("tests.conftest", "run_parameterized_test"),
     "running_service": ("tests.conftest", "running_service"),
-    "s": ("flext_web.service", "s"),
+    "s": ("flext_web", "s"),
     "setup_test_environment": ("tests.conftest", "setup_test_environment"),
     "t": ("tests.typings", "t"),
     "test_app_data": ("tests.conftest", "test_app_data"),
     "u": ("tests.utilities", "u"),
     "unit": ("tests.unit", ""),
-    "x": ("flext_web.mixins", "x"),
+    "x": ("flext_web", "x"),
 }
 
 __all__ = [
