@@ -15,7 +15,7 @@ from typing import Annotated, override
 from flext_core import FlextModels, r, t, u
 from pydantic import BaseModel, Field, field_validator
 
-from flext_web.constants import FlextWebConstants as c
+from flext_web import c
 
 
 class FlextWebModels(FlextModels):
@@ -1014,7 +1014,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             body: Annotated[
-                str | object | None,
+                str | t.ContainerValue | None,
                 Field(
                     default=None,
                     description="Request body (optional for GET/HEAD)",
@@ -1058,7 +1058,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             body: Annotated[
-                str | object | None,
+                str | t.ContainerValue | None,
                 Field(
                     default=None,
                     description="Response body (optional for 204 No Content)",
@@ -1164,7 +1164,7 @@ class FlextWebModels(FlextModels):
             method: c.Web.Literals.HttpMethodLiteral,
             url: str,
             headers: dict[str, str] | None = None,
-            body: str | object | None = None,
+            body: str | t.ContainerValue | None = None,
         ) -> r[WebRequest]:
             """Create a web request model.
 
@@ -1204,7 +1204,7 @@ class FlextWebModels(FlextModels):
             request_id: str,
             status_code: int,
             headers: dict[str, str] | None = None,
-            body: str | object | None = None,
+            body: str | t.ContainerValue | None = None,
         ) -> r[WebResponse]:
             """Create a web response model.
 

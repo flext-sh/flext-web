@@ -43,11 +43,10 @@ from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
+from flext_web import t, u
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
-from flext_web.typings import t
-from flext_web.utilities import u
 
 
 class AppRuntimeInfo(TypedDict):

@@ -12,11 +12,11 @@ from fastapi import FastAPI
 from flext_core import FlextContainer, FlextLogger, r
 from pydantic import ValidationError
 
+from flext_web import t
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
 from flext_web.settings import FlextWebSettings
-from flext_web.typings import t
 
 
 class FlextWebApi:
