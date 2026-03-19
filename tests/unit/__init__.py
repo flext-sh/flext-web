@@ -13,21 +13,17 @@ if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
     from .test___init__ import TestFlextWebInit
-    from .test___main__ import (
-        TestFlextWebCliService,
-        TestFlextWebCliService as s,
-        TestMainFunction,
-    )
+    from .test___main__ import TestFlextWebCliService, TestMainFunction
     from .test_api import TestFlextWebApi
     from .test_app import TestFlextWebApp
     from .test_config import TestFlextWebSettings
-    from .test_constants import TestFlextWebConstants, TestFlextWebConstants as c
+    from .test_constants import TestFlextWebConstants
     from .test_fields import TestFlextWebFields
-    from .test_handlers import TestFlextWebHandlers, TestFlextWebHandlers as h
-    from .test_protocols import TestFlextWebProtocols, TestFlextWebProtocols as p
+    from .test_handlers import TestFlextWebHandlers
+    from .test_protocols import TestFlextWebProtocols
     from .test_services import TestFlextWebService
-    from .test_typings import TestFlextWebModels, TestFlextWebModels as m
-    from .test_utilities import TestFlextWebUtilities, TestFlextWebUtilities as u
+    from .test_typings import TestFlextWebModels
+    from .test_utilities import TestFlextWebUtilities
     from .test_version import TestFlextWebVersion, assert_version_info
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -46,12 +42,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextWebVersion": ("tests.unit.test_version", "TestFlextWebVersion"),
     "TestMainFunction": ("tests.unit.test___main__", "TestMainFunction"),
     "assert_version_info": ("tests.unit.test_version", "assert_version_info"),
-    "c": ("tests.unit.test_constants", "TestFlextWebConstants"),
-    "h": ("tests.unit.test_handlers", "TestFlextWebHandlers"),
-    "m": ("tests.unit.test_typings", "TestFlextWebModels"),
-    "p": ("tests.unit.test_protocols", "TestFlextWebProtocols"),
-    "s": ("tests.unit.test___main__", "TestFlextWebCliService"),
-    "u": ("tests.unit.test_utilities", "TestFlextWebUtilities"),
 }
 
 __all__ = [
@@ -70,12 +60,6 @@ __all__ = [
     "TestFlextWebVersion",
     "TestMainFunction",
     "assert_version_info",
-    "c",
-    "h",
-    "m",
-    "p",
-    "s",
-    "u",
 ]
 
 

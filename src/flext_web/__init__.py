@@ -16,6 +16,11 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
+    from flext_core.decorators import d
+    from flext_core.exceptions import e
+    from flext_core.mixins import x
+    from flext_core.result import r
+    from flext_core.service import s
     from flext_core.typings import FlextTypes
 
     from flext_web.__version__ import __all__
@@ -60,14 +65,19 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "__all__": ("flext_web.__version__", "__all__"),
     "c": ("flext_web.constants", "c"),
     "create_app": ("flext_web.protocols", "create_app"),
+    "d": ("flext_core.decorators", "d"),
+    "e": ("flext_core.exceptions", "e"),
     "h": ("flext_web.handlers", "FlextWebHandlers"),
     "list_apps": ("flext_web.protocols", "list_apps"),
     "m": ("flext_web.models", "m"),
     "p": ("flext_web.protocols", "p"),
+    "r": ("flext_core.result", "r"),
+    "s": ("flext_core.service", "s"),
     "start_app": ("flext_web.protocols", "start_app"),
     "stop_app": ("flext_web.protocols", "stop_app"),
     "t": ("flext_web.typings", "t"),
     "u": ("flext_web.utilities", "u"),
+    "x": ("flext_core.mixins", "x"),
 }
 
 __all__ = [
@@ -87,14 +97,19 @@ __all__ = [
     "__all__",
     "c",
     "create_app",
+    "d",
+    "e",
     "h",
     "list_apps",
     "m",
     "p",
+    "r",
+    "s",
     "start_app",
     "stop_app",
     "t",
     "u",
+    "x",
 ]
 
 
