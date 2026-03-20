@@ -22,14 +22,14 @@ if TYPE_CHECKING:
     from flext_web.__version__ import __all__
     from flext_web.api import FlextWebApi
     from flext_web.app import FlextWebApp
-    from flext_web.constants import FlextWebConstants, c
+    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
     from flext_web.handlers import FlextWebHandlers, FlextWebHandlers as h
-    from flext_web.models import FlextWebModels, m
+    from flext_web.models import FlextWebModels, FlextWebModels as m
     from flext_web.protocols import (
         FlextWebProtocols,
+        FlextWebProtocols as p,
         create_app,
         list_apps,
-        p,
         start_app,
         stop_app,
     )
@@ -37,12 +37,12 @@ if TYPE_CHECKING:
     from flext_web.settings import FlextWebSettings
     from flext_web.typings import (
         FlextWebTypes,
+        FlextWebTypes as t,
         _ApplicationConfig,
         _WebRequestConfig,
         _WebResponseConfig,
-        t,
     )
-    from flext_web.utilities import FlextWebUtilities, u
+    from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "FlextWebApi": ("flext_web.api", "FlextWebApi"),
@@ -59,20 +59,20 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "_WebRequestConfig": ("flext_web.typings", "_WebRequestConfig"),
     "_WebResponseConfig": ("flext_web.typings", "_WebResponseConfig"),
     "__all__": ("flext_web.__version__", "__all__"),
-    "c": ("flext_web.constants", "c"),
+    "c": ("flext_web.constants", "FlextWebConstants"),
     "create_app": ("flext_web.protocols", "create_app"),
     "d": ("flext_core", "d"),
     "e": ("flext_core", "e"),
     "h": ("flext_web.handlers", "FlextWebHandlers"),
     "list_apps": ("flext_web.protocols", "list_apps"),
-    "m": ("flext_web.models", "m"),
-    "p": ("flext_web.protocols", "p"),
+    "m": ("flext_web.models", "FlextWebModels"),
+    "p": ("flext_web.protocols", "FlextWebProtocols"),
     "r": ("flext_core", "r"),
     "s": ("flext_core", "s"),
     "start_app": ("flext_web.protocols", "start_app"),
     "stop_app": ("flext_web.protocols", "stop_app"),
-    "t": ("flext_web.typings", "t"),
-    "u": ("flext_web.utilities", "u"),
+    "t": ("flext_web.typings", "FlextWebTypes"),
+    "u": ("flext_web.utilities", "FlextWebUtilities"),
     "x": ("flext_core", "x"),
 }
 
