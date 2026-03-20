@@ -10,10 +10,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import sys
+from typing import TYPE_CHECKING
 
 from flext_core import FlextLogger, r
 
-from flext_web import FlextWebApi, FlextWebModels
+from flext_web.api import FlextWebApi
+
+if TYPE_CHECKING:
+    from flext_web import FlextWebModels
 
 
 class FlextWebCliService:
