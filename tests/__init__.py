@@ -12,7 +12,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
 
-    from flext_web import c, d, e, h, m, p, r, s, t, u, x
+    from flext_web import d, e, h, r, s, x
 
     from . import helpers as helpers, integration as integration, unit as unit
     from .conftest import (
@@ -36,16 +36,16 @@ if TYPE_CHECKING:
         setup_test_environment,
         test_app_data,
     )
-    from .constants import TestsFlextWebConstants
+    from .constants import TestsFlextWebConstants, TestsFlextWebConstants as c
     from .helpers.models import TestsModels
     from .helpers.protocols import TestsProtocols
     from .helpers.typings import TestsTypings
     from .helpers.utilities import TestsUtilities
     from .integration.test_examples import ExamplesFullFunctionalityTest, logger
-    from .models import TestsFlextWebModels
+    from .models import TestsFlextWebModels, TestsFlextWebModels as m
     from .port_manager import TestPortManager
-    from .protocols import TestsFlextWebProtocols
-    from .typings import TestsFlextWebTypes
+    from .protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p
+    from .typings import TestsFlextWebTypes, TestsFlextWebTypes as t
     from .unit.test___init__ import TestFlextWebInit
     from .unit.test___main__ import TestFlextWebCliService, TestMainFunction
     from .unit.test_api import TestFlextWebApi
@@ -59,7 +59,7 @@ if TYPE_CHECKING:
     from .unit.test_typings import TestFlextWebModels
     from .unit.test_utilities import TestFlextWebUtilities
     from .unit.test_version import TestFlextWebVersion, assert_version_info
-    from .utilities import TestsFlextWebUtilities
+    from .utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "ExamplesFullFunctionalityTest": (
@@ -94,7 +94,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "assert_result": ("tests.conftest", "assert_result"),
     "assert_success": ("tests.conftest", "assert_success"),
     "assert_version_info": ("tests.unit.test_version", "assert_version_info"),
-    "c": ("flext_web", "c"),
+    "c": ("tests.constants", "TestsFlextWebConstants"),
     "create_comprehensive_test_suite": (
         "tests.conftest",
         "create_comprehensive_test_suite",
@@ -111,8 +111,8 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "integration": ("tests.integration", ""),
     "invalid_app_data": ("tests.conftest", "invalid_app_data"),
     "logger": ("tests.integration.test_examples", "logger"),
-    "m": ("flext_web", "m"),
-    "p": ("flext_web", "p"),
+    "m": ("tests.models", "TestsFlextWebModels"),
+    "p": ("tests.protocols", "TestsFlextWebProtocols"),
     "production_config": ("tests.conftest", "production_config"),
     "pytest_configure": ("tests.conftest", "pytest_configure"),
     "r": ("flext_web", "r"),
@@ -123,9 +123,9 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "running_service": ("tests.conftest", "running_service"),
     "s": ("flext_web", "s"),
     "setup_test_environment": ("tests.conftest", "setup_test_environment"),
-    "t": ("flext_web", "t"),
+    "t": ("tests.typings", "TestsFlextWebTypes"),
     "test_app_data": ("tests.conftest", "test_app_data"),
-    "u": ("flext_web", "u"),
+    "u": ("tests.utilities", "TestsFlextWebUtilities"),
     "unit": ("tests.unit", ""),
     "x": ("flext_web", "x"),
 }
