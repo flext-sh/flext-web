@@ -13,9 +13,10 @@ from datetime import UTC, datetime
 from typing import Annotated, override
 
 from flext_core import FlextModels, r, t
-from flext_core.constants import c
 from flext_core.utilities import u
 from pydantic import BaseModel, Field, field_validator
+
+from flext_web.constants import FlextWebConstants as c
 
 
 class FlextWebModels(FlextModels):
