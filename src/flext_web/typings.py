@@ -13,9 +13,10 @@ from __future__ import annotations
 from typing import Annotated, Literal
 
 from flext_core import FlextTypes, r
+from flext_core.constants import c
+from flext_core.models import m
+from flext_core.utilities import u
 from pydantic import Field
-
-from flext_web import c, m, u
 
 HttpMethod = c.Web.Method
 type WebRequestDict = dict[

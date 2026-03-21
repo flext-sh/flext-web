@@ -15,8 +15,8 @@ from typing import override
 import flask
 from fastapi import FastAPI
 from flext_core import FlextLogger, FlextService, r
+from flext_core.typings import t
 
-from flext_web import t
 from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
 from flext_web.settings import FlextWebSettings

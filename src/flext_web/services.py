@@ -14,8 +14,12 @@ from collections.abc import MutableMapping
 from typing import override
 
 from flext_core import r, s
+from flext_core.constants import c
+from flext_core.models import m
+from flext_core.typings import t
+from flext_core.utilities import u
 
-from flext_web import FlextWebSettings, c, m, t, u
+from flext_web.settings import FlextWebSettings
 
 
 class FlextWebServices(s[bool]):

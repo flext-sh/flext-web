@@ -33,7 +33,7 @@ from flext_web import (
     _WebRequestConfig,
     _WebResponseConfig,
 )
-from tests import c, m, t
+from tests import c, m, t, u
 
 
 def assert_success(
@@ -554,7 +554,7 @@ def production_config() -> dict[str, str]:
 def docker_manager() -> Generator[tk]:
     """Provide tk instance for integration tests."""
     try:
-        yield tk(workspace_root=Path().absolute())
+        yield u.Tests.Docker(workspace_root=Path().absolute())
     except ImportError:
         pytest.skip("tk not available")
     except (ConnectionError, TimeoutError, OSError, RuntimeError) as e:

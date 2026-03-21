@@ -17,7 +17,7 @@ from flext_core import FlextLogger, r
 from flext_web.api import FlextWebApi
 
 if TYPE_CHECKING:
-    from flext_web import FlextWebModels
+    from flext_web.models import FlextWebModels
 
 
 class FlextWebCliService:

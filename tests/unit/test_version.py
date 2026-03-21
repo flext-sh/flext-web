@@ -5,7 +5,7 @@ Tests the version management functionality following flext standards.
 
 from __future__ import annotations
 
-from flext_tests import tm
+from flext_tests import u
 
 from flext_web.__version__ import (
     VERSION,
@@ -24,10 +24,10 @@ from flext_web.__version__ import (
 
 def assert_version_info() -> None:
     """Helper to assert version info is valid."""
-    tm.that(isinstance(__version__, str), eq=True)
-    tm.that(isinstance(__version_info__, tuple), eq=True)
-    tm.that(len(__version_info__) > 0, eq=True)
-    tm.that(isinstance(VERSION, FlextWebVersion), eq=True)
+    u.Tests.Matchers.that(isinstance(__version__, str), eq=True)
+    u.Tests.Matchers.that(isinstance(__version_info__, tuple), eq=True)
+    u.Tests.Matchers.that(len(__version_info__) > 0, eq=True)
+    u.Tests.Matchers.that(isinstance(VERSION, FlextWebVersion), eq=True)
 
 
 class TestFlextWebVersion:
@@ -47,40 +47,42 @@ class TestFlextWebVersion:
                 url="https://github.com/flext/flext-web",
             )
         )
-        tm.that(version.version, eq="1.0.0")
-        tm.that(version.version_info, eq=(1, 0, 0))
+        u.Tests.Matchers.that(version.version, eq="1.0.0")
+        u.Tests.Matchers.that(version.version_info, eq=(1, 0, 0))
 
     def test_current_version(self) -> None:
         """Test current version retrieval."""
         current = FlextWebVersion.current()
-        tm.that(isinstance(current.version, str), eq=True)
-        tm.that(isinstance(current.version_info, tuple), eq=True)
-        tm.that(len(current.version_info) > 0, eq=True)
+        u.Tests.Matchers.that(isinstance(current.version, str), eq=True)
+        u.Tests.Matchers.that(isinstance(current.version_info, tuple), eq=True)
+        u.Tests.Matchers.that(len(current.version_info) > 0, eq=True)
 
     def test_version_globals(self) -> None:
         """Test global version variables."""
         assert_version_info()
-        tm.that(VERSION.version, eq=__version__)
-        tm.that(VERSION.version_info, eq=__version_info__)
+        u.Tests.Matchers.that(VERSION.version, eq=__version__)
+        u.Tests.Matchers.that(VERSION.version_info, eq=__version_info__)
 
     def test_version_format(self) -> None:
         """Test version format is valid."""
         version_parts = __version__.split(".")
-        tm.that(len(version_parts) >= 2, eq=True)
+        u.Tests.Matchers.that(len(version_parts) >= 2, eq=True)
         version_from_info = ".".join(str(part) for part in __version_info__)
-        tm.that(version_from_info, eq=__version__)
+        u.Tests.Matchers.that(version_from_info, eq=__version__)
 
     def test_metadata_constants(self) -> None:
         """Test that metadata constants are properly defined."""
-        tm.that(isinstance(__title__, str), eq=True)
-        tm.that(isinstance(__description__, str), eq=True)
-        tm.that(isinstance(__author__, str), eq=True)
-        tm.that(isinstance(__author_email__, str), eq=True)
-        tm.that(isinstance(__license__, str), eq=True)
-        tm.that(isinstance(__url__, str), eq=True)
-        tm.that(len(__title__) > 0, eq=True)
-        tm.that(len(__description__) > 0, eq=True)
-        tm.that(len(__author__) > 0, eq=True)
-        tm.that(isinstance(__license__, str), eq=True)
+        u.Tests.Matchers.that(isinstance(__title__, str), eq=True)
+        u.Tests.Matchers.that(isinstance(__description__, str), eq=True)
+        u.Tests.Matchers.that(isinstance(__author__, str), eq=True)
+        u.Tests.Matchers.that(isinstance(__author_email__, str), eq=True)
+        u.Tests.Matchers.that(isinstance(__license__, str), eq=True)
+        u.Tests.Matchers.that(isinstance(__url__, str), eq=True)
+        u.Tests.Matchers.that(len(__title__) > 0, eq=True)
+        u.Tests.Matchers.that(len(__description__) > 0, eq=True)
+        u.Tests.Matchers.that(len(__author__) > 0, eq=True)
+        u.Tests.Matchers.that(isinstance(__license__, str), eq=True)
         if __url__:
-            tm.that("://" in __url__ or __url__.startswith("http"), eq=True)
+            u.Tests.Matchers.that(
+                "://" in __url__ or __url__.startswith("http"), eq=True
+            )

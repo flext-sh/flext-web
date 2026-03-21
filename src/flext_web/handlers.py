@@ -11,9 +11,10 @@ from collections.abc import MutableMapping
 from typing import Annotated, override
 
 from flext_core import FlextLogger, FlextService, r
+from flext_core.constants import c
+from flext_core.models import m
+from flext_core.utilities import u
 from pydantic import BaseModel, Field
-
-from flext_web import c, m, u
 
 __all__ = ["FlextWebHandlers"]
 
