@@ -20,7 +20,10 @@ if TYPE_CHECKING:
     from .test_examples import ExamplesFullFunctionalityTest, logger, main
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
-    "ExamplesFullFunctionalityTest": ("tests.integration.test_examples", "ExamplesFullFunctionalityTest"),
+    "ExamplesFullFunctionalityTest": (
+        "tests.integration.test_examples",
+        "ExamplesFullFunctionalityTest",
+    ),
     "logger": ("tests.integration.test_examples", "logger"),
     "main": ("tests.integration.test_examples", "main"),
 }
