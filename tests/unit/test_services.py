@@ -12,7 +12,6 @@ from flext_tests import c, m, u
 from pydantic import ValidationError
 
 from flext_web import FlextWebServices as s, FlextWebSettings
-from tests import c, m
 
 
 class TestFlextWebService:
@@ -73,7 +72,7 @@ class TestFlextWebService:
         """Test successful authenticate."""
         service = s()
         credentials = m.Web.Credentials(
-            username="testuser", password=c.Test.DEFAULT_PASSWORD
+            username="testuser", password=c.DEFAULT_PASSWORD
         )
         authenticate_result = service.authenticate(credentials)
         u.Tests.Matchers.ok(authenticate_result), "Authentication should succeed"
@@ -86,7 +85,7 @@ class TestFlextWebService:
         """Test authenticate with invalid credentials."""
         service = s()
         credentials = m.Web.Credentials(
-            username=c.Test.NONEXISTENT_USERNAME, password="wrongpassword"
+            username=c.NONEXISTENT_USERNAME, password="wrongpassword"
         )
         authenticate_result = service.authenticate(credentials)
         u.Tests.Matchers.fail(authenticate_result)

@@ -10,8 +10,6 @@ from unittest.mock import patch
 import pytest
 from flext_tests import m, u
 
-from tests import m, u
-
 
 class TestFlextWebUtilities:
     """Test suite for u unified class."""

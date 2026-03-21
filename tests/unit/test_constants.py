@@ -9,8 +9,6 @@ from collections.abc import Mapping
 
 from flext_tests import c, u
 
-from tests import c
-
 
 class TestFlextWebConstants:
     """Test suite for c class."""

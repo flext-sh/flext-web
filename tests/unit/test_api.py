@@ -15,7 +15,7 @@ from flext_tests import c, m, u
 from pydantic import ValidationError
 
 from flext_web import FlextWebApi, FlextWebSettings
-from tests import c, create_test_result, m
+from tests import create_test_result
 
 
 class TestFlextWebApi:

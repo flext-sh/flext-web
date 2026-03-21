@@ -15,10 +15,6 @@ from flext_web.typings import (
     _WebRequestConfig,
     _WebResponseConfig,
 )
-from tests import (
-    m,
-    t,
-)
 
 
 class TestFlextWebModels:

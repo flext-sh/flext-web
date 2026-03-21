@@ -9,7 +9,6 @@ import pytest
 from flext_tests import m, u
 
 from flext_web import __main__
-from tests import m
 
 
 class TestFlextWebCliService:

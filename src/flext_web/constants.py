@@ -142,7 +142,7 @@ class FlextWebConstants(FlextConstants):
         class WebDefaults:
             """Default bootstrap values for web services."""
 
-            HOST: Final[str] = FlextConstants.Network.LOCALHOST
+            HOST: Final[str] = FlextConstants.LOCALHOST
             PORT: Final[int] = 8080
             APP_NAME: Final[str] = "FLEXT Web"
             ENVIRONMENT: Final[str] = "development"

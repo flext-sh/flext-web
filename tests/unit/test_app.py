@@ -10,7 +10,6 @@ from fastapi.testclient import TestClient
 from flext_tests import c, m, u
 
 from flext_web import FlextWebApp, FlextWebSettings
-from tests import c, m
 
 
 class TestFlextWebApp:

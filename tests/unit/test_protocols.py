@@ -14,8 +14,6 @@ from fastapi import FastAPI
 from flext_core import r
 from flext_tests import c, p, t, u
 
-from tests import c, p, t
-
 _WebAppManagerBase = p.Web.TestBases._WebAppManagerBase
 _WebConnectionBase = p.Web.TestBases._WebConnectionBase
 _WebFrameworkInterfaceBase = p.Web.TestBases._WebFrameworkInterfaceBase

@@ -9,7 +9,7 @@ import pytest
 from flext_tests import c, m, t, u
 from pydantic import ValidationError
 
-from tests import c, create_entry, create_test_app, m, t
+from tests import create_entry, create_test_app
 
 
 class TestFlextWebModels:

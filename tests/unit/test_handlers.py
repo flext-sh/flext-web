@@ -9,7 +9,6 @@ from flext_core import r
 from flext_tests import m, u
 
 from flext_web import FlextWebHandlers
-from tests import m
 
 
 class TestFlextWebHandlers:

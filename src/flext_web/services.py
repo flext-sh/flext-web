@@ -47,10 +47,10 @@ class FlextWebServices(s[bool]):
                                          failure contains error message
 
             """
-            if credentials.username == c.Test.NONEXISTENT_USERNAME:
+            if credentials.username == c.NONEXISTENT_USERNAME:
                 return r[m.Web.AuthResponse].fail("Authentication failed")
 
-            if credentials.password != c.Test.DEFAULT_PASSWORD:
+            if credentials.password != c.DEFAULT_PASSWORD:
                 return r[m.Web.AuthResponse].fail("Authentication failed")
 
             auth_response = m.Web.AuthResponse(

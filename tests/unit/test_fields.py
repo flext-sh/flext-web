@@ -8,7 +8,6 @@ from __future__ import annotations
 from flext_tests import c, m, u
 
 from flext_web import FlextWebSettings
-from tests import c, m
 
 
 class TestFlextWebFields:
