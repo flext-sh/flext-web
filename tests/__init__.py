@@ -41,7 +41,7 @@ if TYPE_CHECKING:
     from .helpers.protocols import TestsProtocols
     from .helpers.typings import TestsTypings
     from .helpers.utilities import TestsUtilities
-    from .integration.test_examples import ExamplesFullFunctionalityTest, logger
+    from .integration.test_examples import ExamplesFullFunctionalityTest, logger, main
     from .models import TestsFlextWebModels, TestsFlextWebModels as m
     from .port_manager import TestPortManager
     from .protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p
@@ -62,10 +62,7 @@ if TYPE_CHECKING:
     from .utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
-    "ExamplesFullFunctionalityTest": (
-        "tests.integration.test_examples",
-        "ExamplesFullFunctionalityTest",
-    ),
+    "ExamplesFullFunctionalityTest": ("tests.integration.test_examples", "ExamplesFullFunctionalityTest"),
     "TestFlextWebApi": ("tests.unit.test_api", "TestFlextWebApi"),
     "TestFlextWebApp": ("tests.unit.test_app", "TestFlextWebApp"),
     "TestFlextWebCliService": ("tests.unit.test___main__", "TestFlextWebCliService"),
@@ -95,10 +92,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "assert_success": ("tests.conftest", "assert_success"),
     "assert_version_info": ("tests.unit.test_version", "assert_version_info"),
     "c": ("tests.constants", "TestsFlextWebConstants"),
-    "create_comprehensive_test_suite": (
-        "tests.conftest",
-        "create_comprehensive_test_suite",
-    ),
+    "create_comprehensive_test_suite": ("tests.conftest", "create_comprehensive_test_suite"),
     "create_entry": ("tests.conftest", "create_entry"),
     "create_test_app": ("tests.conftest", "create_test_app"),
     "create_test_data": ("tests.conftest", "create_test_data"),
@@ -112,6 +106,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "invalid_app_data": ("tests.conftest", "invalid_app_data"),
     "logger": ("tests.integration.test_examples", "logger"),
     "m": ("tests.models", "TestsFlextWebModels"),
+    "main": ("tests.integration.test_examples", "main"),
     "p": ("tests.protocols", "TestsFlextWebProtocols"),
     "production_config": ("tests.conftest", "production_config"),
     "pytest_configure": ("tests.conftest", "pytest_configure"),
@@ -175,6 +170,7 @@ __all__ = [
     "invalid_app_data",
     "logger",
     "m",
+    "main",
     "p",
     "production_config",
     "pytest_configure",
