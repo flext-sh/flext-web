@@ -237,7 +237,7 @@ class TestFlextWebModels:
             _ = _WebRequestConfig(
                 url="http://localhost:8080",
                 method="GET",
-                headers="invalid",  # type: ignore[arg-type]
+                headers="invalid",
             )
 
     def test_create_web_request_invalid_query_params(self) -> None:
@@ -246,7 +246,7 @@ class TestFlextWebModels:
             _ = _WebRequestConfig(
                 url="http://localhost:8080",
                 method="GET",
-                query_params="invalid",  # type: ignore[arg-type]
+                query_params="invalid",
             )
 
     def test_create_web_request_exception_handling(self) -> None:
@@ -267,7 +267,7 @@ class TestFlextWebModels:
             _ = _WebResponseConfig(
                 status_code=200,
                 request_id="test-123",
-                headers="invalid",  # type: ignore[arg-type]
+                headers="invalid",
             )
 
     def test_create_web_response_exception_handling(self) -> None:
@@ -352,14 +352,14 @@ class TestFlextWebModels:
             _ = _WebRequestConfig(
                 url="http://localhost:8080",
                 method="GET",
-                headers=None,  # type: ignore[arg-type]
-                query_params=None,  # type: ignore[arg-type]
+                headers=None,
+                query_params=None,
             )
 
     def test_create_web_response_with_none_headers(self) -> None:
         """Test create_web_response with None headers."""
         with pytest.raises(ValidationError):
-            _ = _WebResponseConfig(status_code=200, request_id="test-123", headers=None)  # type: ignore[arg-type]
+            _ = _WebResponseConfig(status_code=200, request_id="test-123", headers=None)
 
     def test_types_config_initialization(self) -> None:
         """Test TypesConfig initialization with all parameters."""
