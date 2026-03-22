@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import MutableMapping
-from typing import override
+from typing import ClassVar, override
 
 from flext_core import FlextLogger, FlextService, r
 from flext_core.utilities import u
@@ -34,8 +34,8 @@ class FlextWebHandlers(FlextService[bool]):
     "one class per module" architectural requirement.
     """
 
-    SystemInfo = m.Web.SystemInfo
-    HealthStatus = m.Web.HealthStatus
+    SystemInfo: ClassVar[type[m.Web.SystemInfo]] = m.Web.SystemInfo
+    HealthStatus: ClassVar[type[m.Web.HealthStatus]] = m.Web.HealthStatus
 
     class ApplicationHandler:
         """CQRS command handler for web application lifecycle management.

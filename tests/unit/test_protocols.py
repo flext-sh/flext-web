@@ -12,7 +12,11 @@ import flask
 import pytest
 from fastapi import FastAPI
 from flext_core import r
-from flext_tests import c, p, t, u
+from flext_tests import u
+
+from tests.constants import c
+from tests.protocols import p
+from tests.typings import t
 
 _WebAppManagerBase = p.Web.TestBases._WebAppManagerBase
 _WebConnectionBase = p.Web.TestBases._WebConnectionBase
