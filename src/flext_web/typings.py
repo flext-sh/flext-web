@@ -19,16 +19,6 @@ from pydantic import Field
 from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
 
-HttpMethod = c.Web.Method
-type WebRequestDict = dict[
-    str,
-    str | int | bool | list[str] | dict[str, str | int | bool],
-]
-type WebResponseDict = dict[
-    str,
-    str | int | bool | list[str] | dict[str, str | int | bool],
-]
-
 
 class _ApplicationConfig(m.Web.EntityConfig):
     name: Annotated[
@@ -106,8 +96,12 @@ class FlextWebTypes(FlextTypes):
         """
 
         ConfigValue = str | int | bool | list[str]
-        type RequestDict = WebRequestDict
-        type ResponseDict = WebResponseDict
+        type RequestDict = dict[
+            str, str | int | bool | list[str] | dict[str, str | int | bool]
+        ]
+        type ResponseDict = dict[
+            str, str | int | bool | list[str] | dict[str, str | int | bool]
+        ]
         HttpMethodLiteral = Literal[
             "GET",
             "POST",
@@ -150,8 +144,12 @@ class FlextWebTypes(FlextTypes):
     class WebCore:
         """Compatibility namespace for request/response dict aliases."""
 
-        type RequestDict = WebRequestDict
-        type ResponseDict = WebResponseDict
+        type RequestDict = dict[
+            str, str | int | bool | list[str] | dict[str, str | int | bool]
+        ]
+        type ResponseDict = dict[
+            str, str | int | bool | list[str] | dict[str, str | int | bool]
+        ]
 
     class Types:
         """Type system aliases for flext-web Removed redundant aliases."""
@@ -166,9 +164,8 @@ class FlextWebTypes(FlextTypes):
     class Data:
         """Data type definitions for FlextService compatibility."""
 
-        type WebResponseDict = dict[
-            str,
-            str | int | bool | list[str] | dict[str, str | int | bool],
+        type ResponseDict = dict[
+            str, str | int | bool | list[str] | dict[str, str | int | bool]
         ]
 
     class WebConfigDict(m.Web.EntityConfig):
