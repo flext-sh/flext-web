@@ -14,12 +14,12 @@ from collections.abc import MutableMapping
 from typing import override
 
 from flext_core import r, s
-from flext_core.constants import c
-from flext_core.models import m
-from flext_core.typings import t
 from flext_core.utilities import u
 
+from flext_web.constants import FlextWebConstants as c
+from flext_web.models import FlextWebModels as m
 from flext_web.settings import FlextWebSettings
+from flext_web.typings import FlextWebTypes as t
 
 
 class FlextWebServices(s[bool]):
@@ -120,7 +120,7 @@ class FlextWebServices(s[bool]):
             )
             return r[m.Web.EntityData].ok(ready_response)
 
-        def get(self, entity_id: str) -> r[m.Web.EntityData]:
+        def get_entity(self, entity_id: str) -> r[m.Web.EntityData]:
             """Get entity - fail fast if not found.
 
             Args:
@@ -359,7 +359,7 @@ class FlextWebServices(s[bool]):
     def get_entity(self, entity_id: str) -> r[m.Web.EntityData]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
-            lambda service: service.get(entity_id),
+            lambda service: service.get_entity(entity_id),
         )
 
     def health_check(self) -> r[t.WebCore.ResponseDict]:

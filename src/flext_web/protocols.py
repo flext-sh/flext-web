@@ -39,7 +39,6 @@ import flask
 import uvicorn
 from fastapi import FastAPI
 from flext_core import FlextProtocols, r
-from flext_core.typings import t
 from flext_core.utilities import u
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
@@ -48,6 +47,7 @@ from werkzeug.serving import BaseWSGIServer
 from flext_web.app import FlextWebApp
 from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
+from flext_web.typings import FlextWebTypes as t
 
 
 class AppRuntimeInfo(TypedDict):
