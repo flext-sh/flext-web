@@ -153,7 +153,7 @@ print(f'App created: {app.name}')
 
 - `make test` - cannot import modules to test
 - `make validate` - includes testing
-- object actual usage of the library
+- t.NormalizedValue actual usage of the library
 
 ### Quality Impact
 

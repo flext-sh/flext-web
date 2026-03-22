@@ -62,7 +62,7 @@ def assert_result(
         assert_failure(result)
 
 
-def create_entry(entry_type: str, **kwargs: object) -> r[t.ContainerValue]:
+def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerValue]:
     """Generalized entry creation function using flext-core patterns.
 
     This function replaces multiple specific create_* methods by providing
@@ -234,7 +234,9 @@ def create_entry(entry_type: str, **kwargs: object) -> r[t.ContainerValue]:
     raise ValueError(msg)
 
 
-def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, object]:
+def create_test_data(
+    data_type: str, **kwargs: t.Scalar
+) -> dict[str, t.NormalizedValue]:
     """Create test data for tests.
 
     This function provides a standardized way to create test data,
@@ -249,7 +251,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, object]:
 
     """
     if data_type == "app_data":
-        app_data: dict[str, object] = {
+        app_data: dict[str, t.NormalizedValue] = {
             "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
@@ -259,7 +261,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, object]:
         })
         return app_data
     if data_type == "entity_data":
-        entity_data: dict[str, object] = {
+        entity_data: dict[str, t.NormalizedValue] = {
             "id": "test-entity",
             "name": "Test Entity",
         }
@@ -268,7 +270,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, object]:
         })
         return entity_data
     if data_type == "config_data":
-        config_data: dict[str, object] = {
+        config_data: dict[str, t.NormalizedValue] = {
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
             "debug": True,
@@ -278,7 +280,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, object]:
         })
         return config_data
     if data_type == "request_data":
-        request_data: dict[str, object] = {
+        request_data: dict[str, t.NormalizedValue] = {
             "method": c.Web.Tests.TestHttp.TEST_METHOD,
             "url": f"http://{c.Web.Tests.TestWeb.DEFAULT_HOST}:{c.Web.Tests.TestWeb.DEFAULT_PORT}",
             "headers": {"Content-Type": c.Web.Tests.TestHttp.TEST_CONTENT_TYPE},
@@ -288,7 +290,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, object]:
         })
         return request_data
     if data_type == "response_data":
-        response_data: dict[str, object] = {
+        response_data: dict[str, t.NormalizedValue] = {
             "status_code": 200,
             "request_id": "test-123",
         }
@@ -365,7 +367,7 @@ def create_test_result(
 
 
 def run_parameterized_test(
-    test_cases: list[tuple[object, ...]],
+    test_cases: list[tuple[t.NormalizedValue, ...]],
     test_function: Callable[..., r[t.ContainerValue]],
     expected_results: list[bool],
     test_name: str = "parameterized_test",

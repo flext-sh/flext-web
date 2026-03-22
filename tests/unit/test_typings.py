@@ -156,7 +156,9 @@ class TestFlextWebModels:
     def test_type_usage_patterns(self) -> None:
         """Test that types follow expected usage patterns."""
 
-        def process_request_data(request: t.HttpRequest) -> dict[str, object]:
+        def process_request_data(
+            request: t.HttpRequest,
+        ) -> dict[str, t.NormalizedValue]:
             return {"processed": True, "method": request.method, "url": request.url}
 
         request = t.HttpRequest(url="http://localhost:8080/api/test", method="GET")
