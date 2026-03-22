@@ -1,7 +1,4 @@
-"""Test protocol definitions for flext-web.
-
-Provides TestsFlextWebProtocols, combining p with
-FlextWebProtocols for test-specific protocol definitions.
+"""Test protocols for flext-web.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -9,29 +6,20 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import p
+from flext_tests import FlextTestsProtocols
 
 from flext_web import FlextWebProtocols
 
 
-class TestsFlextWebProtocols(p, FlextWebProtocols):
-    """Test protocols combining p and FlextWebProtocols.
-
-    Provides access to:
-    - p.Tests.Docker.* (from p)
-    - p.Tests.Factory.* (from p)
-    - p.Web.* (from FlextWebProtocols)
-    """
+class FlextWebTestProtocols(FlextTestsProtocols, FlextWebProtocols):
+    """Test protocols for flext-web."""
 
     class Web(FlextWebProtocols.Web):
-        """Web-specific test protocols."""
+        """Web domain test protocols."""
 
         class Tests:
-            """Project-specific test protocols.
-
-            Extends Tests Web-specific protocols.
-            """
+            """Test-specific protocols."""
 
 
-p = TestsFlextWebProtocols
-__all__ = ["TestsFlextWebProtocols", "p"]
+p = FlextWebTestProtocols
+__all__ = ["FlextWebTestProtocols", "p"]

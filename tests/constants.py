@@ -1,11 +1,4 @@
-"""Constants for flext-web tests.
-
-Provides TestsFlextWebConstants, extending c with flext-web-specific
-constants using COMPOSITION INHERITANCE.
-
-Inheritance hierarchy:
-- c (flext_tests) - Provides .Tests.* namespace
-- FlextWebConstants (production) - Provides .Web.* namespace
+"""Test constants for flext-web.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -15,41 +8,19 @@ from __future__ import annotations
 
 from typing import Final
 
-from flext_tests import c
+from flext_tests import FlextTestsConstants
 
 from flext_web import FlextWebConstants
 
 
-class TestsFlextWebConstants(c, FlextWebConstants):
-    """Constants for flext-web tests using COMPOSITION INHERITANCE.
-
-    MANDATORY: Inherits from BOTH:
-    1. c - for test infrastructure (.Tests.*)
-    2. FlextWebConstants - for domain constants (.Web.*)
-
-    Access patterns:
-    - c.Tests.Docker.* (container testing)
-    - c.Tests.Matcher.* (assertion messages)
-    - c.Tests.Factory.* (test data generation)
-    - c.Web.* (domain constants from production)
-    - c.Web.Tests.TestWeb.* (project-specific test data)
-    - c.Web.Tests.TestPort.* (port allocation for test isolation)
-
-    Rules:
-    - NEVER duplicate constants from c or FlextWebConstants
-    - Only flext-web-specific test constants allowed (not generic for other projects)
-    - All generic constants come from c
-    - All production constants come from FlextWebConstants
-    """
+class FlextWebTestConstants(FlextTestsConstants, FlextWebConstants):
+    """Test constants for flext-web."""
 
     class Web(FlextWebConstants.Web):
-        """Project-specific test protocols.
-
-        Extends p.Tests with Web-specific protocols.
-        """
+        """Web domain test constants."""
 
         class Tests:
-            """Tests Web-specific test protocols."""
+            """Test-specific constants."""
 
             class Paths:
                 """Test path constants."""
@@ -85,7 +56,6 @@ class TestsFlextWebConstants(c, FlextWebConstants):
 
                 These type aliases reuse production Literals from FlextWebConstants.Web
                 to ensure consistency between tests and production code.
-                All Literal types are at FlextWebConstants.Web.Literals namespace.
                 """
 
                 type HttpMethodLiteral = (
@@ -110,5 +80,5 @@ class TestsFlextWebConstants(c, FlextWebConstants):
                 type SameSiteLiteral = FlextWebConstants.Web.Literals.SameSiteLiteral
 
 
-c = TestsFlextWebConstants
-__all__ = ["TestsFlextWebConstants", "c"]
+c = FlextWebTestConstants
+__all__ = ["FlextWebTestConstants", "c"]

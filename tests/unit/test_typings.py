@@ -6,7 +6,7 @@ Tests the unified m class following flext standards.
 from __future__ import annotations
 
 import pytest
-from flext_tests import m, t, tm
+from flext_tests import tm
 from pydantic import ValidationError
 
 from flext_web import FlextWebSettings
@@ -15,6 +15,7 @@ from flext_web.typings import (
     _WebRequestConfig,
     _WebResponseConfig,
 )
+from tests import m, t
 
 
 class TestFlextWebModels:

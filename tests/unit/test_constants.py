@@ -7,7 +7,9 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from flext_tests import c, tm
+from flext_tests import tm
+
+from tests import c
 
 
 class TestFlextWebConstants:

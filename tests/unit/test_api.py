@@ -11,11 +11,11 @@ which may override Field defaults in test environments.
 from __future__ import annotations
 
 import pytest
-from flext_tests import c, m, tm
+from flext_tests import tm
 from pydantic import ValidationError
 
 from flext_web import FlextWebApi, FlextWebSettings
-from tests import create_test_result
+from tests import c, create_test_result, m
 
 
 class TestFlextWebApi:

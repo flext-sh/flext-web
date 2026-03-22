@@ -7,9 +7,10 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from flext_tests import c, m, tm
+from flext_tests import tm
 
 from flext_web import FlextWebApp, FlextWebSettings
+from tests import c, m
 
 
 class TestFlextWebApp:

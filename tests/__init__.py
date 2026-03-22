@@ -11,8 +11,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
     from flext_core.typings import FlextTypes
-
-    from flext_web import d, e, h, r, s, x
+    from flext_tests import d, e, h, r, s, x
 
     from . import helpers as helpers, integration as integration, unit as unit
     from .conftest import (
@@ -36,16 +35,16 @@ if TYPE_CHECKING:
         setup_test_environment,
         test_app_data,
     )
-    from .constants import TestsFlextWebConstants, TestsFlextWebConstants as c
+    from .constants import FlextWebTestConstants, FlextWebTestConstants as c
     from .helpers.models import TestsModels
     from .helpers.protocols import TestsProtocols
     from .helpers.typings import TestsTypings
     from .helpers.utilities import TestsUtilities
     from .integration.test_examples import ExamplesFullFunctionalityTest, logger, main
-    from .models import TestsFlextWebModels, TestsFlextWebModels as m
+    from .models import FlextWebTestModels, FlextWebTestModels as m
     from .port_manager import TestPortManager
-    from .protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p
-    from .typings import TestsFlextWebTypes, TestsFlextWebTypes as t
+    from .protocols import FlextWebTestProtocols, FlextWebTestProtocols as p
+    from .typings import FlextWebTestTypes, FlextWebTestTypes as t
     from .unit.test___init__ import TestFlextWebInit
     from .unit.test___main__ import TestFlextWebCliService, TestMainFunction
     from .unit.test_api import TestFlextWebApi
@@ -59,13 +58,18 @@ if TYPE_CHECKING:
     from .unit.test_typings import TestFlextWebModels
     from .unit.test_utilities import TestFlextWebUtilities
     from .unit.test_version import TestFlextWebVersion, assert_version_info
-    from .utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
+    from .utilities import FlextWebTestUtilities, FlextWebTestUtilities as u
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "ExamplesFullFunctionalityTest": (
         "tests.integration.test_examples",
         "ExamplesFullFunctionalityTest",
     ),
+    "FlextWebTestConstants": ("tests.constants", "FlextWebTestConstants"),
+    "FlextWebTestModels": ("tests.models", "FlextWebTestModels"),
+    "FlextWebTestProtocols": ("tests.protocols", "FlextWebTestProtocols"),
+    "FlextWebTestTypes": ("tests.typings", "FlextWebTestTypes"),
+    "FlextWebTestUtilities": ("tests.utilities", "FlextWebTestUtilities"),
     "TestFlextWebApi": ("tests.unit.test_api", "TestFlextWebApi"),
     "TestFlextWebApp": ("tests.unit.test_app", "TestFlextWebApp"),
     "TestFlextWebCliService": ("tests.unit.test___main__", "TestFlextWebCliService"),
@@ -81,11 +85,6 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TestFlextWebVersion": ("tests.unit.test_version", "TestFlextWebVersion"),
     "TestMainFunction": ("tests.unit.test___main__", "TestMainFunction"),
     "TestPortManager": ("tests.port_manager", "TestPortManager"),
-    "TestsFlextWebConstants": ("tests.constants", "TestsFlextWebConstants"),
-    "TestsFlextWebModels": ("tests.models", "TestsFlextWebModels"),
-    "TestsFlextWebProtocols": ("tests.protocols", "TestsFlextWebProtocols"),
-    "TestsFlextWebTypes": ("tests.typings", "TestsFlextWebTypes"),
-    "TestsFlextWebUtilities": ("tests.utilities", "TestsFlextWebUtilities"),
     "TestsModels": ("tests.helpers.models", "TestsModels"),
     "TestsProtocols": ("tests.helpers.protocols", "TestsProtocols"),
     "TestsTypings": ("tests.helpers.typings", "TestsTypings"),
@@ -94,7 +93,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "assert_result": ("tests.conftest", "assert_result"),
     "assert_success": ("tests.conftest", "assert_success"),
     "assert_version_info": ("tests.unit.test_version", "assert_version_info"),
-    "c": ("tests.constants", "TestsFlextWebConstants"),
+    "c": ("tests.constants", "FlextWebTestConstants"),
     "create_comprehensive_test_suite": (
         "tests.conftest",
         "create_comprehensive_test_suite",
@@ -103,36 +102,41 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "create_test_app": ("tests.conftest", "create_test_app"),
     "create_test_data": ("tests.conftest", "create_test_data"),
     "create_test_result": ("tests.conftest", "create_test_result"),
-    "d": ("flext_web", "d"),
+    "d": ("flext_tests", "d"),
     "docker_manager": ("tests.conftest", "docker_manager"),
-    "e": ("flext_web", "e"),
-    "h": ("flext_web", "h"),
+    "e": ("flext_tests", "e"),
+    "h": ("flext_tests", "h"),
     "helpers": ("tests.helpers", ""),
     "integration": ("tests.integration", ""),
     "invalid_app_data": ("tests.conftest", "invalid_app_data"),
     "logger": ("tests.integration.test_examples", "logger"),
-    "m": ("tests.models", "TestsFlextWebModels"),
+    "m": ("tests.models", "FlextWebTestModels"),
     "main": ("tests.integration.test_examples", "main"),
-    "p": ("tests.protocols", "TestsFlextWebProtocols"),
+    "p": ("tests.protocols", "FlextWebTestProtocols"),
     "production_config": ("tests.conftest", "production_config"),
     "pytest_configure": ("tests.conftest", "pytest_configure"),
-    "r": ("flext_web", "r"),
+    "r": ("flext_tests", "r"),
     "real_app": ("tests.conftest", "real_app"),
     "real_config": ("tests.conftest", "real_config"),
     "real_service": ("tests.conftest", "real_service"),
     "run_parameterized_test": ("tests.conftest", "run_parameterized_test"),
     "running_service": ("tests.conftest", "running_service"),
-    "s": ("flext_web", "s"),
+    "s": ("flext_tests", "s"),
     "setup_test_environment": ("tests.conftest", "setup_test_environment"),
-    "t": ("tests.typings", "TestsFlextWebTypes"),
+    "t": ("tests.typings", "FlextWebTestTypes"),
     "test_app_data": ("tests.conftest", "test_app_data"),
-    "u": ("tests.utilities", "TestsFlextWebUtilities"),
+    "u": ("tests.utilities", "FlextWebTestUtilities"),
     "unit": ("tests.unit", ""),
-    "x": ("flext_web", "x"),
+    "x": ("flext_tests", "x"),
 }
 
 __all__ = [
     "ExamplesFullFunctionalityTest",
+    "FlextWebTestConstants",
+    "FlextWebTestModels",
+    "FlextWebTestProtocols",
+    "FlextWebTestTypes",
+    "FlextWebTestUtilities",
     "TestFlextWebApi",
     "TestFlextWebApp",
     "TestFlextWebCliService",
@@ -148,11 +152,6 @@ __all__ = [
     "TestFlextWebVersion",
     "TestMainFunction",
     "TestPortManager",
-    "TestsFlextWebConstants",
-    "TestsFlextWebModels",
-    "TestsFlextWebProtocols",
-    "TestsFlextWebTypes",
-    "TestsFlextWebUtilities",
     "TestsModels",
     "TestsProtocols",
     "TestsTypings",

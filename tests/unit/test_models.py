@@ -6,10 +6,10 @@ Tests the web models functionality following flext standards.
 from __future__ import annotations
 
 import pytest
-from flext_tests import c, m, t
+from flext_tests import tm
 from pydantic import ValidationError
 
-from tests import create_entry, create_test_app
+from tests import c, create_entry, create_test_app, m, t
 
 
 class TestFlextWebModels:

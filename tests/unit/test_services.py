@@ -8,10 +8,12 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
-from flext_tests import c, m, tm
+from flext_tests import tm
 from pydantic import ValidationError
 
 from flext_web import FlextWebServices as s, FlextWebSettings
+from tests.constants import c
+from tests.models import m
 
 
 class TestFlextWebService:

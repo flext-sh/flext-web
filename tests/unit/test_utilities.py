@@ -8,7 +8,9 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
-from flext_tests import m, tm, u
+from flext_tests import tm, u
+
+from tests import m
 
 
 class TestFlextWebUtilities:
