@@ -6,7 +6,7 @@ Tests the web models functionality following flext standards.
 from __future__ import annotations
 
 import pytest
-from flext_tests import c, m, t, u
+from flext_tests import c, m, t
 from pydantic import ValidationError
 
 from tests import create_entry, create_test_app
@@ -17,25 +17,25 @@ class TestFlextWebModels:
 
     def test_web_app_status_enum(self) -> None:
         """Test WebAppStatus enum values from constants."""
-        u.Tests.Matchers.that(c.Web.Status.STOPPED.value, eq="stopped")
-        u.Tests.Matchers.that(c.Web.Status.STARTING.value, eq="starting")
-        u.Tests.Matchers.that(c.Web.Status.RUNNING.value, eq="running")
-        u.Tests.Matchers.that(c.Web.Status.STOPPING.value, eq="stopping")
-        u.Tests.Matchers.that(c.Web.Status.ERROR.value, eq="error")
-        u.Tests.Matchers.that(c.Web.Status.MAINTENANCE.value, eq="maintenance")
-        u.Tests.Matchers.that(c.Web.Status.DEPLOYING.value, eq="deploying")
+        tm.that(c.Web.Status.STOPPED.value, eq="stopped")
+        tm.that(c.Web.Status.STARTING.value, eq="starting")
+        tm.that(c.Web.Status.RUNNING.value, eq="running")
+        tm.that(c.Web.Status.STOPPING.value, eq="stopping")
+        tm.that(c.Web.Status.ERROR.value, eq="error")
+        tm.that(c.Web.Status.MAINTENANCE.value, eq="maintenance")
+        tm.that(c.Web.Status.DEPLOYING.value, eq="deploying")
 
     def test_web_app_initialization_with_defaults(self) -> None:
         """Test WebApp initialization with defaults."""
         app = create_test_app()
-        u.Tests.Matchers.that(app.id, eq="test-id")
-        u.Tests.Matchers.that(app.name, eq=c.Web.Tests.TestWeb.TEST_APP_NAME)
-        u.Tests.Matchers.that(app.host, eq=c.Web.WebDefaults.HOST)
-        u.Tests.Matchers.that(app.port, eq=c.Web.WebDefaults.PORT)
-        u.Tests.Matchers.that(app.status, eq="stopped")
-        u.Tests.Matchers.that(app.version, eq=1)
-        u.Tests.Matchers.that(app.environment, eq="development")
-        u.Tests.Matchers.that(app.debug_mode is False, eq=True)
+        tm.that(app.id, eq="test-id")
+        tm.that(app.name, eq=c.Web.Tests.TestWeb.TEST_APP_NAME)
+        tm.that(app.host, eq=c.Web.WebDefaults.HOST)
+        tm.that(app.port, eq=c.Web.WebDefaults.PORT)
+        tm.that(app.status, eq="stopped")
+        tm.that(app.version, eq=1)
+        tm.that(app.environment, eq="development")
+        tm.that(app.debug_mode is False, eq=True)
 
     def test_web_app_initialization_with_custom_values(self) -> None:
         """Test WebApp initialization with custom values."""
@@ -49,17 +49,17 @@ class TestFlextWebModels:
             environment="production",
             debug_mode=True,
         )
-        u.Tests.Matchers.that(app.host, eq="0.0.0.0")
-        u.Tests.Matchers.that(app.port, eq=3000)
-        u.Tests.Matchers.that(app.status, eq="running")
-        u.Tests.Matchers.that(app.version, eq=2)
-        u.Tests.Matchers.that(app.environment, eq="production")
-        u.Tests.Matchers.that(app.debug_mode is True, eq=True)
+        tm.that(app.host, eq="0.0.0.0")
+        tm.that(app.port, eq=3000)
+        tm.that(app.status, eq="running")
+        tm.that(app.version, eq=2)
+        tm.that(app.environment, eq="production")
+        tm.that(app.debug_mode is True, eq=True)
 
     def test_web_app_name_validation(self) -> None:
         """Test WebApp name validation."""
         app = m.Web.Entity(id="test-id", name="valid-app-name")
-        u.Tests.Matchers.that(app.name, eq="valid-app-name")
+        tm.that(app.name, eq="valid-app-name")
         with pytest.raises(ValidationError):
             _ = m.Web.Entity(id="test-id", name="ab")
         with pytest.raises(ValidationError):
@@ -87,7 +87,7 @@ class TestFlextWebModels:
     def test_web_app_port_validation(self) -> None:
         """Test WebApp port validation."""
         app = m.Web.Entity(id="test-id", name="test-app", port=8080)
-        u.Tests.Matchers.that(app.port, eq=8080)
+        tm.that(app.port, eq=8080)
         with pytest.raises(ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", port=0)
         with pytest.raises(ValidationError):
@@ -96,113 +96,113 @@ class TestFlextWebModels:
     def test_web_app_status_validation(self) -> None:
         """Test WebApp status validation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
-        u.Tests.Matchers.that(app.status, eq="running")
+        tm.that(app.status, eq="running")
         with pytest.raises(ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", status="invalid")
 
     def test_web_app_computed_fields(self) -> None:
         """Test WebApp computed fields."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
-        u.Tests.Matchers.that(app.is_running is True, eq=True)
-        u.Tests.Matchers.that(app.is_healthy is True, eq=True)
-        u.Tests.Matchers.that(app.can_start is False, eq=True)
-        u.Tests.Matchers.that(app.can_stop is True, eq=True)
-        u.Tests.Matchers.that(app.can_restart is True, eq=True)
+        tm.that(app.is_running is True, eq=True)
+        tm.that(app.is_healthy is True, eq=True)
+        tm.that(app.can_start is False, eq=True)
+        tm.that(app.can_stop is True, eq=True)
+        tm.that(app.can_restart is True, eq=True)
 
     def test_web_app_url_generation(self) -> None:
         """Test WebApp URL generation."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
-        u.Tests.Matchers.that(app.url, eq="http://localhost:8080")
+        tm.that(app.url, eq="http://localhost:8080")
         app_https = m.Web.Entity(
             id="test-id", name="test-app", host="localhost", port=443
         )
-        u.Tests.Matchers.that(app_https.url, eq="https://localhost:443")
+        tm.that(app_https.url, eq="https://localhost:443")
 
     def test_web_app_business_rules_validation(self) -> None:
         """Test WebApp business rules validation."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.validate_business_rules()
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
 
     def test_web_app_start_success(self) -> None:
         """Test WebApp start operation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="stopped")
         result = app.start()
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         started_app = result.value
-        u.Tests.Matchers.that(started_app.status, eq="running")
+        tm.that(started_app.status, eq="running")
 
     def test_web_app_start_already_running(self) -> None:
         """Test WebApp start when already running."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         result = app.start()
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         assert result.error is not None
-        u.Tests.Matchers.that("already running" in result.error, eq=True)
+        tm.that("already running" in result.error, eq=True)
 
     def test_web_app_stop_success(self) -> None:
         """Test WebApp stop operation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         result = app.stop()
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         stopped_app = result.value
-        u.Tests.Matchers.that(stopped_app.status, eq="stopped")
+        tm.that(stopped_app.status, eq="stopped")
 
     def test_web_app_stop_not_running(self) -> None:
         """Test WebApp stop when not running."""
         app = m.Web.Entity(id="test-id", name="test-app", status="stopped")
         result = app.stop()
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         assert result.error is not None
-        u.Tests.Matchers.that("not running" in result.error, eq=True)
+        tm.that("not running" in result.error, eq=True)
 
     def test_web_app_restart_success(self) -> None:
         """Test WebApp restart operation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         result = app.restart()
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         restarted_app = result.value
-        u.Tests.Matchers.that(restarted_app.status, eq="running")
+        tm.that(restarted_app.status, eq="running")
 
     def test_web_app_metrics_update(self) -> None:
         """Test WebApp metrics update."""
         app = create_test_app()
         metrics: dict[str, t.Scalar] = {"requests": 100, "errors": 5}
         result = app.update_metrics(metrics)
-        u.Tests.Matchers.ok(result)
-        u.Tests.Matchers.that(result.value is True, eq=True)
-        u.Tests.Matchers.that("requests" in app.metrics, eq=True)
-        u.Tests.Matchers.that("errors" in app.metrics, eq=True)
-        u.Tests.Matchers.that(app.metrics["requests"], eq=100)
-        u.Tests.Matchers.that(app.metrics["errors"], eq=5)
+        tm.ok(result)
+        tm.that(result.value is True, eq=True)
+        tm.that("requests" in app.metrics, eq=True)
+        tm.that("errors" in app.metrics, eq=True)
+        tm.that(app.metrics["requests"], eq=100)
+        tm.that(app.metrics["errors"], eq=5)
 
     def test_web_app_health_status(self) -> None:
         """Test WebApp health status."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         health = app.get_health_status()
-        u.Tests.Matchers.that("status" in health, eq=True)
-        u.Tests.Matchers.that("is_running" in health, eq=True)
-        u.Tests.Matchers.that("is_healthy" in health, eq=True)
-        u.Tests.Matchers.that("url" in health, eq=True)
-        u.Tests.Matchers.that(health["status"], eq="running")
+        tm.that("status" in health, eq=True)
+        tm.that("is_running" in health, eq=True)
+        tm.that("is_healthy" in health, eq=True)
+        tm.that("url" in health, eq=True)
+        tm.that(health["status"], eq="running")
 
     def test_web_app_to_dict(self) -> None:
         """Test WebApp to_dict conversion."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         app_dict = app.model_dump()
-        u.Tests.Matchers.that(app_dict["id"], eq="test-id")
-        u.Tests.Matchers.that(app_dict["name"], eq="test-app")
-        u.Tests.Matchers.that(app_dict["host"], eq="localhost")
-        u.Tests.Matchers.that(app_dict["port"], eq=8080)
+        tm.that(app_dict["id"], eq="test-id")
+        tm.that(app_dict["name"], eq="test-app")
+        tm.that(app_dict["host"], eq="localhost")
+        tm.that(app_dict["port"], eq=8080)
 
     def test_web_app_string_representation(self) -> None:
         """Test WebApp string representation."""
         app = m.Web.Entity(
             id="test-id", name="test-app", host="localhost", port=8080, status="running"
         )
-        u.Tests.Matchers.that("test-app" in str(app), eq=True)
-        u.Tests.Matchers.that("localhost:8080" in str(app), eq=True)
-        u.Tests.Matchers.that("running" in str(app), eq=True)
+        tm.that("test-app" in str(app), eq=True)
+        tm.that("localhost:8080" in str(app), eq=True)
+        tm.that("running" in str(app), eq=True)
 
     def test_web_request_initialization(self) -> None:
         """Test WebRequest initialization."""
@@ -212,13 +212,13 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"test": "data"}',
         )
-        u.Tests.Matchers.that(request.method, eq="GET")
-        u.Tests.Matchers.that(request.url, eq="http://localhost:8080/api/test")
-        u.Tests.Matchers.that(request.headers["Content-Type"], eq="application/json")
+        tm.that(request.method, eq="GET")
+        tm.that(request.url, eq="http://localhost:8080/api/test")
+        tm.that(request.headers["Content-Type"], eq="application/json")
         assert isinstance(request.body, str)
-        u.Tests.Matchers.that(request.body, eq='{"test": "data"}')
-        u.Tests.Matchers.that(request.request_id is not None, eq=True)
-        u.Tests.Matchers.that(request.timestamp is not None, eq=True)
+        tm.that(request.body, eq='{"test": "data"}')
+        tm.that(request.request_id is not None, eq=True)
+        tm.that(request.timestamp is not None, eq=True)
 
     def test_web_response_initialization(self) -> None:
         """Test WebResponse initialization."""
@@ -228,13 +228,13 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"result": "success"}',
         )
-        u.Tests.Matchers.that(response.request_id, eq="req-123")
-        u.Tests.Matchers.that(response.status_code, eq=200)
-        u.Tests.Matchers.that(response.headers["Content-Type"], eq="application/json")
+        tm.that(response.request_id, eq="req-123")
+        tm.that(response.status_code, eq=200)
+        tm.that(response.headers["Content-Type"], eq="application/json")
         assert isinstance(response.body, str)
-        u.Tests.Matchers.that(response.body, eq='{"result": "success"}')
-        u.Tests.Matchers.that(response.response_id is not None, eq=True)
-        u.Tests.Matchers.that(response.timestamp is not None, eq=True)
+        tm.that(response.body, eq='{"result": "success"}')
+        tm.that(response.response_id is not None, eq=True)
+        tm.that(response.timestamp is not None, eq=True)
 
     def test_web_app_config_initialization(self) -> None:
         """Test WebAppConfig initialization."""
@@ -245,35 +245,33 @@ class TestFlextWebModels:
             debug=True,
             secret_key="test-secret-key-32-characters-long",
         )
-        u.Tests.Matchers.that(config.app_name, eq="Test App")
-        u.Tests.Matchers.that(config.host, eq="localhost")
-        u.Tests.Matchers.that(config.port, eq=8080)
-        u.Tests.Matchers.that(config.debug is True, eq=True)
-        u.Tests.Matchers.that(
-            config.secret_key, eq="test-secret-key-32-characters-long"
-        )
+        tm.that(config.app_name, eq="Test App")
+        tm.that(config.host, eq="localhost")
+        tm.that(config.port, eq=8080)
+        tm.that(config.debug is True, eq=True)
+        tm.that(config.secret_key, eq="test-secret-key-32-characters-long")
 
     def test_app_config_initialization(self) -> None:
         """Test AppConfig initialization."""
         config = m.Web.AppConfig(
             title="Test API", version="1.0.0", description="Test API Description"
         )
-        u.Tests.Matchers.that(config.title, eq="Test API")
-        u.Tests.Matchers.that(config.version, eq="1.0.0")
-        u.Tests.Matchers.that(config.description, eq="Test API Description")
-        u.Tests.Matchers.that(config.docs_url, eq="/docs")
-        u.Tests.Matchers.that(config.redoc_url, eq="/redoc")
-        u.Tests.Matchers.that(config.openapi_url, eq="/openapi.json")
+        tm.that(config.title, eq="Test API")
+        tm.that(config.version, eq="1.0.0")
+        tm.that(config.description, eq="Test API Description")
+        tm.that(config.docs_url, eq="/docs")
+        tm.that(config.redoc_url, eq="/redoc")
+        tm.that(config.openapi_url, eq="/openapi.json")
 
     def test_create_web_app_factory(self) -> None:
         """Test create_web_app factory method."""
         result = create_entry("web_app", name="test-app", host="localhost", port=8080)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         app = result.value
-        u.Tests.Matchers.that(isinstance(app, m.Web.Entity), eq=True)
-        u.Tests.Matchers.that(app.name, eq="test-app")
-        u.Tests.Matchers.that(app.host, eq="localhost")
-        u.Tests.Matchers.that(app.port, eq=8080)
+        tm.that(isinstance(app, m.Web.Entity), eq=True)
+        tm.that(app.name, eq="test-app")
+        tm.that(app.host, eq="localhost")
+        tm.that(app.port, eq=8080)
 
     def test_create_web_request_factory(self) -> None:
         """Test create_web_request factory method."""
@@ -284,11 +282,11 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"test": "data"}',
         )
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         request = result.value
-        u.Tests.Matchers.that(isinstance(request, m.Web.AppRequest), eq=True)
-        u.Tests.Matchers.that(request.method, eq="POST")
-        u.Tests.Matchers.that(request.url, eq="http://localhost:8080/api/test")
+        tm.that(isinstance(request, m.Web.AppRequest), eq=True)
+        tm.that(request.method, eq="POST")
+        tm.that(request.url, eq="http://localhost:8080/api/test")
 
     def test_create_web_response_factory(self) -> None:
         """Test create_web_response factory method."""
@@ -299,53 +297,53 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"id": 1}',
         )
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         response = result.value
-        u.Tests.Matchers.that(isinstance(response, m.Web.AppResponse), eq=True)
-        u.Tests.Matchers.that(response.status_code, eq=201)
+        tm.that(isinstance(response, m.Web.AppResponse), eq=True)
+        tm.that(response.status_code, eq=201)
 
     def test_http_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
         request_with_body = m.Web.Request(
             url="http://localhost:8080", method="POST", body='{"data": "test"}'
         )
-        u.Tests.Matchers.that(request_with_body.has_body is True, eq=True)
+        tm.that(request_with_body.has_body is True, eq=True)
         request_without_body = m.Web.Request(
             url="http://localhost:8080", method="GET", body=None
         )
-        u.Tests.Matchers.that(request_without_body.has_body is False, eq=True)
+        tm.that(request_without_body.has_body is False, eq=True)
 
     def test_http_request_is_secure_property(self) -> None:
         """Test Web.Request is_secure property."""
         https_request = m.Web.Request(url="https://localhost:8080", method="GET")
-        u.Tests.Matchers.that(https_request.is_secure is True, eq=True)
+        tm.that(https_request.is_secure is True, eq=True)
         http_request = m.Web.Request(url="http://localhost:8080", method="GET")
-        u.Tests.Matchers.that(http_request.is_secure is False, eq=True)
+        tm.that(http_request.is_secure is False, eq=True)
 
     def test_http_response_is_success_property(self) -> None:
         """Test Web.Response is_success property."""
         success_response = m.Web.Response(status_code=200)
-        u.Tests.Matchers.that(success_response.is_success is True, eq=True)
+        tm.that(success_response.is_success is True, eq=True)
         error_response = m.Web.Response(status_code=404)
-        u.Tests.Matchers.that(error_response.is_success is False, eq=True)
+        tm.that(error_response.is_success is False, eq=True)
 
     def test_http_response_is_error_property(self) -> None:
         """Test Web.Response is_error property."""
         error_response = m.Web.Response(status_code=500)
-        u.Tests.Matchers.that(error_response.is_error is True, eq=True)
+        tm.that(error_response.is_error is True, eq=True)
         success_response = m.Web.Response(status_code=200)
-        u.Tests.Matchers.that(success_response.is_error is False, eq=True)
+        tm.that(success_response.is_error is False, eq=True)
 
     def test_web_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
         request_with_body = m.Web.Request(
             url="http://localhost:8080", method="POST", body='{"data": "test"}'
         )
-        u.Tests.Matchers.that(request_with_body.has_body is True, eq=True)
+        tm.that(request_with_body.has_body is True, eq=True)
         request_without_body = m.Web.Request(
             url="http://localhost:8080", method="GET", body=None
         )
-        u.Tests.Matchers.that(request_without_body.has_body is False, eq=True)
+        tm.that(request_without_body.has_body is False, eq=True)
 
     def test_application_validate_business_rules_short_name(self) -> None:
         """Test validate_business_rules with name too short."""
@@ -360,9 +358,9 @@ class TestFlextWebModels:
             debug_mode=False,
         )
         result = app.validate_business_rules()
-        u.Tests.Matchers.fail(result)
-        u.Tests.Matchers.that(result.error is not None, eq=True)
-        u.Tests.Matchers.that(
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that(
             "name" in (result.error or "").lower()
             or "at least" in (result.error or "").lower(),
             eq=True,
@@ -381,9 +379,9 @@ class TestFlextWebModels:
             debug_mode=False,
         )
         result = app.validate_business_rules()
-        u.Tests.Matchers.fail(result)
-        u.Tests.Matchers.that(result.error is not None, eq=True)
-        u.Tests.Matchers.that(
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that(
             "port" in (result.error or "").lower()
             or "between" in (result.error or "").lower(),
             eq=True,
@@ -402,9 +400,9 @@ class TestFlextWebModels:
             debug_mode=False,
         )
         result = app.validate_business_rules()
-        u.Tests.Matchers.fail(result)
-        u.Tests.Matchers.that(result.error is not None, eq=True)
-        u.Tests.Matchers.that(
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that(
             "port" in (result.error or "").lower()
             or "between" in (result.error or "").lower(),
             eq=True,
@@ -415,24 +413,24 @@ class TestFlextWebModels:
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         invalid_metrics: dict[str, t.Scalar] = {"not_a_dict": "not_a_dict"}
         result = app.update_metrics(invalid_metrics)
-        u.Tests.Matchers.fail(result)
-        u.Tests.Matchers.that(result.error is not None, eq=True)
-        u.Tests.Matchers.that("dict" in (result.error or "").lower(), eq=True)
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that("dict" in (result.error or "").lower(), eq=True)
 
     def test_application_add_domain_event_invalid_type(self) -> None:
         """Test add_domain_event with invalid type raises ValidationError."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         invalid_event_type: str = str(123)
         result = app.add_domain_event(invalid_event_type)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
 
     def test_application_add_domain_event_empty_string(self) -> None:
         """Test add_domain_event with empty string."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.add_domain_event("")
-        u.Tests.Matchers.fail(result)
-        u.Tests.Matchers.that(result.error is not None, eq=True)
-        u.Tests.Matchers.that("empty" in (result.error or "").lower(), eq=True)
+        tm.fail(result)
+        tm.that(result.error is not None, eq=True)
+        tm.that("empty" in (result.error or "").lower(), eq=True)
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
@@ -442,7 +440,7 @@ class TestFlextWebModels:
             url="http://localhost:8080",
             headers="not_a_dict",
         )
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
 
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers type."""
@@ -452,14 +450,14 @@ class TestFlextWebModels:
             status_code=200,
             headers="not_a_dict",
         )
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
 
     def test_web_response_processing_time_seconds(self) -> None:
         """Test Web.AppResponse processing_time_seconds property."""
         response = m.Web.AppResponse(
             status_code=200, request_id="test-123", processing_time_ms=1500.0
         )
-        u.Tests.Matchers.that(abs(response.processing_time_seconds - 1.5), lt=1e-9)
+        tm.that(abs(response.processing_time_seconds - 1.5), lt=1e-9)
 
     def test_application_validate_name_max_length(self) -> None:
         """Test validate_name with max_length validation (lines 404-405)."""
@@ -472,15 +470,15 @@ class TestFlextWebModels:
         """Test validate_business_rules with valid data (line 525)."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.validate_business_rules()
-        u.Tests.Matchers.ok(result)
-        u.Tests.Matchers.that(result.value is True, eq=True)
+        tm.ok(result)
+        tm.that(result.value is True, eq=True)
 
     def test_create_web_app_validation_error(self) -> None:
         """Test create_web_app with validation error (lines 914-920)."""
         result = create_entry("web_app", name="ab", host="localhost", port=8080)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         assert result.error is not None
-        u.Tests.Matchers.that(
+        tm.that(
             (
                 "Validation failed" in result.error
                 or "at least" in result.error
@@ -492,45 +490,45 @@ class TestFlextWebModels:
     def test_create_web_app_value_error(self) -> None:
         """Test create_web_app with ValueError (lines 914-920)."""
         result = create_entry("web_app", name="root", host="localhost", port=8080)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
 
     def test_create_web_request_validation_error(self) -> None:
         """Test create_web_request with validation error (lines 961-967)."""
         result = create_entry("web_request", method="GET", url="")
-        u.Tests.Matchers.fail(result), "Empty URL should cause validation failure"
-        u.Tests.Matchers.that(result.error is not None, eq=True)
+        tm.fail(result), "Empty URL should cause validation failure"
+        tm.that(result.error is not None, eq=True)
 
     def test_create_web_response_validation_error(self) -> None:
         """Test create_web_response with validation error (lines 1008-1014)."""
         result = create_entry("web_response", request_id="test-123", status_code=999)
         (
-            u.Tests.Matchers.fail(result),
+            tm.fail(result),
             "Invalid status code should cause validation failure",
         )
-        u.Tests.Matchers.that(result.error is not None, eq=True)
+        tm.that(result.error is not None, eq=True)
 
     def test_application_edge_cases(self) -> None:
         """Test Application model with edge cases."""
         max_name = "a" * 100
         result = create_entry("web_app", name=max_name, host="localhost", port=8080)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         result = create_entry("web_app", name="a", host="localhost", port=8080)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         result = create_entry(
             "web_app", name="test_app-123_special", host="localhost", port=8080
         )
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
 
     def test_application_invalid_cases(self) -> None:
         """Test Application model with invalid inputs."""
         result = create_entry("web_app", name="", host="localhost", port=8080)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         result = create_entry("web_app", name=None, host="localhost", port=8080)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         result = create_entry("web_app", name="test", host="localhost", port=0)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         result = create_entry("web_app", name="test", host="", port=8080)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
 
     @pytest.mark.parametrize(
         ("name", "host", "port", "should_succeed"),
@@ -555,44 +553,44 @@ class TestFlextWebModels:
         result = create_entry("web_app", name=name, host=host, port=port)
         if should_succeed:
             (
-                u.Tests.Matchers.ok(result),
+                tm.ok(result),
                 (f"Expected success for app '{name}', got: {result.error}"),
             )
             app = result.value
-            u.Tests.Matchers.that(isinstance(app, m.Web.Entity), eq=True)
-            u.Tests.Matchers.that(app.name, eq=name)
-            u.Tests.Matchers.that(app.host, eq=host)
-            u.Tests.Matchers.that(app.port, eq=port)
+            tm.that(isinstance(app, m.Web.Entity), eq=True)
+            tm.that(app.name, eq=name)
+            tm.that(app.host, eq=host)
+            tm.that(app.port, eq=port)
         else:
             (
-                u.Tests.Matchers.fail(result),
+                tm.fail(result),
                 (f"Expected failure for app '{name}', but succeeded"),
             )
-            u.Tests.Matchers.that(result.error is not None, eq=True)
+            tm.that(result.error is not None, eq=True)
 
     def test_extreme_edge_cases(self) -> None:
         """Test absolute extreme edge cases that might reveal bugs."""
         unicode_name = "测试应用_🚀_123"
         result = create_entry("web_app", name=unicode_name, host="localhost", port=8080)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         result = create_entry("web_app", name="test", host="localhost", port=65535)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         ipv6_host = "2001:db8::1"
         result = create_entry("web_app", name="test", host=ipv6_host, port=8080)
-        u.Tests.Matchers.that(result.is_success or result.is_failure, eq=True)
+        tm.that(result.is_success or result.is_failure, eq=True)
         long_hostname = "a" * 253
         result = create_entry("web_app", name="test", host=long_hostname, port=8080)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         result = create_entry("web_app", name="x", host="localhost", port=8080)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         max_name = "x" * 100
         result = create_entry("web_app", name=max_name, host="localhost", port=8080)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         too_long_name = "x" * 101
         result = create_entry(
             "web_app", name=too_long_name, host="localhost", port=8080
         )
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
 
     def test_dangerous_patterns_rejection(self) -> None:
         """Test that dangerous patterns in names are properly rejected."""
@@ -611,7 +609,7 @@ class TestFlextWebModels:
                 "web_app", name=dangerous_name, host="localhost", port=8080
             )
             (
-                u.Tests.Matchers.fail(result),
+                tm.fail(result),
                 (f"Dangerous pattern '{dangerous_name}' should be rejected"),
             )
 
@@ -619,25 +617,23 @@ class TestFlextWebModels:
         """Test add_domain_event with valid input."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.add_domain_event("TestEvent")
-        u.Tests.Matchers.ok(result)
-        u.Tests.Matchers.that(result.value is not None, eq=True)
-        u.Tests.Matchers.that(hasattr(result.value, "event_type"), eq=True)
+        tm.ok(result)
+        tm.that(result.value is not None, eq=True)
+        tm.that(hasattr(result.value, "event_type"), eq=True)
 
     def test_application_add_domain_event_empty(self) -> None:
         """Test add_domain_event with empty string."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.add_domain_event("")
-        u.Tests.Matchers.fail(result)
-        u.Tests.Matchers.that(
-            result.error and "empty" in (result.error or "").lower(), eq=True
-        )
+        tm.fail(result)
+        tm.that(result.error and "empty" in (result.error or "").lower(), eq=True)
 
     def test_application_name_too_long(self) -> None:
         """Test application creation with name too long."""
         long_name = "a" * 101
         result = create_entry("web_app", name=long_name, host="localhost", port=8080)
-        u.Tests.Matchers.fail(result)
-        u.Tests.Matchers.that(
+        tm.fail(result)
+        tm.that(
             result.error
             and ("100" in result.error or "between" in (result.error or "").lower()),
             eq=True,
@@ -653,7 +649,7 @@ class TestFlextWebModels:
             status="maintenance",
         )
         result = app.restart()
-        u.Tests.Matchers.fail(result)
-        u.Tests.Matchers.that(
+        tm.fail(result)
+        tm.that(
             result.error and "Cannot restart in current state" in result.error, eq=True
         )

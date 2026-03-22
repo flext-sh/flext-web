@@ -11,7 +11,7 @@ which may override Field defaults in test environments.
 from __future__ import annotations
 
 import pytest
-from flext_tests import c, m, u
+from flext_tests import c, m, tm
 from pydantic import ValidationError
 
 from flext_web import FlextWebApi, FlextWebSettings
@@ -24,58 +24,58 @@ class TestFlextWebApi:
     def test_initialization(self) -> None:
         """Test FlextWebApi initialization."""
         api = FlextWebApi()
-        u.Tests.Matchers.that(api is not None, eq=True)
-        u.Tests.Matchers.that(hasattr(api, "_container"), eq=True)
-        u.Tests.Matchers.that(hasattr(api, "_logger"), eq=True)
+        tm.that(api is not None, eq=True)
+        tm.that(hasattr(api, "_container"), eq=True)
+        tm.that(hasattr(api, "_logger"), eq=True)
 
     def test_create_fastapi_app_success(self) -> None:
         """Test successful FastAPI app creation."""
         result = FlextWebApi.create_fastapi_app()
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         app = result.value
-        u.Tests.Matchers.that(app is not None, eq=True)
+        tm.that(app is not None, eq=True)
 
     def test_create_fastapi_app_with_config(self) -> None:
         """Test FastAPI app creation with configuration."""
         config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
         result = FlextWebApi.create_fastapi_app(config)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         app = result.value
-        u.Tests.Matchers.that(app is not None, eq=True)
+        tm.that(app is not None, eq=True)
 
     def test_create_fastapi_app_with_invalid_config(self) -> None:
         """Test FastAPI app creation with invalid config - REAL validation."""
         try:
             invalid_config = m.Web.FastAPIAppConfig(title="", version="1.0.0")
             result = FlextWebApi.create_fastapi_app(invalid_config)
-            u.Tests.Matchers.that(result.is_failure or result.is_success, eq=True)
+            tm.that(result.is_failure or result.is_success, eq=True)
         except ValidationError:
             pass
 
     def test_create_http_config_success(self) -> None:
         """Test HTTP configuration creation."""
         result = FlextWebApi.create_http_config(host="localhost", port=8080, debug=True)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         config = result.value
-        u.Tests.Matchers.that(config.host, eq="localhost")
-        u.Tests.Matchers.that(config.port, eq=8080)
+        tm.that(config.host, eq="localhost")
+        tm.that(config.port, eq=8080)
 
     def test_create_http_config_with_none_debug(self) -> None:
         """Test HTTP configuration creation with debug=None."""
         result = FlextWebApi.create_http_config(host="localhost", port=8080, debug=None)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
 
     def test_create_http_config_edge_cases(self) -> None:
         """Test HTTP configuration creation with edge cases."""
         result = FlextWebApi.create_http_config(
             host="localhost", port=65535, debug=True
         )
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         result = FlextWebApi.create_http_config(host="localhost", port=1, debug=True)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         long_host = "a" * 253
         result = FlextWebApi.create_http_config(host=long_host, port=8080, debug=True)
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
 
     @pytest.mark.xfail(
         reason="FlextSettings bug: Field constraints not enforced", strict=False
@@ -87,13 +87,13 @@ class TestFlextWebApi:
         Actual: FlextSettings accepts invalid values (bug in flext-core)
         """
         result = FlextWebApi.create_http_config(host="localhost", port=-1, debug=True)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         result = FlextWebApi.create_http_config(
             host="localhost", port=65536, debug=True
         )
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
         result = FlextWebApi.create_http_config(host="", port=8080, debug=True)
-        u.Tests.Matchers.fail(result)
+        tm.fail(result)
 
     def test_http_config_result_consistency(self) -> None:
         """Test that HTTP config results follow r patterns.
@@ -105,20 +105,20 @@ class TestFlextWebApi:
         success_result = FlextWebApi.create_http_config(
             host="localhost", port=8080, debug=True
         )
-        u.Tests.Matchers.ok(success_result)
-        u.Tests.Matchers.that(success_result.value is not None, eq=True)
-        u.Tests.Matchers.that(success_result.error is None, eq=True)
+        tm.ok(success_result)
+        tm.that(success_result.value is not None, eq=True)
+        tm.that(success_result.error is None, eq=True)
         test_success = create_test_result(success=True, data="test")
         test_failure = create_test_result(success=False, error="test error")
-        u.Tests.Matchers.ok(test_success)
-        u.Tests.Matchers.that(test_success.value, eq="test")
-        u.Tests.Matchers.fail(test_failure)
-        u.Tests.Matchers.that(test_failure.error, eq="test error")
+        tm.ok(test_success)
+        tm.that(test_success.value, eq="test")
+        tm.fail(test_failure)
+        tm.that(test_failure.error, eq="test error")
 
     def test_create_http_config_with_defaults(self) -> None:
         """Test HTTP configuration creation with defaults."""
         result = FlextWebApi.create_http_config()
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
 
     @pytest.mark.parametrize(
         ("host", "port", "debug", "should_succeed"),
@@ -138,12 +138,12 @@ class TestFlextWebApi:
         result = FlextWebApi.create_http_config(host=host, port=port, debug=debug)
         if should_succeed:
             (
-                u.Tests.Matchers.ok(result),
+                tm.ok(result),
                 (f"Expected success for {host}:{port}, got: {result.error}"),
             )
             config = result.value
-            u.Tests.Matchers.that(config.host, eq=host)
-            u.Tests.Matchers.that(config.port, eq=port)
+            tm.that(config.host, eq=host)
+            tm.that(config.port, eq=port)
 
     @pytest.mark.xfail(
         reason="FlextSettings bug: Field constraints not enforced", strict=False
@@ -159,10 +159,10 @@ class TestFlextWebApi:
         """
         result = FlextWebApi.create_http_config(host=host, port=port, debug=True)
         (
-            u.Tests.Matchers.fail(result),
+            tm.fail(result),
             f"Expected failure for {host}:{port}, but succeeded",
         )
-        u.Tests.Matchers.that(result.error is not None, eq=True)
+        tm.that(result.error is not None, eq=True)
 
     def test_validate_http_config_success(self) -> None:
         """Test HTTP configuration validation."""
@@ -173,8 +173,8 @@ class TestFlextWebApi:
             secret_key=c.Web.WebDefaults.DEV_SECRET_KEY,
         )
         result = FlextWebApi.validate_http_config(config)
-        u.Tests.Matchers.ok(result)
-        u.Tests.Matchers.that(result.value is True, eq=True)
+        tm.ok(result)
+        tm.that(result.value is True, eq=True)
 
     @pytest.mark.xfail(
         reason="FlextSettings bug: Field constraints not enforced", strict=False
@@ -191,18 +191,18 @@ class TestFlextWebApi:
     def test_get_service_status(self) -> None:
         """Test service status retrieval."""
         result = FlextWebApi.get_service_status()
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         status = result.value
-        u.Tests.Matchers.that(isinstance(status, m.Web.ServiceResponse), eq=True)
-        u.Tests.Matchers.that("http_services_available" in status.capabilities, eq=True)
-        u.Tests.Matchers.that(status.service, eq="flext-web-api")
-        u.Tests.Matchers.that(status.status, eq="operational")
+        tm.that(isinstance(status, m.Web.ServiceResponse), eq=True)
+        tm.that("http_services_available" in status.capabilities, eq=True)
+        tm.that(status.service, eq="flext-web-api")
+        tm.that(status.status, eq="operational")
 
     def test_get_api_capabilities(self) -> None:
         """Test API capabilities retrieval."""
         result = FlextWebApi.get_api_capabilities()
-        u.Tests.Matchers.ok(result)
+        tm.ok(result)
         capabilities = result.value
-        u.Tests.Matchers.that(isinstance(capabilities, dict), eq=True)
-        u.Tests.Matchers.that("application_management" in capabilities, eq=True)
-        u.Tests.Matchers.that("service_management" in capabilities, eq=True)
+        tm.that(isinstance(capabilities, dict), eq=True)
+        tm.that("application_management" in capabilities, eq=True)
+        tm.that("service_management" in capabilities, eq=True)
