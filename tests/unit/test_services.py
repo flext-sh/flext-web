@@ -72,7 +72,7 @@ class TestFlextWebService:
         """Test successful authenticate."""
         service = s()
         credentials = m.Web.Credentials(
-            username="testuser", password=c.DEFAULT_PASSWORD
+            username="testuser", password=c.DEFAULT_TEST_CREDENTIAL
         )
         authenticate_result = service.authenticate(credentials)
         u.Tests.Matchers.ok(authenticate_result), "Authentication should succeed"
