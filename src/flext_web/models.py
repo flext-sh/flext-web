@@ -1320,6 +1320,31 @@ class FlextWebModels(FlextModels):
                 ),
             ]
 
+        class SystemInfo(BaseModel):
+            """System information response model."""
+
+            service_name: Annotated[str, Field(description="Service name")]
+            service_type: Annotated[str, Field(description="Service type")]
+            architecture: Annotated[str, Field(description="Architecture pattern")]
+            patterns: Annotated[list[str], Field(description="Design patterns used")]
+            integrations: Annotated[
+                list[str], Field(description="Integrated components")
+            ]
+            capabilities: Annotated[
+                list[str], Field(description="Service capabilities")
+            ]
+
+        class HealthStatus(BaseModel):
+            """Health status response model."""
+
+            status: Annotated[str, Field(description="Health status")]
+            service: Annotated[str, Field(description="Service name")]
+            version: Annotated[str, Field(description="Service version")]
+            timestamp: Annotated[str, Field(description="Status timestamp")]
+            components: Annotated[
+                dict[str, str], Field(description="Component statuses")
+            ]
+
 
 m = FlextWebModels
 

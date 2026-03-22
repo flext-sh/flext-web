@@ -8,16 +8,19 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import MutableMapping
-from typing import Annotated, override
+from typing import override
 
 from flext_core import FlextLogger, FlextService, r
 from flext_core.utilities import u
-from pydantic import BaseModel, Field
 
 from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
 
 __all__ = ["FlextWebHandlers"]
+
+# Canonical model aliases for this module
+SystemInfo = m.Web.SystemInfo
+HealthStatus = m.Web.HealthStatus
 
 
 class FlextWebHandlers(FlextService[bool]):
@@ -31,24 +34,8 @@ class FlextWebHandlers(FlextService[bool]):
     "one class per module" architectural requirement.
     """
 
-    class SystemInfo(BaseModel):
-        """System information response model."""
-
-        service_name: Annotated[str, Field(description="Service name")]
-        service_type: Annotated[str, Field(description="Service type")]
-        architecture: Annotated[str, Field(description="Architecture pattern")]
-        patterns: Annotated[list[str], Field(description="Design patterns used")]
-        integrations: Annotated[list[str], Field(description="Integrated components")]
-        capabilities: Annotated[list[str], Field(description="Service capabilities")]
-
-    class HealthStatus(BaseModel):
-        """Health status response model."""
-
-        status: Annotated[str, Field(description="Health status")]
-        service: Annotated[str, Field(description="Service name")]
-        version: Annotated[str, Field(description="Service version")]
-        timestamp: Annotated[str, Field(description="Status timestamp")]
-        components: Annotated[dict[str, str], Field(description="Component statuses")]
+    SystemInfo = m.Web.SystemInfo
+    HealthStatus = m.Web.HealthStatus
 
     class ApplicationHandler:
         """CQRS command handler for web application lifecycle management.
@@ -230,15 +217,15 @@ class FlextWebHandlers(FlextService[bool]):
         return app.stop()
 
     @classmethod
-    def handle_system_info(cls) -> r[FlextWebHandlers.SystemInfo]:
+    def handle_system_info(cls) -> r[m.Web.SystemInfo]:
         """Handle system information requests.
 
         Returns:
         r containing detailed system information.
 
         """
-        return r[FlextWebHandlers.SystemInfo].ok(
-            FlextWebHandlers.SystemInfo(
+        return r[m.Web.SystemInfo].ok(
+            m.Web.SystemInfo(
                 service_name="FLEXT Web Interface",
                 service_type="web_api",
                 architecture="flask_clean_architecture",
@@ -254,15 +241,15 @@ class FlextWebHandlers(FlextService[bool]):
         )
 
     @staticmethod
-    def handle_health_check() -> r[FlextWebHandlers.HealthStatus]:
+    def handle_health_check() -> r[m.Web.HealthStatus]:
         """Handle health check requests with system status.
 
         Returns:
         r containing health status information.
 
         """
-        return r[FlextWebHandlers.HealthStatus].ok(
-            FlextWebHandlers.HealthStatus(
+        return r[m.Web.HealthStatus].ok(
+            m.Web.HealthStatus(
                 status=c.Web.WebResponse.STATUS_HEALTHY,
                 service=c.Web.WebService.SERVICE_NAME,
                 version="0.9.0",
