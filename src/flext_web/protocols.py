@@ -239,18 +239,18 @@ class FlextWebProtocols(FlextProtocols):
                 """Register a URL route."""
                 ...
 
-        apps_registry: ClassVar[Mapping[str, t.WebCore.ResponseDict]] = {}
-        framework_instances: ClassVar[Mapping[str, flask.Flask | FastAPI]] = {}
-        app_runtimes: ClassVar[Mapping[str, AppRuntimeInfo]] = {}
-        service_state: ClassVar[Mapping[str, bool]] = {
+        apps_registry: ClassVar[dict[str, t.WebCore.ResponseDict]] = {}
+        framework_instances: ClassVar[dict[str, flask.Flask | FastAPI]] = {}
+        app_runtimes: ClassVar[dict[str, AppRuntimeInfo]] = {}
+        service_state: ClassVar[dict[str, bool]] = {
             "routes_initialized": False,
             "middleware_configured": False,
             "service_running": False,
         }
-        web_metrics: ClassVar[Mapping[str, int | str]] = {}
+        web_metrics: ClassVar[dict[str, int | str]] = {}
         template_config: ClassVar[t.WebCore.RequestDict] = {}
-        template_globals: ClassVar[Mapping[str, t.ContainerValue]] = {}
-        template_filters: ClassVar[Mapping[str, Callable[[str], str]]] = {}
+        template_globals: ClassVar[dict[str, t.ContainerValue]] = {}
+        template_filters: ClassVar[dict[str, Callable[[str], str]]] = {}
 
         @classmethod
         def _create_framework_app(
@@ -954,7 +954,7 @@ class FlextWebProtocols(FlextProtocols):
                 r containing list of matching entities or error details
 
                 """
-                matches: Sequence[t.WebCore.ResponseDict] = []
+                matches: list[t.WebCore.ResponseDict] = []
                 for app_data in FlextWebProtocols.Web.apps_registry.values():
                     is_match = True
                     for key, expected_value in criteria.items():

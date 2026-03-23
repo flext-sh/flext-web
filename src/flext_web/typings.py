@@ -95,10 +95,10 @@ class FlextWebTypes(FlextTypes):
         """
 
         ConfigValue = str | int | bool | Sequence[str]
-        type RequestDict = Mapping[
+        type RequestDict = dict[
             str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
-        type ResponseDict = Mapping[
+        type ResponseDict = dict[
             str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
         HttpMethodLiteral = Literal[
@@ -143,10 +143,10 @@ class FlextWebTypes(FlextTypes):
     class WebCore:
         """Compatibility namespace for request/response dict aliases."""
 
-        type RequestDict = Mapping[
+        type RequestDict = dict[
             str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
-        type ResponseDict = Mapping[
+        type ResponseDict = dict[
             str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
 
@@ -163,7 +163,7 @@ class FlextWebTypes(FlextTypes):
     class Data:
         """Data type definitions for FlextService compatibility."""
 
-        type ResponseDict = Mapping[
+        type ResponseDict = dict[
             str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
 

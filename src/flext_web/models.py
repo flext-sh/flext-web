@@ -573,7 +573,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             metrics: Annotated[
-                Mapping[str, t.Scalar],
+                dict[str, t.Scalar],
                 Field(
                     default_factory=dict,
                     description="Application metrics",
@@ -582,7 +582,7 @@ class FlextWebModels(FlextModels):
             # Note: domain_events is inherited from Entry with type Sequence[DomainEvent]
             # Use add_event() method to add events instead of direct list manipulation
             web_events: Annotated[
-                Sequence[str],
+                list[str],
                 Field(
                     default_factory=list,
                     description="Web-specific events (application lifecycle)",
