@@ -5,7 +5,7 @@ Tests the unified p class following flext standards.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from typing import override
 
 import flask
@@ -271,8 +271,8 @@ class TestFlextWebProtocols:
                     "port": 8080,
                 })
 
-            def list_apps(self) -> r[list[t.WebCore.ResponseDict]]:
-                return r[list[t.WebCore.ResponseDict]].ok([
+            def list_apps(self) -> r[Sequence[t.WebCore.ResponseDict]]:
+                return r[Sequence[t.WebCore.ResponseDict]].ok([
                     {"name": "test", "host": "localhost", "port": 8080}
                 ])
 
@@ -531,8 +531,8 @@ class TestFlextWebProtocols:
         class RealWebRepository:
             def find_by_criteria(
                 self, criteria: t.WebCore.RequestDict
-            ) -> r[list[t.WebCore.ResponseDict]]:
-                return r[list[t.WebCore.ResponseDict]].ok([])
+            ) -> r[Sequence[t.WebCore.ResponseDict]]:
+                return r[Sequence[t.WebCore.ResponseDict]].ok([])
 
             def get_by_id(self, entity_id: str) -> r[t.WebCore.ResponseDict]:
                 return r[t.WebCore.ResponseDict].ok({"id": entity_id})
@@ -543,8 +543,8 @@ class TestFlextWebProtocols:
             def delete(self, entity_id: str) -> r[bool]:
                 return r[bool].ok(True)
 
-            def find_all(self) -> r[list[t.WebCore.ResponseDict]]:
-                return r[list[t.WebCore.ResponseDict]].ok([])
+            def find_all(self) -> r[Sequence[t.WebCore.ResponseDict]]:
+                return r[Sequence[t.WebCore.ResponseDict]].ok([])
 
             def execute(self) -> r[t.WebCore.ResponseDict]:
                 return r[t.WebCore.ResponseDict].ok({})

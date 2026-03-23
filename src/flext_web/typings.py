@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from typing import Annotated, Literal
 
 from flext_core import FlextTypes, r, u
@@ -93,12 +94,12 @@ class FlextWebTypes(FlextTypes):
         This enables consistent namespace patterns for cross-project type access.
         """
 
-        ConfigValue = str | int | bool | list[str]
-        type RequestDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
+        ConfigValue = str | int | bool | Sequence[str]
+        type RequestDict = Mapping[
+            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
-        type ResponseDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
+        type ResponseDict = Mapping[
+            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
         HttpMethodLiteral = Literal[
             "GET",
@@ -142,11 +143,11 @@ class FlextWebTypes(FlextTypes):
     class WebCore:
         """Compatibility namespace for request/response dict aliases."""
 
-        type RequestDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
+        type RequestDict = Mapping[
+            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
-        type ResponseDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
+        type ResponseDict = Mapping[
+            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
 
     class Types:
@@ -162,8 +163,8 @@ class FlextWebTypes(FlextTypes):
     class Data:
         """Data type definitions for FlextService compatibility."""
 
-        type ResponseDict = dict[
-            str, str | int | bool | list[str] | dict[str, str | int | bool]
+        type ResponseDict = Mapping[
+            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
         ]
 
     class WebConfigDict(m.Web.EntityConfig):
@@ -227,8 +228,8 @@ class FlextWebTypes(FlextTypes):
         cls,
         url: str,
         method: str = c.Web.Method.GET,
-        headers: dict[str, str] | None = None,
-        body: str | dict[str, FlextTypes.Scalar] | None = None,
+        headers: Mapping[str, str] | None = None,
+        body: str | Mapping[str, FlextTypes.Scalar] | None = None,
         timeout: float = c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
     ) -> r[m.Web.Request]:
         """Create HTTP request model instance with proper validation.
@@ -287,8 +288,8 @@ class FlextWebTypes(FlextTypes):
     def create_http_response(
         cls,
         status_code: int,
-        headers: dict[str, str] | None = None,
-        body: str | dict[str, FlextTypes.Scalar] | None = None,
+        headers: Mapping[str, str] | None = None,
+        body: str | Mapping[str, FlextTypes.Scalar] | None = None,
         elapsed_time: float | None = None,
     ) -> r[m.Web.Response]:
         """Create HTTP response model instance with proper validation.
@@ -355,8 +356,8 @@ class FlextWebTypes(FlextTypes):
         if not url or not url.strip():
             return r[m.Web.AppRequest].fail("URL is required")
         url_validated = url.strip()
-        headers_validated: dict[str, str] = headers or {}
-        query_params_validated: dict[str, FlextTypes.Scalar] = query_params or {}
+        headers_validated: Mapping[str, str] = headers or {}
+        query_params_validated: Mapping[str, FlextTypes.Scalar] = query_params or {}
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
@@ -419,7 +420,7 @@ class FlextWebTypes(FlextTypes):
         content_type: str = config.content_type or c.Web.Http.CONTENT_TYPE_JSON
         content_length: int = config.content_length or 0
         processing_time_ms: float = config.processing_time_ms or 0.0
-        headers_validated: dict[str, str] = headers or {}
+        headers_validated: Mapping[str, str] = headers or {}
 
         def create_response() -> m.Web.AppResponse:
             """Create response model."""
@@ -456,7 +457,7 @@ class FlextWebTypes(FlextTypes):
             *,
             use_pydantic_models: bool = True,
             enable_runtime_validation: bool = True,
-            models_available: list[str] | None = None,
+            models_available: Sequence[str] | None = None,
         ) -> None:
             """Initialize types configuration."""
             super().__init__()
@@ -481,7 +482,7 @@ class FlextWebTypes(FlextTypes):
         *,
         use_pydantic_models: bool = True,
         enable_runtime_validation: bool = True,
-        models_available: list[str] | None = None,
+        models_available: Sequence[str] | None = None,
     ) -> r[FlextWebTypes.TypesConfig]:
         """Configure web types system to use Pydantic models.
 

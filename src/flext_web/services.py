@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Sequence
 from typing import override
 
 from flext_core import r, s, u
@@ -133,14 +133,14 @@ class FlextWebServices(s[bool]):
                 return r[m.Web.EntityData].fail(f"Entity not found: {entity_id}")
             return r[m.Web.EntityData].ok(self._storage[entity_id])
 
-        def list_all(self) -> r[list[m.Web.EntityData]]:
+        def list_all(self) -> r[Sequence[m.Web.EntityData]]:
             """List all entities.
 
             Returns:
-                r[list[EntityData]]: Success contains list of entities
+                r[Sequence[EntityData]]: Success contains list of entities
 
             """
-            return r[list[m.Web.EntityData]].ok(list(self._storage.values()))
+            return r[Sequence[m.Web.EntityData]].ok(list(self._storage.values()))
 
     class Health:
         """Health check service."""
@@ -379,17 +379,17 @@ class FlextWebServices(s[bool]):
         self._routes_initialized = True
         return r[bool].ok(value=True)
 
-    def list_apps(self) -> r[list[m.Web.ApplicationResponse]]:
+    def list_apps(self) -> r[Sequence[m.Web.ApplicationResponse]]:
         """List applications.
 
         Returns:
-            r[list[AppResponse]]: Success contains list of app responses
+            r[Sequence[AppResponse]]: Success contains list of app responses
 
         """
         apps_list = list(self._applications.values())
-        return r[list[m.Web.ApplicationResponse]].ok(apps_list)
+        return r[Sequence[m.Web.ApplicationResponse]].ok(apps_list)
 
-    def list_entities(self) -> r[list[m.Web.EntityData]]:
+    def list_entities(self) -> r[Sequence[m.Web.EntityData]]:
         """Delegate to Entity using monadic pattern."""
         return self._ensure_entity_service().flat_map(
             lambda service: service.list_all(),

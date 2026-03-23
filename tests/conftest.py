@@ -15,7 +15,7 @@ import os
 import socket
 import threading
 import time
-from collections.abc import Callable, Generator
+from collections.abc import Callable, Generator, Mapping, Sequence
 from pathlib import Path
 from typing import ClassVar
 
@@ -145,15 +145,15 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
         if not isinstance(url, str) or not isinstance(method, str):
             return r[t.ContainerValue].fail("Invalid parameters for web_request")
         try:
-            headers_dict: dict[str, str] = (
+            headers_dict: Mapping[str, str] = (
                 {}
                 if headers is None
                 else (headers if isinstance(headers, dict) else {})
             )
-            body_value: dict[str, t.Scalar] | str | None = (
+            body_value: Mapping[str, t.Scalar] | str | None = (
                 body if isinstance(body, (dict, str)) or body is None else None
             )
-            query_params_dict: dict[str, t.Scalar] = (
+            query_params_dict: Mapping[str, t.Scalar] = (
                 {}
                 if query_params is None
                 else (query_params if isinstance(query_params, dict) else {})
@@ -183,12 +183,12 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
         if not isinstance(status_code, int):
             return r[t.ContainerValue].fail("Invalid status_code for web_response")
         try:
-            headers_dict: dict[str, str] = (
+            headers_dict: Mapping[str, str] = (
                 {}
                 if headers is None
                 else (headers if isinstance(headers, dict) else {})
             )
-            body_value: dict[str, t.Scalar] | str | None = (
+            body_value: Mapping[str, t.Scalar] | str | None = (
                 body if isinstance(body, (dict, str)) or body is None else None
             )
             web_response_config = _WebResponseConfig(
@@ -236,7 +236,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
 
 def create_test_data(
     data_type: str, **kwargs: t.Scalar
-) -> dict[str, t.NormalizedValue]:
+) -> Mapping[str, t.NormalizedValue]:
     """Create test data for tests.
 
     This function provides a standardized way to create test data,
@@ -251,7 +251,7 @@ def create_test_data(
 
     """
     if data_type == "app_data":
-        app_data: dict[str, t.NormalizedValue] = {
+        app_data: Mapping[str, t.NormalizedValue] = {
             "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
@@ -261,7 +261,7 @@ def create_test_data(
         })
         return app_data
     if data_type == "entity_data":
-        entity_data: dict[str, t.NormalizedValue] = {
+        entity_data: Mapping[str, t.NormalizedValue] = {
             "id": "test-entity",
             "name": "Test Entity",
         }
@@ -270,7 +270,7 @@ def create_test_data(
         })
         return entity_data
     if data_type == "config_data":
-        config_data: dict[str, t.NormalizedValue] = {
+        config_data: Mapping[str, t.NormalizedValue] = {
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
             "debug": True,
@@ -280,7 +280,7 @@ def create_test_data(
         })
         return config_data
     if data_type == "request_data":
-        request_data: dict[str, t.NormalizedValue] = {
+        request_data: Mapping[str, t.NormalizedValue] = {
             "method": c.Web.Tests.TestHttp.TEST_METHOD,
             "url": f"http://{c.Web.Tests.TestWeb.DEFAULT_HOST}:{c.Web.Tests.TestWeb.DEFAULT_PORT}",
             "headers": {"Content-Type": c.Web.Tests.TestHttp.TEST_CONTENT_TYPE},
@@ -290,7 +290,7 @@ def create_test_data(
         })
         return request_data
     if data_type == "response_data":
-        response_data: dict[str, t.NormalizedValue] = {
+        response_data: Mapping[str, t.NormalizedValue] = {
             "status_code": 200,
             "request_id": "test-123",
         }
@@ -315,7 +315,7 @@ def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:
         m.Web.Entity instance
 
     """
-    defaults: dict[str, str | int] = {
+    defaults: Mapping[str, str | int] = {
         "id": "test-id",
         "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
         "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
@@ -367,9 +367,9 @@ def create_test_result(
 
 
 def run_parameterized_test(
-    test_cases: list[tuple[t.NormalizedValue, ...]],
+    test_cases: Sequence[tuple[t.NormalizedValue, ...]],
     test_function: Callable[..., r[t.ContainerValue]],
-    expected_results: list[bool],
+    expected_results: Sequence[bool],
     test_name: str = "parameterized_test",
 ) -> None:
     """Run parameterized tests using flext_tests patterns.
@@ -406,8 +406,8 @@ def run_parameterized_test(
 
 def create_comprehensive_test_suite(
     entity_type: str,
-    valid_cases: list[dict[str, t.Scalar]],
-    invalid_cases: list[dict[str, t.Scalar]],
+    valid_cases: Sequence[Mapping[str, t.Scalar]],
+    invalid_cases: Sequence[Mapping[str, t.Scalar]],
     test_name_prefix: str = "comprehensive",
 ) -> None:
     """Create comprehensive test suite using flext_tests patterns.
@@ -435,7 +435,7 @@ def create_comprehensive_test_suite(
 @pytest.fixture(autouse=True)
 def setup_test_environment() -> Generator[None]:
     """Set up test environment with real configuration."""
-    original_env: dict[str, str] = {
+    original_env: Mapping[str, str] = {
         k: v for k, v in os.environ.items() if isinstance(v, str)
     }
     os.environ["FLEXT_ENV"] = "test"
@@ -526,7 +526,7 @@ def running_service(real_config: FlextWebSettings) -> Generator[FlextWebServices
 
 
 @pytest.fixture
-def test_app_data() -> dict[str, str | int]:
+def test_app_data() -> Mapping[str, str | int]:
     """Real application data for testing."""
     return {
         "name": "test-application",
@@ -536,13 +536,13 @@ def test_app_data() -> dict[str, str | int]:
 
 
 @pytest.fixture
-def invalid_app_data() -> dict[str, str | int]:
+def invalid_app_data() -> Mapping[str, str | int]:
     """Invalid application data for error testing."""
     return {"name": "", "port": 99999, "host": ""}
 
 
 @pytest.fixture
-def production_config() -> dict[str, str]:
+def production_config() -> Mapping[str, str]:
     """Production-like configuration for testing."""
     return {
         "FLEXT_WEB_HOST": c.Web.WebSpecific.ALL_INTERFACES,

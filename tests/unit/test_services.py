@@ -5,6 +5,7 @@ Tests the web services functionality following flext standards.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 
 import pytest
@@ -189,7 +190,7 @@ class TestFlextWebService:
         service = s()
         list_result = service.list_apps()
         tm.ok(list_result)
-        apps_data: list[Any] = list_result.value
+        apps_data: Sequence[Any] = list_result.value
         tm.that(isinstance(apps_data, list), eq=True)
         tm.that(all(hasattr(app, "id") for app in apps_data), eq=True)
 

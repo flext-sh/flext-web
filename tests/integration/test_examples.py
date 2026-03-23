@@ -10,6 +10,7 @@ import importlib
 import importlib.util
 import sys
 import time
+from collections.abc import Sequence
 from pathlib import Path
 
 import pytest
@@ -187,7 +188,7 @@ class ExamplesFullFunctionalityTest:
             logger.warning("Failed to start Docker service for testing")
             return False
         try:
-            results: list[tuple[str, bool | None]] = []
+            results: Sequence[tuple[str, bool | None]] = []
             results.extend((
                 ("basic_service", self.test_basic_service_full_functionality()),
                 ("api_usage", self.test_api_usage_full_functionality()),

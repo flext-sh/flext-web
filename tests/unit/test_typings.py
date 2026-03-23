@@ -5,6 +5,8 @@ Tests the unified m class following flext standards.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import pytest
 from flext_tests import tm
 from pydantic import ValidationError
@@ -158,7 +160,7 @@ class TestFlextWebModels:
 
         def process_request_data(
             request: t.HttpRequest,
-        ) -> dict[str, t.NormalizedValue]:
+        ) -> Mapping[str, t.NormalizedValue]:
             return {"processed": True, "method": request.method, "url": request.url}
 
         request = t.HttpRequest(url="http://localhost:8080/api/test", method="GET")

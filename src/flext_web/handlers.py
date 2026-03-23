@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Sequence
 from typing import ClassVar, override
 
 from flext_core import FlextLogger, FlextService, r, u
@@ -118,10 +118,10 @@ class FlextWebHandlers(FlextService[bool]):
             """
             return self.create(name, port, host)
 
-        def list_apps(self) -> r[list[m.Web.Entity]]:
+        def list_apps(self) -> r[Sequence[m.Web.Entity]]:
             """List all applications - implements WebAppManager."""
             apps_list = list(self.apps_registry.values())
-            return r[list[m.Web.Entity]].ok(apps_list)
+            return r[Sequence[m.Web.Entity]].ok(apps_list)
 
         def start_app(self, app_id: str) -> r[m.Web.Entity]:
             """Start an application - implements WebAppManager."""

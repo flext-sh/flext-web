@@ -27,7 +27,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping, Sequence
 from copy import deepcopy
 from threading import Thread
 from time import sleep
@@ -239,18 +239,18 @@ class FlextWebProtocols(FlextProtocols):
                 """Register a URL route."""
                 ...
 
-        apps_registry: ClassVar[dict[str, t.WebCore.ResponseDict]] = {}
-        framework_instances: ClassVar[dict[str, flask.Flask | FastAPI]] = {}
-        app_runtimes: ClassVar[dict[str, AppRuntimeInfo]] = {}
-        service_state: ClassVar[dict[str, bool]] = {
+        apps_registry: ClassVar[Mapping[str, t.WebCore.ResponseDict]] = {}
+        framework_instances: ClassVar[Mapping[str, flask.Flask | FastAPI]] = {}
+        app_runtimes: ClassVar[Mapping[str, AppRuntimeInfo]] = {}
+        service_state: ClassVar[Mapping[str, bool]] = {
             "routes_initialized": False,
             "middleware_configured": False,
             "service_running": False,
         }
-        web_metrics: ClassVar[dict[str, int | str]] = {}
+        web_metrics: ClassVar[Mapping[str, int | str]] = {}
         template_config: ClassVar[t.WebCore.RequestDict] = {}
-        template_globals: ClassVar[dict[str, t.ContainerValue]] = {}
-        template_filters: ClassVar[dict[str, Callable[[str], str]]] = {}
+        template_globals: ClassVar[Mapping[str, t.ContainerValue]] = {}
+        template_filters: ClassVar[Mapping[str, Callable[[str], str]]] = {}
 
         @classmethod
         def _create_framework_app(
@@ -581,7 +581,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[t.WebCore.ResponseDict].ok(app_data)
 
             @staticmethod
-            def list_apps() -> r[list[t.WebCore.ResponseDict]]:
+            def list_apps() -> r[Sequence[t.WebCore.ResponseDict]]:
                 """List all web applications.
 
                 Returns:
@@ -592,7 +592,7 @@ class FlextWebProtocols(FlextProtocols):
                     FlextWebProtocols.Web.copy_response_dict(app)
                     for app in FlextWebProtocols.Web.apps_registry.values()
                 ]
-                return r[list[t.WebCore.ResponseDict]].ok(apps)
+                return r[Sequence[t.WebCore.ResponseDict]].ok(apps)
 
             @staticmethod
             def start_app(app_id: str) -> r[t.WebCore.ResponseDict]:
@@ -934,9 +934,9 @@ class FlextWebProtocols(FlextProtocols):
                 return r[bool].ok(True)
 
             @staticmethod
-            def find_all() -> r[list[t.WebCore.ResponseDict]]:
+            def find_all() -> r[Sequence[t.WebCore.ResponseDict]]:
                 """Return all registered app entities as defensive copies."""
-                return r[list[t.WebCore.ResponseDict]].ok([
+                return r[Sequence[t.WebCore.ResponseDict]].ok([
                     FlextWebProtocols.Web.copy_response_dict(app)
                     for app in FlextWebProtocols.Web.apps_registry.values()
                 ])
@@ -944,7 +944,7 @@ class FlextWebProtocols(FlextProtocols):
             @staticmethod
             def find_by_criteria(
                 criteria: t.WebCore.RequestDict,
-            ) -> r[list[t.WebCore.ResponseDict]]:
+            ) -> r[Sequence[t.WebCore.ResponseDict]]:
                 """Find entities by criteria.
 
                 Args:
@@ -954,7 +954,7 @@ class FlextWebProtocols(FlextProtocols):
                 r containing list of matching entities or error details
 
                 """
-                matches: list[t.WebCore.ResponseDict] = []
+                matches: Sequence[t.WebCore.ResponseDict] = []
                 for app_data in FlextWebProtocols.Web.apps_registry.values():
                     is_match = True
                     for key, expected_value in criteria.items():
@@ -965,7 +965,7 @@ class FlextWebProtocols(FlextProtocols):
                         matches.append(
                             FlextWebProtocols.Web.copy_response_dict(app_data),
                         )
-                return r[list[t.WebCore.ResponseDict]].ok(matches)
+                return r[Sequence[t.WebCore.ResponseDict]].ok(matches)
 
         @runtime_checkable
         class WebHandler(Protocol):
@@ -1407,7 +1407,7 @@ class FlextWebProtocols(FlextProtocols):
                 self,
                 key: str,
                 default: str | None = None,
-            ) -> str | int | bool | list[str] | None:
+            ) -> str | int | bool | Sequence[str] | None:
                 """Get value by key with optional default."""
                 ...
 
@@ -1430,7 +1430,7 @@ class FlextWebProtocols(FlextProtocols):
                         host,
                     )
 
-                def list_apps(self) -> r[list[t.WebCore.ResponseDict]]:
+                def list_apps(self) -> r[Sequence[t.WebCore.ResponseDict]]:
                     """List all web applications."""
                     return FlextWebProtocols.Web.WebAppManager.list_apps()
 
@@ -1532,7 +1532,7 @@ class FlextWebProtocols(FlextProtocols):
                 def find_by_criteria(
                     self,
                     criteria: t.WebCore.RequestDict,
-                ) -> r[list[t.WebCore.ResponseDict]]:
+                ) -> r[Sequence[t.WebCore.ResponseDict]]:
                     """Find entities by criteria."""
                     return FlextWebProtocols.Web.WebRepository.find_by_criteria(
                         criteria,
@@ -1696,7 +1696,7 @@ def stop_app(app_id: str) -> r[t.WebCore.ResponseDict]:
     return FlextWebProtocols.Web.WebAppManager.stop_app(app_id)
 
 
-def list_apps() -> r[list[t.WebCore.ResponseDict]]:
+def list_apps() -> r[Sequence[t.WebCore.ResponseDict]]:
     """List all web applications."""
     return FlextWebProtocols.Web.WebAppManager.list_apps()
 

@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from typing import Annotated, override
 
@@ -48,14 +49,14 @@ class FlextWebModels(FlextModels):
             """
 
             headers: Annotated[
-                dict[str, str],
+                Mapping[str, str],
                 Field(
                     default_factory=dict,
                     description="HTTP headers for message",
                 ),
             ]
             body: Annotated[
-                str | dict[str, t.Scalar] | None,
+                str | Mapping[str, t.Scalar] | None,
                 Field(
                     default=None,
                     description="Message body content (optional for GET/HEAD)",
@@ -261,14 +262,14 @@ class FlextWebModels(FlextModels):
                 return upper
 
             headers: Annotated[
-                dict[str, str],
+                Mapping[str, str],
                 Field(
                     default_factory=dict,
                     description="HTTP headers",
                 ),
             ]
             body: Annotated[
-                str | dict[str, t.Scalar] | None,
+                str | Mapping[str, t.Scalar] | None,
                 Field(
                     default=None,
                     description="Request body content (optional for GET/HEAD)",
@@ -289,7 +290,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             query_params: Annotated[
-                dict[str, t.Scalar],
+                Mapping[str, t.Scalar],
                 Field(
                     default_factory=dict,
                     description="Query string parameters",
@@ -353,14 +354,14 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             headers: Annotated[
-                dict[str, str],
+                Mapping[str, str],
                 Field(
                     default_factory=dict,
                     description="HTTP response headers",
                 ),
             ]
             body: Annotated[
-                str | dict[str, t.Scalar] | None,
+                str | Mapping[str, t.Scalar] | None,
                 Field(
                     default=None,
                     description="Response body content",
@@ -572,16 +573,16 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             metrics: Annotated[
-                dict[str, t.Scalar],
+                Mapping[str, t.Scalar],
                 Field(
                     default_factory=dict,
                     description="Application metrics",
                 ),
             ]
-            # Note: domain_events is inherited from Entry with type list[DomainEvent]
+            # Note: domain_events is inherited from Entry with type Sequence[DomainEvent]
             # Use add_event() method to add events instead of direct list manipulation
             web_events: Annotated[
-                list[str],
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="Web-specific events (application lifecycle)",
@@ -690,7 +691,7 @@ class FlextWebModels(FlextModels):
                     )
                 return super().add_domain_event(event_type=event_type, data=data)
 
-            def get_health_status(self) -> dict[str, t.Scalar]:
+            def get_health_status(self) -> Mapping[str, t.Scalar]:
                 """Get comprehensive health status."""
                 return {
                     "status": self.status,
@@ -760,7 +761,7 @@ class FlextWebModels(FlextModels):
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
-            def update_metrics(self, new_metrics: dict[str, t.Scalar]) -> r[bool]:
+            def update_metrics(self, new_metrics: Mapping[str, t.Scalar]) -> r[bool]:
                 """Update application metrics.
 
                 Returns:
@@ -911,7 +912,7 @@ class FlextWebModels(FlextModels):
             """Generic entity data model."""
 
             data: Annotated[
-                dict[str, t.Scalar],
+                Mapping[str, t.Scalar],
                 Field(
                     default_factory=dict,
                     description="Entity data dictionary",
@@ -954,7 +955,9 @@ class FlextWebModels(FlextModels):
             """Metrics response model."""
 
             service_status: Annotated[str, Field(description="Service status")]
-            components: Annotated[list[str], Field(description="Service components")]
+            components: Annotated[
+                Sequence[str], Field(description="Service components")
+            ]
 
         class DashboardResponse(FlextModels.Value):
             """Dashboard response model."""
@@ -982,7 +985,7 @@ class FlextWebModels(FlextModels):
 
             service: Annotated[str, Field(description="Service name")]
             capabilities: Annotated[
-                list[str],
+                Sequence[str],
                 Field(description="Service capabilities"),
             ]
             status: Annotated[str, Field(description="Service status")]
@@ -1007,7 +1010,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             headers: Annotated[
-                dict[str, str],
+                Mapping[str, str],
                 Field(
                     default_factory=dict,
                     description="HTTP headers",
@@ -1051,7 +1054,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             headers: Annotated[
-                dict[str, str],
+                Mapping[str, str],
                 Field(
                     default_factory=dict,
                     description="HTTP response headers",
@@ -1163,7 +1166,7 @@ class FlextWebModels(FlextModels):
             cls,
             method: c.Web.Literals.HttpMethodLiteral,
             url: str,
-            headers: dict[str, str] | None = None,
+            headers: Mapping[str, str] | None = None,
             body: str | t.ContainerValue | None = None,
         ) -> r[WebRequest]:
             """Create a web request model.
@@ -1179,7 +1182,7 @@ class FlextWebModels(FlextModels):
                                         failure contains validation error
 
             """
-            headers_validated: dict[str, str] = headers or {}
+            headers_validated: Mapping[str, str] = headers or {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_request() -> FlextWebModels.Web.WebRequest:
@@ -1203,7 +1206,7 @@ class FlextWebModels(FlextModels):
             cls,
             request_id: str,
             status_code: int,
-            headers: dict[str, str] | None = None,
+            headers: Mapping[str, str] | None = None,
             body: str | t.ContainerValue | None = None,
         ) -> r[WebResponse]:
             """Create a web response model.
@@ -1219,7 +1222,7 @@ class FlextWebModels(FlextModels):
                                           failure contains validation error
 
             """
-            headers_validated: dict[str, str] = headers or {}
+            headers_validated: Mapping[str, str] = headers or {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_response() -> FlextWebModels.Web.WebResponse:
@@ -1291,7 +1294,7 @@ class FlextWebModels(FlextModels):
                 Field(default=False, description="FastAPI testing mode"),
             ]
             middlewares: Annotated[
-                list[str],
+                Sequence[str],
                 Field(
                     default_factory=list,
                     description="List of middleware objects",
@@ -1325,12 +1328,14 @@ class FlextWebModels(FlextModels):
             service_name: Annotated[str, Field(description="Service name")]
             service_type: Annotated[str, Field(description="Service type")]
             architecture: Annotated[str, Field(description="Architecture pattern")]
-            patterns: Annotated[list[str], Field(description="Design patterns used")]
+            patterns: Annotated[
+                Sequence[str], Field(description="Design patterns used")
+            ]
             integrations: Annotated[
-                list[str], Field(description="Integrated components")
+                Sequence[str], Field(description="Integrated components")
             ]
             capabilities: Annotated[
-                list[str], Field(description="Service capabilities")
+                Sequence[str], Field(description="Service capabilities")
             ]
 
         class HealthStatus(BaseModel):
@@ -1341,7 +1346,7 @@ class FlextWebModels(FlextModels):
             version: Annotated[str, Field(description="Service version")]
             timestamp: Annotated[str, Field(description="Status timestamp")]
             components: Annotated[
-                dict[str, str], Field(description="Component statuses")
+                Mapping[str, str], Field(description="Component statuses")
             ]
 
 

@@ -12,6 +12,8 @@ This example shows:
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
+
 import requests
 from flext_core import r
 
@@ -44,7 +46,7 @@ def check_service_health() -> bool:
         response = requests.get(f"{ExampleConstants.BASE_URL}/health", timeout=5)
         if response.status_code != ExampleConstants.HTTP_OK:
             return False
-        result: dict[str, t.ContainerValue] = response.json()
+        result: Mapping[str, t.ContainerValue] = response.json()
         success_value = result.get("success")
         data_value = result.get("data")
         if not isinstance(data_value, dict):
@@ -72,7 +74,7 @@ def create_application(name: str, port: int, host: str = "localhost") -> t.AppDa
         ValueError: If application creation fails.
 
     """
-    request_data: dict[str, str | int] = {"name": name, "port": port, "host": host}
+    request_data: Mapping[str, str | int] = {"name": name, "port": port, "host": host}
 
     def _make_request() -> r[requests.Response]:
         """Make HTTP request using r for error handling."""
@@ -88,13 +90,13 @@ def create_application(name: str, port: int, host: str = "localhost") -> t.AppDa
 
     def _parse_json(
         response: requests.Response,
-    ) -> r[dict[str, t.ContainerValue]]:
+    ) -> r[Mapping[str, t.ContainerValue]]:
         """Parse JSON response."""
         try:
-            json_data: dict[str, t.ContainerValue] = response.json()
-            return r[dict[str, t.ContainerValue]].ok(json_data)
+            json_data: Mapping[str, t.ContainerValue] = response.json()
+            return r[Mapping[str, t.ContainerValue]].ok(json_data)
         except Exception as e:
-            return r[dict[str, t.ContainerValue]].fail(f"JSON parse failed: {e}")
+            return r[Mapping[str, t.ContainerValue]].fail(f"JSON parse failed: {e}")
 
     result = _make_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
@@ -103,7 +105,7 @@ def create_application(name: str, port: int, host: str = "localhost") -> t.AppDa
     parsed_result = result.flat_map(_parse_json)
     if parsed_result.is_failure:
         raise ValueError(parsed_result.error or "Parse failed")
-    json_data: dict[str, t.ContainerValue] = parsed_result.value
+    json_data: Mapping[str, t.ContainerValue] = parsed_result.value
     if (
         json_data.get("success")
         and isinstance((data := json_data.get("data")), dict)
@@ -116,8 +118,8 @@ def create_application(name: str, port: int, host: str = "localhost") -> t.AppDa
 
 
 def _extract_apps_from_response(
-    response_data: dict[str, t.ContainerValue] | t.ContainerValue, data_key: str
-) -> list[t.AppData]:
+    response_data: Mapping[str, t.ContainerValue] | t.ContainerValue, data_key: str
+) -> Sequence[t.AppData]:
     """Extract apps list from response data with proper type checking."""
     if not isinstance(response_data, dict):
         return []
@@ -127,7 +129,7 @@ def _extract_apps_from_response(
     apps_section = data_section.get(data_key)
     if not isinstance(apps_section, list):
         return []
-    result_list: list[t.AppData] = []
+    result_list: Sequence[t.AppData] = []
     for app_item in apps_section:
         try:
             if isinstance(app_item, dict):
@@ -138,7 +140,7 @@ def _extract_apps_from_response(
 
 
 def _execute_app_operation(
-    method: str, endpoint: str, json_data: dict[str, t.ContainerValue] | None = None
+    method: str, endpoint: str, json_data: Mapping[str, t.ContainerValue] | None = None
 ) -> t.AppData:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
@@ -150,7 +152,7 @@ def _execute_app_operation(
         """Make HTTP request using r for error handling."""
         try:
             request_func = getattr(requests, method.lower())
-            kwargs: dict[str, t.ContainerValue] = {
+            kwargs: Mapping[str, t.ContainerValue] = {
                 "url": f"{ExampleConstants.BASE_URL}{endpoint}",
                 "timeout": 5,
             }
@@ -167,13 +169,13 @@ def _execute_app_operation(
 
     def _parse_json_response(
         response: requests.Response,
-    ) -> r[dict[str, t.ContainerValue]]:
+    ) -> r[Mapping[str, t.ContainerValue]]:
         """Parse JSON from response."""
         try:
-            json_data: dict[str, t.ContainerValue] = response.json()
-            return r[dict[str, t.ContainerValue]].ok(json_data)
+            json_data: Mapping[str, t.ContainerValue] = response.json()
+            return r[Mapping[str, t.ContainerValue]].ok(json_data)
         except Exception as e:
-            return r[dict[str, t.ContainerValue]].fail(f"JSON parse failed: {e}")
+            return r[Mapping[str, t.ContainerValue]].fail(f"JSON parse failed: {e}")
 
     result = (
         _make_http_request()
@@ -197,7 +199,7 @@ def _execute_app_operation(
     return result.value
 
 
-def _execute_list_operation(endpoint: str, data_key: str) -> list[t.AppData]:
+def _execute_list_operation(endpoint: str, data_key: str) -> Sequence[t.AppData]:
     """Advanced Monad Composition using flext-core - eliminates 7 returns with Kleisli composition."""
 
     def _make_get_request() -> r[requests.Response]:
@@ -210,13 +212,13 @@ def _execute_list_operation(endpoint: str, data_key: str) -> list[t.AppData]:
 
     def _parse_response_json(
         response: requests.Response,
-    ) -> r[dict[str, t.ContainerValue]]:
+    ) -> r[Mapping[str, t.ContainerValue]]:
         """Parse JSON from response."""
         try:
-            json_data: dict[str, t.ContainerValue] = response.json()
-            return r[dict[str, t.ContainerValue]].ok(json_data)
+            json_data: Mapping[str, t.ContainerValue] = response.json()
+            return r[Mapping[str, t.ContainerValue]].ok(json_data)
         except Exception as e:
-            return r[dict[str, t.ContainerValue]].fail(f"JSON parse failed: {e}")
+            return r[Mapping[str, t.ContainerValue]].fail(f"JSON parse failed: {e}")
 
     result = _make_get_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
@@ -225,8 +227,10 @@ def _execute_list_operation(endpoint: str, data_key: str) -> list[t.AppData]:
     parsed_result = result.flat_map(_parse_response_json)
     if parsed_result.is_failure:
         raise ValueError(parsed_result.error or "Parse failed")
-    response_dict: dict[str, t.ContainerValue] = parsed_result.value
-    apps_list: list[t.AppData] = _extract_apps_from_response(response_dict, data_key)
+    response_dict: Mapping[str, t.ContainerValue] = parsed_result.value
+    apps_list: Sequence[t.AppData] = _extract_apps_from_response(
+        response_dict, data_key
+    )
     return apps_list
 
 
@@ -275,7 +279,7 @@ def stop_application(app_id: str) -> t.AppData:
     )
 
 
-def list_applications() -> list[t.AppData]:
+def list_applications() -> Sequence[t.AppData]:
     """List all applications using FlextWebServices.apps storage.
 
     Returns:
