@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 import requests
 from flext_core import FlextLogger
-from flext_tests import u
+from flext_tests import tk
 
 logger = FlextLogger(__name__)
 
@@ -28,7 +28,7 @@ class ExamplesFullFunctionalityTest:
         super().__init__()
         self.container_id: str | None = None
         self.service_url = "http://localhost:8093"
-        self.docker_manager = u.Tests.Docker(workspace_root=Path().absolute())
+        self.docker_manager = tk(workspace_root=Path().absolute())
 
     def start_service_in_docker(self) -> bool | None:
         """Inicia o serviço em Docker para teste completo usando tk."""
