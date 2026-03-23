@@ -9,8 +9,8 @@ import pytest
 from flext_tests import tm
 from pydantic import ValidationError
 
-from flext_web import FlextWebSettings
-from flext_web.typings import (
+from flext_web import (
+    FlextWebSettings,
     _ApplicationConfig,
     _WebRequestConfig,
     _WebResponseConfig,

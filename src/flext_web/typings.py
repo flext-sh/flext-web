@@ -12,12 +12,10 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from flext_core import FlextTypes, r
-from flext_core.utilities import u
+from flext_core import FlextTypes, r, u
 from pydantic import Field
 
-from flext_web.constants import FlextWebConstants as c
-from flext_web.models import FlextWebModels as m
+from flext_web import c, m
 
 
 class _ApplicationConfig(m.Web.EntityConfig):

@@ -10,11 +10,9 @@ from __future__ import annotations
 from collections.abc import MutableMapping
 from typing import ClassVar, override
 
-from flext_core import FlextLogger, FlextService, r
-from flext_core.utilities import u
+from flext_core import FlextLogger, FlextService, r, u
 
-from flext_web.constants import FlextWebConstants as c
-from flext_web.models import FlextWebModels as m
+from flext_web import c, m
 
 __all__ = ["FlextWebHandlers"]
 

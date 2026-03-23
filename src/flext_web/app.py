@@ -16,11 +16,7 @@ import flask
 from fastapi import FastAPI
 from flext_core import FlextLogger, FlextService, r
 
-from flext_web.constants import FlextWebConstants as c
-from flext_web.models import FlextWebModels as m
-from flext_web.settings import FlextWebSettings
-from flext_web.typings import FlextWebTypes as t
-from flext_web.utilities import FlextWebUtilities as u
+from flext_web import FlextWebSettings, c, m, t, u
 
 
 class FlextWebApp(FlextService[bool]):

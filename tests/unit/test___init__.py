@@ -6,7 +6,7 @@ Tests the package initialization and exports.
 from flext_tests import tm
 
 import flext_web
-from flext_web.__version__ import __version__, __version_info__
+from flext_web import __version__, __version_info__
 
 
 class TestFlextWebInit:

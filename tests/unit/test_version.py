@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from flext_tests import tm
 
-from flext_web.__version__ import (
+from flext_web import (
     VERSION,
     FlextWebVersion,
     __author__,

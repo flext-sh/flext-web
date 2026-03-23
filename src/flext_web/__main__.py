@@ -14,10 +14,10 @@ from typing import TYPE_CHECKING
 
 from flext_core import FlextLogger, r
 
-from flext_web.api import FlextWebApi
+from flext_web import FlextWebApi
 
 if TYPE_CHECKING:
-    from flext_web.models import FlextWebModels
+    from flext_web import FlextWebModels
 
 
 class FlextWebCliService:

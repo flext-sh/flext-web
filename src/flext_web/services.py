@@ -13,13 +13,9 @@ import uuid
 from collections.abc import MutableMapping
 from typing import override
 
-from flext_core import r, s
-from flext_core.utilities import u
+from flext_core import r, s, u
 
-from flext_web.constants import FlextWebConstants as c
-from flext_web.models import FlextWebModels as m
-from flext_web.settings import FlextWebSettings
-from flext_web.typings import FlextWebTypes as t
+from flext_web import FlextWebSettings, c, m, t
 
 
 class FlextWebServices(s[bool]):
