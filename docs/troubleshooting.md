@@ -1,7 +1,6 @@
 # Troubleshooting - flext-web
 
 <!-- TOC START -->
-
 - [Primary Issue: Circular Import Error](#primary-issue-circular-import-error)
 - [Diagnosis Steps](#diagnosis-steps)
   - [Test Import Failure](#test-import-failure)
@@ -16,7 +15,6 @@
   - [Quality Impact](#quality-impact)
 - [Development Workflow](#development-workflow)
 - [Getting Help](#getting-help)
-
 <!-- TOC END -->
 
 **Updated**: September 17, 2025 | **Version**: 0.9.9 RC

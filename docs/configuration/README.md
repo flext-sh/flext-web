@@ -1,7 +1,6 @@
 # Configuration Guide - FLEXT Web Interface
 
 <!-- TOC START -->
-
 - [🔧 Configuration Overview](#configuration-overview)
   - [Configuration Architecture](#configuration-architecture)
   - [Key Features](#key-features)
@@ -41,7 +40,6 @@
 - [🔄 Configuration Updates](#configuration-updates)
   - [Development Configuration Changes](#development-configuration-changes)
   - [Production Configuration Updates](#production-configuration-updates)
-
 <!-- TOC END -->
 
 **Configuration System**: Pydantic Settings • Environment Variables • flext-core Integration\

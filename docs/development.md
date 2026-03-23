@@ -1,7 +1,6 @@
 # Development Guide - flext-web
 
 <!-- TOC START -->
-
 - [Development Focus](#development-focus)
 - [Current Development Status](#current-development-status)
 - [Development Setup](#development-setup)
@@ -18,7 +17,6 @@
 - [Integration Guidelines](#integration-guidelines)
 - [Contributing Workflow](#contributing-workflow)
 - [Getting Help](#getting-help)
-
 <!-- TOC END -->
 
 **Updated**: September 17, 2025 | **Version**: 0.9.9 RC

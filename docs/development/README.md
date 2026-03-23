@@ -1,7 +1,6 @@
 # Development Guide - FLEXT Web Interface
 
 <!-- TOC START -->
-
 - [🚀 Quick Start](#quick-start)
   - [Prerequisites](#prerequisites)
   - [Initial Setup](#initial-setup)
@@ -46,7 +45,6 @@
   - [Feature Development](#feature-development)
   - [Bug Fixes](#bug-fixes)
   - [Refactoring](#refactoring)
-
 <!-- TOC END -->
 
 **Development Environment**: Python 3.13+ • Poetry • Flask • pytest\

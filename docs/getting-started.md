@@ -1,7 +1,6 @@
 # Getting Started - flext-web
 
 <!-- TOC START -->
-
 - [Current Status](#current-status)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
@@ -10,7 +9,6 @@
 - [Development Priority](#development-priority)
 - [Getting Help](#getting-help)
 - [Related Documentation](#related-documentation)
-
 <!-- TOC END -->
 
 **Updated**: September 17, 2025 | **Version**: 0.9.9 RC
