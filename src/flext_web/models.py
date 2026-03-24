@@ -9,7 +9,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import Sequence, Mapping
 from datetime import UTC, datetime
 from typing import Annotated, override
 
@@ -49,7 +48,7 @@ class FlextWebModels(FlextModels):
             """
 
             headers: Annotated[
-                Mapping[str, str],
+                t.StrMapping,
                 Field(
                     default_factory=dict,
                     description="HTTP headers for message",
@@ -256,7 +255,7 @@ class FlextWebModels(FlextModels):
                 return upper
 
             headers: Annotated[
-                Mapping[str, str],
+                t.StrMapping,
                 Field(
                     default_factory=dict,
                     description="HTTP headers",
@@ -347,7 +346,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             headers: Annotated[
-                Mapping[str, str],
+                t.StrMapping,
                 Field(
                     default_factory=dict,
                     description="HTTP response headers",
@@ -941,7 +940,7 @@ class FlextWebModels(FlextModels):
 
             service_status: Annotated[str, Field(description="Service status")]
             components: Annotated[
-                Sequence[str], Field(description="Service components")
+                t.StrSequence, Field(description="Service components")
             ]
 
         class DashboardResponse(FlextModels.Value):
@@ -970,7 +969,7 @@ class FlextWebModels(FlextModels):
 
             service: Annotated[str, Field(description="Service name")]
             capabilities: Annotated[
-                Sequence[str],
+                t.StrSequence,
                 Field(description="Service capabilities"),
             ]
             status: Annotated[str, Field(description="Service status")]
@@ -995,7 +994,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             headers: Annotated[
-                Mapping[str, str],
+                t.StrMapping,
                 Field(
                     default_factory=dict,
                     description="HTTP headers",
@@ -1039,7 +1038,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             headers: Annotated[
-                Mapping[str, str],
+                t.StrMapping,
                 Field(
                     default_factory=dict,
                     description="HTTP response headers",
@@ -1151,7 +1150,7 @@ class FlextWebModels(FlextModels):
             cls,
             method: c.Web.Literals.HttpMethodLiteral,
             url: str,
-            headers: Mapping[str, str] | None = None,
+            headers: t.StrMapping | None = None,
             body: str | t.ContainerValue | None = None,
         ) -> r[WebRequest]:
             """Create a web request model.
@@ -1167,7 +1166,7 @@ class FlextWebModels(FlextModels):
                                         failure contains validation error
 
             """
-            headers_validated: Mapping[str, str] = headers or {}
+            headers_validated: t.StrMapping = headers or {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_request() -> FlextWebModels.Web.WebRequest:
@@ -1191,7 +1190,7 @@ class FlextWebModels(FlextModels):
             cls,
             request_id: str,
             status_code: int,
-            headers: Mapping[str, str] | None = None,
+            headers: t.StrMapping | None = None,
             body: str | t.ContainerValue | None = None,
         ) -> r[WebResponse]:
             """Create a web response model.
@@ -1207,7 +1206,7 @@ class FlextWebModels(FlextModels):
                                           failure contains validation error
 
             """
-            headers_validated: Mapping[str, str] = headers or {}
+            headers_validated: t.StrMapping = headers or {}
 
             # Use u.try_() for unified error handling (DSL pattern)
             def create_response() -> FlextWebModels.Web.WebResponse:
@@ -1279,7 +1278,7 @@ class FlextWebModels(FlextModels):
                 Field(default=False, description="FastAPI testing mode"),
             ]
             middlewares: Annotated[
-                Sequence[str],
+                t.StrSequence,
                 Field(
                     default_factory=list,
                     description="List of middleware objects",
@@ -1314,13 +1313,13 @@ class FlextWebModels(FlextModels):
             service_type: Annotated[str, Field(description="Service type")]
             architecture: Annotated[str, Field(description="Architecture pattern")]
             patterns: Annotated[
-                Sequence[str], Field(description="Design patterns used")
+                t.StrSequence, Field(description="Design patterns used")
             ]
             integrations: Annotated[
-                Sequence[str], Field(description="Integrated components")
+                t.StrSequence, Field(description="Integrated components")
             ]
             capabilities: Annotated[
-                Sequence[str], Field(description="Service capabilities")
+                t.StrSequence, Field(description="Service capabilities")
             ]
 
         class HealthStatus(BaseModel):
@@ -1331,7 +1330,7 @@ class FlextWebModels(FlextModels):
             version: Annotated[str, Field(description="Service version")]
             timestamp: Annotated[str, Field(description="Status timestamp")]
             components: Annotated[
-                Mapping[str, str], Field(description="Component statuses")
+                t.StrMapping, Field(description="Component statuses")
             ]
 
 

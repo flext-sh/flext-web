@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence, Mapping
+from collections.abc import Mapping
 from enum import IntEnum, StrEnum, unique
 from ipaddress import IPv4Address
 from types import MappingProxyType
 from typing import ClassVar, Final, Literal
 
 from flext_core import FlextConstants
+
+from flext_web import t
 
 
 class FlextWebConstants(FlextConstants):
@@ -384,4 +386,4 @@ class FlextWebConstants(FlextConstants):
 
 
 c = FlextWebConstants
-__all__: Sequence[str] = ["FlextWebConstants", "c"]
+__all__: t.StrSequence = ["FlextWebConstants", "c"]
