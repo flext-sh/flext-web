@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Annotated, Literal
+from typing import Annotated
 
 from flext_core import FlextTypes, r
 from pydantic import Field
@@ -105,44 +105,6 @@ class FlextWebTypes(FlextTypes):
             str,
             FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar],
         ]
-        HttpMethodLiteral = Literal[
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "PATCH",
-            "HEAD",
-            "OPTIONS",
-        ]
-        EnvironmentNameLiteral = Literal[
-            "development",
-            "staging",
-            "production",
-            "testing",
-        ]
-        ApplicationStatusLiteral = Literal[
-            "stopped",
-            "starting",
-            "running",
-            "stopping",
-            "error",
-            "maintenance",
-            "deploying",
-        ]
-        ApplicationTypeLiteral = Literal[
-            "application",
-            "service",
-            "api",
-            "microservice",
-            "webapp",
-            "spa",
-            "dashboard",
-            "REDACTED_LDAP_BIND_PASSWORD_panel",
-        ]
-        ResponseStatusLiteral = Literal["success", "error", "operational", "healthy"]
-        ProtocolLiteral = Literal["http", "https"]
-        ContentTypeLiteral = Literal["application/json", "text/plain", "text/html"]
-        SameSiteLiteral = Literal["Lax", "Strict", "None"]
 
     class Types:
         """Type system aliases for flext-web Removed redundant aliases."""

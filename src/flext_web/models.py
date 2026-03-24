@@ -521,7 +521,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             status: Annotated[
-                c.Web.Literals.ApplicationStatusLiteral | str,
+                c.Web.Status | str,
                 Field(
                     default=c.Web.Status.STOPPED.value,
                     description="Current application status",
@@ -980,7 +980,7 @@ class FlextWebModels(FlextModels):
             """Web request model with complete tracking."""
 
             method: Annotated[
-                c.Web.Literals.HttpMethodLiteral,
+                c.Web.Method,
                 Field(
                     default="GET",  # Default HTTP method
                     description="HTTP method",
@@ -1149,7 +1149,7 @@ class FlextWebModels(FlextModels):
         @classmethod
         def create_web_request(
             cls,
-            method: c.Web.Literals.HttpMethodLiteral,
+            method: c.Web.Method,
             url: str,
             headers: t.StrMapping | None = None,
             body: str | t.ContainerValue | None = None,

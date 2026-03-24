@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from enum import IntEnum, StrEnum, unique
 from ipaddress import IPv4Address
 from types import MappingProxyType
-from typing import ClassVar, Final, Literal
+from typing import ClassVar, Final
 
 from flext_core import FlextConstants, t
 
@@ -330,57 +330,6 @@ class FlextWebConstants(FlextConstants):
             REDOC_URL: Final[str] = "/redoc"
             OPENAPI_URL: Final[str] = "/openapi.json"
             DEFAULT_DESCRIPTION: Final[str] = "Generic HTTP Service"
-
-        class Literals:
-            """Type literals for compile-time type safety.
-
-            Provides Literal type aliases derived from StrEnum values.
-            Usage: c.Web.Literals.HttpMethodLiteral
-            """
-
-            HttpMethodLiteral = Literal[
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "PATCH",
-                "HEAD",
-                "OPTIONS",
-            ]
-            ContentTypeLiteral = Literal["application/json", "text/plain", "text/html"]
-            EnvironmentNameLiteral = Literal[
-                "development",
-                "staging",
-                "production",
-                "testing",
-            ]
-            ApplicationStatusLiteral = Literal[
-                "stopped",
-                "starting",
-                "running",
-                "stopping",
-                "error",
-                "maintenance",
-                "deploying",
-            ]
-            ApplicationTypeLiteral = Literal[
-                "application",
-                "service",
-                "api",
-                "microservice",
-                "webapp",
-                "spa",
-                "dashboard",
-                "REDACTED_LDAP_BIND_PASSWORD-panel",
-            ]
-            ResponseStatusLiteral = Literal[
-                "success",
-                "error",
-                "operational",
-                "healthy",
-            ]
-            ProtocolLiteral = Literal["http", "https"]
-            SameSiteLiteral = Literal["Lax", "Strict", "None"]
 
 
 c = FlextWebConstants
