@@ -16,10 +16,6 @@ from flext_web import c, m, u
 
 __all__ = ["FlextWebHandlers"]
 
-# Canonical model aliases for this module
-SystemInfo = m.Web.SystemInfo
-HealthStatus = m.Web.HealthStatus
-
 
 class FlextWebHandlers(s[bool]):
     """Consolidated web handler system extending flext-core patterns.
