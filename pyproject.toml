@@ -5,13 +5,16 @@
 
 # [MANAGED] build system
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = [ "poetry-core>=2" ]
+build-backend = "hatchling.build"
+requires = [ "hatchling" ]
 
 [dependency-groups]
 dev = [
   "types-flask (>=1.1.6,<2.0.0)",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = [ "src/flext_web" ]
 
 # [CUSTOM] project metadata
 [project]
@@ -32,7 +35,7 @@ classifiers = [
 dependencies = [
   "fastapi>=0.119",
   "flask>=3",
-  "flext-core @ file:../flext-core",
+  "flext-core",
   "pydantic-core>=2.41.4",
   "pydantic-settings>=2.11",
   "pydantic>=2.12.3",
@@ -142,7 +145,6 @@ plugins = [
 ]
 python_version = "3.13"
 
-[tool.poetry]
 
 # [MANAGED] pydantic-mypy
 [tool.pydantic-mypy]
