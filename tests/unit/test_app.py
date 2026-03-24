@@ -123,9 +123,9 @@ class TestFlextWebApp:
         response = client.get("/health")
         tm.that(response.status_code, eq=200)
         health_data = response.json()
-        tm.that("status" in health_data, eq=True)
-        tm.that("service" in health_data, eq=True)
-        tm.that("timestamp" in health_data, eq=True)
+        tm.that(health_data, has="status")
+        tm.that(health_data, has="service")
+        tm.that(health_data, has="timestamp")
 
     def test_create_fastapi_app_with_custom_urls(self) -> None:
         """Test create_fastapi_app with custom URLs - REAL FastAPI."""
@@ -215,8 +215,8 @@ class TestFlextWebApp:
         response = client.get("/health")
         tm.that(response.status_code, eq=200)
         health_data = response.json()
-        tm.that("status" in health_data, eq=True)
-        tm.that("service" in health_data, eq=True)
+        tm.that(health_data, has="status")
+        tm.that(health_data, has="service")
 
     def test_app_configuration_handling(self) -> None:
         """Test FlextWebApp configuration handling - REAL FastAPI."""
@@ -277,7 +277,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_flask_app(config)
         tm.ok(result)
         tm.that(hasattr(result, "value"), eq=True)
-        tm.that(result.value is not None, eq=True)
+        tm.that(result.value, none=False)
         tm.that(hasattr(result.value, "route"), eq=True)
 
     def test_create_flask_app_with_none_config(self) -> None:
@@ -285,7 +285,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_flask_app(None)
         tm.ok(result)
         tm.that(hasattr(result, "value"), eq=True)
-        tm.that(result.value is not None, eq=True)
+        tm.that(result.value, none=False)
         tm.that(hasattr(result.value, "route"), eq=True)
 
     def test_configure_middleware(self) -> None:
@@ -316,9 +316,9 @@ class TestFlextWebApp:
         handler_func = FlextWebApp.HealthHandler.create_handler()
         tm.that(callable(handler_func), eq=True)
         result = handler_func()
-        tm.that("status" in result, eq=True)
-        tm.that("service" in result, eq=True)
-        tm.that("timestamp" in result, eq=True)
+        tm.that(result, has="status")
+        tm.that(result, has="service")
+        tm.that(result, has="timestamp")
 
     def test_info_handler_create_handler(self) -> None:
         """Test InfoHandler.create_handler method - REAL execution."""
@@ -328,12 +328,12 @@ class TestFlextWebApp:
         handler_func = FlextWebApp.InfoHandler.create_handler(config)
         tm.that(callable(handler_func), eq=True)
         result = handler_func()
-        tm.that("service" in result, eq=True)
-        tm.that("title" in result, eq=True)
-        tm.that("version" in result, eq=True)
-        tm.that("description" in result, eq=True)
-        tm.that("debug" in result, eq=True)
-        tm.that("timestamp" in result, eq=True)
+        tm.that(result, has="service")
+        tm.that(result, has="title")
+        tm.that(result, has="version")
+        tm.that(result, has="description")
+        tm.that(result, has="debug")
+        tm.that(result, has="timestamp")
         tm.that(result["title"], eq="Test API")
         tm.that(result["version"], eq="1.0.0")
 
@@ -358,8 +358,8 @@ class TestFlextWebApp:
         info_response = client.get("/info")
         tm.that(info_response.status_code, eq=200)
         info_data = info_response.json()
-        tm.that("service" in info_data, eq=True)
-        tm.that("title" in info_data, eq=True)
+        tm.that(info_data, has="service")
+        tm.that(info_data, has="title")
         tm.that(info_data["title"], eq="Test API")
 
     def test_create_flask_app_health_endpoint_real(self) -> None:
@@ -368,15 +368,15 @@ class TestFlextWebApp:
         result = FlextWebApp.create_flask_app(config)
         tm.ok(result)
         app = result.value
-        tm.that(app is not None, eq=True)
+        tm.that(app, none=False)
         app.config["TESTING"] = True
         test_cli = app.test_client()
         response = test_cli.get("/health")
         tm.that(response.status_code, eq=200)
         health_json = response.get_json()
-        tm.that(health_json is not None, eq=True)
-        tm.that("status" in health_json, eq=True)
-        tm.that("service" in health_json, eq=True)
+        tm.that(health_json, none=False)
+        tm.that(health_json, has="status")
+        tm.that(health_json, has="service")
         tm.that(health_json["status"], eq=c.Web.WebResponse.STATUS_HEALTHY)
 
     def test_validate_business_rules(self) -> None:

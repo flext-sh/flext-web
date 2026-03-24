@@ -179,7 +179,7 @@ class TestFlextWebModels:
         )
         tm.fail(result)
         assert result.error is not None
-        tm.that("Invalid HTTP method" in result.error, eq=True)
+        tm.that(result.error, has="Invalid HTTP method")
 
     def test_create_http_request_invalid_headers(self) -> None:
         """Test create_http_request with invalid headers type."""
@@ -201,7 +201,7 @@ class TestFlextWebModels:
             tm.fail(result),
             "Negative timeout should cause validation failure",
         )
-        tm.that(result.error is not None, eq=True)
+        tm.that(result.error, none=False)
         tm.that(
             "timeout" in (result.error or "").lower()
             or "validation" in (result.error or "").lower(),
@@ -222,7 +222,7 @@ class TestFlextWebModels:
             tm.fail(result),
             ("Negative elapsed_time should cause validation failure"),
         )
-        tm.that(result.error is not None, eq=True)
+        tm.that(result.error, none=False)
         tm.that(
             (
                 "elapsed_time" in (result.error or "").lower()
@@ -293,7 +293,7 @@ class TestFlextWebModels:
         )
         result = t.create_application(config)
         tm.fail(result), "Invalid status should cause validation failure"
-        tm.that(result.error is not None, eq=True)
+        tm.that(result.error, none=False)
         tm.that(
             "status" in (result.error or "").lower()
             or "validation" in (result.error or "").lower(),
@@ -309,7 +309,7 @@ class TestFlextWebModels:
         )
         tm.ok(result), "Operation should succeed"
         config = result.value
-        tm.that("Custom.Model" in config.models_available, eq=True)
+        tm.that(config.models_available, has="Custom.Model")
 
     def test_get_web_types_system_config_exception_handling(self) -> None:
         """Test get_web_types_system_config exception handling."""

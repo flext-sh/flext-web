@@ -18,7 +18,7 @@ class TestFlextWebHandlers:
     def test_web_app_handler_initialization(self) -> None:
         """Test WebAppHandler initialization."""
         handler = FlextWebHandlers.ApplicationHandler()
-        tm.that(handler is not None, eq=True)
+        tm.that(handler, none=False)
         tm.that(hasattr(handler, "logger"), eq=True)
         tm.that(hasattr(handler, "_apps_registry"), eq=True)
 
@@ -64,7 +64,7 @@ class TestFlextWebHandlers:
         result: r[str] = r[str].fail(f"Validation error: {error}")
         tm.fail(result)
         assert result.error is not None
-        tm.that("Validation error" in result.error, eq=True)
+        tm.that(result.error, has="Validation error")
 
     def test_processing_error_with_flext_result(self) -> None:
         """Test processing error handling using r directly."""
@@ -72,7 +72,7 @@ class TestFlextWebHandlers:
         result: r[str] = r[str].fail(f"Operation failed: {error}")
         tm.fail(result)
         assert result.error is not None
-        tm.that("Operation failed" in result.error, eq=True)
+        tm.that(result.error, has="Operation failed")
 
     def test_app_registry_integration(self) -> None:
         """Test app registry integration."""
@@ -80,7 +80,7 @@ class TestFlextWebHandlers:
         create_result = handler.create_app("test-app", 8080, "localhost")
         tm.ok(create_result)
         app = create_result.value
-        tm.that(app.id in handler.apps_registry, eq=True)
+        tm.that(handler.apps_registry, has=app.id)
         tm.that(handler.apps_registry[app.id], eq=app)
 
     def test_protocol_implementation(self) -> None:
@@ -100,21 +100,21 @@ class TestFlextWebHandlers:
         result = handler.create("ab", 8080, "localhost")
         tm.fail(result)
         assert result.error is not None
-        tm.that("at least" in result.error, eq=True)
+        tm.that(result.error, has="at least")
         result = handler.create("test-app", 8080, "")
         tm.fail(result)
         assert result.error is not None
-        tm.that("cannot be empty" in result.error, eq=True)
+        tm.that(result.error, has="cannot be empty")
         result = handler.create("test-app", 8080, "localhost")
         tm.that(result.is_success or result.is_failure, eq=True)
         result = handler.create("test-app", 0, "localhost")
         tm.fail(result)
         assert result.error is not None
-        tm.that("at least" in result.error, eq=True)
+        tm.that(result.error, has="at least")
         result = handler.create("test-app", 70000, "localhost")
         tm.fail(result)
         assert result.error is not None
-        tm.that("at most" in result.error, eq=True)
+        tm.that(result.error, has="at most")
 
     def test_application_handler_start_app_not_found(self) -> None:
         """Test ApplicationHandler.start_app with non-existent app - REAL validation."""
@@ -122,7 +122,7 @@ class TestFlextWebHandlers:
         result = handler.start_app("nonexistent-id")
         tm.fail(result)
         assert result.error is not None
-        tm.that("not found" in result.error, eq=True)
+        tm.that(result.error, has="not found")
 
     def test_application_handler_stop_app_not_found(self) -> None:
         """Test ApplicationHandler.stop_app with non-existent app - REAL validation."""
@@ -130,7 +130,7 @@ class TestFlextWebHandlers:
         result = handler.stop_app("nonexistent-id")
         tm.fail(result)
         assert result.error is not None
-        tm.that("not found" in result.error, eq=True)
+        tm.that(result.error, has="not found")
 
     def test_application_handler_start_stop_cycle(self) -> None:
         """Test ApplicationHandler start/stop cycle - REAL execution."""

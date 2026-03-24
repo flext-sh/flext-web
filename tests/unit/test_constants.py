@@ -29,9 +29,9 @@ class TestFlextWebConstants:
         """Test web-specific constants."""
         tm.that(c.Web.WebDefaults.HOST, eq="localhost")
         tm.that(c.Web.WebDefaults.PORT, eq=8080)
-        tm.that(len(c.Web.WebDefaults.DEV_SECRET_KEY) >= 32, eq=True)
-        tm.that(len(c.Web.WebSpecific.DEV_ENVIRONMENT_KEY) >= 32, eq=True)
-        tm.that(len(c.Web.WebSpecific.TEST_ENVIRONMENT_KEY) >= 32, eq=True)
+        tm.that(len(c.Web.WebDefaults.DEV_SECRET_KEY), gte=32)
+        tm.that(len(c.Web.WebSpecific.DEV_ENVIRONMENT_KEY), gte=32)
+        tm.that(len(c.Web.WebSpecific.TEST_ENVIRONMENT_KEY), gte=32)
         tm.that(c.Web.WebSpecific.ALL_INTERFACES, eq="0.0.0.0")
         tm.that(c.Web.WebSpecific.LOCALHOST_IP, eq="127.0.0.1")
         tm.that(c.Web.WebSpecific.SYSTEM_PORTS_THRESHOLD, eq=1023)
@@ -47,11 +47,11 @@ class TestFlextWebConstants:
     def test_web_security_constants(self) -> None:
         """Test web security constants."""
         tm.that(isinstance(c.Web.WebSecurity.CORS_DEFAULT_ORIGINS, tuple), eq=True)
-        tm.that("*" in c.Web.WebSecurity.CORS_DEFAULT_ORIGINS, eq=True)
+        tm.that(c.Web.WebSecurity.CORS_DEFAULT_ORIGINS, has="*")
         tm.that(isinstance(c.Web.WebSecurity.CORS_SAFE_METHODS, tuple), eq=True)
-        tm.that("GET" in c.Web.WebSecurity.CORS_SAFE_METHODS, eq=True)
+        tm.that(c.Web.WebSecurity.CORS_SAFE_METHODS, has="GET")
         tm.that(isinstance(c.Web.WebSecurity.CORS_SAFE_HEADERS, tuple), eq=True)
-        tm.that("Content-Type" in c.Web.WebSecurity.CORS_SAFE_HEADERS, eq=True)
+        tm.that(c.Web.WebSecurity.CORS_SAFE_HEADERS, has="Content-Type")
         tm.that(c.Web.WebSecurity.SESSION_COOKIE_SECURE_DEFAULT is False, eq=True)
         tm.that(c.Web.WebSecurity.SESSION_COOKIE_HTTPONLY_DEFAULT is True, eq=True)
         tm.that(c.Web.WebSecurity.SESSION_COOKIE_SAMESITE_DEFAULT, eq="Lax")
@@ -78,10 +78,10 @@ class TestFlextWebConstants:
 
     def test_environment_type_values(self) -> None:
         """Test that environment type values are valid."""
-        tm.that(c.Web.Name is not None, eq=True)
-        tm.that(c.Web.ApplicationType is not None, eq=True)
-        tm.that(c.Web.Method is not None, eq=True)
-        tm.that(c.Web.Status is not None, eq=True)
+        tm.that(c.Web.Name, none=False)
+        tm.that(c.Web.ApplicationType, none=False)
+        tm.that(c.Web.Method, none=False)
+        tm.that(c.Web.Status, none=False)
 
     def test_security_constants_types(self) -> None:
         """Test that security constants have correct types."""

@@ -140,7 +140,7 @@ class TestFlextWebModels:
         result = app.start()
         tm.fail(result)
         assert result.error is not None
-        tm.that("already running" in result.error, eq=True)
+        tm.that(result.error, has="already running")
 
     def test_web_app_stop_success(self) -> None:
         """Test WebApp stop operation."""
@@ -156,7 +156,7 @@ class TestFlextWebModels:
         result = app.stop()
         tm.fail(result)
         assert result.error is not None
-        tm.that("not running" in result.error, eq=True)
+        tm.that(result.error, has="not running")
 
     def test_web_app_restart_success(self) -> None:
         """Test WebApp restart operation."""
@@ -173,8 +173,8 @@ class TestFlextWebModels:
         result = app.update_metrics(metrics)
         tm.ok(result)
         tm.that(result.value is True, eq=True)
-        tm.that("requests" in app.metrics, eq=True)
-        tm.that("errors" in app.metrics, eq=True)
+        tm.that(app.metrics, has="requests")
+        tm.that(app.metrics, has="errors")
         tm.that(app.metrics["requests"], eq=100)
         tm.that(app.metrics["errors"], eq=5)
 
@@ -182,10 +182,10 @@ class TestFlextWebModels:
         """Test WebApp health status."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         health = app.get_health_status()
-        tm.that("status" in health, eq=True)
-        tm.that("is_running" in health, eq=True)
-        tm.that("is_healthy" in health, eq=True)
-        tm.that("url" in health, eq=True)
+        tm.that(health, has="status")
+        tm.that(health, has="is_running")
+        tm.that(health, has="is_healthy")
+        tm.that(health, has="url")
         tm.that(health["status"], eq="running")
 
     def test_web_app_to_dict(self) -> None:
@@ -202,9 +202,9 @@ class TestFlextWebModels:
         app = m.Web.Entity(
             id="test-id", name="test-app", host="localhost", port=8080, status="running"
         )
-        tm.that("test-app" in str(app), eq=True)
-        tm.that("localhost:8080" in str(app), eq=True)
-        tm.that("running" in str(app), eq=True)
+        tm.that(str(app), has="test-app")
+        tm.that(str(app), has="localhost:8080")
+        tm.that(str(app), has="running")
 
     def test_web_request_initialization(self) -> None:
         """Test WebRequest initialization."""
@@ -219,8 +219,8 @@ class TestFlextWebModels:
         tm.that(request.headers["Content-Type"], eq="application/json")
         assert isinstance(request.body, str)
         tm.that(request.body, eq='{"test": "data"}')
-        tm.that(request.request_id is not None, eq=True)
-        tm.that(request.timestamp is not None, eq=True)
+        tm.that(request.request_id, none=False)
+        tm.that(request.timestamp, none=False)
 
     def test_web_response_initialization(self) -> None:
         """Test WebResponse initialization."""
@@ -235,8 +235,8 @@ class TestFlextWebModels:
         tm.that(response.headers["Content-Type"], eq="application/json")
         assert isinstance(response.body, str)
         tm.that(response.body, eq='{"result": "success"}')
-        tm.that(response.response_id is not None, eq=True)
-        tm.that(response.timestamp is not None, eq=True)
+        tm.that(response.response_id, none=False)
+        tm.that(response.timestamp, none=False)
 
     def test_web_app_config_initialization(self) -> None:
         """Test WebAppConfig initialization."""
@@ -361,7 +361,7 @@ class TestFlextWebModels:
         )
         result = app.validate_business_rules()
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        tm.that(result.error, none=False)
         tm.that(
             "name" in (result.error or "").lower()
             or "at least" in (result.error or "").lower(),
@@ -382,7 +382,7 @@ class TestFlextWebModels:
         )
         result = app.validate_business_rules()
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        tm.that(result.error, none=False)
         tm.that(
             "port" in (result.error or "").lower()
             or "between" in (result.error or "").lower(),
@@ -403,7 +403,7 @@ class TestFlextWebModels:
         )
         result = app.validate_business_rules()
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
+        tm.that(result.error, none=False)
         tm.that(
             "port" in (result.error or "").lower()
             or "between" in (result.error or "").lower(),
@@ -416,8 +416,8 @@ class TestFlextWebModels:
         invalid_metrics: Mapping[str, t.Scalar] = {"not_a_dict": "not_a_dict"}
         result = app.update_metrics(invalid_metrics)
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
-        tm.that("dict" in (result.error or "").lower(), eq=True)
+        tm.that(result.error, none=False)
+        tm.that((result.error or "").lower(), has="dict")
 
     def test_application_add_domain_event_invalid_type(self) -> None:
         """Test add_domain_event with invalid type raises ValidationError."""
@@ -431,8 +431,8 @@ class TestFlextWebModels:
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.add_domain_event("")
         tm.fail(result)
-        tm.that(result.error is not None, eq=True)
-        tm.that("empty" in (result.error or "").lower(), eq=True)
+        tm.that(result.error, none=False)
+        tm.that((result.error or "").lower(), has="empty")
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
@@ -498,7 +498,7 @@ class TestFlextWebModels:
         """Test create_web_request with validation error (lines 961-967)."""
         result = create_entry("web_request", method="GET", url="")
         tm.fail(result), "Empty URL should cause validation failure"
-        tm.that(result.error is not None, eq=True)
+        tm.that(result.error, none=False)
 
     def test_create_web_response_validation_error(self) -> None:
         """Test create_web_response with validation error (lines 1008-1014)."""
@@ -507,7 +507,7 @@ class TestFlextWebModels:
             tm.fail(result),
             "Invalid status code should cause validation failure",
         )
-        tm.that(result.error is not None, eq=True)
+        tm.that(result.error, none=False)
 
     def test_application_edge_cases(self) -> None:
         """Test Application model with edge cases."""
@@ -568,7 +568,7 @@ class TestFlextWebModels:
                 tm.fail(result),
                 (f"Expected failure for app '{name}', but succeeded"),
             )
-            tm.that(result.error is not None, eq=True)
+            tm.that(result.error, none=False)
 
     def test_extreme_edge_cases(self) -> None:
         """Test absolute extreme edge cases that might reveal bugs."""
@@ -620,7 +620,7 @@ class TestFlextWebModels:
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         result = app.add_domain_event("TestEvent")
         tm.ok(result)
-        tm.that(result.value is not None, eq=True)
+        tm.that(result.value, none=False)
         tm.that(hasattr(result.value, "event_type"), eq=True)
 
     def test_application_add_domain_event_empty(self) -> None:

@@ -47,7 +47,7 @@ class TestFlextWebUtilities:
         tm.that(app.name, eq="test-app")
         tm.that(app.host, eq="localhost")
         tm.that(app.port, eq=8080)
-        tm.that(app.id is not None, eq=True)
+        tm.that(app.id, none=False)
 
     def test_validation_error_handling(self) -> None:
         """Test validation error handling."""
@@ -82,7 +82,7 @@ class TestFlextWebUtilities:
         tm.that(result1, eq=result2)
         result1 = u.format_app_id("Test App")
         result2 = u.format_app_id("Different App")
-        tm.that(result1 != result2, eq=True)
+        tm.that(result1, ne=result2)
 
     def test_format_app_id_safe_string_failure(self) -> None:
         """Test format_app_id when safe_string fails."""

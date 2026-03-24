@@ -66,7 +66,7 @@ class TestFlextWebVersion:
     def test_version_format(self) -> None:
         """Test version format is valid."""
         version_parts = __version__.split(".")
-        tm.that(len(version_parts) >= 2, eq=True)
+        tm.that(len(version_parts), gte=2)
         version_from_info = ".".join(str(part) for part in __version_info__)
         tm.that(version_from_info, eq=__version__)
 

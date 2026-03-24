@@ -27,9 +27,9 @@ class TestFlextWebSettings:
         present and of correct type, not specific values.
         """
         config = FlextWebSettings()
-        tm.that(config.host is not None, eq=True)
-        tm.that(config.port is not None, eq=True)
-        tm.that(config.app_name is not None, eq=True)
+        tm.that(config.host, none=False)
+        tm.that(config.port, none=False)
+        tm.that(config.app_name, none=False)
         tm.that(isinstance(config.app_name, str), eq=True)
         tm.that(config.app_name, eq=True)
 
@@ -87,7 +87,7 @@ class TestFlextWebSettings:
     def test_validation_secret_key_valid(self) -> None:
         """Test secret key validation with valid key."""
         config = FlextWebSettings(secret_key="valid-secret-key-32-characters-long")
-        tm.that(config.secret_key is not None, eq=True)
+        tm.that(config.secret_key, none=False)
 
     def test_ssl_configuration_valid(self) -> None:
         """Test SSL configuration with valid cert and key paths."""
@@ -111,8 +111,8 @@ class TestFlextWebSettings:
     def test_validate_config_success(self) -> None:
         """Test config validation with Pydantic."""
         config = FlextWebSettings()
-        tm.that(config.host is not None, eq=True)
-        tm.that(config.port is not None, eq=True)
+        tm.that(config.host, none=False)
+        tm.that(config.port, none=False)
 
     def test_to_dict_method(self) -> None:
         """Test config to dict conversion using Pydantic model_dump."""
@@ -120,7 +120,7 @@ class TestFlextWebSettings:
         config_dict = config.model_dump()
         tm.that(config_dict["host"], eq="localhost")
         tm.that(config_dict["port"], eq=8080)
-        tm.that("debug_mode" in config_dict, eq=True)
+        tm.that(config_dict, has="debug_mode")
 
     def test_create_web_config_factory(self) -> None:
         """Test web config direct instantiation with Pydantic."""
@@ -134,5 +134,5 @@ class TestFlextWebSettings:
         tm.ok(result)
         config = result.value
         tm.that(isinstance(config, FlextWebSettings), eq=True)
-        tm.that(config.host is not None, eq=True)
-        tm.that(config.port is not None, eq=True)
+        tm.that(config.host, none=False)
+        tm.that(config.port, none=False)

@@ -218,16 +218,16 @@ class TestFlextWebProtocols:
         """Test that protocols have proper type annotations."""
         protocol = p.Web.WebAppManager
         create_app_annotations = protocol.__dict__["create_app"].__annotations__
-        tm.that("name" in create_app_annotations, eq=True)
-        tm.that("port" in create_app_annotations, eq=True)
-        tm.that("host" in create_app_annotations, eq=True)
-        tm.that("return" in create_app_annotations, eq=True)
+        tm.that(create_app_annotations, has="name")
+        tm.that(create_app_annotations, has="port")
+        tm.that(create_app_annotations, has="host")
+        tm.that(create_app_annotations, has="return")
 
     def test_protocol_documentation(self) -> None:
         """Test that protocols have proper documentation."""
         protocol = p.Web.WebAppManager
         tm.that(hasattr(protocol, "__doc__"), eq=True)
-        tm.that(protocol.__doc__ is not None, eq=True)
+        tm.that(protocol.__doc__, none=False)
 
     def test_protocol_consistency(self) -> None:
         """Test that protocols are consistent with implementation."""
@@ -334,7 +334,7 @@ class TestFlextWebProtocols:
             return hasattr(obj, "create_app") and hasattr(obj, "start_app")
 
         tm.that(validate_app_manager(ValidAppManager()), eq=True)
-        tm.that(not validate_app_manager(InvalidAppManager()), eq=True)
+        tm.that(validate_app_manager(InvalidAppManager()), eq=False)
 
     def test_app_manager_protocol_real_lifecycle_behavior(self) -> None:
         """Validate real app lifecycle behavior from protocol base implementation."""
@@ -343,7 +343,7 @@ class TestFlextWebProtocols:
         created = manager.create_app("test", 8080, "localhost")
         tm.ok(created)
         app_id = str(created.value["id"])
-        tm.that(created.value["framework"] in {"fastapi", "flask"}, eq=True)
+        tm.that({"fastapi", "flask"}, has=created.value["framework"])
         started = manager.start_app(app_id)
         tm.ok(started)
         tm.that(started.value["status"], eq=c.Web.Status.RUNNING.value)
@@ -424,9 +424,9 @@ class TestFlextWebProtocols:
         error = ValueError("Test error")
         error_result = formatter.format_error(error)
         tm.that(error_result["status"], eq=c.Web.WebResponse.STATUS_ERROR)
-        tm.that("Test error" in str(error_result["message"]), eq=True)
+        tm.that(str(error_result["message"]), has="Test error")
         json_result = formatter.create_json_response(data_with_nested)
-        tm.that(c.Web.Http.HEADER_CONTENT_TYPE in json_result, eq=True)
+        tm.that(json_result, has=c.Web.Http.HEADER_CONTENT_TYPE)
         tm.that(
             (
                 json_result[c.Web.Http.HEADER_CONTENT_TYPE]
@@ -481,7 +481,7 @@ class TestFlextWebProtocols:
             "nested": {"key": "value"},
         }
         json_response = framework.create_json_response(data)
-        tm.that(c.Web.Http.HEADER_CONTENT_TYPE in json_response, eq=True)
+        tm.that(json_response, has=c.Web.Http.HEADER_CONTENT_TYPE)
         request_data = framework.get_request_data({})
         tm.that(isinstance(request_data, dict), eq=True)
         is_json = framework.is_json_request({})
@@ -596,7 +596,7 @@ class TestFlextWebProtocols:
         tm.ok(template_result)
         dashboard_result = renderer.render_dashboard({"data": "value"})
         tm.ok(dashboard_result)
-        tm.that("<html>Dashboard</html>" in dashboard_result.value, eq=True)
+        tm.that(dashboard_result.value, has="<html>Dashboard</html>")
 
     def test_web_template_engine_protocol_methods(self) -> None:
         """Test WebTemplateEngine methods execution."""
@@ -696,7 +696,7 @@ class TestFlextWebProtocols:
         health = monitoring.get_web_health_status()
         tm.that(health["status"], eq=c.Web.WebResponse.STATUS_HEALTHY)
         metrics = monitoring.get_web_metrics()
-        tm.that("requests" in metrics, eq=True)
+        tm.that(metrics, has="requests")
 
     def test_app_lifecycle_direct_execution_on_protocol_base(self) -> None:
         """Test real app lifecycle behavior through WebAppManager protocol base."""
@@ -705,8 +705,8 @@ class TestFlextWebProtocols:
         result = manager.create_app("test", 8080, "localhost")
         tm.ok(result)
         app_id = str(result.value["id"])
-        tm.that(result.value["framework"] in {"fastapi", "flask"}, eq=True)
-        tm.that(result.value["interface"] in {"asgi", "wsgi"}, eq=True)
+        tm.that({"fastapi", "flask"}, has=result.value["framework"])
+        tm.that({"asgi", "wsgi"}, has=result.value["interface"])
         started = manager.start_app(app_id)
         tm.ok(started)
         tm.that(started.value["status"], eq=c.Web.Status.RUNNING.value)
@@ -738,7 +738,7 @@ class TestFlextWebProtocols:
         error = ValueError("Test error message")
         error_result = formatter.format_error(error)
         tm.that(error_result["status"], eq=c.Web.WebResponse.STATUS_ERROR)
-        tm.that("Test error message" in str(error_result["message"]), eq=True)
+        tm.that(str(error_result["message"]), has="Test error message")
         json_result = formatter.create_json_response(data_with_all_types)
         tm.that(
             (
@@ -811,7 +811,7 @@ class TestFlextWebProtocols:
             "status": "running",
         })
         tm.ok(result)
-        tm.that("dashboard" in result.value, eq=True)
+        tm.that(result.value, has="dashboard")
 
     def test_template_engine_real_behavior(self) -> None:
         """Test template engine protocol with config and global/filter handling."""
@@ -883,10 +883,10 @@ class TestFlextWebProtocols:
             paths = [
                 route.path for route in app_instance.routes if hasattr(route, "path")
             ]
-            tm.that("/protocol/health" in paths, eq=True)
+            tm.that(paths, has="/protocol/health")
         elif isinstance(app_instance, flask.Flask):
             routes = [rule.rule for rule in app_instance.url_map.iter_rules()]
-            tm.that("/protocol/health" in routes, eq=True)
+            tm.that(routes, has="/protocol/health")
 
     def test_start_stop_manage_runtime_registry(self) -> None:
         """TDD lifecycle must persist and cleanup runtime metadata."""
@@ -897,7 +897,7 @@ class TestFlextWebProtocols:
         app_id = str(created.value["id"])
         started = manager.start_app(app_id)
         tm.ok(started)
-        tm.that(app_id in p.Web.app_runtimes, eq=True)
+        tm.that(p.Web.app_runtimes, has=app_id)
         stopped = manager.stop_app(app_id)
         tm.ok(stopped)
         tm.that(app_id not in p.Web.app_runtimes, eq=True)

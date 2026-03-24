@@ -24,7 +24,7 @@ class TestFlextWebApi:
     def test_initialization(self) -> None:
         """Test FlextWebApi initialization."""
         api = FlextWebApi()
-        tm.that(api is not None, eq=True)
+        tm.that(api, none=False)
         tm.that(hasattr(api, "_container"), eq=True)
         tm.that(hasattr(api, "_logger"), eq=True)
 
@@ -33,7 +33,7 @@ class TestFlextWebApi:
         result = FlextWebApi.create_fastapi_app()
         tm.ok(result)
         app = result.value
-        tm.that(app is not None, eq=True)
+        tm.that(app, none=False)
 
     def test_create_fastapi_app_with_config(self) -> None:
         """Test FastAPI app creation with configuration."""
@@ -41,7 +41,7 @@ class TestFlextWebApi:
         result = FlextWebApi.create_fastapi_app(config)
         tm.ok(result)
         app = result.value
-        tm.that(app is not None, eq=True)
+        tm.that(app, none=False)
 
     def test_create_fastapi_app_with_invalid_config(self) -> None:
         """Test FastAPI app creation with invalid config - REAL validation."""
@@ -106,8 +106,8 @@ class TestFlextWebApi:
             host="localhost", port=8080, debug=True
         )
         tm.ok(success_result)
-        tm.that(success_result.value is not None, eq=True)
-        tm.that(success_result.error is None, eq=True)
+        tm.that(success_result.value, none=False)
+        tm.that(success_result.error, none=True)
         test_success = create_test_result(success=True, data="test")
         test_failure = create_test_result(success=False, error="test error")
         tm.ok(test_success)
@@ -162,7 +162,7 @@ class TestFlextWebApi:
             tm.fail(result),
             f"Expected failure for {host}:{port}, but succeeded",
         )
-        tm.that(result.error is not None, eq=True)
+        tm.that(result.error, none=False)
 
     def test_validate_http_config_success(self) -> None:
         """Test HTTP configuration validation."""
@@ -194,7 +194,7 @@ class TestFlextWebApi:
         tm.ok(result)
         status = result.value
         tm.that(isinstance(status, m.Web.ServiceResponse), eq=True)
-        tm.that("http_services_available" in status.capabilities, eq=True)
+        tm.that(status.capabilities, has="http_services_available")
         tm.that(status.service, eq="flext-web-api")
         tm.that(status.status, eq="operational")
 
@@ -204,5 +204,5 @@ class TestFlextWebApi:
         tm.ok(result)
         capabilities = result.value
         tm.that(isinstance(capabilities, dict), eq=True)
-        tm.that("application_management" in capabilities, eq=True)
-        tm.that("service_management" in capabilities, eq=True)
+        tm.that(capabilities, has="application_management")
+        tm.that(capabilities, has="service_management")

@@ -47,7 +47,7 @@ class TestFlextWebFields:
     def test_secret_key_field_creation(self) -> None:
         """Test secret key field creation."""
         config = FlextWebSettings(secret_key="valid-secret-key-32-characters-long")
-        tm.that(config.secret_key is not None, eq=True)
+        tm.that(config.secret_key, none=False)
 
     def test_http_status_field_creation(self) -> None:
         """Test HTTP status field creation."""
@@ -101,8 +101,8 @@ class TestFlextWebFields:
         """Test field descriptions are properly set."""
         host_model = m.Web.Request(url="http://localhost:8080")
         port_model = m.Web.Request(url="http://localhost:3000")
-        tm.that(host_model is not None, eq=True)
-        tm.that(port_model is not None, eq=True)
+        tm.that(host_model, none=False)
+        tm.that(port_model, none=False)
 
     def test_http_status_field_with_kwargs(self) -> None:
         """Test HTTP status field with additional kwargs."""

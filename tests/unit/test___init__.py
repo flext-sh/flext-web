@@ -58,7 +58,7 @@ class TestFlextWebInit:
             "t",
             "u",
         }
-        tm.that(set(flext_web.__all__) == expected_exports, eq=True)
+        tm.that(set(flext_web.__all__), eq=expected_exports)
 
     def test_imports_are_classes_or_modules(self) -> None:
         """Test that imported items are of correct types."""
