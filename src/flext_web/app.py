@@ -192,15 +192,16 @@ class FlextWebApp(FlextService[bool]):
         app.config["TESTING"] = flask_config.testing
 
         def health_check() -> flask.Response:
-            json_data = flask.jsonify(
-                status=c.Web.WebResponse.STATUS_HEALTHY,
-                service=c.Web.WebService.SERVICE_NAME_FLASK,
-                timestamp=u.generate_iso_timestamp(),
-            )
-            if not isinstance(json_data, flask.Response):
-                msg = "Expected flask.Response from jsonify"
-                raise TypeError(msg)
-            return json_data
+            import json as _json
+
+            body: str = _json.dumps({
+                "status": c.Web.WebResponse.STATUS_HEALTHY,
+                "service": c.Web.WebService.SERVICE_NAME_FLASK,
+                "timestamp": u.generate_iso_timestamp(),
+            })
+            response = flask.make_response(body, 200)
+            response.content_type = "application/json"
+            return response
 
         app.add_url_rule("/health", "health_check", health_check)
 

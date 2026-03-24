@@ -19,7 +19,7 @@ from pydantic import Field
 from flext_web import c, m, u
 
 
-class ApplicationConfig(m.Web.EntityConfig):
+class FlextWebApplicationConfig(m.Web.EntityConfig):
     """Application configuration with defaults for name, status, environment, debug, and version."""
 
     name: Annotated[
@@ -47,11 +47,11 @@ class ApplicationConfig(m.Web.EntityConfig):
     ]
 
 
-class WebRequestConfig(m.Web.AppRequest):
+class FlextWebRequestConfig(m.Web.AppRequest):
     """Web request configuration extending AppRequest."""
 
 
-class WebResponseConfig(m.Web.AppResponse):
+class FlextWebResponseConfig(m.Web.AppResponse):
     """Web response configuration extending AppResponse."""
 
 
@@ -163,7 +163,7 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_application(
         cls,
-        config: ApplicationConfig,
+        config: FlextWebApplicationConfig,
     ) -> r[m.Web.Entity]:
         """Create application model instance.
 
@@ -320,7 +320,7 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_web_request(
         cls,
-        config: WebRequestConfig,
+        config: FlextWebRequestConfig,
     ) -> r[m.Web.AppRequest]:
         """Create web request model instance with proper validation.
 
@@ -387,7 +387,7 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_web_response(
         cls,
-        config: WebResponseConfig,
+        config: FlextWebResponseConfig,
     ) -> r[m.Web.AppResponse]:
         """Create web response model instance with proper validation.
 
@@ -558,8 +558,15 @@ class FlextWebTypes(FlextTypes):
 
 t = FlextWebTypes
 
+ApplicationConfig = FlextWebApplicationConfig
+WebRequestConfig = FlextWebRequestConfig
+WebResponseConfig = FlextWebResponseConfig
+
 __all__ = [
     "ApplicationConfig",
+    "FlextWebApplicationConfig",
+    "FlextWebRequestConfig",
+    "FlextWebResponseConfig",
     "FlextWebTypes",
     "WebRequestConfig",
     "WebResponseConfig",
