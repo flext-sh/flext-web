@@ -27,8 +27,8 @@ class TestFlextWebInit:
 
     def test_version_exports(self) -> None:
         """Test that version information is exported."""
-        tm.that(isinstance(__version__, str), eq=True)
-        tm.that(isinstance(__version_info__, tuple), eq=True)
+        tm.that(__version__, is_=str)
+        tm.that(__version_info__, is_=tuple)
 
     def test_all_exports_match(self) -> None:
         """Test that __all__ contains all expected exports."""
@@ -64,4 +64,4 @@ class TestFlextWebInit:
         """Test that imported items are of correct types."""
         tm.that(callable(flext_web.FlextWebApi), eq=True)
         tm.that(callable(flext_web.FlextWebSettings), eq=True)
-        tm.that(isinstance(__version__, str), eq=True)
+        tm.that(__version__, is_=str)

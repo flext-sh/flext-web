@@ -30,7 +30,7 @@ class TestFlextWebSettings:
         tm.that(config.host, none=False)
         tm.that(config.port, none=False)
         tm.that(config.app_name, none=False)
-        tm.that(isinstance(config.app_name, str), eq=True)
+        tm.that(config.app_name, is_=str)
         tm.that(config.app_name, eq=True)
 
     def test_initialization_with_custom_values(self) -> None:
@@ -133,6 +133,6 @@ class TestFlextWebSettings:
         result = FlextWebSettings.create_web_config()
         tm.ok(result)
         config = result.value
-        tm.that(isinstance(config, FlextWebSettings), eq=True)
+        tm.that(config, is_=FlextWebSettings)
         tm.that(config.host, none=False)
         tm.that(config.port, none=False)

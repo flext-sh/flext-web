@@ -89,7 +89,7 @@ class TestFlextWebProtocols:
     def test_web_app_manager_protocol(self) -> None:
         """Test WebAppManager definition."""
         protocol = p.Web.WebAppManager
-        tm.that(isinstance(protocol, type), eq=True)
+        tm.that(protocol, is_=type)
         tm.that(hasattr(protocol, "__annotations__"), eq=True)
         tm.that(hasattr(protocol, "create_app"), eq=True)
         tm.that(hasattr(protocol, "start_app"), eq=True)
@@ -99,7 +99,7 @@ class TestFlextWebProtocols:
     def test_response_formatter_protocol(self) -> None:
         """Test ResponseFormatter definition."""
         protocol = p.Web.WebResponseFormatter
-        tm.that(isinstance(protocol, type), eq=True)
+        tm.that(protocol, is_=type)
         tm.that(hasattr(protocol, "__annotations__"), eq=True)
         tm.that(hasattr(protocol, "format_success"), eq=True)
         tm.that(hasattr(protocol, "format_error"), eq=True)
@@ -107,7 +107,7 @@ class TestFlextWebProtocols:
     def test_web_framework_interface_protocol(self) -> None:
         """Test WebFrameworkInterface definition."""
         protocol = p.Web.WebFrameworkInterface
-        tm.that(isinstance(protocol, type), eq=True)
+        tm.that(protocol, is_=type)
         tm.that(hasattr(protocol, "__annotations__"), eq=True)
         tm.that(hasattr(protocol, "create_json_response"), eq=True)
         tm.that(hasattr(protocol, "get_request_data"), eq=True)
@@ -116,7 +116,7 @@ class TestFlextWebProtocols:
     def test_template_renderer_protocol(self) -> None:
         """Test TemplateRenderer definition."""
         protocol = p.Web.WebTemplateRenderer
-        tm.that(isinstance(protocol, type), eq=True)
+        tm.that(protocol, is_=type)
         tm.that(hasattr(protocol, "__annotations__"), eq=True)
         tm.that(hasattr(protocol, "render_template"), eq=True)
         tm.that(hasattr(protocol, "render_dashboard"), eq=True)
@@ -124,7 +124,7 @@ class TestFlextWebProtocols:
     def test_web_service_protocol(self) -> None:
         """Test WebService definition."""
         protocol = p.Web.WebService
-        tm.that(isinstance(protocol, type), eq=True)
+        tm.that(protocol, is_=type)
         tm.that(hasattr(protocol, "__annotations__"), eq=True)
         tm.that(hasattr(protocol, "initialize_routes"), eq=True)
         tm.that(hasattr(protocol, "configure_middleware"), eq=True)
@@ -134,7 +134,7 @@ class TestFlextWebProtocols:
     def test_web_repository_protocol(self) -> None:
         """Test WebRepository definition."""
         protocol = p.Web.WebRepository
-        tm.that(isinstance(protocol, type), eq=True)
+        tm.that(protocol, is_=type)
         tm.that(hasattr(protocol, "__annotations__"), eq=True)
         tm.that(hasattr(protocol, "get_by_id"), eq=True)
         tm.that(hasattr(protocol, "save"), eq=True)
@@ -144,7 +144,7 @@ class TestFlextWebProtocols:
     def test_web_handler_protocol(self) -> None:
         """Test WebHandler definition."""
         protocol = p.Web.WebHandler
-        tm.that(isinstance(protocol, type), eq=True)
+        tm.that(protocol, is_=type)
         tm.that(hasattr(protocol, "__annotations__"), eq=True)
         tm.that(hasattr(protocol, "handle_request"), eq=True)
         tm.that(callable(protocol), eq=True)
@@ -153,7 +153,7 @@ class TestFlextWebProtocols:
     def test_web_template_engine_protocol(self) -> None:
         """Test WebTemplateEngine definition."""
         protocol = p.Web.WebTemplateEngine
-        tm.that(isinstance(protocol, type), eq=True)
+        tm.that(protocol, is_=type)
         tm.that(hasattr(protocol, "__annotations__"), eq=True)
         tm.that(hasattr(protocol, "load_template_config"), eq=True)
         tm.that(hasattr(protocol, "get_template_config"), eq=True)
@@ -165,7 +165,7 @@ class TestFlextWebProtocols:
     def test_web_monitoring_protocol(self) -> None:
         """Test WebMonitoring definition."""
         protocol = p.Web.WebMonitoring
-        tm.that(isinstance(protocol, type), eq=True)
+        tm.that(protocol, is_=type)
         tm.that(hasattr(protocol, "__annotations__"), eq=True)
         tm.that(hasattr(protocol, "record_web_request"), eq=True)
         tm.that(hasattr(protocol, "get_web_health_status"), eq=True)
@@ -243,7 +243,7 @@ class TestFlextWebProtocols:
             p.Web.WebMonitoring,
         ]
         for protocol in protocols:
-            tm.that(isinstance(protocol, type), eq=True)
+            tm.that(protocol, is_=type)
             tm.that(hasattr(protocol, "__annotations__"), eq=True)
             methods = [name for name in dir(protocol) if not name.startswith("_")]
             tm.that(methods, eq=True)
@@ -420,7 +420,7 @@ class TestFlextWebProtocols:
         result = formatter.format_success(data_with_nested)
         tm.that(result["status"], eq=c.Web.WebResponse.STATUS_SUCCESS)
         tm.that(result["key1"], eq="value1")
-        tm.that(isinstance(result["nested"], dict), eq=True)
+        tm.that(result["nested"], is_=dict)
         error = ValueError("Test error")
         error_result = formatter.format_error(error)
         tm.that(error_result["status"], eq=c.Web.WebResponse.STATUS_ERROR)
@@ -483,7 +483,7 @@ class TestFlextWebProtocols:
         json_response = framework.create_json_response(data)
         tm.that(json_response, has=c.Web.Http.HEADER_CONTENT_TYPE)
         request_data = framework.get_request_data({})
-        tm.that(isinstance(request_data, dict), eq=True)
+        tm.that(request_data, is_=dict)
         is_json = framework.is_json_request({})
         tm.that(is_json is False, eq=True)
 
@@ -733,8 +733,8 @@ class TestFlextWebProtocols:
         tm.that(result["string"], eq="value")
         tm.that(result["int"], eq=42)
         tm.that(result["bool"] is True, eq=True)
-        tm.that(isinstance(result["list"], list), eq=True)
-        tm.that(isinstance(result["dict"], dict), eq=True)
+        tm.that(result["list"], is_=list)
+        tm.that(result["dict"], is_=dict)
         error = ValueError("Test error message")
         error_result = formatter.format_error(error)
         tm.that(error_result["status"], eq=c.Web.WebResponse.STATUS_ERROR)
@@ -748,7 +748,7 @@ class TestFlextWebProtocols:
             eq=True,
         )
         request_data = formatter.get_request_data({"test": "data"})
-        tm.that(isinstance(request_data, dict), eq=True)
+        tm.that(request_data, is_=dict)
         tm.that(request_data["test"], eq="data")
 
     def test_framework_interface_real_behavior(self) -> None:
@@ -758,7 +758,7 @@ class TestFlextWebProtocols:
         result = framework.create_json_response(data)
         tm.that(result[c.Web.Http.HEADER_CONTENT_TYPE], eq=c.Web.Http.CONTENT_TYPE_JSON)
         request_data = framework.get_request_data({"test": "data"})
-        tm.that(isinstance(request_data, dict), eq=True)
+        tm.that(request_data, is_=dict)
         tm.that(request_data["test"], eq="data")
         is_json = framework.is_json_request({"content-type": "application/json"})
         tm.that(is_json is True, eq=True)

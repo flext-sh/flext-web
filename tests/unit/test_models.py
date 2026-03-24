@@ -270,7 +270,7 @@ class TestFlextWebModels:
         result = create_entry("web_app", name="test-app", host="localhost", port=8080)
         tm.ok(result)
         app = result.value
-        tm.that(isinstance(app, m.Web.Entity), eq=True)
+        tm.that(app, is_=m.Web.Entity)
         tm.that(app.name, eq="test-app")
         tm.that(app.host, eq="localhost")
         tm.that(app.port, eq=8080)
@@ -286,7 +286,7 @@ class TestFlextWebModels:
         )
         tm.ok(result)
         request = result.value
-        tm.that(isinstance(request, m.Web.AppRequest), eq=True)
+        tm.that(request, is_=m.Web.AppRequest)
         tm.that(request.method, eq="POST")
         tm.that(request.url, eq="http://localhost:8080/api/test")
 
@@ -301,7 +301,7 @@ class TestFlextWebModels:
         )
         tm.ok(result)
         response = result.value
-        tm.that(isinstance(response, m.Web.AppResponse), eq=True)
+        tm.that(response, is_=m.Web.AppResponse)
         tm.that(response.status_code, eq=201)
 
     def test_http_request_has_body_property(self) -> None:
@@ -559,7 +559,7 @@ class TestFlextWebModels:
                 (f"Expected success for app '{name}', got: {result.error}"),
             )
             app = result.value
-            tm.that(isinstance(app, m.Web.Entity), eq=True)
+            tm.that(app, is_=m.Web.Entity)
             tm.that(app.name, eq=name)
             tm.that(app.host, eq=host)
             tm.that(app.port, eq=port)

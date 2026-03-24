@@ -24,10 +24,10 @@ from flext_web.__version__ import (
 
 def assert_version_info() -> None:
     """Helper to assert version info is valid."""
-    tm.that(isinstance(__version__, str), eq=True)
-    tm.that(isinstance(__version_info__, tuple), eq=True)
+    tm.that(__version__, is_=str)
+    tm.that(__version_info__, is_=tuple)
     tm.that(__version_info__, eq=True)
-    tm.that(isinstance(VERSION, FlextWebVersion), eq=True)
+    tm.that(VERSION, is_=FlextWebVersion)
 
 
 class TestFlextWebVersion:
@@ -53,8 +53,8 @@ class TestFlextWebVersion:
     def test_current_version(self) -> None:
         """Test current version retrieval."""
         current = FlextWebVersion.current()
-        tm.that(isinstance(current.version, str), eq=True)
-        tm.that(isinstance(current.version_info, tuple), eq=True)
+        tm.that(current.version, is_=str)
+        tm.that(current.version_info, is_=tuple)
         tm.that(current.version_info, eq=True)
 
     def test_version_globals(self) -> None:
@@ -72,15 +72,15 @@ class TestFlextWebVersion:
 
     def test_metadata_constants(self) -> None:
         """Test that metadata constants are properly defined."""
-        tm.that(isinstance(__title__, str), eq=True)
-        tm.that(isinstance(__description__, str), eq=True)
-        tm.that(isinstance(__author__, str), eq=True)
-        tm.that(isinstance(__author_email__, str), eq=True)
-        tm.that(isinstance(__license__, str), eq=True)
-        tm.that(isinstance(__url__, str), eq=True)
+        tm.that(__title__, is_=str)
+        tm.that(__description__, is_=str)
+        tm.that(__author__, is_=str)
+        tm.that(__author_email__, is_=str)
+        tm.that(__license__, is_=str)
+        tm.that(__url__, is_=str)
         tm.that(__title__, eq=True)
         tm.that(__description__, eq=True)
         tm.that(__author__, eq=True)
-        tm.that(isinstance(__license__, str), eq=True)
+        tm.that(__license__, is_=str)
         if __url__:
             tm.that("://" in __url__ or __url__.startswith("http"), eq=True)

@@ -181,8 +181,8 @@ class TestFlextWebService:
         tm.that(dashboard_data.total_applications, gte=0)
         tm.that(dashboard_data.running_applications, gte=0)
         tm.that({"operational", "stopped"}, has=dashboard_data.service_status)
-        tm.that(isinstance(dashboard_data.routes_initialized, bool), eq=True)
-        tm.that(isinstance(dashboard_data.middleware_configured, bool), eq=True)
+        tm.that(dashboard_data.routes_initialized, is_=bool)
+        tm.that(dashboard_data.middleware_configured, is_=bool)
         tm.that(dashboard_data.timestamp, none=False)
 
     def test_list_apps(self) -> None:
@@ -191,7 +191,7 @@ class TestFlextWebService:
         list_result = service.list_apps()
         tm.ok(list_result)
         apps_data: Sequence[Any] = list_result.value
-        tm.that(isinstance(apps_data, list), eq=True)
+        tm.that(apps_data, is_=list)
         tm.that(all(hasattr(app, "id") for app in apps_data), eq=True)
 
     def test_create_app_success(self) -> None:
@@ -329,7 +329,7 @@ class TestFlextWebService:
         result = s.create_web_service()
         tm.ok(result)
         service = result.value
-        tm.that(isinstance(service, s), eq=True)
+        tm.that(service, is_=s)
 
     def test_create_web_service_with_config(self) -> None:
         """Test create_web_service with config."""
@@ -337,7 +337,7 @@ class TestFlextWebService:
         result = s.create_web_service(config)
         tm.ok(result)
         service = result.value
-        tm.that(isinstance(service, s), eq=True)
+        tm.that(service, is_=s)
 
     @pytest.mark.xfail(
         reason="FlextSettings bug: Field constraints not enforced", strict=False
@@ -429,7 +429,7 @@ class TestFlextWebService:
         tm.ok(metrics_result)
         metrics_data = metrics_result.value
         tm.that(metrics_data.service_status, eq="operational")
-        tm.that(isinstance(metrics_data.components, list), eq=True)
+        tm.that(metrics_data.components, is_=list)
 
     def test_create_configuration_success(self) -> None:
         """Test configuration creation."""
@@ -517,7 +517,7 @@ class TestFlextWebService:
         result = s.create_service()
         tm.ok(result)
         service = result.value
-        tm.that(isinstance(service, s), eq=True)
+        tm.that(service, is_=s)
 
     def test_create_service_with_config(self) -> None:
         """Test create_service with config."""
@@ -525,7 +525,7 @@ class TestFlextWebService:
         result = s.create_service(config)
         tm.ok(result)
         service = result.value
-        tm.that(isinstance(service, s), eq=True)
+        tm.that(service, is_=s)
         tm.that(service._config, none=False)
 
     def test_entity_service_execute(self) -> None:

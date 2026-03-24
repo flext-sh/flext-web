@@ -193,7 +193,7 @@ class TestFlextWebApi:
         result = FlextWebApi.get_service_status()
         tm.ok(result)
         status = result.value
-        tm.that(isinstance(status, m.Web.ServiceResponse), eq=True)
+        tm.that(status, is_=m.Web.ServiceResponse)
         tm.that(status.capabilities, has="http_services_available")
         tm.that(status.service, eq="flext-web-api")
         tm.that(status.status, eq="operational")
@@ -203,6 +203,6 @@ class TestFlextWebApi:
         result = FlextWebApi.get_api_capabilities()
         tm.ok(result)
         capabilities = result.value
-        tm.that(isinstance(capabilities, dict), eq=True)
+        tm.that(capabilities, is_=dict)
         tm.that(capabilities, has="application_management")
         tm.that(capabilities, has="service_management")

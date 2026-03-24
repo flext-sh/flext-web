@@ -73,7 +73,7 @@ class TestFlextWebModels:
             "timestamp": "2025-01-01T00:00:00Z",
             "service_id": "test-service-123",
         }
-        tm.that(isinstance(health_data, dict), eq=True)
+        tm.that(health_data, is_=dict)
         tm.that(health_data["status"], eq="healthy")
 
     def test_request_context_functionality(self) -> None:
@@ -123,7 +123,7 @@ class TestFlextWebModels:
         tm.that(hasattr(config, "models_available"), eq=True)
         tm.that(config.use_pydantic_models is True, eq=True)
         tm.that(config.enable_runtime_validation is True, eq=True)
-        tm.that(isinstance(config.models_available, list), eq=True)
+        tm.that(config.models_available, is_=list)
 
     def test_model_creation(self) -> None:
         """Test model creation functionality."""
@@ -165,7 +165,7 @@ class TestFlextWebModels:
 
         request = t.HttpRequest(url="http://localhost:8080/api/test", method="GET")
         result = process_request_data(request)
-        tm.that(isinstance(result, dict), eq=True)
+        tm.that(result, is_=dict)
         tm.that(result["processed"] is True, eq=True)
         assert isinstance(result["method"], str)
         tm.that(result["method"], eq="GET")
@@ -343,13 +343,13 @@ class TestFlextWebModels:
             url="http://localhost:8080", method="GET", headers=None
         )
         tm.ok(result), "Operation should succeed"
-        tm.that(isinstance(result.value.headers, dict), eq=True)
+        tm.that(result.value.headers, is_=dict)
 
     def test_create_http_response_with_none_headers(self) -> None:
         """Test create_http_response with None headers."""
         result = t.create_http_response(status_code=200, headers=None)
         tm.ok(result), "Operation should succeed"
-        tm.that(isinstance(result.value.headers, dict), eq=True)
+        tm.that(result.value.headers, is_=dict)
 
     def test_create_web_request_with_none_values(self) -> None:
         """Test create_web_request with None headers and query_params."""
@@ -382,7 +382,7 @@ class TestFlextWebModels:
         config = t.TypesConfig()
         tm.that(config.use_pydantic_models is True, eq=True)
         tm.that(config.enable_runtime_validation is True, eq=True)
-        tm.that(isinstance(config.models_available, list), eq=True)
+        tm.that(config.models_available, is_=list)
         tm.that(config.models_available, eq=True)
 
     def test_create_http_request_match_case_default(self) -> None:

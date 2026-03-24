@@ -127,7 +127,7 @@ class TestFlextWebFields:
         for status_code in status_codes:
             response_model = m.Web.Response(status_code=status_code)
             tm.that(response_model.status_code, eq=status_code)
-            tm.that(isinstance(response_model, m.Web.Response), eq=True)
+            tm.that(response_model, is_=m.Web.Response)
 
     def test_field_validation_integration(self) -> None:
         """Test field validation integration."""

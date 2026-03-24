@@ -28,7 +28,7 @@ class TestFlextWebHandlers:
         result = handler.list_apps()
         tm.ok(result)
         apps = result.value
-        tm.that(isinstance(apps, list), eq=True)
+        tm.that(apps, is_=list)
 
     def test_handle_health_check(self) -> None:
         """Test health check handling."""

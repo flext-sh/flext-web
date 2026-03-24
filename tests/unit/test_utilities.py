@@ -59,7 +59,7 @@ class TestFlextWebUtilities:
     def test_slugify_functionality(self) -> None:
         """Test slugify functionality."""
         slug = u.slugify("Test App Name")
-        tm.that(isinstance(slug, str), eq=True)
+        tm.that(slug, is_=str)
         tm.that(slug, eq="test-app-name")
 
     def test_utilities_logging_integration(self) -> None:

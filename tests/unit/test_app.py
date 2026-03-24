@@ -202,7 +202,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_fastapi_app(config)
         tm.ok(result)
         app = result.value
-        tm.that(isinstance(app, FastAPI), eq=True)
+        tm.that(app, is_=FastAPI)
         tm.that(app.title, eq="Test API")
 
     def test_app_health_check_endpoint(self) -> None:
