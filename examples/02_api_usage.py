@@ -94,9 +94,9 @@ def create_application(name: str, port: int, host: str = "localhost") -> t.AppDa
         """Parse JSON response."""
         try:
             json_data: Mapping[str, t.ContainerValue] = response.json()
-            return r[Mapping[str, t.ContainerValue]].ok(json_data)
+            return r[t.ContainerValueMapping].ok(json_data)
         except Exception as e:
-            return r[Mapping[str, t.ContainerValue]].fail(f"JSON parse failed: {e}")
+            return r[t.ContainerValueMapping].fail(f"JSON parse failed: {e}")
 
     result = _make_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
@@ -173,9 +173,9 @@ def _execute_app_operation(
         """Parse JSON from response."""
         try:
             json_data: Mapping[str, t.ContainerValue] = response.json()
-            return r[Mapping[str, t.ContainerValue]].ok(json_data)
+            return r[t.ContainerValueMapping].ok(json_data)
         except Exception as e:
-            return r[Mapping[str, t.ContainerValue]].fail(f"JSON parse failed: {e}")
+            return r[t.ContainerValueMapping].fail(f"JSON parse failed: {e}")
 
     result = (
         _make_http_request()
@@ -216,9 +216,9 @@ def _execute_list_operation(endpoint: str, data_key: str) -> Sequence[t.AppData]
         """Parse JSON from response."""
         try:
             json_data: Mapping[str, t.ContainerValue] = response.json()
-            return r[Mapping[str, t.ContainerValue]].ok(json_data)
+            return r[t.ContainerValueMapping].ok(json_data)
         except Exception as e:
-            return r[Mapping[str, t.ContainerValue]].fail(f"JSON parse failed: {e}")
+            return r[t.ContainerValueMapping].fail(f"JSON parse failed: {e}")
 
     result = _make_get_request()
     if result.is_success and result.value.status_code != ExampleConstants.HTTP_OK:
