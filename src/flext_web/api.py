@@ -114,14 +114,14 @@ class FlextWebApi:
         return r[FlextWebSettings].ok(config)
 
     @classmethod
-    def get_api_capabilities(cls) -> r[t.WebCore.ResponseDict]:
+    def get_api_capabilities(cls) -> r[t.Web.ResponseDict]:
         """Get API facade capabilities and supported operations.
 
         Returns:
         r[t.Core.ResponseDict]: Success contains capabilities info
 
         """
-        return r[t.WebCore.ResponseDict].ok({
+        return r[t.Web.ResponseDict].ok({
             "application_management": ["create_fastapi_app"],
             "service_management": ["create_http_service"],
             "configuration_management": ["create_http_config", "validate_http_config"],

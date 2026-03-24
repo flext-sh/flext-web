@@ -118,10 +118,10 @@ class FlextWebApp(FlextService[bool]):
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
-        def health_check() -> t.WebCore.ResponseDict:
+        def health_check() -> t.Web.ResponseDict:
             return cls.HealthHandler.create_handler()()
 
-        def info_endpoint() -> t.WebCore.ResponseDict:
+        def info_endpoint() -> t.Web.ResponseDict:
             return cls.InfoHandler.create_handler(config)()
 
         app.add_api_route("/health", health_check, methods=["GET"])
@@ -207,10 +207,10 @@ class FlextWebApp(FlextService[bool]):
         """Health check handler with single responsibility for system health monitoring."""
 
         @staticmethod
-        def create_handler() -> Callable[[], t.WebCore.ResponseDict]:
+        def create_handler() -> Callable[[], t.Web.ResponseDict]:
             """Create FastAPI health check handler function."""
 
-            def health_check() -> t.WebCore.ResponseDict:
+            def health_check() -> t.Web.ResponseDict:
                 return {
                     "status": c.Web.WebResponse.STATUS_HEALTHY,
                     "service": c.Web.WebService.SERVICE_NAME,
@@ -225,10 +225,10 @@ class FlextWebApp(FlextService[bool]):
         @staticmethod
         def create_handler(
             config: m.Web.FastAPIAppConfig,
-        ) -> Callable[[], t.WebCore.ResponseDict]:
+        ) -> Callable[[], t.Web.ResponseDict]:
             """Create FastAPI info handler function."""
 
-            def info_handler() -> t.WebCore.ResponseDict:
+            def info_handler() -> t.Web.ResponseDict:
                 return {
                     "service": c.Web.WebService.SERVICE_NAME,
                     "title": config.title,

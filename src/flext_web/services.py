@@ -358,7 +358,7 @@ class FlextWebServices(s[bool]):
             lambda service: service.get_entity(entity_id),
         )
 
-    def health_check(self) -> r[t.WebCore.ResponseDict]:
+    def health_check(self) -> r[t.Web.ResponseDict]:
         """Health check."""
         return self.health_status().map(
             lambda health_response: {
