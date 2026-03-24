@@ -192,7 +192,7 @@ class FlextWebApp(FlextService[bool]):
         app.config["TESTING"] = flask_config.testing
 
         def health_check() -> flask.Response:
-            import json as _json  # noqa: PLC0415
+            import json as _json
 
             body: str = _json.dumps({
                 "status": c.Web.WebResponse.STATUS_HEALTHY,
