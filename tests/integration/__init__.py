@@ -25,10 +25,7 @@ if TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "ExamplesFullFunctionalityTest": (
-        "tests.integration.test_examples",
-        "ExamplesFullFunctionalityTest",
-    ),
+    "ExamplesFullFunctionalityTest": ("tests.integration.test_examples", "ExamplesFullFunctionalityTest"),
     "logger": ("tests.integration.test_examples", "logger"),
     "main": ("tests.integration.test_examples", "main"),
 }
