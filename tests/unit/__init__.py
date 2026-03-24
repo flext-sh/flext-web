@@ -27,22 +27,22 @@ if TYPE_CHECKING:
     from tests.unit.test_utilities import TestFlextWebUtilities
     from tests.unit.test_version import TestFlextWebVersion, assert_version_info
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "TestFlextWebApi": ("tests.unit.test_api", "TestFlextWebApi"),
-    "TestFlextWebApp": ("tests.unit.test_app", "TestFlextWebApp"),
-    "TestFlextWebCliService": ("tests.unit.test___main__", "TestFlextWebCliService"),
-    "TestFlextWebConstants": ("tests.unit.test_constants", "TestFlextWebConstants"),
-    "TestFlextWebFields": ("tests.unit.test_fields", "TestFlextWebFields"),
-    "TestFlextWebHandlers": ("tests.unit.test_handlers", "TestFlextWebHandlers"),
-    "TestFlextWebInit": ("tests.unit.test___init__", "TestFlextWebInit"),
-    "TestFlextWebModels": ("tests.unit.test_typings", "TestFlextWebModels"),
-    "TestFlextWebProtocols": ("tests.unit.test_protocols", "TestFlextWebProtocols"),
-    "TestFlextWebService": ("tests.unit.test_services", "TestFlextWebService"),
-    "TestFlextWebSettings": ("tests.unit.test_config", "TestFlextWebSettings"),
-    "TestFlextWebUtilities": ("tests.unit.test_utilities", "TestFlextWebUtilities"),
-    "TestFlextWebVersion": ("tests.unit.test_version", "TestFlextWebVersion"),
-    "TestMainFunction": ("tests.unit.test___main__", "TestMainFunction"),
-    "assert_version_info": ("tests.unit.test_version", "assert_version_info"),
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "TestFlextWebApi": ["tests.unit.test_api", "TestFlextWebApi"],
+    "TestFlextWebApp": ["tests.unit.test_app", "TestFlextWebApp"],
+    "TestFlextWebCliService": ["tests.unit.test___main__", "TestFlextWebCliService"],
+    "TestFlextWebConstants": ["tests.unit.test_constants", "TestFlextWebConstants"],
+    "TestFlextWebFields": ["tests.unit.test_fields", "TestFlextWebFields"],
+    "TestFlextWebHandlers": ["tests.unit.test_handlers", "TestFlextWebHandlers"],
+    "TestFlextWebInit": ["tests.unit.test___init__", "TestFlextWebInit"],
+    "TestFlextWebModels": ["tests.unit.test_typings", "TestFlextWebModels"],
+    "TestFlextWebProtocols": ["tests.unit.test_protocols", "TestFlextWebProtocols"],
+    "TestFlextWebService": ["tests.unit.test_services", "TestFlextWebService"],
+    "TestFlextWebSettings": ["tests.unit.test_config", "TestFlextWebSettings"],
+    "TestFlextWebUtilities": ["tests.unit.test_utilities", "TestFlextWebUtilities"],
+    "TestFlextWebVersion": ["tests.unit.test_version", "TestFlextWebVersion"],
+    "TestMainFunction": ["tests.unit.test___main__", "TestMainFunction"],
+    "assert_version_info": ["tests.unit.test_version", "assert_version_info"],
 }
 
 __all__ = [

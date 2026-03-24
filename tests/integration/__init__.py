@@ -24,13 +24,13 @@ if TYPE_CHECKING:
         main,
     )
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "ExamplesFullFunctionalityTest": (
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "ExamplesFullFunctionalityTest": [
         "tests.integration.test_examples",
         "ExamplesFullFunctionalityTest",
-    ),
-    "logger": ("tests.integration.test_examples", "logger"),
-    "main": ("tests.integration.test_examples", "main"),
+    ],
+    "logger": ["tests.integration.test_examples", "logger"],
+    "main": ["tests.integration.test_examples", "main"],
 }
 
 __all__ = [

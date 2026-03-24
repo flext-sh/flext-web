@@ -30,15 +30,15 @@ if TYPE_CHECKING:
     from tests.helpers.typings import TestsTypings, t
     from tests.helpers.utilities import TestsUtilities, u
 
-_LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
-    "TestsModels": ("tests.helpers.models", "TestsModels"),
-    "TestsProtocols": ("tests.helpers.protocols", "TestsProtocols"),
-    "TestsTypings": ("tests.helpers.typings", "TestsTypings"),
-    "TestsUtilities": ("tests.helpers.utilities", "TestsUtilities"),
-    "m": ("tests.helpers.models", "m"),
-    "p": ("tests.helpers.protocols", "p"),
-    "t": ("tests.helpers.typings", "t"),
-    "u": ("tests.helpers.utilities", "u"),
+_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "TestsModels": ["tests.helpers.models", "TestsModels"],
+    "TestsProtocols": ["tests.helpers.protocols", "TestsProtocols"],
+    "TestsTypings": ["tests.helpers.typings", "TestsTypings"],
+    "TestsUtilities": ["tests.helpers.utilities", "TestsUtilities"],
+    "m": ["tests.helpers.models", "m"],
+    "p": ["tests.helpers.protocols", "p"],
+    "t": ["tests.helpers.typings", "t"],
+    "u": ["tests.helpers.utilities", "u"],
 }
 
 __all__ = [
