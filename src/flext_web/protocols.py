@@ -46,14 +46,6 @@ from werkzeug.serving import BaseWSGIServer
 from flext_web import FlextWebApp, c, m, t
 
 
-class AppRuntimeInfo(TypedDict):
-    """Runtime information for a running application."""
-
-    runner: str
-    server: uvicorn.Server | WSGIServer
-    thread: Thread
-
-
 class FlextWebProtocols(FlextProtocols):
     """Hierarchical protocol definitions for FLEXT web ecosystem.
 
@@ -195,6 +187,13 @@ class FlextWebProtocols(FlextProtocols):
         ...         class ApiService(FlextWebProtocols.Web.WebService):
         ...             pass
     """
+
+    class AppRuntimeInfo(TypedDict):
+        """Runtime information for a running application."""
+
+        runner: str
+        server: uvicorn.Server | WSGIServer
+        thread: Thread
 
     class Web:
         """Web domain-specific protocols.
@@ -1680,28 +1679,27 @@ class FlextWebProtocols(FlextProtocols):
                         )
                         FlextWebProtocols.Web.web_metrics["errors"] = error_count + 1
 
+    @staticmethod
+    def create_app(name: str, port: int, host: str) -> r[t.Web.ResponseDict]:
+        """Create a new web application."""
+        return FlextWebProtocols.Web.WebAppManager.create_app(name, port, host)
 
-def create_app(name: str, port: int, host: str) -> r[t.Web.ResponseDict]:
-    """Create a new web application."""
-    return FlextWebProtocols.Web.WebAppManager.create_app(name, port, host)
+    @staticmethod
+    def start_app(app_id: str) -> r[t.Web.ResponseDict]:
+        """Start a web application."""
+        return FlextWebProtocols.Web.WebAppManager.start_app(app_id)
 
+    @staticmethod
+    def stop_app(app_id: str) -> r[t.Web.ResponseDict]:
+        """Stop a web application."""
+        return FlextWebProtocols.Web.WebAppManager.stop_app(app_id)
 
-def start_app(app_id: str) -> r[t.Web.ResponseDict]:
-    """Start a web application."""
-    return FlextWebProtocols.Web.WebAppManager.start_app(app_id)
-
-
-def stop_app(app_id: str) -> r[t.Web.ResponseDict]:
-    """Stop a web application."""
-    return FlextWebProtocols.Web.WebAppManager.stop_app(app_id)
-
-
-def list_apps() -> r[Sequence[t.Web.ResponseDict]]:
-    """List all web applications."""
-    return FlextWebProtocols.Web.WebAppManager.list_apps()
+    @staticmethod
+    def list_apps() -> r[Sequence[t.Web.ResponseDict]]:
+        """List all web applications."""
+        return FlextWebProtocols.Web.WebAppManager.list_apps()
 
 
 p = FlextWebProtocols
 
-
-__all__ = ["FlextWebProtocols", "create_app", "list_apps", "p", "start_app", "stop_app"]
+__all__ = ["FlextWebProtocols", "p"]

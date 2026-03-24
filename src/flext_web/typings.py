@@ -10,13 +10,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from typing import Annotated, Literal
 
-from flext_core import FlextTypes, c, m, r
+from flext_core import FlextTypes, r
 from pydantic import Field
 
-from flext_web import u
+from flext_web import c, m, u
 
 
 class _ApplicationConfig(m.Web.EntityConfig):
@@ -94,18 +94,14 @@ class FlextWebTypes(FlextTypes):
         This enables consistent namespace patterns for cross-project type access.
         """
 
-        ConfigValue = FlextTypes.Scalar | FlextTypes.StrSequence
+        ConfigValue = FlextTypes.Scalar | Sequence[str]
         type RequestDict = dict[
             str,
-            FlextTypes.Scalar
-            | FlextTypes.StrSequence
-            | Mapping[str, FlextTypes.Scalar],
+            FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar],
         ]
         type ResponseDict = dict[
             str,
-            FlextTypes.Scalar
-            | FlextTypes.StrSequence
-            | Mapping[str, FlextTypes.Scalar],
+            FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar],
         ]
         HttpMethodLiteral = Literal[
             "GET",
@@ -238,7 +234,7 @@ class FlextWebTypes(FlextTypes):
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: str) -> bool:
+        def _validate_method(m: t.NormalizedValue) -> bool:
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
@@ -350,7 +346,7 @@ class FlextWebTypes(FlextTypes):
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: str) -> bool:
+        def _validate_method(m: t.NormalizedValue) -> bool:
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
@@ -446,7 +442,7 @@ class FlextWebTypes(FlextTypes):
             *,
             use_pydantic_models: bool = True,
             enable_runtime_validation: bool = True,
-            models_available: FlextTypes.StrSequence | None = None,
+            models_available: t.StrSequence | None = None,
         ) -> None:
             """Initialize types configuration."""
             super().__init__()
@@ -471,7 +467,7 @@ class FlextWebTypes(FlextTypes):
         *,
         use_pydantic_models: bool = True,
         enable_runtime_validation: bool = True,
-        models_available: FlextTypes.StrSequence | None = None,
+        models_available: t.StrSequence | None = None,
     ) -> r[FlextWebTypes.TypesConfig]:
         """Configure web types system to use Pydantic models.
 

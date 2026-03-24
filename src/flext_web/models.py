@@ -12,8 +12,10 @@ import uuid
 from datetime import UTC, datetime
 from typing import Annotated, override
 
-from flext_core import FlextModels, c, r, t, u
+from flext_core import FlextModels, r, t, u
 from pydantic import BaseModel, Field, field_validator
+
+from flext_web.constants import c
 
 
 class FlextWebModels(FlextModels):
@@ -665,13 +667,13 @@ class FlextWebModels(FlextModels):
                 self,
                 event_type: str,
                 data: t.ConfigMap | None = None,
-            ) -> r[t.ContainerValue]:
+            ) -> r[FlextModels.Entry]:
                 if not event_type.strip():
-                    return r[t.ContainerValue].fail(
+                    return r[FlextModels.Entry].fail(
                         "Domain event name must be a non-empty string",
                     )
                 if event_type.isdigit():
-                    return r[t.ContainerValue].fail(
+                    return r[FlextModels.Entry].fail(
                         "Domain event name cannot be numeric-only",
                     )
                 return super().add_domain_event(event_type=event_type, data=data)

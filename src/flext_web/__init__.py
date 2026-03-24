@@ -25,14 +25,7 @@ if TYPE_CHECKING:
     from flext_web.constants import FlextWebConstants, FlextWebConstants as c
     from flext_web.handlers import FlextWebHandlers, FlextWebHandlers as h
     from flext_web.models import FlextWebModels, FlextWebModels as m
-    from flext_web.protocols import (
-        FlextWebProtocols,
-        FlextWebProtocols as p,
-        create_app,
-        list_apps,
-        start_app,
-        stop_app,
-    )
+    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
     from flext_web.services import FlextWebServices
     from flext_web.settings import FlextWebSettings
     from flext_web.typings import (
@@ -60,17 +53,13 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
     "_WebResponseConfig": ("flext_web.typings", "_WebResponseConfig"),
     "__all__": ("flext_web.__version__", "__all__"),
     "c": ("flext_web.constants", "FlextWebConstants"),
-    "create_app": ("flext_web.protocols", "create_app"),
     "d": ("flext_core", "d"),
     "e": ("flext_core", "e"),
     "h": ("flext_web.handlers", "FlextWebHandlers"),
-    "list_apps": ("flext_web.protocols", "list_apps"),
     "m": ("flext_web.models", "FlextWebModels"),
     "p": ("flext_web.protocols", "FlextWebProtocols"),
     "r": ("flext_core", "r"),
     "s": ("flext_core", "s"),
-    "start_app": ("flext_web.protocols", "start_app"),
-    "stop_app": ("flext_web.protocols", "stop_app"),
     "t": ("flext_web.typings", "FlextWebTypes"),
     "u": ("flext_web.utilities", "FlextWebUtilities"),
     "x": ("flext_core", "x"),
@@ -92,17 +81,13 @@ __all__ = [
     "_WebResponseConfig",
     "__all__",
     "c",
-    "create_app",
     "d",
     "e",
     "h",
-    "list_apps",
     "m",
     "p",
     "r",
     "s",
-    "start_app",
-    "stop_app",
     "t",
     "u",
     "x",
