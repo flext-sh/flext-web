@@ -10,9 +10,9 @@ from __future__ import annotations
 from collections.abc import MutableMapping, Sequence
 from typing import ClassVar, override
 
-from flext_core import FlextLogger, FlextService, r, u
+from flext_core import FlextLogger, r, s
 
-from flext_web import c, m
+from flext_web import c, m, u
 
 __all__ = ["FlextWebHandlers"]
 
@@ -21,12 +21,12 @@ SystemInfo = m.Web.SystemInfo
 HealthStatus = m.Web.HealthStatus
 
 
-class FlextWebHandlers(FlextService[bool]):
+class FlextWebHandlers(s[bool]):
     """Consolidated web handler system extending flext-core patterns.
 
     This class serves as the single point of access for all web-specific
     handlers, command processors, and response formatters while extending
-    FlextService from flext-core for proper architectural inheritance.
+    s from flext-core for proper architectural inheritance.
 
     All handler functionality is accessible through this single class following the
     "one class per module" architectural requirement.
@@ -262,7 +262,7 @@ class FlextWebHandlers(FlextService[bool]):
 
     @override
     def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
-        """Execute web handler service (FlextService requirement).
+        """Execute web handler service (s requirement).
 
         Returns:
             r[bool]: Success contains True if handlers are operational,
@@ -273,7 +273,7 @@ class FlextWebHandlers(FlextService[bool]):
 
     @override
     def validate_business_rules(self) -> r[bool]:
-        """Validate business rules for web handlers (FlextService requirement).
+        """Validate business rules for web handlers (s requirement).
 
         Returns:
             r[bool]: Success contains True if valid, failure with error message

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_core import FlextModels, r
+from flext_core import FlextModels, r, t
 from pydantic import Field, computed_field
 
 from flext_web import c
@@ -38,11 +38,9 @@ class FlextWebSettings(FlextModels.Value):
         ),
     ]
     port: Annotated[
-        int,
+        t.PortNumber,
         Field(
             default=c.Web.WebDefaults.PORT,
-            ge=c.Web.WebValidation.PORT_RANGE[0],
-            le=c.Web.WebValidation.PORT_RANGE[1],
             description="Bind port",
         ),
     ]
