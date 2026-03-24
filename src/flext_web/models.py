@@ -56,7 +56,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             body: Annotated[
-                str | Mapping[str, t.Scalar] | None,
+                str | t.ScalarMapping | None,
                 Field(
                     default=None,
                     description="Message body content (optional for GET/HEAD)",
@@ -269,7 +269,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             body: Annotated[
-                str | Mapping[str, t.Scalar] | None,
+                str | t.ScalarMapping | None,
                 Field(
                     default=None,
                     description="Request body content (optional for GET/HEAD)",
@@ -361,7 +361,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
             body: Annotated[
-                str | Mapping[str, t.Scalar] | None,
+                str | t.ScalarMapping | None,
                 Field(
                     default=None,
                     description="Response body content",
