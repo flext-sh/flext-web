@@ -252,9 +252,7 @@ class TestFlextWebProtocols:
         """Test that protocols follow expected usage patterns."""
 
         class MockAppManager:
-            def create_app(
-                self, name: str, port: int, host: str
-            ) -> t.Web.ResponseDict:
+            def create_app(self, name: str, port: int, host: str) -> t.Web.ResponseDict:
                 return {"name": name, "host": host, "port": port}
 
             def start_app(self, app_id: str) -> r[t.Web.ResponseDict]:
@@ -359,9 +357,7 @@ class TestFlextWebProtocols:
         """Test WebResponseFormatter methods execution."""
 
         class RealResponseFormatter:
-            def format_success(
-                self, data: t.Web.ResponseDict
-            ) -> t.Web.ResponseDict:
+            def format_success(self, data: t.Web.ResponseDict) -> t.Web.ResponseDict:
                 response: t.Web.ResponseDict = {
                     "status": c.Web.WebResponse.STATUS_SUCCESS
                 }
@@ -608,9 +604,7 @@ class TestFlextWebProtocols:
             def get_template_config(self) -> r[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_template_config(
-                self, config: t.Web.RequestDict
-            ) -> r[bool]:
+            def validate_template_config(self, config: t.Web.RequestDict) -> r[bool]:
                 return r[bool].ok(True)
 
             def render(self, template: str, _context: t.Web.RequestDict) -> r[str]:

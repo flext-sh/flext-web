@@ -12,10 +12,8 @@ import uuid
 from datetime import UTC, datetime
 from typing import Annotated, override
 
-from flext_core import FlextModels, r, t, u
+from flext_core import FlextModels, c, r, t, u
 from pydantic import BaseModel, Field, field_validator
-
-from flext_web import c
 
 
 class FlextWebModels(FlextModels):
@@ -1329,9 +1327,7 @@ class FlextWebModels(FlextModels):
             service: Annotated[str, Field(description="Service name")]
             version: Annotated[str, Field(description="Service version")]
             timestamp: Annotated[str, Field(description="Status timestamp")]
-            components: Annotated[
-                t.StrMapping, Field(description="Component statuses")
-            ]
+            components: Annotated[t.StrMapping, Field(description="Component statuses")]
 
 
 m = FlextWebModels

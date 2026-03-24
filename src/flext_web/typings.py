@@ -13,10 +13,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Annotated, Literal
 
-from flext_core import FlextTypes, r
+from flext_core import FlextTypes, c, m, r
 from pydantic import Field
 
-from flext_web import c, m, u
+from flext_web import u
 
 
 class _ApplicationConfig(m.Web.EntityConfig):
@@ -96,10 +96,16 @@ class FlextWebTypes(FlextTypes):
 
         ConfigValue = FlextTypes.Scalar | FlextTypes.StrSequence
         type RequestDict = dict[
-            str, FlextTypes.Scalar | FlextTypes.StrSequence | Mapping[str, FlextTypes.Scalar]
+            str,
+            FlextTypes.Scalar
+            | FlextTypes.StrSequence
+            | Mapping[str, FlextTypes.Scalar],
         ]
         type ResponseDict = dict[
-            str, FlextTypes.Scalar | FlextTypes.StrSequence | Mapping[str, FlextTypes.Scalar]
+            str,
+            FlextTypes.Scalar
+            | FlextTypes.StrSequence
+            | Mapping[str, FlextTypes.Scalar],
         ]
         HttpMethodLiteral = Literal[
             "GET",
