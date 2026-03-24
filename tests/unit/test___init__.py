@@ -47,16 +47,23 @@ class TestFlextWebInit:
             "_WebRequestConfig",
             "_WebResponseConfig",
             "__all__",
+            "__version__",
+            "__version_info__",
             "c",
             "create_app",
+            "d",
+            "e",
             "h",
             "list_apps",
             "m",
             "p",
+            "r",
+            "s",
             "start_app",
             "stop_app",
             "t",
             "u",
+            "x",
         }
         tm.that(set(flext_web.__all__), eq=expected_exports)
 
