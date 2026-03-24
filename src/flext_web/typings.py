@@ -20,6 +20,8 @@ from flext_web import c, m, u
 
 
 class ApplicationConfig(m.Web.EntityConfig):
+    """Application configuration with defaults for name, status, environment, debug, and version."""
+
     name: Annotated[
         str,
         Field(default=c.Web.WebDefaults.APP_NAME, description="App name"),
@@ -46,10 +48,14 @@ class ApplicationConfig(m.Web.EntityConfig):
 
 
 class WebRequestConfig(m.Web.AppRequest):
+    """Web request configuration extending AppRequest."""
+
     pass
 
 
 class WebResponseConfig(m.Web.AppResponse):
+    """Web response configuration extending AppResponse."""
+
     pass
 
 
@@ -557,8 +563,8 @@ class FlextWebTypes(FlextTypes):
 t = FlextWebTypes
 
 __all__ = [
-    "FlextWebTypes",
     "ApplicationConfig",
+    "FlextWebTypes",
     "WebRequestConfig",
     "WebResponseConfig",
     "t",
