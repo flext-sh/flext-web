@@ -26,7 +26,7 @@ def assert_version_info() -> None:
     """Helper to assert version info is valid."""
     tm.that(isinstance(__version__, str), eq=True)
     tm.that(isinstance(__version_info__, tuple), eq=True)
-    tm.that(len(__version_info__) > 0, eq=True)
+    tm.that(__version_info__, eq=True)
     tm.that(isinstance(VERSION, FlextWebVersion), eq=True)
 
 
@@ -55,7 +55,7 @@ class TestFlextWebVersion:
         current = FlextWebVersion.current()
         tm.that(isinstance(current.version, str), eq=True)
         tm.that(isinstance(current.version_info, tuple), eq=True)
-        tm.that(len(current.version_info) > 0, eq=True)
+        tm.that(current.version_info, eq=True)
 
     def test_version_globals(self) -> None:
         """Test global version variables."""
@@ -78,9 +78,9 @@ class TestFlextWebVersion:
         tm.that(isinstance(__author_email__, str), eq=True)
         tm.that(isinstance(__license__, str), eq=True)
         tm.that(isinstance(__url__, str), eq=True)
-        tm.that(len(__title__) > 0, eq=True)
-        tm.that(len(__description__) > 0, eq=True)
-        tm.that(len(__author__) > 0, eq=True)
+        tm.that(__title__, eq=True)
+        tm.that(__description__, eq=True)
+        tm.that(__author__, eq=True)
         tm.that(isinstance(__license__, str), eq=True)
         if __url__:
             tm.that("://" in __url__ or __url__.startswith("http"), eq=True)

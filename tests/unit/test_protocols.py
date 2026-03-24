@@ -246,7 +246,7 @@ class TestFlextWebProtocols:
             tm.that(isinstance(protocol, type), eq=True)
             tm.that(hasattr(protocol, "__annotations__"), eq=True)
             methods = [name for name in dir(protocol) if not name.startswith("_")]
-            tm.that(len(methods) > 0, eq=True)
+            tm.that(methods, eq=True)
 
     def test_protocol_usage_patterns(self) -> None:
         """Test that protocols follow expected usage patterns."""

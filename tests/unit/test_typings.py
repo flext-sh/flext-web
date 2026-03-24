@@ -383,7 +383,7 @@ class TestFlextWebModels:
         tm.that(config.use_pydantic_models is True, eq=True)
         tm.that(config.enable_runtime_validation is True, eq=True)
         tm.that(isinstance(config.models_available, list), eq=True)
-        tm.that(len(config.models_available) > 0, eq=True)
+        tm.that(config.models_available, eq=True)
 
     def test_create_http_request_match_case_default(self) -> None:
         """Test create_http_request match/case default branch (line 174-175)."""

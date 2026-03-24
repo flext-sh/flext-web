@@ -176,7 +176,7 @@ class ExamplesFullFunctionalityTest:
             assert create_result is None, "Should return None when service down"
             apps = api_usage.list_applications()
             assert isinstance(apps, list), "Should return empty list"
-            assert len(apps) == 0, "Should return empty list"
+            assert not apps, "Should return empty list"
             api_usage.ExampleConstants.BASE_URL = original_base_url
             return True
         except Exception:
