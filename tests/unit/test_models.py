@@ -114,7 +114,10 @@ class TestFlextWebModels:
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         tm.that(app.url, eq="http://localhost:8080")
         app_https = m.Web.Entity(
-            id="test-id", name="test-app", host="localhost", port=443
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=443,
         )
         tm.that(app_https.url, eq="https://localhost:443")
 
@@ -198,7 +201,11 @@ class TestFlextWebModels:
     def test_web_app_string_representation(self) -> None:
         """Test WebApp string representation."""
         app = m.Web.Entity(
-            id="test-id", name="test-app", host="localhost", port=8080, status="running"
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=8080,
+            status="running",
         )
         tm.that(str(app), has="test-app")
         tm.that(str(app), has="localhost:8080")
@@ -254,7 +261,9 @@ class TestFlextWebModels:
     def test_app_config_initialization(self) -> None:
         """Test AppConfig initialization."""
         config = m.Web.AppConfig(
-            title="Test API", version="1.0.0", description="Test API Description"
+            title="Test API",
+            version="1.0.0",
+            description="Test API Description",
         )
         tm.that(config.title, eq="Test API")
         tm.that(config.version, eq="1.0.0")
@@ -305,11 +314,15 @@ class TestFlextWebModels:
     def test_http_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
         request_with_body = m.Web.Request(
-            url="http://localhost:8080", method="POST", body='{"data": "test"}'
+            url="http://localhost:8080",
+            method="POST",
+            body='{"data": "test"}',
         )
         tm.that(request_with_body.has_body is True, eq=True)
         request_without_body = m.Web.Request(
-            url="http://localhost:8080", method="GET", body=None
+            url="http://localhost:8080",
+            method="GET",
+            body=None,
         )
         tm.that(request_without_body.has_body is False, eq=True)
 
@@ -337,11 +350,15 @@ class TestFlextWebModels:
     def test_web_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
         request_with_body = m.Web.Request(
-            url="http://localhost:8080", method="POST", body='{"data": "test"}'
+            url="http://localhost:8080",
+            method="POST",
+            body='{"data": "test"}',
         )
         tm.that(request_with_body.has_body is True, eq=True)
         request_without_body = m.Web.Request(
-            url="http://localhost:8080", method="GET", body=None
+            url="http://localhost:8080",
+            method="GET",
+            body=None,
         )
         tm.that(request_without_body.has_body is False, eq=True)
 
@@ -455,7 +472,9 @@ class TestFlextWebModels:
     def test_web_response_processing_time_seconds(self) -> None:
         """Test Web.AppResponse processing_time_seconds property."""
         response = m.Web.AppResponse(
-            status_code=200, request_id="test-123", processing_time_ms=1500.0
+            status_code=200,
+            request_id="test-123",
+            processing_time_ms=1500.0,
         )
         tm.that(abs(response.processing_time_seconds - 1.5), lt=1e-9)
 
@@ -515,7 +534,10 @@ class TestFlextWebModels:
         result = create_entry("web_app", name="a", host="localhost", port=8080)
         tm.fail(result)
         result = create_entry(
-            "web_app", name="test_app-123_special", host="localhost", port=8080
+            "web_app",
+            name="test_app-123_special",
+            host="localhost",
+            port=8080,
         )
         tm.ok(result)
 
@@ -547,7 +569,11 @@ class TestFlextWebModels:
         ],
     )
     def test_application_parametrized_creation(
-        self, name: str, host: str, port: int, should_succeed: bool
+        self,
+        name: str,
+        host: str,
+        port: int,
+        should_succeed: bool,
     ) -> None:
         """Test application creation with parametrized edge cases."""
         result = create_entry("web_app", name=name, host=host, port=port)
@@ -588,7 +614,10 @@ class TestFlextWebModels:
         tm.ok(result)
         too_long_name = "x" * 101
         result = create_entry(
-            "web_app", name=too_long_name, host="localhost", port=8080
+            "web_app",
+            name=too_long_name,
+            host="localhost",
+            port=8080,
         )
         tm.fail(result)
 
@@ -606,7 +635,10 @@ class TestFlextWebModels:
         ]
         for dangerous_name in dangerous_patterns:
             result = create_entry(
-                "web_app", name=dangerous_name, host="localhost", port=8080
+                "web_app",
+                name=dangerous_name,
+                host="localhost",
+                port=8080,
             )
             (
                 tm.fail(result),
@@ -651,5 +683,6 @@ class TestFlextWebModels:
         result = app.restart()
         tm.fail(result)
         tm.that(
-            result.error and "Cannot restart in current state" in result.error, eq=True
+            result.error and "Cannot restart in current state" in result.error,
+            eq=True,
         )

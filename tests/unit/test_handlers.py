@@ -150,11 +150,9 @@ class TestFlextWebHandlers:
 
     def test_handle_start_app_invalid_type(self) -> None:
         """Test handle_start_app with invalid entity type - REAL validation."""
-        pass
 
     def test_handle_stop_app_invalid_type(self) -> None:
         """Test handle_stop_app with invalid entity type - REAL validation."""
-        pass
 
     def test_handlers_execute(self) -> None:
         """Test FlextWebHandlers.execute - REAL execution."""

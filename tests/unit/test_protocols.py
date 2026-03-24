@@ -271,7 +271,7 @@ class TestFlextWebProtocols:
 
             def list_apps(self) -> r[Sequence[t.Web.ResponseDict]]:
                 return r[Sequence[t.Web.ResponseDict]].ok([
-                    {"name": "test", "host": "localhost", "port": 8080}
+                    {"name": "test", "host": "localhost", "port": 8080},
                 ])
 
         mock_manager = MockAppManager()
@@ -359,7 +359,7 @@ class TestFlextWebProtocols:
         class RealResponseFormatter:
             def format_success(self, data: t.Web.ResponseDict) -> t.Web.ResponseDict:
                 response: t.Web.ResponseDict = {
-                    "status": c.Web.WebResponse.STATUS_SUCCESS
+                    "status": c.Web.WebResponse.STATUS_SUCCESS,
                 }
                 response.update({
                     key: value
@@ -376,10 +376,11 @@ class TestFlextWebProtocols:
                 return result
 
             def create_json_response(
-                self, data: t.Web.ResponseDict
+                self,
+                data: t.Web.ResponseDict,
             ) -> t.Web.ResponseDict:
                 response: t.Web.ResponseDict = {
-                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON
+                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
                 response.update({
                     key: value
@@ -389,7 +390,8 @@ class TestFlextWebProtocols:
                 return response
 
             def get_request_data(
-                self, _request: t.Web.RequestDict
+                self,
+                _request: t.Web.RequestDict,
             ) -> t.Web.RequestDict:
                 return {}
 
@@ -436,10 +438,11 @@ class TestFlextWebProtocols:
 
         class RealFrameworkInterface:
             def create_json_response(
-                self, data: t.Web.ResponseDict
+                self,
+                data: t.Web.ResponseDict,
             ) -> t.Web.ResponseDict:
                 response: t.Web.ResponseDict = {
-                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON
+                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
                 response.update({
                     key: value
@@ -449,7 +452,8 @@ class TestFlextWebProtocols:
                 return response
 
             def get_request_data(
-                self, _request: t.Web.RequestDict
+                self,
+                _request: t.Web.RequestDict,
             ) -> t.Web.RequestDict:
                 return {}
 
@@ -526,7 +530,8 @@ class TestFlextWebProtocols:
 
         class RealWebRepository:
             def find_by_criteria(
-                self, criteria: t.Web.RequestDict
+                self,
+                criteria: t.Web.RequestDict,
             ) -> r[Sequence[t.Web.ResponseDict]]:
                 return r[Sequence[t.Web.ResponseDict]].ok([])
 
@@ -564,7 +569,9 @@ class TestFlextWebProtocols:
 
         class RealTemplateRenderer:
             def render_template(
-                self, template_name: str, _context: t.Web.RequestDict
+                self,
+                template_name: str,
+                _context: t.Web.RequestDict,
             ) -> r[str]:
                 return r[str].ok("")
 
@@ -587,7 +594,8 @@ class TestFlextWebProtocols:
         tm.that(hasattr(renderer, "render_template"), eq=True)
         tm.that(hasattr(renderer, "render_dashboard"), eq=True)
         template_result = renderer.render_template(
-            "tesFlextWebTypes.html", {"key": "value"}
+            "tesFlextWebTypes.html",
+            {"key": "value"},
         )
         tm.ok(template_result)
         dashboard_result = renderer.render_dashboard({"data": "value"})
@@ -655,7 +663,9 @@ class TestFlextWebProtocols:
 
         class RealWebMonitoring:
             def record_web_request(
-                self, request: t.Web.RequestDict, response_time: float
+                self,
+                request: t.Web.RequestDict,
+                response_time: float,
             ) -> None:
                 pass
 

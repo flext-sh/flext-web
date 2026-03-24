@@ -50,13 +50,9 @@ class ApplicationConfig(m.Web.EntityConfig):
 class WebRequestConfig(m.Web.AppRequest):
     """Web request configuration extending AppRequest."""
 
-    pass
-
 
 class WebResponseConfig(m.Web.AppResponse):
     """Web response configuration extending AppResponse."""
-
-    pass
 
 
 class FlextWebTypes(FlextTypes):

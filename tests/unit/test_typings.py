@@ -52,7 +52,11 @@ class TestFlextWebModels:
     def test_app_data_functionality(self) -> None:
         """Test app data functionality."""
         app = t.ApplicationEntity(
-            id="test-id", name="test-app", host="localhost", port=8080, status="running"
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=8080,
+            status="running",
         )
         tm.that(app.id, eq="test-id")
         tm.that(app.name, eq="test-app")
@@ -94,7 +98,8 @@ class TestFlextWebModels:
     def test_configure_web_types_system(self) -> None:
         """Test configure_web_types_system method."""
         result = t.configure_web_types_system(
-            use_pydantic_models=True, enable_runtime_validation=True
+            use_pydantic_models=True,
+            enable_runtime_validation=True,
         )
         tm.ok(result), "Operation should succeed"
         config = result.value
@@ -104,7 +109,8 @@ class TestFlextWebModels:
     def test_configure_web_types_system_invalid_config(self) -> None:
         """Test configure_web_types_system with invalid config."""
         result = t.configure_web_types_system(
-            use_pydantic_models=False, enable_runtime_validation=False
+            use_pydantic_models=False,
+            enable_runtime_validation=False,
         )
         tm.ok(result), "Operation should succeed"
         config = result.value
@@ -126,7 +132,10 @@ class TestFlextWebModels:
     def test_model_creation(self) -> None:
         """Test model creation functionality."""
         app = t.ApplicationEntity(
-            id="test-id", name="test-app", host="localhost", port=8080
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=8080,
         )
         tm.that(app.id, eq="test-id")
         tm.that(app.name, eq="test-app")
@@ -173,7 +182,8 @@ class TestFlextWebModels:
     def test_create_http_request_invalid_method(self) -> None:
         """Test create_http_request with invalid HTTP method."""
         result = t.create_http_request(
-            url="http://localhost:8080", method="INVALID_METHOD"
+            url="http://localhost:8080",
+            method="INVALID_METHOD",
         )
         tm.fail(result)
         assert result.error is not None
@@ -182,7 +192,9 @@ class TestFlextWebModels:
     def test_create_http_request_invalid_headers(self) -> None:
         """Test create_http_request with invalid headers type."""
         result = t.create_http_request(
-            url="http://localhost:8080", method="GET", headers=None
+            url="http://localhost:8080",
+            method="GET",
+            headers=None,
         )
         tm.that(result.is_success or result.is_failure, eq=True)
 
@@ -214,7 +226,10 @@ class TestFlextWebModels:
     def test_create_http_response_exception_handling(self) -> None:
         """Test create_http_response exception handling."""
         result = t.create_http_response(
-            status_code=200, headers={}, body=None, elapsed_time=-1.0
+            status_code=200,
+            headers={},
+            body=None,
+            elapsed_time=-1.0,
         )
         (
             tm.fail(result),
@@ -287,7 +302,10 @@ class TestFlextWebModels:
     def test_create_application_exception_handling(self) -> None:
         """Test create_application exception handling."""
         config = _ApplicationConfig(
-            name="test-app", host="localhost", port=8080, status="invalid_status"
+            name="test-app",
+            host="localhost",
+            port=8080,
+            status="invalid_status",
         )
         result = t.create_application(config)
         tm.fail(result), "Invalid status should cause validation failure"
@@ -338,7 +356,9 @@ class TestFlextWebModels:
     def test_create_http_request_with_none_headers(self) -> None:
         """Test create_http_request with None headers."""
         result = t.create_http_request(
-            url="http://localhost:8080", method="GET", headers=None
+            url="http://localhost:8080",
+            method="GET",
+            headers=None,
         )
         tm.ok(result), "Operation should succeed"
         tm.that(result.value.headers, is_=dict)
@@ -413,7 +433,8 @@ class TestFlextWebModels:
     def test_configure_web_types_system_exception_path(self) -> None:
         """Test configure_web_types_system exception handling (lines 461-462)."""
         result = t.configure_web_types_system(
-            use_pydantic_models=True, enable_runtime_validation=True
+            use_pydantic_models=True,
+            enable_runtime_validation=True,
         )
         tm.ok(result), "Operation should succeed"
 

@@ -118,7 +118,8 @@ def create_application(name: str, port: int, host: str = "localhost") -> t.AppDa
 
 
 def _extract_apps_from_response(
-    response_data: Mapping[str, t.ContainerValue] | t.ContainerValue, data_key: str
+    response_data: Mapping[str, t.ContainerValue] | t.ContainerValue,
+    data_key: str,
 ) -> Sequence[t.AppData]:
     """Extract apps list from response data with proper type checking."""
     if not isinstance(response_data, dict):
@@ -140,7 +141,9 @@ def _extract_apps_from_response(
 
 
 def _execute_app_operation(
-    method: str, endpoint: str, json_data: Mapping[str, t.ContainerValue] | None = None
+    method: str,
+    endpoint: str,
+    json_data: Mapping[str, t.ContainerValue] | None = None,
 ) -> t.AppData:
     """Execute application operation using existing flext-core Railway-oriented programming.
 
@@ -190,7 +193,7 @@ def _execute_app_operation(
                 and ("id" in data)
                 and ("name" in data)
                 else r[t.AppData].fail("Invalid app data")
-            )
+            ),
         )
     )
     if result.is_failure:
@@ -229,7 +232,8 @@ def _execute_list_operation(endpoint: str, data_key: str) -> Sequence[t.AppData]
         raise ValueError(parsed_result.error or "Parse failed")
     response_dict: Mapping[str, t.ContainerValue] = parsed_result.value
     apps_list: Sequence[t.AppData] = _extract_apps_from_response(
-        response_dict, data_key
+        response_dict,
+        data_key,
     )
     return apps_list
 
@@ -245,7 +249,8 @@ def start_application(app_id: str) -> t.AppData:
 
     """
     return _execute_app_operation(
-        method="POST", endpoint=ExampleConstants.APP_START.format(app_id=app_id)
+        method="POST",
+        endpoint=ExampleConstants.APP_START.format(app_id=app_id),
     )
 
 
@@ -260,7 +265,8 @@ def get_application_status(app_id: str) -> t.AppData:
 
     """
     return _execute_app_operation(
-        method="GET", endpoint=ExampleConstants.APP_DETAIL.format(app_id=app_id)
+        method="GET",
+        endpoint=ExampleConstants.APP_DETAIL.format(app_id=app_id),
     )
 
 
@@ -275,7 +281,8 @@ def stop_application(app_id: str) -> t.AppData:
 
     """
     return _execute_app_operation(
-        method="POST", endpoint=ExampleConstants.APP_STOP.format(app_id=app_id)
+        method="POST",
+        endpoint=ExampleConstants.APP_STOP.format(app_id=app_id),
     )
 
 

@@ -45,7 +45,7 @@ class TestFlextWebVersion:
                 author_email="flext@example.com",
                 license_type="MIT",
                 url="https://github.com/flext/flext-web",
-            )
+            ),
         )
         tm.that(version.version, eq="1.0.0")
         tm.that(version.version_info, eq=(1, 0, 0))

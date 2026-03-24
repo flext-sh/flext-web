@@ -68,7 +68,9 @@ class TestFlextWebApi:
     def test_create_http_config_edge_cases(self) -> None:
         """Test HTTP configuration creation with edge cases."""
         result = FlextWebApi.create_http_config(
-            host="localhost", port=65535, debug=True
+            host="localhost",
+            port=65535,
+            debug=True,
         )
         tm.ok(result)
         result = FlextWebApi.create_http_config(host="localhost", port=1, debug=True)
@@ -78,7 +80,8 @@ class TestFlextWebApi:
         tm.ok(result)
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
+        reason="FlextSettings bug: Field constraints not enforced",
+        strict=False,
     )
     def test_create_http_config_invalid_cases(self) -> None:
         """Test HTTP configuration creation with invalid inputs.
@@ -89,7 +92,9 @@ class TestFlextWebApi:
         result = FlextWebApi.create_http_config(host="localhost", port=-1, debug=True)
         tm.fail(result)
         result = FlextWebApi.create_http_config(
-            host="localhost", port=65536, debug=True
+            host="localhost",
+            port=65536,
+            debug=True,
         )
         tm.fail(result)
         result = FlextWebApi.create_http_config(host="", port=8080, debug=True)
@@ -103,7 +108,9 @@ class TestFlextWebApi:
         See test_create_http_config_invalid_cases for validation tests.
         """
         success_result = FlextWebApi.create_http_config(
-            host="localhost", port=8080, debug=True
+            host="localhost",
+            port=8080,
+            debug=True,
         )
         tm.ok(success_result)
         tm.that(success_result.value, none=False)
@@ -125,7 +132,11 @@ class TestFlextWebApi:
         [("localhost", 8080, True, True), ("0.0.0.0", 80, True, True)],
     )
     def test_http_config_parametrized(
-        self, host: str, port: int, debug: bool, should_succeed: bool
+        self,
+        host: str,
+        port: int,
+        debug: bool,
+        should_succeed: bool,
     ) -> None:
         """Test HTTP configuration creation with parametrized cases.
 
@@ -146,10 +157,12 @@ class TestFlextWebApi:
             tm.that(config.port, eq=port)
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
+        reason="FlextSettings bug: Field constraints not enforced",
+        strict=False,
     )
     @pytest.mark.parametrize(
-        ("host", "port"), [("", 8080), ("localhost", -1), ("localhost", 65536)]
+        ("host", "port"),
+        [("", 8080), ("localhost", -1), ("localhost", 65536)],
     )
     def test_http_config_parametrized_validation(self, host: str, port: int) -> None:
         """Test HTTP configuration creation with invalid inputs (parametrized).
@@ -177,7 +190,8 @@ class TestFlextWebApi:
         tm.that(result.value is True, eq=True)
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
+        reason="FlextSettings bug: Field constraints not enforced",
+        strict=False,
     )
     def test_validate_http_config_invalid(self) -> None:
         """Test HTTP configuration validation with invalid data.

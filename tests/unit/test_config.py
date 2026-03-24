@@ -36,7 +36,10 @@ class TestFlextWebSettings:
     def test_initialization_with_custom_values(self) -> None:
         """Test FlextWebSettings initialization with custom values."""
         config = FlextWebSettings(
-            host="0.0.0.0", port=3000, debug_mode=True, app_name="Test App"
+            host="0.0.0.0",
+            port=3000,
+            debug_mode=True,
+            app_name="Test App",
         )
         tm.that(config.host, eq="0.0.0.0")
         tm.that(config.port, eq=3000)
@@ -44,7 +47,8 @@ class TestFlextWebSettings:
         tm.that(config.app_name, eq="Test App")
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
+        reason="FlextSettings bug: Field constraints not enforced",
+        strict=False,
     )
     def test_validation_host_empty(self) -> None:
         """Test host validation with empty string.
@@ -61,7 +65,8 @@ class TestFlextWebSettings:
         tm.that(config.port, eq=8080)
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
+        reason="FlextSettings bug: Field constraints not enforced",
+        strict=False,
     )
     def test_validation_port_out_of_range(self) -> None:
         """Test port validation outside valid range.
@@ -73,7 +78,8 @@ class TestFlextWebSettings:
             _ = FlextWebSettings(port=70000)
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
+        reason="FlextSettings bug: Field constraints not enforced",
+        strict=False,
     )
     def test_validation_secret_key_too_short(self) -> None:
         """Test secret key validation with too short key.
@@ -92,7 +98,9 @@ class TestFlextWebSettings:
     def test_ssl_configuration_valid(self) -> None:
         """Test SSL configuration with valid cert and key paths."""
         config = FlextWebSettings(
-            ssl_enabled=False, ssl_cert_path=None, ssl_key_path=None
+            ssl_enabled=False,
+            ssl_cert_path=None,
+            ssl_key_path=None,
         )
         tm.that(config.ssl_enabled is False, eq=True)
 

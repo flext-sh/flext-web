@@ -74,7 +74,8 @@ class TestFlextWebService:
         """Test successful authenticate."""
         service = s()
         credentials = m.Web.Credentials(
-            username="testuser", password=c.DEFAULT_TEST_CREDENTIAL
+            username="testuser",
+            password=c.DEFAULT_TEST_CREDENTIAL,
         )
         authenticate_result = service.authenticate(credentials)
         tm.ok(authenticate_result), "Authentication should succeed"
@@ -87,7 +88,8 @@ class TestFlextWebService:
         """Test authenticate with invalid credentials."""
         service = s()
         credentials = m.Web.Credentials(
-            username=c.NONEXISTENT_USERNAME, password="wrongpassword"
+            username=c.NONEXISTENT_USERNAME,
+            password="wrongpassword",
         )
         authenticate_result = service.authenticate(credentials)
         tm.fail(authenticate_result)
@@ -128,7 +130,9 @@ class TestFlextWebService:
         """Test successful user registration."""
         service = s()
         user_data = m.Web.UserData(
-            username="newuser", email="newuser@example.com", password="password123"
+            username="newuser",
+            email="newuser@example.com",
+            password="password123",
         )
         register_result = service.register_user(user_data)
         tm.ok(register_result)
@@ -142,12 +146,16 @@ class TestFlextWebService:
         """Test registration with duplicate username."""
         service = s()
         first_user_data = m.Web.UserData(
-            username="duplicate", email="user1@example.com", password="password123"
+            username="duplicate",
+            email="user1@example.com",
+            password="password123",
         )
         first_result = service.register_user(first_user_data)
         tm.ok(first_result)
         second_user_data = m.Web.UserData(
-            username="duplicate", email="user2@example.com", password="password456"
+            username="duplicate",
+            email="user2@example.com",
+            password="password456",
         )
         register_result = service.register_user(second_user_data)
         tm.ok(register_result)
@@ -340,7 +348,8 @@ class TestFlextWebService:
         tm.that(service, is_=s)
 
     @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
+        reason="FlextSettings bug: Field constraints not enforced",
+        strict=False,
     )
     def test_create_web_service_invalid_config(self) -> None:
         """Test create_web_service with invalid config.

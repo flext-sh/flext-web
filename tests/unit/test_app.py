@@ -81,7 +81,9 @@ class TestFlextWebApp:
     def test_create_fastapi_app_success(self) -> None:
         """Test create_fastapi_app with success - REAL FastAPI."""
         config = m.Web.FastAPIAppConfig(
-            title="Test API", version="1.0.0", description="Test Description"
+            title="Test API",
+            version="1.0.0",
+            description="Test Description",
         )
         result = FlextWebApp.create_fastapi_app(config)
         tm.ok(result)
@@ -197,7 +199,9 @@ class TestFlextWebApp:
     def test_app_fastapi_integration(self) -> None:
         """Test FlextWebApp FastAPI integration - REAL FastAPI."""
         config = m.Web.FastAPIAppConfig(
-            title="Test API", version="1.0.0", description="Test Description"
+            title="Test API",
+            version="1.0.0",
+            description="Test Description",
         )
         result = FlextWebApp.create_fastapi_app(config)
         tm.ok(result)
@@ -323,7 +327,9 @@ class TestFlextWebApp:
     def test_info_handler_create_handler(self) -> None:
         """Test InfoHandler.create_handler method - REAL execution."""
         config = m.Web.FastAPIAppConfig(
-            title="Test API", version="1.0.0", description="Test Description"
+            title="Test API",
+            version="1.0.0",
+            description="Test Description",
         )
         handler_func = FlextWebApp.InfoHandler.create_handler(config)
         tm.that(callable(handler_func), eq=True)

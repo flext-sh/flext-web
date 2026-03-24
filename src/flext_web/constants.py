@@ -157,7 +157,7 @@ class FlextWebConstants(FlextConstants):
             )
             TEST_SECRET_KEY: Final[str] = "test-secret-key-32-characters-long-for-tests"
             TIMEOUT_SECONDS: Final[float] = float(
-                FlextConstants.DEFAULT_TIMEOUT_SECONDS
+                FlextConstants.DEFAULT_TIMEOUT_SECONDS,
             )
             HTTP_PROTOCOL: Final[str] = "http"
             HTTPS_PROTOCOL: Final[str] = "https"
@@ -236,7 +236,7 @@ class FlextWebConstants(FlextConstants):
             HEADER_CONTENT_TYPE: Final[str] = "content-type"
             HEADER_CONTENT_LENGTH: Final[str] = "content-length"
             DEFAULT_TIMEOUT_SECONDS: Final[float] = float(
-                FlextConstants.DEFAULT_TIMEOUT_SECONDS
+                FlextConstants.DEFAULT_TIMEOUT_SECONDS,
             )
             METHODS: ClassVar[tuple[str, ...]] = (
                 "GET",

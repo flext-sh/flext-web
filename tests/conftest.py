@@ -37,7 +37,8 @@ from tests import c, m, t
 
 
 def assert_success(
-    result: r[t.ContainerValue], message: str = "Operation should succeed"
+    result: r[t.ContainerValue],
+    message: str = "Operation should succeed",
 ) -> None:
     """Assert that a r is successful using flext_tests matchers."""
     if not result.is_success:
@@ -45,7 +46,8 @@ def assert_success(
 
 
 def assert_failure(
-    result: r[t.ContainerValue], message: str = "Operation should fail"
+    result: r[t.ContainerValue],
+    message: str = "Operation should fail",
 ) -> None:
     """Assert that a r is a failure using flext_tests matchers."""
     if result.is_success:
@@ -53,7 +55,9 @@ def assert_failure(
 
 
 def assert_result(
-    result: r[t.ContainerValue], *, expected_success: bool = True
+    result: r[t.ContainerValue],
+    *,
+    expected_success: bool = True,
 ) -> None:
     """Assert r state with appropriate message using flext_tests."""
     if expected_success:
@@ -339,7 +343,9 @@ def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:
 
 
 def create_test_result(
-    *, success: bool = True, **kwargs: t.Scalar
+    *,
+    success: bool = True,
+    **kwargs: t.Scalar,
 ) -> r[t.Scalar | None]:
     """Create a test r using r API directly.
 
@@ -386,7 +392,7 @@ def run_parameterized_test(
 
     """
     for i, (test_case, expected_success) in enumerate(
-        zip(test_cases, expected_results, strict=True)
+        zip(test_cases, expected_results, strict=True),
     ):
         try:
             result = (
@@ -517,7 +523,7 @@ def running_service(real_config: FlextWebSettings) -> Generator[FlextWebServices
 
     if not wait_for_port(test_config.port, timeout=5.0):
         pytest.fail(
-            f"Service failed to start on port {test_config.port} within 5 seconds"
+            f"Service failed to start on port {test_config.port} within 5 seconds",
         )
     yield service
     TestPortManager.release_port(test_port)
@@ -565,7 +571,8 @@ def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers for real testing."""
     config.addinivalue_line("markers", "unit: Unit tests with real execution")
     config.addinivalue_line(
-        "markers", "integration: Integration tests with real services"
+        "markers",
+        "integration: Integration tests with real services",
     )
     config.addinivalue_line("markers", "api: API tests with real HTTP")
     config.addinivalue_line("markers", "web: Web interface tests with real Flask")

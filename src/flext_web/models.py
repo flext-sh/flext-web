@@ -940,7 +940,8 @@ class FlextWebModels(FlextModels):
 
             service_status: Annotated[str, Field(description="Service status")]
             components: Annotated[
-                t.StrSequence, Field(description="Service components")
+                t.StrSequence,
+                Field(description="Service components"),
             ]
 
         class DashboardResponse(FlextModels.Value):
@@ -1313,13 +1314,16 @@ class FlextWebModels(FlextModels):
             service_type: Annotated[str, Field(description="Service type")]
             architecture: Annotated[str, Field(description="Architecture pattern")]
             patterns: Annotated[
-                t.StrSequence, Field(description="Design patterns used")
+                t.StrSequence,
+                Field(description="Design patterns used"),
             ]
             integrations: Annotated[
-                t.StrSequence, Field(description="Integrated components")
+                t.StrSequence,
+                Field(description="Integrated components"),
             ]
             capabilities: Annotated[
-                t.StrSequence, Field(description="Service capabilities")
+                t.StrSequence,
+                Field(description="Service capabilities"),
             ]
 
         class HealthStatus(BaseModel):
