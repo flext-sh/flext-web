@@ -334,7 +334,7 @@ class TestFlextWebProtocols:
             return hasattr(obj, "create_app") and hasattr(obj, "start_app")
 
         tm.that(validate_app_manager(ValidAppManager()), eq=True)
-        tm.that(validate_app_manager(InvalidAppManager()), eq=False)
+        tm.that(not validate_app_manager(InvalidAppManager()), eq=True)
 
     def test_app_manager_protocol_real_lifecycle_behavior(self) -> None:
         """Validate real app lifecycle behavior from protocol base implementation."""

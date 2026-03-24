@@ -234,9 +234,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
     raise ValueError(msg)
 
 
-def create_test_data(
-    data_type: str, **kwargs: t.Scalar
-) -> Mapping[str, t.NormalizedValue]:
+def create_test_data(data_type: str, **kwargs: t.Scalar) -> t.ContainerMapping:
     """Create test data for tests.
 
     This function provides a standardized way to create test data,
@@ -251,7 +249,7 @@ def create_test_data(
 
     """
     if data_type == "app_data":
-        app_data: Mapping[str, t.NormalizedValue] = {
+        app_data: t.ContainerMapping = {
             "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
@@ -261,7 +259,7 @@ def create_test_data(
         })
         return app_data
     if data_type == "entity_data":
-        entity_data: Mapping[str, t.NormalizedValue] = {
+        entity_data: t.ContainerMapping = {
             "id": "test-entity",
             "name": "Test Entity",
         }
@@ -270,7 +268,7 @@ def create_test_data(
         })
         return entity_data
     if data_type == "config_data":
-        config_data: Mapping[str, t.NormalizedValue] = {
+        config_data: t.ContainerMapping = {
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
             "debug": True,
@@ -280,7 +278,7 @@ def create_test_data(
         })
         return config_data
     if data_type == "request_data":
-        request_data: Mapping[str, t.NormalizedValue] = {
+        request_data: t.ContainerMapping = {
             "method": c.Web.Tests.TestHttp.TEST_METHOD,
             "url": f"http://{c.Web.Tests.TestWeb.DEFAULT_HOST}:{c.Web.Tests.TestWeb.DEFAULT_PORT}",
             "headers": {"Content-Type": c.Web.Tests.TestHttp.TEST_CONTENT_TYPE},
@@ -290,7 +288,7 @@ def create_test_data(
         })
         return request_data
     if data_type == "response_data":
-        response_data: Mapping[str, t.NormalizedValue] = {
+        response_data: t.ContainerMapping = {
             "status_code": 200,
             "request_id": "test-123",
         }

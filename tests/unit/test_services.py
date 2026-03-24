@@ -63,7 +63,7 @@ class TestFlextWebService:
         service = s()
         service._service_running = True
         _ = service.stop_service()
-        tm.that(service._service_running, eq=False)
+        tm.that(not service._service_running, eq=True)
 
     def test_auth_property_lazy_initialization(self) -> None:
         """Test auth service access."""
