@@ -27,7 +27,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Mapping, Sequence
+from collections.abc import Awaitable, Callable, Mapping, MutableSequence, Sequence
 from copy import deepcopy
 from threading import Thread
 from time import sleep
@@ -953,7 +953,7 @@ class FlextWebProtocols(FlextProtocols):
                 r containing list of matching entities or error details
 
                 """
-                matches: list[t.Web.ResponseDict] = []
+                matches: MutableSequence[t.Web.ResponseDict] = []
                 for app_data in FlextWebProtocols.Web.apps_registry.values():
                     is_match = True
                     for key, expected_value in criteria.items():
