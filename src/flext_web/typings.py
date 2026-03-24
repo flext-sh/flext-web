@@ -94,12 +94,12 @@ class FlextWebTypes(FlextTypes):
         This enables consistent namespace patterns for cross-project type access.
         """
 
-        ConfigValue = str | int | bool | Sequence[str]
+        ConfigValue = FlextTypes.Scalar | Sequence[str]
         type RequestDict = dict[
-            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
         type ResponseDict = dict[
-            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
         HttpMethodLiteral = Literal[
             "GET",
@@ -144,10 +144,10 @@ class FlextWebTypes(FlextTypes):
         """Compatibility namespace for request/response dict aliases."""
 
         type RequestDict = dict[
-            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
         type ResponseDict = dict[
-            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
 
     class Types:
@@ -164,7 +164,7 @@ class FlextWebTypes(FlextTypes):
         """Data type definitions for FlextService compatibility."""
 
         type ResponseDict = dict[
-            str, str | int | bool | Sequence[str] | Mapping[str, str | int | bool]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
 
     class WebConfigDict(m.Web.EntityConfig):
