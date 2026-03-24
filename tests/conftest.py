@@ -150,10 +150,10 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
                 if headers is None
                 else (headers if isinstance(headers, dict) else {})
             )
-            body_value: Mapping[str, t.Scalar] | str | None = (
+            body_value: t.ScalarMapping | str | None = (
                 body if isinstance(body, (dict, str)) or body is None else None
             )
-            query_params_dict: Mapping[str, t.Scalar] = (
+            query_params_dict: t.ScalarMapping = (
                 {}
                 if query_params is None
                 else (query_params if isinstance(query_params, dict) else {})
@@ -188,7 +188,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
                 if headers is None
                 else (headers if isinstance(headers, dict) else {})
             )
-            body_value: Mapping[str, t.Scalar] | str | None = (
+            body_value: t.ScalarMapping | str | None = (
                 body if isinstance(body, (dict, str)) or body is None else None
             )
             web_response_config = _WebResponseConfig(
@@ -404,8 +404,8 @@ def run_parameterized_test(
 
 def create_comprehensive_test_suite(
     entity_type: str,
-    valid_cases: Sequence[Mapping[str, t.Scalar]],
-    invalid_cases: Sequence[Mapping[str, t.Scalar]],
+    valid_cases: Sequence[t.ScalarMapping],
+    invalid_cases: Sequence[t.ScalarMapping],
     test_name_prefix: str = "comprehensive",
 ) -> None:
     """Create comprehensive test suite using flext_tests patterns.

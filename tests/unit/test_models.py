@@ -5,8 +5,6 @@ Tests the web models functionality following flext standards.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-
 import pytest
 from flext_tests import tm
 from pydantic import ValidationError
@@ -169,7 +167,7 @@ class TestFlextWebModels:
     def test_web_app_metrics_update(self) -> None:
         """Test WebApp metrics update."""
         app = create_test_app()
-        metrics: Mapping[str, t.Scalar] = {"requests": 100, "errors": 5}
+        metrics: t.ScalarMapping = {"requests": 100, "errors": 5}
         result = app.update_metrics(metrics)
         tm.ok(result)
         tm.that(result.value is True, eq=True)
@@ -413,7 +411,7 @@ class TestFlextWebModels:
     def test_application_update_metrics_invalid_type(self) -> None:
         """Test update_metrics with invalid type."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
-        invalid_metrics: Mapping[str, t.Scalar] = {"not_a_dict": "not_a_dict"}
+        invalid_metrics: t.ScalarMapping = {"not_a_dict": "not_a_dict"}
         result = app.update_metrics(invalid_metrics)
         tm.fail(result)
         tm.that(result.error, none=False)

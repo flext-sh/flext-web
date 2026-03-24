@@ -298,7 +298,7 @@ class TestFlextWebProtocols:
                 return r[bool].ok(True)
 
             @override
-            def get_service_info(self) -> Mapping[str, t.Scalar]:
+            def get_service_info(self) -> t.ScalarMapping:
                 return {"name": "Custom"}
 
             @override
@@ -403,7 +403,7 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> Mapping[str, t.Scalar]:
+            def get_service_info(self) -> t.ScalarMapping:
                 return {"name": "ResponseFormatter"}
 
             def is_valid(self) -> bool:
@@ -466,7 +466,7 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> Mapping[str, t.Scalar]:
+            def get_service_info(self) -> t.ScalarMapping:
                 return {"name": "FrameworkInterface"}
 
             def is_valid(self) -> bool:
@@ -509,7 +509,7 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> Mapping[str, t.Scalar]:
+            def get_service_info(self) -> t.ScalarMapping:
                 return {"name": "WebService"}
 
             def is_valid(self) -> bool:
@@ -552,7 +552,7 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> Mapping[str, t.Scalar]:
+            def get_service_info(self) -> t.ScalarMapping:
                 return {"name": "WebRepository"}
 
             def is_valid(self) -> bool:
@@ -581,7 +581,7 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> Mapping[str, t.Scalar]:
+            def get_service_info(self) -> t.ScalarMapping:
                 return {"name": "TemplateRenderer"}
 
             def is_valid(self) -> bool:
@@ -628,7 +628,7 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> Mapping[str, t.Scalar]:
+            def get_service_info(self) -> t.ScalarMapping:
                 return {"name": "TemplateEngine"}
 
             def is_valid(self) -> bool:
@@ -680,7 +680,7 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> Mapping[str, t.Scalar]:
+            def get_service_info(self) -> t.ScalarMapping:
                 return {"name": "WebMonitoring"}
 
             def is_valid(self) -> bool:
