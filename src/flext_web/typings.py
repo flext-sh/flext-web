@@ -558,17 +558,10 @@ class FlextWebTypes(FlextTypes):
 
 t = FlextWebTypes
 
-ApplicationConfig = FlextWebApplicationConfig
-WebRequestConfig = FlextWebRequestConfig
-WebResponseConfig = FlextWebResponseConfig
-
 __all__ = [
-    "ApplicationConfig",
     "FlextWebApplicationConfig",
     "FlextWebRequestConfig",
     "FlextWebResponseConfig",
     "FlextWebTypes",
-    "WebRequestConfig",
-    "WebResponseConfig",
     "t",
 ]
