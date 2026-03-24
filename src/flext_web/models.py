@@ -558,7 +558,7 @@ class FlextWebModels(FlextModels):
                     default=c.Web.WebDefaults.VERSION_INT,
                     description="Application version",
                 ),
-            ]
+            ] = c.Web.WebDefaults.VERSION_INT
             metrics: Annotated[
                 dict[str, t.Scalar],
                 Field(

@@ -31,9 +31,9 @@ if TYPE_CHECKING:
     from flext_web.typings import (
         FlextWebTypes,
         FlextWebTypes as t,
-        _ApplicationConfig,
-        _WebRequestConfig,
-        _WebResponseConfig,
+        ApplicationConfig,
+        WebRequestConfig,
+        WebResponseConfig,
     )
     from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 
@@ -48,9 +48,9 @@ _LAZY_IMPORTS: Mapping[str, tuple[str, str]] = {
     "FlextWebSettings": ("flext_web.settings", "FlextWebSettings"),
     "FlextWebTypes": ("flext_web.typings", "FlextWebTypes"),
     "FlextWebUtilities": ("flext_web.utilities", "FlextWebUtilities"),
-    "_ApplicationConfig": ("flext_web.typings", "_ApplicationConfig"),
-    "_WebRequestConfig": ("flext_web.typings", "_WebRequestConfig"),
-    "_WebResponseConfig": ("flext_web.typings", "_WebResponseConfig"),
+    "ApplicationConfig": ("flext_web.typings", "ApplicationConfig"),
+    "WebRequestConfig": ("flext_web.typings", "WebRequestConfig"),
+    "WebResponseConfig": ("flext_web.typings", "WebResponseConfig"),
     "__all__": ("flext_web.__version__", "__all__"),
     "c": ("flext_web.constants", "FlextWebConstants"),
     "d": ("flext_core", "d"),
@@ -76,9 +76,9 @@ __all__ = [
     "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
-    "_ApplicationConfig",
-    "_WebRequestConfig",
-    "_WebResponseConfig",
+    "ApplicationConfig",
+    "WebRequestConfig",
+    "WebResponseConfig",
     "__all__",
     "c",
     "d",
