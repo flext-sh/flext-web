@@ -1407,7 +1407,7 @@ class FlextWebProtocols(FlextProtocols):
                 self,
                 key: str,
                 default: str | None = None,
-            ) -> t.Scalar | t.StrSequence | None:
+            ) -> t.Scalar | Sequence[str] | None:
                 """Get value by key with optional default."""
                 ...
 

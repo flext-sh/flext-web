@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from typing import Annotated, Literal
 
 from flext_core import FlextTypes, r
@@ -94,12 +94,12 @@ class FlextWebTypes(FlextTypes):
         This enables consistent namespace patterns for cross-project type access.
         """
 
-        ConfigValue = FlextTypes.Scalar | t.StrSequence
+        ConfigValue = FlextTypes.Scalar | Sequence[str]
         type RequestDict = dict[
-            str, FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
         type ResponseDict = dict[
-            str, FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
         HttpMethodLiteral = Literal[
             "GET",
@@ -144,10 +144,10 @@ class FlextWebTypes(FlextTypes):
         """Compatibility namespace for request/response dict aliases."""
 
         type RequestDict = dict[
-            str, FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
         type ResponseDict = dict[
-            str, FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
 
     class Types:
@@ -164,7 +164,7 @@ class FlextWebTypes(FlextTypes):
         """Data type definitions for FlextService compatibility."""
 
         type ResponseDict = dict[
-            str, FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar]
+            str, FlextTypes.Scalar | Sequence[str] | Mapping[str, FlextTypes.Scalar]
         ]
 
     class WebConfigDict(m.Web.EntityConfig):
@@ -457,7 +457,7 @@ class FlextWebTypes(FlextTypes):
             *,
             use_pydantic_models: bool = True,
             enable_runtime_validation: bool = True,
-            models_available: t.StrSequence | None = None,
+            models_available: Sequence[str] | None = None,
         ) -> None:
             """Initialize types configuration."""
             super().__init__()
@@ -482,7 +482,7 @@ class FlextWebTypes(FlextTypes):
         *,
         use_pydantic_models: bool = True,
         enable_runtime_validation: bool = True,
-        models_available: t.StrSequence | None = None,
+        models_available: Sequence[str] | None = None,
     ) -> r[FlextWebTypes.TypesConfig]:
         """Configure web types system to use Pydantic models.
 

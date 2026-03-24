@@ -145,7 +145,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
         if not isinstance(url, str) or not isinstance(method, str):
             return r[t.ContainerValue].fail("Invalid parameters for web_request")
         try:
-            headers_dict: t.StrMapping = (
+            headers_dict: Mapping[str, str] = (
                 {}
                 if headers is None
                 else (headers if isinstance(headers, dict) else {})
@@ -183,7 +183,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
         if not isinstance(status_code, int):
             return r[t.ContainerValue].fail("Invalid status_code for web_response")
         try:
-            headers_dict: t.StrMapping = (
+            headers_dict: Mapping[str, str] = (
                 {}
                 if headers is None
                 else (headers if isinstance(headers, dict) else {})
@@ -433,7 +433,7 @@ def create_comprehensive_test_suite(
 @pytest.fixture(autouse=True)
 def setup_test_environment() -> Generator[None]:
     """Set up test environment with real configuration."""
-    original_env: t.StrMapping = {
+    original_env: Mapping[str, str] = {
         k: v for k, v in os.environ.items() if isinstance(v, str)
     }
     os.environ["FLEXT_ENV"] = "test"
@@ -540,7 +540,7 @@ def invalid_app_data() -> Mapping[str, str | int]:
 
 
 @pytest.fixture
-def production_config() -> t.StrMapping:
+def production_config() -> Mapping[str, str]:
     """Production-like configuration for testing."""
     return {
         "FLEXT_WEB_HOST": c.Web.WebSpecific.ALL_INTERFACES,
