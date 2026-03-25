@@ -28,7 +28,7 @@ def main() -> None:
         _ = service.start_service("127.0.0.1", 8000, _debug=True)
     except KeyboardInterrupt:
         return
-    except Exception:
+    except (RuntimeError, OSError, ValueError):
         raise
 
 

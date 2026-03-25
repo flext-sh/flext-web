@@ -53,7 +53,7 @@ class TestFlextWebUtilities:
         """Test validation error handling."""
         try:
             _ = m.Web.Entity(name="", host="localhost", port=8080)
-        except Exception:
+        except (ValueError, TypeError):
             pass
 
     def test_slugify_functionality(self) -> None:

@@ -16,7 +16,9 @@ from typing import Annotated
 from flext_core import FlextTypes, r
 from pydantic import Field
 
-from flext_web import c, m, u
+from flext_web.constants import FlextWebConstants as c
+from flext_web.models import FlextWebModels as m
+from flext_web.utilities import FlextWebUtilities as u
 
 
 class FlextWebApplicationConfig(m.Web.EntityConfig):

@@ -71,7 +71,15 @@ class ExamplesFullFunctionalityTest:
             assert hasattr(service, "app"), "Service missing Flask app"
             assert hasattr(service, "run"), "Service missing run method"
             return True
-        except Exception:
+        except (
+            ImportError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            AttributeError,
+            AssertionError,
+            OSError,
+        ):
             return False
 
     def test_api_usage_full_functionality(self) -> bool | None:
@@ -108,7 +116,15 @@ class ExamplesFullFunctionalityTest:
             api_usage.list_applications()
             api_usage.demo_application_lifecycle()
             return True
-        except Exception:
+        except (
+            ImportError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            AttributeError,
+            AssertionError,
+            OSError,
+        ):
             return False
 
     def test_docker_ready_full_functionality(self) -> bool | None:
@@ -135,7 +151,15 @@ class ExamplesFullFunctionalityTest:
             assert hasattr(docker_ready, "main"), "main() function missing"
             assert callable(docker_ready.main), "main() not callable"
             return True
-        except Exception:
+        except (
+            ImportError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            AttributeError,
+            AssertionError,
+            OSError,
+        ):
             return False
 
     def test_examples_integration_functionality(self) -> bool | None:
@@ -156,7 +180,15 @@ class ExamplesFullFunctionalityTest:
             assert hasattr(service1, "run")
             assert hasattr(service2, "run")
             return True
-        except Exception:
+        except (
+            ImportError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            AttributeError,
+            AssertionError,
+            OSError,
+        ):
             return False
 
     def test_examples_error_handling(self) -> bool | None:
@@ -183,7 +215,15 @@ class ExamplesFullFunctionalityTest:
             assert not apps, "Should return empty list"
             api_usage.ExampleConstants.BASE_URL = original_base_url
             return True
-        except Exception:
+        except (
+            ImportError,
+            RuntimeError,
+            ValueError,
+            TypeError,
+            AttributeError,
+            AssertionError,
+            OSError,
+        ):
             return False
 
     def run_full_functionality_test(self) -> bool:

@@ -135,7 +135,7 @@ def _extract_apps_from_response(
         try:
             if isinstance(app_item, dict):
                 result_list.append(t.AppData.model_validate(app_item))
-        except Exception:
+        except (ValueError, TypeError):
             continue
     return result_list
 
