@@ -121,12 +121,26 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
             return r[BaseModel].fail("Invalid body for http_request")
         if not isinstance(timeout, (float, int)):
             return r[BaseModel].fail("Invalid timeout for http_request")
+        narrow_headers: Mapping[str, str] | None = (
+            {k: str(v) for k, v in req_headers.items()}
+            if isinstance(req_headers, dict)
+            else None
+        )
+        narrow_body: str | t.ScalarMapping | None = (
+            req_body
+            if isinstance(req_body, str) or req_body is None
+            else {
+                k: v
+                for k, v in req_body.items()
+                if isinstance(v, (str, int, float, bool))
+            }
+        )
         return _wrap_result(
             t.create_http_request(
                 url=url,
                 method=method,
-                headers=req_headers,
-                body=req_body,
+                headers=narrow_headers,
+                body=narrow_body,
                 timeout=float(timeout),
             )
         )
@@ -143,11 +157,23 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
             return r[BaseModel].fail("Invalid body for http_response")
         if elapsed_time is not None and (not isinstance(elapsed_time, (float, int))):
             return r[BaseModel].fail("Invalid elapsed_time for http_response")
+        resp_narrow_headers: Mapping[str, str] | None = (
+            {k: str(v) for k, v in headers.items()}
+            if isinstance(headers, dict)
+            else None
+        )
+        resp_narrow_body: str | t.ScalarMapping | None = (
+            body
+            if isinstance(body, str) or body is None
+            else {
+                k: v for k, v in body.items() if isinstance(v, (str, int, float, bool))
+            }
+        )
         return _wrap_result(
             t.create_http_response(
                 status_code=status_code,
-                headers=headers,
-                body=body,
+                headers=resp_narrow_headers,
+                body=resp_narrow_body,
                 elapsed_time=float(elapsed_time) if elapsed_time else None,
             )
         )
@@ -165,16 +191,30 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
         try:
             headers_dict: t.StrMapping = (
                 {}
-                if headers is None
-                else (headers if isinstance(headers, dict) else {})
+                if not isinstance(headers, dict)
+                else {k: str(v) for k, v in headers.items()}
             )
             body_value: t.ScalarMapping | str | None = (
-                body if isinstance(body, (dict, str)) or body is None else None
+                body
+                if isinstance(body, str) or body is None
+                else (
+                    {
+                        k: v
+                        for k, v in body.items()
+                        if isinstance(v, (str, int, float, bool))
+                    }
+                    if isinstance(body, dict)
+                    else None
+                )
             )
             query_params_dict: t.ScalarMapping = (
                 {}
-                if query_params is None
-                else (query_params if isinstance(query_params, dict) else {})
+                if not isinstance(query_params, dict)
+                else {
+                    k: v
+                    for k, v in query_params.items()
+                    if isinstance(v, (str, int, float, bool))
+                }
             )
             web_request_config = FlextWebRequestConfig(
                 url=url,
@@ -203,11 +243,21 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
         try:
             resp_headers_dict: t.StrMapping = (
                 {}
-                if headers is None
-                else (headers if isinstance(headers, dict) else {})
+                if not isinstance(headers, dict)
+                else {k: str(v) for k, v in headers.items()}
             )
             resp_body_value: t.ScalarMapping | str | None = (
-                body if isinstance(body, (dict, str)) or body is None else None
+                body
+                if isinstance(body, str) or body is None
+                else (
+                    {
+                        k: v
+                        for k, v in body.items()
+                        if isinstance(v, (str, int, float, bool))
+                    }
+                    if isinstance(body, dict)
+                    else None
+                )
             )
             web_response_config = FlextWebResponseConfig(
                 status_code=status_code,
