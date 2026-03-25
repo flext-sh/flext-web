@@ -121,13 +121,15 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
             return r[BaseModel].fail("Invalid body for http_request")
         if not isinstance(timeout, (float, int)):
             return r[BaseModel].fail("Invalid timeout for http_request")
-        return _wrap_result(t.create_http_request(
-            url=url,
-            method=method,
-            headers=req_headers,
-            body=req_body,
-            timeout=float(timeout),
-        ))
+        return _wrap_result(
+            t.create_http_request(
+                url=url,
+                method=method,
+                headers=req_headers,
+                body=req_body,
+                timeout=float(timeout),
+            )
+        )
     if entry_type == "http_response":
         status_code = kwargs.get("status_code")
         headers = kwargs.get("headers")
@@ -141,12 +143,14 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
             return r[BaseModel].fail("Invalid body for http_response")
         if elapsed_time is not None and (not isinstance(elapsed_time, (float, int))):
             return r[BaseModel].fail("Invalid elapsed_time for http_response")
-        return _wrap_result(t.create_http_response(
-            status_code=status_code,
-            headers=headers,
-            body=body,
-            elapsed_time=float(elapsed_time) if elapsed_time else None,
-        ))
+        return _wrap_result(
+            t.create_http_response(
+                status_code=status_code,
+                headers=headers,
+                body=body,
+                elapsed_time=float(elapsed_time) if elapsed_time else None,
+            )
+        )
     if entry_type == "web_request":
         url = kwargs.get("url")
         method = kwargs.get("method")
@@ -248,7 +252,9 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
     raise ValueError(msg)
 
 
-def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, t.NormalizedValue]:
+def create_test_data(
+    data_type: str, **kwargs: t.Scalar
+) -> dict[str, t.NormalizedValue]:
     """Create test data for tests.
 
     This function provides a standardized way to create test data,

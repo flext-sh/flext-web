@@ -578,14 +578,18 @@ class TestFlextWebModels:
         """Test application creation with parametrized edge cases."""
         result = create_entry("web_app", name=name, host=host, port=port)
         if should_succeed:
-            assert result.is_success, f"Expected success for app '{name}', got: {result.error}"
+            assert result.is_success, (
+                f"Expected success for app '{name}', got: {result.error}"
+            )
             app = result.value
             assert isinstance(app, m.Web.Entity)
             tm.that(app.name, eq=name)
             tm.that(app.host, eq=host)
             tm.that(app.port, eq=port)
         else:
-            assert result.is_failure, f"Expected failure for app '{name}', but succeeded"
+            assert result.is_failure, (
+                f"Expected failure for app '{name}', but succeeded"
+            )
             tm.that(result.error, none=False)
 
     def test_extreme_edge_cases(self) -> None:

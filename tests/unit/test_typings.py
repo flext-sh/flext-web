@@ -341,7 +341,9 @@ class TestFlextWebModels:
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
             result = t.create_http_request(url="http://localhost:8080", method=method)
-            assert result.is_success, f"Operation should succeed for method {method}: {result.error}"
+            assert result.is_success, (
+                f"Operation should succeed for method {method}: {result.error}"
+            )
             tm.that(result.value.method, eq=method)
 
     def test_create_web_request_all_methods(self) -> None:
@@ -350,7 +352,9 @@ class TestFlextWebModels:
         for method in valid_methods:
             config = FlextWebRequestConfig(url="http://localhost:8080", method=method)
             result = t.create_web_request(config)
-            assert result.is_success, f"Operation should succeed for method {method}: {result.error}"
+            assert result.is_success, (
+                f"Operation should succeed for method {method}: {result.error}"
+            )
             tm.that(result.value.method, eq=method)
 
     def test_create_http_request_with_none_headers(self) -> None:
@@ -383,7 +387,9 @@ class TestFlextWebModels:
         """Test create_web_response with None headers."""
         with pytest.raises(ValidationError):
             FlextWebResponseConfig.model_validate({
-                "status_code": 200, "request_id": "test-123", "headers": None,
+                "status_code": 200,
+                "request_id": "test-123",
+                "headers": None,
             })
 
     def test_types_config_initialization(self) -> None:
