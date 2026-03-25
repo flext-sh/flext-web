@@ -39,7 +39,7 @@ class TestFlextWebApp:
             openapi_url=c.Web.WebApi.OPENAPI_URL,
         )
         result = FlextWebApp.FastAPIFactory.create_instance(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(hasattr(app, "title"), eq=True)
         tm.that(hasattr(app, "version"), eq=True)
@@ -55,7 +55,7 @@ class TestFlextWebApp:
             openapi_url=c.Web.WebApi.OPENAPI_URL,
         )
         result = FlextWebApp.FastAPIFactory.create_instance(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app.title, eq="Valid Test API")
         tm.that(hasattr(app, "get"), eq=True)
@@ -71,7 +71,7 @@ class TestFlextWebApp:
             openapi_url=c.Web.WebApi.OPENAPI_URL,
         )
         result = FlextWebApp.FastAPIFactory.create_instance(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app.title, eq="Real Test API")
         tm.that(app.version, eq="1.0.0")
@@ -86,7 +86,7 @@ class TestFlextWebApp:
             description="Test Description",
         )
         result = FlextWebApp.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app.title, eq="Test API")
         tm.that(app.version, eq="1.0.0")
@@ -100,7 +100,7 @@ class TestFlextWebApp:
             description=c.Web.WebApi.DEFAULT_DESCRIPTION,
         )
         result = FlextWebApp.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app.title, eq="Custom Test API")
         tm.that(app.version, eq="2.0.0")
@@ -109,7 +109,7 @@ class TestFlextWebApp:
     def test_create_fastapi_app_with_none_config(self) -> None:
         """Test create_fastapi_app with None config uses defaults - REAL FastAPI."""
         result = FlextWebApp.create_fastapi_app(None)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(hasattr(app, "title"), eq=True)
         tm.that(hasattr(app, "version"), eq=True)
@@ -119,7 +119,7 @@ class TestFlextWebApp:
         """Test create_fastapi_app health check registration - REAL FastAPI."""
         config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
         result = FlextWebApp.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         client = TestClient(app)
         response = client.get("/health")
@@ -140,7 +140,7 @@ class TestFlextWebApp:
             openapi_url="/custom-openapi.json",
         )
         result = FlextWebApp.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app.title, eq="Test API")
         tm.that(app.version, eq="1.0.0")
@@ -150,7 +150,7 @@ class TestFlextWebApp:
         """Test create_fastapi_app with default description from Constants - REAL FastAPI."""
         config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
         result = FlextWebApp.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app.title, eq="Test API")
         tm.that(app.version, eq="1.0.0")
@@ -162,7 +162,7 @@ class TestFlextWebApp:
         tm.that(hasattr(app, "execute"), eq=True)
         tm.that(callable(app.execute), eq=True)
         result = app.execute()
-        tm.ok(result)
+        assert result.is_success, result.error
 
     def test_app_static_methods(self) -> None:
         """Test FlextWebApp static methods."""
@@ -172,7 +172,7 @@ class TestFlextWebApp:
     def test_app_error_handling(self) -> None:
         """Test FlextWebApp error handling - REAL FastAPI."""
         result = FlextWebApp.create_fastapi_app(None)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(hasattr(app, "title"), eq=True)
         tm.that(hasattr(app, "version"), eq=True)
@@ -184,7 +184,7 @@ class TestFlextWebApp:
         tm.that(hasattr(result, "is_success"), eq=True)
         tm.that(hasattr(result, "value"), eq=True)
         tm.that(hasattr(result, "error"), eq=True)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(hasattr(app, "title"), eq=True)
 
@@ -192,7 +192,7 @@ class TestFlextWebApp:
         """Test FlextWebApp logging integration - REAL FastAPI."""
         config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
         result = FlextWebApp.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(hasattr(app, "title"), eq=True)
 
@@ -204,16 +204,16 @@ class TestFlextWebApp:
             description="Test Description",
         )
         result = FlextWebApp.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
-        tm.that(app, is_=FastAPI)
+        assert isinstance(app, FastAPI)
         tm.that(app.title, eq="Test API")
 
     def test_app_health_check_endpoint(self) -> None:
         """Test FlextWebApp health check endpoint registration - REAL FastAPI."""
         config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
         result = FlextWebApp.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         client = TestClient(app)
         response = client.get("/health")
@@ -233,7 +233,7 @@ class TestFlextWebApp:
             openapi_url="/custom-openapi.json",
         )
         result = FlextWebApp.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app.title, eq="Custom API")
         tm.that(app.version, eq="2.0.0")
@@ -251,7 +251,7 @@ class TestFlextWebApp:
             openapi_url=config.openapi_url,
         )
         result = FlextWebApp.create_fastapi_app(config, factory_config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app.title, eq="Override Title")
         tm.that(app.version, eq="1.0.0")
@@ -269,7 +269,7 @@ class TestFlextWebApp:
             openapi_url="/override-openapi.json",
         )
         result = FlextWebApp.create_fastapi_app(config, factory_config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app.title, eq="Test API")
         tm.that(app.version, eq="1.0.0")
@@ -279,7 +279,7 @@ class TestFlextWebApp:
         """Test create_flask_app with success."""
         config = FlextWebSettings(secret_key=c.Web.WebDefaults.TEST_SECRET_KEY)
         result = FlextWebApp.create_flask_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         tm.that(hasattr(result, "value"), eq=True)
         tm.that(result.value, none=False)
         tm.that(hasattr(result.value, "route"), eq=True)
@@ -287,7 +287,7 @@ class TestFlextWebApp:
     def test_create_flask_app_with_none_config(self) -> None:
         """Test create_flask_app with None config uses defaults."""
         result = FlextWebApp.create_flask_app(None)
-        tm.ok(result)
+        assert result.is_success, result.error
         tm.that(hasattr(result, "value"), eq=True)
         tm.that(result.value, none=False)
         tm.that(hasattr(result.value, "route"), eq=True)
@@ -297,7 +297,7 @@ class TestFlextWebApp:
         app = FastAPI()
         config = FlextWebSettings()
         result = FlextWebApp.configure_middleware(app, config)
-        tm.ok(result)
+        assert result.is_success, result.error
         tm.that(result.value is True, eq=True)
 
     def test_configure_routes(self) -> None:
@@ -305,14 +305,14 @@ class TestFlextWebApp:
         app = FastAPI()
         config = FlextWebSettings()
         result = FlextWebApp.configure_routes(app, config)
-        tm.ok(result)
+        assert result.is_success, result.error
         tm.that(result.value is True, eq=True)
 
     def test_configure_error_handlers(self) -> None:
         """Test configure_error_handlers method."""
         app = FastAPI()
         result = FlextWebApp.configure_error_handlers(app)
-        tm.ok(result)
+        assert result.is_success, result.error
         tm.that(result.value is True, eq=True)
 
     def test_health_handler_create_handler(self) -> None:
@@ -355,7 +355,7 @@ class TestFlextWebApp:
             openapi_url=config.openapi_url,
         )
         app_result = FlextWebApp.FastAPIFactory.create_instance(fastapi_config)
-        tm.ok(app_result)
+        assert app_result.is_success, app_result.error
         app = app_result.value
         configured_app = FlextWebApp._configure_fastapi_endpoints(app, config)
         client = TestClient(configured_app)
@@ -372,7 +372,7 @@ class TestFlextWebApp:
         """Test create_flask_app health endpoint - REAL Flask app."""
         config = FlextWebSettings(secret_key=c.Web.WebDefaults.TEST_SECRET_KEY)
         result = FlextWebApp.create_flask_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
         tm.that(app, none=False)
         app.config["TESTING"] = True
@@ -389,5 +389,5 @@ class TestFlextWebApp:
         """Test validate_business_rules method (line 352)."""
         app = FlextWebApp()
         result = app.validate_business_rules()
-        tm.ok(result)
+        assert result.is_success, result.error
         tm.that(result.value is True, eq=True)

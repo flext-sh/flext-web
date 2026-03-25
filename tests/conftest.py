@@ -39,6 +39,16 @@ from tests import c, m, t
 _T = TypeVar("_T")
 
 
+def _wrap_result(result: r[_T]) -> r[BaseModel]:
+    """Wrap a typed FlextResult into r[BaseModel] for generic test helpers."""
+    if result.is_success:
+        val = result.value
+        if isinstance(val, BaseModel):
+            return r[BaseModel].ok(val)
+        return r[BaseModel].fail("Result value is not a BaseModel")
+    return r[BaseModel].fail(result.error or "Unknown error")
+
+
 def assert_success(
     result: r[_T],
     message: str = "Operation should succeed",
@@ -97,7 +107,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
         ):
             return r[BaseModel].fail("Invalid parameters for web_app")
         try:
-            return m.Web.create_web_app(name=name, host=host, port=port)
+            return _wrap_result(m.Web.create_web_app(name=name, host=host, port=port))
         except (ValidationError, ValueError, TypeError) as exc:
             return r[BaseModel].fail(str(exc))
     if entry_type == "http_request":
@@ -114,13 +124,13 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
             return r[BaseModel].fail("Invalid body for http_request")
         if not isinstance(timeout, (float, int)):
             return r[BaseModel].fail("Invalid timeout for http_request")
-        return t.create_http_request(
+        return _wrap_result(t.create_http_request(
             url=url,
             method=method,
             headers=req_headers,
             body=req_body,
             timeout=float(timeout),
-        )
+        ))
     if entry_type == "http_response":
         status_code = kwargs.get("status_code")
         headers = kwargs.get("headers")
@@ -134,12 +144,12 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
             return r[BaseModel].fail("Invalid body for http_response")
         if elapsed_time is not None and (not isinstance(elapsed_time, (float, int))):
             return r[BaseModel].fail("Invalid elapsed_time for http_response")
-        return t.create_http_response(
+        return _wrap_result(t.create_http_response(
             status_code=status_code,
             headers=headers,
             body=body,
             elapsed_time=float(elapsed_time) if elapsed_time else None,
-        )
+        ))
     if entry_type == "web_request":
         url = kwargs.get("url")
         method = kwargs.get("method")
@@ -175,7 +185,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
                 client_ip=client_ip if isinstance(client_ip, str) else "127.0.0.1",
                 user_agent=user_agent if isinstance(user_agent, str) else "test-client",
             )
-            return t.create_web_request(web_request_config)
+            return _wrap_result(t.create_web_request(web_request_config))
         except (ValidationError, ValueError, TypeError) as exc:
             return r[BaseModel].fail(str(exc))
     if entry_type == "web_response":
@@ -216,7 +226,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
                 if isinstance(processing_time_ms, (int, float))
                 else 0.0,
             )
-            return t.create_web_response(web_response_config)
+            return _wrap_result(t.create_web_response(web_response_config))
         except (ValidationError, ValueError, TypeError) as exc:
             return r[BaseModel].fail(str(exc))
     if entry_type == "application":
@@ -236,7 +246,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
             port=port,
             status=status if isinstance(status, str) else "stopped",
         )
-        return t.create_application(app_config)
+        return _wrap_result(t.create_application(app_config))
     msg = f"Unsupported entry type: {entry_type}"
     raise ValueError(msg)
 
@@ -375,7 +385,7 @@ def create_test_result(
 
 def run_parameterized_test(
     test_cases: Sequence[tuple[t.NormalizedValue, ...]],
-    test_function: Callable[..., r[BaseModel]],
+    test_function: Callable[..., r[_T]],
     expected_results: Sequence[bool],
     test_name: str = "parameterized_test",
 ) -> None:

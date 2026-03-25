@@ -24,24 +24,24 @@ class TestFlextWebApi:
     def test_initialization(self) -> None:
         """Test FlextWebApi initialization."""
         api = FlextWebApi()
-        tm.that(api, none=False)
+        assert api is not None
         tm.that(hasattr(api, "_container"), eq=True)
         tm.that(hasattr(api, "_logger"), eq=True)
 
     def test_create_fastapi_app_success(self) -> None:
         """Test successful FastAPI app creation."""
         result = FlextWebApi.create_fastapi_app()
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
-        tm.that(app, none=False)
+        assert app is not None
 
     def test_create_fastapi_app_with_config(self) -> None:
         """Test FastAPI app creation with configuration."""
         config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
         result = FlextWebApi.create_fastapi_app(config)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
-        tm.that(app, none=False)
+        assert app is not None
 
     def test_create_fastapi_app_with_invalid_config(self) -> None:
         """Test FastAPI app creation with invalid config - REAL validation."""
