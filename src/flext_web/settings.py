@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_core import FlextModels, r, t
+from flext_core import FlextModels, r
 from pydantic import Field, computed_field
 
-from flext_web import c
+from flext_web import c, t
 
 
 class FlextWebSettings(FlextModels.Value):
