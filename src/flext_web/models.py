@@ -12,9 +12,10 @@ import uuid
 from datetime import UTC, datetime
 from typing import Annotated, override
 
-from flext_core import FlextModels, r, t, u
+from flext_core import FlextModels, r, u
 from pydantic import BaseModel, Field, field_validator
 
+from flext_web import t
 from flext_web.constants import c
 
 
