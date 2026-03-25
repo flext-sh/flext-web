@@ -430,22 +430,12 @@ from flext_core import u
 class FlextWebApp(FlextModels.Entity):
     """Domain entity with business rules"""
 
-<<<<<<< Updated upstream
     def start(self) -> r["FlextWebApp"]:
-=======
-    def start(self) -> FlextResult["FlextWebApp"]:
->>>>>>> Stashed changes
         """Business logic for starting application"""
         if self.status == FlextWebAppStatus.RUNNING:
             return r[bool].fail("Application already running")
         # Business validation here
-<<<<<<< Updated upstream
         return r[bool].ok(self.model_copy(update={"status": FlextWebAppStatus.RUNNING}))
-=======
-        return FlextResult[bool].ok(
-            self.model_copy(update={"status": FlextWebAppStatus.RUNNING})
-        )
->>>>>>> Stashed changes
 ```
 
 #### Application Layer Development
