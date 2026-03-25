@@ -74,21 +74,11 @@ class FlextWebTypes(FlextTypes):
     class HttpResponse(m.Web.Response):
         """HTTP response model - inherits from m.Web.Response."""
 
-    WebRequest = m.Web.AppRequest
-    "Web request model - references m.Web.AppRequest."
-    WebResponse = m.Web.AppResponse
-    "Web response model - references m.Web.AppResponse."
-
     class ApplicationEntity(m.Web.Entity):
         """Application entity model - inherits from m.Web.Entity."""
 
-    ApplicationStatus = c.Web.Status
-
     class AppData(m.Web.ApplicationResponse):
         """Application data model - inherits from m.Web.ApplicationResponse."""
-
-    HealthResponse = m.Web.HealthResponse
-    "Health response model - references m.Web.HealthResponse."
 
     class Web:
         """Web core type aliases for request/response data.
@@ -110,13 +100,6 @@ class FlextWebTypes(FlextTypes):
 
     class Types:
         """Type system aliases for flext-web Removed redundant aliases."""
-
-    SuccessResponse = m.Web.ServiceResponse
-    "Success response model - references m.Web.ServiceResponse."
-    BaseResponse = m.Web.ServiceResponse
-    "Base response model - references m.Web.ServiceResponse."
-    ErrorResponse = m.Web.ServiceResponse
-    "Error response model - references m.Web.ServiceResponse."
 
     class WebConfigDict(m.Web.EntityConfig):
         """Web configuration dictionary model - inherits from m.Web.EntityConfig."""

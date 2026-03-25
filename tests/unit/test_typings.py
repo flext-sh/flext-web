@@ -33,9 +33,7 @@ class TestFlextWebModels:
 
     def test_core_web_types(self) -> None:
         """Test Core web types."""
-        tm.that(hasattr(t, "SuccessResponse"), eq=True)
-        tm.that(hasattr(t, "BaseResponse"), eq=True)
-        tm.that(hasattr(t, "ErrorResponse"), eq=True)
+        tm.that(hasattr(m.Web, "ServiceResponse"), eq=True)
 
     def test_application_types(self) -> None:
         """Test Application types."""
@@ -80,7 +78,7 @@ class TestFlextWebModels:
 
     def test_request_context_functionality(self) -> None:
         """Test request context functionality."""
-        request = t.WebRequest(
+        request = m.Web.AppRequest(
             url="http://localhost:8080/api/test",
             method="GET",
             headers={"Content-Type": "application/json"},
@@ -153,7 +151,7 @@ class TestFlextWebModels:
         tm.that(hasattr(m.Web, "WebRequest"), eq=True)
         tm.that(hasattr(m.Web, "WebResponse"), eq=True)
         tm.that(hasattr(m.Web, "Entity"), eq=True)
-        test_request = t.WebRequest(url="https://example.com")
+        test_request = m.Web.AppRequest(url="https://example.com")
         tm.that(hasattr(test_request, "is_secure"), eq=True)
 
     def test_type_annotations(self) -> None:

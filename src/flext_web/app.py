@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import json as _json
 from collections.abc import Callable
 from typing import override
 
@@ -192,8 +193,6 @@ class FlextWebApp(FlextService[bool]):
         app.config["TESTING"] = flask_config.testing
 
         def health_check() -> flask.Response:
-            import json as _json
-
             body: str = _json.dumps({
                 "status": c.Web.WebResponse.STATUS_HEALTHY,
                 "service": c.Web.WebService.SERVICE_NAME_FLASK,
