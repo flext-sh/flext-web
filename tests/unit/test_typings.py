@@ -10,10 +10,10 @@ from flext_tests import tm
 from pydantic import ValidationError
 
 from flext_web import (
-    FlextWebSettings,
     FlextWebApplicationConfig,
     FlextWebRequestConfig,
     FlextWebResponseConfig,
+    FlextWebSettings,
 )
 from tests import c, m, t
 
@@ -245,7 +245,9 @@ class TestFlextWebModels:
     def test_create_web_request_invalid_method(self) -> None:
         """Test create_web_request with invalid HTTP method."""
         with pytest.raises(ValidationError):
-            _ = FlextWebRequestConfig(url="http://localhost:8080", method="INVALID_METHOD")
+            _ = FlextWebRequestConfig(
+                url="http://localhost:8080", method="INVALID_METHOD"
+            )
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
@@ -380,7 +382,9 @@ class TestFlextWebModels:
     def test_create_web_response_with_none_headers(self) -> None:
         """Test create_web_response with None headers."""
         with pytest.raises(ValidationError):
-            _ = FlextWebResponseConfig(status_code=200, request_id="test-123", headers=None)
+            _ = FlextWebResponseConfig(
+                status_code=200, request_id="test-123", headers=None
+            )
 
     def test_types_config_initialization(self) -> None:
         """Test TypesConfig initialization with all parameters."""

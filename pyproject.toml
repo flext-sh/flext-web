@@ -4,7 +4,6 @@
 # Sections with [CUSTOM] are project-specific extension points.
 
 # [MANAGED] build system
-
 [build-system]
 build-backend = "hatchling.build"
 requires = [ "hatchling" ]
@@ -14,9 +13,9 @@ dev = [
   "types-flask (>=1.1.6,<2.0.0)",
 ]
 
+# [CUSTOM] project metadata
 [project]
 
-# [MANAGED] consolidated development dependencies
 authors = [ {email = "team@flext.sh", name = "FLEXT Team"} ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -51,6 +50,7 @@ scripts = {"flext-web" = "flext_web.__main__:main"}
 urls = {Documentation = "https://github.com/flext-sh/flext/blob/main/README.md", Homepage = "https://github.com/flext-sh/flext"}
 version = "0.12.0-dev"
 
+# [MANAGED] consolidated development dependencies
 [project.optional-dependencies]
 dev = [
   "autoflake>=2.3.1",
@@ -114,13 +114,13 @@ dev = [
 ]
 
 # [MANAGED] coverage
-
 [tool.coverage.report]
 fail_under = 15
 precision = 2
 show_missing = true
 skip_covered = false
 
+# [MANAGED] deptry
 [tool.deptry]
 known_first_party = [
   "flext_web",
@@ -132,6 +132,7 @@ pep621_dev_dependency_groups = [
 [tool.hatch.metadata]
 allow-direct-references = true
 
+# [MANAGED] mypy
 [tool.mypy]
 disable_error_code = [
   "prop-decorator",
@@ -147,11 +148,13 @@ python_version = "3.13"
 
 [tool.poetry]
 
+# [MANAGED] pydantic-mypy
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
 
+# [MANAGED] pyrefly
 [tool.pyrefly]
 disable-project-excludes-heuristics = true
 ignore-errors-in-generated-code = true
@@ -200,11 +203,20 @@ unannotated-attribute = true
 unannotated-parameter = true
 unannotated-return = true
 
+# [MANAGED] pyright
 [tool.pyright]
 exclude = [
   "**/.*",
+  "**/.venv",
+  "**/.venv/**",
   "**/__pycache__",
+  "**/dist-packages",
+  "**/dist-packages/**",
   "**/node_modules",
+  "**/site-packages",
+  "**/site-packages/**",
+  "**/venv",
+  "**/venv/**",
   ".mypy_cache",
   ".pytest_cache",
   ".ruff_cache",
@@ -255,6 +267,7 @@ extraPaths = [ ".", "src" ]
 reportPrivateUsage = "none"
 root = "examples"
 
+# [MANAGED] pytest
 [tool.pytest.ini_options]
 addopts = [
   "--strict-markers",
@@ -280,6 +293,7 @@ python_files = [
   "test_*.py",
 ]
 
+# [MANAGED] ruff
 [tool.ruff]
 exclude = [
   ".git",
@@ -385,6 +399,7 @@ known-first-party = [
 split-on-trailing-comma = true
 
 [tool.ruff.lint.per-file-ignores]
+
 "**/.vulture_whitelist.py" = [
   "ALL",
 ]
@@ -674,6 +689,7 @@ split-on-trailing-comma = true
   "S607",
 ]
 
+# [MANAGED] tomlsort
 [tool.tomlsort]
 all = true
 in_place = true
@@ -684,12 +700,13 @@ sort_first = [
   "tool",
 ]
 
+[tool.uv.sources.flext-core]
+workspace = true
+
+# [MANAGED] yamlfix
 [tool.yamlfix]
 explicit_start = false
 line_length = 88
 preserve_quotes = true
 section_whitelines = 1
 whitelines = 1
-
-[tool.uv.sources.flext-core]
-workspace = true
