@@ -256,7 +256,11 @@ from flext_core import t
 from flext_core import u
 
 
+<<<<<<< Updated upstream
 def process_request(data: dict) -> r[FlextWebApp]:
+=======
+def process_request(data: dict) -> FlextResult[FlextWebApp]:
+>>>>>>> Stashed changes
     return (
         validate_input(data)
         .flat_map(create_application)

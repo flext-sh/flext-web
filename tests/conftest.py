@@ -576,7 +576,11 @@ def production_config() -> t.StrMapping:
 def docker_manager() -> Generator[tk]:
     """Provide tk instance for integration tests."""
     try:
+<<<<<<< Updated upstream
         yield tk(workspace_root=Path().absolute())
+=======
+        yield FlextTestsDocker(workspace_root=Path().absolute())
+>>>>>>> Stashed changes
     except ImportError:
         pytest.skip("tk not available")
     except (ConnectionError, TimeoutError, OSError, RuntimeError) as e:
