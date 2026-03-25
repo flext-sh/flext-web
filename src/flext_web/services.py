@@ -429,12 +429,14 @@ class FlextWebServices(s[bool]):
         """Start HTTP service."""
         if self._service_running:
             return r[bool].fail("Service is already running")
-        return (
-            self
-            .initialize_routes()
-            .flat_map(lambda _: self.configure_middleware())
-            .map(lambda _: self._mark_service_running())
-        )
+        init_result = self.initialize_routes()
+        if init_result.is_failure:
+            return init_result
+        middleware_result = self.configure_middleware()
+        if middleware_result.is_failure:
+            return middleware_result
+        self._mark_service_running()
+        return r[bool].ok(value=True)
 
     def stop_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
         """Stop application - fail fast if not found."""

@@ -6,7 +6,7 @@ Tests the package initialization and exports.
 from flext_tests import tm
 
 import flext_web
-from flext_web import __version__, __version_info__
+from flext_web.__version__ import __version__, __version_info__
 
 
 class TestFlextWebInit:
@@ -43,29 +43,23 @@ class TestFlextWebInit:
             "FlextWebServices",
             "FlextWebTypes",
             "FlextWebUtilities",
-            "_ApplicationConfig",
-            "_WebRequestConfig",
-            "_WebResponseConfig",
+            "FlextWebApplicationConfig",
+            "FlextWebRequestConfig",
+            "FlextWebResponseConfig",
             "__all__",
-            "__version__",
-            "__version_info__",
             "c",
-            "create_app",
             "d",
             "e",
             "h",
-            "list_apps",
             "m",
             "p",
             "r",
             "s",
-            "start_app",
-            "stop_app",
             "t",
             "u",
             "x",
         }
-        tm.that(set(flext_web.__all__), eq=expected_exports)
+        assert set(flext_web.__all__) == expected_exports
 
     def test_imports_are_classes_or_modules(self) -> None:
         """Test that imported items are of correct types."""

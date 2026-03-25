@@ -22,8 +22,8 @@ __version_info__: Final[tuple[int | str, ...]] = tuple(
 )
 __title__: Final[str] = _metadata["Name"]
 __description__: Final[str] = _metadata["Summary"]
-__author__: Final[str] = _metadata["Author"]
-__author_email__: Final[str] = _metadata["Author-Email"]
+__author__: Final[str] = _metadata.get("Author", "")
+__author_email__: Final[str] = _metadata.get("Author-Email", "")
 __license__: Final[str] = _metadata.get("License", "")
 __url__: Final[str] = _metadata.get("Home-Page", "")
 

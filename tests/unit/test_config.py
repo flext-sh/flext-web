@@ -31,7 +31,7 @@ class TestFlextWebSettings:
         tm.that(config.port, none=False)
         tm.that(config.app_name, none=False)
         tm.that(config.app_name, is_=str)
-        tm.that(config.app_name, eq=True)
+        tm.that(config.app_name, empty=False)
 
     def test_initialization_with_custom_values(self) -> None:
         """Test FlextWebSettings initialization with custom values."""

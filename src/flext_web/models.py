@@ -12,10 +12,11 @@ import uuid
 from datetime import UTC, datetime
 from typing import Annotated, override
 
-from flext_core import FlextModels, r
+from flext_core import FlextModels, FlextTypes as t, r
 from pydantic import BaseModel, Field, field_validator
 
-from flext_web import c, t, u
+from flext_web.constants import FlextWebConstants as c
+from flext_web.utilities import FlextWebUtilities as u
 
 
 class FlextWebModels(FlextModels):
@@ -376,7 +377,7 @@ class FlextWebModels(FlextModels):
                 Field(description="Associated request identifier"),
             ]
             content_type: Annotated[
-                c.Web.Literals.ContentTypeLiteral | str,
+                str,
                 Field(
                     default=c.Web.Http.CONTENT_TYPE_JSON,
                     description="Response content type",
@@ -1229,36 +1230,33 @@ class FlextWebModels(FlextModels):
             title: Annotated[
                 str,
                 Field(
-                    default=c.Web.WebDefaults.APP_NAME,
                     min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
                     max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
                     description="FastAPI application title",
                 ),
-            ]
+            ] = c.Web.WebDefaults.APP_NAME
             version: Annotated[
                 str,
                 Field(
-                    default=c.Web.WebDefaults.VERSION_STRING,
                     description="Application version",
                 ),
-            ]
+            ] = c.Web.WebDefaults.VERSION_STRING
             description: Annotated[
                 str,
                 Field(
-                    default=c.Web.WebApi.DEFAULT_DESCRIPTION,
                     min_length=1,
                     max_length=c.Web.WebSecurity.MAX_DESCRIPTION_LENGTH,
                     description="Application description",
                 ),
-            ]
+            ] = c.Web.WebApi.DEFAULT_DESCRIPTION
             debug: Annotated[
                 bool,
-                Field(default=False, description="FastAPI debug mode"),
-            ]
+                Field(description="FastAPI debug mode"),
+            ] = False
             testing: Annotated[
                 bool,
-                Field(default=False, description="FastAPI testing mode"),
-            ]
+                Field(description="FastAPI testing mode"),
+            ] = False
             middlewares: Annotated[
                 t.StrSequence,
                 Field(
@@ -1268,24 +1266,21 @@ class FlextWebModels(FlextModels):
             docs_url: Annotated[
                 str,
                 Field(
-                    default=c.Web.WebApi.DOCS_URL,
                     description="Documentation URL",
                 ),
-            ]
+            ] = c.Web.WebApi.DOCS_URL
             redoc_url: Annotated[
                 str,
                 Field(
-                    default=c.Web.WebApi.REDOC_URL,
                     description="ReDoc URL",
                 ),
-            ]
+            ] = c.Web.WebApi.REDOC_URL
             openapi_url: Annotated[
                 str,
                 Field(
-                    default=c.Web.WebApi.OPENAPI_URL,
                     description="OpenAPI URL",
                 ),
-            ]
+            ] = c.Web.WebApi.OPENAPI_URL
 
         class SystemInfo(BaseModel):
             """System information response model."""

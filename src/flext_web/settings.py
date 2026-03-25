@@ -22,57 +22,52 @@ class FlextWebSettings(FlextModels.Value):
     app_name: Annotated[
         str,
         Field(
-            default=c.Web.WebDefaults.APP_NAME,
             min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
             max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
             description="Application name",
         ),
-    ]
+    ] = c.Web.WebDefaults.APP_NAME
     host: Annotated[
         str,
         Field(
-            default=c.Web.WebDefaults.HOST,
             min_length=1,
             max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
             description="Bind host",
         ),
-    ]
+    ] = c.Web.WebDefaults.HOST
     port: Annotated[
         t.PortNumber,
         Field(
-            default=c.Web.WebDefaults.PORT,
             description="Bind port",
         ),
-    ]
+    ] = c.Web.WebDefaults.PORT
     debug_mode: Annotated[
         bool,
         Field(
-            default=c.Web.WebDefaults.DEBUG_MODE,
             description="Debug mode",
         ),
-    ]
-    debug: Annotated[bool, Field(default=False, description="Flask debug flag")]
-    testing: Annotated[bool, Field(default=False, description="Flask testing flag")]
+    ] = c.Web.WebDefaults.DEBUG_MODE
+    debug: Annotated[bool, Field(description="Flask debug flag")] = False
+    testing: Annotated[bool, Field(description="Flask testing flag")] = False
     secret_key: Annotated[
         str,
         Field(
-            default=c.Web.WebDefaults.SECRET_KEY,
             min_length=c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
             description="Application secret key",
         ),
-    ]
+    ] = c.Web.WebDefaults.SECRET_KEY
     ssl_enabled: Annotated[
         bool,
-        Field(default=False, description="Enable TLS endpoints"),
-    ]
+        Field(description="Enable TLS endpoints"),
+    ] = False
     ssl_cert_path: Annotated[
         str | None,
-        Field(default=None, description="TLS certificate file path"),
-    ]
+        Field(description="TLS certificate file path"),
+    ] = None
     ssl_key_path: Annotated[
         str | None,
-        Field(default=None, description="TLS key file path"),
-    ]
+        Field(description="TLS key file path"),
+    ] = None
 
     @computed_field
     @property

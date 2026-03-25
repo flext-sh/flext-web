@@ -27,11 +27,11 @@ from pydantic import ValidationError
 
 from flext_web import (
     FlextWebApp,
+    FlextWebApplicationConfig,
+    FlextWebRequestConfig,
+    FlextWebResponseConfig,
     FlextWebServices,
     FlextWebSettings,
-    _ApplicationConfig,
-    _WebRequestConfig,
-    _WebResponseConfig,
 )
 from tests import c, m, t
 
@@ -162,7 +162,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
                 if query_params is None
                 else (query_params if isinstance(query_params, dict) else {})
             )
-            web_request_config = _WebRequestConfig(
+            web_request_config = FlextWebRequestConfig(
                 url=url,
                 method=method,
                 headers=headers_dict,
@@ -195,7 +195,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
             body_value: t.ScalarMapping | str | None = (
                 body if isinstance(body, (dict, str)) or body is None else None
             )
-            web_response_config = _WebResponseConfig(
+            web_response_config = FlextWebResponseConfig(
                 status_code=status_code,
                 request_id=request_id
                 if isinstance(request_id, str)
@@ -227,7 +227,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
             or (not isinstance(port, int))
         ):
             return r[t.ContainerValue].fail("Invalid parameters for application")
-        app_config = _ApplicationConfig(
+        app_config = FlextWebApplicationConfig(
             name=name,
             host=host,
             port=port,

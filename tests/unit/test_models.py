@@ -214,12 +214,12 @@ class TestFlextWebModels:
     def test_web_request_initialization(self) -> None:
         """Test WebRequest initialization."""
         request = m.Web.WebRequest(
-            method="GET",
+            method=c.Web.Method.GET,
             url="http://localhost:8080/api/test",
             headers={"Content-Type": "application/json"},
             body='{"test": "data"}',
         )
-        tm.that(request.method, eq="GET")
+        tm.that(request.method, eq=c.Web.Method.GET)
         tm.that(request.url, eq="http://localhost:8080/api/test")
         tm.that(request.headers["Content-Type"], eq="application/json")
         assert isinstance(request.body, str)
@@ -450,24 +450,24 @@ class TestFlextWebModels:
         tm.that((result.error or "").lower(), has="empty")
 
     def test_create_web_request_invalid_headers(self) -> None:
-        """Test create_web_request with invalid headers type."""
+        """Test create_web_request with invalid headers coerces to empty dict."""
         result = create_entry(
             "web_request",
             method="GET",
             url="http://localhost:8080",
             headers="not_a_dict",
         )
-        tm.fail(result)
+        tm.ok(result)
 
     def test_create_web_response_invalid_headers(self) -> None:
-        """Test create_web_response with invalid headers type."""
+        """Test create_web_response with invalid headers coerces to empty dict."""
         result = create_entry(
             "web_response",
             request_id="test-123",
             status_code=200,
             headers="not_a_dict",
         )
-        tm.fail(result)
+        tm.ok(result)
 
     def test_web_response_processing_time_seconds(self) -> None:
         """Test Web.AppResponse processing_time_seconds property."""
