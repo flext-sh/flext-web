@@ -18,7 +18,7 @@ class TestFlextWebCliService:
     def test_initialization(self) -> None:
         """Test FlextWebCliService initialization."""
         cli_service = __main__.FlextWebCliService()
-        tm.that(cli_service, none=False)
+        assert cli_service is not None
         tm.that(hasattr(cli_service, "_logger"), eq=True)
         tm.that(hasattr(cli_service, "_api"), eq=True)
 

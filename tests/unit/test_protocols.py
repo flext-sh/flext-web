@@ -901,7 +901,7 @@ class TestFlextWebProtocols:
         app_id = str(created.value["id"])
         started = manager.start_app(app_id)
         tm.ok(started)
-        tm.that(p.Web.app_runtimes, has=app_id)
+        assert app_id in p.Web.app_runtimes
         stopped = manager.stop_app(app_id)
         tm.ok(stopped)
         tm.that(app_id not in p.Web.app_runtimes, eq=True)

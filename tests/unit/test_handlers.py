@@ -18,7 +18,7 @@ class TestFlextWebHandlers:
     def test_web_app_handler_initialization(self) -> None:
         """Test WebAppHandler initialization."""
         handler = FlextWebHandlers.ApplicationHandler()
-        tm.that(handler, none=False)
+        assert handler is not None
         tm.that(hasattr(handler, "logger"), eq=True)
         tm.that(hasattr(handler, "_apps_registry"), eq=True)
 

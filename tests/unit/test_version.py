@@ -27,7 +27,7 @@ def assert_version_info() -> None:
     tm.that(__version__, is_=str)
     tm.that(__version_info__, is_=tuple)
     tm.that(__version_info__, empty=False)
-    tm.that(VERSION, is_=FlextWebVersion)
+    assert isinstance(VERSION, FlextWebVersion)
 
 
 class TestFlextWebVersion:

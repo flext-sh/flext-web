@@ -275,9 +275,9 @@ class TestFlextWebModels:
     def test_create_web_app_factory(self) -> None:
         """Test create_web_app factory method."""
         result = create_entry("web_app", name="test-app", host="localhost", port=8080)
-        tm.ok(result)
+        assert result.is_success, result.error
         app = result.value
-        tm.that(app, is_=m.Web.Entity)
+        assert isinstance(app, m.Web.Entity)
         tm.that(app.name, eq="test-app")
         tm.that(app.host, eq="localhost")
         tm.that(app.port, eq=8080)
@@ -291,9 +291,9 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"test": "data"}',
         )
-        tm.ok(result)
+        assert result.is_success, result.error
         request = result.value
-        tm.that(request, is_=m.Web.AppRequest)
+        assert isinstance(request, m.Web.AppRequest)
         tm.that(request.method, eq="POST")
         tm.that(request.url, eq="http://localhost:8080/api/test")
 
@@ -306,9 +306,9 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"id": 1}',
         )
-        tm.ok(result)
+        assert result.is_success, result.error
         response = result.value
-        tm.that(response, is_=m.Web.AppResponse)
+        assert isinstance(response, m.Web.AppResponse)
         tm.that(response.status_code, eq=201)
 
     def test_http_request_has_body_property(self) -> None:
@@ -578,20 +578,14 @@ class TestFlextWebModels:
         """Test application creation with parametrized edge cases."""
         result = create_entry("web_app", name=name, host=host, port=port)
         if should_succeed:
-            (
-                tm.ok(result),
-                (f"Expected success for app '{name}', got: {result.error}"),
-            )
+            assert result.is_success, f"Expected success for app '{name}', got: {result.error}"
             app = result.value
-            tm.that(app, is_=m.Web.Entity)
+            assert isinstance(app, m.Web.Entity)
             tm.that(app.name, eq=name)
             tm.that(app.host, eq=host)
             tm.that(app.port, eq=port)
         else:
-            (
-                tm.fail(result),
-                (f"Expected failure for app '{name}', but succeeded"),
-            )
+            assert result.is_failure, f"Expected failure for app '{name}', but succeeded"
             tm.that(result.error, none=False)
 
     def test_extreme_edge_cases(self) -> None:

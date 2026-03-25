@@ -15,7 +15,7 @@ import os
 import socket
 import threading
 import time
-from collections.abc import Callable, Generator, Mapping, MutableMapping, Sequence
+from collections.abc import Callable, Generator, Mapping, Sequence
 from pathlib import Path
 from typing import ClassVar, TypeVar
 
@@ -34,7 +34,6 @@ from flext_web import (
     FlextWebSettings,
 )
 from tests import c, m, t
-
 
 _T = TypeVar("_T")
 

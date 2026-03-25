@@ -130,7 +130,7 @@ def _extract_apps_from_response(
     apps_section = data_section.get(data_key)
     if not isinstance(apps_section, list):
         return []
-    result_list: Sequence[t.AppData] = []
+    result_list: list[t.AppData] = []
     for app_item in apps_section:
         try:
             if isinstance(app_item, dict):
@@ -155,7 +155,7 @@ def _execute_app_operation(
         """Make HTTP request using r for error handling."""
         try:
             request_func = getattr(requests, method.lower())
-            kwargs: Mapping[str, t.ContainerValue] = {
+            kwargs: dict[str, t.ContainerValue] = {
                 "url": f"{ExampleConstants.BASE_URL}{endpoint}",
                 "timeout": 5,
             }

@@ -10,7 +10,6 @@ import importlib
 import importlib.util
 import sys
 import time
-from collections.abc import Sequence
 from pathlib import Path
 
 import pytest
@@ -40,7 +39,7 @@ class ExamplesFullFunctionalityTest:
                 if response.status_code == 200:
                     return True
             except Exception as exc:
-                logger.debug("health check attempt failed: %s", exc)
+                logger.debug("health check attempt failed: %s", str(exc))
             time.sleep(0.5)
         pytest.fail(f"Service failed to start within 10 seconds on {self.service_url}")
         return False
@@ -232,7 +231,7 @@ class ExamplesFullFunctionalityTest:
             logger.warning("Failed to start Docker service for testing")
             return False
         try:
-            results: Sequence[tuple[str, bool | None]] = []
+            results: list[tuple[str, bool | None]] = []
             results.extend((
                 ("basic_service", self.test_basic_service_full_functionality()),
                 ("api_usage", self.test_api_usage_full_functionality()),
