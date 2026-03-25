@@ -39,7 +39,7 @@ class ExamplesFullFunctionalityTest:
                 if response.status_code == 200:
                     return True
             except Exception as exc:
-                logger.debug("health check attempt failed: %s", str(exc))
+                logger.debug(f"health check attempt failed: {exc}")
             time.sleep(0.5)
         pytest.fail(f"Service failed to start within 10 seconds on {self.service_url}")
         return False

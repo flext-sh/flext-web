@@ -186,7 +186,7 @@ class FlextWebTypes(FlextTypes):
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
-        if method_validated is None:
+        if not isinstance(method_validated, str):
             return r[m.Web.Request].fail(
                 f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             )
@@ -298,7 +298,7 @@ class FlextWebTypes(FlextTypes):
             return isinstance(m, str) and m in valid_methods
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
-        if method_validated is None:
+        if not isinstance(method_validated, str):
             return r[m.Web.AppRequest].fail(
                 f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             )

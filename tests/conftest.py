@@ -17,7 +17,7 @@ import threading
 import time
 from collections.abc import Callable, Generator, Mapping, Sequence
 from pathlib import Path
-from typing import ClassVar, TypeVar
+from typing import ClassVar
 
 import pytest
 from flask import Flask
@@ -35,10 +35,8 @@ from flext_web import (
 )
 from tests import c, m, t
 
-_T = TypeVar("_T")
 
-
-def _wrap_result(result: r[_T]) -> r[BaseModel]:
+def _wrap_result[T](result: r[T]) -> r[BaseModel]:
     """Wrap a typed FlextResult into r[BaseModel] for generic test helpers."""
     if result.is_success:
         val = result.value
@@ -48,8 +46,8 @@ def _wrap_result(result: r[_T]) -> r[BaseModel]:
     return r[BaseModel].fail(result.error or "Unknown error")
 
 
-def assert_success(
-    result: r[_T],
+def assert_success[T](
+    result: r[T],
     message: str = "Operation should succeed",
 ) -> None:
     """Assert that a r is successful using flext_tests matchers."""
@@ -57,8 +55,8 @@ def assert_success(
         raise AssertionError(f"{message}: {result.error}")
 
 
-def assert_failure(
-    result: r[_T],
+def assert_failure[T](
+    result: r[T],
     message: str = "Operation should fail",
 ) -> None:
     """Assert that a r is a failure using flext_tests matchers."""
@@ -66,8 +64,8 @@ def assert_failure(
         raise AssertionError(message)
 
 
-def assert_result(
-    result: r[_T],
+def assert_result[T](
+    result: r[T],
     *,
     expected_success: bool = True,
 ) -> None:
@@ -384,7 +382,7 @@ def create_test_result(
 
 def run_parameterized_test(
     test_cases: Sequence[tuple[t.NormalizedValue, ...]],
-    test_function: Callable[..., r[_T]],
+    test_function: Callable[..., r[BaseModel]],
     expected_results: Sequence[bool],
     test_name: str = "parameterized_test",
 ) -> None:
