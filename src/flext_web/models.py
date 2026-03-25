@@ -50,10 +50,9 @@ class FlextWebModels(FlextModels):
             headers: Annotated[
                 t.StrMapping,
                 Field(
-                    default_factory=dict,
                     description="HTTP headers for message",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             body: Annotated[
                 str | t.ScalarMapping | None,
                 Field(
@@ -64,10 +63,9 @@ class FlextWebModels(FlextModels):
             timestamp: Annotated[
                 datetime,
                 Field(
-                    default_factory=lambda: datetime.now(UTC),
                     description="UTC timestamp of message creation",
                 ),
-            ]
+            ] = Field(default_factory=lambda: datetime.now(UTC))
 
         class Request(Message):
             """HTTP request model with complete validation.
@@ -257,10 +255,9 @@ class FlextWebModels(FlextModels):
             headers: Annotated[
                 t.StrMapping,
                 Field(
-                    default_factory=dict,
                     description="HTTP headers",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             body: Annotated[
                 str | t.ScalarMapping | None,
                 Field(
@@ -271,24 +268,21 @@ class FlextWebModels(FlextModels):
             timestamp: Annotated[
                 datetime,
                 Field(
-                    default_factory=lambda: datetime.now(UTC),
                     description="Request timestamp",
                 ),
-            ]
+            ] = Field(default_factory=lambda: datetime.now(UTC))
             request_id: Annotated[
                 str,
                 Field(
-                    default_factory=lambda: str(uuid.uuid4()),
                     description="Unique request identifier",
                 ),
-            ]
+            ] = Field(default_factory=lambda: str(uuid.uuid4()))
             query_params: Annotated[
                 t.ConfigurationMapping,
                 Field(
-                    default_factory=dict,
                     description="Query string parameters",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             client_ip: Annotated[
                 str,
                 Field(default="", description="Client IP address"),
@@ -348,10 +342,9 @@ class FlextWebModels(FlextModels):
             headers: Annotated[
                 t.StrMapping,
                 Field(
-                    default_factory=dict,
                     description="HTTP response headers",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             body: Annotated[
                 str | t.ScalarMapping | None,
                 Field(
@@ -362,10 +355,9 @@ class FlextWebModels(FlextModels):
             timestamp: Annotated[
                 datetime,
                 Field(
-                    default_factory=lambda: datetime.now(UTC),
                     description="Response timestamp",
                 ),
-            ]
+            ] = Field(default_factory=lambda: datetime.now(UTC))
             elapsed_time: Annotated[
                 t.NonNegativeFloat,
                 Field(
@@ -376,10 +368,9 @@ class FlextWebModels(FlextModels):
             response_id: Annotated[
                 str,
                 Field(
-                    default_factory=lambda: str(uuid.uuid4()),
                     description="Unique response identifier",
                 ),
-            ]
+            ] = Field(default_factory=lambda: str(uuid.uuid4()))
             request_id: Annotated[
                 str,
                 Field(description="Associated request identifier"),
@@ -465,10 +456,9 @@ class FlextWebModels(FlextModels):
             id: Annotated[
                 str,
                 Field(
-                    default_factory=lambda: str(uuid.uuid4()),
                     description="Unique application identifier",
                 ),
-            ]
+            ] = Field(default_factory=lambda: str(uuid.uuid4()))
             name: Annotated[
                 str,
                 Field(
@@ -562,19 +552,17 @@ class FlextWebModels(FlextModels):
             metrics: Annotated[
                 dict[str, t.Scalar],
                 Field(
-                    default_factory=dict,
                     description="Application metrics",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             # Note: domain_events is inherited from Entry with type Sequence[DomainEvent]
             # Use add_event() method to add events instead of direct list manipulation
             web_events: Annotated[
                 list[str],
                 Field(
-                    default_factory=list,
                     description="Web-specific events (application lifecycle)",
                 ),
-            ]
+            ] = Field(default_factory=list)
 
             @override
             def __str__(self) -> str:
@@ -898,10 +886,9 @@ class FlextWebModels(FlextModels):
             data: Annotated[
                 t.ConfigurationMapping,
                 Field(
-                    default_factory=dict,
                     description="Entity data dictionary",
                 ),
-            ]
+            ] = Field(default_factory=dict)
 
         class AuthResponse(FlextModels.Value):
             """Authentication response model."""
@@ -997,10 +984,9 @@ class FlextWebModels(FlextModels):
             headers: Annotated[
                 t.StrMapping,
                 Field(
-                    default_factory=dict,
                     description="HTTP headers",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             body: Annotated[
                 str | t.ContainerValue | None,
                 Field(
@@ -1011,17 +997,15 @@ class FlextWebModels(FlextModels):
             request_id: Annotated[
                 str,
                 Field(
-                    default_factory=lambda: str(uuid.uuid4()),
                     description="Unique request identifier",
                 ),
-            ]
+            ] = Field(default_factory=lambda: str(uuid.uuid4()))
             timestamp: Annotated[
                 datetime,
                 Field(
-                    default_factory=lambda: datetime.now(UTC),
                     description="Request timestamp",
                 ),
-            ]
+            ] = Field(default_factory=lambda: datetime.now(UTC))
 
         class WebResponse(FlextModels.Value):
             """Web response model with status tracking."""
@@ -1041,10 +1025,9 @@ class FlextWebModels(FlextModels):
             headers: Annotated[
                 t.StrMapping,
                 Field(
-                    default_factory=dict,
                     description="HTTP response headers",
                 ),
-            ]
+            ] = Field(default_factory=dict)
             body: Annotated[
                 str | t.ContainerValue | None,
                 Field(
@@ -1055,17 +1038,15 @@ class FlextWebModels(FlextModels):
             response_id: Annotated[
                 str,
                 Field(
-                    default_factory=lambda: str(uuid.uuid4()),
                     description="Unique response identifier",
                 ),
-            ]
+            ] = Field(default_factory=lambda: str(uuid.uuid4()))
             timestamp: Annotated[
                 datetime,
                 Field(
-                    default_factory=lambda: datetime.now(UTC),
                     description="Response timestamp",
                 ),
-            ]
+            ] = Field(default_factory=lambda: datetime.now(UTC))
 
         class AppConfig(FlextModels.Value):
             """Application configuration model."""
@@ -1281,10 +1262,9 @@ class FlextWebModels(FlextModels):
             middlewares: Annotated[
                 t.StrSequence,
                 Field(
-                    default_factory=list,
                     description="List of middleware objects",
                 ),
-            ]
+            ] = Field(default_factory=list)
             docs_url: Annotated[
                 str,
                 Field(
