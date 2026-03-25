@@ -13,9 +13,9 @@ import uuid
 from collections.abc import MutableMapping, Sequence
 from typing import override
 
-from flext_core import r, s, u
+from flext_core import r, s
 
-from flext_web import FlextWebSettings, c, m, t
+from flext_web import FlextWebSettings, c, m, t, u
 
 
 class FlextWebServices(s[bool]):

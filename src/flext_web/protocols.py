@@ -38,12 +38,12 @@ from wsgiref.simple_server import WSGIServer, make_server
 import flask
 import uvicorn
 from fastapi import FastAPI
-from flext_core import FlextProtocols, r, u
+from flext_core import FlextProtocols, r
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
-from flext_web import FlextWebApp, c, m, t
+from flext_web import FlextWebApp, c, m, t, u
 
 
 class FlextWebProtocols(FlextProtocols):
