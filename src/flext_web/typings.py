@@ -26,27 +26,26 @@ class FlextWebApplicationConfig(m.Web.EntityConfig):
 
     name: Annotated[
         str,
-        Field(default=c.Web.WebDefaults.APP_NAME, description="App name"),
-    ]
+        Field(description="App name"),
+    ] = c.Web.WebDefaults.APP_NAME
     status: Annotated[
         str,
-        Field(default=c.Web.Status.STOPPED.value, description="App status"),
-    ]
+        Field(description="App status"),
+    ] = c.Web.Status.STOPPED.value
     environment: Annotated[
         str,
         Field(
-            default=c.Web.Name.DEVELOPMENT.value,
             description="Environment",
         ),
-    ]
+    ] = c.Web.Name.DEVELOPMENT.value
     debug_mode: Annotated[
         bool,
-        Field(default=c.Web.WebDefaults.DEBUG_MODE, description="Debug"),
-    ]
+        Field(description="Debug"),
+    ] = c.Web.WebDefaults.DEBUG_MODE
     version: Annotated[
         int,
-        Field(default=c.Web.WebDefaults.VERSION_INT, description="Version"),
-    ]
+        Field(description="Version"),
+    ] = c.Web.WebDefaults.VERSION_INT
 
 
 class FlextWebRequestConfig(m.Web.AppRequest):

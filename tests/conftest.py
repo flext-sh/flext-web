@@ -15,15 +15,15 @@ import os
 import socket
 import threading
 import time
-from collections.abc import Callable, Generator, Mapping, Sequence
+from collections.abc import Callable, Generator, Mapping, MutableMapping, Sequence
 from pathlib import Path
-from typing import ClassVar
+from typing import ClassVar, TypeVar
 
 import pytest
 from flask import Flask
 from flext_core import r
 from flext_tests import tk
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from flext_web import (
     FlextWebApp,
@@ -36,8 +36,11 @@ from flext_web import (
 from tests import c, m, t
 
 
+_T = TypeVar("_T")
+
+
 def assert_success(
-    result: r[t.ContainerValue],
+    result: r[_T],
     message: str = "Operation should succeed",
 ) -> None:
     """Assert that a r is successful using flext_tests matchers."""
@@ -46,7 +49,7 @@ def assert_success(
 
 
 def assert_failure(
-    result: r[t.ContainerValue],
+    result: r[_T],
     message: str = "Operation should fail",
 ) -> None:
     """Assert that a r is a failure using flext_tests matchers."""
@@ -55,7 +58,7 @@ def assert_failure(
 
 
 def assert_result(
-    result: r[t.ContainerValue],
+    result: r[_T],
     *,
     expected_success: bool = True,
 ) -> None:
@@ -66,7 +69,7 @@ def assert_result(
         assert_failure(result)
 
 
-def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerValue]:
+def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
     """Generalized entry creation function using flext-core patterns.
 
     This function replaces multiple specific create_* methods by providing
@@ -92,11 +95,11 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
             or not isinstance(host, str)
             or (not isinstance(port, int))
         ):
-            return r[t.ContainerValue].fail("Invalid parameters for web_app")
+            return r[BaseModel].fail("Invalid parameters for web_app")
         try:
             return m.Web.create_web_app(name=name, host=host, port=port)
         except (ValidationError, ValueError, TypeError) as exc:
-            return r[t.ContainerValue].fail(str(exc))
+            return r[BaseModel].fail(str(exc))
     if entry_type == "http_request":
         url = kwargs.get("url")
         method = kwargs.get("method")
@@ -104,13 +107,13 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
         req_body = kwargs.get("body")
         timeout = kwargs.get("timeout")
         if not isinstance(url, str) or not isinstance(method, str):
-            return r[t.ContainerValue].fail("Invalid parameters for http_request")
+            return r[BaseModel].fail("Invalid parameters for http_request")
         if req_headers is not None and (not isinstance(req_headers, dict)):
-            return r[t.ContainerValue].fail("Invalid headers for http_request")
+            return r[BaseModel].fail("Invalid headers for http_request")
         if req_body is not None and (not isinstance(req_body, (str, dict))):
-            return r[t.ContainerValue].fail("Invalid body for http_request")
+            return r[BaseModel].fail("Invalid body for http_request")
         if not isinstance(timeout, (float, int)):
-            return r[t.ContainerValue].fail("Invalid timeout for http_request")
+            return r[BaseModel].fail("Invalid timeout for http_request")
         return t.create_http_request(
             url=url,
             method=method,
@@ -124,13 +127,13 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
         body = kwargs.get("body")
         elapsed_time = kwargs.get("elapsed_time")
         if not isinstance(status_code, int):
-            return r[t.ContainerValue].fail("Invalid status_code for http_response")
+            return r[BaseModel].fail("Invalid status_code for http_response")
         if headers is not None and (not isinstance(headers, dict)):
-            return r[t.ContainerValue].fail("Invalid headers for http_response")
+            return r[BaseModel].fail("Invalid headers for http_response")
         if body is not None and (not isinstance(body, (str, dict))):
-            return r[t.ContainerValue].fail("Invalid body for http_response")
+            return r[BaseModel].fail("Invalid body for http_response")
         if elapsed_time is not None and (not isinstance(elapsed_time, (float, int))):
-            return r[t.ContainerValue].fail("Invalid elapsed_time for http_response")
+            return r[BaseModel].fail("Invalid elapsed_time for http_response")
         return t.create_http_response(
             status_code=status_code,
             headers=headers,
@@ -147,7 +150,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
         client_ip = kwargs.get("client_ip")
         user_agent = kwargs.get("user_agent")
         if not isinstance(url, str) or not isinstance(method, str):
-            return r[t.ContainerValue].fail("Invalid parameters for web_request")
+            return r[BaseModel].fail("Invalid parameters for web_request")
         try:
             headers_dict: t.StrMapping = (
                 {}
@@ -174,7 +177,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
             )
             return t.create_web_request(web_request_config)
         except (ValidationError, ValueError, TypeError) as exc:
-            return r[t.ContainerValue].fail(str(exc))
+            return r[BaseModel].fail(str(exc))
     if entry_type == "web_response":
         status_code = kwargs.get("status_code")
         request_id = kwargs.get("request_id")
@@ -185,14 +188,14 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
         content_length = kwargs.get("content_length")
         processing_time_ms = kwargs.get("processing_time_ms")
         if not isinstance(status_code, int):
-            return r[t.ContainerValue].fail("Invalid status_code for web_response")
+            return r[BaseModel].fail("Invalid status_code for web_response")
         try:
-            headers_dict: t.StrMapping = (
+            resp_headers_dict: t.StrMapping = (
                 {}
                 if headers is None
                 else (headers if isinstance(headers, dict) else {})
             )
-            body_value: t.ScalarMapping | str | None = (
+            resp_body_value: t.ScalarMapping | str | None = (
                 body if isinstance(body, (dict, str)) or body is None else None
             )
             web_response_config = FlextWebResponseConfig(
@@ -200,8 +203,8 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
                 request_id=request_id
                 if isinstance(request_id, str)
                 else "test-request",
-                headers=headers_dict,
-                body=body_value,
+                headers=resp_headers_dict,
+                body=resp_body_value,
                 elapsed_time=float(elapsed_time)
                 if isinstance(elapsed_time, (int, float))
                 else 0.0,
@@ -215,7 +218,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
             )
             return t.create_web_response(web_response_config)
         except (ValidationError, ValueError, TypeError) as exc:
-            return r[t.ContainerValue].fail(str(exc))
+            return r[BaseModel].fail(str(exc))
     if entry_type == "application":
         name = kwargs.get("name")
         host = kwargs.get("host")
@@ -226,7 +229,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
             or not isinstance(host, str)
             or (not isinstance(port, int))
         ):
-            return r[t.ContainerValue].fail("Invalid parameters for application")
+            return r[BaseModel].fail("Invalid parameters for application")
         app_config = FlextWebApplicationConfig(
             name=name,
             host=host,
@@ -238,7 +241,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[t.ContainerV
     raise ValueError(msg)
 
 
-def create_test_data(data_type: str, **kwargs: t.Scalar) -> t.ContainerMapping:
+def create_test_data(data_type: str, **kwargs: t.Scalar) -> dict[str, t.NormalizedValue]:
     """Create test data for tests.
 
     This function provides a standardized way to create test data,
@@ -253,7 +256,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> t.ContainerMapping:
 
     """
     if data_type == "app_data":
-        app_data: t.ContainerMapping = {
+        app_data: dict[str, t.NormalizedValue] = {
             "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
@@ -263,7 +266,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> t.ContainerMapping:
         })
         return app_data
     if data_type == "entity_data":
-        entity_data: t.ContainerMapping = {
+        entity_data: dict[str, t.NormalizedValue] = {
             "id": "test-entity",
             "name": "Test Entity",
         }
@@ -272,7 +275,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> t.ContainerMapping:
         })
         return entity_data
     if data_type == "config_data":
-        config_data: t.ContainerMapping = {
+        config_data: dict[str, t.NormalizedValue] = {
             "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
             "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
             "debug": True,
@@ -282,7 +285,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> t.ContainerMapping:
         })
         return config_data
     if data_type == "request_data":
-        request_data: t.ContainerMapping = {
+        request_data: dict[str, t.NormalizedValue] = {
             "method": c.Web.Tests.TestHttp.TEST_METHOD,
             "url": f"http://{c.Web.Tests.TestWeb.DEFAULT_HOST}:{c.Web.Tests.TestWeb.DEFAULT_PORT}",
             "headers": {"Content-Type": c.Web.Tests.TestHttp.TEST_CONTENT_TYPE},
@@ -292,7 +295,7 @@ def create_test_data(data_type: str, **kwargs: t.Scalar) -> t.ContainerMapping:
         })
         return request_data
     if data_type == "response_data":
-        response_data: t.ContainerMapping = {
+        response_data: dict[str, t.NormalizedValue] = {
             "status_code": 200,
             "request_id": "test-123",
         }
@@ -317,7 +320,7 @@ def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:
         m.Web.Entity instance
 
     """
-    defaults: Mapping[str, str | int] = {
+    defaults: dict[str, str | int] = {
         "id": "test-id",
         "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
         "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
@@ -372,7 +375,7 @@ def create_test_result(
 
 def run_parameterized_test(
     test_cases: Sequence[tuple[t.NormalizedValue, ...]],
-    test_function: Callable[..., r[t.ContainerValue]],
+    test_function: Callable[..., r[BaseModel]],
     expected_results: Sequence[bool],
     test_name: str = "parameterized_test",
 ) -> None:

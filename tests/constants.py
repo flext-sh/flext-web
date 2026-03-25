@@ -54,30 +54,18 @@ class FlextWebTestConstants(FlextTestsConstants, FlextWebConstants):
             class Literals:
                 """Literal type aliases for test constants (Python 3.13 pattern).
 
-                These type aliases reuse production Literals from FlextWebConstants.Web
+                These type aliases use the StrEnum types from FlextWebConstants.Web
                 to ensure consistency between tests and production code.
                 """
 
-                type HttpMethodLiteral = (
-                    FlextWebConstants.Web.Literals.HttpMethodLiteral
-                )
-                type EnvironmentNameLiteral = (
-                    FlextWebConstants.Web.Literals.EnvironmentNameLiteral
-                )
-                type ApplicationStatusLiteral = (
-                    FlextWebConstants.Web.Literals.ApplicationStatusLiteral
-                )
-                type ApplicationTypeLiteral = (
-                    FlextWebConstants.Web.Literals.ApplicationTypeLiteral
-                )
-                type ResponseStatusLiteral = (
-                    FlextWebConstants.Web.Literals.ResponseStatusLiteral
-                )
-                type ProtocolLiteral = FlextWebConstants.Web.Literals.ProtocolLiteral
-                type ContentTypeLiteral = (
-                    FlextWebConstants.Web.Literals.ContentTypeLiteral
-                )
-                type SameSiteLiteral = FlextWebConstants.Web.Literals.SameSiteLiteral
+                type HttpMethodLiteral = FlextWebConstants.Web.Method
+                type EnvironmentNameLiteral = FlextWebConstants.Web.Name
+                type ApplicationStatusLiteral = FlextWebConstants.Web.Status
+                type ApplicationTypeLiteral = FlextWebConstants.Web.ApplicationType
+                type ResponseStatusLiteral = str
+                type ProtocolLiteral = str
+                type ContentTypeLiteral = str
+                type SameSiteLiteral = str
 
 
 c = FlextWebTestConstants
