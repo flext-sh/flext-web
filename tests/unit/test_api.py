@@ -148,10 +148,10 @@ class TestFlextWebApi:
         """
         result = FlextWebApi.create_http_config(host=host, port=port, debug=debug)
         if should_succeed:
-            (
-                tm.ok(result),
-                (f"Expected success for {host}:{port}, got: {result.error}"),
+            assert result.is_success, (
+                f"Expected success for {host}:{port}, got: {result.error}"
             )
+            tm.ok(result)
             config = result.value
             tm.that(config.host, eq=host)
             tm.that(config.port, eq=port)
@@ -171,10 +171,8 @@ class TestFlextWebApi:
         Actual: FlextSettings accepts invalid values (bug in flext-core)
         """
         result = FlextWebApi.create_http_config(host=host, port=port, debug=True)
-        (
-            tm.fail(result),
-            f"Expected failure for {host}:{port}, but succeeded",
-        )
+        assert result.is_failure, f"Expected failure for {host}:{port}, but succeeded"
+        tm.fail(result)
         tm.that(result.error, none=False)
 
     def test_validate_http_config_success(self) -> None:

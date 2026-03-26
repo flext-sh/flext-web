@@ -430,10 +430,10 @@ def create_test_result(
 
     """
     if success:
-        value = kwargs.get("data") or kwargs.get("value")
-        return r.ok(value)
+        value: t.Scalar | None = kwargs.get("data") or kwargs.get("value")
+        return r[t.Scalar | None].ok(value)
     error = str(kwargs.get("error", "Test error"))
-    return r.fail(error)
+    return r[t.Scalar | None].fail(error)
 
 
 def run_parameterized_test(
@@ -461,11 +461,7 @@ def run_parameterized_test(
         zip(test_cases, expected_results, strict=True),
     ):
         try:
-            result = (
-                test_function(*test_case)
-                if isinstance(test_case, tuple)
-                else test_function(test_case)
-            )
+            result = test_function(*test_case)
             if expected_success:
                 assert_success(result, f"{test_name} case {i} should succeed")
             else:
@@ -505,9 +501,7 @@ def create_comprehensive_test_suite(
 @pytest.fixture(autouse=True)
 def setup_test_environment() -> Generator[None]:
     """Set up test environment with real configuration."""
-    original_env: t.StrMapping = {
-        k: v for k, v in os.environ.items() if isinstance(v, str)
-    }
+    original_env: t.StrMapping = dict(os.environ)
     os.environ["FLEXT_ENV"] = "test"
     os.environ["FLEXT_LOG_LEVEL"] = "INFO"
     os.environ["FLEXT_WEB_DEBUG_MODE"] = "true"

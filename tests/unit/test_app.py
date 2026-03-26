@@ -5,8 +5,11 @@ Tests the unified FlextWebApp class following flext standards.
 
 from __future__ import annotations
 
+from typing import cast
+
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from flask import Flask as FlaskApp
 from flext_tests import tm
 
 from flext_web import FlextWebApp, FlextWebSettings
@@ -281,7 +284,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_flask_app(config)
         assert result.is_success, result.error
         tm.that(hasattr(result, "value"), eq=True)
-        tm.that(result.value, none=False)
+        assert result.value is not None
         tm.that(hasattr(result.value, "route"), eq=True)
 
     def test_create_flask_app_with_none_config(self) -> None:
@@ -289,7 +292,7 @@ class TestFlextWebApp:
         result = FlextWebApp.create_flask_app(None)
         assert result.is_success, result.error
         tm.that(hasattr(result, "value"), eq=True)
-        tm.that(result.value, none=False)
+        assert result.value is not None
         tm.that(hasattr(result.value, "route"), eq=True)
 
     def test_configure_middleware(self) -> None:
@@ -373,14 +376,16 @@ class TestFlextWebApp:
         config = FlextWebSettings(secret_key=c.Web.WebDefaults.TEST_SECRET_KEY)
         result = FlextWebApp.create_flask_app(config)
         assert result.is_success, result.error
-        app = result.value
-        tm.that(app, none=False)
-        app.config["TESTING"] = True
-        test_cli = app.test_client()
-        response = test_cli.get("/health")
-        tm.that(response.status_code, eq=200)
-        health_json = response.get_json()
-        tm.that(health_json, none=False)
+        flask_app: FlaskApp = result.value
+        assert flask_app is not None
+        flask_app.config["TESTING"] = True
+        cli = flask_app.test_client()
+        get_fn = getattr(cli, "get")
+        resp_obj: object = get_fn("/health")
+        status_code: int = cast("int", getattr(resp_obj, "status_code"))
+        tm.that(status_code, eq=200)
+        json_fn = getattr(resp_obj, "get_json")
+        health_json: dict[str, str] = cast("dict[str, str]", json_fn())
         tm.that(health_json, has="status")
         tm.that(health_json, has="service")
         tm.that(health_json["status"], eq=c.Web.WebResponse.STATUS_HEALTHY)

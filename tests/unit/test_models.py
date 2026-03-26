@@ -514,16 +514,15 @@ class TestFlextWebModels:
     def test_create_web_request_validation_error(self) -> None:
         """Test create_web_request with validation error (lines 961-967)."""
         result = create_entry("web_request", method="GET", url="")
-        tm.fail(result), "Empty URL should cause validation failure"
+        assert result.is_failure, "Empty URL should cause validation failure"
+        tm.fail(result)
         tm.that(result.error, none=False)
 
     def test_create_web_response_validation_error(self) -> None:
         """Test create_web_response with validation error (lines 1008-1014)."""
         result = create_entry("web_response", request_id="test-123", status_code=999)
-        (
-            tm.fail(result),
-            "Invalid status code should cause validation failure",
-        )
+        assert result.is_failure, "Invalid status code should cause validation failure"
+        tm.fail(result)
         tm.that(result.error, none=False)
 
     def test_application_edge_cases(self) -> None:
@@ -638,10 +637,10 @@ class TestFlextWebModels:
                 host="localhost",
                 port=8080,
             )
-            (
-                tm.fail(result),
-                (f"Dangerous pattern '{dangerous_name}' should be rejected"),
+            assert result.is_failure, (
+                f"Dangerous pattern '{dangerous_name}' should be rejected"
             )
+            tm.fail(result)
 
     def test_application_add_domain_event_success(self) -> None:
         """Test add_domain_event with valid input."""

@@ -94,21 +94,29 @@ class ExamplesFullFunctionalityTest:
             assert spec.loader is not None
             api_usage = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(api_usage)
-            health_result = api_usage.check_service_health()
+            health_result: dict[str, str] | bool = api_usage.check_service_health()
             if health_result:
                 assert isinstance(health_result, dict)
                 assert health_result.get("status") == "healthy"
-            create_result = api_usage.create_application("test-full-func", 3001)
+            create_result: dict[str, str | int] | None = api_usage.create_application(
+                "test-full-func", 3001
+            )
             if create_result:
                 app_id = create_result.get("id")
                 if app_id:
-                    start_result = api_usage.start_application(app_id)
+                    start_result: dict[str, str | int | bool] | None = (
+                        api_usage.start_application(app_id)
+                    )
                     if start_result:
-                        status = api_usage.get_application_status(app_id)
+                        status: dict[str, str | int | bool] | None = (
+                            api_usage.get_application_status(app_id)
+                        )
                         if status:
                             assert isinstance(status, dict)
                             assert "status" in status
-                        stop_result = api_usage.stop_application(app_id)
+                        stop_result: dict[str, str | int | bool] | None = (
+                            api_usage.stop_application(app_id)
+                        )
                         if stop_result:
                             assert isinstance(stop_result, dict)
                             assert stop_result.get("success") is True

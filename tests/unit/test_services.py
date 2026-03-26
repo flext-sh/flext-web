@@ -78,7 +78,8 @@ class TestFlextWebService:
             password=c.DEFAULT_TEST_CREDENTIAL,
         )
         authenticate_result = service.authenticate(credentials)
-        tm.ok(authenticate_result), "Authentication should succeed"
+        assert authenticate_result.is_success, "Authentication should succeed"
+        tm.ok(authenticate_result)
         authenticate_data = authenticate_result.value
         tm.that(authenticate_data.authenticated is True, eq=True)
         tm.that(authenticate_data.token, none=False)
@@ -378,7 +379,7 @@ class TestFlextWebService:
         tm.ok(create_result)
         created_entity = create_result.value
         entity_id_value = created_entity.data["id"]
-        entity_id = str(entity_id_value) if entity_id_value is not None else "unknown"
+        entity_id = str(entity_id_value)
         get_result = service.get_entity(entity_id)
         tm.ok(get_result)
         retrieved_entity = get_result.value

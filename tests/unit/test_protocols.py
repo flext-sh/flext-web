@@ -69,8 +69,8 @@ class TestFlextWebProtocols:
         monkeypatch.setattr(p.Web, "_stop_app_runtime", staticmethod(_stop_runtime))
 
     def test_protocols_inheritance(self) -> None:
-        """Test that p inherits from p."""
-        tm.that(issubclass(p, p), eq=True)
+        """Test that p has expected Web namespace."""
+        tm.that(hasattr(p, "Web"), eq=True)
         tm.that(hasattr(p.Web, "WebAppManager"), eq=True)
         tm.that(hasattr(p.Web, "WebResponseFormatter"), eq=True)
         tm.that(hasattr(p.Web, "WebFrameworkInterface"), eq=True)
@@ -884,8 +884,10 @@ class TestFlextWebProtocols:
         framework = str(create_result.value["framework"])
         app_instance = p.Web.framework_instances[app_id]
         if framework == "fastapi" and isinstance(app_instance, FastAPI):
-            paths = [
-                route.path for route in app_instance.routes if hasattr(route, "path")
+            paths: list[str] = [
+                str(getattr(route, "path"))
+                for route in app_instance.routes
+                if hasattr(route, "path")
             ]
             tm.that(paths, has="/protocol/health")
         elif isinstance(app_instance, flask.Flask):

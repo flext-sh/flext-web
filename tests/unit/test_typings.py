@@ -205,10 +205,8 @@ class TestFlextWebModels:
             body=None,
             timeout=-1.0,
         )
-        (
-            tm.fail(result),
-            "Negative timeout should cause validation failure",
-        )
+        assert result.is_failure, "Negative timeout should cause validation failure"
+        tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(
             "timeout" in (result.error or "").lower()
@@ -229,10 +227,10 @@ class TestFlextWebModels:
             body=None,
             elapsed_time=-1.0,
         )
-        (
-            tm.fail(result),
-            ("Negative elapsed_time should cause validation failure"),
+        assert result.is_failure, (
+            "Negative elapsed_time should cause validation failure"
         )
+        tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(
             (
@@ -308,7 +306,8 @@ class TestFlextWebModels:
             status="invalid_status",
         )
         result = t.create_application(config)
-        tm.fail(result), "Invalid status should cause validation failure"
+        assert result.is_failure, "Invalid status should cause validation failure"
+        tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(
             "status" in (result.error or "").lower()
@@ -419,7 +418,8 @@ class TestFlextWebModels:
     def test_create_http_request_duplicate_validation(self) -> None:
         """Test create_http_request duplicate validation path (line 157)."""
         result = t.create_http_request(url="http://localhost:8080", method="INVALID")
-        tm.fail(result), "Operation should fail"
+        assert result.is_failure, "Operation should fail"
+        tm.fail(result)
 
     def test_create_web_request_match_case_default(self) -> None:
         """Test create_web_request match/case default branch (line 301-302)."""
