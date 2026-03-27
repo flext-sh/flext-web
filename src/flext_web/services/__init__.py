@@ -1,12 +1,7 @@
 # AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
 # Regenerate with: make gen
 #
-"""Integration tests for FLEXT Web application.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
-"""
+"""Canonical services package for flext-web."""
 
 from __future__ import annotations
 
@@ -18,25 +13,23 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
-    from tests.integration.test_examples import (
-        ExamplesFullFunctionalityTest,
-        logger,
-        main,
-    )
+    from flext_web.services.auth import FlextWebAuth
+    from flext_web.services.entities import FlextWebEntities
+    from flext_web.services.health import FlextWebHealth
+    from flext_web.services.web import FlextWebServices
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "ExamplesFullFunctionalityTest": [
-        "tests.integration.test_examples",
-        "ExamplesFullFunctionalityTest",
-    ],
-    "logger": ["tests.integration.test_examples", "logger"],
-    "main": ["tests.integration.test_examples", "main"],
+    "FlextWebAuth": ["flext_web.services.auth", "FlextWebAuth"],
+    "FlextWebEntities": ["flext_web.services.entities", "FlextWebEntities"],
+    "FlextWebHealth": ["flext_web.services.health", "FlextWebHealth"],
+    "FlextWebServices": ["flext_web.services.web", "FlextWebServices"],
 }
 
 __all__ = [
-    "ExamplesFullFunctionalityTest",
-    "logger",
-    "main",
+    "FlextWebAuth",
+    "FlextWebEntities",
+    "FlextWebHealth",
+    "FlextWebServices",
 ]
 
 

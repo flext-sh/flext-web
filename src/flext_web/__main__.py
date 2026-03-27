@@ -1,77 +1,75 @@
-"""Generic HTTP CLI Service - flext-cli Integration.
-
-Domain-agnostic CLI service using flext-cli exclusively for all CLI operations.
-Follows SOLID principles with single responsibility and proper delegation.
-
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-"""
+"""Console entry point for flext-web."""
 
 from __future__ import annotations
 
+import argparse
 import sys
-from typing import TYPE_CHECKING
+from collections.abc import Sequence
 
-from flext_core import FlextLogger, r
+from flext_core import r
 
-from flext_web import FlextWebApi
-
-if TYPE_CHECKING:
-    from flext_web import FlextWebModels
+from flext_web import FlextWebApi, FlextWebSettings, web
 
 
 class FlextWebCliService:
-    """Generic HTTP CLI service.
+    """CLI adapter over the canonical `web` facade."""
 
-    Single Responsibility: Provides HTTP service operations.
-    Uses FlextWebApi for HTTP operations following SOLID patterns.
-    """
-
-    def __init__(self) -> None:
-        """Initialize HTTP service."""
+    def __init__(self, api: FlextWebApi | None = None) -> None:
+        """Initialize the CLI with a facade instance."""
         super().__init__()
-        self._logger = FlextLogger(__name__)
-        self._api = FlextWebApi()
+        self._api = api if api is not None else web
 
     @staticmethod
-    def main() -> None:
-        """CLI entry point - static method following flext-core patterns."""
-        logger = FlextLogger(__name__)
-        cli_service = FlextWebCliService()
-        result = cli_service.run()
-        if result.is_failure:
-            _ = logger.error(f"Service failed: {result.error}")
-            sys.exit(1)
-        sys.exit(0)
+    def build_parser() -> argparse.ArgumentParser:
+        """Build the CLI argument parser."""
+        parser = argparse.ArgumentParser(prog="flext-web")
+        parser.add_argument("--host", default=None)
+        parser.add_argument("--port", type=int, default=None)
+        parser.add_argument("--debug", action="store_true")
+        parser.add_argument("--no-debug", action="store_true")
+        return parser
 
-    def run(self) -> r[bool]:
-        """Run HTTP service operations.
+    @classmethod
+    def parse_args(
+        cls,
+        argv: Sequence[str] | None = None,
+    ) -> argparse.Namespace:
+        """Parse CLI arguments."""
+        return cls.build_parser().parse_args(list(argv) if argv is not None else None)
 
-        Returns:
-            r[bool]: Success contains True if service is operational,
-                             failure contains error message
+    @classmethod
+    def main(cls, argv: Sequence[str] | None = None) -> None:
+        """CLI entry point following the console script contract."""
+        result = cls().run(argv)
+        sys.exit(0 if result.is_success else 1)
 
-        """
-        status_result = self._api.get_service_status()
-        return status_result.map(self._log_status_and_return)
+    def run(self, argv: Sequence[str] | None = None) -> r[bool]:
+        """Run the public web facade from CLI arguments."""
+        args = self.parse_args(argv)
+        debug_value = False if args.no_debug else bool(args.debug)
+        config_result = FlextWebSettings.create_web_config(
+            host=args.host,
+            port=args.port,
+            debug=debug_value,
+        )
+        if config_result.is_failure:
+            return r[bool].fail(config_result.error)
+        service_result = self._api.create_service(config_result.value)
+        if service_result.is_failure:
+            return r[bool].fail(service_result.error)
+        return service_result.value.start_service(
+            host=config_result.value.host,
+            port=config_result.value.port,
+            debug=debug_value,
+        )
 
-    def _log_status_and_return(
-        self,
-        status_data: FlextWebModels.Web.ServiceResponse,
-    ) -> bool:
-        """Log service status and return True for success - internal state management.
 
-        Args:
-            status_data: Service status response data
-
-        Returns:
-            bool: Always True when called (indicates successful status check)
-
-        """
-        _ = self._logger.info(f"Service status: {status_data.service}")
-        return True
+def main() -> None:
+    """Console script shim required by pyproject entry points."""
+    FlextWebCliService.main(sys.argv[1:])
 
 
 if __name__ == "__main__":
-    FlextWebCliService.main()
-__all__ = ["FlextWebCliService"]
+    main()
+
+__all__ = ["FlextWebCliService", "main"]

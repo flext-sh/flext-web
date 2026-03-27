@@ -1,50 +1,73 @@
-"""Unit tests for flext_web.__main__ module.
-
-Tests the CLI entry point functionality following flext standards.
-"""
+"""Unit tests for flext_web.__main__."""
 
 from __future__ import annotations
 
 import pytest
 from flext_tests import tm
 
-from flext_web import __main__
-from tests import m
+from flext_web import FlextWebProtocols, __main__, web
 
 
 class TestFlextWebCliService:
-    """Test suite for FlextWebCliService class."""
+    """Tests for the CLI adapter."""
+
+    def setup_method(self) -> None:
+        """Reset shared runtime registries before each test."""
+        FlextWebProtocols.Web.apps_registry.clear()
+        FlextWebProtocols.Web.framework_instances.clear()
+        FlextWebProtocols.Web.app_runtimes.clear()
+        FlextWebProtocols.Web.web_metrics.clear()
+        FlextWebProtocols.Web.service_state.update({
+            "routes_initialized": False,
+            "middleware_configured": False,
+            "service_running": False,
+        })
 
     def test_initialization(self) -> None:
-        """Test FlextWebCliService initialization."""
+        """The CLI defaults to the canonical `web` facade."""
         cli_service = __main__.FlextWebCliService()
-        assert cli_service is not None
-        tm.that(hasattr(cli_service, "_logger"), eq=True)
-        tm.that(hasattr(cli_service, "_api"), eq=True)
+        tm.that(cli_service._api is web, eq=True)
 
-    def test_log_status_and_return(self) -> None:
-        """Test _log_status_and_return method."""
+    def test_parse_args(self) -> None:
+        """The parser accepts host, port and debug flags."""
+        args = __main__.FlextWebCliService.parse_args([
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8195",
+            "--debug",
+        ])
+        tm.that(args.host, eq="127.0.0.1")
+        tm.that(args.port, eq=8195)
+        tm.that(args.debug, eq=True)
+
+    def test_run_starts_service(self) -> None:
+        """Running the CLI starts the service through the public facade."""
         cli_service = __main__.FlextWebCliService()
-        status = m.Web.ServiceResponse(
-            service="test-service",
-            status="healthy",
-            capabilities=["http_services_available"],
-            config=True,
-        )
-        result = cli_service._log_status_and_return(status)
-        tm.that(result is True, eq=True)
+        result = cli_service.run(["--host", "127.0.0.1", "--port", "8196"])
+        tm.ok(result)
+        tm.that(FlextWebProtocols.Web.service_state["service_running"], eq=True)
+        stop_result = web.stop_service()
+        tm.ok(stop_result)
 
 
 class TestMainFunction:
-    """Test suite for main() function."""
+    """Tests for the console entrypoint."""
 
     def test_main_structure(self) -> None:
-        """Test main function structure and imports."""
+        """The module exposes the console callable required by pyproject."""
+        tm.that(callable(__main__.main), eq=True)
         tm.that(callable(__main__.FlextWebCliService.main), eq=True)
-        tm.that(hasattr(__main__.FlextWebCliService, "main"), eq=True)
 
     def test_main_module_execution(self) -> None:
-        """Test __main__ module execution (line 78)."""
+        """The console entrypoint exits with code zero on success."""
         with pytest.raises(SystemExit) as exc_info:
-            __main__.FlextWebCliService.main()
+            __main__.FlextWebCliService.main([
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8197",
+            ])
         tm.that(exc_info.value.code, eq=0)
+        stop_result = web.stop_service()
+        tm.ok(stop_result)

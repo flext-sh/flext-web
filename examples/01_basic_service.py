@@ -1,31 +1,26 @@
-"""FLEXT Web Interface - Basic Service Example.
-
-Simple example demonstrating how to start the FLEXT Web Interface service
-with default configuration for development purposes using the refactored API.
-"""
+"""Basic flext-web startup via the canonical public facade."""
 
 from __future__ import annotations
 
-from flext_web import FlextWebServices, FlextWebSettings
+from flext_web import web
 
 
 def main() -> None:
-    """Start FLEXT Web Interface with default configuration."""
-    config = FlextWebSettings(
-        app_name="flext-web",
+    """Start flext-web using validated settings and the public facade."""
+    config_result = web.settings.create_web_config(
         host="127.0.0.1",
         port=8000,
-        debug_mode=True,
         debug=True,
-        testing=False,
         secret_key="dev-secret-key-32-characters-long",
     )
-    service_result = FlextWebServices.create_web_service(config)
-    if service_result.is_failure:
+    if config_result.is_failure:
         return
-    service = service_result.value
     try:
-        _ = service.start_service("127.0.0.1", 8000, _debug=True)
+        _ = web.start_service(
+            host=config_result.value.host,
+            port=config_result.value.port,
+            debug=config_result.value.debug_mode,
+        )
     except KeyboardInterrupt:
         return
     except (RuntimeError, OSError, ValueError):

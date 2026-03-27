@@ -26,12 +26,11 @@ from flext_tests import tk
 from pydantic import BaseModel, ValidationError
 
 from flext_web import (
-    FlextWebApp,
     FlextWebApplicationConfig,
     FlextWebRequestConfig,
     FlextWebResponseConfig,
-    FlextWebServices,
     FlextWebSettings,
+    web,
 )
 from tests import c, m, t
 
@@ -523,9 +522,9 @@ def real_config() -> FlextWebSettings:
 
 
 @pytest.fixture
-def real_service(real_config: FlextWebSettings) -> FlextWebServices:
-    """Create real FlextWebServices instance with clean state."""
-    result = FlextWebServices.create_service(real_config)
+def real_service(real_config: FlextWebSettings) -> object:
+    """Create a real service instance through the public `web` facade."""
+    result = web.create_service(real_config)
     assert result.is_success, f"Service creation failed: {result.error}"
     return result.value
 
@@ -539,20 +538,20 @@ def real_app(real_config: FlextWebSettings) -> Flask:
 
 
 @pytest.fixture
-def running_service(real_config: FlextWebSettings) -> Generator[FlextWebServices]:
-    """Start real service in background thread with clean state."""
+def running_service(real_config: FlextWebSettings) -> Generator[object]:
+    """Start a real service through the public `web` facade."""
     test_port = TestPortManager.allocate_port()
     test_config = FlextWebSettings(
         host=real_config.host,
         port=test_port,
         app_name=real_config.app_name,
     )
-    result = FlextWebServices.create_service(test_config)
+    result = web.create_service(test_config)
     assert result.is_success, f"Service creation failed: {result.error}"
     service = result.value
 
     def run_service() -> None:
-        app_result = FlextWebApp.create_flask_app(test_config)
+        app_result = web.create_flask_app(test_config)
         if app_result.is_success:
             app = app_result.value
             app.run(

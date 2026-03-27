@@ -65,10 +65,20 @@ class ExamplesFullFunctionalityTest:
             assert hasattr(basic_service, "main"), "main() function missing"
             assert callable(basic_service.main), "main() not callable"
             flext_web = importlib.import_module("flext_web")
-            config = flext_web.FlextWebSettings.create_web_config()
-            service = flext_web.FlextWebServices.create_web_service(config)
-            assert hasattr(service, "app"), "Service missing Flask app"
-            assert hasattr(service, "run"), "Service missing run method"
+            config_result = flext_web.web.settings.create_web_config(
+                host="127.0.0.1",
+                port=8093,
+            )
+            assert config_result.is_success, "Settings creation failed"
+            service_result = flext_web.web.create_service(config_result.value)
+            assert service_result.is_success, "Service creation failed"
+            start_result = flext_web.web.start_service(host="127.0.0.1", port=8093)
+            assert start_result.is_success, "Service start failed"
+            status_result = flext_web.web.get_service_status()
+            assert status_result.is_success, "Service status failed"
+            assert status_result.value.status == "operational"
+            stop_result = flext_web.web.stop_service()
+            assert stop_result.is_success, "Service stop failed"
             return True
         except (
             ImportError,
@@ -173,19 +183,26 @@ class ExamplesFullFunctionalityTest:
         """Testa integração entre examples e funcionalidade completa."""
         try:
             flext_web = importlib.import_module("flext_web")
-            config1 = flext_web.FlextWebSettings.create_web_config()
-            service1 = flext_web.FlextWebServices.create_web_service(config1)
-            config2 = flext_web.FlextWebSettings(
+            config1_result = flext_web.web.settings.create_web_config(
                 host="127.0.0.1",
                 port=8094,
-                debug=False,
+            )
+            assert config1_result.is_success, "First settings creation failed"
+            service1 = flext_web.web.create_service(config1_result.value)
+            assert service1.is_success, "First service creation failed"
+            config2_result = flext_web.web.settings.create_web_config(
+                host="127.0.0.1",
+                port=8095,
                 secret_key="integration-test-key-32-characters!",
             )
-            service2 = flext_web.FlextWebServices.create_web_service(config2)
-            assert hasattr(service1, "app")
-            assert hasattr(service2, "app")
-            assert hasattr(service1, "run")
-            assert hasattr(service2, "run")
+            assert config2_result.is_success, "Second settings creation failed"
+            service2 = flext_web.web.create_service(config2_result.value)
+            assert service2.is_success, "Second service creation failed"
+            status_result = flext_web.web.get_service_status()
+            assert status_result.is_success, "Service status failed"
+            capabilities_result = flext_web.web.get_api_capabilities()
+            assert capabilities_result.is_success, "Capabilities failed"
+            assert "service_management" in capabilities_result.value
             return True
         except (
             ImportError,

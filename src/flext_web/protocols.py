@@ -256,7 +256,8 @@ class FlextWebProtocols(FlextProtocols):
             cls,
             name: str,
         ) -> r[tuple[flask.Flask | FastAPI, str, str]]:
-            fastapi_result = FlextWebApp.create_fastapi_app(
+            app_service = FlextWebApp()
+            fastapi_result = app_service.create_fastapi_app(
                 config=m.Web.FastAPIAppConfig(
                     title=name,
                     version=c.Web.WebDefaults.VERSION_STRING,
@@ -275,7 +276,7 @@ class FlextWebProtocols(FlextProtocols):
                     c.Web.WebFramework.FRAMEWORK_FASTAPI,
                     c.Web.WebFramework.INTERFACE_ASGI,
                 ))
-            flask_result = FlextWebApp.create_flask_app()
+            flask_result = app_service.create_flask_app()
             if flask_result.is_success:
                 return r[tuple[flask.Flask | FastAPI, str, str]].ok((
                     flask_result.value,
