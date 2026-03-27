@@ -8,13 +8,13 @@ from collections.abc import Sequence
 
 from flext_core import r
 
-from flext_web import FlextWebApi, FlextWebSettings, web
+from flext_web import FlextWeb, FlextWebSettings, web
 
 
 class FlextWebCliService:
     """CLI adapter over the canonical `web` facade."""
 
-    def __init__(self, api: FlextWebApi | None = None) -> None:
+    def __init__(self, api: FlextWeb | None = None) -> None:
         """Initialize the CLI with a facade instance."""
         super().__init__()
         self._api = api if api is not None else web

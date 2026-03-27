@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from flext_web import services
     from flext_web.__version__ import __all__
-    from flext_web.api import FlextWebApi, web
+    from flext_web.api import FlextWeb, web
     from flext_web.base import FlextWebServiceBase
     from flext_web.constants import FlextWebConstants, FlextWebConstants as c
     from flext_web.models import FlextWebModels, FlextWebModels as m
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "FlextWebApi": ["flext_web.api", "FlextWebApi"],
+    "FlextWeb": ["flext_web.api", "FlextWeb"],
     "FlextWebApp": ["flext_web.services.app", "FlextWebApp"],
     "FlextWebAuth": ["flext_web.services.auth", "FlextWebAuth"],
     "FlextWebConstants": ["flext_web.constants", "FlextWebConstants"],
@@ -68,7 +68,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
 }
 
 __all__ = [
-    "FlextWebApi",
+    "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
     "FlextWebConstants",

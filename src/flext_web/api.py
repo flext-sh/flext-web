@@ -11,15 +11,17 @@ from __future__ import annotations
 
 from typing import ClassVar, Self
 
-from flext_web.services.app import FlextWebApp
-from flext_web.services.auth import FlextWebAuth
-from flext_web.services.entities import FlextWebEntities
-from flext_web.services.handlers import FlextWebHandlers
-from flext_web.services.health import FlextWebHealth
-from flext_web.services.web import FlextWebServices
+from flext_web import (
+    FlextWebApp,
+    FlextWebAuth,
+    FlextWebEntities,
+    FlextWebHandlers,
+    FlextWebHealth,
+    FlextWebServices,
+)
 
 
-class FlextWebApi(
+class FlextWeb(
     FlextWebApp,
     FlextWebServices,
     FlextWebAuth,
@@ -39,6 +41,6 @@ class FlextWebApi(
         return cls._instance
 
 
-web = FlextWebApi.get_instance()
+web = FlextWeb.get_instance()
 
-__all__ = ["FlextWebApi", "web"]
+__all__ = ["FlextWeb", "web"]

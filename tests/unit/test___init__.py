@@ -38,7 +38,7 @@ class TestFlextWebInit:
 
     def test_package_imports(self) -> None:
         """Test that all main classes are importable from package."""
-        tm.that(hasattr(flext_web, "FlextWebApi"), eq=True)
+        tm.that(hasattr(flext_web, "FlextWeb"), eq=True)
         tm.that(hasattr(flext_web, "FlextWebApp"), eq=True)
         tm.that(hasattr(flext_web, "FlextWebSettings"), eq=True)
         tm.that(hasattr(flext_web, "FlextWebConstants"), eq=True)
@@ -57,7 +57,7 @@ class TestFlextWebInit:
     def test_all_exports_match(self) -> None:
         """Test that __all__ contains all expected exports."""
         expected_exports = {
-            "FlextWebApi",
+            "FlextWeb",
             "FlextWebApp",
             "FlextWebSettings",
             "FlextWebConstants",
@@ -90,7 +90,7 @@ class TestFlextWebInit:
 
     def test_imports_are_classes_or_modules(self) -> None:
         """Test that imported items are of correct types."""
-        tm.that(callable(flext_web.FlextWebApi), eq=True)
+        tm.that(callable(flext_web.FlextWeb), eq=True)
         tm.that(callable(flext_web.FlextWebSettings), eq=True)
         tm.that(__version__, is_=str)
 
