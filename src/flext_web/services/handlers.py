@@ -7,15 +7,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping, Sequence
 from typing import ClassVar, override
 
-from flext_core import FlextLogger, r, s
+from flext_core import r
 
-from flext_web import c, m, u
+from flext_web import FlextWebServiceBase, c, m, u
 
 
-class FlextWebHandlers(s[bool]):
+class FlextWebHandlers(FlextWebServiceBase[bool]):
     """Consolidated web handler system extending flext-core patterns.
 
     This class serves as the single point of access for all web-specific
@@ -28,126 +27,6 @@ class FlextWebHandlers(s[bool]):
 
     SystemInfo: ClassVar[type[m.Web.SystemInfo]] = m.Web.SystemInfo
     HealthStatus: ClassVar[type[m.Web.HealthStatus]] = m.Web.HealthStatus
-
-    class ApplicationHandler:
-        """CQRS command handler for web application lifecycle management.
-
-        Implements Command Query Responsibility Segregation (CQRS) patterns for
-        web application operations using flext-core handler patterns. Provides
-        validated, consistent handling of application lifecycle commands with
-        complete error handling and business rule enforcement.
-
-        Responsibilities:
-          - Command validation and processing
-          - Business rule enforcement via domain entities
-          - Error handling and reporting
-          - Application registry management
-
-        """
-
-        def __init__(self) -> None:
-            """Initialize application handler."""
-            super().__init__()
-            self.logger = FlextLogger(__name__)
-            self._apps_registry: MutableMapping[str, m.Web.Entity] = {}
-            self.apps_registry = self._apps_registry
-            self.logger.info("WebApp handler initialized")
-
-        @staticmethod
-        def _validate_create_inputs(name: str, port: int, host: str) -> r[str]:
-            """Validate create inputs - consolidates all validations."""
-            if len(name) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
-                return r[str].fail(
-                    f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
-                )
-            if name.isdigit():
-                return r[str].fail("Application name cannot be numeric-only")
-            if not host:
-                return r[str].fail("Host cannot be empty")
-            min_port = c.Web.WebValidation.PORT_RANGE[0]
-            max_port = c.Web.WebValidation.PORT_RANGE[1]
-            if port < min_port:
-                return r[str].fail(f"Port must be at least {min_port}")
-            if port > max_port:
-                return r[str].fail(f"Port must be at most {max_port}")
-            return r[str].ok("")
-
-        def create(
-            self,
-            name: str,
-            port: int = c.Web.WebDefaults.PORT,
-            host: str = c.Web.WebDefaults.HOST,
-        ) -> r[m.Web.Entity]:
-            """Create new web application with validation."""
-            self.logger.info("Create app command")
-            validation_result = self._validate_create_inputs(name, port, host)
-            if validation_result.is_failure:
-                return r[m.Web.Entity].fail(validation_result.error)
-            app_id = m.Web.Entity.format_id_from_name(name)
-            app = m.Web.Entity(
-                id=app_id,
-                name=name,
-                port=port,
-                host=host,
-                status=c.Web.Status.STOPPED.value,
-                environment=c.Web.Name.DEVELOPMENT.value,
-                debug_mode=False,
-                metrics={},
-                web_events=[],
-                domain_events=[],
-            )
-            return app.validate_business_rules().flat_map(
-                lambda _: self._register_app(app),
-            )
-
-        def create_app(
-            self,
-            name: str,
-            port: int = c.Web.WebDefaults.PORT,
-            host: str = c.Web.WebDefaults.HOST,
-        ) -> r[m.Web.Entity]:
-            """Create a new application - implements WebAppManager.
-
-            This method delegates to the create method for protocol compliance.
-            """
-            return self.create(name, port, host)
-
-        def list_apps(self) -> r[Sequence[m.Web.Entity]]:
-            """List all applications - implements WebAppManager."""
-            apps_list = list(self.apps_registry.values())
-            return r[Sequence[m.Web.Entity]].ok(apps_list)
-
-        def start_app(self, app_id: str) -> r[m.Web.Entity]:
-            """Start an application - implements WebAppManager."""
-            if app_id not in self.apps_registry:
-                return r[m.Web.Entity].fail(f"Application {app_id} not found")
-            app = self.apps_registry[app_id]
-            return app.start().map(
-                lambda updated_app: self._update_app_in_registry(app_id, updated_app),
-            )
-
-        def stop_app(self, app_id: str) -> r[m.Web.Entity]:
-            """Stop an application - implements WebAppManager."""
-            if app_id not in self.apps_registry:
-                return r[m.Web.Entity].fail(f"Application {app_id} not found")
-            app = self.apps_registry[app_id]
-            return app.stop().map(
-                lambda updated_app: self._update_app_in_registry(app_id, updated_app),
-            )
-
-        def _register_app(self, app: m.Web.Entity) -> r[m.Web.Entity]:
-            """Register application in registry."""
-            self.apps_registry[app.id] = app
-            return r[m.Web.Entity].ok(app)
-
-        def _update_app_in_registry(
-            self,
-            app_id: str,
-            app: m.Web.Entity,
-        ) -> m.Web.Entity:
-            """Update application in registry."""
-            self.apps_registry[app_id] = app
-            return app
 
     @classmethod
     def handle_create_app(

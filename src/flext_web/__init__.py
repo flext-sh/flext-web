@@ -33,19 +33,12 @@ if TYPE_CHECKING:
     from flext_web.services.health import FlextWebHealth
     from flext_web.services.web import FlextWebServices
     from flext_web.settings import FlextWebSettings
-    from flext_web.typings import (
-        FlextWebApplicationConfig,
-        FlextWebRequestConfig,
-        FlextWebResponseConfig,
-        FlextWebTypes,
-        FlextWebTypes as t,
-    )
+    from flext_web.typings import FlextWebTypes, FlextWebTypes as t
     from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextWebApi": ["flext_web.api", "FlextWebApi"],
     "FlextWebApp": ["flext_web.services.app", "FlextWebApp"],
-    "FlextWebApplicationConfig": ["flext_web.typings", "FlextWebApplicationConfig"],
     "FlextWebAuth": ["flext_web.services.auth", "FlextWebAuth"],
     "FlextWebConstants": ["flext_web.constants", "FlextWebConstants"],
     "FlextWebEntities": ["flext_web.services.entities", "FlextWebEntities"],
@@ -53,8 +46,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextWebHealth": ["flext_web.services.health", "FlextWebHealth"],
     "FlextWebModels": ["flext_web.models", "FlextWebModels"],
     "FlextWebProtocols": ["flext_web.protocols", "FlextWebProtocols"],
-    "FlextWebRequestConfig": ["flext_web.typings", "FlextWebRequestConfig"],
-    "FlextWebResponseConfig": ["flext_web.typings", "FlextWebResponseConfig"],
     "FlextWebServiceBase": ["flext_web.base", "FlextWebServiceBase"],
     "FlextWebServices": ["flext_web.services.web", "FlextWebServices"],
     "FlextWebSettings": ["flext_web.settings", "FlextWebSettings"],
@@ -79,7 +70,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
 __all__ = [
     "FlextWebApi",
     "FlextWebApp",
-    "FlextWebApplicationConfig",
     "FlextWebAuth",
     "FlextWebConstants",
     "FlextWebEntities",
@@ -87,8 +77,6 @@ __all__ = [
     "FlextWebHealth",
     "FlextWebModels",
     "FlextWebProtocols",
-    "FlextWebRequestConfig",
-    "FlextWebResponseConfig",
     "FlextWebServiceBase",
     "FlextWebServices",
     "FlextWebSettings",

@@ -21,41 +21,6 @@ from flext_web.models import FlextWebModels as m
 from flext_web.utilities import FlextWebUtilities as u
 
 
-class FlextWebApplicationConfig(m.Web.EntityConfig):
-    """Application configuration with defaults for name, status, environment, debug, and version."""
-
-    name: Annotated[
-        str,
-        Field(description="App name"),
-    ] = c.Web.WebDefaults.APP_NAME
-    status: Annotated[
-        str,
-        Field(description="App status"),
-    ] = c.Web.Status.STOPPED.value
-    environment: Annotated[
-        str,
-        Field(
-            description="Environment",
-        ),
-    ] = c.Web.Name.DEVELOPMENT.value
-    debug_mode: Annotated[
-        bool,
-        Field(description="Debug"),
-    ] = c.Web.WebDefaults.DEBUG_MODE
-    version: Annotated[
-        int,
-        Field(description="Version"),
-    ] = c.Web.WebDefaults.VERSION_INT
-
-
-class FlextWebRequestConfig(m.Web.AppRequest):
-    """Web request configuration extending AppRequest."""
-
-
-class FlextWebResponseConfig(m.Web.AppResponse):
-    """Web response configuration extending AppResponse."""
-
-
 class FlextWebTypes(FlextTypes):
     """Web-specific type definitions using m.
 
@@ -88,13 +53,48 @@ class FlextWebTypes(FlextTypes):
         """
 
         ConfigValue = FlextTypes.Scalar | Sequence[str]
+
+        class ApplicationConfig(m.Web.EntityConfig):
+            """Application configuration with web-specific defaults."""
+
+            name: Annotated[
+                str,
+                Field(description="App name"),
+            ] = c.Web.WebDefaults.APP_NAME
+            status: Annotated[
+                str,
+                Field(description="App status"),
+            ] = c.Web.Status.STOPPED.value
+            environment: Annotated[
+                str,
+                Field(description="Environment"),
+            ] = c.Web.Name.DEVELOPMENT.value
+            debug_mode: Annotated[
+                bool,
+                Field(description="Debug"),
+            ] = c.Web.WebDefaults.DEBUG_MODE
+            version: Annotated[
+                int,
+                Field(description="Version"),
+            ] = c.Web.WebDefaults.VERSION_INT
+
+        class RequestConfig(m.Web.AppRequest):
+            """Web request configuration extending AppRequest."""
+
+        class ResponseConfig(m.Web.AppResponse):
+            """Web response configuration extending AppResponse."""
+
         type RequestDict = dict[
             str,
-            FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar],
+            FlextTypes.Scalar
+            | FlextTypes.StrSequence
+            | Mapping[str, FlextTypes.Scalar],
         ]
         type ResponseDict = dict[
             str,
-            FlextTypes.Scalar | t.StrSequence | Mapping[str, FlextTypes.Scalar],
+            FlextTypes.Scalar
+            | FlextTypes.StrSequence
+            | Mapping[str, FlextTypes.Scalar],
         ]
 
     class Types:
@@ -109,7 +109,7 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_application(
         cls,
-        config: FlextWebApplicationConfig,
+        config: FlextWebTypes.Web.ApplicationConfig,
     ) -> r[m.Web.Entity]:
         """Create application model instance.
 
@@ -182,8 +182,8 @@ class FlextWebTypes(FlextTypes):
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: t.NormalizedValue) -> bool:
-            return isinstance(m, str) and m in valid_methods
+        def _validate_method(value: FlextTypes.NormalizedValue) -> bool:
+            return isinstance(value, str) and value in valid_methods
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
         if not isinstance(method_validated, str):
@@ -266,7 +266,7 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_web_request(
         cls,
-        config: FlextWebRequestConfig,
+        config: FlextWebTypes.Web.RequestConfig,
     ) -> r[m.Web.AppRequest]:
         """Create web request model instance with proper validation.
 
@@ -294,8 +294,8 @@ class FlextWebTypes(FlextTypes):
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
 
-        def _validate_method(m: t.NormalizedValue) -> bool:
-            return isinstance(m, str) and m in valid_methods
+        def _validate_method(value: FlextTypes.NormalizedValue) -> bool:
+            return isinstance(value, str) and value in valid_methods
 
         method_validated = u.guard(method_upper, _validate_method, return_value=True)
         if not isinstance(method_validated, str):
@@ -333,7 +333,7 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_web_response(
         cls,
-        config: FlextWebResponseConfig,
+        config: FlextWebTypes.Web.ResponseConfig,
     ) -> r[m.Web.AppResponse]:
         """Create web response model instance with proper validation.
 
@@ -390,7 +390,7 @@ class FlextWebTypes(FlextTypes):
             *,
             use_pydantic_models: bool = True,
             enable_runtime_validation: bool = True,
-            models_available: t.StrSequence | None = None,
+            models_available: FlextTypes.StrSequence | None = None,
         ) -> None:
             """Initialize types configuration."""
             super().__init__()
@@ -415,7 +415,7 @@ class FlextWebTypes(FlextTypes):
         *,
         use_pydantic_models: bool = True,
         enable_runtime_validation: bool = True,
-        models_available: t.StrSequence | None = None,
+        models_available: FlextTypes.StrSequence | None = None,
     ) -> r[FlextWebTypes.TypesConfig]:
         """Configure web types system to use Pydantic models.
 
@@ -505,9 +505,6 @@ class FlextWebTypes(FlextTypes):
 t = FlextWebTypes
 
 __all__ = [
-    "FlextWebApplicationConfig",
-    "FlextWebRequestConfig",
-    "FlextWebResponseConfig",
     "FlextWebTypes",
     "t",
 ]

@@ -1,7 +1,7 @@
 # FLEXT Web - Usage Examples
 
 This directory shows the current public usage pattern for `flext-web`:
-`from flext_web import web`.
+`from flext_web import web, c, t, p, m, u`.
 
 ## Basic Usage
 
@@ -15,11 +15,12 @@ _ = web.start_service(host=config.host, port=config.port, debug=config.debug_mod
 ## API Usage
 
 ```python
-from flext_web import web
-from examples import m
+from flext_web import m, web
 
-result = web.create_app(m.Web.AppData(name="demo", host="127.0.0.1", port=8080))
-assert result.is_success
+created = web.create_app(m.Web.AppData(name="demo", host="127.0.0.1", port=8080))
+assert created.is_success
+started = web.start_app(created.value.id)
+assert started.is_success
 ```
 
 ## Flask Integration

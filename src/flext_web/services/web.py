@@ -8,16 +8,18 @@ from typing import override
 from flext_core import r
 from pydantic import PrivateAttr
 
-from flext_web.base import FlextWebServiceBase
-from flext_web.constants import FlextWebConstants as c
-from flext_web.models import FlextWebModels as m
-from flext_web.protocols import FlextWebProtocols
-from flext_web.services.auth import FlextWebAuth
-from flext_web.services.entities import FlextWebEntities
-from flext_web.services.health import FlextWebHealth
-from flext_web.settings import FlextWebSettings
-from flext_web.typings import FlextWebTypes as t
-from flext_web.utilities import FlextWebUtilities as u
+from flext_web import (
+    FlextWebAuth,
+    FlextWebEntities,
+    FlextWebHealth,
+    FlextWebServiceBase,
+    FlextWebSettings,
+    c,
+    m,
+    p,
+    t,
+    u,
+)
 
 
 class FlextWebServices(FlextWebServiceBase[bool]):
@@ -43,11 +45,11 @@ class FlextWebServices(FlextWebServiceBase[bool]):
 
     def configure_middleware(self) -> r[bool]:
         """Configure protocol-backed middleware state."""
-        return FlextWebProtocols.Web.WebService.configure_middleware()
+        return p.Web.WebService.configure_middleware()
 
     def create_app(self, app_data: m.Web.AppData) -> r[m.Web.ApplicationResponse]:
         """Create an application through the protocol runtime registry."""
-        return FlextWebProtocols.create_app(
+        return p.create_app(
             name=app_data.name,
             port=app_data.port,
             host=app_data.host,
@@ -59,7 +61,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
 
     def dashboard(self) -> r[m.Web.DashboardResponse]:
         """Return dashboard data projected from the protocol runtime state."""
-        state = FlextWebProtocols.Web.service_state
+        state = p.Web.service_state
         return self.list_apps().map(
             lambda apps: m.Web.DashboardResponse(
                 total_applications=len(apps),
@@ -100,7 +102,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         """Return a registered application by identifier."""
         if not u.ensure_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
-        return FlextWebProtocols.Web.WebRepository.get_by_id(app_id).flat_map(
+        return p.Web.WebRepository.get_by_id(app_id).flat_map(
             self._application_response_from_payload,
         )
 
@@ -110,7 +112,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
 
     def get_service_status(self) -> r[m.Web.ServiceResponse]:
         """Return service status using protocol runtime state and settings."""
-        state = FlextWebProtocols.Web.service_state
+        state = p.Web.service_state
         return r[m.Web.ServiceResponse].ok(
             m.Web.ServiceResponse(
                 service=c.Web.WebService.SERVICE_NAME_API,
@@ -145,11 +147,11 @@ class FlextWebServices(FlextWebServiceBase[bool]):
 
     def initialize_routes(self) -> r[bool]:
         """Initialize protocol-backed routes state."""
-        return FlextWebProtocols.Web.WebService.initialize_routes()
+        return p.Web.WebService.initialize_routes()
 
     def list_apps(self) -> r[Sequence[m.Web.ApplicationResponse]]:
         """List all registered applications."""
-        return FlextWebProtocols.list_apps().flat_map(
+        return p.list_apps().flat_map(
             self._application_responses_from_payloads,
         )
 
@@ -165,7 +167,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         """Start a registered application and project its payload into a model."""
         if not u.ensure_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
-        return FlextWebProtocols.start_app(app_id).flat_map(
+        return p.start_app(app_id).flat_map(
             self._application_response_from_payload,
         )
 
@@ -190,13 +192,13 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         running_app = self.start_app(app_result.value.id)
         if running_app.is_failure:
             return r[bool].fail(running_app.error)
-        return FlextWebProtocols.Web.WebService.start_service()
+        return p.Web.WebService.start_service()
 
     def stop_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
         """Stop a registered application and project its payload into a model."""
         if not u.ensure_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
-        return FlextWebProtocols.stop_app(app_id).flat_map(
+        return p.stop_app(app_id).flat_map(
             self._application_response_from_payload,
         )
 
@@ -210,12 +212,12 @@ class FlextWebServices(FlextWebServiceBase[bool]):
                 stop_result = self.stop_app(app.id)
                 if stop_result.is_failure:
                     return r[bool].fail(stop_result.error)
-        return FlextWebProtocols.Web.WebService.stop_service()
+        return p.Web.WebService.stop_service()
 
     @override
     def validate_business_rules(self) -> r[bool]:
         """Validate protocol-backed service state invariants."""
-        state = FlextWebProtocols.Web.service_state
+        state = p.Web.service_state
         if state["service_running"] and not state["routes_initialized"]:
             return r[bool].fail("Service cannot be running without initialized routes")
         if state["service_running"] and not state["middleware_configured"]:

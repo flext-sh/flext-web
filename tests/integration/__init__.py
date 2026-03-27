@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
     from tests.integration.test_examples import (
         ExamplesFullFunctionalityTest,
+        TestExamples,
         logger,
         main,
     )
@@ -29,12 +30,14 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
         "tests.integration.test_examples",
         "ExamplesFullFunctionalityTest",
     ],
+    "TestExamples": ["tests.integration.test_examples", "TestExamples"],
     "logger": ["tests.integration.test_examples", "logger"],
     "main": ["tests.integration.test_examples", "main"],
 }
 
 __all__ = [
     "ExamplesFullFunctionalityTest",
+    "TestExamples",
     "logger",
     "main",
 ]

@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from tests.helpers.utilities import TestsUtilities
     from tests.integration.test_examples import (
         ExamplesFullFunctionalityTest,
+        TestExamples,
         logger,
         main,
     )
@@ -75,6 +76,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextWebTestProtocols": ["tests.protocols", "FlextWebTestProtocols"],
     "FlextWebTestTypes": ["tests.typings", "FlextWebTestTypes"],
     "FlextWebTestUtilities": ["tests.utilities", "FlextWebTestUtilities"],
+    "TestExamples": ["tests.integration.test_examples", "TestExamples"],
     "TestFlextWebApi": ["tests.unit.test_api", "TestFlextWebApi"],
     "TestFlextWebApp": ["tests.unit.test_app", "TestFlextWebApp"],
     "TestFlextWebCliService": ["tests.unit.test___main__", "TestFlextWebCliService"],
@@ -142,6 +144,7 @@ __all__ = [
     "FlextWebTestProtocols",
     "FlextWebTestTypes",
     "FlextWebTestUtilities",
+    "TestExamples",
     "TestFlextWebApi",
     "TestFlextWebApp",
     "TestFlextWebCliService",

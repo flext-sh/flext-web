@@ -25,12 +25,7 @@ from flext_core import r
 from flext_tests import tk
 from pydantic import BaseModel, ValidationError
 
-from flext_web import (
-    FlextWebApplicationConfig,
-    FlextWebRequestConfig,
-    FlextWebResponseConfig,
-    web,
-)
+from flext_web import web
 from tests import c, m, t
 
 if TYPE_CHECKING:
@@ -217,7 +212,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
                     if isinstance(v, (str, int, float, bool))
                 }
             )
-            web_request_config = FlextWebRequestConfig(
+            web_request_config = t.Web.RequestConfig(
                 url=url,
                 method=method,
                 headers=headers_dict,
@@ -260,7 +255,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
                     else None
                 )
             )
-            web_response_config = FlextWebResponseConfig(
+            web_response_config = t.Web.ResponseConfig(
                 status_code=status_code,
                 request_id=request_id
                 if isinstance(request_id, str)
@@ -292,7 +287,7 @@ def create_entry(entry_type: str, **kwargs: t.NormalizedValue) -> r[BaseModel]:
             or (not isinstance(port, int))
         ):
             return r[BaseModel].fail("Invalid parameters for application")
-        app_config = FlextWebApplicationConfig(
+        app_config = t.Web.ApplicationConfig(
             name=name,
             host=host,
             port=port,

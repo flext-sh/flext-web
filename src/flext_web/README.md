@@ -1,12 +1,14 @@
 # FLEXT Web Source Guide
 
-`flext_web` exposes one canonical public facade, `web`, plus the supporting
-namespaces for models, constants, protocols, utilities, handlers and settings.
+`flext_web` exposes one canonical public surface:
+`from flext_web import web, c, t, p, m, u`.
+
+Everything operational goes through `web`. Structural contracts stay under
+`c.Web`, `t.Web`, `p.Web`, `m.Web` and `u.Web`.
 
 ## Current Structure
 
-- `api.py`: public facade and shared `web` alias
-- `app.py`: framework app factories
+- `api.py`: public facade and shared `web` alias, composed from all service classes
 - `base.py`: service base with typed `web` settings access
 - `settings.py`: registered settings namespace
 - `services/`: canonical service implementations
@@ -16,11 +18,16 @@ namespaces for models, constants, protocols, utilities, handlers and settings.
 ## Public Usage
 
 ```python
-from flext_web import web
+from flext_web import c, m, p, t, u, web
 
 status = web.get_service_status()
 capabilities = web.get_api_capabilities()
 config = web.settings
+health_service_name = c.Web.WebService.SERVICE_NAME
+app_request_model = m.Web.AppData
+response_payload_type = t.Web.ResponseDict
+web_protocol = p.Web.WebService
+app_identifier = u.format_app_id("demo")
 ```
 
 ## Runtime Factories

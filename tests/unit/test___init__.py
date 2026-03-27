@@ -12,6 +12,30 @@ from flext_web.__version__ import __version__, __version_info__
 class TestFlextWebInit:
     """Test suite for flext_web package initialization."""
 
+    _WEB_SURFACE = (
+        "create_fastapi_app",
+        "create_flask_app",
+        "authenticate",
+        "register_user",
+        "create_entity",
+        "get_entity",
+        "list_entities",
+        "health_status",
+        "dashboard_metrics",
+        "dashboard",
+        "create_app",
+        "get_app",
+        "list_apps",
+        "start_app",
+        "stop_app",
+        "start_service",
+        "stop_service",
+        "initialize_routes",
+        "configure_middleware",
+        "handle_system_info",
+        "handle_health_check",
+    )
+
     def test_package_imports(self) -> None:
         """Test that all main classes are importable from package."""
         tm.that(hasattr(flext_web, "FlextWebApi"), eq=True)
@@ -47,9 +71,6 @@ class TestFlextWebInit:
             "FlextWebServices",
             "FlextWebTypes",
             "FlextWebUtilities",
-            "FlextWebApplicationConfig",
-            "FlextWebRequestConfig",
-            "FlextWebResponseConfig",
             "__all__",
             "c",
             "d",
@@ -72,3 +93,11 @@ class TestFlextWebInit:
         tm.that(callable(flext_web.FlextWebApi), eq=True)
         tm.that(callable(flext_web.FlextWebSettings), eq=True)
         tm.that(__version__, is_=str)
+
+    def test_web_and_aliases_define_the_public_surface(self) -> None:
+        """The package exposes the canonical `web, c, t, p, m, u` surface."""
+        for name in self._WEB_SURFACE:
+            tm.that(hasattr(flext_web.web, name), eq=True)
+        for alias_name in ("c", "t", "p", "m", "u"):
+            alias = getattr(flext_web, alias_name)
+            tm.that(hasattr(alias, "Web"), eq=True)
