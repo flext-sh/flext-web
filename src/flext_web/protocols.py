@@ -546,18 +546,26 @@ class FlextWebProtocols(FlextProtocols):
                     r containing application data or error details
 
                 """
-                if len(name.strip()) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
+                normalized_name = name.strip()
+                normalized_host = host.strip()
+                if len(normalized_name) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
                     return r[t.Web.ResponseDict].fail(
                         f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
                     )
-                if not host.strip():
+                if normalized_name.isdigit():
+                    return r[t.Web.ResponseDict].fail(
+                        "Application name cannot be numeric-only",
+                    )
+                if not normalized_host:
                     return r[t.Web.ResponseDict].fail("Host cannot be empty")
                 if not FlextWebProtocols.Web.is_valid_port(port):
                     min_port, max_port = c.Web.WebValidation.PORT_RANGE
                     return r[t.Web.ResponseDict].fail(
                         f"Port must be between {min_port} and {max_port}",
                     )
-                framework_result = FlextWebProtocols.Web.create_framework_app(name)
+                framework_result = FlextWebProtocols.Web.create_framework_app(
+                    normalized_name,
+                )
                 if framework_result.is_failure:
                     return r[t.Web.ResponseDict].fail(framework_result.error)
                 app_instance, framework_name, interface_type = framework_result.value
@@ -569,10 +577,11 @@ class FlextWebProtocols(FlextProtocols):
                 FlextWebProtocols.Web.configure_framework_app_middleware(app_instance)
                 app_data: t.Web.ResponseDict = {
                     "id": app_id,
-                    "name": name,
+                    "name": normalized_name,
                     "port": port,
-                    "host": host,
+                    "host": normalized_host,
                     "status": c.Web.Status.STOPPED.value,
+                    "created_at": u.generate_iso_timestamp(),
                     "framework": framework_name,
                     "interface": interface_type,
                 }

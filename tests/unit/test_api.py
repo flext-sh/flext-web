@@ -67,7 +67,7 @@ class TestFlextWebApi:
                 "port": 8080,
                 "debug": True,
                 "debug_mode": True,
-                "secret_key": "test-secret-key-32-characters!",
+                "secret_key": "test-secret-key-32-characters!!!",
             },
         )
         result = web.settings.validate_settings(config)

@@ -11,7 +11,8 @@ from __future__ import annotations
 
 from typing import ClassVar, Self
 
-from flext_web import FlextWebApp, FlextWebServices
+from flext_web.services.app import FlextWebApp
+from flext_web.services.web import FlextWebServices
 
 
 class FlextWebApi(FlextWebApp, FlextWebServices):

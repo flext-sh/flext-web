@@ -13,21 +13,27 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from flext_web.services.app import FlextWebApp
     from flext_web.services.auth import FlextWebAuth
     from flext_web.services.entities import FlextWebEntities
+    from flext_web.services.handlers import FlextWebHandlers
     from flext_web.services.health import FlextWebHealth
     from flext_web.services.web import FlextWebServices
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
+    "FlextWebApp": ["flext_web.services.app", "FlextWebApp"],
     "FlextWebAuth": ["flext_web.services.auth", "FlextWebAuth"],
     "FlextWebEntities": ["flext_web.services.entities", "FlextWebEntities"],
+    "FlextWebHandlers": ["flext_web.services.handlers", "FlextWebHandlers"],
     "FlextWebHealth": ["flext_web.services.health", "FlextWebHealth"],
     "FlextWebServices": ["flext_web.services.web", "FlextWebServices"],
 }
 
 __all__ = [
+    "FlextWebApp",
     "FlextWebAuth",
     "FlextWebEntities",
+    "FlextWebHandlers",
     "FlextWebHealth",
     "FlextWebServices",
 ]

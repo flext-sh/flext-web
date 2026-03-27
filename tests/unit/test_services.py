@@ -77,7 +77,10 @@ class TestFlextWebService:
         tm.ok(get_result)
         tm.ok(list_result)
         tm.that(get_result.value.id, eq=app.id)
-        tm.that(list_result.value[0].id, eq=app.id)
+        tm.that(
+            any(listed_app.id == app.id for listed_app in list_result.value),
+            eq=True,
+        )
 
     def test_start_and_stop_app_cycle(self) -> None:
         """Applications transition through running and stopped states."""

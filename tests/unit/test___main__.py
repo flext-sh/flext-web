@@ -5,23 +5,22 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from flext_web import FlextWebProtocols, __main__, web
+from flext_web import __main__, web
 
 
 class TestFlextWebCliService:
     """Tests for the CLI adapter."""
 
     def setup_method(self) -> None:
-        """Reset shared runtime registries before each test."""
-        FlextWebProtocols.Web.apps_registry.clear()
-        FlextWebProtocols.Web.framework_instances.clear()
-        FlextWebProtocols.Web.app_runtimes.clear()
-        FlextWebProtocols.Web.web_metrics.clear()
-        FlextWebProtocols.Web.service_state.update({
-            "routes_initialized": False,
-            "middleware_configured": False,
-            "service_running": False,
-        })
+        """Reset shared runtime state through the public facade before each test."""
+        apps_result = web.list_apps()
+        if apps_result.is_success:
+            for app in apps_result.value:
+                if app.status == "running":
+                    _ = web.stop_app(app.id)
+        status_result = web.get_service_status()
+        if status_result.is_success and status_result.value.status == "operational":
+            _ = web.stop_service()
 
     def test_initialization(self) -> None:
         """The CLI defaults to the canonical `web` facade."""
@@ -46,7 +45,9 @@ class TestFlextWebCliService:
         cli_service = __main__.FlextWebCliService()
         result = cli_service.run(["--host", "127.0.0.1", "--port", "8196"])
         tm.ok(result)
-        tm.that(FlextWebProtocols.Web.service_state["service_running"], eq=True)
+        status_result = web.get_service_status()
+        tm.ok(status_result)
+        tm.that(status_result.value.status, eq="operational")
         stop_result = web.stop_service()
         tm.ok(stop_result)
 

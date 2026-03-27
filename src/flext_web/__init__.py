@@ -17,19 +17,19 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, r, s, x
+    from flext_core import FlextTypes, d, e, h, r, s, x
 
     from flext_web import services
     from flext_web.__version__ import __all__
     from flext_web.api import FlextWebApi, web
-    from flext_web.app import FlextWebApp
     from flext_web.base import FlextWebServiceBase
     from flext_web.constants import FlextWebConstants, FlextWebConstants as c
-    from flext_web.handlers import FlextWebHandlers, FlextWebHandlers as h
     from flext_web.models import FlextWebModels, FlextWebModels as m
     from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
+    from flext_web.services.app import FlextWebApp
     from flext_web.services.auth import FlextWebAuth
     from flext_web.services.entities import FlextWebEntities
+    from flext_web.services.handlers import FlextWebHandlers
     from flext_web.services.health import FlextWebHealth
     from flext_web.services.web import FlextWebServices
     from flext_web.settings import FlextWebSettings
@@ -44,12 +44,12 @@ if TYPE_CHECKING:
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextWebApi": ["flext_web.api", "FlextWebApi"],
-    "FlextWebApp": ["flext_web.app", "FlextWebApp"],
+    "FlextWebApp": ["flext_web.services.app", "FlextWebApp"],
     "FlextWebApplicationConfig": ["flext_web.typings", "FlextWebApplicationConfig"],
     "FlextWebAuth": ["flext_web.services.auth", "FlextWebAuth"],
     "FlextWebConstants": ["flext_web.constants", "FlextWebConstants"],
     "FlextWebEntities": ["flext_web.services.entities", "FlextWebEntities"],
-    "FlextWebHandlers": ["flext_web.handlers", "FlextWebHandlers"],
+    "FlextWebHandlers": ["flext_web.services.handlers", "FlextWebHandlers"],
     "FlextWebHealth": ["flext_web.services.health", "FlextWebHealth"],
     "FlextWebModels": ["flext_web.models", "FlextWebModels"],
     "FlextWebProtocols": ["flext_web.protocols", "FlextWebProtocols"],
@@ -64,7 +64,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "c": ["flext_web.constants", "FlextWebConstants"],
     "d": ["flext_core", "d"],
     "e": ["flext_core", "e"],
-    "h": ["flext_web.handlers", "FlextWebHandlers"],
+    "h": ["flext_core", "h"],
     "m": ["flext_web.models", "FlextWebModels"],
     "p": ["flext_web.protocols", "FlextWebProtocols"],
     "r": ["flext_core", "r"],

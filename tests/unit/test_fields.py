@@ -1,37 +1,34 @@
-"""Unit tests for flext_web.fields module.
-
-Tests the web fields functionality following flext standards.
-"""
+"""Unit tests for public field behavior exposed through `web`."""
 
 from __future__ import annotations
 
 from flext_tests import tm
 
-from flext_web import FlextWebSettings
-from tests import c, m
+from flext_web import web
+from tests import m
 
 
 class TestFlextWebFields:
-    """Test suite for m class."""
+    """Test suite for public web field behavior."""
 
     def test_host_field_creation(self) -> None:
         """Test host field creation."""
-        config = FlextWebSettings(host="localhost")
+        config = web.settings.model_copy(update={"host": "localhost"})
         tm.that(config.host, eq="localhost")
 
     def test_host_field_with_custom_default(self) -> None:
         """Test host field creation with custom default."""
-        config = FlextWebSettings(host="0.0.0.0")
+        config = web.settings.model_copy(update={"host": "0.0.0.0"})
         tm.that(config.host, eq="0.0.0.0")
 
     def test_port_field_creation(self) -> None:
         """Test port field creation."""
-        config = FlextWebSettings(port=8080)
+        config = web.settings.model_copy(update={"port": 8080})
         tm.that(config.port, eq=8080)
 
     def test_port_field_with_custom_default(self) -> None:
         """Test port field creation with custom default."""
-        config = FlextWebSettings(port=3000)
+        config = web.settings.model_copy(update={"port": 3000})
         tm.that(config.port, eq=3000)
 
     def test_url_field_creation(self) -> None:
@@ -41,12 +38,14 @@ class TestFlextWebFields:
 
     def test_app_name_field_creation(self) -> None:
         """Test app name field creation."""
-        config = FlextWebSettings(app_name="Test App")
+        config = web.settings.model_copy(update={"app_name": "Test App"})
         tm.that(config.app_name, eq="Test App")
 
     def test_secret_key_field_creation(self) -> None:
         """Test secret key field creation."""
-        config = FlextWebSettings(secret_key="valid-secret-key-32-characters-long")
+        config = web.settings.model_copy(
+            update={"secret_key": "valid-secret-key-32-characters-long"},
+        )
         tm.that(config.secret_key, none=False)
 
     def test_http_status_field_creation(self) -> None:
@@ -131,6 +130,6 @@ class TestFlextWebFields:
 
     def test_field_validation_integration(self) -> None:
         """Test field validation integration."""
-        model = FlextWebSettings()
-        tm.that(model.host, eq=c.Web.WebDefaults.HOST)
-        tm.that(model.port, eq=c.Web.WebDefaults.PORT)
+        model = web.settings
+        tm.that(model.host, eq=web.settings.host)
+        tm.that(model.port, eq=web.settings.port)

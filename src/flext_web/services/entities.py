@@ -10,12 +10,11 @@ from flext_core import r
 from pydantic import PrivateAttr
 
 from flext_web.base import FlextWebServiceBase
-from flext_web.constants import FlextWebConstants as c
 from flext_web.models import FlextWebModels as m
 from flext_web.utilities import FlextWebUtilities as u
 
 
-class FlextWebEntities(FlextWebServiceBase[m.Web.EntityData]):
+class FlextWebEntities(FlextWebServiceBase[bool]):
     """In-memory entity CRUD support for flext-web."""
 
     _storage: MutableMapping[str, m.Web.EntityData] = PrivateAttr(
@@ -30,11 +29,9 @@ class FlextWebEntities(FlextWebServiceBase[m.Web.EntityData]):
         return r[m.Web.EntityData].ok(entity)
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> r[m.Web.EntityData]:
+    def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
         """Execute the entity namespace service."""
-        return r[m.Web.EntityData].ok(
-            m.Web.EntityData(data={"message": c.Web.WebMessages.ENTITY_SERVICE_READY}),
-        )
+        return r[bool].ok(True)
 
     def get_entity(self, entity_id: str) -> r[m.Web.EntityData]:
         """Fetch an entity by identifier."""

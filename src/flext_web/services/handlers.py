@@ -14,8 +14,6 @@ from flext_core import FlextLogger, r, s
 
 from flext_web import c, m, u
 
-__all__ = ["FlextWebHandlers"]
-
 
 class FlextWebHandlers(s[bool]):
     """Consolidated web handler system extending flext-core patterns.
@@ -276,3 +274,6 @@ class FlextWebHandlers(s[bool]):
 
         """
         return r[bool].ok(value=True)
+
+
+__all__ = ["FlextWebHandlers"]

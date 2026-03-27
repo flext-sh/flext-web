@@ -17,7 +17,7 @@ import threading
 import time
 from collections.abc import Callable, Generator, Mapping, Sequence
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 from flask import Flask
@@ -29,10 +29,12 @@ from flext_web import (
     FlextWebApplicationConfig,
     FlextWebRequestConfig,
     FlextWebResponseConfig,
-    FlextWebSettings,
     web,
 )
 from tests import c, m, t
+
+if TYPE_CHECKING:
+    from flext_web import FlextWebSettings
 
 
 def _wrap_result[T](result: r[T]) -> r[BaseModel]:
@@ -518,7 +520,11 @@ def real_config() -> FlextWebSettings:
 
     Fast fail if secret key cannot be provided - no fallback.
     """
-    return FlextWebSettings(secret_key=c.Web.WebDefaults.TEST_SECRET_KEY)
+    result = web.settings.create_web_config(
+        secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
+    )
+    assert result.is_success, result.error
+    return result.value
 
 
 @pytest.fixture
@@ -541,10 +547,12 @@ def real_app(real_config: FlextWebSettings) -> Flask:
 def running_service(real_config: FlextWebSettings) -> Generator[object]:
     """Start a real service through the public `web` facade."""
     test_port = TestPortManager.allocate_port()
-    test_config = FlextWebSettings(
-        host=real_config.host,
-        port=test_port,
-        app_name=real_config.app_name,
+    test_config = real_config.model_copy(
+        update={
+            "host": real_config.host,
+            "port": test_port,
+            "app_name": real_config.app_name,
+        },
     )
     result = web.create_service(test_config)
     assert result.is_success, f"Service creation failed: {result.error}"

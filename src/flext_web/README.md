@@ -1,345 +1,49 @@
-# FLEXT Web Interface - Source Code
+# FLEXT Web Source Guide
 
-<!-- TOC START -->
+`flext_web` exposes one canonical public facade, `web`, plus the supporting
+namespaces for models, constants, protocols, utilities, handlers and settings.
 
-- [Overview](#overview)
-- [Module Structure](#module-structure)
-  - [Current Implementation (Monolithic - Requires Refactoring)](#current-implementation-monolithic-requires-refactoring)
-  - [Target Architecture (Post-Refactoring)](#target-architecture-post-refactoring)
-- [Components](#components)
-  - [Domain Layer](#domain-layer)
-  - [Application Layer](#application-layer)
-  - [Infrastructure Layer](#infrastructure-layer)
-  - [CLI Interface](#cli-interface)
-- [FLEXT Core Integration](#flext-core-integration)
-  - [Foundation Patterns](#foundation-patterns)
-  - [Error Handling](#error-handling)
-- [Current Issues (Critical)](#current-issues-critical)
-  - [1. Monolithic Architecture](#1-monolithic-architecture)
-  - [2. Dependency Confusion](#2-dependency-confusion)
-  - [3. Template Inconsistency](#3-template-inconsistency)
-  - [4. No Persistence Layer](#4-no-persistence-layer)
-- [Development Guidelines](#development-guidelines)
-  - [Code Quality Standards](#code-quality-standards)
-  - [Testing Approach](#testing-approach)
-  - [Refactoring Priorities (Phase 1)](#refactoring-priorities-phase-1)
-- [Integration Points](#integration-points)
-  - [FLEXT Ecosystem](#flext-ecosystem)
-  - [External Services](#external-services)
-- [Version History](#version-history)
+## Current Structure
 
-<!-- TOC END -->
+- `api.py`: public facade and shared `web` alias
+- `app.py`: framework app factories
+- `base.py`: service base with typed `web` settings access
+- `settings.py`: registered settings namespace
+- `services/`: canonical service implementations
+- `protocols.py`: runtime protocol contracts and registry behavior
+- `models.py`, `constants.py`, `typings.py`, `utilities.py`: SSOT support modules
 
-**Module**: `flext_web` - Enterprise web management console for FLEXT ecosystem
-**Architecture**: Clean Architecture + Domain-Driven Design + FLEXT Core Integration
-**Version**: 0.9.9 RC (Development)
-
-## Overview
-
-This directory contains the source code for the FLEXT Web Interface, a web management console that provides dashboard and REST API endpoints for monitoring and managing applications within the FLEXT distributed data integration ecosystem.
-
-## Module Structure
-
-### Current Implementation (Monolithic - Requires Refactoring)
-
-```
-src/flext_web/
-├── __init__.py          # Main module (518 lines) - ALL layers consolidated
-│                        # ⚠️ CRITICAL: Violates Clean Architecture separation
-├── __main__.py          # CLI entry point with argument parsing
-├── exceptions.py        # Domain-specific exception hierarchy
-├── py.typed
-└── templates/          # Flask templates (currently unused)
-    ├── base.html       # Django-style template (incompatible)
-    └── dashboard.html  # Dashboard template (not used)
-```
-
-### Target Architecture (Post-Refactoring)
-
-```
-src/flext_web/
-├── __init__.py          # Public API exports only
-├── domain/              # Domain Layer (Business Logic)
-│   ├── entities.py      # FlextWebApp domain entity
-│   ├── value_objects.py # WebAppStatus, HostPort value objects
-│   ├── repositories.py  # Repository interfaces
-│   └── services.py      # Domain services
-├── application/         # Application Layer (Use Cases)
-│   ├── handlers.py      # CQRS command handlers
-│   ├── commands.py      # Command definitions
-│   ├── queries.py       # Query definitions
-│   └── config.py        # Configuration management
-├── infrastructure/     # Infrastructure Layer (External Concerns)
-│   ├── persistence/     # Database and storage
-│   ├── web/            # Web framework integration
-│   └── external/       # External service integration
-└── interfaces/         # Interface Layer (Controllers)
-    ├── api/            # REST API endpoints
-    ├── web/            # Web dashboard
-    └── cli/            # Command-line interface
-```
-
-## Components
-
-### Domain Layer
-
-#### FlextWebApp Entity
-
-Rich domain entity implementing application lifecycle management with state machine patterns.
-
-**Key Features**:
-
-- State management (STOPPED, STARTING, RUNNING, STOPPING, ERROR)
-- Business rule validation using flext-core patterns
-- State transition validation with error handling
-- Integration with r for railway-oriented programming
-
-**Usage**:
+## Public Usage
 
 ```python
-from flext_web import FlextWebApp, FlextWebAppStatus
+from flext_web import web
 
-app = FlextWebApp(id="app_web-service", name="web-service", host="localhost", port=3000)
-
-# Start application with validation
-result = app.start()
-if result.success:
-    running_app = result.data
-    print(f"Started: {running_app.name}")
+status = web.get_service_status()
+capabilities = web.get_api_capabilities()
+config = web.settings
 ```
 
-#### FlextWebAppStatus Enumeration
-
-Application status enumeration with state transition rules and business logic.
-
-**States**:
-
-- `STOPPED`: Application not running, can be started
-- `STARTING`: Transitional state during startup
-- `RUNNING`: Application actively running
-- `STOPPING`: Transitional state during shutdown
-- `ERROR`: Error state requiring intervention
-
-### Application Layer
-
-#### FlextWebAppHandler
-
-CQRS command handler implementing application service patterns with validation.
-
-**Operations**:
-
-- `create()`: Create new application with validation
-- `start()`: Start application with state management
-- `stop()`: Stop application with graceful shutdown
-
-**Usage**:
+## Runtime Factories
 
 ```python
-from flext_web import FlextWebAppHandler
+from flext_web import web
 
-handler = FlextWebAppHandler()
-
-# Create application
-result = handler.create("api-service", port=8080, host="0.0.0.0")
-if result.success:
-    app = result.data
-
-    # Start application
-    start_result = handler.start(app)
-    if start_result.success:
-        print(f"Application {start_result.data.name} is running")
+fastapi_result = web.create_fastapi_app()
+flask_result = web.create_flask_app()
 ```
 
-#### FlextWebSettings
+## Settings
 
-Environment-based configuration management with comprehensive validation and production safety checks.
-
-**Features**:
-
-- Environment variable integration (`FLEXT_WEB_*` prefix)
-- Comprehensive validation with business rules
-- Production safety checks and security validation
-- Integration with flext-core configuration patterns
-
-**Usage**:
+`web.settings` is the registered namespace. Use it directly instead of creating
+parallel config accessors.
 
 ```python
-from flext_web import FlextWebSettings, get_web_settings
+from flext_web import web
 
-# Get validated configuration
-config = get_web_settings()
-print(f"Server URL: {config.get_server_url()}")
+config_result = web.settings.create_web_config(host="localhost", port=8080)
 ```
 
-### Infrastructure Layer
+## Services
 
-#### FlextWebServices
-
-Flask integration service providing REST API endpoints and web dashboard with comprehensive route management.
-
-**Features**:
-
-- REST API endpoints for application management
-- Inline HTML dashboard generation
-- Health check endpoints with system status
-- Standardized JSON response patterns
-- Integration with CQRS handlers
-
-**API Endpoints**:
-
-- `GET /health` - Service health check
-- `GET /` - Web dashboard
-- `GET /api/v1/apps` - List applications
-- `POST /api/v1/apps` - Create application
-- `GET /api/v1/apps/<id>` - Get application details
-- `POST /api/v1/apps/<id>/start` - Start application
-- `POST /api/v1/apps/<id>/stop` - Stop application
-
-### CLI Interface
-
-#### Entry Point (`__main__.py`)
-
-Command-line interface with argument parsing and service initialization.
-
-**Features**:
-
-- Host and port override options
-- Debug mode control
-- Configuration validation
-- Service startup with error handling
-
-**Usage**:
-
-```bash
-# Development mode
-python -m flext_web --debug --host localhost --port 8080
-
-# Production mode
-python -m flext_web --no-debug --host 0.0.0.0 --port 8080
-```
-
-## FLEXT Core Integration
-
-### Foundation Patterns
-
-The module extensively uses flext-core foundation patterns for consistency across the FLEXT ecosystem:
-
-- **r**: Railway-oriented programming for error handling
-- **FlextModels.Entity**: Domain entity base class with validation
-- **FlextSettings**: Configuration management with validation
-- **FlextProcessors**: CQRS command handler patterns
-
-### Error Handling
-
-All operations use r for consistent error handling:
-
-```python
-from flext_core import FlextBus
-from flext_core import FlextSettings
-from flext_core import FlextConstants
-from flext_core import FlextContainer
-from flext_core import FlextContext
-from flext_core import FlextDecorators
-from flext_core import FlextDispatcher
-from flext_core import FlextExceptions
-from flext_core import h
-from flext_core import FlextLogger
-from flext_core import x
-from flext_core import FlextModels
-from flext_core import FlextProcessors
-from flext_core import p
-from flext_core import FlextRegistry
-from flext_core import r
-from flext_core import FlextRuntime
-from flext_core import FlextService
-from flext_core import t
-from flext_core import u
-
-
-def process_request(data: dict) -> r[FlextWebApp]:
-    return (
-        validate_input(data)
-        .flat_map(create_application)
-        .flat_map(save_to_storage)
-        .map(format_response)
-    )
-```
-
-## Current Issues (Critical)
-
-### 1. Monolithic Architecture
-
-- **Issue**: 518 lines in single `__init__.py` file
-- **Impact**: Violates Single Responsibility Principle, difficult to maintain
-- **Resolution**: Refactor into Clean Architecture layers
-
-### 2. Dependency Confusion
-
-- **Issue**: pyproject.toml declares Django/FastAPI but uses Flask
-- **Impact**: Bloated dependencies, architectural confusion
-- **Resolution**: Clean up dependencies, choose single web framework
-
-### 3. Template Inconsistency
-
-- **Issue**: Django templates exist but Flask uses inline HTML
-- **Impact**: Template system confusion, maintenance overhead
-- **Resolution**: Implement consistent Flask template system
-
-### 4. No Persistence Layer
-
-- **Issue**: In-memory storage only, data lost on restart
-- **Impact**: Not suitable for production deployment
-- **Resolution**: Implement repository pattern with database
-
-## Development Guidelines
-
-### Code Quality Standards
-
-- **Type Safety**: MyPy strict mode adoption; aiming for 95%+ coverage
-- **Test Coverage**: 90%+ coverage required for all code
-- **Documentation**: Comprehensive docstrings for all public APIs
-- **Error Handling**: r patterns for all operations
-- **Validation**: Domain rule validation for all entities
-
-### Testing Approach
-
-- **Unit Tests**: Domain entity and handler validation
-- **Integration Tests**: API endpoint testing with Flask test client
-- **End-to-End Tests**: Complete workflow validation
-- **Performance Tests**: Load testing for production readiness
-
-### Refactoring Priorities (Phase 1)
-
-1. **Extract Domain Layer**: Move entities and value objects
-1. **Extract Application Layer**: Move handlers and configuration
-1. **Extract Infrastructure Layer**: Move Flask service and persistence
-1. **Clean Dependencies**: Remove unused Django/FastAPI dependencies
-1. **Implement Persistence**: Add repository pattern with database
-
-## Integration Points
-
-### FLEXT Ecosystem
-
-- **flext-core**: Foundation patterns and utilities
-- **flext-observability**: Monitoring and health checks
-- **flext-auth**: Authentication and authorization (planned)
-- **FlexCore**: Go runtime service integration (planned)
-- **FLEXT Service**: Data platform service integration (planned)
-
-### External Services
-
-- **Database**: PostgreSQL for application persistence (planned)
-- **Cache**: Redis for session management (planned)
-- **Monitoring**: Integration with observability stack
-- **Load Balancer**: Support for multiple instance deployment
-
-## Version History
-
-- **0.9.9**: Current development version with monolithic architecture
-- **0.9.9**: Target production version with Clean Architecture (planned)
-
-______________________________________________________________________
-
-**Maintainers**: FLEXT Development Team
-**Architecture Review**: Required after Clean Architecture refactoring
-**Quality Gates**: All changes must pass `make validate` before merge
+The service surface is intentionally narrow and should stay behind `web`.
+Consumers should not reach into internal modules for lifecycle operations.

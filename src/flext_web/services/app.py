@@ -29,10 +29,6 @@ class FlextWebApp(FlextWebServiceBase[bool]):
     Delegates to flext-core for logging, container management, and error handling.
     """
 
-    def __init__(self) -> None:
-        """Initialize with flext-core container and logger."""
-        super().__init__()
-
     @override
     def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
         """Execute the web application service.

@@ -4,7 +4,7 @@ Demonstrates how to interact with the FLEXT Web Interface REST API
 for application lifecycle management using the refactored architecture.
 
 This example shows:
-- Health check using WebHandlers
+- Health check against the running web service
 - Application lifecycle management
 - Error handling with r patterns
 - Usage of new type aliases for better type safety
@@ -60,15 +60,15 @@ def check_service_health() -> bool:
 
 
 def create_application(name: str, port: int, host: str = "localhost") -> t.AppData:
-    """Create a new application using WebHandlers.
+    """Create a new application through the web API.
 
     Args:
-        name: Application name (must follow WebFields validation)
+        name: Application name (must follow service validation)
         port: Port number (1-65535 range)
         host: Host address (default: localhost)
 
     Returns:
-        Application data from FlextWebApp model.
+        Application data validated into `t.AppData`.
 
     Raises:
         ValueError: If application creation fails.
@@ -239,13 +239,13 @@ def _execute_list_operation(endpoint: str, data_key: str) -> Sequence[t.AppData]
 
 
 def start_application(app_id: str) -> t.AppData:
-    """Start an application using FlextWebAppHandler.start().
+    """Start an application through the web API.
 
     Args:
-        app_id: Application ID (format: "app_{name}")
+        app_id: Application ID.
 
     Returns:
-        Updated application data with RUNNING status or None if failed.
+        Updated application data validated into `t.AppData`.
 
     """
     return _execute_app_operation(
@@ -255,13 +255,13 @@ def start_application(app_id: str) -> t.AppData:
 
 
 def get_application_status(app_id: str) -> t.AppData:
-    """Get application status using FlextWebApp entity.
+    """Get application status through the web API.
 
     Args:
-        app_id: Application ID (format: "app_{name}")
+        app_id: Application ID.
 
     Returns:
-        Application data with current FlextWebAppStatus or None if failed.
+        Application data validated into `t.AppData`.
 
     """
     return _execute_app_operation(
@@ -271,13 +271,13 @@ def get_application_status(app_id: str) -> t.AppData:
 
 
 def stop_application(app_id: str) -> t.AppData:
-    """Stop an application using FlextWebAppHandler.stop().
+    """Stop an application through the web API.
 
     Args:
-        app_id: Application ID (format: "app_{name}")
+        app_id: Application ID.
 
     Returns:
-        Updated application data with STOPPED status or None if failed.
+        Updated application data validated into `t.AppData`.
 
     """
     return _execute_app_operation(
@@ -287,23 +287,23 @@ def stop_application(app_id: str) -> t.AppData:
 
 
 def list_applications() -> Sequence[t.AppData]:
-    """List all applications using FlextWebServices.apps storage.
+    """List all applications available through the web API.
 
     Returns:
-        List of FlextWebApp entities with current status information.
+        List of validated `t.AppData` payloads.
 
     """
     return _execute_list_operation(endpoint=ExampleConstants.APPS_BASE, data_key="apps")
 
 
 def demo_application_lifecycle() -> None:
-    """Demonstrate complete application lifecycle using the refactored API.
+    """Demonstrate complete lifecycle usage through the public REST API.
 
     Shows the full workflow:
-    1. Health check using standardized r responses
-    2. Application creation with WebFields validation
-    3. Lifecycle management via FlextWebAppHandler
-    4. Status monitoring through FlextWebApp entities
+    1. Health check over HTTP
+    2. Application creation through REST endpoints
+    3. Lifecycle management through REST endpoints
+    4. Response validation into `t.AppData`
     """
     if not check_service_health():
         return

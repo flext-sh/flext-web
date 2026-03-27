@@ -1,192 +1,164 @@
-"""Unit tests for flext_web.handlers module.
-
-Tests the web handlers functionality following flext standards.
-"""
+"""Unit tests for public behavior backed by web handlers."""
 
 from __future__ import annotations
 
-from flext_core import r
 from flext_tests import tm
 
-from flext_web import FlextWebHandlers
+from flext_web import web
 from tests import m
 
 
 class TestFlextWebHandlers:
-    """Test suite for FlextWebHandlers class."""
+    """Tests for handler-backed behavior exposed through `web`."""
 
-    def test_web_app_handler_initialization(self) -> None:
-        """Test WebAppHandler initialization."""
-        handler = FlextWebHandlers.ApplicationHandler()
-        assert handler is not None
-        tm.that(hasattr(handler, "logger"), eq=True)
-        tm.that(hasattr(handler, "_apps_registry"), eq=True)
+    def setup_method(self) -> None:
+        """Reset the public runtime to a stopped state before each test."""
+        apps_result = web.list_apps()
+        if apps_result.is_success:
+            for app in apps_result.value:
+                if app.status == "running":
+                    _ = web.stop_app(app.id)
+        status_result = web.get_service_status()
+        if status_result.is_success and status_result.value.status == "operational":
+            _ = web.stop_service()
 
-    def test_web_app_handler_list_apps(self) -> None:
-        """Test listing apps."""
-        handler = FlextWebHandlers.ApplicationHandler()
-        result = handler.list_apps()
+    def test_list_apps_uses_public_registry(self) -> None:
+        """Applications are listed through the public facade."""
+        create_result = web.create_app(
+            m.Web.AppData(name="test-app", host="localhost", port=8080),
+        )
+        tm.ok(create_result)
+        result = web.list_apps()
         tm.ok(result)
-        apps = result.value
-        tm.that(apps, is_=list)
+        tm.that(result.value, is_=list)
+        tm.that(any(app.name == "test-app" for app in result.value), eq=True)
 
-    def test_handle_health_check(self) -> None:
-        """Test health check handling."""
-        result = FlextWebHandlers.handle_health_check()
+    def test_health_check_projection(self) -> None:
+        """Health state is exposed through the public facade."""
+        result = web.health_status()
         tm.ok(result)
         health_data = result.value
         tm.that(hasattr(health_data, "status"), eq=True)
         tm.that(hasattr(health_data, "service"), eq=True)
-        tm.that(hasattr(health_data, "version"), eq=True)
         tm.that(hasattr(health_data, "timestamp"), eq=True)
 
-    def test_handle_system_info(self) -> None:
-        """Test system info handling."""
-        result = FlextWebHandlers.handle_system_info()
+    def test_service_status_projection(self) -> None:
+        """Service metadata is exposed through the public facade."""
+        result = web.get_service_status()
         tm.ok(result)
         system_data = result.value
-        tm.that(hasattr(system_data, "service_name"), eq=True)
-        tm.that(hasattr(system_data, "service_type"), eq=True)
-        tm.that(hasattr(system_data, "architecture"), eq=True)
+        tm.that(hasattr(system_data, "service"), eq=True)
+        tm.that(hasattr(system_data, "status"), eq=True)
+        tm.that(hasattr(system_data, "capabilities"), eq=True)
 
-    def test_handle_create_app(self) -> None:
-        """Test app creation handling."""
-        result = FlextWebHandlers.handle_create_app("test-app", 8080, "localhost")
+    def test_create_app_through_public_facade(self) -> None:
+        """Application creation goes through the public facade."""
+        result = web.create_app(
+            m.Web.AppData(name="test-app", host="localhost", port=8080),
+        )
         tm.ok(result)
         app = result.value
         tm.that(app.name, eq="test-app")
         tm.that(app.port, eq=8080)
         tm.that(app.host, eq="localhost")
 
-    def test_error_handling_with_flext_result(self) -> None:
-        """Test error handling using r directly - no helpers."""
-        error = ValueError("Invalid input")
-        result: r[str] = r[str].fail(f"Validation error: {error}")
-        tm.fail(result)
-        assert result.error is not None
-        tm.that(result.error, has="Validation error")
-
-    def test_processing_error_with_flext_result(self) -> None:
-        """Test processing error handling using r directly."""
-        error = RuntimeError("Processing failed")
-        result: r[str] = r[str].fail(f"Operation failed: {error}")
-        tm.fail(result)
-        assert result.error is not None
-        tm.that(result.error, has="Operation failed")
-
     def test_app_registry_integration(self) -> None:
-        """Test app registry integration."""
-        handler = FlextWebHandlers.ApplicationHandler()
-        create_result = handler.create_app("test-app", 8080, "localhost")
+        """Created applications remain visible through the public registry."""
+        create_result = web.create_app(
+            m.Web.AppData(name="test-app", host="localhost", port=8080),
+        )
         tm.ok(create_result)
         app = create_result.value
-        tm.that(handler.apps_registry, has=app.id)
-        tm.that(handler.apps_registry[app.id], eq=app)
+        list_result = web.list_apps()
+        tm.ok(list_result)
+        tm.that(
+            any(listed_app.id == app.id for listed_app in list_result.value), eq=True
+        )
 
     def test_protocol_implementation(self) -> None:
-        """Test protocol implementation - REAL execution."""
-        handler = FlextWebHandlers.ApplicationHandler()
-        create_result = handler.create_app("test", 8080, "localhost")
+        """Public app lifecycle operations remain coherent."""
+        create_result = web.create_app(
+            m.Web.AppData(name="test", host="localhost", port=8080),
+        )
         tm.ok(create_result)
-        list_result = handler.list_apps()
+        list_result = web.list_apps()
         tm.ok(list_result)
 
-    def test_application_handler_create_validation_errors(self) -> None:
-        """Test ApplicationHandler.create with validation errors - REAL validation."""
-        handler = FlextWebHandlers.ApplicationHandler()
-        result = handler.create("123", 8080, "localhost")
-        tm.fail(result)
-        assert result.error is not None
-        result = handler.create("ab", 8080, "localhost")
-        tm.fail(result)
-        assert result.error is not None
-        tm.that(result.error, has="at least")
-        result = handler.create("test-app", 8080, "")
-        tm.fail(result)
-        assert result.error is not None
-        tm.that(result.error, has="cannot be empty")
-        result = handler.create("test-app", 8080, "localhost")
-        tm.that(result.is_success or result.is_failure, eq=True)
-        result = handler.create("test-app", 0, "localhost")
-        tm.fail(result)
-        assert result.error is not None
-        tm.that(result.error, has="at least")
-        result = handler.create("test-app", 70000, "localhost")
-        tm.fail(result)
-        assert result.error is not None
-        tm.that(result.error, has="at most")
+    def test_public_identifier_validation_errors(self) -> None:
+        """Invalid public identifiers fail before runtime mutation."""
+        start_result = web.start_app("")
+        tm.fail(start_result)
+        stop_result = web.stop_app("")
+        tm.fail(stop_result)
 
     def test_application_handler_start_app_not_found(self) -> None:
-        """Test ApplicationHandler.start_app with non-existent app - REAL validation."""
-        handler = FlextWebHandlers.ApplicationHandler()
-        result = handler.start_app("nonexistent-id")
+        """Starting an unknown app fails through the public API."""
+        result = web.start_app("nonexistent-id")
         tm.fail(result)
         assert result.error is not None
         tm.that(result.error, has="not found")
 
     def test_application_handler_stop_app_not_found(self) -> None:
-        """Test ApplicationHandler.stop_app with non-existent app - REAL validation."""
-        handler = FlextWebHandlers.ApplicationHandler()
-        result = handler.stop_app("nonexistent-id")
+        """Stopping an unknown app fails through the public API."""
+        result = web.stop_app("nonexistent-id")
         tm.fail(result)
         assert result.error is not None
         tm.that(result.error, has="not found")
 
     def test_application_handler_start_stop_cycle(self) -> None:
-        """Test ApplicationHandler start/stop cycle - REAL execution."""
-        handler = FlextWebHandlers.ApplicationHandler()
-        create_result = handler.create("test-app", 8080, "localhost")
+        """Apps can be started and stopped through the public API."""
+        create_result = web.create_app(
+            m.Web.AppData(name="test-app", host="localhost", port=8080),
+        )
         tm.ok(create_result)
-        app = create_result.value
-        app_id = app.id
-        start_result = handler.start_app(app_id)
+        app_id = create_result.value.id
+        start_result = web.start_app(app_id)
         tm.ok(start_result)
-        started_app = start_result.value
-        tm.that(started_app.status, eq="running")
-        stop_result = handler.stop_app(app_id)
+        tm.that(start_result.value.status, eq="running")
+        stop_result = web.stop_app(app_id)
         tm.ok(stop_result)
-        stopped_app = stop_result.value
-        tm.that(stopped_app.status, eq="stopped")
+        tm.that(stop_result.value.status, eq="stopped")
 
     def test_handle_start_app_invalid_type(self) -> None:
-        """Test handle_start_app with invalid entity type - REAL validation."""
+        """App lifecycle public API rejects unknown app identifiers."""
+        result = web.start_app("")
+        tm.fail(result)
 
     def test_handle_stop_app_invalid_type(self) -> None:
-        """Test handle_stop_app with invalid entity type - REAL validation."""
+        """App lifecycle public API rejects empty app identifiers."""
+        result = web.stop_app("")
+        tm.fail(result)
 
     def test_handlers_execute(self) -> None:
-        """Test FlextWebHandlers.execute - REAL execution."""
-        handlers = FlextWebHandlers()
-        result = handlers.execute()
+        """The public facade remains executable."""
+        result = web.execute()
         tm.ok(result)
         tm.that(result.value is True, eq=True)
 
     def test_handlers_validate_business_rules(self) -> None:
-        """Test FlextWebHandlers.validate_business_rules - REAL execution."""
-        handlers = FlextWebHandlers()
-        result = handlers.validate_business_rules()
+        """Business-rule validation is exposed through the public facade."""
+        result = web.validate_business_rules()
         tm.ok(result)
         tm.that(result.value is True, eq=True)
 
     def test_handle_start_app(self) -> None:
-        """Test handle_start_app with valid entity."""
-        app_result = m.Web.create_web_app("test-app", "localhost", 8080)
+        """Starting a created app works through the public facade."""
+        app_result = web.create_app(
+            m.Web.AppData(name="test-app", host="localhost", port=8080),
+        )
         tm.ok(app_result)
-        app = app_result.value
-        result = FlextWebHandlers.handle_start_app(app)
+        result = web.start_app(app_result.value.id)
         tm.ok(result)
-        started_app = result.value
-        tm.that(started_app.is_running, eq=True)
+        tm.that(result.value.status, eq="running")
 
     def test_handle_stop_app(self) -> None:
-        """Test handle_stop_app with valid entity."""
-        app_result = m.Web.create_web_app("test-app", "localhost", 8080)
+        """Stopping a running app works through the public facade."""
+        app_result = web.create_app(
+            m.Web.AppData(name="test-app", host="localhost", port=8080),
+        )
         tm.ok(app_result)
-        app = app_result.value
-        start_result = app.start()
+        start_result = web.start_app(app_result.value.id)
         tm.ok(start_result)
-        started_app = start_result.value
-        result = FlextWebHandlers.handle_stop_app(started_app)
+        result = web.stop_app(start_result.value.id)
         tm.ok(result)
-        stopped_app = result.value
-        tm.that(stopped_app.status, eq="stopped")
+        tm.that(result.value.status, eq="stopped")

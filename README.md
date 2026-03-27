@@ -1,27 +1,35 @@
 # FLEXT Web
 
-Camada web para operacao e visualizacao das capacidades do ecossistema FLEXT.
+`flext-web` exposes its canonical public facade as `web`:
 
-Descricao oficial atual: "FLEXT Web - Modern Web Interface for FLEXT Platform".
+```python
+from flext_web import web
+```
 
-## O que este projeto entrega
+Use `web.settings` for the registered settings namespace and call operations
+through the facade instead of importing service classes directly.
 
-- Fornece interface para acompanhamento operacional.
-- Integra consumo de APIs para fluxos de uso do time.
-- Apoia visualizacao de status e capacidades de servico.
+## What it provides
 
-## Contexto operacional
+- Application lifecycle and runtime status management
+- FastAPI and Flask app factories
+- Settings validation through the `web` namespace
+- Canonical example and testing surface for the workspace
 
-- Entrada: interacoes de usuario e chamadas de API.
-- Saida: telas operacionais e feedback de execucao.
-- Dependencias: flext-api, flext-auth e backend disponivel.
+## Usage
 
-## Estado atual e risco de adocao
+```python
+from flext_web import web
 
-- Qualidade: **Alpha**
-- Uso recomendado: **Nao produtivo**
-- Nivel de estabilidade: em maturacao funcional e tecnica, sujeito a mudancas de contrato sem garantia de retrocompatibilidade.
+config = web.settings.create_web_config(host="127.0.0.1", port=8080, debug=True).value
+app_result = web.create_fastapi_app()
+service_result = web.start_service(
+    host=config.host, port=config.port, debug=config.debug_mode
+)
+```
 
-## Diretriz para uso nesta fase
+## Status
 
-Aplicar este projeto somente em desenvolvimento, prova de conceito e homologacao controlada, com expectativa de ajustes frequentes ate maturidade de release.
+`flext-web` is intended for development and controlled validation in the
+current workspace. Use the facade directly and keep examples aligned with the
+public API.

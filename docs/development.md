@@ -1,172 +1,81 @@
 # Development Guide - flext-web
 
+
 <!-- TOC START -->
-- [Development Focus](#development-focus)
-- [Current Development Status](#current-development-status)
-- [Development Setup](#development-setup)
-- [Development Commands](#development-commands)
-  - [Quality Gates](#quality-gates)
-  - [Testing (Implementation Needed)](#testing-implementation-needed)
-- [Architecture Context](#architecture-context)
-- [Code Organization](#code-organization)
-- [Development Priorities](#development-priorities)
-  - [Priority 1: Architectural Compliance](#priority-1-architectural-compliance)
-  - [Priority 2: Web Framework Enhancement](#priority-2-web-framework-enhancement)
-  - [Priority 3: Modern Web Patterns](#priority-3-modern-web-patterns)
-- [Quality Standards](#quality-standards)
-- [Integration Guidelines](#integration-guidelines)
-- [Contributing Workflow](#contributing-workflow)
-- [Getting Help](#getting-help)
+- [Current Architecture](#current-architecture)
+- [Development Workflow](#development-workflow)
+- [Public API Rule](#public-api-rule)
+- [Settings Rule](#settings-rule)
+- [Service Rule](#service-rule)
+- [Quality Rule](#quality-rule)
 <!-- TOC END -->
 
-**Updated**: September 17, 2025 | **Version**: 0.9.9 RC
+## Current Architecture
 
-## Development Focus
+`flext-web` is centered on one canonical public facade:
 
-**Primary objective**: Implement architectural improvements while maintaining functional imports.
+```python
+from flext_web import web
+```
 
-Circular import issue resolved - focus on FLEXT compliance and modern web patterns.
+Current source layout:
 
-## Current Development Status
+- `api.py`: thin public facade and shared `web` instance
+- `app.py`: FastAPI and Flask app factories
+- `base.py`: common service base with typed `web.settings`
+- `settings.py`: registered namespaced settings model
+- `services/`: canonical service implementations
+- `protocols.py`: runtime protocol and registry behavior
+- `models.py`, `constants.py`, `typings.py`, `utilities.py`: SSOT support tiers
 
-**Functional**: Basic imports and service creation work
-**Architecture Gaps**: Direct Flask imports, nested classes need refactoring
-**Quality Status**: Source files pass linting and type checking
+## Development Workflow
 
-## Development Setup
+Use only repository `make` targets:
 
 ```bash
-# Complete setup
-cd flext/flext-web
-poetry install
-make setup
-
-# Verify functionality
-python -c "from flext_web import FlextWebServices; print('Import successful')"
-make lint      # ✅ Source files pass
-make type-check # ✅ Source files pass
+make check PROJECT=flext-web
+make test PROJECT=flext-web
+make gen PROJECT=flext-web
 ```
 
-## Development Commands
+Use `make gen` when exports or lazy initialization need regeneration.
 
-### Quality Gates
+## Public API Rule
+
+- Operational code should prefer `web`.
+- Tests and examples should exercise the public facade, not internal service
+  classes.
+- `api.py` stays thin; behavior belongs in services, settings, protocols or app
+  factories.
+
+## Settings Rule
+
+Configuration access is namespaced and direct:
+
+```python
+from flext_web import web
+
+config = web.settings
+result = web.settings.create_web_config(host="localhost", port=8080)
+```
+
+## Service Rule
+
+Lifecycle operations stay on the facade:
+
+```python
+from flext_web import web
+
+assert web.get_service_status().is_success
+assert web.start_service(host="127.0.0.1", port=8080).is_success
+assert web.stop_service().is_success
+```
+
+## Quality Rule
+
+Changes are not complete until both commands pass:
 
 ```bash
-make lint          # Ruff linting
-make type-check    # MyPy/PyRight type checking
-make format        # Auto-format code
-make validate      # Complete validation (when tests work)
+make check PROJECT=flext-web
+make test PROJECT=flext-web
 ```
-
-### Testing (Implementation Needed)
-
-```bash
-make test          # Run test suite (needs implementation)
-make coverage      # Test coverage report
-make test-web      # Web-specific functionality tests
-```
-
-## Architecture Context
-
-**flext-web design** follows patterns from:
-
-- **flext-core**: Foundation patterns (r, FlextModels, Clean Architecture)
-- **FLEXT workspace**: Overall architecture guidance (see ../docs/architecture)
-
-**flext-web specific concerns**:
-
-- Web application lifecycle management
-- Flask integration patterns
-- HTTP request/response handling
-- Web-specific domain models
-
-**Not duplicated here**: flext-core already documents r, FlextContainer, domain modeling, and Clean Architecture patterns.
-
-## Code Organization
-
-**Current structure** (4,441 lines across 15 files):
-
-```
-src/flext_web/
-├── services.py (818 lines)    # Flask web services
-├── config.py (774 lines)      # Configuration management
-├── handlers.py (691 lines)    # CQRS handlers
-├── protocols.py (439 lines)   # Interface definitions
-├── models.py (279 lines)      # Domain models
-├── settings.py (54 lines)     # Settings
-└── Other modules...
-```
-
-## Development Priorities
-
-### Priority 1: Architectural Compliance
-
-- **Fix Direct Flask Imports**: Abstract Flask through flext-web interfaces
-- **Single Class Pattern**: Refactor services.py nested classes
-- **Enhanced flext-core Integration**: Complete r usage
-- **Type Safety**: Achieve zero MyPy errors in strict mode
-
-### Priority 2: Web Framework Enhancement
-
-- **HTTP Interface**: Create framework-agnostic request/response handling
-- **Error Handling**: Standardize r patterns
-- **Middleware System**: Request/response pipeline
-- **Configuration**: Environment-based configuration management
-
-### Priority 3: Modern Web Patterns
-
-- **Research**: Investigate FastAPI compatibility
-- **API Documentation**: Auto-generated documentation
-- **Testing Infrastructure**: Web-specific test utilities
-- **CLI Integration**: flext-cli command support
-
-## Quality Standards
-
-**Static analysis** (works on source files):
-
-- Ruff linting: Zero violations
-- MyPy strict mode: Zero errors
-- Type annotations: Complete coverage
-
-**Functional testing** (needs implementation):
-
-- Web service functionality tests
-- HTTP request/response testing
-- Integration tests with flext-core
-- Performance and security testing
-
-## Integration Guidelines
-
-**flext-core integration patterns**:
-
-- Use r[T] for all operations returning values
-- Use FlextModels.Entity for domain entities (WebApp, etc.)
-- Use FlextContainer for dependency injection
-- Follow Clean Architecture layer separation
-
-**Web-specific patterns**:
-
-- Flask application factory patterns
-- HTTP request/response handling
-- Web application lifecycle management
-- Configuration management for web services
-
-## Contributing Workflow
-
-**Current focus**: Architectural compliance and quality improvement
-
-1. **Analyze current architecture**: Understand existing patterns
-1. **Plan incremental changes**: Small, focused improvements
-1. **Implement FLEXT compliance**: Fix architectural violations
-1. **Add web functionality**: Implement missing API methods
-1. **Add comprehensive tests**: Web-specific testing
-1. **Performance optimization**: Benchmark and improve
-1. **Documentation updates**: Keep docs current with code
-
-## Getting Help
-
-**Architecture reference**: ../docs/architecture (Clean Architecture patterns)
-**Foundation patterns**: ../flext-core/README.md (r, domain modeling)
-**Development roadmap**: See TODO.md for priorities and implementation plan
-
-**Current status**: Foundation functional, architectural improvements in progress.

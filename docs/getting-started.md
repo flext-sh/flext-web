@@ -1,102 +1,40 @@
 # Getting Started - flext-web
 
+
 <!-- TOC START -->
-- [Current Status](#current-status)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
+- [Install](#install)
 - [Basic Usage](#basic-usage)
-- [Integration with FLEXT Patterns](#integration-with-flext-patterns)
-- [Development Priority](#development-priority)
-- [Getting Help](#getting-help)
-- [Related Documentation](#related-documentation)
+- [Working Pattern](#working-pattern)
 <!-- TOC END -->
 
-**Updated**: September 17, 2025 | **Version**: 0.9.9 RC
+`flext-web` exposes its canonical public facade as `web`.
 
-## Current Status
-
-**flext-web is functional** for imports and basic service creation. Circular import issue has been resolved.
-
-## Prerequisites
-
-- Python 3.11+
-- Access to flext-core (../flext-core)
-- Poetry for dependency management
-
-## Installation
+## Install
 
 ```bash
-# Clone FLEXT workspace if needed
-cd flext/flext-web
-
-# Install dependencies
+cd flext-web
 poetry install
 make setup
-
-# Verify installation
-python -c "from flext_web import FlextWebServices; print('Import successful')"
+python -c "from flext_web import web; print('Import successful')"
 ```
 
 ## Basic Usage
 
 ```python
-from flext_web import FlextWebServices, FlextWebModels, FlextWebHandlers
+from flext_web import web
 
-# Create web service
-service = FlextWebServices()
-print(f"Service type: {type(service)}")
+settings_result = web.settings.create_web_config(
+    host="localhost", port=8080, debug=True
+)
+assert settings_result.is_success
 
-# Access components
-handlers = FlextWebHandlers()
-models = FlextWebModels()
-
-# Check available methods
-methods = [m for m in dir(service) if not m.startswith("_")]
-print(f"Available methods: {methods}")
+web.create_fastapi_app()
+web.get_service_status()
 ```
 
-## Integration with FLEXT Patterns
+## Working Pattern
 
-flext-web uses patterns from flext-core:
-
-- **r[T]** for error handling
-- **FlextModels** for domain entities
-- **Clean Architecture** layer separation
-
-See [flext-core README](https://github.com/organization/flext/tree/main/flext-core/README.md) for foundation patterns.
-
-## Development Priority
-
-1. **Architecture Compliance**: Fix direct Flask imports and follow FLEXT standards
-1. **API Implementation**: Complete web service methods
-1. **Testing**: Implement comprehensive test coverage
-1. **Modern Patterns**: Research FastAPI integration for support
-
-## Getting Help
-
-**Current State**: Basic imports functional, architectural improvements needed
-**Next Steps**: See [TODO.md](../TODO.md) for development roadmap
-**Architecture**: See [development.md](development.md) for development patterns
-
-______________________________________________________________________
-
-**Status**: Functional for imports - ready for architectural improvements · 1.0.0 Release Preparation
-
-## Related Documentation
-
-**Within Project**:
-
-- [Architecture](architecture.md) - Architecture and design patterns
-- [API Reference](api-reference.md) - Complete API documentation
-- [Development](development.md) - Development patterns
-
-**Across Projects**:
-
-- [flext-core Foundation](https://github.com/organization/flext/tree/main/flext-core/docs/architecture/overview.md) - Clean architecture and CQRS patterns
-- [flext-core Service Patterns](https://github.com/organization/flext/tree/main/flext-core/docs/guides/service-patterns.md) - Service patterns and dependency injection
-- [flext-api HTTP Framework](https://github.com/organization/flext/tree/main/flext-api/AGENTS.md) - HTTP foundation patterns
-
-**External Resources**:
-
-- [PEP 257 - Docstring Conventions](https://peps.python.org/pep-0257/)
-- [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
+- Use `web.settings` for configuration access.
+- Use `web.create_fastapi_app()` and `web.create_flask_app()` for framework factories.
+- Use `web.start_service()` and `web.stop_service()` for lifecycle control.
+- Keep examples and tests on the public facade, not on service classes.

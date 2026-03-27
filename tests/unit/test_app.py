@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 
+import flask
 from fastapi.testclient import TestClient
-from flask.testing import FlaskClient
 from flext_tests import tm
 
 from flext_web import web
@@ -82,8 +83,10 @@ class TestFlextWebApp:
         """The Flask health endpoint returns a JSON response."""
         result = web.create_flask_app()
         tm.ok(result)
-        client: FlaskClient = result.value.test_client()
-        response = client.get("/health", as_tuple=False)
+        health_view = result.value.view_functions["health_check"]
+        response_factory: Callable[[], flask.Response] = health_view
+        with result.value.app_context():
+            response = response_factory()
         payload = json.loads(response.get_data(as_text=True))
         tm.that(response.status_code, eq=200)
         tm.that(payload, has="status")

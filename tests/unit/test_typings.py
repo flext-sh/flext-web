@@ -13,7 +13,7 @@ from flext_web import (
     FlextWebApplicationConfig,
     FlextWebRequestConfig,
     FlextWebResponseConfig,
-    FlextWebSettings,
+    web,
 )
 from tests import c, m, t
 
@@ -142,9 +142,10 @@ class TestFlextWebModels:
 
     def test_config_validation(self) -> None:
         """Test config validation functionality."""
-        config = FlextWebSettings(host="localhost", port=8080)
-        tm.that(config.host, eq="localhost")
-        tm.that(config.port, eq=8080)
+        result = web.settings.create_web_config(host="localhost", port=8080)
+        tm.ok(result)
+        tm.that(result.value.host, eq="localhost")
+        tm.that(result.value.port, eq=8080)
 
     def test_type_consistency(self) -> None:
         """Test that types are consistent with t."""

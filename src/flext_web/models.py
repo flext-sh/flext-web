@@ -893,6 +893,11 @@ class FlextWebModels(FlextModels):
             status: Annotated[str, Field(description="Application status")]
             created_at: Annotated[str, Field(description="Creation timestamp")]
 
+            @property
+            def is_running(self) -> bool:
+                """Return whether the projected application is running."""
+                return self.status == c.Web.Status.RUNNING.value
+
         class HealthResponse(FlextModels.Value):
             """Health check response model."""
 
