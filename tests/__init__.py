@@ -67,7 +67,10 @@ if TYPE_CHECKING:
     from tests.utilities import FlextWebTestUtilities, FlextWebTestUtilities as u
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "ExamplesFullFunctionalityTest": ["tests.integration.test_examples", "ExamplesFullFunctionalityTest"],
+    "ExamplesFullFunctionalityTest": [
+        "tests.integration.test_examples",
+        "ExamplesFullFunctionalityTest",
+    ],
     "FlextWebTestConstants": ["tests.constants", "FlextWebTestConstants"],
     "FlextWebTestModels": ["tests.models", "FlextWebTestModels"],
     "FlextWebTestProtocols": ["tests.protocols", "FlextWebTestProtocols"],
@@ -98,7 +101,10 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "assert_success": ["tests.conftest", "assert_success"],
     "assert_version_info": ["tests.unit.test_version", "assert_version_info"],
     "c": ["tests.constants", "FlextWebTestConstants"],
-    "create_comprehensive_test_suite": ["tests.conftest", "create_comprehensive_test_suite"],
+    "create_comprehensive_test_suite": [
+        "tests.conftest",
+        "create_comprehensive_test_suite",
+    ],
     "create_entry": ["tests.conftest", "create_entry"],
     "create_test_app": ["tests.conftest", "create_test_app"],
     "create_test_data": ["tests.conftest", "create_test_data"],
