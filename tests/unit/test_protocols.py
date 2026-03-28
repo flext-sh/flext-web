@@ -285,7 +285,8 @@ class TestFlextWebProtocols:
 
         class Custom(p.Web.WebAppManager):
             def custom_method(self) -> None:
-                pass
+                msg = "Must use unified test helpers per Rule 3.6"
+                raise NotImplementedError(msg)
 
             @override
             def execute(self) -> r[t.Web.ResponseDict]:
@@ -311,20 +312,25 @@ class TestFlextWebProtocols:
 
         class ValidAppManager:
             def create_app(self, name: str, port: int, host: str) -> None:
-                pass
+                msg = "Must use unified test helpers per Rule 3.6"
+                raise NotImplementedError(msg)
 
             def start_app(self, app_id: str) -> None:
-                pass
+                msg = "Must use unified test helpers per Rule 3.6"
+                raise NotImplementedError(msg)
 
             def stop_app(self, app_id: str) -> None:
-                pass
+                msg = "Must use unified test helpers per Rule 3.6"
+                raise NotImplementedError(msg)
 
             def list_apps(self) -> None:
-                pass
+                msg = "Must use unified test helpers per Rule 3.6"
+                raise NotImplementedError(msg)
 
         class InvalidAppManager:
             def create_app(self, name: str, port: int, host: str) -> None:
-                pass
+                msg = "Must use unified test helpers per Rule 3.6"
+                raise NotImplementedError(msg)
 
         def validate_app_manager(
             obj: ValidAppManager | InvalidAppManager,
@@ -619,10 +625,12 @@ class TestFlextWebProtocols:
                 return r[str].ok("")
 
             def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
-                pass
+                msg = "Must use unified test helpers per Rule 3.6"
+                raise NotImplementedError(msg)
 
             def add_global(self, name: str, *, value: t.ContainerValue) -> None:
-                pass
+                msg = "Must use unified test helpers per Rule 3.6"
+                raise NotImplementedError(msg)
 
             def execute(self) -> r[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
@@ -667,7 +675,8 @@ class TestFlextWebProtocols:
                 request: t.Web.RequestDict,
                 response_time: float,
             ) -> None:
-                pass
+                msg = "Must use unified test helpers per Rule 3.6"
+                raise NotImplementedError(msg)
 
             def get_web_health_status(self) -> t.Web.ResponseDict:
                 return {
