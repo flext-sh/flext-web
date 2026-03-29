@@ -26,10 +26,7 @@ if TYPE_CHECKING:
     )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "ExamplesFullFunctionalityTest": [
-        "tests.integration.test_examples",
-        "ExamplesFullFunctionalityTest",
-    ],
+    "ExamplesFullFunctionalityTest": ["tests.integration.test_examples", "ExamplesFullFunctionalityTest"],
     "TestExamples": ["tests.integration.test_examples", "TestExamples"],
     "logger": ["tests.integration.test_examples", "logger"],
     "main": ["tests.integration.test_examples", "main"],
