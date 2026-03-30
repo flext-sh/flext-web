@@ -5,100 +5,117 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
     from tests import (
-        conftest,
-        constants,
-        helpers,
-        integration,
-        models,
-        port_manager,
-        protocols,
-        typings,
-        unit,
-        utilities,
+        conftest as conftest,
+        constants as constants,
+        helpers as helpers,
+        integration as integration,
+        models as models,
+        port_manager as port_manager,
+        protocols as protocols,
+        typings as typings,
+        unit as unit,
+        utilities as utilities,
     )
     from tests.conftest import (
-        assert_failure,
-        assert_result,
-        assert_success,
-        create_comprehensive_test_suite,
-        create_entry,
-        create_test_app,
-        create_test_data,
-        create_test_result,
-        docker_manager,
-        invalid_app_data,
-        production_config,
-        pytest_configure,
-        real_app,
-        real_config,
-        real_service,
-        run_parameterized_test,
-        running_service,
-        setup_test_environment,
-        test_app_data,
+        assert_failure as assert_failure,
+        assert_result as assert_result,
+        assert_success as assert_success,
+        create_comprehensive_test_suite as create_comprehensive_test_suite,
+        create_entry as create_entry,
+        create_test_app as create_test_app,
+        create_test_data as create_test_data,
+        create_test_result as create_test_result,
+        docker_manager as docker_manager,
+        invalid_app_data as invalid_app_data,
+        production_config as production_config,
+        pytest_configure as pytest_configure,
+        real_app as real_app,
+        real_config as real_config,
+        real_service as real_service,
+        run_parameterized_test as run_parameterized_test,
+        running_service as running_service,
+        setup_test_environment as setup_test_environment,
+        test_app_data as test_app_data,
     )
-    from tests.constants import FlextWebTestConstants, FlextWebTestConstants as c
-    from tests.helpers.models import TestsModels
-    from tests.helpers.protocols import TestsProtocols
-    from tests.helpers.typings import TestsTypings
-    from tests.helpers.utilities import TestsUtilities
-    from tests.integration import test_examples
+    from tests.constants import (
+        FlextWebTestConstants as FlextWebTestConstants,
+        FlextWebTestConstants as c,
+    )
+    from tests.helpers.models import TestsModels as TestsModels
+    from tests.helpers.protocols import TestsProtocols as TestsProtocols
+    from tests.helpers.typings import TestsTypings as TestsTypings
+    from tests.helpers.utilities import TestsUtilities as TestsUtilities
+    from tests.integration import test_examples as test_examples
     from tests.integration.test_examples import (
-        ExamplesFullFunctionalityTest,
-        TestExamples,
-        logger,
-        main,
+        ExamplesFullFunctionalityTest as ExamplesFullFunctionalityTest,
+        TestExamples as TestExamples,
+        logger as logger,
+        main as main,
     )
-    from tests.models import FlextWebTestModels, FlextWebTestModels as m
-    from tests.port_manager import TestPortManager
-    from tests.protocols import FlextWebTestProtocols, FlextWebTestProtocols as p
-    from tests.typings import FlextWebTestTypes, FlextWebTestTypes as t
+    from tests.models import (
+        FlextWebTestModels as FlextWebTestModels,
+        FlextWebTestModels as m,
+    )
+    from tests.port_manager import TestPortManager as TestPortManager
+    from tests.protocols import (
+        FlextWebTestProtocols as FlextWebTestProtocols,
+        FlextWebTestProtocols as p,
+    )
+    from tests.typings import (
+        FlextWebTestTypes as FlextWebTestTypes,
+        FlextWebTestTypes as t,
+    )
     from tests.unit import (
-        test___init__,
-        test___main__,
-        test_api,
-        test_app,
-        test_config,
-        test_constants,
-        test_fields,
-        test_handlers,
-        test_models,
-        test_protocols,
-        test_services,
-        test_typings,
-        test_utilities,
-        test_version,
+        test___init__ as test___init__,
+        test___main__ as test___main__,
+        test_api as test_api,
+        test_app as test_app,
+        test_config as test_config,
+        test_constants as test_constants,
+        test_fields as test_fields,
+        test_handlers as test_handlers,
+        test_models as test_models,
+        test_protocols as test_protocols,
+        test_services as test_services,
+        test_typings as test_typings,
+        test_utilities as test_utilities,
+        test_version as test_version,
     )
-    from tests.unit.test___init__ import TestFlextWebInit
-    from tests.unit.test___main__ import TestFlextWebCliService, TestMainFunction
-    from tests.unit.test_api import TestFlextWebApi
-    from tests.unit.test_app import TestFlextWebApp
-    from tests.unit.test_config import TestFlextWebSettings
-    from tests.unit.test_constants import TestFlextWebConstants
-    from tests.unit.test_fields import TestFlextWebFields
-    from tests.unit.test_handlers import TestFlextWebHandlers
-    from tests.unit.test_protocols import TestFlextWebProtocols
-    from tests.unit.test_services import TestFlextWebService
-    from tests.unit.test_typings import TestFlextWebModels
-    from tests.unit.test_utilities import TestFlextWebUtilities
-    from tests.unit.test_version import TestFlextWebVersion, assert_version_info
-    from tests.utilities import FlextWebTestUtilities, FlextWebTestUtilities as u
+    from tests.unit.test___init__ import TestFlextWebInit as TestFlextWebInit
+    from tests.unit.test___main__ import (
+        TestFlextWebCliService as TestFlextWebCliService,
+        TestMainFunction as TestMainFunction,
+    )
+    from tests.unit.test_api import TestFlextWebApi as TestFlextWebApi
+    from tests.unit.test_app import TestFlextWebApp as TestFlextWebApp
+    from tests.unit.test_config import TestFlextWebSettings as TestFlextWebSettings
+    from tests.unit.test_constants import TestFlextWebConstants as TestFlextWebConstants
+    from tests.unit.test_fields import TestFlextWebFields as TestFlextWebFields
+    from tests.unit.test_handlers import TestFlextWebHandlers as TestFlextWebHandlers
+    from tests.unit.test_protocols import TestFlextWebProtocols as TestFlextWebProtocols
+    from tests.unit.test_services import TestFlextWebService as TestFlextWebService
+    from tests.unit.test_typings import TestFlextWebModels as TestFlextWebModels
+    from tests.unit.test_utilities import TestFlextWebUtilities as TestFlextWebUtilities
+    from tests.unit.test_version import (
+        TestFlextWebVersion as TestFlextWebVersion,
+        assert_version_info as assert_version_info,
+    )
+    from tests.utilities import (
+        FlextWebTestUtilities as FlextWebTestUtilities,
+        FlextWebTestUtilities as u,
+    )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "ExamplesFullFunctionalityTest": [
-        "tests.integration.test_examples",
-        "ExamplesFullFunctionalityTest",
-    ],
+    "ExamplesFullFunctionalityTest": ["tests.integration.test_examples", "ExamplesFullFunctionalityTest"],
     "FlextWebTestConstants": ["tests.constants", "FlextWebTestConstants"],
     "FlextWebTestModels": ["tests.models", "FlextWebTestModels"],
     "FlextWebTestProtocols": ["tests.protocols", "FlextWebTestProtocols"],
@@ -131,10 +148,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "c": ["tests.constants", "FlextWebTestConstants"],
     "conftest": ["tests.conftest", ""],
     "constants": ["tests.constants", ""],
-    "create_comprehensive_test_suite": [
-        "tests.conftest",
-        "create_comprehensive_test_suite",
-    ],
+    "create_comprehensive_test_suite": ["tests.conftest", "create_comprehensive_test_suite"],
     "create_entry": ["tests.conftest", "create_entry"],
     "create_test_app": ["tests.conftest", "create_test_app"],
     "create_test_data": ["tests.conftest", "create_test_data"],
@@ -187,7 +201,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "x": ["flext_tests", "x"],
 }
 
-__all__ = [
+_EXPORTS: Sequence[str] = [
     "ExamplesFullFunctionalityTest",
     "FlextWebTestConstants",
     "FlextWebTestModels",
@@ -275,41 +289,4 @@ __all__ = [
 ]
 
 
-_LAZY_CACHE: MutableMapping[str, FlextTypes.ModuleExport] = {}
-
-
-def __getattr__(name: str) -> FlextTypes.ModuleExport:
-    """Lazy-load module attributes on first access (PEP 562).
-
-    A local cache ``_LAZY_CACHE`` persists resolved objects across repeated
-    accesses during process lifetime.
-
-    Args:
-        name: Attribute name requested by dir()/import.
-
-    Returns:
-        Lazy-loaded module export type.
-
-    Raises:
-        AttributeError: If attribute not registered.
-
-    """
-    if name in _LAZY_CACHE:
-        return _LAZY_CACHE[name]
-
-    value = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
-    _LAZY_CACHE[name] = value
-    return value
-
-
-def __dir__() -> Sequence[str]:
-    """Return list of available attributes for dir() and autocomplete.
-
-    Returns:
-        List of public names from module exports.
-
-    """
-    return sorted(__all__)
-
-
-cleanup_submodule_namespace(__name__, _LAZY_IMPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)

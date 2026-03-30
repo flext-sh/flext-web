@@ -11,54 +11,69 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core.lazy import install_lazy_exports
 
 from flext_web.__version__ import (
-    VERSION,
-    FlextWebVersion,
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
-    _VersionMetadata,
+    VERSION as VERSION,
+    FlextWebVersion as FlextWebVersion,
+    __author__ as __author__,
+    __author_email__ as __author_email__,
+    __description__ as __description__,
+    __license__ as __license__,
+    __title__ as __title__,
+    __url__ as __url__,
+    __version__ as __version__,
+    __version_info__ as __version_info__,
+    _VersionMetadata as _VersionMetadata,
 )
 
 if TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, h, r, s, x
+    from flext_core import d, e, h, r, s, x
 
     from flext_web import (
-        api,
-        base,
-        constants,
-        models,
-        protocols,
-        services,
-        settings,
-        typings,
-        utilities,
+        api as api,
+        base as base,
+        constants as constants,
+        models as models,
+        protocols as protocols,
+        services as services,
+        settings as settings,
+        typings as typings,
+        utilities as utilities,
     )
-    from flext_web.api import FlextWeb, web
-    from flext_web.base import FlextWebServiceBase
-    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
-    from flext_web.models import FlextWebModels, FlextWebModels as m
-    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
-    from flext_web.services import app, auth, entities, handlers, health
-    from flext_web.services.app import FlextWebApp
-    from flext_web.services.auth import FlextWebAuth
-    from flext_web.services.entities import FlextWebEntities
-    from flext_web.services.handlers import FlextWebHandlers
-    from flext_web.services.health import FlextWebHealth
-    from flext_web.services.web import FlextWebServices
-    from flext_web.settings import FlextWebSettings
-    from flext_web.typings import FlextWebTypes, FlextWebTypes as t
-    from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
+    from flext_web.api import FlextWeb as FlextWeb, web as web
+    from flext_web.base import FlextWebServiceBase as FlextWebServiceBase
+    from flext_web.constants import (
+        FlextWebConstants as FlextWebConstants,
+        FlextWebConstants as c,
+    )
+    from flext_web.models import FlextWebModels as FlextWebModels, FlextWebModels as m
+    from flext_web.protocols import (
+        FlextWebProtocols as FlextWebProtocols,
+        FlextWebProtocols as p,
+    )
+    from flext_web.services import (
+        app as app,
+        auth as auth,
+        entities as entities,
+        handlers as handlers,
+        health as health,
+    )
+    from flext_web.services.app import FlextWebApp as FlextWebApp
+    from flext_web.services.auth import FlextWebAuth as FlextWebAuth
+    from flext_web.services.entities import FlextWebEntities as FlextWebEntities
+    from flext_web.services.handlers import FlextWebHandlers as FlextWebHandlers
+    from flext_web.services.health import FlextWebHealth as FlextWebHealth
+    from flext_web.services.web import FlextWebServices as FlextWebServices
+    from flext_web.settings import FlextWebSettings as FlextWebSettings
+    from flext_web.typings import FlextWebTypes as FlextWebTypes, FlextWebTypes as t
+    from flext_web.utilities import (
+        FlextWebUtilities as FlextWebUtilities,
+        FlextWebUtilities as u,
+    )
 
 _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextWeb": ["flext_web.api", "FlextWeb"],
@@ -103,8 +118,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "x": ["flext_core", "x"],
 }
 
-__all__ = [
-    "VERSION",
+_EXPORTS: Sequence[str] = [
     "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
@@ -120,6 +134,7 @@ __all__ = [
     "FlextWebTypes",
     "FlextWebUtilities",
     "FlextWebVersion",
+    "VERSION",
     "_VersionMetadata",
     "__author__",
     "__author_email__",
@@ -158,41 +173,4 @@ __all__ = [
 ]
 
 
-_LAZY_CACHE: MutableMapping[str, FlextTypes.ModuleExport] = {}
-
-
-def __getattr__(name: str) -> FlextTypes.ModuleExport:
-    """Lazy-load module attributes on first access (PEP 562).
-
-    A local cache ``_LAZY_CACHE`` persists resolved objects across repeated
-    accesses during process lifetime.
-
-    Args:
-        name: Attribute name requested by dir()/import.
-
-    Returns:
-        Lazy-loaded module export type.
-
-    Raises:
-        AttributeError: If attribute not registered.
-
-    """
-    if name in _LAZY_CACHE:
-        return _LAZY_CACHE[name]
-
-    value = lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
-    _LAZY_CACHE[name] = value
-    return value
-
-
-def __dir__() -> Sequence[str]:
-    """Return list of available attributes for dir() and autocomplete.
-
-    Returns:
-        List of public names from module exports.
-
-    """
-    return sorted(__all__)
-
-
-cleanup_submodule_namespace(__name__, _LAZY_IMPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)
