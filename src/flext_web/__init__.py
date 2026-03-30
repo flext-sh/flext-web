@@ -16,33 +16,10 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
 
-from flext_web.__version__ import (
-    VERSION,
-    FlextWebVersion,
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
-    _VersionMetadata,
-)
+from flext_web.services import _LAZY_IMPORTS as _CHILD_LAZY_0
 
 if TYPE_CHECKING:
-    from flext_core import *
-
-    from flext_web import (
-        api,
-        base,
-        constants,
-        models,
-        protocols,
-        settings,
-        typings,
-        utilities,
-    )
+    from flext_web.__version__ import *
     from flext_web.api import *
     from flext_web.base import *
     from flext_web.constants import *
@@ -54,32 +31,33 @@ if TYPE_CHECKING:
     from flext_web.utilities import *
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+    **_CHILD_LAZY_0,
     "FlextWeb": "flext_web.api",
-    "FlextWebApp": "flext_web.services.app",
-    "FlextWebAuth": "flext_web.services.auth",
     "FlextWebConstants": "flext_web.constants",
-    "FlextWebEntities": "flext_web.services.entities",
-    "FlextWebHandlers": "flext_web.services.handlers",
-    "FlextWebHealth": "flext_web.services.health",
     "FlextWebModels": "flext_web.models",
     "FlextWebProtocols": "flext_web.protocols",
     "FlextWebServiceBase": "flext_web.base",
-    "FlextWebServices": "flext_web.services.web",
     "FlextWebSettings": "flext_web.settings",
     "FlextWebTypes": "flext_web.typings",
     "FlextWebUtilities": "flext_web.utilities",
+    "FlextWebVersion": "flext_web.__version__",
+    "VERSION": "flext_web.__version__",
+    "_VersionMetadata": "flext_web.__version__",
+    "__author__": "flext_web.__version__",
+    "__author_email__": "flext_web.__version__",
+    "__description__": "flext_web.__version__",
+    "__license__": "flext_web.__version__",
+    "__title__": "flext_web.__version__",
+    "__url__": "flext_web.__version__",
+    "__version__": "flext_web.__version__",
+    "__version_info__": "flext_web.__version__",
     "api": "flext_web.api",
-    "app": "flext_web.services.app",
-    "auth": "flext_web.services.auth",
     "base": "flext_web.base",
     "c": ["flext_web.constants", "FlextWebConstants"],
     "constants": "flext_web.constants",
     "d": "flext_core",
     "e": "flext_core",
-    "entities": "flext_web.services.entities",
     "h": "flext_core",
-    "handlers": "flext_web.services.handlers",
-    "health": "flext_web.services.health",
     "m": ["flext_web.models", "FlextWebModels"],
     "models": "flext_web.models",
     "p": ["flext_web.protocols", "FlextWebProtocols"],
@@ -97,4 +75,4 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
 }
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)

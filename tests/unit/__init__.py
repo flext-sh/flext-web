@@ -11,22 +11,6 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from tests.unit import (
-        test___init__,
-        test___main__,
-        test_api,
-        test_app,
-        test_config,
-        test_constants,
-        test_fields,
-        test_handlers,
-        test_models,
-        test_protocols,
-        test_services,
-        test_typings,
-        test_utilities,
-        test_version,
-    )
     from tests.unit.test___init__ import *
     from tests.unit.test___main__ import *
     from tests.unit.test_api import *
@@ -74,4 +58,4 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
 }
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
