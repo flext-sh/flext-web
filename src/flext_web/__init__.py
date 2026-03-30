@@ -16,23 +16,24 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 
+from flext_web.__version__ import (
+    VERSION,
+    FlextWebVersion,
+    __author__,
+    __author_email__,
+    __description__,
+    __license__,
+    __title__,
+    __url__,
+    __version__,
+    __version_info__,
+    _VersionMetadata,
+)
+
 if TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
 
     from flext_web import services
-    from flext_web.__version__ import (
-        VERSION,
-        FlextWebVersion,
-        __author__,
-        __author_email__,
-        __description__,
-        __license__,
-        __title__,
-        __url__,
-        __version__,
-        __version_info__,
-        _VersionMetadata,
-    )
     from flext_web.api import FlextWeb, web
     from flext_web.base import FlextWebServiceBase
     from flext_web.constants import FlextWebConstants, FlextWebConstants as c
@@ -63,17 +64,6 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextWebSettings": ["flext_web.settings", "FlextWebSettings"],
     "FlextWebTypes": ["flext_web.typings", "FlextWebTypes"],
     "FlextWebUtilities": ["flext_web.utilities", "FlextWebUtilities"],
-    "FlextWebVersion": ["flext_web.__version__", "FlextWebVersion"],
-    "VERSION": ["flext_web.__version__", "VERSION"],
-    "_VersionMetadata": ["flext_web.__version__", "_VersionMetadata"],
-    "__author__": ["flext_web.__version__", "__author__"],
-    "__author_email__": ["flext_web.__version__", "__author_email__"],
-    "__description__": ["flext_web.__version__", "__description__"],
-    "__license__": ["flext_web.__version__", "__license__"],
-    "__title__": ["flext_web.__version__", "__title__"],
-    "__url__": ["flext_web.__version__", "__url__"],
-    "__version__": ["flext_web.__version__", "__version__"],
-    "__version_info__": ["flext_web.__version__", "__version_info__"],
     "c": ["flext_web.constants", "FlextWebConstants"],
     "d": ["flext_core", "d"],
     "e": ["flext_core", "e"],
