@@ -14,9 +14,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import install_lazy_exports
-
-from flext_web.services import _LAZY_IMPORTS as _CHILD_LAZY_0
+from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 
 if TYPE_CHECKING:
     from flext_web.__version__ import *
@@ -30,49 +28,51 @@ if TYPE_CHECKING:
     from flext_web.typings import *
     from flext_web.utilities import *
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
-    **_CHILD_LAZY_0,
-    "FlextWeb": "flext_web.api",
-    "FlextWebConstants": "flext_web.constants",
-    "FlextWebModels": "flext_web.models",
-    "FlextWebProtocols": "flext_web.protocols",
-    "FlextWebServiceBase": "flext_web.base",
-    "FlextWebSettings": "flext_web.settings",
-    "FlextWebTypes": "flext_web.typings",
-    "FlextWebUtilities": "flext_web.utilities",
-    "FlextWebVersion": "flext_web.__version__",
-    "VERSION": "flext_web.__version__",
-    "_VersionMetadata": "flext_web.__version__",
-    "__author__": "flext_web.__version__",
-    "__author_email__": "flext_web.__version__",
-    "__description__": "flext_web.__version__",
-    "__license__": "flext_web.__version__",
-    "__title__": "flext_web.__version__",
-    "__url__": "flext_web.__version__",
-    "__version__": "flext_web.__version__",
-    "__version_info__": "flext_web.__version__",
-    "api": "flext_web.api",
-    "base": "flext_web.base",
-    "c": ["flext_web.constants", "FlextWebConstants"],
-    "constants": "flext_web.constants",
-    "d": "flext_core",
-    "e": "flext_core",
-    "h": "flext_core",
-    "m": ["flext_web.models", "FlextWebModels"],
-    "models": "flext_web.models",
-    "p": ["flext_web.protocols", "FlextWebProtocols"],
-    "protocols": "flext_web.protocols",
-    "r": "flext_core",
-    "s": "flext_core",
-    "services": "flext_web.services",
-    "settings": "flext_web.settings",
-    "t": ["flext_web.typings", "FlextWebTypes"],
-    "typings": "flext_web.typings",
-    "u": ["flext_web.utilities", "FlextWebUtilities"],
-    "utilities": "flext_web.utilities",
-    "web": "flext_web.api",
-    "x": "flext_core",
-}
+_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
+    ("flext_web.services",),
+    {
+        "FlextWeb": "flext_web.api",
+        "FlextWebConstants": "flext_web.constants",
+        "FlextWebModels": "flext_web.models",
+        "FlextWebProtocols": "flext_web.protocols",
+        "FlextWebServiceBase": "flext_web.base",
+        "FlextWebSettings": "flext_web.settings",
+        "FlextWebTypes": "flext_web.typings",
+        "FlextWebUtilities": "flext_web.utilities",
+        "FlextWebVersion": "flext_web.__version__",
+        "VERSION": "flext_web.__version__",
+        "_VersionMetadata": "flext_web.__version__",
+        "__author__": "flext_web.__version__",
+        "__author_email__": "flext_web.__version__",
+        "__description__": "flext_web.__version__",
+        "__license__": "flext_web.__version__",
+        "__title__": "flext_web.__version__",
+        "__url__": "flext_web.__version__",
+        "__version__": "flext_web.__version__",
+        "__version_info__": "flext_web.__version__",
+        "api": "flext_web.api",
+        "base": "flext_web.base",
+        "c": ("flext_web.constants", "FlextWebConstants"),
+        "constants": "flext_web.constants",
+        "d": "flext_core",
+        "e": "flext_core",
+        "h": "flext_core",
+        "m": ("flext_web.models", "FlextWebModels"),
+        "models": "flext_web.models",
+        "p": ("flext_web.protocols", "FlextWebProtocols"),
+        "protocols": "flext_web.protocols",
+        "r": "flext_core",
+        "s": "flext_core",
+        "services": "flext_web.services",
+        "settings": "flext_web.settings",
+        "t": ("flext_web.typings", "FlextWebTypes"),
+        "typings": "flext_web.typings",
+        "u": ("flext_web.utilities", "FlextWebUtilities"),
+        "utilities": "flext_web.utilities",
+        "web": "flext_web.api",
+        "x": "flext_core",
+    },
+)
 
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
