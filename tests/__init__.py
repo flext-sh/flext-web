@@ -16,75 +16,54 @@ if TYPE_CHECKING:
     from tests import (
         conftest,
         constants,
-        helpers,
-        integration,
         models,
         port_manager,
         protocols,
         typings,
-        unit,
         utilities,
     )
     from tests.conftest import *
     from tests.constants import *
-    from tests.helpers.models import *
-    from tests.helpers.protocols import *
-    from tests.helpers.typings import *
-    from tests.helpers.utilities import *
-    from tests.integration import test_examples
-    from tests.integration.test_examples import *
+    from tests.helpers import *
+    from tests.integration import *
     from tests.models import *
     from tests.port_manager import *
     from tests.protocols import *
     from tests.typings import *
-    from tests.unit import (
-        test___init__,
-        test___main__,
-        test_api,
-        test_app,
-        test_config,
-        test_constants,
-        test_fields,
-        test_handlers,
-        test_models,
-        test_protocols,
-        test_services,
-        test_typings,
-        test_utilities,
-        test_version,
-    )
-    from tests.unit.test___init__ import *
-    from tests.unit.test___main__ import *
-    from tests.unit.test_api import *
-    from tests.unit.test_app import *
-    from tests.unit.test_config import *
-    from tests.unit.test_constants import *
-    from tests.unit.test_fields import *
-    from tests.unit.test_handlers import *
-    from tests.unit.test_protocols import *
-    from tests.unit.test_services import *
-    from tests.unit.test_typings import *
-    from tests.unit.test_utilities import *
-    from tests.unit.test_version import *
+    from tests.unit import *
     from tests.utilities import *
 
-from tests.helpers import _LAZY_IMPORTS as _HELPERS_LAZY
-from tests.integration import _LAZY_IMPORTS as _INTEGRATION_LAZY
-from tests.unit import _LAZY_IMPORTS as _UNIT_LAZY
-
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
-    **_HELPERS_LAZY,
-    **_INTEGRATION_LAZY,
-    **_UNIT_LAZY,
+    "ExamplesFullFunctionalityTest": "tests.integration.test_examples",
     "FlextWebTestConstants": "tests.constants",
     "FlextWebTestModels": "tests.models",
     "FlextWebTestProtocols": "tests.protocols",
     "FlextWebTestTypes": "tests.typings",
     "FlextWebTestUtilities": "tests.utilities",
+    "TestExamples": "tests.integration.test_examples",
+    "TestFlextWebApi": "tests.unit.test_api",
+    "TestFlextWebApp": "tests.unit.test_app",
+    "TestFlextWebCliService": "tests.unit.test___main__",
+    "TestFlextWebConstants": "tests.unit.test_constants",
+    "TestFlextWebFields": "tests.unit.test_fields",
+    "TestFlextWebHandlers": "tests.unit.test_handlers",
+    "TestFlextWebInit": "tests.unit.test___init__",
+    "TestFlextWebModels": "tests.unit.test_typings",
+    "TestFlextWebProtocols": "tests.unit.test_protocols",
+    "TestFlextWebService": "tests.unit.test_services",
+    "TestFlextWebSettings": "tests.unit.test_config",
+    "TestFlextWebUtilities": "tests.unit.test_utilities",
+    "TestFlextWebVersion": "tests.unit.test_version",
+    "TestMainFunction": "tests.unit.test___main__",
     "TestPortManager": "tests.port_manager",
+    "TestsModels": "tests.helpers.models",
+    "TestsProtocols": "tests.helpers.protocols",
+    "TestsTypings": "tests.helpers.typings",
+    "TestsUtilities": "tests.helpers.utilities",
     "assert_failure": "tests.conftest",
     "assert_result": "tests.conftest",
     "assert_success": "tests.conftest",
+    "assert_version_info": "tests.unit.test_version",
     "c": ["tests.constants", "FlextWebTestConstants"],
     "conftest": "tests.conftest",
     "constants": "tests.constants",
@@ -100,7 +79,9 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "helpers": "tests.helpers",
     "integration": "tests.integration",
     "invalid_app_data": "tests.conftest",
+    "logger": "tests.integration.test_examples",
     "m": ["tests.models", "FlextWebTestModels"],
+    "main": "tests.integration.test_examples",
     "models": "tests.models",
     "p": ["tests.protocols", "FlextWebTestProtocols"],
     "port_manager": "tests.port_manager",
@@ -116,7 +97,22 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "s": "flext_tests",
     "setup_test_environment": "tests.conftest",
     "t": ["tests.typings", "FlextWebTestTypes"],
+    "test___init__": "tests.unit.test___init__",
+    "test___main__": "tests.unit.test___main__",
+    "test_api": "tests.unit.test_api",
+    "test_app": "tests.unit.test_app",
     "test_app_data": "tests.conftest",
+    "test_config": "tests.unit.test_config",
+    "test_constants": "tests.unit.test_constants",
+    "test_examples": "tests.integration.test_examples",
+    "test_fields": "tests.unit.test_fields",
+    "test_handlers": "tests.unit.test_handlers",
+    "test_models": "tests.unit.test_models",
+    "test_protocols": "tests.unit.test_protocols",
+    "test_services": "tests.unit.test_services",
+    "test_typings": "tests.unit.test_typings",
+    "test_utilities": "tests.unit.test_utilities",
+    "test_version": "tests.unit.test_version",
     "typings": "tests.typings",
     "u": ["tests.utilities", "FlextWebTestUtilities"],
     "unit": "tests.unit",
