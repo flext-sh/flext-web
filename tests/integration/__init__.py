@@ -16,32 +16,16 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from tests.integration import test_examples as test_examples
-    from tests.integration.test_examples import (
-        ExamplesFullFunctionalityTest as ExamplesFullFunctionalityTest,
-        TestExamples as TestExamples,
-        logger as logger,
-        main as main,
-    )
+    from tests.integration import test_examples
+    from tests.integration.test_examples import *
 
-_LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
-    "ExamplesFullFunctionalityTest": [
-        "tests.integration.test_examples",
-        "ExamplesFullFunctionalityTest",
-    ],
-    "TestExamples": ["tests.integration.test_examples", "TestExamples"],
-    "logger": ["tests.integration.test_examples", "logger"],
-    "main": ["tests.integration.test_examples", "main"],
-    "test_examples": ["tests.integration.test_examples", ""],
+_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+    "ExamplesFullFunctionalityTest": "tests.integration.test_examples",
+    "TestExamples": "tests.integration.test_examples",
+    "logger": "tests.integration.test_examples",
+    "main": "tests.integration.test_examples",
+    "test_examples": "tests.integration.test_examples",
 }
 
-_EXPORTS: Sequence[str] = [
-    "ExamplesFullFunctionalityTest",
-    "TestExamples",
-    "logger",
-    "main",
-    "test_examples",
-]
 
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, _EXPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, sorted(_LAZY_IMPORTS))
