@@ -13,6 +13,22 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from tests.unit import (
+        test___init__,
+        test___main__,
+        test_api,
+        test_app,
+        test_config,
+        test_constants,
+        test_fields,
+        test_handlers,
+        test_models,
+        test_protocols,
+        test_services,
+        test_typings,
+        test_utilities,
+        test_version,
+    )
     from tests.unit.test___init__ import TestFlextWebInit
     from tests.unit.test___main__ import TestFlextWebCliService, TestMainFunction
     from tests.unit.test_api import TestFlextWebApi
@@ -43,6 +59,20 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "TestFlextWebVersion": ["tests.unit.test_version", "TestFlextWebVersion"],
     "TestMainFunction": ["tests.unit.test___main__", "TestMainFunction"],
     "assert_version_info": ["tests.unit.test_version", "assert_version_info"],
+    "test___init__": ["tests.unit.test___init__", ""],
+    "test___main__": ["tests.unit.test___main__", ""],
+    "test_api": ["tests.unit.test_api", ""],
+    "test_app": ["tests.unit.test_app", ""],
+    "test_config": ["tests.unit.test_config", ""],
+    "test_constants": ["tests.unit.test_constants", ""],
+    "test_fields": ["tests.unit.test_fields", ""],
+    "test_handlers": ["tests.unit.test_handlers", ""],
+    "test_models": ["tests.unit.test_models", ""],
+    "test_protocols": ["tests.unit.test_protocols", ""],
+    "test_services": ["tests.unit.test_services", ""],
+    "test_typings": ["tests.unit.test_typings", ""],
+    "test_utilities": ["tests.unit.test_utilities", ""],
+    "test_version": ["tests.unit.test_version", ""],
 }
 
 __all__ = [
@@ -61,6 +91,20 @@ __all__ = [
     "TestFlextWebVersion",
     "TestMainFunction",
     "assert_version_info",
+    "test___init__",
+    "test___main__",
+    "test_api",
+    "test_app",
+    "test_config",
+    "test_constants",
+    "test_fields",
+    "test_handlers",
+    "test_models",
+    "test_protocols",
+    "test_services",
+    "test_typings",
+    "test_utilities",
+    "test_version",
 ]
 
 

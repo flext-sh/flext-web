@@ -14,7 +14,18 @@ if TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
-    from tests import helpers, integration, unit
+    from tests import (
+        conftest,
+        constants,
+        helpers,
+        integration,
+        models,
+        port_manager,
+        protocols,
+        typings,
+        unit,
+        utilities,
+    )
     from tests.conftest import (
         assert_failure,
         assert_result,
@@ -41,6 +52,7 @@ if TYPE_CHECKING:
     from tests.helpers.protocols import TestsProtocols
     from tests.helpers.typings import TestsTypings
     from tests.helpers.utilities import TestsUtilities
+    from tests.integration import test_examples
     from tests.integration.test_examples import (
         ExamplesFullFunctionalityTest,
         TestExamples,
@@ -51,6 +63,22 @@ if TYPE_CHECKING:
     from tests.port_manager import TestPortManager
     from tests.protocols import FlextWebTestProtocols, FlextWebTestProtocols as p
     from tests.typings import FlextWebTestTypes, FlextWebTestTypes as t
+    from tests.unit import (
+        test___init__,
+        test___main__,
+        test_api,
+        test_app,
+        test_config,
+        test_constants,
+        test_fields,
+        test_handlers,
+        test_models,
+        test_protocols,
+        test_services,
+        test_typings,
+        test_utilities,
+        test_version,
+    )
     from tests.unit.test___init__ import TestFlextWebInit
     from tests.unit.test___main__ import TestFlextWebCliService, TestMainFunction
     from tests.unit.test_api import TestFlextWebApi
@@ -101,6 +129,8 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "assert_success": ["tests.conftest", "assert_success"],
     "assert_version_info": ["tests.unit.test_version", "assert_version_info"],
     "c": ["tests.constants", "FlextWebTestConstants"],
+    "conftest": ["tests.conftest", ""],
+    "constants": ["tests.constants", ""],
     "create_comprehensive_test_suite": [
         "tests.conftest",
         "create_comprehensive_test_suite",
@@ -119,8 +149,11 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "logger": ["tests.integration.test_examples", "logger"],
     "m": ["tests.models", "FlextWebTestModels"],
     "main": ["tests.integration.test_examples", "main"],
+    "models": ["tests.models", ""],
     "p": ["tests.protocols", "FlextWebTestProtocols"],
+    "port_manager": ["tests.port_manager", ""],
     "production_config": ["tests.conftest", "production_config"],
+    "protocols": ["tests.protocols", ""],
     "pytest_configure": ["tests.conftest", "pytest_configure"],
     "r": ["flext_tests", "r"],
     "real_app": ["tests.conftest", "real_app"],
@@ -131,9 +164,26 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "s": ["flext_tests", "s"],
     "setup_test_environment": ["tests.conftest", "setup_test_environment"],
     "t": ["tests.typings", "FlextWebTestTypes"],
+    "test___init__": ["tests.unit.test___init__", ""],
+    "test___main__": ["tests.unit.test___main__", ""],
+    "test_api": ["tests.unit.test_api", ""],
+    "test_app": ["tests.unit.test_app", ""],
     "test_app_data": ["tests.conftest", "test_app_data"],
+    "test_config": ["tests.unit.test_config", ""],
+    "test_constants": ["tests.unit.test_constants", ""],
+    "test_examples": ["tests.integration.test_examples", ""],
+    "test_fields": ["tests.unit.test_fields", ""],
+    "test_handlers": ["tests.unit.test_handlers", ""],
+    "test_models": ["tests.unit.test_models", ""],
+    "test_protocols": ["tests.unit.test_protocols", ""],
+    "test_services": ["tests.unit.test_services", ""],
+    "test_typings": ["tests.unit.test_typings", ""],
+    "test_utilities": ["tests.unit.test_utilities", ""],
+    "test_version": ["tests.unit.test_version", ""],
+    "typings": ["tests.typings", ""],
     "u": ["tests.utilities", "FlextWebTestUtilities"],
     "unit": ["tests.unit", ""],
+    "utilities": ["tests.utilities", ""],
     "x": ["flext_tests", "x"],
 }
 
@@ -169,6 +219,8 @@ __all__ = [
     "assert_success",
     "assert_version_info",
     "c",
+    "conftest",
+    "constants",
     "create_comprehensive_test_suite",
     "create_entry",
     "create_test_app",
@@ -184,8 +236,11 @@ __all__ = [
     "logger",
     "m",
     "main",
+    "models",
     "p",
+    "port_manager",
     "production_config",
+    "protocols",
     "pytest_configure",
     "r",
     "real_app",
@@ -196,9 +251,26 @@ __all__ = [
     "s",
     "setup_test_environment",
     "t",
+    "test___init__",
+    "test___main__",
+    "test_api",
+    "test_app",
     "test_app_data",
+    "test_config",
+    "test_constants",
+    "test_examples",
+    "test_fields",
+    "test_handlers",
+    "test_models",
+    "test_protocols",
+    "test_services",
+    "test_typings",
+    "test_utilities",
+    "test_version",
+    "typings",
     "u",
     "unit",
+    "utilities",
     "x",
 ]
 

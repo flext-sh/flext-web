@@ -18,6 +18,7 @@ from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
 if TYPE_CHECKING:
     from flext_core import FlextTypes
 
+    from tests.integration import test_examples
     from tests.integration.test_examples import (
         ExamplesFullFunctionalityTest,
         TestExamples,
@@ -33,6 +34,7 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "TestExamples": ["tests.integration.test_examples", "TestExamples"],
     "logger": ["tests.integration.test_examples", "logger"],
     "main": ["tests.integration.test_examples", "main"],
+    "test_examples": ["tests.integration.test_examples", ""],
 }
 
 __all__ = [
@@ -40,6 +42,7 @@ __all__ = [
     "TestExamples",
     "logger",
     "main",
+    "test_examples",
 ]
 
 

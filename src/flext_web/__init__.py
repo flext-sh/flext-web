@@ -33,12 +33,23 @@ from flext_web.__version__ import (
 if TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
 
-    from flext_web import services
+    from flext_web import (
+        api,
+        base,
+        constants,
+        models,
+        protocols,
+        services,
+        settings,
+        typings,
+        utilities,
+    )
     from flext_web.api import FlextWeb, web
     from flext_web.base import FlextWebServiceBase
     from flext_web.constants import FlextWebConstants, FlextWebConstants as c
     from flext_web.models import FlextWebModels, FlextWebModels as m
     from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
+    from flext_web.services import app, auth, entities, handlers, health
     from flext_web.services.app import FlextWebApp
     from flext_web.services.auth import FlextWebAuth
     from flext_web.services.entities import FlextWebEntities
@@ -64,17 +75,30 @@ _LAZY_IMPORTS: Mapping[str, Sequence[str]] = {
     "FlextWebSettings": ["flext_web.settings", "FlextWebSettings"],
     "FlextWebTypes": ["flext_web.typings", "FlextWebTypes"],
     "FlextWebUtilities": ["flext_web.utilities", "FlextWebUtilities"],
+    "api": ["flext_web.api", ""],
+    "app": ["flext_web.services.app", ""],
+    "auth": ["flext_web.services.auth", ""],
+    "base": ["flext_web.base", ""],
     "c": ["flext_web.constants", "FlextWebConstants"],
+    "constants": ["flext_web.constants", ""],
     "d": ["flext_core", "d"],
     "e": ["flext_core", "e"],
+    "entities": ["flext_web.services.entities", ""],
     "h": ["flext_core", "h"],
+    "handlers": ["flext_web.services.handlers", ""],
+    "health": ["flext_web.services.health", ""],
     "m": ["flext_web.models", "FlextWebModels"],
+    "models": ["flext_web.models", ""],
     "p": ["flext_web.protocols", "FlextWebProtocols"],
+    "protocols": ["flext_web.protocols", ""],
     "r": ["flext_core", "r"],
     "s": ["flext_core", "s"],
     "services": ["flext_web.services", ""],
+    "settings": ["flext_web.settings", ""],
     "t": ["flext_web.typings", "FlextWebTypes"],
+    "typings": ["flext_web.typings", ""],
     "u": ["flext_web.utilities", "FlextWebUtilities"],
+    "utilities": ["flext_web.utilities", ""],
     "web": ["flext_web.api", "web"],
     "x": ["flext_core", "x"],
 }
@@ -105,17 +129,30 @@ __all__ = [
     "__url__",
     "__version__",
     "__version_info__",
+    "api",
+    "app",
+    "auth",
+    "base",
     "c",
+    "constants",
     "d",
     "e",
+    "entities",
     "h",
+    "handlers",
+    "health",
     "m",
+    "models",
     "p",
+    "protocols",
     "r",
     "s",
     "services",
+    "settings",
     "t",
+    "typings",
     "u",
+    "utilities",
     "web",
     "x",
 ]
