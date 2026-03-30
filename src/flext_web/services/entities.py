@@ -9,9 +9,7 @@ from typing import override
 from flext_core import r
 from pydantic import PrivateAttr
 
-from flext_web.base import FlextWebServiceBase
-from flext_web.models import FlextWebModels as m
-from flext_web.utilities import FlextWebUtilities as u
+from flext_web import FlextWebModels as m, FlextWebServiceBase, FlextWebUtilities as u
 
 
 class FlextWebEntities(FlextWebServiceBase[bool]):

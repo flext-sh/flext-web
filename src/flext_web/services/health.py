@@ -6,11 +6,13 @@ from typing import override
 
 from flext_core import r
 
-from flext_web.base import FlextWebServiceBase
-from flext_web.constants import FlextWebConstants as c
-from flext_web.models import FlextWebModels as m
-from flext_web.protocols import FlextWebProtocols
-from flext_web.utilities import FlextWebUtilities as u
+from flext_web import (
+    FlextWebConstants as c,
+    FlextWebModels as m,
+    FlextWebProtocols,
+    FlextWebServiceBase,
+    FlextWebUtilities as u,
+)
 
 
 class FlextWebHealth(FlextWebServiceBase[bool]):

@@ -15,8 +15,7 @@ from typing import Annotated, override
 from flext_core import FlextModels, FlextTypes as t, r
 from pydantic import BaseModel, Field, field_validator
 
-from flext_web.constants import FlextWebConstants as c
-from flext_web.utilities import FlextWebUtilities as u
+from flext_web import FlextWebConstants as c, FlextWebUtilities as u
 
 
 class FlextWebModels(FlextModels):
