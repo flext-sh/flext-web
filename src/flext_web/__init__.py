@@ -33,15 +33,38 @@ from flext_web.__version__ import (
 if _TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
 
-    from flext_web.api import *
-    from flext_web.base import *
-    from flext_web.constants import *
-    from flext_web.models import *
-    from flext_web.protocols import *
-    from flext_web.services import *
-    from flext_web.settings import *
-    from flext_web.typings import *
-    from flext_web.utilities import *
+    from flext_web import (
+        api,
+        base,
+        constants,
+        models,
+        protocols,
+        services,
+        settings,
+        typings,
+        utilities,
+    )
+    from flext_web.api import FlextWeb, web
+    from flext_web.base import FlextWebServiceBase
+    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
+    from flext_web.models import FlextWebModels, FlextWebModels as m
+    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
+    from flext_web.services import (
+        FlextWebApp,
+        FlextWebAuth,
+        FlextWebEntities,
+        FlextWebHandlers,
+        FlextWebHealth,
+        FlextWebServices,
+        app,
+        auth,
+        entities,
+        handlers,
+        health,
+    )
+    from flext_web.settings import FlextWebSettings
+    from flext_web.typings import FlextWebTypes, FlextWebTypes as t
+    from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
     ("flext_web.services",),

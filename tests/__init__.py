@@ -14,16 +14,84 @@ if _TYPE_CHECKING:
     from flext_core import FlextTypes
     from flext_tests import d, e, h, r, s, x
 
-    from tests.conftest import *
-    from tests.constants import *
-    from tests.helpers import *
-    from tests.integration import *
-    from tests.models import *
-    from tests.port_manager import *
-    from tests.protocols import *
-    from tests.typings import *
-    from tests.unit import *
-    from tests.utilities import *
+    from tests import (
+        conftest,
+        constants,
+        helpers,
+        integration,
+        models,
+        port_manager,
+        protocols,
+        typings,
+        unit,
+        utilities,
+    )
+    from tests.conftest import (
+        assert_failure,
+        assert_result,
+        assert_success,
+        create_comprehensive_test_suite,
+        create_entry,
+        create_test_app,
+        create_test_data,
+        create_test_result,
+        docker_manager,
+        invalid_app_data,
+        production_config,
+        pytest_configure,
+        real_app,
+        real_config,
+        real_service,
+        run_parameterized_test,
+        running_service,
+        setup_test_environment,
+        test_app_data,
+    )
+    from tests.constants import FlextWebTestConstants, FlextWebTestConstants as c
+    from tests.helpers import TestsModels, TestsProtocols, TestsTypings, TestsUtilities
+    from tests.integration import (
+        ExamplesFullFunctionalityTest,
+        TestExamples,
+        logger,
+        main,
+        test_examples,
+    )
+    from tests.models import FlextWebTestModels, FlextWebTestModels as m
+    from tests.port_manager import TestPortManager
+    from tests.protocols import FlextWebTestProtocols, FlextWebTestProtocols as p
+    from tests.typings import FlextWebTestTypes, FlextWebTestTypes as t
+    from tests.unit import (
+        TestFlextWebApi,
+        TestFlextWebApp,
+        TestFlextWebCliService,
+        TestFlextWebConstants,
+        TestFlextWebFields,
+        TestFlextWebHandlers,
+        TestFlextWebInit,
+        TestFlextWebModels,
+        TestFlextWebProtocols,
+        TestFlextWebService,
+        TestFlextWebSettings,
+        TestFlextWebUtilities,
+        TestFlextWebVersion,
+        TestMainFunction,
+        assert_version_info,
+        test___init__,
+        test___main__,
+        test_api,
+        test_app,
+        test_config,
+        test_constants,
+        test_fields,
+        test_handlers,
+        test_models,
+        test_protocols,
+        test_services,
+        test_typings,
+        test_utilities,
+        test_version,
+    )
+    from tests.utilities import FlextWebTestUtilities, FlextWebTestUtilities as u
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
     (

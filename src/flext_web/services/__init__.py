@@ -13,12 +13,13 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
-    from flext_web.services.app import *
-    from flext_web.services.auth import *
-    from flext_web.services.entities import *
-    from flext_web.services.handlers import *
-    from flext_web.services.health import *
-    from flext_web.services.web import *
+    from flext_web.services import app, auth, entities, handlers, health, web
+    from flext_web.services.app import FlextWebApp
+    from flext_web.services.auth import FlextWebAuth
+    from flext_web.services.entities import FlextWebEntities
+    from flext_web.services.handlers import FlextWebHandlers
+    from flext_web.services.health import FlextWebHealth
+    from flext_web.services.web import FlextWebServices
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "FlextWebApp": "flext_web.services.app",
