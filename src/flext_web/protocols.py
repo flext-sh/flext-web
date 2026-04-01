@@ -1355,7 +1355,7 @@ class FlextWebProtocols(FlextProtocols):
                 """
                 metrics: t.Web.ResponseDict = {}
                 for key, val in FlextWebProtocols.Web.web_metrics.items():
-                    metrics[key] = int(val) if isinstance(val, float) else val
+                    metrics[key] = u.to_int(val) if isinstance(val, float) else val
                 return metrics
 
             def record_web_request(

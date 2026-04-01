@@ -16,10 +16,23 @@ from typing import TYPE_CHECKING as _TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 
-if _TYPE_CHECKING:
-    from flext_core import d, e, h, r, s, x
+from flext_web.__version__ import (
+    VERSION,
+    FlextWebVersion,
+    __author__,
+    __author_email__,
+    __description__,
+    __license__,
+    __title__,
+    __url__,
+    __version__,
+    __version_info__,
+    _VersionMetadata,
+)
 
-    from flext_web.__version__ import *
+if _TYPE_CHECKING:
+    from flext_core import FlextTypes, d, e, h, r, s, x
+
     from flext_web.api import *
     from flext_web.base import *
     from flext_web.constants import *
@@ -41,17 +54,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
         "FlextWebSettings": "flext_web.settings",
         "FlextWebTypes": "flext_web.typings",
         "FlextWebUtilities": "flext_web.utilities",
-        "FlextWebVersion": "flext_web.__version__",
-        "VERSION": "flext_web.__version__",
-        "_VersionMetadata": "flext_web.__version__",
-        "__author__": "flext_web.__version__",
-        "__author_email__": "flext_web.__version__",
-        "__description__": "flext_web.__version__",
-        "__license__": "flext_web.__version__",
-        "__title__": "flext_web.__version__",
-        "__url__": "flext_web.__version__",
-        "__version__": "flext_web.__version__",
-        "__version_info__": "flext_web.__version__",
         "api": "flext_web.api",
         "base": "flext_web.base",
         "c": ("flext_web.constants", "FlextWebConstants"),
@@ -77,4 +79,21 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
 )
 
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
+install_lazy_exports(
+    __name__,
+    globals(),
+    _LAZY_IMPORTS,
+    [
+        "FlextWebVersion",
+        "VERSION",
+        "_VersionMetadata",
+        "__author__",
+        "__author_email__",
+        "__description__",
+        "__license__",
+        "__title__",
+        "__url__",
+        "__version__",
+        "__version_info__",
+    ],
+)
