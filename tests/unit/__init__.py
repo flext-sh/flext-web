@@ -13,19 +13,19 @@ from flext_core.lazy import install_lazy_exports
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
 
-    from tests.unit.test___init__ import *
-    from tests.unit.test___main__ import *
-    from tests.unit.test_api import *
-    from tests.unit.test_app import *
-    from tests.unit.test_config import *
-    from tests.unit.test_constants import *
-    from tests.unit.test_fields import *
-    from tests.unit.test_handlers import *
-    from tests.unit.test_protocols import *
-    from tests.unit.test_services import *
-    from tests.unit.test_typings import *
-    from tests.unit.test_utilities import *
-    from tests.unit.test_version import *
+    from tests.unit.test___init__ import TestFlextWebInit
+    from tests.unit.test___main__ import TestFlextWebCliService, TestMainFunction
+    from tests.unit.test_api import TestFlextWebApi
+    from tests.unit.test_app import TestFlextWebApp
+    from tests.unit.test_config import TestFlextWebSettings
+    from tests.unit.test_constants import TestFlextWebConstants
+    from tests.unit.test_fields import TestFlextWebFields
+    from tests.unit.test_handlers import TestFlextWebHandlers
+    from tests.unit.test_protocols import TestFlextWebProtocols
+    from tests.unit.test_services import TestFlextWebService
+    from tests.unit.test_typings import TestFlextWebModels
+    from tests.unit.test_utilities import TestFlextWebUtilities
+    from tests.unit.test_version import TestFlextWebVersion, assert_version_info
 
 _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
     "TestFlextWebApi": "tests.unit.test_api",
