@@ -19,6 +19,7 @@ from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 from flext_web.__version__ import (
     VERSION,
     FlextWebVersion,
+    VersionMetadata,
     __author__,
     __author_email__,
     __description__,
@@ -27,7 +28,6 @@ from flext_web.__version__ import (
     __url__,
     __version__,
     __version_info__,
-    _VersionMetadata,
 )
 
 if _TYPE_CHECKING:
@@ -109,7 +109,7 @@ install_lazy_exports(
     [
         "FlextWebVersion",
         "VERSION",
-        "_VersionMetadata",
+        "VersionMetadata",
         "__author__",
         "__author_email__",
         "__description__",

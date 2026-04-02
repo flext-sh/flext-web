@@ -525,13 +525,14 @@ class FlextWebModels(FlextModels):
                     description="Debug mode enabled flag",
                 ),
             ] = c.Web.WebDefaults.DEBUG_MODE
-            version: Annotated[
-                int,
-                Field(
-                    default=c.Web.WebDefaults.VERSION_INT,
-                    description="Application version",
-                ),
-            ] = c.Web.WebDefaults.VERSION_INT
+            # Mypy internal error workaround: 'version' is inherited from VersionableMixin
+            # version: Annotated[
+            #     int,
+            #     Field(
+            #         default=c.Web.WebDefaults.VERSION_INT,
+            #         description="Application version",
+            #     ),
+            # ] = c.Web.WebDefaults.VERSION_INT
             metrics: Annotated[
                 dict[str, t.Scalar],
                 Field(
@@ -1138,10 +1139,11 @@ class FlextWebModels(FlextModels):
                     timestamp=datetime.now(UTC),
                 )
 
-            return u.try_(
+            result: r[FlextWebModels.Web.WebRequest] = u.try_(
                 create_request,
                 catch=Exception,
-            ).map_error(lambda e: f"Failed to create web request: {e}")
+            )
+            return result.map_error(lambda e: f"Failed to create web request: {e}")
 
         @classmethod
         def create_web_response(
@@ -1178,10 +1180,11 @@ class FlextWebModels(FlextModels):
                     timestamp=datetime.now(UTC),
                 )
 
-            return u.try_(
+            result: r[FlextWebModels.Web.WebResponse] = u.try_(
                 create_response,
                 catch=Exception,
-            ).map_error(lambda e: f"Failed to create web response: {e}")
+            )
+            return result.map_error(lambda e: f"Failed to create web response: {e}")
 
         class FastAPIAppConfig(BaseModel):
             """FastAPI application configuration model (Value Object).

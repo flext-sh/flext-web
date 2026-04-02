@@ -183,12 +183,11 @@ class FlextWebTypes(FlextTypes):
         """
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
-
-        def _validate_method(value: FlextTypes.NormalizedValue) -> bool:
-            return isinstance(value, str) and value in valid_methods
-
-        method_validated = u.guard(method_upper, _validate_method, return_value=True)
-        if not isinstance(method_validated, str):
+        method_validated = u.guard(method_upper, str, return_value=True)
+        if (
+            not isinstance(method_validated, str)
+            or method_validated not in valid_methods
+        ):
             return r[m.Web.Request].fail(
                 f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             )
@@ -295,12 +294,11 @@ class FlextWebTypes(FlextTypes):
         query_params_validated: Mapping[str, FlextTypes.Scalar] = query_params or {}
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
-
-        def _validate_method(value: FlextTypes.NormalizedValue) -> bool:
-            return isinstance(value, str) and value in valid_methods
-
-        method_validated = u.guard(method_upper, _validate_method, return_value=True)
-        if not isinstance(method_validated, str):
+        method_validated = u.guard(method_upper, str, return_value=True)
+        if (
+            not isinstance(method_validated, str)
+            or method_validated not in valid_methods
+        ):
             return r[m.Web.AppRequest].fail(
                 f"Invalid HTTP method: {method}. Must be one of: {valid_methods}",
             )

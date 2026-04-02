@@ -10,6 +10,7 @@ from flext_tests import tm
 from flext_web import (
     VERSION,
     FlextWebVersion,
+    VersionMetadata,
     __author__,
     __author_email__,
     __description__,
@@ -18,7 +19,6 @@ from flext_web import (
     __url__,
     __version__,
     __version_info__,
-    _VersionMetadata,
 )
 
 
@@ -36,7 +36,7 @@ class TestFlextWebVersion:
     def test_version_initialization(self) -> None:
         """Test FlextWebVersion initialization."""
         version = FlextWebVersion(
-            _VersionMetadata(
+            VersionMetadata(
                 version="1.0.0",
                 version_info=(1, 0, 0),
                 title="FLEXT Web",

@@ -28,7 +28,9 @@ __license__: Final[str] = _metadata.get("License", "")
 __url__: Final[str] = _metadata.get("Home-Page", "")
 
 
-class _VersionMetadata(FlextModels.Value):
+class VersionMetadata(FlextModels.Value):
+    """Immutable package version metadata."""
+
     version: Annotated[str, Field(description="Package version")]
     version_info: Annotated[tuple[int | str, ...], Field(description="Version tuple")]
     title: Annotated[str, Field(description="Package title")]
@@ -45,7 +47,7 @@ class FlextWebVersion:
     Provides metadata access through singleton pattern using importlib.metadata.
     """
 
-    def __init__(self, metadata: _VersionMetadata) -> None:
+    def __init__(self, metadata: VersionMetadata) -> None:
         """Initialize version metadata.
 
         Args:
@@ -71,7 +73,7 @@ class FlextWebVersion:
 
         """
         return cls(
-            _VersionMetadata(
+            VersionMetadata(
                 version=__version__,
                 version_info=__version_info__,
                 title=__title__,
@@ -88,7 +90,7 @@ VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
 __all__ = [
     "VERSION",
     "FlextWebVersion",
-    "_VersionMetadata",
+    "VersionMetadata",
     "__author__",
     "__author_email__",
     "__description__",

@@ -6,7 +6,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+import socket
+import time
 from collections.abc import Callable, Mapping, Sequence
+from threading import Lock
+from typing import ClassVar
 
 import pytest
 from flext_core import r
@@ -27,6 +31,63 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
 
         class Tests:
             """Test-specific utilities."""
+
+            class TestPortManager:
+                """Thread-safe port allocation manager for test services."""
+
+                _lock: ClassVar[Lock] = Lock()
+                _allocated_ports: ClassVar[set[int]] = set()
+                _current_port: ClassVar[int] = (
+                    FlextWebTestConstants.Web.Tests.TestPort.PORT_START
+                )
+
+                @classmethod
+                def allocate_port(cls) -> int:
+                    """Allocate a unique port for testing."""
+                    with cls._lock:
+                        while cls._current_port in cls._allocated_ports:
+                            cls._current_port += 1
+                            if (
+                                cls._current_port
+                                > FlextWebTestConstants.Web.Tests.TestPort.PORT_END
+                            ):
+                                cls._current_port = (
+                                    FlextWebTestConstants.Web.Tests.TestPort.PORT_START
+                                )
+                        port = cls._current_port
+                        cls._allocated_ports.add(port)
+                        cls._current_port += 1
+                        return port
+
+                @classmethod
+                def release_port(cls, port: int) -> None:
+                    """Release a previously allocated port."""
+                    with cls._lock:
+                        cls._allocated_ports.discard(port)
+
+                @classmethod
+                def reset(cls) -> None:
+                    """Reset the allocated test ports."""
+                    with cls._lock:
+                        cls._allocated_ports.clear()
+                        cls._current_port = (
+                            FlextWebTestConstants.Web.Tests.TestPort.PORT_START
+                        )
+
+            @staticmethod
+            def wait_for_port(host: str, port: int, timeout: float = 5.0) -> bool:
+                """Wait until a TCP port becomes reachable."""
+                start_time = time.time()
+                while time.time() - start_time < timeout:
+                    try:
+                        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                            sock.settimeout(0.1)
+                            if sock.connect_ex((host, port)) == 0:
+                                return True
+                    except OSError:
+                        pass
+                    time.sleep(0.1)
+                return False
 
             @staticmethod
             def _wrap_result[T](result: r[T]) -> r[BaseModel]:

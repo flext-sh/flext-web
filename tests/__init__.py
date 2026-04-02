@@ -20,7 +20,6 @@ if _TYPE_CHECKING:
         helpers,
         integration,
         models,
-        port_manager,
         protocols,
         typings,
         unit,
@@ -48,7 +47,6 @@ if _TYPE_CHECKING:
         test_examples,
     )
     from tests.models import FlextWebTestModels, FlextWebTestModels as m
-    from tests.port_manager import TestPortManager
     from tests.protocols import FlextWebTestProtocols, FlextWebTestProtocols as p
     from tests.typings import FlextWebTestTypes, FlextWebTestTypes as t
     from tests.unit import (
@@ -96,7 +94,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
         "FlextWebTestProtocols": "tests.protocols",
         "FlextWebTestTypes": "tests.typings",
         "FlextWebTestUtilities": "tests.utilities",
-        "TestPortManager": "tests.port_manager",
         "c": ("tests.constants", "FlextWebTestConstants"),
         "conftest": "tests.conftest",
         "constants": "tests.constants",
@@ -110,7 +107,6 @@ _LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
         "m": ("tests.models", "FlextWebTestModels"),
         "models": "tests.models",
         "p": ("tests.protocols", "FlextWebTestProtocols"),
-        "port_manager": "tests.port_manager",
         "production_config": "tests.conftest",
         "protocols": "tests.protocols",
         "pytest_configure": "tests.conftest",
