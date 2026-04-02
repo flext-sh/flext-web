@@ -30,6 +30,14 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
         class Tests:
             """Test-specific utilities."""
 
+            @staticmethod
+            def _is_numeric(value: t.NormalizedValue) -> bool:
+                """Return whether value is a numeric scalar excluding bool."""
+                return isinstance(value, t.NUMERIC_TYPES) and not isinstance(
+                    value,
+                    bool,
+                )
+
             class TestPortManager:
                 """Thread-safe port allocation manager for test services."""
 
@@ -158,7 +166,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return r[BaseModel].fail("Invalid headers for http_request")
                     if body is not None and not isinstance(body, (str, dict)):
                         return r[BaseModel].fail("Invalid body for http_request")
-                    if not isinstance(timeout, t.Numeric):
+                    if not FlextWebTestUtilities.Web.Tests._is_numeric(timeout):
                         return r[BaseModel].fail("Invalid timeout for http_request")
                     narrow_headers: t.StrMapping | None = (
                         {k: str(v) for k, v in headers.items()}
@@ -168,9 +176,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                     narrow_body: str | t.ScalarMapping | None = (
                         body
                         if isinstance(body, str) or body is None
-                        else {
-                            k: v for k, v in body.items() if isinstance(v, t.Primitives)
-                        }
+                        else {k: v for k, v in body.items() if u.is_primitive(v)}
                     )
                     return FlextWebTestUtilities.Web.Tests._wrap_result(
                         t.create_http_request(
@@ -194,9 +200,8 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return r[BaseModel].fail("Invalid headers for http_response")
                     if body is not None and not isinstance(body, (str, dict)):
                         return r[BaseModel].fail("Invalid body for http_response")
-                    if elapsed_time is not None and not isinstance(
-                        elapsed_time,
-                        t.Numeric,
+                    if elapsed_time is not None and not (
+                        FlextWebTestUtilities.Web.Tests._is_numeric(elapsed_time)
                     ):
                         return r[BaseModel].fail(
                             "Invalid elapsed_time for http_response",
@@ -209,9 +214,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                     resp_body: str | t.ScalarMapping | None = (
                         body
                         if isinstance(body, str) or body is None
-                        else {
-                            k: v for k, v in body.items() if isinstance(v, t.Primitives)
-                        }
+                        else {k: v for k, v in body.items() if u.is_primitive(v)}
                     )
                     return FlextWebTestUtilities.Web.Tests._wrap_result(
                         t.create_http_response(
@@ -246,11 +249,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             body
                             if isinstance(body, str) or body is None
                             else (
-                                {
-                                    k: v
-                                    for k, v in body.items()
-                                    if isinstance(v, t.Primitives)
-                                }
+                                {k: v for k, v in body.items() if u.is_primitive(v)}
                                 if isinstance(body, dict)
                                 else None
                             )
@@ -261,7 +260,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             else {
                                 k: v
                                 for k, v in query_params.items()
-                                if isinstance(v, t.Primitives)
+                                if u.is_primitive(v)
                             }
                         )
                         config = t.Web.RequestConfig(
@@ -271,7 +270,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             body=body_value,
                             timeout=(
                                 float(timeout)
-                                if isinstance(timeout, t.Numeric)
+                                if FlextWebTestUtilities.Web.Tests._is_numeric(timeout)
                                 else 30.0
                             ),
                             query_params=query_params_dict,
@@ -312,11 +311,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             body
                             if isinstance(body, str) or body is None
                             else (
-                                {
-                                    k: v
-                                    for k, v in body.items()
-                                    if isinstance(v, t.Primitives)
-                                }
+                                {k: v for k, v in body.items() if u.is_primitive(v)}
                                 if isinstance(body, dict)
                                 else None
                             )
@@ -332,7 +327,9 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             body=body_value,
                             elapsed_time=(
                                 float(elapsed_time)
-                                if isinstance(elapsed_time, t.Numeric)
+                                if FlextWebTestUtilities.Web.Tests._is_numeric(
+                                    elapsed_time,
+                                )
                                 else 0.0
                             ),
                             content_type=(
@@ -345,7 +342,9 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                             processing_time_ms=(
                                 processing_time_ms
-                                if isinstance(processing_time_ms, t.Numeric)
+                                if FlextWebTestUtilities.Web.Tests._is_numeric(
+                                    processing_time_ms,
+                                )
                                 else 0.0
                             ),
                         )
@@ -389,7 +388,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
                     }
                     app_data.update({
-                        k: v for k, v in kwargs.items() if isinstance(v, t.Primitives)
+                        k: v for k, v in kwargs.items() if u.is_primitive(v)
                     })
                     return app_data
                 if data_type == "entity_data":
@@ -398,7 +397,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         "name": "Test Entity",
                     }
                     entity_data.update({
-                        k: v for k, v in kwargs.items() if isinstance(v, t.Primitives)
+                        k: v for k, v in kwargs.items() if u.is_primitive(v)
                     })
                     return entity_data
                 if data_type == "config_data":
@@ -408,7 +407,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         "debug": True,
                     }
                     config_data.update({
-                        k: v for k, v in kwargs.items() if isinstance(v, t.Primitives)
+                        k: v for k, v in kwargs.items() if u.is_primitive(v)
                     })
                     return config_data
                 if data_type == "request_data":

@@ -30,7 +30,13 @@ from flext_web.__version__ import (
 )
 
 if _TYPE_CHECKING:
-    from flext_core import FlextTypes, d, e, h, r, s, x
+    from flext_core import FlextTypes
+    from flext_core.decorators import FlextDecorators as d
+    from flext_core.exceptions import FlextExceptions as e
+    from flext_core.handlers import FlextHandlers as h
+    from flext_core.mixins import FlextMixins as x
+    from flext_core.result import FlextResult as r
+    from flext_core.service import FlextService as s
     from flext_web import (
         api,
         base,
@@ -79,15 +85,15 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "base": "flext_web.base",
         "c": ("flext_web.constants", "FlextWebConstants"),
         "constants": "flext_web.constants",
-        "d": "flext_core",
-        "e": "flext_core",
-        "h": "flext_core",
+        "d": ("flext_core.decorators", "FlextDecorators"),
+        "e": ("flext_core.exceptions", "FlextExceptions"),
+        "h": ("flext_core.handlers", "FlextHandlers"),
         "m": ("flext_web.models", "FlextWebModels"),
         "models": "flext_web.models",
         "p": ("flext_web.protocols", "FlextWebProtocols"),
         "protocols": "flext_web.protocols",
-        "r": "flext_core",
-        "s": "flext_core",
+        "r": ("flext_core.result", "FlextResult"),
+        "s": ("flext_core.service", "FlextService"),
         "services": "flext_web.services",
         "settings": "flext_web.settings",
         "t": ("flext_web.typings", "FlextWebTypes"),
@@ -95,7 +101,7 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
         "u": ("flext_web.utilities", "FlextWebUtilities"),
         "utilities": "flext_web.utilities",
         "web": "flext_web.api",
-        "x": "flext_core",
+        "x": ("flext_core.mixins", "FlextMixins"),
     },
 )
 
