@@ -3,6 +3,10 @@
 Tests the package initialization and exports.
 """
 
+from __future__ import annotations
+
+from collections.abc import Sequence
+
 from flext_tests import tm
 
 import flext_web
@@ -86,7 +90,8 @@ class TestFlextWebInit:
             "web",
             "x",
         }
-        assert set(flext_web.__all__) == expected_exports
+        module_all: Sequence[str] = getattr(flext_web, "__all__", [])
+        assert set(module_all) == expected_exports
 
     def test_imports_are_classes_or_modules(self) -> None:
         """Test that imported items are of correct types."""

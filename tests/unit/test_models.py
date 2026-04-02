@@ -9,7 +9,7 @@ import pytest
 from flext_tests import tm
 from pydantic import ValidationError
 
-from tests import c, create_entry, create_test_app, m, t
+from tests import c, m, t, u
 
 
 class TestFlextWebModels:
@@ -27,7 +27,7 @@ class TestFlextWebModels:
 
     def test_web_app_initialization_with_defaults(self) -> None:
         """Test WebApp initialization with defaults."""
-        app = create_test_app()
+        app = u.Web.Tests.create_test_app()
         tm.that(app.id, eq="test-id")
         tm.that(app.name, eq=c.Web.Tests.TestWeb.TEST_APP_NAME)
         tm.that(app.host, eq=c.Web.WebDefaults.HOST)
@@ -169,7 +169,7 @@ class TestFlextWebModels:
 
     def test_web_app_metrics_update(self) -> None:
         """Test WebApp metrics update."""
-        app = create_test_app()
+        app = u.Web.Tests.create_test_app()
         metrics: t.ScalarMapping = {"requests": 100, "errors": 5}
         result = app.update_metrics(metrics)
         tm.ok(result)
@@ -274,7 +274,12 @@ class TestFlextWebModels:
 
     def test_create_web_app_factory(self) -> None:
         """Test create_web_app factory method."""
-        result = create_entry("web_app", name="test-app", host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name="test-app",
+            host="localhost",
+            port=8080,
+        )
         assert result.is_success, result.error
         app = result.value
         assert isinstance(app, m.Web.Entity)
@@ -284,7 +289,7 @@ class TestFlextWebModels:
 
     def test_create_web_request_factory(self) -> None:
         """Test create_web_request factory method."""
-        result = create_entry(
+        result = u.Web.Tests.create_entry(
             "web_request",
             method="POST",
             url="http://localhost:8080/api/test",
@@ -299,7 +304,7 @@ class TestFlextWebModels:
 
     def test_create_web_response_factory(self) -> None:
         """Test create_web_response factory method."""
-        result = create_entry(
+        result = u.Web.Tests.create_entry(
             "web_response",
             request_id="req-123",
             status_code=201,
@@ -451,7 +456,7 @@ class TestFlextWebModels:
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers coerces to empty dict."""
-        result = create_entry(
+        result = u.Web.Tests.create_entry(
             "web_request",
             method="GET",
             url="http://localhost:8080",
@@ -461,7 +466,7 @@ class TestFlextWebModels:
 
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers coerces to empty dict."""
-        result = create_entry(
+        result = u.Web.Tests.create_entry(
             "web_response",
             request_id="test-123",
             status_code=200,
@@ -494,7 +499,12 @@ class TestFlextWebModels:
 
     def test_create_web_app_validation_error(self) -> None:
         """Test create_web_app with validation error (lines 914-920)."""
-        result = create_entry("web_app", name="ab", host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name="ab",
+            host="localhost",
+            port=8080,
+        )
         tm.fail(result)
         assert result.error is not None
         tm.that(
@@ -508,19 +518,28 @@ class TestFlextWebModels:
 
     def test_create_web_app_value_error(self) -> None:
         """Test create_web_app with ValueError (lines 914-920)."""
-        result = create_entry("web_app", name="root", host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name="root",
+            host="localhost",
+            port=8080,
+        )
         tm.fail(result)
 
     def test_create_web_request_validation_error(self) -> None:
         """Test create_web_request with validation error (lines 961-967)."""
-        result = create_entry("web_request", method="GET", url="")
+        result = u.Web.Tests.create_entry("web_request", method="GET", url="")
         assert result.is_failure, "Empty URL should cause validation failure"
         tm.fail(result)
         tm.that(result.error, none=False)
 
     def test_create_web_response_validation_error(self) -> None:
         """Test create_web_response with validation error (lines 1008-1014)."""
-        result = create_entry("web_response", request_id="test-123", status_code=999)
+        result = u.Web.Tests.create_entry(
+            "web_response",
+            request_id="test-123",
+            status_code=999,
+        )
         assert result.is_failure, "Invalid status code should cause validation failure"
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -528,11 +547,21 @@ class TestFlextWebModels:
     def test_application_edge_cases(self) -> None:
         """Test Application model with edge cases."""
         max_name = "a" * 100
-        result = create_entry("web_app", name=max_name, host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name=max_name,
+            host="localhost",
+            port=8080,
+        )
         tm.ok(result)
-        result = create_entry("web_app", name="a", host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name="a",
+            host="localhost",
+            port=8080,
+        )
         tm.fail(result)
-        result = create_entry(
+        result = u.Web.Tests.create_entry(
             "web_app",
             name="test_app-123_special",
             host="localhost",
@@ -542,13 +571,19 @@ class TestFlextWebModels:
 
     def test_application_invalid_cases(self) -> None:
         """Test Application model with invalid inputs."""
-        result = create_entry("web_app", name="", host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app", name="", host="localhost", port=8080
+        )
         tm.fail(result)
-        result = create_entry("web_app", name=None, host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app", name=None, host="localhost", port=8080
+        )
         tm.fail(result)
-        result = create_entry("web_app", name="test", host="localhost", port=0)
+        result = u.Web.Tests.create_entry(
+            "web_app", name="test", host="localhost", port=0
+        )
         tm.fail(result)
-        result = create_entry("web_app", name="test", host="", port=8080)
+        result = u.Web.Tests.create_entry("web_app", name="test", host="", port=8080)
         tm.fail(result)
 
     @pytest.mark.parametrize(
@@ -575,7 +610,7 @@ class TestFlextWebModels:
         should_succeed: bool,
     ) -> None:
         """Test application creation with parametrized edge cases."""
-        result = create_entry("web_app", name=name, host=host, port=port)
+        result = u.Web.Tests.create_entry("web_app", name=name, host=host, port=port)
         if should_succeed:
             assert result.is_success, (
                 f"Expected success for app '{name}', got: {result.error}"
@@ -594,23 +629,50 @@ class TestFlextWebModels:
     def test_extreme_edge_cases(self) -> None:
         """Test absolute extreme edge cases that might reveal bugs."""
         unicode_name = "测试应用_🚀_123"
-        result = create_entry("web_app", name=unicode_name, host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name=unicode_name,
+            host="localhost",
+            port=8080,
+        )
         tm.ok(result)
-        result = create_entry("web_app", name="test", host="localhost", port=65535)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name="test",
+            host="localhost",
+            port=65535,
+        )
         tm.ok(result)
         ipv6_host = "2001:db8::1"
-        result = create_entry("web_app", name="test", host=ipv6_host, port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name="test",
+            host=ipv6_host,
+            port=8080,
+        )
         tm.that(result.is_success or result.is_failure, eq=True)
         long_hostname = "a" * 253
-        result = create_entry("web_app", name="test", host=long_hostname, port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name="test",
+            host=long_hostname,
+            port=8080,
+        )
         tm.ok(result)
-        result = create_entry("web_app", name="x", host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app", name="x", host="localhost", port=8080
+        )
         tm.fail(result)
         max_name = "x" * 100
-        result = create_entry("web_app", name=max_name, host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name=max_name,
+            host="localhost",
+            port=8080,
+        )
         tm.ok(result)
         too_long_name = "x" * 101
-        result = create_entry(
+        result = u.Web.Tests.create_entry(
             "web_app",
             name=too_long_name,
             host="localhost",
@@ -631,7 +693,7 @@ class TestFlextWebModels:
             "system",
         ]
         for dangerous_name in dangerous_patterns:
-            result = create_entry(
+            result = u.Web.Tests.create_entry(
                 "web_app",
                 name=dangerous_name,
                 host="localhost",
@@ -660,7 +722,12 @@ class TestFlextWebModels:
     def test_application_name_too_long(self) -> None:
         """Test application creation with name too long."""
         long_name = "a" * 101
-        result = create_entry("web_app", name=long_name, host="localhost", port=8080)
+        result = u.Web.Tests.create_entry(
+            "web_app",
+            name=long_name,
+            host="localhost",
+            port=8080,
+        )
         tm.fail(result)
         tm.that(
             result.error
