@@ -6,9 +6,9 @@ import uuid
 from collections.abc import MutableMapping, Sequence
 from typing import override
 
-from flext_core import r
 from pydantic import PrivateAttr
 
+from flext_core import r
 from flext_web import FlextWebModels as m, FlextWebServiceBase, FlextWebUtilities as u
 
 

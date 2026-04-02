@@ -279,7 +279,7 @@ class FlextWebConstants(FlextConstants):
                 "Content-Type",
                 "Authorization",
             )
-            SESSION_DEFAULTS: ClassVar[Mapping[str, str | bool]] = MappingProxyType({
+            SESSION_DEFAULTS: ClassVar[t.FeatureFlagMapping] = MappingProxyType({
                 "secure": False,
                 "httponly": True,
                 "samesite": "Lax",

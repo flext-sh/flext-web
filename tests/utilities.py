@@ -13,10 +13,10 @@ from threading import Lock
 from typing import ClassVar
 
 import pytest
-from flext_core import r
 from flext_tests import FlextTestsUtilities
 from pydantic import BaseModel, ValidationError
 
+from flext_core import r
 from flext_web import FlextWebUtilities
 from tests.constants import FlextWebTestConstants
 from tests.models import FlextWebTestModels

@@ -15,7 +15,6 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING as _TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
-
 from flext_web.__version__ import (
     VERSION,
     FlextWebVersion,
@@ -32,7 +31,6 @@ from flext_web.__version__ import (
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes, d, e, h, r, s, x
-
     from flext_web import (
         api,
         base,
@@ -66,7 +64,7 @@ if _TYPE_CHECKING:
     from flext_web.typings import FlextWebTypes, FlextWebTypes as t
     from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = merge_lazy_imports(
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = merge_lazy_imports(
     ("flext_web.services",),
     {
         "FlextWeb": "flext_web.api",

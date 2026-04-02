@@ -11,9 +11,9 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_core import FlextSettings, r
 from pydantic import Field, ValidationError, computed_field, field_validator
 
+from flext_core import FlextSettings, r
 from flext_web import c, t
 
 

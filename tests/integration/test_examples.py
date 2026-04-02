@@ -6,9 +6,9 @@ import importlib.util
 from pathlib import Path
 from types import ModuleType
 
-from flext_core import FlextLogger
 from flext_tests import tm
 
+from flext_core import FlextLogger
 from flext_web import web
 
 logger = FlextLogger(__name__)

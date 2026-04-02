@@ -12,8 +12,9 @@ from __future__ import annotations
 from importlib.metadata import metadata
 from typing import Annotated, Final
 
-from flext_core import FlextModels
 from pydantic import Field
+
+from flext_core import FlextModels
 
 _metadata = metadata("flext-web")
 __version__: Final[str] = _metadata["Version"]

@@ -5,9 +5,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import override
 
-from flext_core import r
 from pydantic import PrivateAttr
 
+from flext_core import r
 from flext_web import (
     FlextWebAuth,
     FlextWebEntities,

@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import override
 
 from flext_core import r
-
 from flext_web import (
     FlextWebConstants as c,
     FlextWebModels as m,

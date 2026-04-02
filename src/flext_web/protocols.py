@@ -31,18 +31,18 @@ from collections.abc import Awaitable, Callable, Mapping, Sequence
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import ClassVar, Protocol, TypedDict, override, runtime_checkable
+from typing import ClassVar, Protocol, override, runtime_checkable
 from uuid import uuid4
 from wsgiref.simple_server import WSGIServer, make_server
 
 import flask
 import uvicorn
 from fastapi import FastAPI
-from flext_core import FlextProtocols, r
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
+from flext_core import FlextProtocols, r
 from flext_web import FlextWebApp, c, m, t, u
 
 
@@ -188,13 +188,6 @@ class FlextWebProtocols(FlextProtocols):
         ...             pass
     """
 
-    class AppRuntimeInfo(TypedDict):
-        """Runtime information for a running application."""
-
-        runner: str
-        server: uvicorn.Server | WSGIServer
-        thread: Thread
-
     class Web:
         """Web domain-specific protocols.
 
@@ -240,7 +233,7 @@ class FlextWebProtocols(FlextProtocols):
 
         apps_registry: ClassVar[dict[str, t.Web.ResponseDict]] = {}
         framework_instances: ClassVar[dict[str, flask.Flask | FastAPI]] = {}
-        app_runtimes: ClassVar[dict[str, FlextWebProtocols.AppRuntimeInfo]] = {}
+        app_runtimes: ClassVar[dict[str, m.Web.AppRuntimeInfo]] = {}
         service_state: ClassVar[dict[str, bool]] = {
             "routes_initialized": False,
             "middleware_configured": False,
@@ -391,12 +384,12 @@ class FlextWebProtocols(FlextProtocols):
             app_id: str,
             app_data: t.Web.ResponseDict,
             app_instance: flask.Flask | FastAPI,
-        ) -> r[FlextWebProtocols.AppRuntimeInfo]:
+        ) -> r[m.Web.AppRuntimeInfo]:
             host = app_data.get("host")
             port = app_data.get("port")
             interface = app_data.get("interface")
             if not isinstance(host, str) or not isinstance(port, int):
-                return r[FlextWebProtocols.AppRuntimeInfo].fail(
+                return r[m.Web.AppRuntimeInfo].fail(
                     f"Invalid runtime configuration for app: {app_id}",
                 )
             if interface == c.Web.WebFramework.INTERFACE_ASGI:
@@ -416,17 +409,17 @@ class FlextWebProtocols(FlextProtocols):
                     thread.start()
                     sleep(0.05)
                     if not thread.is_alive():
-                        return r[FlextWebProtocols.AppRuntimeInfo].fail(
+                        return r[m.Web.AppRuntimeInfo].fail(
                             f"ASGI runtime exited immediately for app: {app_id}",
                         )
-                    runtime_info: FlextWebProtocols.AppRuntimeInfo = {
-                        "runner": c.Web.WebFramework.RUNNER_UVICORN,
-                        "server": server,
-                        "thread": thread,
-                    }
-                    return r[FlextWebProtocols.AppRuntimeInfo].ok(runtime_info)
+                    runtime_info = m.Web.AppRuntimeInfo(
+                        runner=c.Web.WebFramework.RUNNER_UVICORN,
+                        server=server,
+                        thread=thread,
+                    )
+                    return r[m.Web.AppRuntimeInfo].ok(runtime_info)
                 except (RuntimeError, OSError, ValueError, TypeError) as exc:
-                    return r[FlextWebProtocols.AppRuntimeInfo].fail(
+                    return r[m.Web.AppRuntimeInfo].fail(
                         f"Failed to start ASGI runtime for app {app_id}: {exc}",
                     )
             if interface == c.Web.WebFramework.INTERFACE_WSGI and isinstance(
@@ -443,15 +436,15 @@ class FlextWebProtocols(FlextProtocols):
                     thread.start()
                     sleep(0.05)
                     if not thread.is_alive():
-                        return r[FlextWebProtocols.AppRuntimeInfo].fail(
+                        return r[m.Web.AppRuntimeInfo].fail(
                             f"WSGI runtime exited immediately for app: {app_id}",
                         )
-                    wsgi_runtime_info: FlextWebProtocols.AppRuntimeInfo = {
-                        "runner": c.Web.WebFramework.RUNNER_WERKZEUG,
-                        "server": wsgi_server,
-                        "thread": thread,
-                    }
-                    return r[FlextWebProtocols.AppRuntimeInfo].ok(wsgi_runtime_info)
+                    wsgi_runtime_info = m.Web.AppRuntimeInfo(
+                        runner=c.Web.WebFramework.RUNNER_WERKZEUG,
+                        server=wsgi_server,
+                        thread=thread,
+                    )
+                    return r[m.Web.AppRuntimeInfo].ok(wsgi_runtime_info)
                 except (
                     RuntimeError,
                     OSError,
@@ -459,21 +452,21 @@ class FlextWebProtocols(FlextProtocols):
                     TypeError,
                     AttributeError,
                 ) as exc:
-                    return r[FlextWebProtocols.AppRuntimeInfo].fail(
+                    return r[m.Web.AppRuntimeInfo].fail(
                         f"Failed to start WSGI runtime for app {app_id}: {exc}",
                     )
-            return r[FlextWebProtocols.AppRuntimeInfo].fail(
+            return r[m.Web.AppRuntimeInfo].fail(
                 f"Unsupported app interface for runtime start: {interface}",
             )
 
         @staticmethod
         def _stop_app_runtime(
             app_id: str,
-            runtime: FlextWebProtocols.AppRuntimeInfo,
+            runtime: m.Web.AppRuntimeInfo,
         ) -> r[bool]:
-            runner: str = runtime["runner"]
-            server: uvicorn.Server | WSGIServer = runtime["server"]
-            thread: Thread = runtime["thread"]
+            runner: str = runtime.runner
+            server: uvicorn.Server | WSGIServer = runtime.server
+            thread: Thread = runtime.thread
             try:
                 if runner == c.Web.WebFramework.RUNNER_UVICORN:
                     if not isinstance(server, uvicorn.Server):
@@ -512,9 +505,9 @@ class FlextWebProtocols(FlextProtocols):
         configure_framework_app_middleware: ClassVar[Callable[..., None]] = (
             _configure_framework_app_middleware
         )
-        start_app_runtime: ClassVar[
-            Callable[..., r[FlextWebProtocols.AppRuntimeInfo]]
-        ] = _start_app_runtime
+        start_app_runtime: ClassVar[Callable[..., r[m.Web.AppRuntimeInfo]]] = (
+            _start_app_runtime
+        )
         stop_app_runtime: ClassVar[Callable[..., r[bool]]] = _stop_app_runtime
         is_valid_port: ClassVar[Callable[[int], bool]] = _is_valid_port
 

@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import os
 import threading
-from collections.abc import Generator, Mapping
+from collections.abc import Generator
 from pathlib import Path
 
 import pytest
@@ -111,7 +111,7 @@ def running_service(real_config: FlextWebSettings) -> Generator[FlextWebServices
 
 
 @pytest.fixture
-def test_app_data() -> Mapping[str, str | int]:
+def test_app_data() -> t.HeaderMapping:
     """Real application data for testing."""
     return {
         "name": "test-application",
@@ -121,7 +121,7 @@ def test_app_data() -> Mapping[str, str | int]:
 
 
 @pytest.fixture
-def invalid_app_data() -> Mapping[str, str | int]:
+def invalid_app_data() -> t.HeaderMapping:
     """Invalid application data for error testing."""
     return {"name": "", "port": 99999, "host": ""}
 

@@ -10,7 +10,6 @@ from __future__ import annotations
 from typing import ClassVar, override
 
 from flext_core import r
-
 from flext_web import FlextWebServiceBase, c, m, u
 
 

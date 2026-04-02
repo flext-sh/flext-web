@@ -11,9 +11,9 @@ from typing import override
 import flask
 import pytest
 from fastapi import FastAPI
-from flext_core import r
 from flext_tests import tm
 
+from flext_core import r
 from tests import c, p, t
 
 _WebAppManagerBase = p.Web.TestBases._WebAppManagerBase

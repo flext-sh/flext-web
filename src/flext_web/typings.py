@@ -13,9 +13,9 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Annotated
 
-from flext_core import FlextTypes, r
 from pydantic import Field
 
+from flext_core import FlextTypes, r
 from flext_web import (
     FlextWebConstants as c,
     FlextWebModels as m,

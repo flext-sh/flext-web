@@ -6,7 +6,6 @@ import socket
 from collections.abc import Sequence
 
 from flext_core import r
-
 from flext_web import m, web
 
 

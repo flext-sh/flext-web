@@ -10,11 +10,14 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import Annotated, override
+from threading import Thread
+from typing import Annotated, ClassVar, override
+from wsgiref.simple_server import WSGIServer
+
+import uvicorn
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from flext_core import FlextModels, FlextTypes as t, r
-from pydantic import BaseModel, Field, field_validator
-
 from flext_web import FlextWebConstants as c, FlextWebUtilities as u
 
 
@@ -1287,6 +1290,31 @@ class FlextWebModels(FlextModels):
             version: Annotated[str, Field(description="Service version")]
             timestamp: Annotated[str, Field(description="Status timestamp")]
             components: Annotated[t.StrMapping, Field(description="Component statuses")]
+
+        class AppRuntimeInfo(FlextModels.ArbitraryTypesModel):
+            """Runtime information for a running web application.
+
+            Tracks the server instance, daemon thread, and runner type
+            for each started application so it can be stopped cleanly.
+            """
+
+            model_config: ClassVar[ConfigDict] = ConfigDict(
+                arbitrary_types_allowed=True,
+                frozen=True,
+                extra="forbid",
+            )
+            runner: Annotated[
+                str,
+                Field(description="Runtime runner name (uvicorn, werkzeug)"),
+            ]
+            server: Annotated[
+                uvicorn.Server | WSGIServer,
+                Field(description="Server instance for lifecycle management"),
+            ]
+            thread: Annotated[
+                Thread,
+                Field(description="Daemon thread running the server"),
+            ]
 
 
 m = FlextWebModels

@@ -7,7 +7,6 @@ import sys
 from collections.abc import Sequence
 
 from flext_core import r
-
 from flext_web import FlextWeb, FlextWebSettings, web
 
 

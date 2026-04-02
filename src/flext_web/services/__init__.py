@@ -12,7 +12,6 @@ from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
-
     from flext_web.services import app, auth, entities, handlers, health, web
     from flext_web.services.app import FlextWebApp
     from flext_web.services.auth import FlextWebAuth
@@ -21,7 +20,7 @@ if _TYPE_CHECKING:
     from flext_web.services.health import FlextWebHealth
     from flext_web.services.web import FlextWebServices
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "FlextWebApp": "flext_web.services.app",
     "FlextWebAuth": "flext_web.services.auth",
     "FlextWebEntities": "flext_web.services.entities",

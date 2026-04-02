@@ -14,7 +14,6 @@ from collections.abc import Sequence
 from typing import override
 
 from flext_core import FlextSettings, s, t
-
 from flext_web import FlextWebSettings
 
 

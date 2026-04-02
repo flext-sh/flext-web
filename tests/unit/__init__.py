@@ -12,7 +12,6 @@ from flext_core.lazy import install_lazy_exports
 
 if _TYPE_CHECKING:
     from flext_core import FlextTypes
-
     from tests.unit import (
         test___init__,
         test___main__,
@@ -43,7 +42,7 @@ if _TYPE_CHECKING:
     from tests.unit.test_utilities import TestFlextWebUtilities
     from tests.unit.test_version import TestFlextWebVersion, assert_version_info
 
-_LAZY_IMPORTS: Mapping[str, str | Sequence[str]] = {
+_LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "TestFlextWebApi": "tests.unit.test_api",
     "TestFlextWebApp": "tests.unit.test_app",
     "TestFlextWebCliService": "tests.unit.test___main__",
