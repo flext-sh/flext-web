@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections.abc import Sequence
 
 from flext_core import r
-from flext_web import FlextWeb, FlextWebSettings, web
+from flext_web import FlextWeb, FlextWebSettings, t, web
 
 
 class FlextWebCliService:
@@ -31,18 +30,18 @@ class FlextWebCliService:
     @classmethod
     def parse_args(
         cls,
-        argv: Sequence[str] | None = None,
+        argv: t.StrSequence | None = None,
     ) -> argparse.Namespace:
         """Parse CLI arguments."""
         return cls.build_parser().parse_args(list(argv) if argv is not None else None)
 
     @classmethod
-    def main(cls, argv: Sequence[str] | None = None) -> None:
+    def main(cls, argv: t.StrSequence | None = None) -> None:
         """CLI entry point following the console script contract."""
         result = cls().run(argv)
         sys.exit(0 if result.is_success else 1)
 
-    def run(self, argv: Sequence[str] | None = None) -> r[bool]:
+    def run(self, argv: t.StrSequence | None = None) -> r[bool]:
         """Run the public web facade from CLI arguments."""
         args = self.parse_args(argv)
         debug_value = False if args.no_debug else bool(args.debug)

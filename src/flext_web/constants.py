@@ -120,7 +120,7 @@ class FlextWebConstants(FlextConstants):
             MAINTENANCE = "maintenance"
             DEPLOYING = "deploying"
 
-        STATUS_CODES: ClassVar[Mapping[str, int]] = MappingProxyType({
+        STATUS_CODES: ClassVar[t.IntMapping] = MappingProxyType({
             status.name: int(status.value) for status in StatusCode
         })
         STATUS_RANGES: ClassVar[Mapping[str, tuple[int, int]]] = MappingProxyType({
@@ -225,7 +225,7 @@ class FlextWebConstants(FlextConstants):
             )
             REQUEST_TIMEOUT_RANGE: Final[tuple[int, int]] = (1, REQUEST_TIMEOUT_MAX)
             URL_LENGTH_RANGE: Final[tuple[int, int]] = (MIN_URL_LENGTH, MAX_URL_LENGTH)
-            HEADER_LIMITS: ClassVar[Mapping[str, int]] = MappingProxyType({
+            HEADER_LIMITS: ClassVar[t.IntMapping] = MappingProxyType({
                 "max_length": MAX_HEADER_LENGTH,
                 "max_count": MAX_HEADERS_COUNT,
             })

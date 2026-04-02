@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import socket
 import time
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Sequence
 from threading import Lock
 from typing import ClassVar
 
@@ -18,9 +18,7 @@ from pydantic import BaseModel, ValidationError
 
 from flext_core import r
 from flext_web import FlextWebUtilities
-from tests.constants import FlextWebTestConstants
-from tests.models import FlextWebTestModels
-from tests.typings import FlextWebTestTypes
+from tests import c, m, t
 
 
 class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
@@ -37,9 +35,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
 
                 _lock: ClassVar[Lock] = Lock()
                 _allocated_ports: ClassVar[set[int]] = set()
-                _current_port: ClassVar[int] = (
-                    FlextWebTestConstants.Web.Tests.TestPort.PORT_START
-                )
+                _current_port: ClassVar[int] = c.Web.Tests.TestPort.PORT_START
 
                 @classmethod
                 def allocate_port(cls) -> int:
@@ -47,13 +43,8 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                     with cls._lock:
                         while cls._current_port in cls._allocated_ports:
                             cls._current_port += 1
-                            if (
-                                cls._current_port
-                                > FlextWebTestConstants.Web.Tests.TestPort.PORT_END
-                            ):
-                                cls._current_port = (
-                                    FlextWebTestConstants.Web.Tests.TestPort.PORT_START
-                                )
+                            if cls._current_port > c.Web.Tests.TestPort.PORT_END:
+                                cls._current_port = c.Web.Tests.TestPort.PORT_START
                         port = cls._current_port
                         cls._allocated_ports.add(port)
                         cls._current_port += 1
@@ -70,9 +61,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                     """Reset the allocated test ports."""
                     with cls._lock:
                         cls._allocated_ports.clear()
-                        cls._current_port = (
-                            FlextWebTestConstants.Web.Tests.TestPort.PORT_START
-                        )
+                        cls._current_port = c.Web.Tests.TestPort.PORT_START
 
             @staticmethod
             def wait_for_port(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -132,7 +121,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
             @staticmethod
             def create_entry(
                 entry_type: str,
-                **kwargs: FlextWebTestTypes.NormalizedValue,
+                **kwargs: t.NormalizedValue,
             ) -> r[BaseModel]:
                 """Create test entities through runtime namespaced MRO factories."""
                 if entry_type == "web_app":
@@ -147,7 +136,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return r[BaseModel].fail("Invalid parameters for web_app")
                     try:
                         return FlextWebTestUtilities.Web.Tests._wrap_result(
-                            FlextWebTestModels.Web.create_web_app(
+                            m.Web.create_web_app(
                                 name=name,
                                 host=host,
                                 port=port,
@@ -169,24 +158,22 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return r[BaseModel].fail("Invalid headers for http_request")
                     if body is not None and not isinstance(body, (str, dict)):
                         return r[BaseModel].fail("Invalid body for http_request")
-                    if not isinstance(timeout, int | float):
+                    if not isinstance(timeout, t.Numeric):
                         return r[BaseModel].fail("Invalid timeout for http_request")
-                    narrow_headers: Mapping[str, str] | None = (
+                    narrow_headers: t.StrMapping | None = (
                         {k: str(v) for k, v in headers.items()}
                         if isinstance(headers, dict)
                         else None
                     )
-                    narrow_body: str | FlextWebTestTypes.ScalarMapping | None = (
+                    narrow_body: str | t.ScalarMapping | None = (
                         body
                         if isinstance(body, str) or body is None
                         else {
-                            k: v
-                            for k, v in body.items()
-                            if isinstance(v, str | int | float | bool)
+                            k: v for k, v in body.items() if isinstance(v, t.Primitives)
                         }
                     )
                     return FlextWebTestUtilities.Web.Tests._wrap_result(
-                        FlextWebTestTypes.create_http_request(
+                        t.create_http_request(
                             url=url,
                             method=method,
                             headers=narrow_headers,
@@ -209,27 +196,25 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return r[BaseModel].fail("Invalid body for http_response")
                     if elapsed_time is not None and not isinstance(
                         elapsed_time,
-                        int | float,
+                        t.Numeric,
                     ):
                         return r[BaseModel].fail(
                             "Invalid elapsed_time for http_response",
                         )
-                    resp_headers: Mapping[str, str] | None = (
+                    resp_headers: t.StrMapping | None = (
                         {k: str(v) for k, v in headers.items()}
                         if isinstance(headers, dict)
                         else None
                     )
-                    resp_body: str | FlextWebTestTypes.ScalarMapping | None = (
+                    resp_body: str | t.ScalarMapping | None = (
                         body
                         if isinstance(body, str) or body is None
                         else {
-                            k: v
-                            for k, v in body.items()
-                            if isinstance(v, str | int | float | bool)
+                            k: v for k, v in body.items() if isinstance(v, t.Primitives)
                         }
                     )
                     return FlextWebTestUtilities.Web.Tests._wrap_result(
-                        FlextWebTestTypes.create_http_response(
+                        t.create_http_response(
                             status_code=status_code,
                             headers=resp_headers,
                             body=resp_body,
@@ -252,41 +237,41 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                     if not isinstance(url, str) or not isinstance(method, str):
                         return r[BaseModel].fail("Invalid parameters for web_request")
                     try:
-                        headers_dict: FlextWebTestTypes.StrMapping = (
+                        headers_dict: t.StrMapping = (
                             {}
                             if not isinstance(headers, dict)
                             else {k: str(v) for k, v in headers.items()}
                         )
-                        body_value: FlextWebTestTypes.ScalarMapping | str | None = (
+                        body_value: t.ScalarMapping | str | None = (
                             body
                             if isinstance(body, str) or body is None
                             else (
                                 {
                                     k: v
                                     for k, v in body.items()
-                                    if isinstance(v, str | int | float | bool)
+                                    if isinstance(v, t.Primitives)
                                 }
                                 if isinstance(body, dict)
                                 else None
                             )
                         )
-                        query_params_dict: FlextWebTestTypes.ScalarMapping = (
+                        query_params_dict: t.ScalarMapping = (
                             {}
                             if not isinstance(query_params, dict)
                             else {
                                 k: v
                                 for k, v in query_params.items()
-                                if isinstance(v, str | int | float | bool)
+                                if isinstance(v, t.Primitives)
                             }
                         )
-                        config = FlextWebTestTypes.Web.RequestConfig(
+                        config = t.Web.RequestConfig(
                             url=url,
                             method=method,
                             headers=headers_dict,
                             body=body_value,
                             timeout=(
                                 float(timeout)
-                                if isinstance(timeout, int | float)
+                                if isinstance(timeout, t.Numeric)
                                 else 30.0
                             ),
                             query_params=query_params_dict,
@@ -300,7 +285,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                         )
                         return FlextWebTestUtilities.Web.Tests._wrap_result(
-                            FlextWebTestTypes.create_web_request(config),
+                            t.create_web_request(config),
                         )
                     except (ValidationError, ValueError, TypeError) as exc:
                         return r[BaseModel].fail(str(exc))
@@ -318,25 +303,25 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             "Invalid status_code for web_response",
                         )
                     try:
-                        headers_dict: FlextWebTestTypes.StrMapping = (
+                        headers_dict: t.StrMapping = (
                             {}
                             if not isinstance(headers, dict)
                             else {k: str(v) for k, v in headers.items()}
                         )
-                        body_value: FlextWebTestTypes.ScalarMapping | str | None = (
+                        body_value: t.ScalarMapping | str | None = (
                             body
                             if isinstance(body, str) or body is None
                             else (
                                 {
                                     k: v
                                     for k, v in body.items()
-                                    if isinstance(v, str | int | float | bool)
+                                    if isinstance(v, t.Primitives)
                                 }
                                 if isinstance(body, dict)
                                 else None
                             )
                         )
-                        config = FlextWebTestTypes.Web.ResponseConfig(
+                        config = t.Web.ResponseConfig(
                             status_code=status_code,
                             request_id=(
                                 request_id
@@ -347,7 +332,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             body=body_value,
                             elapsed_time=(
                                 float(elapsed_time)
-                                if isinstance(elapsed_time, int | float)
+                                if isinstance(elapsed_time, t.Numeric)
                                 else 0.0
                             ),
                             content_type=(
@@ -360,12 +345,12 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                             processing_time_ms=(
                                 processing_time_ms
-                                if isinstance(processing_time_ms, int | float)
+                                if isinstance(processing_time_ms, t.Numeric)
                                 else 0.0
                             ),
                         )
                         return FlextWebTestUtilities.Web.Tests._wrap_result(
-                            FlextWebTestTypes.create_web_response(config),
+                            t.create_web_response(config),
                         )
                     except (ValidationError, ValueError, TypeError) as exc:
                         return r[BaseModel].fail(str(exc))
@@ -380,70 +365,62 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         or not isinstance(port, int)
                     ):
                         return r[BaseModel].fail("Invalid parameters for application")
-                    config = FlextWebTestTypes.Web.ApplicationConfig(
+                    config = t.Web.ApplicationConfig(
                         name=name,
                         host=host,
                         port=port,
                         status=status if isinstance(status, str) else "stopped",
                     )
                     return FlextWebTestUtilities.Web.Tests._wrap_result(
-                        FlextWebTestTypes.create_application(config),
+                        t.create_application(config),
                     )
                 raise ValueError(f"Unsupported entry type: {entry_type}")
 
             @staticmethod
             def create_test_data(
                 data_type: str,
-                **kwargs: FlextWebTestTypes.Scalar,
-            ) -> dict[str, FlextWebTestTypes.NormalizedValue]:
+                **kwargs: t.Scalar,
+            ) -> dict[str, t.NormalizedValue]:
                 """Create centralized test data payloads."""
                 if data_type == "app_data":
-                    app_data: dict[str, FlextWebTestTypes.NormalizedValue] = {
-                        "name": FlextWebTestConstants.Web.Tests.TestWeb.TEST_APP_NAME,
-                        "host": FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_HOST,
-                        "port": FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_PORT,
+                    app_data: dict[str, t.NormalizedValue] = {
+                        "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
+                        "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
+                        "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
                     }
                     app_data.update({
-                        k: v
-                        for k, v in kwargs.items()
-                        if isinstance(v, str | int | float | bool)
+                        k: v for k, v in kwargs.items() if isinstance(v, t.Primitives)
                     })
                     return app_data
                 if data_type == "entity_data":
-                    entity_data: dict[str, FlextWebTestTypes.NormalizedValue] = {
+                    entity_data: dict[str, t.NormalizedValue] = {
                         "id": "test-entity",
                         "name": "Test Entity",
                     }
                     entity_data.update({
-                        k: v
-                        for k, v in kwargs.items()
-                        if isinstance(v, str | int | float | bool)
+                        k: v for k, v in kwargs.items() if isinstance(v, t.Primitives)
                     })
                     return entity_data
                 if data_type == "config_data":
-                    config_data: dict[str, FlextWebTestTypes.NormalizedValue] = {
-                        "host": FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_HOST,
-                        "port": FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_PORT,
+                    config_data: dict[str, t.NormalizedValue] = {
+                        "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
+                        "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
                         "debug": True,
                     }
                     config_data.update({
-                        k: v
-                        for k, v in kwargs.items()
-                        if isinstance(v, str | int | float | bool)
+                        k: v for k, v in kwargs.items() if isinstance(v, t.Primitives)
                     })
                     return config_data
                 if data_type == "request_data":
-                    request_data: dict[str, FlextWebTestTypes.NormalizedValue] = {
-                        "method": FlextWebTestConstants.Web.Tests.TestHttp.TEST_METHOD,
+                    request_data: dict[str, t.NormalizedValue] = {
+                        "method": c.Web.Tests.TestHttp.TEST_METHOD,
                         "url": (
                             f"http://"
-                            f"{FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_HOST}:"
-                            f"{FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_PORT}"
+                            f"{c.Web.Tests.TestWeb.DEFAULT_HOST}:"
+                            f"{c.Web.Tests.TestWeb.DEFAULT_PORT}"
                         ),
                         "headers": {
-                            "Content-Type": (
-                                FlextWebTestConstants.Web.Tests.TestHttp.TEST_CONTENT_TYPE
-                            )
+                            "Content-Type": (c.Web.Tests.TestHttp.TEST_CONTENT_TYPE)
                         },
                     }
                     request_data.update({
@@ -451,7 +428,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                     })
                     return request_data
                 if data_type == "response_data":
-                    response_data: dict[str, FlextWebTestTypes.NormalizedValue] = {
+                    response_data: dict[str, t.NormalizedValue] = {
                         "status_code": 200,
                         "request_id": "test-123",
                     }
@@ -465,14 +442,14 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def create_test_app(
-                **kwargs: FlextWebTestTypes.Scalar,
-            ) -> FlextWebTestModels.Web.Entity:
+                **kwargs: t.Scalar,
+            ) -> m.Web.Entity:
                 """Create a web test application entity."""
                 defaults: dict[str, str | int] = {
                     "id": "test-id",
-                    "name": FlextWebTestConstants.Web.Tests.TestWeb.TEST_APP_NAME,
-                    "host": FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_HOST,
-                    "port": FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_PORT,
+                    "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
+                    "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
+                    "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
                 }
                 defaults.update({
                     k: v for k, v in kwargs.items() if isinstance(v, str | int)
@@ -480,32 +457,32 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                 id_value = defaults.get("id", "test-id")
                 name_value = defaults.get(
                     "name",
-                    FlextWebTestConstants.Web.Tests.TestWeb.TEST_APP_NAME,
+                    c.Web.Tests.TestWeb.TEST_APP_NAME,
                 )
                 host_value = defaults.get(
                     "host",
-                    FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_HOST,
+                    c.Web.Tests.TestWeb.DEFAULT_HOST,
                 )
                 port_value = defaults.get(
                     "port",
-                    FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_PORT,
+                    c.Web.Tests.TestWeb.DEFAULT_PORT,
                 )
-                return FlextWebTestModels.Web.Entity(
+                return m.Web.Entity(
                     id=id_value if isinstance(id_value, str) else "test-id",
                     name=(
                         name_value
                         if isinstance(name_value, str)
-                        else FlextWebTestConstants.Web.Tests.TestWeb.TEST_APP_NAME
+                        else c.Web.Tests.TestWeb.TEST_APP_NAME
                     ),
                     host=(
                         host_value
                         if isinstance(host_value, str)
-                        else FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_HOST
+                        else c.Web.Tests.TestWeb.DEFAULT_HOST
                     ),
                     port=(
                         port_value
                         if isinstance(port_value, int)
-                        else FlextWebTestConstants.Web.Tests.TestWeb.DEFAULT_PORT
+                        else c.Web.Tests.TestWeb.DEFAULT_PORT
                     ),
                 )
 
@@ -513,20 +490,18 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
             def create_test_result(
                 *,
                 success: bool = True,
-                **kwargs: FlextWebTestTypes.Scalar,
-            ) -> r[FlextWebTestTypes.Scalar | None]:
+                **kwargs: t.Scalar,
+            ) -> r[t.Scalar | None]:
                 """Create standardized test results."""
                 if success:
-                    value: FlextWebTestTypes.Scalar | None = kwargs.get(
-                        "data"
-                    ) or kwargs.get("value")
-                    return r[FlextWebTestTypes.Scalar | None].ok(value)
+                    value: t.Scalar | None = kwargs.get("data") or kwargs.get("value")
+                    return r[t.Scalar | None].ok(value)
                 error = str(kwargs.get("error", "Test error"))
-                return r[FlextWebTestTypes.Scalar | None].fail(error)
+                return r[t.Scalar | None].fail(error)
 
             @staticmethod
             def run_parameterized_test(
-                test_cases: Sequence[tuple[FlextWebTestTypes.NormalizedValue, ...]],
+                test_cases: Sequence[tuple[t.NormalizedValue, ...]],
                 test_function: Callable[..., r[BaseModel]],
                 expected_results: Sequence[bool],
                 test_name: str = "parameterized_test",
@@ -560,8 +535,8 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
             @staticmethod
             def create_comprehensive_test_suite(
                 entity_type: str,
-                valid_cases: Sequence[FlextWebTestTypes.ScalarMapping],
-                invalid_cases: Sequence[FlextWebTestTypes.ScalarMapping],
+                valid_cases: Sequence[t.ScalarMapping],
+                invalid_cases: Sequence[t.ScalarMapping],
                 test_name_prefix: str = "comprehensive",
             ) -> None:
                 """Run comprehensive valid/invalid case suites."""

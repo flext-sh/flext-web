@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from typing import Annotated
 
 from pydantic import Field
@@ -50,11 +50,11 @@ class FlextWebTypes(FlextTypes):
         """Web core type aliases for request/response data.
 
         Provides organized access to all Web types for other FLEXT projects.
-        Usage: Other projects can reference `t.Web.Http.*`, `t.Web.Project.*`, etc.
+        Usage: Other projects can reference `FlextTypes.Web.Http.*`, `FlextTypes.Web.Project.*`, etc.
         This enables consistent namespace patterns for cross-project type access.
         """
 
-        ConfigValue = FlextTypes.Scalar | Sequence[str]
+        ConfigValue = FlextTypes.Scalar | FlextTypes.StrSequence
 
         class ApplicationConfig(m.Web.EntityConfig):
             """Application configuration with web-specific defaults."""
@@ -163,7 +163,7 @@ class FlextWebTypes(FlextTypes):
         cls,
         url: str,
         method: str = c.Web.Method.GET,
-        headers: Mapping[str, str] | None = None,
+        headers: FlextTypes.StrMapping | None = None,
         body: str | Mapping[str, FlextTypes.Scalar] | None = None,
         timeout: float = c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
     ) -> r[m.Web.Request]:
@@ -222,7 +222,7 @@ class FlextWebTypes(FlextTypes):
     def create_http_response(
         cls,
         status_code: int,
-        headers: Mapping[str, str] | None = None,
+        headers: FlextTypes.StrMapping | None = None,
         body: str | Mapping[str, FlextTypes.Scalar] | None = None,
         elapsed_time: float | None = None,
     ) -> r[m.Web.Response]:
@@ -290,7 +290,7 @@ class FlextWebTypes(FlextTypes):
         if not url or not url.strip():
             return r[m.Web.AppRequest].fail("URL is required")
         url_validated = url.strip()
-        headers_validated: Mapping[str, str] = headers or {}
+        headers_validated: FlextTypes.StrMapping = headers or {}
         query_params_validated: Mapping[str, FlextTypes.Scalar] = query_params or {}
         method_upper = method.upper()
         valid_methods = set(c.Web.Http.METHODS)
@@ -353,7 +353,7 @@ class FlextWebTypes(FlextTypes):
         content_type: str = config.content_type or c.Web.Http.CONTENT_TYPE_JSON
         content_length: int = config.content_length or 0
         processing_time_ms: float = config.processing_time_ms or 0.0
-        headers_validated: Mapping[str, str] = headers or {}
+        headers_validated: FlextTypes.StrMapping = headers or {}
 
         def create_response() -> m.Web.AppResponse:
             """Create response model."""

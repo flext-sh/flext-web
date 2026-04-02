@@ -5,12 +5,11 @@ Tests the package initialization and exports.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-
 from flext_tests import tm
 
 import flext_web
 from flext_web import __version__, __version_info__
+from tests import t
 
 
 class TestFlextWebInit:
@@ -90,7 +89,7 @@ class TestFlextWebInit:
             "web",
             "x",
         }
-        module_all: Sequence[str] = getattr(flext_web, "__all__", [])
+        module_all: t.StrSequence = getattr(flext_web, "__all__", [])
         assert set(module_all) == expected_exports
 
     def test_imports_are_classes_or_modules(self) -> None:
