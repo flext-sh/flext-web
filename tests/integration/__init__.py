@@ -23,22 +23,29 @@ if _TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from flext_web import test_examples
-    from flext_web.test_examples import ExamplesFullFunctionalityTest, logger
+    from tests.integration import test_examples
+    from tests.integration.test_examples import (
+        ExamplesFullFunctionalityTest,
+        TestExamples,
+        logger,
+        main,
+    )
 
 _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
-    "ExamplesFullFunctionalityTest": "flext_web.test_examples",
+    "ExamplesFullFunctionalityTest": "tests.integration.test_examples",
+    "TestExamples": "tests.integration.test_examples",
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
     "h": ("flext_core.handlers", "FlextHandlers"),
-    "logger": "flext_web.test_examples",
+    "logger": "tests.integration.test_examples",
     "m": ("flext_core.models", "FlextModels"),
+    "main": "tests.integration.test_examples",
     "p": ("flext_core.protocols", "FlextProtocols"),
     "r": ("flext_core.result", "FlextResult"),
     "s": ("flext_core.service", "FlextService"),
     "t": ("flext_core.typings", "FlextTypes"),
-    "test_examples": "flext_web.test_examples",
+    "test_examples": "tests.integration.test_examples",
     "u": ("flext_core.utilities", "FlextUtilities"),
     "x": ("flext_core.mixins", "FlextMixins"),
 }
