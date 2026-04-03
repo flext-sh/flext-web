@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from threading import Thread
 from typing import Annotated, ClassVar, override
@@ -641,7 +642,9 @@ class FlextWebModels(FlextModels):
             def add_domain_event(
                 self,
                 event_type: str,
-                data: t.ConfigMap | None = None,
+                data: t.ConfigMap
+                | Mapping[str, t.MetadataOrValue | None]
+                | None = None,
             ) -> r[FlextModels.Entry]:
                 if not event_type.strip():
                     return r[FlextModels.Entry].fail(

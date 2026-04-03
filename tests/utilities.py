@@ -31,12 +31,26 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
             """Test-specific utilities."""
 
             @staticmethod
-            def _is_numeric(value: t.NormalizedValue) -> bool:
+            def _is_numeric(value: t.NormalizedValue | None) -> bool:
                 """Return whether value is a numeric scalar excluding bool."""
                 return isinstance(value, t.NUMERIC_TYPES) and not isinstance(
                     value,
                     bool,
                 )
+
+            @staticmethod
+            def _to_float(value: t.NormalizedValue | None, *, default: float) -> float:
+                """Normalize supported numeric values to float with fallback."""
+                if isinstance(value, t.NUMERIC_TYPES) and not isinstance(value, bool):
+                    return float(value)
+                return default
+
+            @staticmethod
+            def _to_optional_float(value: t.NormalizedValue | None) -> float | None:
+                """Normalize supported numeric values to float or None."""
+                if isinstance(value, t.NUMERIC_TYPES) and not isinstance(value, bool):
+                    return float(value)
+                return None
 
             class TestPortManager:
                 """Thread-safe port allocation manager for test services."""
@@ -184,7 +198,10 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             method=method,
                             headers=narrow_headers,
                             body=narrow_body,
-                            timeout=float(timeout),
+                            timeout=FlextWebTestUtilities.Web.Tests._to_float(
+                                timeout,
+                                default=30.0,
+                            ),
                         ),
                     )
                 if entry_type == "http_response":
@@ -221,10 +238,8 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             status_code=status_code,
                             headers=resp_headers,
                             body=resp_body,
-                            elapsed_time=(
-                                float(elapsed_time)
-                                if elapsed_time is not None
-                                else None
+                            elapsed_time=FlextWebTestUtilities.Web.Tests._to_optional_float(
+                                elapsed_time,
                             ),
                         ),
                     )
@@ -268,10 +283,9 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             method=method,
                             headers=headers_dict,
                             body=body_value,
-                            timeout=(
-                                float(timeout)
-                                if FlextWebTestUtilities.Web.Tests._is_numeric(timeout)
-                                else 30.0
+                            timeout=FlextWebTestUtilities.Web.Tests._to_float(
+                                timeout,
+                                default=30.0,
                             ),
                             query_params=query_params_dict,
                             client_ip=(
@@ -325,12 +339,9 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                             headers=headers_dict,
                             body=body_value,
-                            elapsed_time=(
-                                float(elapsed_time)
-                                if FlextWebTestUtilities.Web.Tests._is_numeric(
-                                    elapsed_time,
-                                )
-                                else 0.0
+                            elapsed_time=FlextWebTestUtilities.Web.Tests._to_float(
+                                elapsed_time,
+                                default=0.0,
                             ),
                             content_type=(
                                 content_type
@@ -340,12 +351,9 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             content_length=(
                                 content_length if isinstance(content_length, int) else 0
                             ),
-                            processing_time_ms=(
-                                processing_time_ms
-                                if FlextWebTestUtilities.Web.Tests._is_numeric(
-                                    processing_time_ms,
-                                )
-                                else 0.0
+                            processing_time_ms=FlextWebTestUtilities.Web.Tests._to_float(
+                                processing_time_ms,
+                                default=0.0,
                             ),
                         )
                         return FlextWebTestUtilities.Web.Tests._wrap_result(

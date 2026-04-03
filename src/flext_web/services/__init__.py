@@ -5,33 +5,66 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING as _TYPE_CHECKING
+import typing as _t
 
+from flext_core.constants import FlextConstants as c
+from flext_core.decorators import FlextDecorators as d
+from flext_core.exceptions import FlextExceptions as e
 from flext_core.lazy import install_lazy_exports
+from flext_core.mixins import FlextMixins as x
+from flext_core.models import FlextModels as m
+from flext_core.protocols import FlextProtocols as p
+from flext_core.result import FlextResult as r
+from flext_core.service import FlextService as s
+from flext_core.typings import FlextTypes as t
+from flext_core.utilities import FlextUtilities as u
 
-if _TYPE_CHECKING:
-    from flext_core import FlextTypes
-    from flext_core.constants import FlextConstants as c
-    from flext_core.decorators import FlextDecorators as d
-    from flext_core.exceptions import FlextExceptions as e
-    from flext_core.handlers import FlextHandlers as h
-    from flext_core.mixins import FlextMixins as x
-    from flext_core.models import FlextModels as m
-    from flext_core.protocols import FlextProtocols as p
-    from flext_core.result import FlextResult as r
-    from flext_core.service import FlextService as s
-    from flext_core.typings import FlextTypes as t
-    from flext_core.utilities import FlextUtilities as u
-    from flext_web.services import app, auth, entities, handlers, health, web
-    from flext_web.services.app import FlextWebApp
-    from flext_web.services.auth import FlextWebAuth
-    from flext_web.services.entities import FlextWebEntities
-    from flext_web.services.handlers import FlextWebHandlers
-    from flext_web.services.health import FlextWebHealth
-    from flext_web.services.web import FlextWebServices
+if _t.TYPE_CHECKING:
+    import flext_web.services.app as _flext_web_services_app
 
-_LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
+    app = _flext_web_services_app
+    import flext_web.services.auth as _flext_web_services_auth
+
+    auth = _flext_web_services_auth
+    import flext_web.services.entities as _flext_web_services_entities
+
+    entities = _flext_web_services_entities
+    import flext_web.services.handlers as _flext_web_services_handlers
+
+    handlers = _flext_web_services_handlers
+    import flext_web.services.health as _flext_web_services_health
+
+    health = _flext_web_services_health
+    import flext_web.services.web as _flext_web_services_web
+
+    web = _flext_web_services_web
+
+    _ = (
+        FlextWebApp,
+        FlextWebAuth,
+        FlextWebEntities,
+        FlextWebHandlers,
+        FlextWebHealth,
+        FlextWebServices,
+        app,
+        auth,
+        c,
+        d,
+        e,
+        entities,
+        h,
+        handlers,
+        health,
+        m,
+        p,
+        r,
+        s,
+        t,
+        u,
+        web,
+        x,
+    )
+_LAZY_IMPORTS = {
     "FlextWebApp": "flext_web.services.app",
     "FlextWebAuth": "flext_web.services.auth",
     "FlextWebEntities": "flext_web.services.entities",
@@ -44,7 +77,7 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
     "entities": "flext_web.services.entities",
-    "h": ("flext_core.handlers", "FlextHandlers"),
+    "h": ("flext_web.services.handlers", "FlextWebHandlers"),
     "handlers": "flext_web.services.handlers",
     "health": "flext_web.services.health",
     "m": ("flext_core.models", "FlextModels"),
@@ -56,6 +89,32 @@ _LAZY_IMPORTS: FlextTypes.LazyImportIndex = {
     "web": "flext_web.services.web",
     "x": ("flext_core.mixins", "FlextMixins"),
 }
+
+__all__ = [
+    "FlextWebApp",
+    "FlextWebAuth",
+    "FlextWebEntities",
+    "FlextWebHandlers",
+    "FlextWebHealth",
+    "FlextWebServices",
+    "app",
+    "auth",
+    "c",
+    "d",
+    "e",
+    "entities",
+    "h",
+    "handlers",
+    "health",
+    "m",
+    "p",
+    "r",
+    "s",
+    "t",
+    "u",
+    "web",
+    "x",
+]
 
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
