@@ -7,47 +7,28 @@ from __future__ import annotations
 
 import typing as _t
 
-from flext_core.constants import FlextConstants as c
-from flext_core.decorators import FlextDecorators as d
-from flext_core.exceptions import FlextExceptions as e
-from flext_core.handlers import FlextHandlers as h
 from flext_core.lazy import install_lazy_exports
-from flext_core.mixins import FlextMixins as x
-from flext_core.models import FlextModels as m
-from flext_core.protocols import FlextProtocols as p
-from flext_core.result import FlextResult as r
-from flext_core.service import FlextService as s
-from flext_core.typings import FlextTypes as t
-from flext_core.utilities import FlextUtilities as u
-from tests.integration.test_examples import (
-    ExamplesFullFunctionalityTest,
-    TestExamples,
-    logger,
-    main,
-)
 
 if _t.TYPE_CHECKING:
     import tests.integration.test_examples as _tests_integration_test_examples
 
     test_examples = _tests_integration_test_examples
-
-    _ = (
+    from flext_core.constants import FlextConstants as c
+    from flext_core.decorators import FlextDecorators as d
+    from flext_core.exceptions import FlextExceptions as e
+    from flext_core.handlers import FlextHandlers as h
+    from flext_core.mixins import FlextMixins as x
+    from flext_core.models import FlextModels as m
+    from flext_core.protocols import FlextProtocols as p
+    from flext_core.result import FlextResult as r
+    from flext_core.service import FlextService as s
+    from flext_core.typings import FlextTypes as t
+    from flext_core.utilities import FlextUtilities as u
+    from tests.integration.test_examples import (
         ExamplesFullFunctionalityTest,
         TestExamples,
-        c,
-        d,
-        e,
-        h,
         logger,
-        m,
         main,
-        p,
-        r,
-        s,
-        t,
-        test_examples,
-        u,
-        x,
     )
 _LAZY_IMPORTS = {
     "ExamplesFullFunctionalityTest": "tests.integration.test_examples",

@@ -7,88 +7,14 @@ from __future__ import annotations
 
 import typing as _t
 
-from flext_core.decorators import FlextDecorators as d
-from flext_core.exceptions import FlextExceptions as e
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
-from flext_core.mixins import FlextMixins as x
-from flext_core.result import FlextResult as r
-from flext_core.service import FlextService as s
 from flext_web.__version__ import *
-from flext_web.__version__ import (
-    VERSION,
-    FlextWebVersion,
-    VersionMetadata,
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
-)
 
 if _t.TYPE_CHECKING:
     import flext_web.api as _flext_web_api
-
-    api = _flext_web_api
-    import flext_web.base as _flext_web_base
-
-    base = _flext_web_base
-    import flext_web.constants as _flext_web_constants
-
-    constants = _flext_web_constants
-    import flext_web.models as _flext_web_models
-
-    models = _flext_web_models
-    import flext_web.protocols as _flext_web_protocols
-
-    protocols = _flext_web_protocols
-    import flext_web.services as _flext_web_services
-
-    services = _flext_web_services
-    import flext_web.services.app as _flext_web_services_app
-
-    app = _flext_web_services_app
-    import flext_web.services.auth as _flext_web_services_auth
-
-    auth = _flext_web_services_auth
-    import flext_web.services.entities as _flext_web_services_entities
-
-    entities = _flext_web_services_entities
-    import flext_web.services.handlers as _flext_web_services_handlers
-
-    handlers = _flext_web_services_handlers
-    import flext_web.services.health as _flext_web_services_health
-
-    health = _flext_web_services_health
-    import flext_web.settings as _flext_web_settings
-
-    settings = _flext_web_settings
-    import flext_web.typings as _flext_web_typings
-
-    typings = _flext_web_typings
-    import flext_web.utilities as _flext_web_utilities
-
-    utilities = _flext_web_utilities
-
-    _ = (
-        FlextWeb,
-        FlextWebApp,
-        FlextWebAuth,
-        FlextWebConstants,
-        FlextWebEntities,
-        FlextWebHandlers,
-        FlextWebHealth,
-        FlextWebModels,
-        FlextWebProtocols,
-        FlextWebServiceBase,
-        FlextWebServices,
-        FlextWebSettings,
-        FlextWebTypes,
-        FlextWebUtilities,
-        FlextWebVersion,
+    from flext_web.__version__ import (
         VERSION,
+        FlextWebVersion,
         VersionMetadata,
         __author__,
         __author_email__,
@@ -98,33 +24,67 @@ if _t.TYPE_CHECKING:
         __url__,
         __version__,
         __version_info__,
-        api,
-        app,
-        auth,
-        base,
-        c,
-        constants,
-        d,
-        e,
-        entities,
-        h,
-        handlers,
-        health,
-        m,
-        models,
-        p,
-        protocols,
-        r,
-        s,
-        services,
-        settings,
-        t,
-        typings,
-        u,
-        utilities,
-        web,
-        x,
     )
+
+    api = _flext_web_api
+    import flext_web.base as _flext_web_base
+    from flext_web.api import FlextWeb, web
+
+    base = _flext_web_base
+    import flext_web.constants as _flext_web_constants
+    from flext_web.base import FlextWebServiceBase
+
+    constants = _flext_web_constants
+    import flext_web.models as _flext_web_models
+    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
+
+    models = _flext_web_models
+    import flext_web.protocols as _flext_web_protocols
+    from flext_web.models import FlextWebModels, FlextWebModels as m
+
+    protocols = _flext_web_protocols
+    import flext_web.services as _flext_web_services
+    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
+
+    services = _flext_web_services
+    import flext_web.services.app as _flext_web_services_app
+
+    app = _flext_web_services_app
+    import flext_web.services.auth as _flext_web_services_auth
+    from flext_web.services.app import FlextWebApp
+
+    auth = _flext_web_services_auth
+    import flext_web.services.entities as _flext_web_services_entities
+    from flext_web.services.auth import FlextWebAuth
+
+    entities = _flext_web_services_entities
+    import flext_web.services.handlers as _flext_web_services_handlers
+    from flext_web.services.entities import FlextWebEntities
+
+    handlers = _flext_web_services_handlers
+    import flext_web.services.health as _flext_web_services_health
+    from flext_web.services.handlers import FlextWebHandlers, FlextWebHandlers as h
+
+    health = _flext_web_services_health
+    import flext_web.settings as _flext_web_settings
+    from flext_web.services.health import FlextWebHealth
+    from flext_web.services.web import FlextWebServices
+
+    settings = _flext_web_settings
+    import flext_web.typings as _flext_web_typings
+    from flext_web.settings import FlextWebSettings
+
+    typings = _flext_web_typings
+    import flext_web.utilities as _flext_web_utilities
+    from flext_web.typings import FlextWebTypes, FlextWebTypes as t
+
+    utilities = _flext_web_utilities
+    from flext_core.decorators import FlextDecorators as d
+    from flext_core.exceptions import FlextExceptions as e
+    from flext_core.mixins import FlextMixins as x
+    from flext_core.result import FlextResult as r
+    from flext_core.service import FlextService as s
+    from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 _LAZY_IMPORTS = merge_lazy_imports(
     ("flext_web.services",),
     {
