@@ -33,7 +33,7 @@ class FlextWebEntities(FlextWebServiceBase[bool]):
 
     def get_entity(self, entity_id: str) -> r[m.Web.EntityData]:
         """Fetch an entity by identifier."""
-        if not u.ensure_str(entity_id):
+        if not u.to_str(entity_id):
             return r[m.Web.EntityData].fail("Entity ID cannot be empty")
         entity = self._storage.get(entity_id)
         if entity is None:

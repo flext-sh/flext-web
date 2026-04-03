@@ -100,7 +100,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
 
     def get_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
         """Return a registered application by identifier."""
-        if not u.ensure_str(app_id):
+        if not u.to_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
         return p.Web.WebRepository.get_by_id(app_id).flat_map(
             self._application_response_from_payload,
@@ -165,7 +165,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
 
     def start_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
         """Start a registered application and project its payload into a model."""
-        if not u.ensure_str(app_id):
+        if not u.to_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
         return p.start_app(app_id).flat_map(
             self._application_response_from_payload,
@@ -196,7 +196,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
 
     def stop_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
         """Stop a registered application and project its payload into a model."""
-        if not u.ensure_str(app_id):
+        if not u.to_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
         return p.stop_app(app_id).flat_map(
             self._application_response_from_payload,
