@@ -6,11 +6,11 @@ from typing import override
 
 from flext_core import r
 from flext_web import (
-    FlextWebConstants as c,
-    FlextWebModels as m,
     FlextWebProtocols,
     FlextWebServiceBase,
-    FlextWebUtilities as u,
+    c,
+    m,
+    u,
 )
 
 

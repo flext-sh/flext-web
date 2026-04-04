@@ -18,8 +18,8 @@ from wsgiref.simple_server import WSGIServer
 import uvicorn
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from flext_core import FlextModels, FlextTypes as t, r
-from flext_web import FlextWebConstants as c, FlextWebUtilities as u
+from flext_core import FlextModels, r, t
+from flext_web import c, u
 
 
 class FlextWebModels(FlextModels):

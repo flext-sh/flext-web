@@ -17,9 +17,9 @@ from pydantic import Field
 
 from flext_core import FlextTypes, r
 from flext_web import (
-    FlextWebConstants as c,
-    FlextWebModels as m,
-    FlextWebUtilities as u,
+    c,
+    m,
+    u,
 )
 
 
