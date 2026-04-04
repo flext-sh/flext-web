@@ -13,6 +13,8 @@ from abc import ABC
 from collections.abc import Sequence
 from typing import override
 
+from pydantic import Field
+
 from flext_core import FlextSettings, s, t
 from flext_web import FlextWebSettings
 
@@ -23,7 +25,9 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
 ):
     """Base class for flext-web services with typed `web` settings access."""
 
-    config_type: type | None = FlextWebSettings
+    config_type: type | None = Field(  # type: ignore[assignment]
+        default=FlextWebSettings, description="Settings class for web services"
+    )
 
     @property
     @override
