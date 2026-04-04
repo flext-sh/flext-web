@@ -625,12 +625,10 @@ class TestFlextWebProtocols:
                 return r[str].ok("")
 
             def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
-                msg = "Must use unified test helpers per Rule 3.6"
-                raise NotImplementedError(msg)
+                _ = name, filter_func
 
             def add_global(self, name: str, *, value: t.ContainerValue) -> None:
-                msg = "Must use unified test helpers per Rule 3.6"
-                raise NotImplementedError(msg)
+                _ = name, value
 
             def execute(self) -> r[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})

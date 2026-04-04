@@ -188,8 +188,7 @@ class FlextWebProtocols(FlextProtocols):
         ...             pass
     """
 
-    @runtime_checkable
-    class Web(Protocol):
+    class Web:
         """Web domain-specific protocols.
 
         All web-specific protocols are organized within this namespace
