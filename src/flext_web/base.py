@@ -25,7 +25,7 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
 ):
     """Base class for flext-web services with typed `web` settings access."""
 
-    config_type: type | None = Field(  # type: ignore[assignment]
+    config_type: type | None = Field(
         default=FlextWebSettings, description="Settings class for web services"
     )
 

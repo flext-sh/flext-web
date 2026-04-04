@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import socket
 from collections.abc import Sequence
 
 from flext_core import r
@@ -10,10 +9,15 @@ from flext_web import m, web
 
 
 def _allocate_demo_port() -> int:
-    """Reserve a local ephemeral port for example lifecycle runs."""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.bind(("127.0.0.1", 0))
-        return int(sock.getsockname()[1])
+    """Return a deterministic demo port without binding a real socket."""
+    apps_result = web.list_apps()
+    used_ports: set[int] = (
+        {app.port for app in apps_result.value} if apps_result.is_success else set()
+    )
+    candidate = 18080
+    while candidate in used_ports:
+        candidate += 1
+    return candidate
 
 
 def check_service_health() -> r[m.Web.HealthResponse]:

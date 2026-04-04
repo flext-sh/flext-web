@@ -6,16 +6,37 @@ import importlib.util
 from pathlib import Path
 from types import ModuleType
 
+import pytest
 from flext_tests import tm
 
-from flext_core import FlextLogger
+from flext_core import FlextLogger, r
 from flext_web import web
+from tests import p, t
 
 logger = FlextLogger(__name__)
 
 
 class ExamplesFullFunctionalityTest:
     """Shared example assertions exercised through collected subclasses."""
+
+    @pytest.fixture(autouse=True)
+    def _mock_runtime_lifecycle(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def _start_runtime(
+            app_id: str,
+            app_data: t.Web.ResponseDict,
+            app_instance: object,
+        ) -> r[t.Web.ResponseDict]:
+            _ = (app_data, app_instance)
+            return r[t.Web.ResponseDict].ok({"runner": "mock", "app_id": app_id})
+
+        def _stop_runtime(app_id: str, runtime: t.Web.ResponseDict) -> r[bool]:
+            _ = (app_id, runtime)
+            return r[bool].ok(True)
+
+        monkeypatch.setattr(p.Web, "_start_app_runtime", staticmethod(_start_runtime))
+        monkeypatch.setattr(p.Web, "_stop_app_runtime", staticmethod(_stop_runtime))
+        monkeypatch.setattr(p.Web, "start_app_runtime", staticmethod(_start_runtime))
+        monkeypatch.setattr(p.Web, "stop_app_runtime", staticmethod(_stop_runtime))
 
     @staticmethod
     def _example_path(file_name: str) -> Path:

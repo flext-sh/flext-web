@@ -8,7 +8,6 @@ from __future__ import annotations
 import typing as _t
 
 from flext_core.lazy import install_lazy_exports, merge_lazy_imports
-from flext_web.__version__ import *
 
 if _t.TYPE_CHECKING:
     import flext_web.api as _flext_web_api

@@ -67,6 +67,8 @@ class TestFlextWebProtocols:
 
         monkeypatch.setattr(p.Web, "_start_app_runtime", staticmethod(_start_runtime))
         monkeypatch.setattr(p.Web, "_stop_app_runtime", staticmethod(_stop_runtime))
+        monkeypatch.setattr(p.Web, "start_app_runtime", staticmethod(_start_runtime))
+        monkeypatch.setattr(p.Web, "stop_app_runtime", staticmethod(_stop_runtime))
 
     def test_protocols_inheritance(self) -> None:
         """Test that p has expected Web namespace."""
