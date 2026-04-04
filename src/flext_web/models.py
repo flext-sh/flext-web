@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableSequence
 from datetime import UTC, datetime
 from threading import Thread
 from typing import Annotated, ClassVar, override
@@ -538,7 +538,7 @@ class FlextWebModels(FlextModels):
             #     ),
             # ] = c.Web.WebDefaults.VERSION_INT
             metrics: Annotated[
-                dict[str, t.Scalar],
+                t.MutableContainerMapping,
                 Field(
                     description="Application metrics",
                 ),
@@ -546,7 +546,7 @@ class FlextWebModels(FlextModels):
             # Note: domain_events is inherited from Entry with type Sequence[DomainEvent]
             # Use add_event() method to add events instead of direct list manipulation
             web_events: Annotated[
-                list[str],
+                MutableSequence[str],
                 Field(
                     description="Web-specific events (application lifecycle)",
                 ),
