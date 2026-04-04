@@ -33,21 +33,16 @@ if _t.TYPE_CHECKING:
 
     helpers = _tests_helpers
     import tests.integration as _tests_integration
-    from tests.helpers.models import TestsModels
-    from tests.helpers.protocols import TestsProtocols
-    from tests.helpers.typings import TestsTypings
-    from tests.helpers.utilities import TestsUtilities
+    from tests.helpers import TestsModels, TestsProtocols, TestsTypings, TestsUtilities
 
     integration = _tests_integration
-    import tests.integration.test_examples as _tests_integration_test_examples
-
-    test_examples = _tests_integration_test_examples
     import tests.models as _tests_models
-    from tests.integration.test_examples import (
+    from tests.integration import (
         ExamplesFullFunctionalityTest,
         TestExamples,
         logger,
         main,
+        test_examples,
     )
 
     models = _tests_models
@@ -63,62 +58,38 @@ if _t.TYPE_CHECKING:
     from tests.typings import FlextWebTestTypes, FlextWebTestTypes as t
 
     unit = _tests_unit
-    import tests.unit.test___init__ as _tests_unit_test___init__
-
-    test___init__ = _tests_unit_test___init__
-    import tests.unit.test___main__ as _tests_unit_test___main__
-    from tests.unit.test___init__ import TestFlextWebInit
-
-    test___main__ = _tests_unit_test___main__
-    import tests.unit.test_api as _tests_unit_test_api
-    from tests.unit.test___main__ import TestFlextWebCliService, TestMainFunction
-
-    test_api = _tests_unit_test_api
-    import tests.unit.test_app as _tests_unit_test_app
-    from tests.unit.test_api import TestFlextWebApi
-
-    test_app = _tests_unit_test_app
-    import tests.unit.test_config as _tests_unit_test_config
-    from tests.unit.test_app import TestFlextWebApp
-
-    test_config = _tests_unit_test_config
-    import tests.unit.test_constants as _tests_unit_test_constants
-    from tests.unit.test_config import TestFlextWebSettings
-
-    test_constants = _tests_unit_test_constants
-    import tests.unit.test_fields as _tests_unit_test_fields
-    from tests.unit.test_constants import TestFlextWebConstants
-
-    test_fields = _tests_unit_test_fields
-    import tests.unit.test_handlers as _tests_unit_test_handlers
-    from tests.unit.test_fields import TestFlextWebFields
-
-    test_handlers = _tests_unit_test_handlers
-    import tests.unit.test_models as _tests_unit_test_models
-    from tests.unit.test_handlers import TestFlextWebHandlers
-
-    test_models = _tests_unit_test_models
-    import tests.unit.test_protocols as _tests_unit_test_protocols
-
-    test_protocols = _tests_unit_test_protocols
-    import tests.unit.test_services as _tests_unit_test_services
-    from tests.unit.test_protocols import TestFlextWebProtocols
-
-    test_services = _tests_unit_test_services
-    import tests.unit.test_typings as _tests_unit_test_typings
-    from tests.unit.test_services import TestFlextWebService
-
-    test_typings = _tests_unit_test_typings
-    import tests.unit.test_utilities as _tests_unit_test_utilities
-    from tests.unit.test_typings import TestFlextWebModels
-
-    test_utilities = _tests_unit_test_utilities
-    import tests.unit.test_version as _tests_unit_test_version
-    from tests.unit.test_utilities import TestFlextWebUtilities
-
-    test_version = _tests_unit_test_version
     import tests.utilities as _tests_utilities
-    from tests.unit.test_version import TestFlextWebVersion, assert_version_info
+    from tests.unit import (
+        TestFlextWebApi,
+        TestFlextWebApp,
+        TestFlextWebCliService,
+        TestFlextWebConstants,
+        TestFlextWebFields,
+        TestFlextWebHandlers,
+        TestFlextWebInit,
+        TestFlextWebModels,
+        TestFlextWebProtocols,
+        TestFlextWebService,
+        TestFlextWebSettings,
+        TestFlextWebUtilities,
+        TestFlextWebVersion,
+        TestMainFunction,
+        assert_version_info,
+        test___init__,
+        test___main__,
+        test_api,
+        test_app,
+        test_config,
+        test_constants,
+        test_fields,
+        test_handlers,
+        test_models,
+        test_protocols,
+        test_services,
+        test_typings,
+        test_utilities,
+        test_version,
+    )
 
     utilities = _tests_utilities
     from flext_core.decorators import FlextDecorators as d

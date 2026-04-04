@@ -47,28 +47,21 @@ if _t.TYPE_CHECKING:
     from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
 
     services = _flext_web_services
-    import flext_web.services.app as _flext_web_services_app
-
-    app = _flext_web_services_app
-    import flext_web.services.auth as _flext_web_services_auth
-    from flext_web.services.app import FlextWebApp
-
-    auth = _flext_web_services_auth
-    import flext_web.services.entities as _flext_web_services_entities
-    from flext_web.services.auth import FlextWebAuth
-
-    entities = _flext_web_services_entities
-    import flext_web.services.handlers as _flext_web_services_handlers
-    from flext_web.services.entities import FlextWebEntities
-
-    handlers = _flext_web_services_handlers
-    import flext_web.services.health as _flext_web_services_health
-    from flext_web.services.handlers import FlextWebHandlers, FlextWebHandlers as h
-
-    health = _flext_web_services_health
     import flext_web.settings as _flext_web_settings
-    from flext_web.services.health import FlextWebHealth
-    from flext_web.services.web import FlextWebServices
+    from flext_web.services import (
+        FlextWebApp,
+        FlextWebAuth,
+        FlextWebEntities,
+        FlextWebHandlers,
+        FlextWebHandlers as h,
+        FlextWebHealth,
+        FlextWebServices,
+        app,
+        auth,
+        entities,
+        handlers,
+        health,
+    )
 
     settings = _flext_web_settings
     import flext_web.typings as _flext_web_typings
