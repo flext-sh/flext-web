@@ -673,8 +673,7 @@ class TestFlextWebProtocols:
                 request: t.Web.RequestDict,
                 response_time: float,
             ) -> None:
-                msg = "Must use unified test helpers per Rule 3.6"
-                raise NotImplementedError(msg)
+                pass
 
             def get_web_health_status(self) -> t.Web.ResponseDict:
                 return {
