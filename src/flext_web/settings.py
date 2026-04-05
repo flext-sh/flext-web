@@ -9,9 +9,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, ClassVar
 
 from pydantic import Field, ValidationError, computed_field, field_validator
+from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextSettings, r
 from flext_web import c, t
@@ -20,6 +21,11 @@ from flext_web import c, t
 @FlextSettings.auto_register("web")
 class FlextWebSettings(FlextSettings):
     """Validated settings for web runtime and HTTP endpoints."""
+
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+        env_prefix="FLEXT_WEB_",
+        extra="ignore",
+    )
 
     app_name: Annotated[
         str,

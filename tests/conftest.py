@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import os
 import threading
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from pathlib import Path
 
 import pytest
@@ -22,6 +22,16 @@ from flext_tests import tk
 
 from flext_web import FlextWebServices, FlextWebSettings, web
 from tests import c, t, u
+
+pytest_plugins = ["flext_tests.conftest_plugin"]
+
+
+@pytest.fixture
+def web_settings(
+    settings_factory: Callable[..., FlextWebSettings],
+) -> FlextWebSettings:
+    """Provide clean FlextWebSettings for tests."""
+    return settings_factory(FlextWebSettings)
 
 
 @pytest.fixture(autouse=True)

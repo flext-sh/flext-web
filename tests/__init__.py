@@ -19,12 +19,14 @@ if _t.TYPE_CHECKING:
         invalid_app_data,
         production_config,
         pytest_configure,
+        pytest_plugins,
         real_app,
         real_config,
         real_service,
         running_service,
         setup_test_environment,
         test_app_data,
+        web_settings,
     )
 
     constants = _tests_constants
@@ -127,6 +129,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
         "production_config": "tests.conftest",
         "protocols": "tests.protocols",
         "pytest_configure": "tests.conftest",
+        "pytest_plugins": "tests.conftest",
         "r": ("flext_core.result", "FlextResult"),
         "real_app": "tests.conftest",
         "real_config": "tests.conftest",
@@ -140,6 +143,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
         "u": ("tests.utilities", "FlextWebTestUtilities"),
         "unit": "tests.unit",
         "utilities": "tests.utilities",
+        "web_settings": "tests.conftest",
         "x": ("flext_core.mixins", "FlextMixins"),
     },
 )
@@ -189,6 +193,7 @@ __all__ = [
     "production_config",
     "protocols",
     "pytest_configure",
+    "pytest_plugins",
     "r",
     "real_app",
     "real_config",
@@ -217,6 +222,7 @@ __all__ = [
     "u",
     "unit",
     "utilities",
+    "web_settings",
     "x",
 ]
 
