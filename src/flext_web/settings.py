@@ -14,7 +14,7 @@ from typing import Annotated, ClassVar, Self
 from pydantic import Field, ValidationError, computed_field, field_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextSettings, r
+from flext_core import FlextResult, FlextSettings, r
 from flext_web import c, t
 
 
@@ -149,17 +149,18 @@ class FlextWebSettings(FlextSettings):
             secret_key if secret_key is not None else c.Web.WebDefaults.SECRET_KEY
         )
         try:
-            return r[Self].ok(
-                cls(
-                    host=host_value,
-                    port=port_value,
-                    debug_mode=debug_value,
-                    debug=debug_value,
-                    secret_key=secret_key_value,
-                ),
+            instance = cls(
+                host=host_value,
+                port=port_value,
+                debug_mode=debug_value,
+                debug=debug_value,
+                secret_key=secret_key_value,
             )
+            success: r[Self] = FlextResult[Self](value=instance, is_success=True)
+            return success
         except ValidationError as exc:
-            return r[Self].fail(str(exc))
+            failure: r[Self] = FlextResult[Self](error=str(exc), is_success=False)
+            return failure
 
     @classmethod
     def validate_settings(cls, settings: Self) -> r[bool]:
