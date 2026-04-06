@@ -10,8 +10,8 @@ import pytest
 from flext_tests import tm
 
 from flext_core import FlextLogger, r
-from flext_web import web
-from tests import p, t
+from flext_web import FlextWebProtocols, web
+from tests import t
 
 logger = FlextLogger(__name__)
 
@@ -33,10 +33,18 @@ class ExamplesFullFunctionalityTest:
             _ = (app_id, runtime)
             return r[bool].ok(True)
 
-        monkeypatch.setattr(p.Web, "_start_app_runtime", staticmethod(_start_runtime))
-        monkeypatch.setattr(p.Web, "_stop_app_runtime", staticmethod(_stop_runtime))
-        monkeypatch.setattr(p.Web, "start_app_runtime", staticmethod(_start_runtime))
-        monkeypatch.setattr(p.Web, "stop_app_runtime", staticmethod(_stop_runtime))
+        monkeypatch.setattr(
+            FlextWebProtocols.Web, "_start_app_runtime", staticmethod(_start_runtime)
+        )
+        monkeypatch.setattr(
+            FlextWebProtocols.Web, "_stop_app_runtime", staticmethod(_stop_runtime)
+        )
+        monkeypatch.setattr(
+            FlextWebProtocols.Web, "start_app_runtime", staticmethod(_start_runtime)
+        )
+        monkeypatch.setattr(
+            FlextWebProtocols.Web, "stop_app_runtime", staticmethod(_stop_runtime)
+        )
 
     @staticmethod
     def _example_path(file_name: str) -> Path:
