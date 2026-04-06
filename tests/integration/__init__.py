@@ -31,15 +31,18 @@ if _t.TYPE_CHECKING:
         main,
     )
 _LAZY_IMPORTS = {
-    "ExamplesFullFunctionalityTest": "tests.integration.test_examples",
-    "TestExamples": "tests.integration.test_examples",
+    "ExamplesFullFunctionalityTest": (
+        "tests.integration.test_examples",
+        "ExamplesFullFunctionalityTest",
+    ),
+    "TestExamples": ("tests.integration.test_examples", "TestExamples"),
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
     "h": ("flext_core.handlers", "FlextHandlers"),
-    "logger": "tests.integration.test_examples",
+    "logger": ("tests.integration.test_examples", "logger"),
     "m": ("flext_core.models", "FlextModels"),
-    "main": "tests.integration.test_examples",
+    "main": ("tests.integration.test_examples", "main"),
     "p": ("flext_core.protocols", "FlextProtocols"),
     "r": ("flext_core.result", "FlextResult"),
     "s": ("flext_core.service", "FlextService"),

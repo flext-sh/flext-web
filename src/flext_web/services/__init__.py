@@ -45,12 +45,12 @@ if _t.TYPE_CHECKING:
     from flext_core.utilities import FlextUtilities as u
     from flext_web.services.web import FlextWebServices
 _LAZY_IMPORTS = {
-    "FlextWebApp": "flext_web.services.app",
-    "FlextWebAuth": "flext_web.services.auth",
-    "FlextWebEntities": "flext_web.services.entities",
-    "FlextWebHandlers": "flext_web.services.handlers",
-    "FlextWebHealth": "flext_web.services.health",
-    "FlextWebServices": "flext_web.services.web",
+    "FlextWebApp": ("flext_web.services.app", "FlextWebApp"),
+    "FlextWebAuth": ("flext_web.services.auth", "FlextWebAuth"),
+    "FlextWebEntities": ("flext_web.services.entities", "FlextWebEntities"),
+    "FlextWebHandlers": ("flext_web.services.handlers", "FlextWebHandlers"),
+    "FlextWebHealth": ("flext_web.services.health", "FlextWebHealth"),
+    "FlextWebServices": ("flext_web.services.web", "FlextWebServices"),
     "app": "flext_web.services.app",
     "auth": "flext_web.services.auth",
     "c": ("flext_core.constants", "FlextConstants"),
