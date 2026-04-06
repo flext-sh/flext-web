@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Annotated, ClassVar
+from typing import Annotated, ClassVar, Self
 
 from pydantic import Field, ValidationError, computed_field, field_validator
 from pydantic_settings import SettingsConfigDict
@@ -140,7 +140,7 @@ class FlextWebSettings(FlextSettings):
         *,
         debug: bool | None = None,
         secret_key: str | None = None,
-    ) -> r[FlextWebSettings]:
+    ) -> r[Self]:
         """Create web settings with validated overrides."""
         host_value = host if host is not None else c.Web.WebDefaults.HOST
         port_value = port if port is not None else c.Web.WebDefaults.PORT
@@ -149,7 +149,7 @@ class FlextWebSettings(FlextSettings):
             secret_key if secret_key is not None else c.Web.WebDefaults.SECRET_KEY
         )
         try:
-            return r[FlextWebSettings].ok(
+            return r[Self].ok(
                 cls(
                     host=host_value,
                     port=port_value,
@@ -159,10 +159,10 @@ class FlextWebSettings(FlextSettings):
                 ),
             )
         except ValidationError as exc:
-            return r[FlextWebSettings].fail(str(exc))
+            return r[Self].fail(str(exc))
 
     @classmethod
-    def validate_settings(cls, settings: FlextWebSettings) -> r[bool]:
+    def validate_settings(cls, settings: Self) -> r[bool]:
         """Validate a settings instance against the canonical schema."""
         try:
             _ = cls(**settings.model_dump())

@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from importlib.metadata import metadata
-from typing import Annotated, Final
+from typing import Annotated, Final, Self
 
 from pydantic import Field
 
@@ -66,7 +66,7 @@ class FlextWebVersion:
         self.url = metadata.url
 
     @classmethod
-    def current(cls) -> FlextWebVersion:
+    def current(cls) -> Self:
         """Return current package metadata from pyproject.toml.
 
         Returns:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import override
+from typing import Self, override
 
 from pydantic import PrivateAttr
 
@@ -33,11 +33,11 @@ class FlextWebServices(FlextWebServiceBase[bool]):
     def create_service(
         cls,
         config: FlextWebSettings | None = None,
-    ) -> r[FlextWebServices]:
+    ) -> r[Self]:
         """Create a service instance using optional settings overrides."""
         overrides = config.model_dump() if config is not None else None
         instance = cls(config_overrides=overrides) if overrides is not None else cls()
-        return r[FlextWebServices].ok(instance)
+        return r[Self].ok(instance)
 
     def authenticate(self, credentials: m.Web.Credentials) -> r[m.Web.AuthResponse]:
         """Delegate authentication to the canonical auth service."""

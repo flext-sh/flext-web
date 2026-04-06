@@ -452,9 +452,9 @@ class FlextWebTypes(FlextTypes):
             OSError,
             RuntimeError,
             ImportError,
-        ) as e:
+        ) as exc:
             return r[FlextWebTypes.TypesConfig].fail(
-                f"Failed to configure web types system: {e}",
+                f"Failed to configure web types system: {exc}",
             )
 
     @classmethod
@@ -476,9 +476,9 @@ class FlextWebTypes(FlextTypes):
             OSError,
             RuntimeError,
             ImportError,
-        ) as e:
+        ) as exc:
             return r[FlextWebTypes.TypesConfig].fail(
-                f"Failed to get web types system config: {e}",
+                f"Failed to get web types system config: {exc}",
             )
 
     class Project:

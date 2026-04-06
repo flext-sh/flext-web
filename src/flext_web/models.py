@@ -1145,11 +1145,11 @@ class FlextWebModels(FlextModels):
                     timestamp=datetime.now(UTC),
                 )
 
-            result: r[FlextWebModels.Web.WebRequest] = u.try_(
+            result = u.try_(
                 create_request,
                 catch=Exception,
             )
-            return result.map_error(lambda e: f"Failed to create web request: {e}")
+            return result.map_error(lambda exc: f"Failed to create web request: {exc}")
 
         @classmethod
         def create_web_response(
@@ -1186,11 +1186,11 @@ class FlextWebModels(FlextModels):
                     timestamp=datetime.now(UTC),
                 )
 
-            result: r[FlextWebModels.Web.WebResponse] = u.try_(
+            result = u.try_(
                 create_response,
                 catch=Exception,
             )
-            return result.map_error(lambda e: f"Failed to create web response: {e}")
+            return result.map_error(lambda exc: f"Failed to create web response: {exc}")
 
         class FastAPIAppConfig(BaseModel):
             """FastAPI application configuration model (Value Object).
