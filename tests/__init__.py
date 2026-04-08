@@ -16,17 +16,6 @@ if _t.TYPE_CHECKING:
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
     from flext_core.service import FlextService as s
-    from tests import (
-        conftest,
-        constants,
-        helpers,
-        integration,
-        models,
-        protocols,
-        typings,
-        unit,
-        utilities,
-    )
     from tests.constants import TestsFlextWebConstants, TestsFlextWebConstants as c
     from tests.helpers.models import TestsModels
     from tests.helpers.protocols import TestsProtocols
@@ -37,11 +26,7 @@ if _t.TYPE_CHECKING:
     from tests.typings import TestsFlextWebTypes, TestsFlextWebTypes as t
     from tests.utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
 _LAZY_IMPORTS = merge_lazy_imports(
-    (
-        "tests.helpers",
-        "tests.integration",
-        "tests.unit",
-    ),
+    ("tests.helpers",),
     {
         "TestsFlextWebConstants": ("tests.constants", "TestsFlextWebConstants"),
         "TestsFlextWebModels": ("tests.models", "TestsFlextWebModels"),
@@ -49,24 +34,15 @@ _LAZY_IMPORTS = merge_lazy_imports(
         "TestsFlextWebTypes": ("tests.typings", "TestsFlextWebTypes"),
         "TestsFlextWebUtilities": ("tests.utilities", "TestsFlextWebUtilities"),
         "c": ("tests.constants", "TestsFlextWebConstants"),
-        "conftest": "tests.conftest",
-        "constants": "tests.constants",
         "d": ("flext_core.decorators", "FlextDecorators"),
         "e": ("flext_core.exceptions", "FlextExceptions"),
         "h": ("flext_core.handlers", "FlextHandlers"),
-        "helpers": "tests.helpers",
-        "integration": "tests.integration",
         "m": ("tests.models", "TestsFlextWebModels"),
-        "models": "tests.models",
         "p": ("tests.protocols", "TestsFlextWebProtocols"),
-        "protocols": "tests.protocols",
         "r": ("flext_core.result", "FlextResult"),
         "s": ("flext_core.service", "FlextService"),
         "t": ("tests.typings", "TestsFlextWebTypes"),
-        "typings": "tests.typings",
         "u": ("tests.utilities", "TestsFlextWebUtilities"),
-        "unit": "tests.unit",
-        "utilities": "tests.utilities",
         "x": ("flext_core.mixins", "FlextMixins"),
     },
 )
@@ -89,24 +65,15 @@ __all__ = [
     "TestsTypings",
     "TestsUtilities",
     "c",
-    "conftest",
-    "constants",
     "d",
     "e",
     "h",
-    "helpers",
-    "integration",
     "m",
-    "models",
     "p",
-    "protocols",
     "r",
     "s",
     "t",
-    "typings",
     "u",
-    "unit",
-    "utilities",
     "x",
 ]
 
