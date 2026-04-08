@@ -14,7 +14,7 @@ from typing import Annotated, ClassVar, Self
 from pydantic import Field, ValidationError, computed_field, field_validator
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextResult, FlextSettings, r
+from flext_core import FlextSettings, r
 from flext_web import c, t
 
 
@@ -156,10 +156,10 @@ class FlextWebSettings(FlextSettings):
                 debug=debug_value,
                 secret_key=secret_key_value,
             )
-            success: r[Self] = FlextResult[Self](value=instance, is_success=True)
+            success: r[Self] = r[Self](value=instance, is_success=True)
             return success
         except ValidationError as exc:
-            failure: r[Self] = FlextResult[Self](error=str(exc), is_success=False)
+            failure: r[Self] = r[Self](error=str(exc), is_success=False)
             return failure
 
     @classmethod

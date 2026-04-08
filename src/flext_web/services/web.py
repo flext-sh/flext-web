@@ -7,7 +7,7 @@ from typing import Self, override
 
 from pydantic import PrivateAttr
 
-from flext_core import FlextResult, r
+from flext_core import r
 from flext_web import (
     FlextWebAuth,
     FlextWebEntities,
@@ -37,7 +37,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         """Create a service instance using optional settings overrides."""
         overrides = config.model_dump() if config is not None else None
         instance = cls(config_overrides=overrides) if overrides is not None else cls()
-        return FlextResult[Self](value=instance, is_success=True)
+        return r[Self](value=instance, is_success=True)
 
     def authenticate(self, credentials: m.Web.Credentials) -> r[m.Web.AuthResponse]:
         """Delegate authentication to the canonical auth service."""

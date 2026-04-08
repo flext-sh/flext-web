@@ -297,7 +297,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
 
     @override
     def validate_business_rules(self) -> r[bool]:
-        """Validate business rules for web app service (FlextService requirement).
+        """Validate business rules for web app service (s requirement).
 
         Returns:
             r[bool]: Success contains True if valid, failure with error message

@@ -148,7 +148,7 @@ class FlextWebProtocols(FlextProtocols):
     - Enables railway pattern error handling throughout web ecosystem
     - Type-safe success/failure composition
 
-    FlextService Integration:
+    s Integration:
     - Base web service implementation follows Service protocol
     - Methods: execute(), validate_business_rules(), get_service_info()
     - Type-safe web service lifecycle management

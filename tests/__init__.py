@@ -12,12 +12,12 @@ from flext_core.lazy import (
 )
 
 if _t.TYPE_CHECKING:
-    from flext_core.decorators import FlextDecorators as d
-    from flext_core.exceptions import FlextExceptions as e
-    from flext_core.handlers import FlextHandlers as h
-    from flext_core.mixins import FlextMixins as x
-    from flext_core.result import FlextResult as r
-    from flext_core.service import FlextService as s
+    from flext_core.decorators import d
+    from flext_core.exceptions import e
+    from flext_core.handlers import h
+    from flext_core.mixins import x
+    from flext_core.result import r
+    from flext_core.service import s
     from tests.constants import TestsFlextWebConstants, TestsFlextWebConstants as c
     from tests.helpers.models import TestsModels
     from tests.helpers.protocols import TestsProtocols
@@ -36,6 +36,12 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".protocols": ("TestsFlextWebProtocols",),
             ".typings": ("TestsFlextWebTypes",),
             ".utilities": ("TestsFlextWebUtilities",),
+            "flext_core.decorators": ("d",),
+            "flext_core.exceptions": ("e",),
+            "flext_core.handlers": ("h",),
+            "flext_core.mixins": ("x",),
+            "flext_core.result": ("r",),
+            "flext_core.service": ("s",),
         },
         alias_groups={
             ".constants": (("c", "TestsFlextWebConstants"),),
@@ -43,12 +49,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".protocols": (("p", "TestsFlextWebProtocols"),),
             ".typings": (("t", "TestsFlextWebTypes"),),
             ".utilities": (("u", "TestsFlextWebUtilities"),),
-            "flext_core.decorators": (("d", "FlextDecorators"),),
-            "flext_core.exceptions": (("e", "FlextExceptions"),),
-            "flext_core.handlers": (("h", "FlextHandlers"),),
-            "flext_core.mixins": (("x", "FlextMixins"),),
-            "flext_core.result": (("r", "FlextResult"),),
-            "flext_core.service": (("s", "FlextService"),),
         },
     ),
     exclude_names=(

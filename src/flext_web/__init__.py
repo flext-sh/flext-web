@@ -13,10 +13,10 @@ from flext_core.lazy import (
 from flext_web.__version__ import *
 
 if _t.TYPE_CHECKING:
-    from flext_core.decorators import FlextDecorators as d
-    from flext_core.exceptions import FlextExceptions as e
-    from flext_core.mixins import FlextMixins as x
-    from flext_core.result import FlextResult as r
+    from flext_core.decorators import d
+    from flext_core.exceptions import e
+    from flext_core.mixins import x
+    from flext_core.result import r
     from flext_web.api import FlextWeb, web
     from flext_web.base import FlextWebServiceBase, FlextWebServiceBase as s
     from flext_web.constants import FlextWebConstants, FlextWebConstants as c
@@ -59,6 +59,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".settings": ("FlextWebSettings",),
             ".typings": ("FlextWebTypes",),
             ".utilities": ("FlextWebUtilities",),
+            "flext_core.decorators": ("d",),
+            "flext_core.exceptions": ("e",),
+            "flext_core.mixins": ("x",),
+            "flext_core.result": ("r",),
         },
         alias_groups={
             ".base": (("s", "FlextWebServiceBase"),),
@@ -67,10 +71,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".protocols": (("p", "FlextWebProtocols"),),
             ".typings": (("t", "FlextWebTypes"),),
             ".utilities": (("u", "FlextWebUtilities"),),
-            "flext_core.decorators": (("d", "FlextDecorators"),),
-            "flext_core.exceptions": (("e", "FlextExceptions"),),
-            "flext_core.mixins": (("x", "FlextMixins"),),
-            "flext_core.result": (("r", "FlextResult"),),
         },
     ),
     exclude_names=(
