@@ -8,14 +8,14 @@ from __future__ import annotations
 from flext_core.lazy import install_lazy_exports
 
 _LAZY_IMPORTS = {
-    "TestsModels": ("tests.helpers.models", "TestsModels"),
-    "TestsProtocols": ("tests.helpers.protocols", "TestsProtocols"),
-    "TestsTypings": ("tests.helpers.typings", "TestsTypings"),
-    "TestsUtilities": ("tests.helpers.utilities", "TestsUtilities"),
-    "m": ("tests.helpers.models", "m"),
-    "p": ("tests.helpers.protocols", "p"),
-    "t": ("tests.helpers.typings", "t"),
-    "u": ("tests.helpers.utilities", "u"),
+    "TestsModels": ".models",
+    "TestsProtocols": ".protocols",
+    "TestsTypings": ".typings",
+    "TestsUtilities": ".utilities",
+    "m": ".models",
+    "p": ".protocols",
+    "t": ".typings",
+    "u": ".utilities",
 }
 
 

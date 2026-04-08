@@ -26,33 +26,36 @@ if _t.TYPE_CHECKING:
     from tests.typings import TestsFlextWebTypes, TestsFlextWebTypes as t
     from tests.utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
 _LAZY_IMPORTS = merge_lazy_imports(
-    ("tests.helpers",),
+    (".helpers",),
     {
-        "TestsFlextWebConstants": ("tests.constants", "TestsFlextWebConstants"),
-        "TestsFlextWebModels": ("tests.models", "TestsFlextWebModels"),
-        "TestsFlextWebProtocols": ("tests.protocols", "TestsFlextWebProtocols"),
-        "TestsFlextWebTypes": ("tests.typings", "TestsFlextWebTypes"),
-        "TestsFlextWebUtilities": ("tests.utilities", "TestsFlextWebUtilities"),
-        "c": ("tests.constants", "TestsFlextWebConstants"),
+        "TestsFlextWebConstants": ".constants",
+        "TestsFlextWebModels": ".models",
+        "TestsFlextWebProtocols": ".protocols",
+        "TestsFlextWebTypes": ".typings",
+        "TestsFlextWebUtilities": ".utilities",
+        "c": (".constants", "TestsFlextWebConstants"),
         "d": ("flext_core.decorators", "FlextDecorators"),
         "e": ("flext_core.exceptions", "FlextExceptions"),
         "h": ("flext_core.handlers", "FlextHandlers"),
-        "m": ("tests.models", "TestsFlextWebModels"),
-        "p": ("tests.protocols", "TestsFlextWebProtocols"),
+        "m": (".models", "TestsFlextWebModels"),
+        "p": (".protocols", "TestsFlextWebProtocols"),
         "r": ("flext_core.result", "FlextResult"),
         "s": ("flext_core.service", "FlextService"),
-        "t": ("tests.typings", "TestsFlextWebTypes"),
-        "u": ("tests.utilities", "TestsFlextWebUtilities"),
+        "t": (".typings", "TestsFlextWebTypes"),
+        "u": (".utilities", "TestsFlextWebUtilities"),
         "x": ("flext_core.mixins", "FlextMixins"),
     },
+    exclude_names=(
+        "cleanup_submodule_namespace",
+        "install_lazy_exports",
+        "lazy_getattr",
+        "logger",
+        "merge_lazy_imports",
+        "output",
+        "output_reporting",
+    ),
+    module_name=__name__,
 )
-_ = _LAZY_IMPORTS.pop("cleanup_submodule_namespace", None)
-_ = _LAZY_IMPORTS.pop("install_lazy_exports", None)
-_ = _LAZY_IMPORTS.pop("lazy_getattr", None)
-_ = _LAZY_IMPORTS.pop("logger", None)
-_ = _LAZY_IMPORTS.pop("merge_lazy_imports", None)
-_ = _LAZY_IMPORTS.pop("output", None)
-_ = _LAZY_IMPORTS.pop("output_reporting", None)
 
 __all__ = [
     "TestsFlextWebConstants",
