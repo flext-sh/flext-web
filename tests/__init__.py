@@ -14,24 +14,10 @@ if _t.TYPE_CHECKING:
 
     conftest = _tests_conftest
     import tests.constants as _tests_constants
-    from tests.conftest import (
-        docker_manager,
-        invalid_app_data,
-        production_config,
-        pytest_configure,
-        pytest_plugins,
-        real_app,
-        real_config,
-        real_service,
-        running_service,
-        setup_test_environment,
-        test_app_data,
-        web_settings,
-    )
 
     constants = _tests_constants
     import tests.helpers as _tests_helpers
-    from tests.constants import FlextWebTestConstants, FlextWebTestConstants as c
+    from tests.constants import TestsFlextWebConstants, TestsFlextWebConstants as c
 
     helpers = _tests_helpers
     import tests.integration as _tests_integration
@@ -39,59 +25,21 @@ if _t.TYPE_CHECKING:
 
     integration = _tests_integration
     import tests.models as _tests_models
-    from tests.integration import (
-        ExamplesFullFunctionalityTest,
-        TestExamples,
-        logger,
-        main,
-        test_examples,
-    )
 
     models = _tests_models
     import tests.protocols as _tests_protocols
-    from tests.models import FlextWebTestModels, FlextWebTestModels as m
+    from tests.models import TestsFlextWebModels, TestsFlextWebModels as m
 
     protocols = _tests_protocols
     import tests.typings as _tests_typings
-    from tests.protocols import FlextWebTestProtocols, FlextWebTestProtocols as p
+    from tests.protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p
 
     typings = _tests_typings
     import tests.unit as _tests_unit
-    from tests.typings import FlextWebTestTypes, FlextWebTestTypes as t
+    from tests.typings import TestsFlextWebTypes, TestsFlextWebTypes as t
 
     unit = _tests_unit
     import tests.utilities as _tests_utilities
-    from tests.unit import (
-        TestFlextWebApi,
-        TestFlextWebApp,
-        TestFlextWebCliService,
-        TestFlextWebConstants,
-        TestFlextWebFields,
-        TestFlextWebHandlers,
-        TestFlextWebInit,
-        TestFlextWebModels,
-        TestFlextWebProtocols,
-        TestFlextWebService,
-        TestFlextWebSettings,
-        TestFlextWebUtilities,
-        TestFlextWebVersion,
-        TestMainFunction,
-        assert_version_info,
-        test___init__,
-        test___main__,
-        test_api,
-        test_app,
-        test_config,
-        test_constants,
-        test_fields,
-        test_handlers,
-        test_models,
-        test_protocols,
-        test_services,
-        test_typings,
-        test_utilities,
-        test_version,
-    )
 
     utilities = _tests_utilities
     from flext_core.decorators import FlextDecorators as d
@@ -100,7 +48,7 @@ if _t.TYPE_CHECKING:
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
     from flext_core.service import FlextService as s
-    from tests.utilities import FlextWebTestUtilities, FlextWebTestUtilities as u
+    from tests.utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
 _LAZY_IMPORTS = merge_lazy_imports(
     (
         "tests.helpers",
@@ -108,127 +56,70 @@ _LAZY_IMPORTS = merge_lazy_imports(
         "tests.unit",
     ),
     {
-        "FlextWebTestConstants": ("tests.constants", "FlextWebTestConstants"),
-        "FlextWebTestModels": ("tests.models", "FlextWebTestModels"),
-        "FlextWebTestProtocols": ("tests.protocols", "FlextWebTestProtocols"),
-        "FlextWebTestTypes": ("tests.typings", "FlextWebTestTypes"),
-        "FlextWebTestUtilities": ("tests.utilities", "FlextWebTestUtilities"),
-        "c": ("tests.constants", "FlextWebTestConstants"),
+        "TestsFlextWebConstants": ("tests.constants", "TestsFlextWebConstants"),
+        "TestsFlextWebModels": ("tests.models", "TestsFlextWebModels"),
+        "TestsFlextWebProtocols": ("tests.protocols", "TestsFlextWebProtocols"),
+        "TestsFlextWebTypes": ("tests.typings", "TestsFlextWebTypes"),
+        "TestsFlextWebUtilities": ("tests.utilities", "TestsFlextWebUtilities"),
+        "c": ("tests.constants", "TestsFlextWebConstants"),
         "conftest": "tests.conftest",
         "constants": "tests.constants",
         "d": ("flext_core.decorators", "FlextDecorators"),
-        "docker_manager": ("tests.conftest", "docker_manager"),
         "e": ("flext_core.exceptions", "FlextExceptions"),
         "h": ("flext_core.handlers", "FlextHandlers"),
         "helpers": "tests.helpers",
         "integration": "tests.integration",
-        "invalid_app_data": ("tests.conftest", "invalid_app_data"),
-        "m": ("tests.models", "FlextWebTestModels"),
+        "m": ("tests.models", "TestsFlextWebModels"),
         "models": "tests.models",
-        "p": ("tests.protocols", "FlextWebTestProtocols"),
-        "production_config": ("tests.conftest", "production_config"),
+        "p": ("tests.protocols", "TestsFlextWebProtocols"),
         "protocols": "tests.protocols",
-        "pytest_configure": ("tests.conftest", "pytest_configure"),
-        "pytest_plugins": ("tests.conftest", "pytest_plugins"),
         "r": ("flext_core.result", "FlextResult"),
-        "real_app": ("tests.conftest", "real_app"),
-        "real_config": ("tests.conftest", "real_config"),
-        "real_service": ("tests.conftest", "real_service"),
-        "running_service": ("tests.conftest", "running_service"),
         "s": ("flext_core.service", "FlextService"),
-        "setup_test_environment": ("tests.conftest", "setup_test_environment"),
-        "t": ("tests.typings", "FlextWebTestTypes"),
-        "test_app_data": ("tests.conftest", "test_app_data"),
+        "t": ("tests.typings", "TestsFlextWebTypes"),
         "typings": "tests.typings",
-        "u": ("tests.utilities", "FlextWebTestUtilities"),
+        "u": ("tests.utilities", "TestsFlextWebUtilities"),
         "unit": "tests.unit",
         "utilities": "tests.utilities",
-        "web_settings": ("tests.conftest", "web_settings"),
         "x": ("flext_core.mixins", "FlextMixins"),
     },
 )
 _ = _LAZY_IMPORTS.pop("cleanup_submodule_namespace", None)
 _ = _LAZY_IMPORTS.pop("install_lazy_exports", None)
 _ = _LAZY_IMPORTS.pop("lazy_getattr", None)
+_ = _LAZY_IMPORTS.pop("logger", None)
 _ = _LAZY_IMPORTS.pop("merge_lazy_imports", None)
 _ = _LAZY_IMPORTS.pop("output", None)
 _ = _LAZY_IMPORTS.pop("output_reporting", None)
 
 __all__ = [
-    "ExamplesFullFunctionalityTest",
-    "FlextWebTestConstants",
-    "FlextWebTestModels",
-    "FlextWebTestProtocols",
-    "FlextWebTestTypes",
-    "FlextWebTestUtilities",
-    "TestExamples",
-    "TestFlextWebApi",
-    "TestFlextWebApp",
-    "TestFlextWebCliService",
-    "TestFlextWebConstants",
-    "TestFlextWebFields",
-    "TestFlextWebHandlers",
-    "TestFlextWebInit",
-    "TestFlextWebModels",
-    "TestFlextWebProtocols",
-    "TestFlextWebService",
-    "TestFlextWebSettings",
-    "TestFlextWebUtilities",
-    "TestFlextWebVersion",
-    "TestMainFunction",
+    "TestsFlextWebConstants",
+    "TestsFlextWebModels",
+    "TestsFlextWebProtocols",
+    "TestsFlextWebTypes",
+    "TestsFlextWebUtilities",
     "TestsModels",
     "TestsProtocols",
     "TestsTypings",
     "TestsUtilities",
-    "assert_version_info",
     "c",
     "conftest",
     "constants",
     "d",
-    "docker_manager",
     "e",
     "h",
     "helpers",
     "integration",
-    "invalid_app_data",
-    "logger",
     "m",
-    "main",
     "models",
     "p",
-    "production_config",
     "protocols",
-    "pytest_configure",
-    "pytest_plugins",
     "r",
-    "real_app",
-    "real_config",
-    "real_service",
-    "running_service",
     "s",
-    "setup_test_environment",
     "t",
-    "test___init__",
-    "test___main__",
-    "test_api",
-    "test_app",
-    "test_app_data",
-    "test_config",
-    "test_constants",
-    "test_examples",
-    "test_fields",
-    "test_handlers",
-    "test_models",
-    "test_protocols",
-    "test_services",
-    "test_typings",
-    "test_utilities",
-    "test_version",
     "typings",
     "u",
     "unit",
     "utilities",
-    "web_settings",
     "x",
 ]
 

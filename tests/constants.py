@@ -13,7 +13,7 @@ from flext_tests import FlextTestsConstants
 from flext_web import FlextWebConstants
 
 
-class FlextWebTestConstants(FlextTestsConstants, FlextWebConstants):
+class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
     """Test constants for flext-web."""
 
     class Web(FlextWebConstants.Web):
@@ -68,5 +68,5 @@ class FlextWebTestConstants(FlextTestsConstants, FlextWebConstants):
                 type SameSiteLiteral = str
 
 
-c = FlextWebTestConstants
-__all__ = ["FlextWebTestConstants", "c"]
+c = TestsFlextWebConstants
+__all__ = ["TestsFlextWebConstants", "c"]

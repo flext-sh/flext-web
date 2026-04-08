@@ -24,25 +24,12 @@ if _t.TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from tests.integration.test_examples import (
-        ExamplesFullFunctionalityTest,
-        TestExamples,
-        logger,
-        main,
-    )
 _LAZY_IMPORTS = {
-    "ExamplesFullFunctionalityTest": (
-        "tests.integration.test_examples",
-        "ExamplesFullFunctionalityTest",
-    ),
-    "TestExamples": ("tests.integration.test_examples", "TestExamples"),
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
     "h": ("flext_core.handlers", "FlextHandlers"),
-    "logger": ("tests.integration.test_examples", "logger"),
     "m": ("flext_core.models", "FlextModels"),
-    "main": ("tests.integration.test_examples", "main"),
     "p": ("flext_core.protocols", "FlextProtocols"),
     "r": ("flext_core.result", "FlextResult"),
     "s": ("flext_core.service", "FlextService"),
@@ -53,15 +40,11 @@ _LAZY_IMPORTS = {
 }
 
 __all__ = [
-    "ExamplesFullFunctionalityTest",
-    "TestExamples",
     "c",
     "d",
     "e",
     "h",
-    "logger",
     "m",
-    "main",
     "p",
     "r",
     "s",

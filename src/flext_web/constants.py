@@ -336,4 +336,3 @@ class FlextWebConstants(FlextConstants):
 
 
 c = FlextWebConstants
-__all__: t.StrSequence = ["FlextWebConstants", "c"]

@@ -11,7 +11,7 @@ from flext_tests import FlextTestsProtocols
 from flext_web import FlextWebProtocols
 
 
-class FlextWebTestProtocols(FlextTestsProtocols, FlextWebProtocols):
+class TestsFlextWebProtocols(FlextTestsProtocols, FlextWebProtocols):
     """Test protocols for flext-web."""
 
     class Web(FlextWebProtocols.Web):
@@ -21,5 +21,5 @@ class FlextWebTestProtocols(FlextTestsProtocols, FlextWebProtocols):
             """Test-specific protocols."""
 
 
-p = FlextWebTestProtocols
-__all__ = ["FlextWebTestProtocols", "p"]
+p = TestsFlextWebProtocols
+__all__ = ["TestsFlextWebProtocols", "p"]

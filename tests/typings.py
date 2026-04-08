@@ -11,7 +11,7 @@ from flext_tests import FlextTestsTypes
 from flext_web import FlextWebTypes
 
 
-class FlextWebTestTypes(FlextTestsTypes, FlextWebTypes):
+class TestsFlextWebTypes(FlextTestsTypes, FlextWebTypes):
     """Test type aliases for flext-web."""
 
     class Web(FlextWebTypes.Web):
@@ -21,5 +21,5 @@ class FlextWebTestTypes(FlextTestsTypes, FlextWebTypes):
             """Test-specific type aliases."""
 
 
-t = FlextWebTestTypes
-__all__ = ["FlextWebTestTypes", "t"]
+t = TestsFlextWebTypes
+__all__ = ["TestsFlextWebTypes", "t"]

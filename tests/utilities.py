@@ -21,7 +21,7 @@ from flext_web import FlextWebUtilities
 from tests import c, m, t
 
 
-class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
+class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
     """Test utilities for flext-web."""
 
     class Web(FlextWebUtilities.Web):
@@ -136,9 +136,9 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
             ) -> None:
                 """Assert result state according to expectation."""
                 if expected_success:
-                    FlextWebTestUtilities.Web.Tests.assert_success(result)
+                    TestsFlextWebUtilities.Web.Tests.assert_success(result)
                 else:
-                    FlextWebTestUtilities.Web.Tests.assert_failure(result)
+                    TestsFlextWebUtilities.Web.Tests.assert_failure(result)
 
             @staticmethod
             def create_entry(
@@ -157,7 +157,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                     ):
                         return r[BaseModel].fail("Invalid parameters for web_app")
                     try:
-                        return FlextWebTestUtilities.Web.Tests._wrap_result(
+                        return TestsFlextWebUtilities.Web.Tests._wrap_result(
                             m.Web.create_web_app(
                                 name=name,
                                 host=host,
@@ -180,7 +180,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return r[BaseModel].fail("Invalid headers for http_request")
                     if body is not None and not isinstance(body, (str, dict)):
                         return r[BaseModel].fail("Invalid body for http_request")
-                    if not FlextWebTestUtilities.Web.Tests._is_numeric(timeout):
+                    if not TestsFlextWebUtilities.Web.Tests._is_numeric(timeout):
                         return r[BaseModel].fail("Invalid timeout for http_request")
                     narrow_headers: t.StrMapping | None = (
                         {k: str(v) for k, v in headers.items()}
@@ -192,13 +192,13 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         if isinstance(body, str) or body is None
                         else {k: v for k, v in body.items() if u.is_primitive(v)}
                     )
-                    return FlextWebTestUtilities.Web.Tests._wrap_result(
+                    return TestsFlextWebUtilities.Web.Tests._wrap_result(
                         t.create_http_request(
                             url=url,
                             method=method,
                             headers=narrow_headers,
                             body=narrow_body,
-                            timeout=FlextWebTestUtilities.Web.Tests._to_float(
+                            timeout=TestsFlextWebUtilities.Web.Tests._to_float(
                                 timeout,
                                 default=30.0,
                             ),
@@ -218,7 +218,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                     if body is not None and not isinstance(body, (str, dict)):
                         return r[BaseModel].fail("Invalid body for http_response")
                     if elapsed_time is not None and not (
-                        FlextWebTestUtilities.Web.Tests._is_numeric(elapsed_time)
+                        TestsFlextWebUtilities.Web.Tests._is_numeric(elapsed_time)
                     ):
                         return r[BaseModel].fail(
                             "Invalid elapsed_time for http_response",
@@ -233,12 +233,12 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         if isinstance(body, str) or body is None
                         else {k: v for k, v in body.items() if u.is_primitive(v)}
                     )
-                    return FlextWebTestUtilities.Web.Tests._wrap_result(
+                    return TestsFlextWebUtilities.Web.Tests._wrap_result(
                         t.create_http_response(
                             status_code=status_code,
                             headers=resp_headers,
                             body=resp_body,
-                            elapsed_time=FlextWebTestUtilities.Web.Tests._to_optional_float(
+                            elapsed_time=TestsFlextWebUtilities.Web.Tests._to_optional_float(
                                 elapsed_time,
                             ),
                         ),
@@ -283,7 +283,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             method=method,
                             headers=headers_dict,
                             body=body_value,
-                            timeout=FlextWebTestUtilities.Web.Tests._to_float(
+                            timeout=TestsFlextWebUtilities.Web.Tests._to_float(
                                 timeout,
                                 default=30.0,
                             ),
@@ -297,7 +297,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 else "test-client"
                             ),
                         )
-                        return FlextWebTestUtilities.Web.Tests._wrap_result(
+                        return TestsFlextWebUtilities.Web.Tests._wrap_result(
                             t.create_web_request(config),
                         )
                     except (ValidationError, ValueError, TypeError) as exc:
@@ -339,7 +339,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                             headers=headers_dict,
                             body=body_value,
-                            elapsed_time=FlextWebTestUtilities.Web.Tests._to_float(
+                            elapsed_time=TestsFlextWebUtilities.Web.Tests._to_float(
                                 elapsed_time,
                                 default=0.0,
                             ),
@@ -351,12 +351,12 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                             content_length=(
                                 content_length if isinstance(content_length, int) else 0
                             ),
-                            processing_time_ms=FlextWebTestUtilities.Web.Tests._to_float(
+                            processing_time_ms=TestsFlextWebUtilities.Web.Tests._to_float(
                                 processing_time_ms,
                                 default=0.0,
                             ),
                         )
-                        return FlextWebTestUtilities.Web.Tests._wrap_result(
+                        return TestsFlextWebUtilities.Web.Tests._wrap_result(
                             t.create_web_response(config),
                         )
                     except (ValidationError, ValueError, TypeError) as exc:
@@ -378,7 +378,7 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                         port=port,
                         status=status if isinstance(status, str) else "stopped",
                     )
-                    return FlextWebTestUtilities.Web.Tests._wrap_result(
+                    return TestsFlextWebUtilities.Web.Tests._wrap_result(
                         t.create_application(config),
                     )
                 raise ValueError(f"Unsupported entry type: {entry_type}")
@@ -520,12 +520,12 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                     try:
                         result = test_function(*test_case)
                         if expected_success:
-                            FlextWebTestUtilities.Web.Tests.assert_success(
+                            TestsFlextWebUtilities.Web.Tests.assert_success(
                                 result,
                                 f"{test_name} case {index} should succeed",
                             )
                         else:
-                            FlextWebTestUtilities.Web.Tests.assert_failure(
+                            TestsFlextWebUtilities.Web.Tests.assert_failure(
                                 result,
                                 f"{test_name} case {index} should fail",
                             )
@@ -549,25 +549,25 @@ class FlextWebTestUtilities(FlextTestsUtilities, FlextWebUtilities):
                 """Run comprehensive valid/invalid case suites."""
                 for index, params in enumerate(valid_cases):
                     test_name = f"{test_name_prefix}_valid_case_{index}"
-                    result = FlextWebTestUtilities.Web.Tests.create_entry(
+                    result = TestsFlextWebUtilities.Web.Tests.create_entry(
                         entity_type,
                         **params,
                     )
-                    FlextWebTestUtilities.Web.Tests.assert_success(
+                    TestsFlextWebUtilities.Web.Tests.assert_success(
                         result,
                         f"{test_name} should succeed",
                     )
                 for index, params in enumerate(invalid_cases):
                     test_name = f"{test_name_prefix}_invalid_case_{index}"
-                    result = FlextWebTestUtilities.Web.Tests.create_entry(
+                    result = TestsFlextWebUtilities.Web.Tests.create_entry(
                         entity_type,
                         **params,
                     )
-                    FlextWebTestUtilities.Web.Tests.assert_failure(
+                    TestsFlextWebUtilities.Web.Tests.assert_failure(
                         result,
                         f"{test_name} should fail",
                     )
 
 
-u = FlextWebTestUtilities
-__all__ = ["FlextWebTestUtilities", "u"]
+u = TestsFlextWebUtilities
+__all__ = ["TestsFlextWebUtilities", "u"]

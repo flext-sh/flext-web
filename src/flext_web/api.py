@@ -43,4 +43,5 @@ class FlextWeb(
 
 web = FlextWeb.get_instance()
 
+
 __all__ = ["FlextWeb", "web"]

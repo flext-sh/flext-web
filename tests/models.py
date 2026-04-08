@@ -11,7 +11,7 @@ from flext_tests import FlextTestsModels
 from flext_web import FlextWebModels
 
 
-class FlextWebTestModels(FlextTestsModels, FlextWebModels):
+class TestsFlextWebModels(FlextTestsModels, FlextWebModels):
     """Test models for flext-web."""
 
     class Web(FlextWebModels.Web):
@@ -21,5 +21,5 @@ class FlextWebTestModels(FlextTestsModels, FlextWebModels):
             """Test-specific models."""
 
 
-m = FlextWebTestModels
-__all__ = ["FlextWebTestModels", "m"]
+m = TestsFlextWebModels
+__all__ = ["TestsFlextWebModels", "m"]

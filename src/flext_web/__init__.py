@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import typing as _t
 
-from flext_core.lazy import install_lazy_exports
+from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 from flext_web.__version__ import *
 
 if _t.TYPE_CHECKING:
@@ -30,14 +30,20 @@ if _t.TYPE_CHECKING:
     from flext_web.models import FlextWebModels, FlextWebModels as m
 
     protocols = _flext_web_protocols
-    import flext_web.settings as _flext_web_settings
+    import flext_web.services as _flext_web_services
     from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
-    from flext_web.services.app import FlextWebApp
-    from flext_web.services.auth import FlextWebAuth
-    from flext_web.services.entities import FlextWebEntities
-    from flext_web.services.handlers import FlextWebHandlers, FlextWebHandlers as h
-    from flext_web.services.health import FlextWebHealth
-    from flext_web.services.web import FlextWebServices
+
+    services = _flext_web_services
+    import flext_web.settings as _flext_web_settings
+    from flext_web.services import (
+        FlextWebApp,
+        FlextWebAuth,
+        FlextWebEntities,
+        FlextWebHandlers,
+        FlextWebHandlers as h,
+        FlextWebHealth,
+        FlextWebServices,
+    )
 
     settings = _flext_web_settings
     import flext_web.typings as _flext_web_typings
@@ -53,53 +59,57 @@ if _t.TYPE_CHECKING:
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
     from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
-_LAZY_IMPORTS = {
-    "FlextWeb": ("flext_web.api", "FlextWeb"),
-    "FlextWebApp": ("flext_web.services.app", "FlextWebApp"),
-    "FlextWebAuth": ("flext_web.services.auth", "FlextWebAuth"),
-    "FlextWebConstants": ("flext_web.constants", "FlextWebConstants"),
-    "FlextWebEntities": ("flext_web.services.entities", "FlextWebEntities"),
-    "FlextWebHandlers": ("flext_web.services.handlers", "FlextWebHandlers"),
-    "FlextWebHealth": ("flext_web.services.health", "FlextWebHealth"),
-    "FlextWebModels": ("flext_web.models", "FlextWebModels"),
-    "FlextWebProtocols": ("flext_web.protocols", "FlextWebProtocols"),
-    "FlextWebServiceBase": ("flext_web.base", "FlextWebServiceBase"),
-    "FlextWebServices": ("flext_web.services.web", "FlextWebServices"),
-    "FlextWebSettings": ("flext_web.settings", "FlextWebSettings"),
-    "FlextWebTypes": ("flext_web.typings", "FlextWebTypes"),
-    "FlextWebUtilities": ("flext_web.utilities", "FlextWebUtilities"),
-    "FlextWebVersion": ("flext_web.__version__", "FlextWebVersion"),
-    "VERSION": ("flext_web.__version__", "VERSION"),
-    "VersionMetadata": ("flext_web.__version__", "VersionMetadata"),
-    "__author__": ("flext_web.__version__", "__author__"),
-    "__author_email__": ("flext_web.__version__", "__author_email__"),
-    "__description__": ("flext_web.__version__", "__description__"),
-    "__license__": ("flext_web.__version__", "__license__"),
-    "__title__": ("flext_web.__version__", "__title__"),
-    "__url__": ("flext_web.__version__", "__url__"),
-    "__version__": ("flext_web.__version__", "__version__"),
-    "__version_info__": ("flext_web.__version__", "__version_info__"),
-    "api": "flext_web.api",
-    "base": "flext_web.base",
-    "c": ("flext_web.constants", "FlextWebConstants"),
-    "constants": "flext_web.constants",
-    "d": ("flext_core.decorators", "FlextDecorators"),
-    "e": ("flext_core.exceptions", "FlextExceptions"),
-    "h": ("flext_web.services.handlers", "FlextWebHandlers"),
-    "m": ("flext_web.models", "FlextWebModels"),
-    "models": "flext_web.models",
-    "p": ("flext_web.protocols", "FlextWebProtocols"),
-    "protocols": "flext_web.protocols",
-    "r": ("flext_core.result", "FlextResult"),
-    "s": ("flext_web.base", "FlextWebServiceBase"),
-    "settings": "flext_web.settings",
-    "t": ("flext_web.typings", "FlextWebTypes"),
-    "typings": "flext_web.typings",
-    "u": ("flext_web.utilities", "FlextWebUtilities"),
-    "utilities": "flext_web.utilities",
-    "web": ("flext_web.api", "web"),
-    "x": ("flext_core.mixins", "FlextMixins"),
-}
+_LAZY_IMPORTS = merge_lazy_imports(
+    ("flext_web.services",),
+    {
+        "FlextWeb": ("flext_web.api", "FlextWeb"),
+        "FlextWebConstants": ("flext_web.constants", "FlextWebConstants"),
+        "FlextWebModels": ("flext_web.models", "FlextWebModels"),
+        "FlextWebProtocols": ("flext_web.protocols", "FlextWebProtocols"),
+        "FlextWebServiceBase": ("flext_web.base", "FlextWebServiceBase"),
+        "FlextWebSettings": ("flext_web.settings", "FlextWebSettings"),
+        "FlextWebTypes": ("flext_web.typings", "FlextWebTypes"),
+        "FlextWebUtilities": ("flext_web.utilities", "FlextWebUtilities"),
+        "FlextWebVersion": ("flext_web.__version__", "FlextWebVersion"),
+        "VERSION": ("flext_web.__version__", "VERSION"),
+        "VersionMetadata": ("flext_web.__version__", "VersionMetadata"),
+        "__author__": ("flext_web.__version__", "__author__"),
+        "__author_email__": ("flext_web.__version__", "__author_email__"),
+        "__description__": ("flext_web.__version__", "__description__"),
+        "__license__": ("flext_web.__version__", "__license__"),
+        "__title__": ("flext_web.__version__", "__title__"),
+        "__url__": ("flext_web.__version__", "__url__"),
+        "__version__": ("flext_web.__version__", "__version__"),
+        "__version_info__": ("flext_web.__version__", "__version_info__"),
+        "api": "flext_web.api",
+        "base": "flext_web.base",
+        "c": ("flext_web.constants", "FlextWebConstants"),
+        "constants": "flext_web.constants",
+        "d": ("flext_core.decorators", "FlextDecorators"),
+        "e": ("flext_core.exceptions", "FlextExceptions"),
+        "m": ("flext_web.models", "FlextWebModels"),
+        "models": "flext_web.models",
+        "p": ("flext_web.protocols", "FlextWebProtocols"),
+        "protocols": "flext_web.protocols",
+        "r": ("flext_core.result", "FlextResult"),
+        "s": ("flext_web.base", "FlextWebServiceBase"),
+        "services": "flext_web.services",
+        "settings": "flext_web.settings",
+        "t": ("flext_web.typings", "FlextWebTypes"),
+        "typings": "flext_web.typings",
+        "u": ("flext_web.utilities", "FlextWebUtilities"),
+        "utilities": "flext_web.utilities",
+        "web": ("flext_web.api", "web"),
+        "x": ("flext_core.mixins", "FlextMixins"),
+    },
+)
+_ = _LAZY_IMPORTS.pop("cleanup_submodule_namespace", None)
+_ = _LAZY_IMPORTS.pop("install_lazy_exports", None)
+_ = _LAZY_IMPORTS.pop("lazy_getattr", None)
+_ = _LAZY_IMPORTS.pop("logger", None)
+_ = _LAZY_IMPORTS.pop("merge_lazy_imports", None)
+_ = _LAZY_IMPORTS.pop("output", None)
+_ = _LAZY_IMPORTS.pop("output_reporting", None)
 
 __all__ = [
     "VERSION",
@@ -140,6 +150,7 @@ __all__ = [
     "protocols",
     "r",
     "s",
+    "services",
     "settings",
     "t",
     "typings",

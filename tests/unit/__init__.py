@@ -14,54 +14,42 @@ if _t.TYPE_CHECKING:
 
     test___init__ = _tests_unit_test___init__
     import tests.unit.test___main__ as _tests_unit_test___main__
-    from tests.unit.test___init__ import TestFlextWebInit
 
     test___main__ = _tests_unit_test___main__
     import tests.unit.test_api as _tests_unit_test_api
-    from tests.unit.test___main__ import TestFlextWebCliService, TestMainFunction
 
     test_api = _tests_unit_test_api
     import tests.unit.test_app as _tests_unit_test_app
-    from tests.unit.test_api import TestFlextWebApi
 
     test_app = _tests_unit_test_app
     import tests.unit.test_config as _tests_unit_test_config
-    from tests.unit.test_app import TestFlextWebApp
 
     test_config = _tests_unit_test_config
     import tests.unit.test_constants as _tests_unit_test_constants
-    from tests.unit.test_config import TestFlextWebSettings
 
     test_constants = _tests_unit_test_constants
     import tests.unit.test_fields as _tests_unit_test_fields
-    from tests.unit.test_constants import TestFlextWebConstants
 
     test_fields = _tests_unit_test_fields
     import tests.unit.test_handlers as _tests_unit_test_handlers
-    from tests.unit.test_fields import TestFlextWebFields
 
     test_handlers = _tests_unit_test_handlers
     import tests.unit.test_models as _tests_unit_test_models
-    from tests.unit.test_handlers import TestFlextWebHandlers
 
     test_models = _tests_unit_test_models
     import tests.unit.test_protocols as _tests_unit_test_protocols
 
     test_protocols = _tests_unit_test_protocols
     import tests.unit.test_services as _tests_unit_test_services
-    from tests.unit.test_protocols import TestFlextWebProtocols
 
     test_services = _tests_unit_test_services
     import tests.unit.test_typings as _tests_unit_test_typings
-    from tests.unit.test_services import TestFlextWebService
 
     test_typings = _tests_unit_test_typings
     import tests.unit.test_utilities as _tests_unit_test_utilities
-    from tests.unit.test_typings import TestFlextWebModels
 
     test_utilities = _tests_unit_test_utilities
     import tests.unit.test_version as _tests_unit_test_version
-    from tests.unit.test_utilities import TestFlextWebUtilities
 
     test_version = _tests_unit_test_version
     from flext_core.constants import FlextConstants as c
@@ -75,23 +63,7 @@ if _t.TYPE_CHECKING:
     from flext_core.service import FlextService as s
     from flext_core.typings import FlextTypes as t
     from flext_core.utilities import FlextUtilities as u
-    from tests.unit.test_version import TestFlextWebVersion, assert_version_info
 _LAZY_IMPORTS = {
-    "TestFlextWebApi": ("tests.unit.test_api", "TestFlextWebApi"),
-    "TestFlextWebApp": ("tests.unit.test_app", "TestFlextWebApp"),
-    "TestFlextWebCliService": ("tests.unit.test___main__", "TestFlextWebCliService"),
-    "TestFlextWebConstants": ("tests.unit.test_constants", "TestFlextWebConstants"),
-    "TestFlextWebFields": ("tests.unit.test_fields", "TestFlextWebFields"),
-    "TestFlextWebHandlers": ("tests.unit.test_handlers", "TestFlextWebHandlers"),
-    "TestFlextWebInit": ("tests.unit.test___init__", "TestFlextWebInit"),
-    "TestFlextWebModels": ("tests.unit.test_typings", "TestFlextWebModels"),
-    "TestFlextWebProtocols": ("tests.unit.test_protocols", "TestFlextWebProtocols"),
-    "TestFlextWebService": ("tests.unit.test_services", "TestFlextWebService"),
-    "TestFlextWebSettings": ("tests.unit.test_config", "TestFlextWebSettings"),
-    "TestFlextWebUtilities": ("tests.unit.test_utilities", "TestFlextWebUtilities"),
-    "TestFlextWebVersion": ("tests.unit.test_version", "TestFlextWebVersion"),
-    "TestMainFunction": ("tests.unit.test___main__", "TestMainFunction"),
-    "assert_version_info": ("tests.unit.test_version", "assert_version_info"),
     "c": ("flext_core.constants", "FlextConstants"),
     "d": ("flext_core.decorators", "FlextDecorators"),
     "e": ("flext_core.exceptions", "FlextExceptions"),
@@ -120,21 +92,6 @@ _LAZY_IMPORTS = {
 }
 
 __all__ = [
-    "TestFlextWebApi",
-    "TestFlextWebApp",
-    "TestFlextWebCliService",
-    "TestFlextWebConstants",
-    "TestFlextWebFields",
-    "TestFlextWebHandlers",
-    "TestFlextWebInit",
-    "TestFlextWebModels",
-    "TestFlextWebProtocols",
-    "TestFlextWebService",
-    "TestFlextWebSettings",
-    "TestFlextWebUtilities",
-    "TestFlextWebVersion",
-    "TestMainFunction",
-    "assert_version_info",
     "c",
     "d",
     "e",
