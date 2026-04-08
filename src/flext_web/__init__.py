@@ -11,53 +11,34 @@ from flext_core.lazy import install_lazy_exports, merge_lazy_imports
 from flext_web.__version__ import *
 
 if _t.TYPE_CHECKING:
-    import flext_web.api as _flext_web_api
-
-    api = _flext_web_api
-    import flext_web.base as _flext_web_base
-    from flext_web.api import FlextWeb, web
-
-    base = _flext_web_base
-    import flext_web.constants as _flext_web_constants
-    from flext_web.base import FlextWebServiceBase, FlextWebServiceBase as s
-
-    constants = _flext_web_constants
-    import flext_web.models as _flext_web_models
-    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
-
-    models = _flext_web_models
-    import flext_web.protocols as _flext_web_protocols
-    from flext_web.models import FlextWebModels, FlextWebModels as m
-
-    protocols = _flext_web_protocols
-    import flext_web.services as _flext_web_services
-    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
-
-    services = _flext_web_services
-    import flext_web.settings as _flext_web_settings
-    from flext_web.services import (
-        FlextWebApp,
-        FlextWebAuth,
-        FlextWebEntities,
-        FlextWebHandlers,
-        FlextWebHandlers as h,
-        FlextWebHealth,
-        FlextWebServices,
-    )
-
-    settings = _flext_web_settings
-    import flext_web.typings as _flext_web_typings
-    from flext_web.settings import FlextWebSettings
-
-    typings = _flext_web_typings
-    import flext_web.utilities as _flext_web_utilities
-    from flext_web.typings import FlextWebTypes, FlextWebTypes as t
-
-    utilities = _flext_web_utilities
     from flext_core.decorators import FlextDecorators as d
     from flext_core.exceptions import FlextExceptions as e
     from flext_core.mixins import FlextMixins as x
     from flext_core.result import FlextResult as r
+    from flext_web import (
+        api,
+        base,
+        constants,
+        models,
+        protocols,
+        services,
+        settings,
+        typings,
+        utilities,
+    )
+    from flext_web.api import FlextWeb, web
+    from flext_web.base import FlextWebServiceBase, FlextWebServiceBase as s
+    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
+    from flext_web.models import FlextWebModels, FlextWebModels as m
+    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
+    from flext_web.services.app import FlextWebApp
+    from flext_web.services.auth import FlextWebAuth
+    from flext_web.services.entities import FlextWebEntities
+    from flext_web.services.handlers import FlextWebHandlers, FlextWebHandlers as h
+    from flext_web.services.health import FlextWebHealth
+    from flext_web.services.web import FlextWebServices
+    from flext_web.settings import FlextWebSettings
+    from flext_web.typings import FlextWebTypes, FlextWebTypes as t
     from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
 _LAZY_IMPORTS = merge_lazy_imports(
     ("flext_web.services",),

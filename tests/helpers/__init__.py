@@ -5,34 +5,8 @@
 
 from __future__ import annotations
 
-import typing as _t
-
 from flext_core.lazy import install_lazy_exports
 
-if _t.TYPE_CHECKING:
-    import tests.helpers.models as _tests_helpers_models
-
-    models = _tests_helpers_models
-    import tests.helpers.protocols as _tests_helpers_protocols
-    from tests.helpers.models import TestsModels, TestsModels as m
-
-    protocols = _tests_helpers_protocols
-    import tests.helpers.typings as _tests_helpers_typings
-    from tests.helpers.protocols import TestsProtocols, TestsProtocols as p
-
-    typings = _tests_helpers_typings
-    import tests.helpers.utilities as _tests_helpers_utilities
-    from tests.helpers.typings import TestsTypings, t
-
-    utilities = _tests_helpers_utilities
-    from flext_core.constants import FlextConstants as c
-    from flext_core.decorators import FlextDecorators as d
-    from flext_core.exceptions import FlextExceptions as e
-    from flext_core.handlers import FlextHandlers as h
-    from flext_core.mixins import FlextMixins as x
-    from flext_core.result import FlextResult as r
-    from flext_core.service import FlextService as s
-    from tests.helpers.utilities import TestsUtilities, TestsUtilities as u
 _LAZY_IMPORTS = {
     "TestsModels": ("tests.helpers.models", "TestsModels"),
     "TestsProtocols": ("tests.helpers.protocols", "TestsProtocols"),
@@ -55,27 +29,5 @@ _LAZY_IMPORTS = {
     "x": ("flext_core.mixins", "FlextMixins"),
 }
 
-__all__ = [
-    "TestsModels",
-    "TestsProtocols",
-    "TestsTypings",
-    "TestsUtilities",
-    "c",
-    "d",
-    "e",
-    "h",
-    "m",
-    "models",
-    "p",
-    "protocols",
-    "r",
-    "s",
-    "t",
-    "typings",
-    "u",
-    "utilities",
-    "x",
-]
 
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
