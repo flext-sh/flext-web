@@ -3,17 +3,21 @@
 
 from __future__ import annotations
 
-from flext_core.lazy import install_lazy_exports
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
-_LAZY_IMPORTS = {
-    "FlextWebApp": ".app",
-    "FlextWebAuth": ".auth",
-    "FlextWebEntities": ".entities",
-    "FlextWebHandlers": ".handlers",
-    "FlextWebHealth": ".health",
-    "FlextWebServices": ".web",
-    "h": (".handlers", "FlextWebHandlers"),
-}
+_LAZY_IMPORTS = build_lazy_import_map(
+    {
+        ".app": ("FlextWebApp",),
+        ".auth": ("FlextWebAuth",),
+        ".entities": ("FlextWebEntities",),
+        ".handlers": ("FlextWebHandlers",),
+        ".health": ("FlextWebHealth",),
+        ".web": ("FlextWebServices",),
+    },
+    alias_groups={
+        ".handlers": (("h", "FlextWebHandlers"),),
+    },
+)
 
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
