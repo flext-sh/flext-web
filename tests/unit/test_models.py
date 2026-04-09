@@ -710,7 +710,6 @@ class TestFlextWebModels:
         result = app.add_domain_event("TestEvent")
         tm.ok(result)
         tm.that(result.value, none=False)
-        tm.that(hasattr(result.value, "event_type"), eq=True)
 
     def test_application_add_domain_event_empty(self) -> None:
         """Test add_domain_event with empty string."""

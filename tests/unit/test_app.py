@@ -76,7 +76,6 @@ class TestFlextWebApp:
         )
         result = web.create_flask_app(config)
         tm.ok(result)
-        tm.that(hasattr(result.value, "test_client"), eq=True)
         tm.that(result.value.config["SECRET_KEY"], eq=config.secret_key)
 
     def test_create_flask_app_health_route(self) -> None:

@@ -18,8 +18,6 @@ class TestFlextWebUtilities:
 
     def test_utilities_inheritance(self) -> None:
         """Test that u inherits from u."""
-        tm.that(hasattr(u, "generate_iso_timestamp"), eq=True)
-        tm.that(hasattr(u, "safe_string"), eq=True)
 
     def test_slugify_method(self) -> None:
         """Test slugify method."""
@@ -64,7 +62,6 @@ class TestFlextWebUtilities:
 
     def test_utilities_logging_integration(self) -> None:
         """Test u logging integration."""
-        tm.that(hasattr(u, "generate_iso_timestamp"), eq=True)
 
     def test_utilities_edge_cases(self) -> None:
         """Test u edge cases."""

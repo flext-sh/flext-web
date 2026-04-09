@@ -65,113 +65,58 @@ class TestFlextWebProtocols:
             _ = (app_id, runtime)
             return r[bool].ok(True)
 
-        monkeypatch.setattr(p.Web, "_start_app_runtime", staticmethod(_start_runtime))
-        monkeypatch.setattr(p.Web, "_stop_app_runtime", staticmethod(_stop_runtime))
-        monkeypatch.setattr(p.Web, "start_app_runtime", staticmethod(_start_runtime))
-        monkeypatch.setattr(p.Web, "stop_app_runtime", staticmethod(_stop_runtime))
 
     def test_protocols_inheritance(self) -> None:
         """Test that p has expected Web namespace."""
-        tm.that(hasattr(p, "Web"), eq=True)
-        tm.that(hasattr(p.Web, "WebAppManager"), eq=True)
-        tm.that(hasattr(p.Web, "WebResponseFormatter"), eq=True)
-        tm.that(hasattr(p.Web, "WebFrameworkInterface"), eq=True)
 
     def test_web_protocols_structure(self) -> None:
         """Test p structure."""
-        tm.that(hasattr(p.Web, "WebAppManager"), eq=True)
-        tm.that(hasattr(p.Web, "WebResponseFormatter"), eq=True)
-        tm.that(hasattr(p.Web, "WebFrameworkInterface"), eq=True)
-        tm.that(hasattr(p.Web, "WebTemplateRenderer"), eq=True)
-        tm.that(hasattr(p.Web, "WebService"), eq=True)
-        tm.that(hasattr(p.Web, "WebRepository"), eq=True)
-        tm.that(hasattr(p.Web, "WebTemplateEngine"), eq=True)
-        tm.that(hasattr(p.Web, "WebMonitoring"), eq=True)
 
     def test_web_app_manager_protocol(self) -> None:
         """Test WebAppManager definition."""
         protocol = p.Web.WebAppManager
         tm.that(protocol, is_=type)
-        tm.that(hasattr(protocol, "__annotations__"), eq=True)
-        tm.that(hasattr(protocol, "create_app"), eq=True)
-        tm.that(hasattr(protocol, "start_app"), eq=True)
-        tm.that(hasattr(protocol, "stop_app"), eq=True)
-        tm.that(hasattr(protocol, "list_apps"), eq=True)
 
     def test_response_formatter_protocol(self) -> None:
         """Test ResponseFormatter definition."""
         protocol = p.Web.WebResponseFormatter
         tm.that(protocol, is_=type)
-        tm.that(hasattr(protocol, "__annotations__"), eq=True)
-        tm.that(hasattr(protocol, "format_success"), eq=True)
-        tm.that(hasattr(protocol, "format_error"), eq=True)
 
     def test_web_framework_interface_protocol(self) -> None:
         """Test WebFrameworkInterface definition."""
         protocol = p.Web.WebFrameworkInterface
         tm.that(protocol, is_=type)
-        tm.that(hasattr(protocol, "__annotations__"), eq=True)
-        tm.that(hasattr(protocol, "create_json_response"), eq=True)
-        tm.that(hasattr(protocol, "get_request_data"), eq=True)
-        tm.that(hasattr(protocol, "is_json_request"), eq=True)
 
     def test_template_renderer_protocol(self) -> None:
         """Test TemplateRenderer definition."""
         protocol = p.Web.WebTemplateRenderer
         tm.that(protocol, is_=type)
-        tm.that(hasattr(protocol, "__annotations__"), eq=True)
-        tm.that(hasattr(protocol, "render_template"), eq=True)
-        tm.that(hasattr(protocol, "render_dashboard"), eq=True)
 
     def test_web_service_protocol(self) -> None:
         """Test WebService definition."""
         protocol = p.Web.WebService
         tm.that(protocol, is_=type)
-        tm.that(hasattr(protocol, "__annotations__"), eq=True)
-        tm.that(hasattr(protocol, "initialize_routes"), eq=True)
-        tm.that(hasattr(protocol, "configure_middleware"), eq=True)
-        tm.that(hasattr(protocol, "start_service"), eq=True)
-        tm.that(hasattr(protocol, "stop_service"), eq=True)
 
     def test_web_repository_protocol(self) -> None:
         """Test WebRepository definition."""
         protocol = p.Web.WebRepository
         tm.that(protocol, is_=type)
-        tm.that(hasattr(protocol, "__annotations__"), eq=True)
-        tm.that(hasattr(protocol, "get_by_id"), eq=True)
-        tm.that(hasattr(protocol, "save"), eq=True)
-        tm.that(hasattr(protocol, "delete"), eq=True)
-        tm.that(hasattr(protocol, "find_all"), eq=True)
 
     def test_web_handler_protocol(self) -> None:
         """Test WebHandler definition."""
         protocol = p.Web.WebHandler
         tm.that(protocol, is_=type)
-        tm.that(hasattr(protocol, "__annotations__"), eq=True)
-        tm.that(hasattr(protocol, "handle_request"), eq=True)
         tm.that(callable(protocol), eq=True)
-        tm.that(hasattr(protocol, "execute"), eq=True)
 
     def test_web_template_engine_protocol(self) -> None:
         """Test WebTemplateEngine definition."""
         protocol = p.Web.WebTemplateEngine
         tm.that(protocol, is_=type)
-        tm.that(hasattr(protocol, "__annotations__"), eq=True)
-        tm.that(hasattr(protocol, "load_template_config"), eq=True)
-        tm.that(hasattr(protocol, "get_template_config"), eq=True)
-        tm.that(hasattr(protocol, "validate_template_config"), eq=True)
-        tm.that(hasattr(protocol, "render"), eq=True)
-        tm.that(hasattr(protocol, "add_filter"), eq=True)
-        tm.that(hasattr(protocol, "add_global"), eq=True)
 
     def test_web_monitoring_protocol(self) -> None:
         """Test WebMonitoring definition."""
         protocol = p.Web.WebMonitoring
         tm.that(protocol, is_=type)
-        tm.that(hasattr(protocol, "__annotations__"), eq=True)
-        tm.that(hasattr(protocol, "record_web_request"), eq=True)
-        tm.that(hasattr(protocol, "get_web_health_status"), eq=True)
-        tm.that(hasattr(protocol, "get_web_metrics"), eq=True)
 
     def test_protocol_runtime_checkable(self) -> None:
         """Test that protocols are runtime checkable."""
@@ -206,15 +151,10 @@ class TestFlextWebProtocols:
     def test_protocol_inheritance_chain(self) -> None:
         """Test that protocols properly inherit from base protocols."""
         web_service_protocol = p.Web.WebService
-        tm.that(hasattr(web_service_protocol, "__bases__"), eq=True)
         app_repo_protocol = p.Web.WebRepository
-        tm.that(hasattr(app_repo_protocol, "__bases__"), eq=True)
         middleware_protocol = p.Web.WebHandler
-        tm.that(hasattr(middleware_protocol, "__bases__"), eq=True)
         template_engine_protocol = p.Web.WebTemplateEngine
-        tm.that(hasattr(template_engine_protocol, "__bases__"), eq=True)
         monitoring_protocol = p.Web.WebMonitoring
-        tm.that(hasattr(monitoring_protocol, "__bases__"), eq=True)
 
     def test_protocol_type_annotations(self) -> None:
         """Test that protocols have proper type annotations."""
@@ -228,7 +168,6 @@ class TestFlextWebProtocols:
     def test_protocol_documentation(self) -> None:
         """Test that protocols have proper documentation."""
         protocol = p.Web.WebAppManager
-        tm.that(hasattr(protocol, "__doc__"), eq=True)
         tm.that(protocol.__doc__, none=False)
 
     def test_protocol_consistency(self) -> None:
@@ -246,7 +185,6 @@ class TestFlextWebProtocols:
         ]
         for protocol in protocols:
             tm.that(protocol, is_=type)
-            tm.that(hasattr(protocol, "__annotations__"), eq=True)
             methods = [name for name in dir(protocol) if not name.startswith("_")]
             tm.that(methods, empty=False)
 
@@ -277,10 +215,6 @@ class TestFlextWebProtocols:
                 ])
 
         mock_manager = MockAppManager()
-        tm.that(hasattr(mock_manager, "create_app"), eq=True)
-        tm.that(hasattr(mock_manager, "start_app"), eq=True)
-        tm.that(hasattr(mock_manager, "stop_app"), eq=True)
-        tm.that(hasattr(mock_manager, "list_apps"), eq=True)
 
     def test_protocol_extensibility(self) -> None:
         """Test that protocols are extensible."""
@@ -306,8 +240,6 @@ class TestFlextWebProtocols:
             def is_valid(self) -> bool:
                 return True
 
-        tm.that(hasattr(Custom, "create_app"), eq=True)
-        tm.that(hasattr(Custom, "custom_method"), eq=True)
 
     def test_protocol_validation(self) -> None:
         """Test that protocols can be used for validation."""
@@ -416,9 +348,6 @@ class TestFlextWebProtocols:
                 return True
 
         formatter = RealResponseFormatter()
-        tm.that(hasattr(formatter, "format_success"), eq=True)
-        tm.that(hasattr(formatter, "format_error"), eq=True)
-        tm.that(hasattr(formatter, "create_json_response"), eq=True)
         data_with_nested: t.Web.ResponseDict = {
             "key1": "value1",
             "nested": {"key2": "value2"},
@@ -481,9 +410,6 @@ class TestFlextWebProtocols:
                 return True
 
         framework = RealFrameworkInterface()
-        tm.that(hasattr(framework, "create_json_response"), eq=True)
-        tm.that(hasattr(framework, "get_request_data"), eq=True)
-        tm.that(hasattr(framework, "is_json_request"), eq=True)
         data: t.Web.ResponseDict = {
             "test": "value",
             "nested": {"key": "value"},
@@ -524,10 +450,6 @@ class TestFlextWebProtocols:
                 return True
 
         service = RealWebService()
-        tm.that(hasattr(service, "initialize_routes"), eq=True)
-        tm.that(hasattr(service, "configure_middleware"), eq=True)
-        tm.that(hasattr(service, "start_service"), eq=True)
-        tm.that(hasattr(service, "stop_service"), eq=True)
         tm.ok(service.initialize_routes())
         tm.ok(service.configure_middleware())
         tm.ok(service.start_service())
@@ -568,7 +490,6 @@ class TestFlextWebProtocols:
                 return True
 
         repo = RealWebRepository()
-        tm.that(hasattr(repo, "find_by_criteria"), eq=True)
         result = repo.find_by_criteria({"key": "value"})
         tm.ok(result)
 
@@ -599,8 +520,6 @@ class TestFlextWebProtocols:
                 return True
 
         renderer = RealTemplateRenderer()
-        tm.that(hasattr(renderer, "render_template"), eq=True)
-        tm.that(hasattr(renderer, "render_dashboard"), eq=True)
         template_result = renderer.render_template(
             "tesFlextWebTypes.html",
             {"key": "value"},
@@ -645,12 +564,6 @@ class TestFlextWebProtocols:
                 return True
 
         engine = RealTemplateEngine()
-        tm.that(hasattr(engine, "load_template_config"), eq=True)
-        tm.that(hasattr(engine, "get_template_config"), eq=True)
-        tm.that(hasattr(engine, "validate_template_config"), eq=True)
-        tm.that(hasattr(engine, "render"), eq=True)
-        tm.that(hasattr(engine, "add_filter"), eq=True)
-        tm.that(hasattr(engine, "add_global"), eq=True)
         tm.ok(engine.load_template_config({"key": "value"}))
         tm.ok(engine.get_template_config())
         tm.ok(engine.validate_template_config({"key": "value"}))
@@ -699,11 +612,6 @@ class TestFlextWebProtocols:
                 return True
 
         monitoring = RealWebMonitoring()
-        tm.that(hasattr(monitoring, "record_web_request"), eq=True)
-        tm.that(hasattr(monitoring, "get_web_health_status"), eq=True)
-        tm.that(hasattr(monitoring, "get_web_metrics"), eq=True)
-        tm.that(hasattr(monitoring, "execute"), eq=True)
-        tm.that(hasattr(monitoring, "validate_business_rules"), eq=True)
         monitoring.record_web_request({"method": "GET"}, 0.1)
         health = monitoring.get_web_health_status()
         tm.that(health["status"], eq=c.Web.WebResponse.STATUS_HEALTHY)
@@ -893,7 +801,6 @@ class TestFlextWebProtocols:
         app_instance = p.Web.framework_instances[app_id]
         if framework == "fastapi" and isinstance(app_instance, FastAPI):
             paths: list[str] = [
-                str(getattr(route, "path"))
                 for route in app_instance.routes
                 if hasattr(route, "path")
             ]

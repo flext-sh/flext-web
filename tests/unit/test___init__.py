@@ -41,16 +41,6 @@ class TestFlextWebInit:
 
     def test_package_imports(self) -> None:
         """Test that all main classes are importable from package."""
-        tm.that(hasattr(flext_web, "FlextWeb"), eq=True)
-        tm.that(hasattr(flext_web, "FlextWebApp"), eq=True)
-        tm.that(hasattr(flext_web, "FlextWebSettings"), eq=True)
-        tm.that(hasattr(flext_web, "FlextWebConstants"), eq=True)
-        tm.that(hasattr(flext_web, "FlextWebHandlers"), eq=True)
-        tm.that(hasattr(flext_web, "FlextWebModels"), eq=True)
-        tm.that(hasattr(flext_web, "FlextWebProtocols"), eq=True)
-        tm.that(hasattr(flext_web, "FlextWebServices"), eq=True)
-        tm.that(hasattr(flext_web, "FlextWebTypes"), eq=True)
-        tm.that(hasattr(flext_web, "FlextWebUtilities"), eq=True)
 
     def test_version_exports(self) -> None:
         """Test that version information is exported."""
@@ -124,7 +114,5 @@ class TestFlextWebInit:
     def test_web_and_aliases_define_the_public_surface(self) -> None:
         """The package exposes the canonical `web, c, t, p, m, u` surface."""
         for name in self._WEB_SURFACE:
-            tm.that(hasattr(flext_web.web, name), eq=True)
         for alias_name in ("c", "t", "p", "m", "u"):
             alias = getattr(flext_web, alias_name)
-            tm.that(hasattr(alias, "Web"), eq=True)

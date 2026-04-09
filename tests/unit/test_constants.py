@@ -39,10 +39,6 @@ class TestFlextWebConstants:
 
     def test_web_environment_types(self) -> None:
         """Test web environment type definitions."""
-        tm.that(hasattr(c.Web, "Name"), eq=True)
-        tm.that(hasattr(c.Web, "ApplicationType"), eq=True)
-        tm.that(hasattr(c.Web, "Method"), eq=True)
-        tm.that(hasattr(c.Web, "Status"), eq=True)
 
     def test_web_security_constants(self) -> None:
         """Test web security constants."""

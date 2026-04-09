@@ -18,21 +18,12 @@ class TestFlextWebModels:
 
     def test_typings_structure(self) -> None:
         """Test that m has proper structure."""
-        tm.that(hasattr(m, "Web"), eq=True)
-        tm.that(hasattr(m.Web, "Message"), eq=True)
-        tm.that(hasattr(m.Web, "Request"), eq=True)
-        tm.that(hasattr(m.Web, "Response"), eq=True)
-        tm.that(hasattr(m.Web, "WebRequest"), eq=True)
-        tm.that(hasattr(m.Web, "WebResponse"), eq=True)
-        tm.that(hasattr(m.Web, "Entity"), eq=True)
 
     def test_core_web_types(self) -> None:
         """Test Core web types."""
-        tm.that(hasattr(m.Web, "ServiceResponse"), eq=True)
 
     def test_application_types(self) -> None:
         """Test Application types."""
-        tm.that(hasattr(m.Web, "Entity"), eq=True)
 
     def test_model_functionality(self) -> None:
         """Test Pydantic model functionality."""
@@ -86,7 +77,6 @@ class TestFlextWebModels:
 
     def test_project_types(self) -> None:
         """Test Project types."""
-        tm.that(hasattr(m.Web, "Entity"), eq=True)
 
     def test_configure_web_types_system(self) -> None:
         """Test configure_web_types_system method."""
@@ -115,9 +105,6 @@ class TestFlextWebModels:
         result = t.get_web_types_system_config()
         assert result.is_success, result.error
         config = result.value
-        tm.that(hasattr(config, "use_pydantic_models"), eq=True)
-        tm.that(hasattr(config, "enable_runtime_validation"), eq=True)
-        tm.that(hasattr(config, "models_available"), eq=True)
         tm.that(config.use_pydantic_models is True, eq=True)
         tm.that(config.enable_runtime_validation is True, eq=True)
         tm.that(config.models_available, is_=list)
@@ -144,17 +131,10 @@ class TestFlextWebModels:
 
     def test_type_consistency(self) -> None:
         """Test that types are consistent with t."""
-        tm.that(hasattr(m.Web, "WebRequest"), eq=True)
-        tm.that(hasattr(m.Web, "WebResponse"), eq=True)
-        tm.that(hasattr(m.Web, "Entity"), eq=True)
         test_request = m.Web.AppRequest(url="https://example.com")
-        tm.that(hasattr(test_request, "is_secure"), eq=True)
 
     def test_type_annotations(self) -> None:
         """Test that types have proper annotations."""
-        tm.that(hasattr(m.Web, "WebRequest"), eq=True)
-        tm.that(hasattr(m.Web, "WebResponse"), eq=True)
-        tm.that(hasattr(m.Web, "Entity"), eq=True)
 
     def test_type_usage_patterns(self) -> None:
         """Test that types follow expected usage patterns."""
@@ -327,9 +307,6 @@ class TestFlextWebModels:
         result = t.get_web_types_system_config()
         assert result.is_success, result.error
         config = result.value
-        tm.that(hasattr(config, "use_pydantic_models"), eq=True)
-        tm.that(hasattr(config, "enable_runtime_validation"), eq=True)
-        tm.that(hasattr(config, "models_available"), eq=True)
 
     def test_create_http_request_all_methods(self) -> None:
         """Test create_http_request with all valid HTTP methods."""

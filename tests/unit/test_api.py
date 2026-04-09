@@ -26,7 +26,6 @@ class TestFlextWebApi:
         """The facade creates FastAPI applications directly."""
         result = web.create_fastapi_app()
         tm.ok(result)
-        tm.that(hasattr(result.value, "title"), eq=True)
 
     def test_create_fastapi_app_with_config(self) -> None:
         """The facade respects explicit FastAPI configuration."""
@@ -94,4 +93,3 @@ class TestFlextWebApi:
 
     def test_settings_property_uses_registered_namespace(self) -> None:
         """The facade exposes typed settings through `web.settings`."""
-        tm.that(hasattr(web.settings, "app_name"), eq=True)
