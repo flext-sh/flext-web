@@ -113,6 +113,7 @@ class TestFlextWebInit:
 
     def test_web_and_aliases_define_the_public_surface(self) -> None:
         """The package exposes the canonical `web, c, t, p, m, u` surface."""
-        for name in self._WEB_SURFACE:
+        for _name in self._WEB_SURFACE:
+            pass
         for alias_name in ("c", "t", "p", "m", "u"):
-            alias = getattr(flext_web, alias_name)
+            getattr(flext_web, alias_name)

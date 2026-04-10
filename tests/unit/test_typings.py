@@ -131,7 +131,7 @@ class TestFlextWebModels:
 
     def test_type_consistency(self) -> None:
         """Test that types are consistent with t."""
-        test_request = m.Web.AppRequest(url="https://example.com")
+        m.Web.AppRequest(url="https://example.com")
 
     def test_type_annotations(self) -> None:
         """Test that types have proper annotations."""
@@ -306,7 +306,6 @@ class TestFlextWebModels:
         """Test get_web_types_system_config exception handling."""
         result = t.get_web_types_system_config()
         assert result.is_success, result.error
-        config = result.value
 
     def test_create_http_request_all_methods(self) -> None:
         """Test create_http_request with all valid HTTP methods."""

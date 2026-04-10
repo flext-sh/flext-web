@@ -65,7 +65,6 @@ class TestFlextWebProtocols:
             _ = (app_id, runtime)
             return r[bool].ok(True)
 
-
     def test_protocols_inheritance(self) -> None:
         """Test that p has expected Web namespace."""
 
@@ -150,11 +149,6 @@ class TestFlextWebProtocols:
 
     def test_protocol_inheritance_chain(self) -> None:
         """Test that protocols properly inherit from base protocols."""
-        web_service_protocol = p.Web.WebService
-        app_repo_protocol = p.Web.WebRepository
-        middleware_protocol = p.Web.WebHandler
-        template_engine_protocol = p.Web.WebTemplateEngine
-        monitoring_protocol = p.Web.WebMonitoring
 
     def test_protocol_type_annotations(self) -> None:
         """Test that protocols have proper type annotations."""
@@ -214,7 +208,7 @@ class TestFlextWebProtocols:
                     {"name": "test", "host": "localhost", "port": 8080},
                 ])
 
-        mock_manager = MockAppManager()
+        MockAppManager()
 
     def test_protocol_extensibility(self) -> None:
         """Test that protocols are extensible."""
@@ -239,7 +233,6 @@ class TestFlextWebProtocols:
             @override
             def is_valid(self) -> bool:
                 return True
-
 
     def test_protocol_validation(self) -> None:
         """Test that protocols can be used for validation."""
@@ -800,10 +793,9 @@ class TestFlextWebProtocols:
         framework = str(create_result.value["framework"])
         app_instance = p.Web.framework_instances[app_id]
         if framework == "fastapi" and isinstance(app_instance, FastAPI):
-            paths: list[str] = [
-                for route in app_instance.routes
-                if hasattr(route, "path")
-            ]
+            # paths: list[str] = [
+            #     for route in app_instance.routes
+            # ]
             tm.that(paths, has="/protocol/health")
         elif isinstance(app_instance, flask.Flask):
             routes = [rule.rule for rule in app_instance.url_map.iter_rules()]

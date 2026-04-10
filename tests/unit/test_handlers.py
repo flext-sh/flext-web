@@ -37,13 +37,11 @@ class TestFlextWebHandlers:
         """Health state is exposed through the public facade."""
         result = web.health_status()
         tm.ok(result)
-        health_data = result.value
 
     def test_service_status_projection(self) -> None:
         """Service metadata is exposed through the public facade."""
         result = web.get_service_status()
         tm.ok(result)
-        system_data = result.value
 
     def test_create_app_through_public_facade(self) -> None:
         """Application creation goes through the public facade."""
