@@ -14,7 +14,7 @@ from flext_web.__version__ import *
 
 if _t.TYPE_CHECKING:
     from flext_core import d, e, h, r, s, x
-    from flext_web.api import FlextWeb
+    from flext_web.api import FlextWeb, web
     from flext_web.base import FlextWebServiceBase
     from flext_web.constants import FlextWebConstants, c
     from flext_web.models import FlextWebModels, m
@@ -42,7 +42,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "__version__",
                 "__version_info__",
             ),
-            ".api": ("FlextWeb",),
+            ".api": (
+                "FlextWeb",
+                "web",
+            ),
             ".base": ("FlextWebServiceBase",),
             ".constants": (
                 "FlextWebConstants",
@@ -123,5 +126,6 @@ __all__ = [
     "s",
     "t",
     "u",
+    "web",
     "x",
 ]
