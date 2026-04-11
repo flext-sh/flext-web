@@ -12,22 +12,7 @@ from flext_core.lazy import (
 )
 
 if _t.TYPE_CHECKING:
-    from flext_tests import (
-        d,
-        e,
-        h,
-        r,
-        reset_settings,
-        s,
-        settings,
-        settings_factory,
-        td,
-        tf,
-        tk,
-        tm,
-        tv,
-        x,
-    )
+    from flext_tests import d, e, h, r, s, td, tf, tk, tm, tv, x
 
     from tests.constants import TestsFlextWebConstants, c
     from tests.helpers.models import TestsModels
@@ -71,10 +56,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "e",
                 "h",
                 "r",
-                "reset_settings",
                 "s",
-                "settings",
-                "settings_factory",
                 "td",
                 "tf",
                 "tk",
@@ -116,10 +98,7 @@ __all__ = [
     "m",
     "p",
     "r",
-    "reset_settings",
     "s",
-    "settings",
-    "settings_factory",
     "t",
     "td",
     "tf",
