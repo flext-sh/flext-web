@@ -227,11 +227,11 @@ class TestFlextWebProtocols:
                 return r[bool].ok(True)
 
             @override
-            def get_service_info(self) -> t.ScalarMapping:
+            def service_info(self) -> t.ScalarMapping:
                 return {"name": "Custom"}
 
             @override
-            def is_valid(self) -> bool:
+            def valid(self) -> bool:
                 return True
 
     def test_protocol_validation(self) -> None:
@@ -322,7 +322,7 @@ class TestFlextWebProtocols:
                 })
                 return response
 
-            def get_request_data(
+            def resolve_request_data(
                 self,
                 _request: t.Web.RequestDict,
             ) -> t.Web.RequestDict:
@@ -334,10 +334,10 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> t.ScalarMapping:
+            def service_info(self) -> t.ScalarMapping:
                 return {"name": "ResponseFormatter"}
 
-            def is_valid(self) -> bool:
+            def valid(self) -> bool:
                 return True
 
         formatter = RealResponseFormatter()
@@ -381,13 +381,13 @@ class TestFlextWebProtocols:
                 })
                 return response
 
-            def get_request_data(
+            def resolve_request_data(
                 self,
                 _request: t.Web.RequestDict,
             ) -> t.Web.RequestDict:
                 return {}
 
-            def is_json_request(self, _request: t.Web.RequestDict) -> bool:
+            def json_request(self, _request: t.Web.RequestDict) -> bool:
                 return False
 
             def execute(self) -> r[t.Web.ResponseDict]:
@@ -396,10 +396,10 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> t.ScalarMapping:
+            def service_info(self) -> t.ScalarMapping:
                 return {"name": "FrameworkInterface"}
 
-            def is_valid(self) -> bool:
+            def valid(self) -> bool:
                 return True
 
         framework = RealFrameworkInterface()
@@ -409,9 +409,9 @@ class TestFlextWebProtocols:
         }
         json_response = framework.create_json_response(data)
         tm.that(json_response, has=c.Web.Http.HEADER_CONTENT_TYPE)
-        request_data = framework.get_request_data({})
+        request_data = framework.resolve_request_data({})
         tm.that(request_data, is_=dict)
-        is_json = framework.is_json_request({})
+        is_json = framework.json_request({})
         tm.that(is_json is False, eq=True)
 
     def test_web_service_protocol_methods(self) -> None:
@@ -436,10 +436,10 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> t.ScalarMapping:
+            def service_info(self) -> t.ScalarMapping:
                 return {"name": "WebService"}
 
-            def is_valid(self) -> bool:
+            def valid(self) -> bool:
                 return True
 
         service = RealWebService()
@@ -458,7 +458,7 @@ class TestFlextWebProtocols:
             ) -> r[Sequence[t.Web.ResponseDict]]:
                 return r[Sequence[t.Web.ResponseDict]].ok([])
 
-            def get_by_id(self, entity_id: str) -> r[t.Web.ResponseDict]:
+            def fetch_by_id(self, entity_id: str) -> r[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({"id": entity_id})
 
             def save(self, entity: t.Web.ResponseDict) -> r[t.Web.ResponseDict]:
@@ -476,10 +476,10 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> t.ScalarMapping:
+            def service_info(self) -> t.ScalarMapping:
                 return {"name": "WebRepository"}
 
-            def is_valid(self) -> bool:
+            def valid(self) -> bool:
                 return True
 
         repo = RealWebRepository()
@@ -506,10 +506,10 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> t.ScalarMapping:
+            def service_info(self) -> t.ScalarMapping:
                 return {"name": "TemplateRenderer"}
 
-            def is_valid(self) -> bool:
+            def valid(self) -> bool:
                 return True
 
         renderer = RealTemplateRenderer()
@@ -529,7 +529,7 @@ class TestFlextWebProtocols:
             def load_template_config(self, config: t.Web.RequestDict) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_template_config(self) -> r[t.Web.ResponseDict]:
+            def template_config(self) -> r[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
             def validate_template_config(self, config: t.Web.RequestDict) -> r[bool]:
@@ -550,15 +550,15 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> t.ScalarMapping:
+            def service_info(self) -> t.ScalarMapping:
                 return {"name": "TemplateEngine"}
 
-            def is_valid(self) -> bool:
+            def valid(self) -> bool:
                 return True
 
         engine = RealTemplateEngine()
         tm.ok(engine.load_template_config({"key": "value"}))
-        tm.ok(engine.get_template_config())
+        tm.ok(engine.template_config())
         tm.ok(engine.validate_template_config({"key": "value"}))
         tm.ok(engine.render("template", {"key": "value"}))
 
@@ -583,13 +583,13 @@ class TestFlextWebProtocols:
             ) -> None:
                 pass
 
-            def get_web_health_status(self) -> t.Web.ResponseDict:
+            def web_health_status(self) -> t.Web.ResponseDict:
                 return {
                     "status": c.Web.WebResponse.STATUS_HEALTHY,
                     "service": c.Web.WebService.SERVICE_NAME,
                 }
 
-            def get_web_metrics(self) -> t.Web.ResponseDict:
+            def web_metrics(self) -> t.Web.ResponseDict:
                 return {"requests": 0, "errors": 0, "uptime": "0s"}
 
             def execute(self) -> r[t.Web.ResponseDict]:
@@ -598,17 +598,17 @@ class TestFlextWebProtocols:
             def validate_business_rules(self) -> r[bool]:
                 return r[bool].ok(True)
 
-            def get_service_info(self) -> t.ScalarMapping:
+            def service_info(self) -> t.ScalarMapping:
                 return {"name": "WebMonitoring"}
 
-            def is_valid(self) -> bool:
+            def valid(self) -> bool:
                 return True
 
         monitoring = RealWebMonitoring()
         monitoring.record_web_request({"method": "GET"}, 0.1)
-        health = monitoring.get_web_health_status()
+        health = monitoring.web_health_status()
         tm.that(health["status"], eq=c.Web.WebResponse.STATUS_HEALTHY)
-        metrics = monitoring.get_web_metrics()
+        metrics = monitoring.web_metrics()
         tm.that(metrics, has="requests")
 
     def test_app_lifecycle_direct_execution_on_protocol_base(self) -> None:
@@ -660,7 +660,7 @@ class TestFlextWebProtocols:
             ),
             eq=True,
         )
-        request_data = formatter.get_request_data({"test": "data"})
+        request_data = formatter.resolve_request_data({"test": "data"})
         tm.that(request_data, is_=dict)
         tm.that(request_data["test"], eq="data")
 
@@ -670,10 +670,10 @@ class TestFlextWebProtocols:
         data: t.Web.ResponseDict = {"test": "value", "nested": {"key": "value"}}
         result = framework.create_json_response(data)
         tm.that(result[c.Web.Http.HEADER_CONTENT_TYPE], eq=c.Web.Http.CONTENT_TYPE_JSON)
-        request_data = framework.get_request_data({"test": "data"})
+        request_data = framework.resolve_request_data({"test": "data"})
         tm.that(request_data, is_=dict)
         tm.that(request_data["test"], eq="data")
-        is_json = framework.is_json_request({"content-type": "application/json"})
+        is_json = framework.json_request({"content-type": "application/json"})
         tm.that(is_json is True, eq=True)
 
     def test_service_protocol_real_behavior(self) -> None:
@@ -731,7 +731,7 @@ class TestFlextWebProtocols:
         self._reset_protocol_state()
         engine = _WebTemplateEngineBase()
         tm.ok(engine.load_template_config({"template_dir": "templates"}))
-        tm.ok(engine.get_template_config())
+        tm.ok(engine.template_config())
         tm.ok(engine.validate_template_config({"template_dir": "templates"}))
         tm.fail(engine.validate_template_config({"invalid": "value"}))
         engine.add_filter("test", lambda x: x.upper())
@@ -749,7 +749,7 @@ class TestFlextWebProtocols:
         app_id = str(created.value["id"])
         tm.ok(manager.start_app(app_id))
         connection = _WebConnectionBase()
-        url = connection.get_endpoint_url()
+        url = connection.endpoint_url()
         tm.that(url, eq="http://127.0.0.1:9090")
 
     def test_monitoring_protocol_real_behavior(self) -> None:
@@ -757,10 +757,10 @@ class TestFlextWebProtocols:
         self._reset_protocol_state()
         monitoring = _WebMonitoringBase()
         monitoring.record_web_request({"method": "GET"}, 0.1)
-        health = monitoring.get_web_health_status()
+        health = monitoring.web_health_status()
         tm.that(health["status"], eq=c.Web.Status.STOPPED.value)
         tm.that(health["service"], eq=c.Web.WebService.SERVICE_NAME)
-        metrics = monitoring.get_web_metrics()
+        metrics = monitoring.web_metrics()
         tm.that(metrics["requests"], eq=1)
         tm.that(metrics["errors"], eq=0)
         tm.that(metrics["uptime"], eq="0s")

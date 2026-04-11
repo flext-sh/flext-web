@@ -103,8 +103,8 @@ class TestFlextWebModels:
     def test_web_app_computed_fields(self) -> None:
         """Test WebApp computed fields."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
-        tm.that(app.is_running is True, eq=True)
-        tm.that(app.is_healthy is True, eq=True)
+        tm.that(app.running is True, eq=True)
+        tm.that(app.healthy is True, eq=True)
         tm.that(app.can_start is False, eq=True)
         tm.that(app.can_stop is True, eq=True)
         tm.that(app.can_restart is True, eq=True)
@@ -182,10 +182,10 @@ class TestFlextWebModels:
     def test_web_app_health_status(self) -> None:
         """Test WebApp health status."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
-        health = app.get_health_status()
+        health = app.health_status()
         tm.that(health, has="status")
-        tm.that(health, has="is_running")
-        tm.that(health, has="is_healthy")
+        tm.that(health, has="running")
+        tm.that(health, has="healthy")
         tm.that(health, has="url")
         tm.that(health["status"], eq="running")
 
@@ -280,7 +280,7 @@ class TestFlextWebModels:
             host="localhost",
             port=8080,
         )
-        assert result.is_success, result.error
+        assert result.success, result.error
         app = result.value
         assert isinstance(app, m.Web.Entity)
         tm.that(app.name, eq="test-app")
@@ -296,7 +296,7 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"test": "data"}',
         )
-        assert result.is_success, result.error
+        assert result.success, result.error
         request = result.value
         assert isinstance(request, m.Web.AppRequest)
         tm.that(request.method, eq="POST")
@@ -311,7 +311,7 @@ class TestFlextWebModels:
             headers={"Content-Type": "application/json"},
             body='{"id": 1}',
         )
-        assert result.is_success, result.error
+        assert result.success, result.error
         response = result.value
         assert isinstance(response, m.Web.AppResponse)
         tm.that(response.status_code, eq=201)
@@ -331,26 +331,26 @@ class TestFlextWebModels:
         )
         tm.that(request_without_body.has_body is False, eq=True)
 
-    def test_http_request_is_secure_property(self) -> None:
-        """Test Web.Request is_secure property."""
+    def test_http_request_secure_property(self) -> None:
+        """Test Web.Request secure property."""
         https_request = m.Web.Request(url="https://localhost:8080", method="GET")
-        tm.that(https_request.is_secure is True, eq=True)
+        tm.that(https_request.secure is True, eq=True)
         http_request = m.Web.Request(url="http://localhost:8080", method="GET")
-        tm.that(http_request.is_secure is False, eq=True)
+        tm.that(http_request.secure is False, eq=True)
 
     def test_http_response_is_success_property(self) -> None:
         """Test Web.Response is_success property."""
         success_response = m.Web.Response(status_code=200)
-        tm.that(success_response.is_success is True, eq=True)
+        tm.that(success_response.success is True, eq=True)
         error_response = m.Web.Response(status_code=404)
-        tm.that(error_response.is_success is False, eq=True)
+        tm.that(error_response.success is False, eq=True)
 
-    def test_http_response_is_error_property(self) -> None:
-        """Test Web.Response is_error property."""
+    def test_http_response_error_property(self) -> None:
+        """Test Web.Response error property."""
         error_response = m.Web.Response(status_code=500)
-        tm.that(error_response.is_error is True, eq=True)
+        tm.that(error_response.error is True, eq=True)
         success_response = m.Web.Response(status_code=200)
-        tm.that(success_response.is_error is False, eq=True)
+        tm.that(success_response.error is False, eq=True)
 
     def test_web_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
@@ -529,7 +529,7 @@ class TestFlextWebModels:
     def test_create_web_request_validation_error(self) -> None:
         """Test create_web_request with validation error (lines 961-967)."""
         result = u.Web.Tests.create_entry("web_request", method="GET", url="")
-        assert result.is_failure, "Empty URL should cause validation failure"
+        assert result.failure, "Empty URL should cause validation failure"
         tm.fail(result)
         tm.that(result.error, none=False)
 
@@ -540,7 +540,7 @@ class TestFlextWebModels:
             request_id="test-123",
             status_code=999,
         )
-        assert result.is_failure, "Invalid status code should cause validation failure"
+        assert result.failure, "Invalid status code should cause validation failure"
         tm.fail(result)
         tm.that(result.error, none=False)
 
@@ -612,7 +612,7 @@ class TestFlextWebModels:
         """Test application creation with parametrized edge cases."""
         result = u.Web.Tests.create_entry("web_app", name=name, host=host, port=port)
         if should_succeed:
-            assert result.is_success, (
+            assert result.success, (
                 f"Expected success for app '{name}', got: {result.error}"
             )
             app = result.value
@@ -621,9 +621,7 @@ class TestFlextWebModels:
             tm.that(app.host, eq=host)
             tm.that(app.port, eq=port)
         else:
-            assert result.is_failure, (
-                f"Expected failure for app '{name}', but succeeded"
-            )
+            assert result.failure, f"Expected failure for app '{name}', but succeeded"
             tm.that(result.error, none=False)
 
     def test_extreme_edge_cases(self) -> None:
@@ -650,7 +648,7 @@ class TestFlextWebModels:
             host=ipv6_host,
             port=8080,
         )
-        tm.that(result.is_success or result.is_failure, eq=True)
+        tm.that(result.success or result.failure, eq=True)
         long_hostname = "a" * 253
         result = u.Web.Tests.create_entry(
             "web_app",
@@ -699,7 +697,7 @@ class TestFlextWebModels:
                 host="localhost",
                 port=8080,
             )
-            assert result.is_failure, (
+            assert result.failure, (
                 f"Dangerous pattern '{dangerous_name}' should be rejected"
             )
             tm.fail(result)

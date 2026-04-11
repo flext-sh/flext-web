@@ -18,9 +18,9 @@ _ = web.start_service(host=config.host, port=config.port, debug=config.debug_mod
 from flext_web import m, web
 
 created = web.create_app(m.Web.AppData(name="demo", host="127.0.0.1", port=8080))
-assert created.is_success
+assert created.success
 started = web.start_app(created.value.id)
-assert started.is_success
+assert started.success
 ```
 
 ## Flask Integration
@@ -30,7 +30,7 @@ from flask import Flask
 from flext_web import web
 
 app_result = web.create_flask_app()
-assert app_result.is_success
+assert app_result.success
 app: Flask = app_result.value
 ```
 
@@ -39,8 +39,8 @@ app: Flask = app_result.value
 ```python
 from flext_web import web
 
-assert web.get_service_status().is_success
-assert web.get_api_capabilities().is_success
+assert web.service_status().success
+assert web.api_capabilities().success
 ```
 
 ## Running The Examples

@@ -58,7 +58,7 @@ def real_config() -> FlextWebSettings:
     result = web.settings.create_web_config(
         secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
     )
-    assert result.is_success, result.error
+    assert result.success, result.error
     return result.value
 
 
@@ -66,7 +66,7 @@ def real_config() -> FlextWebSettings:
 def real_service(real_config: FlextWebSettings) -> FlextWebServices:
     """Create a real service instance through the public `web` facade."""
     result = web.create_service(real_config)
-    assert result.is_success, f"Service creation failed: {result.error}"
+    assert result.success, f"Service creation failed: {result.error}"
     return result.value
 
 
@@ -90,12 +90,12 @@ def running_service(real_config: FlextWebSettings) -> Generator[FlextWebServices
         },
     )
     result = web.create_service(test_config)
-    assert result.is_success, f"Service creation failed: {result.error}"
+    assert result.success, f"Service creation failed: {result.error}"
     service = result.value
 
     def run_service() -> None:
         app_result = web.create_flask_app(test_config)
-        if app_result.is_success:
+        if app_result.success:
             app = app_result.value
             app.run(
                 host=test_config.host,

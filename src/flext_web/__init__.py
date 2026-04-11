@@ -13,13 +13,8 @@ from flext_core.lazy import (
 from flext_web.__version__ import *
 
 if _t.TYPE_CHECKING:
-    from flext_core.decorators import d
-    from flext_core.exceptions import e
-    from flext_core.handlers import h
-    from flext_core.mixins import x
-    from flext_core.result import r
-    from flext_core.service import s
-    from flext_web.api import FlextWeb, web
+    from flext_core import d, e, h, r, s, x
+    from flext_web.api import FlextWeb
     from flext_web.base import FlextWebServiceBase
     from flext_web.constants import FlextWebConstants, c
     from flext_web.models import FlextWebModels, m
@@ -38,9 +33,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
     build_lazy_import_map(
         {
             ".__version__": (
-                "FlextWebVersion",
-                "VERSION",
-                "VersionMetadata",
                 "__author__",
                 "__author_email__",
                 "__description__",
@@ -50,10 +42,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "__version__",
                 "__version_info__",
             ),
-            ".api": (
-                "FlextWeb",
-                "web",
-            ),
+            ".api": ("FlextWeb",),
             ".base": ("FlextWebServiceBase",),
             ".constants": (
                 "FlextWebConstants",
@@ -76,12 +65,14 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextWebUtilities",
                 "u",
             ),
-            "flext_core.decorators": ("d",),
-            "flext_core.exceptions": ("e",),
-            "flext_core.handlers": ("h",),
-            "flext_core.mixins": ("x",),
-            "flext_core.result": ("r",),
-            "flext_core.service": ("s",),
+            "flext_core": (
+                "d",
+                "e",
+                "h",
+                "r",
+                "s",
+                "x",
+            ),
         },
     ),
     exclude_names=(
@@ -100,7 +91,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__ = [
-    "VERSION",
     "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
@@ -115,8 +105,6 @@ __all__ = [
     "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
-    "FlextWebVersion",
-    "VersionMetadata",
     "__author__",
     "__author_email__",
     "__description__",
@@ -135,6 +123,5 @@ __all__ = [
     "s",
     "t",
     "u",
-    "web",
     "x",
 ]

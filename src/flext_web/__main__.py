@@ -39,7 +39,7 @@ class FlextWebCliService:
     def main(cls, argv: t.StrSequence | None = None) -> None:
         """CLI entry point following the console script contract."""
         result = cls().run(argv)
-        sys.exit(0 if result.is_success else 1)
+        sys.exit(0 if result.success else 1)
 
     def run(self, argv: t.StrSequence | None = None) -> r[bool]:
         """Run the public web facade from CLI arguments."""
@@ -50,10 +50,10 @@ class FlextWebCliService:
             port=args.port,
             debug=debug_value,
         )
-        if config_result.is_failure:
+        if config_result.failure:
             return r[bool].fail(config_result.error)
         service_result = self._api.create_service(config_result.value)
-        if service_result.is_failure:
+        if service_result.failure:
             return r[bool].fail(service_result.error)
         return service_result.value.start_service(
             host=config_result.value.host,

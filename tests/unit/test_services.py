@@ -14,12 +14,12 @@ class TestFlextWebService:
     def setup_method(self) -> None:
         """Stop any running service before each test."""
         apps_result = web.list_apps()
-        if apps_result.is_success:
+        if apps_result.success:
             for app in apps_result.value:
                 if app.status == "running":
                     _ = web.stop_app(app.id)
-        status_result = web.get_service_status()
-        if status_result.is_success and status_result.value.status == "operational":
+        status_result = web.service_status()
+        if status_result.success and status_result.value.status == "operational":
             _ = web.stop_service()
 
     def test_authenticate_success(self) -> None:
@@ -72,7 +72,7 @@ class TestFlextWebService:
         )
         tm.ok(create_result)
         app = create_result.value
-        get_result = web.get_app(app.id)
+        get_result = web.fetch_app(app.id)
         list_result = web.list_apps()
         tm.ok(get_result)
         tm.ok(list_result)
@@ -101,7 +101,7 @@ class TestFlextWebService:
         create_result = web.create_entity(m.Web.EntityData(data={"key": "value"}))
         tm.ok(create_result)
         entity_id = str(create_result.value.data["id"])
-        get_result = web.get_entity(entity_id)
+        get_result = web.fetch_entity(entity_id)
         list_result = web.list_entities()
         tm.ok(get_result)
         tm.ok(list_result)
@@ -114,7 +114,7 @@ class TestFlextWebService:
         tm.ok(web.configure_middleware())
         health_result = web.health_status()
         dashboard_result = web.dashboard()
-        capabilities_result = web.get_api_capabilities()
+        capabilities_result = web.api_capabilities()
         tm.ok(health_result)
         tm.ok(dashboard_result)
         tm.ok(capabilities_result)
@@ -126,7 +126,7 @@ class TestFlextWebService:
         """Service start bootstraps a runtime application and stop tears it down."""
         start_result = web.start_service(host="127.0.0.1", port=8184)
         tm.ok(start_result)
-        status_result = web.get_service_status()
+        status_result = web.service_status()
         tm.ok(status_result)
         tm.that(status_result.value.status, eq="operational")
         apps_result = web.list_apps()
@@ -134,13 +134,13 @@ class TestFlextWebService:
         tm.that(any(app.status == "running" for app in apps_result.value), eq=True)
         stop_result = web.stop_service()
         tm.ok(stop_result)
-        stopped_status = web.get_service_status()
+        stopped_status = web.service_status()
         tm.ok(stopped_status)
         tm.that(stopped_status.value.status, eq="stopped")
 
     def test_get_service_status(self) -> None:
         """Structured service status is exposed by the service layer itself."""
-        result = web.get_service_status()
+        result = web.service_status()
         tm.ok(result)
         tm.that(result.value.service, eq="flext-web-api")
         tm.that(result.value.capabilities, has="flask_support")

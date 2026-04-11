@@ -14,12 +14,12 @@ class TestFlextWebHandlers:
     def setup_method(self) -> None:
         """Reset the public runtime to a stopped state before each test."""
         apps_result = web.list_apps()
-        if apps_result.is_success:
+        if apps_result.success:
             for app in apps_result.value:
                 if app.status == "running":
                     _ = web.stop_app(app.id)
-        status_result = web.get_service_status()
-        if status_result.is_success and status_result.value.status == "operational":
+        status_result = web.service_status()
+        if status_result.success and status_result.value.status == "operational":
             _ = web.stop_service()
 
     def test_list_apps_uses_public_registry(self) -> None:
@@ -40,7 +40,7 @@ class TestFlextWebHandlers:
 
     def test_service_status_projection(self) -> None:
         """Service metadata is exposed through the public facade."""
-        result = web.get_service_status()
+        result = web.service_status()
         tm.ok(result)
 
     def test_create_app_through_public_facade(self) -> None:

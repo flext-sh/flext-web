@@ -34,14 +34,14 @@ class FlextWeb(
     _instance: ClassVar[Self | None] = None
 
     @classmethod
-    def get_instance(cls) -> Self:
+    def instance(cls) -> Self:
         """Return the shared facade instance."""
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
 
 
-web = FlextWeb.get_instance()
+web = FlextWeb.instance()
 
 
 __all__ = ["FlextWeb", "web"]

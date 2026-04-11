@@ -31,7 +31,7 @@ class FlextWebEntities(FlextWebServiceBase[bool]):
         """Execute the entity namespace service."""
         return r[bool].ok(True)
 
-    def get_entity(self, entity_id: str) -> r[m.Web.EntityData]:
+    def fetch_entity(self, entity_id: str) -> r[m.Web.EntityData]:
         """Fetch an entity by identifier."""
         if not u.to_str(entity_id):
             return r[m.Web.EntityData].fail("Entity ID cannot be empty")

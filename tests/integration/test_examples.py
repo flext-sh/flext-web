@@ -64,12 +64,12 @@ class ExamplesFullFunctionalityTest:
     @staticmethod
     def _reset_public_runtime() -> None:
         apps_result = web.list_apps()
-        if apps_result.is_success:
+        if apps_result.success:
             for app in apps_result.value:
-                if app.is_running:
+                if app.running:
                     _ = web.stop_app(app.id)
-        status_result = web.get_service_status()
-        if status_result.is_success and status_result.value.status == "operational":
+        status_result = web.service_status()
+        if status_result.success and status_result.value.status == "operational":
             _ = web.stop_service()
 
     def setup_method(self) -> None:
@@ -98,9 +98,9 @@ class ExamplesFullFunctionalityTest:
 
         start_result = module.start_application(create_result.value.id)
         tm.ok(start_result)
-        tm.that(start_result.value.is_running, eq=True)
+        tm.that(start_result.value.running, eq=True)
 
-        get_result = module.get_application_status(create_result.value.id)
+        get_result = module.fetch_application_status(create_result.value.id)
         tm.ok(get_result)
         tm.that(get_result.value.id, eq=create_result.value.id)
 
@@ -112,7 +112,7 @@ class ExamplesFullFunctionalityTest:
 
         stop_result = module.stop_application(create_result.value.id)
         tm.ok(stop_result)
-        tm.that(stop_result.value.is_running, eq=False)
+        tm.that(stop_result.value.running, eq=False)
 
     def test_api_usage_demo_runs_full_lifecycle(self) -> None:
         """The lifecycle demo returns the projected applications after execution."""
@@ -120,7 +120,7 @@ class ExamplesFullFunctionalityTest:
         demo_result = module.demo_application_lifecycle()
         tm.ok(demo_result)
         tm.that(demo_result.value, length=2)
-        tm.that(all(app.is_running is False for app in demo_result.value), eq=True)
+        tm.that(all(app.running is False for app in demo_result.value), eq=True)
 
 
 class TestExamples(ExamplesFullFunctionalityTest):

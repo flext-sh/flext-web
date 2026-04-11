@@ -13,7 +13,7 @@ def main() -> None:
         debug=True,
         secret_key="dev-secret-key-32-characters-long",
     )
-    if config_result.is_failure:
+    if config_result.failure:
         return
     try:
         _ = web.start_service(

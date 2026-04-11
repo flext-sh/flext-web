@@ -37,7 +37,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         """Create a service instance using optional settings overrides."""
         overrides = config.model_dump() if config is not None else None
         instance = cls(config_overrides=overrides) if overrides is not None else cls()
-        return r[Self](value=instance, is_success=True)
+        return r[Self](value=instance, success=True)
 
     def authenticate(self, credentials: m.Web.Credentials) -> r[m.Web.AuthResponse]:
         """Delegate authentication to the canonical auth service."""
@@ -88,29 +88,29 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         """Execute the web service facade."""
         return self.validate_business_rules()
 
-    def get_api_capabilities(self) -> r[t.Web.ResponseDict]:
+    def api_capabilities(self) -> r[t.Web.ResponseDict]:
         """Expose the canonical capabilities of the public web facade."""
         return r[t.Web.ResponseDict].ok({
-            "application_management": ["create_app", "get_app", "list_apps"],
+            "application_management": ["create_app", "fetch_app", "list_apps"],
             "framework_management": ["create_fastapi_app", "create_flask_app"],
             "service_management": ["start_service", "stop_service"],
             "configuration_management": ["settings", "create_service"],
             "monitoring": ["health_check", "health_status", "dashboard"],
         })
 
-    def get_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
+    def fetch_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
         """Return a registered application by identifier."""
         if not u.to_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
-        return p.Web.WebRepository.get_by_id(app_id).flat_map(
+        return p.Web.WebRepository.fetch_by_id(app_id).flat_map(
             self._application_response_from_payload,
         )
 
-    def get_entity(self, entity_id: str) -> r[m.Web.EntityData]:
+    def fetch_entity(self, entity_id: str) -> r[m.Web.EntityData]:
         """Return a generic entity by identifier."""
-        return self._entities().get_entity(entity_id)
+        return self._entities().fetch_entity(entity_id)
 
-    def get_service_status(self) -> r[m.Web.ServiceResponse]:
+    def service_status(self) -> r[m.Web.ServiceResponse]:
         """Return service status using protocol runtime state and settings."""
         state = p.Web.service_state
         return r[m.Web.ServiceResponse].ok(
@@ -181,16 +181,16 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         """Start the service and ensure a runtime application exists."""
         _ = debug
         init_result = self.initialize_routes()
-        if init_result.is_failure:
+        if init_result.failure:
             return init_result
         middleware_result = self.configure_middleware()
-        if middleware_result.is_failure:
+        if middleware_result.failure:
             return middleware_result
         app_result = self._get_or_create_runtime_application(host=host, port=port)
-        if app_result.is_failure:
+        if app_result.failure:
             return r[bool].fail(app_result.error)
         running_app = self.start_app(app_result.value.id)
-        if running_app.is_failure:
+        if running_app.failure:
             return r[bool].fail(running_app.error)
         return p.Web.WebService.start_service()
 
@@ -205,12 +205,12 @@ class FlextWebServices(FlextWebServiceBase[bool]):
     def stop_service(self) -> r[bool]:
         """Stop the service and all running applications."""
         apps_result = self.list_apps()
-        if apps_result.is_failure:
+        if apps_result.failure:
             return r[bool].fail(apps_result.error)
         for app in apps_result.value:
             if app.status == c.Web.Status.RUNNING.value:
                 stop_result = self.stop_app(app.id)
-                if stop_result.is_failure:
+                if stop_result.failure:
                     return r[bool].fail(stop_result.error)
         return p.Web.WebService.stop_service()
 
@@ -281,7 +281,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         responses: list[m.Web.ApplicationResponse] = []
         for payload in payloads:
             response_result = self._application_response_from_payload(payload)
-            if response_result.is_failure:
+            if response_result.failure:
                 return r[Sequence[m.Web.ApplicationResponse]].fail(
                     response_result.error,
                 )
@@ -314,7 +314,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         target_host = host if host is not None else self.settings.host
         target_port = port if port is not None else self.settings.port
         apps_result = self.list_apps()
-        if apps_result.is_failure:
+        if apps_result.failure:
             return r[m.Web.ApplicationResponse].fail(apps_result.error)
         for app in apps_result.value:
             if (

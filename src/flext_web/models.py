@@ -115,7 +115,7 @@ class FlextWebModels(FlextModels):
                 return self.body is not None
 
             @property
-            def is_secure(self) -> bool:
+            def secure(self) -> bool:
                 """Check if HTTP request uses HTTPS protocol.
 
                 Returns:
@@ -170,7 +170,7 @@ class FlextWebModels(FlextModels):
             ] = None
 
             @property
-            def is_error(self) -> bool:
+            def error(self) -> bool:
                 """Check if HTTP status indicates client or server error.
 
                 Returns:
@@ -180,7 +180,7 @@ class FlextWebModels(FlextModels):
                 return self.status_code >= c.Web.ERROR_MIN
 
             @property
-            def is_success(self) -> bool:
+            def success(self) -> bool:
                 """Check if HTTP status indicates success (2xx range).
 
                 Returns:
@@ -300,7 +300,7 @@ class FlextWebModels(FlextModels):
                 return self.body is not None
 
             @property
-            def is_secure(self) -> bool:
+            def secure(self) -> bool:
                 """Check if web request uses HTTPS protocol.
 
                 Returns:
@@ -390,7 +390,7 @@ class FlextWebModels(FlextModels):
             ] = 0.0
 
             @property
-            def is_error(self) -> bool:
+            def error(self) -> bool:
                 """Check if web response status indicates error.
 
                 Returns:
@@ -400,7 +400,7 @@ class FlextWebModels(FlextModels):
                 return self.status_code >= c.Web.ERROR_MIN
 
             @property
-            def is_success(self) -> bool:
+            def success(self) -> bool:
                 """Check if web response status indicates success.
 
                 Returns:
@@ -577,14 +577,14 @@ class FlextWebModels(FlextModels):
                 return self.status == c.Web.Status.RUNNING.value
 
             @property
-            def is_healthy(self) -> bool:
+            def healthy(self) -> bool:
                 """Check if application is healthy and operational."""
                 running = c.Web.Status.RUNNING.value
                 maintenance = c.Web.Status.MAINTENANCE.value
                 return self.status in {running, maintenance}
 
             @property
-            def is_running(self) -> bool:
+            def running(self) -> bool:
                 """Check if application is currently running."""
                 return self.status == c.Web.Status.RUNNING.value
 
@@ -656,12 +656,12 @@ class FlextWebModels(FlextModels):
                     )
                 return super().add_domain_event(event_type=event_type, data=data)
 
-            def get_health_status(self) -> t.ConfigurationMapping:
+            def health_status(self) -> t.ConfigurationMapping:
                 """Get comprehensive health status."""
                 return {
                     "status": self.status,
-                    "is_running": self.is_running,
-                    "is_healthy": self.is_healthy,
+                    "running": self.running,
+                    "healthy": self.healthy,
                     "url": self.url,
                     "version": self.version,
                     "environment": self.environment,
@@ -679,13 +679,13 @@ class FlextWebModels(FlextModels):
                 self.status = starting_status
                 # Add web lifecycle events
                 restart_event_result = self.add_web_event("ApplicationRestarting")
-                if restart_event_result.is_failure:  # pragma: no cover
+                if restart_event_result.failure:  # pragma: no cover
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {restart_event_result.error}",
                     )
                 self.status = running_status
                 start_event_result = self.add_web_event("ApplicationStarted")
-                if start_event_result.is_failure:  # pragma: no cover
+                if start_event_result.failure:  # pragma: no cover
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {start_event_result.error}",
                     )
@@ -702,7 +702,7 @@ class FlextWebModels(FlextModels):
                 self.status = running_status
                 # Add web lifecycle event
                 event_result = self.add_web_event("ApplicationStarted")
-                if event_result.is_failure:  # pragma: no cover
+                if event_result.failure:  # pragma: no cover
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {event_result.error}",
                     )
@@ -720,7 +720,7 @@ class FlextWebModels(FlextModels):
                 self.status = stopped_status
                 # Add web lifecycle event
                 event_result = self.add_web_event("ApplicationStopped")
-                if event_result.is_failure:  # pragma: no cover
+                if event_result.failure:  # pragma: no cover
                     return r[FlextWebModels.Web.Entity].fail(
                         f"Failed to add web event: {event_result.error}",
                     )
@@ -747,7 +747,7 @@ class FlextWebModels(FlextModels):
                 self.metrics.update(new_metrics)
                 # Add web lifecycle event
                 event_result = self.add_web_event("MetricsUpdated")
-                if event_result.is_failure:  # pragma: no cover
+                if event_result.failure:  # pragma: no cover
                     return r[bool].fail(
                         f"Failed to add web event: {event_result.error}",
                     )
@@ -900,7 +900,7 @@ class FlextWebModels(FlextModels):
             created_at: Annotated[str, Field(description="Creation timestamp")]
 
             @property
-            def is_running(self) -> bool:
+            def running(self) -> bool:
                 """Return whether the projected application is running."""
                 return self.status == c.Web.Status.RUNNING.value
 

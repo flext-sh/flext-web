@@ -14,12 +14,12 @@ class TestFlextWebCliService:
     def setup_method(self) -> None:
         """Reset shared runtime state through the public facade before each test."""
         apps_result = web.list_apps()
-        if apps_result.is_success:
+        if apps_result.success:
             for app in apps_result.value:
                 if app.status == "running":
                     _ = web.stop_app(app.id)
-        status_result = web.get_service_status()
-        if status_result.is_success and status_result.value.status == "operational":
+        status_result = web.service_status()
+        if status_result.success and status_result.value.status == "operational":
             _ = web.stop_service()
 
     def test_initialization(self) -> None:
@@ -45,7 +45,7 @@ class TestFlextWebCliService:
         cli_service = __main__.FlextWebCliService()
         result = cli_service.run(["--host", "127.0.0.1", "--port", "8196"])
         tm.ok(result)
-        status_result = web.get_service_status()
+        status_result = web.service_status()
         tm.ok(status_result)
         tm.that(status_result.value.status, eq="operational")
         stop_result = web.stop_service()

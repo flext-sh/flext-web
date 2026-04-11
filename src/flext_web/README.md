@@ -20,8 +20,8 @@ Everything operational goes through `web`. Structural contracts stay under
 ```python
 from flext_web import c, m, p, t, u, web
 
-status = web.get_service_status()
-capabilities = web.get_api_capabilities()
+status = web.service_status()
+capabilities = web.api_capabilities()
 config = web.settings
 health_service_name = c.Web.WebService.SERVICE_NAME
 app_request_model = m.Web.AppData

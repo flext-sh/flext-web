@@ -458,7 +458,7 @@ class FlextWebTypes(FlextTypes):
             )
 
     @classmethod
-    def get_web_types_system_config(cls) -> r[FlextWebTypes.TypesConfig]:
+    def web_types_system_config(cls) -> r[FlextWebTypes.TypesConfig]:
         """Get current web types system configuration.
 
         Returns:

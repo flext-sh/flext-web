@@ -156,10 +156,10 @@ class FlextWebSettings(FlextSettings):
                 debug=debug_value,
                 secret_key=secret_key_value,
             )
-            success: r[Self] = r[Self](value=instance, is_success=True)
+            success: r[Self] = r[Self](value=instance, success=True)
             return success
         except ValidationError as exc:
-            failure: r[Self] = r[Self](error=str(exc), is_success=False)
+            failure: r[Self] = r[Self](error=str(exc), success=False)
             return failure
 
     @classmethod

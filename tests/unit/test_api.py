@@ -14,12 +14,12 @@ class TestFlextWebApi:
     def setup_method(self) -> None:
         """Stop any running public runtime before each test."""
         apps_result = web.list_apps()
-        if apps_result.is_success:
+        if apps_result.success:
             for app in apps_result.value:
                 if app.status == "running":
                     _ = web.stop_app(app.id)
-        status_result = web.get_service_status()
-        if status_result.is_success and status_result.value.status == "operational":
+        status_result = web.service_status()
+        if status_result.success and status_result.value.status == "operational":
             _ = web.stop_service()
 
     def test_create_fastapi_app_success(self) -> None:
@@ -75,7 +75,7 @@ class TestFlextWebApi:
 
     def test_get_service_status(self) -> None:
         """The facade exposes structured service status."""
-        result = web.get_service_status()
+        result = web.service_status()
         tm.ok(result)
         status = result.value
         tm.that(status, is_=m.Web.ServiceResponse)
@@ -84,7 +84,7 @@ class TestFlextWebApi:
 
     def test_get_api_capabilities(self) -> None:
         """The facade reports its canonical public capabilities."""
-        result = web.get_api_capabilities()
+        result = web.api_capabilities()
         tm.ok(result)
         capabilities = result.value
         tm.that(capabilities, has="application_management")

@@ -160,7 +160,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
         result = self.FastAPIFactory.create_instance(factory_payload).map(
             lambda app: self._configure_fastapi_endpoints(app, fastapi_config),
         )
-        if result.is_success:
+        if result.success:
             self.logger.info(
                 "FastAPI application created",
                 title=fastapi_config.title,

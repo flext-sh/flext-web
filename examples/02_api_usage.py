@@ -12,7 +12,7 @@ def _allocate_demo_port() -> int:
     """Return a deterministic demo port without binding a real socket."""
     apps_result = web.list_apps()
     used_ports: set[int] = (
-        {app.port for app in apps_result.value} if apps_result.is_success else set()
+        {app.port for app in apps_result.value} if apps_result.success else set()
     )
     candidate = 18080
     while candidate in used_ports:
@@ -39,9 +39,9 @@ def start_application(app_id: str) -> r[m.Web.ApplicationResponse]:
     return web.start_app(app_id)
 
 
-def get_application_status(app_id: str) -> r[m.Web.ApplicationResponse]:
+def fetch_application_status(app_id: str) -> r[m.Web.ApplicationResponse]:
     """Load a single application projection through the canonical `web` facade."""
-    return web.get_app(app_id)
+    return web.fetch_app(app_id)
 
 
 def stop_application(app_id: str) -> r[m.Web.ApplicationResponse]:
@@ -65,28 +65,28 @@ def demo_application_lifecycle() -> r[Sequence[m.Web.ApplicationResponse]]:
         m.Web.AppData(name="api-gateway", host="127.0.0.1", port=second_port),
     ):
         created_result = web.create_app(app_data)
-        if created_result.is_failure:
+        if created_result.failure:
             return r[Sequence[m.Web.ApplicationResponse]].fail(created_result.error)
         created_apps.append(created_result.value)
 
     for created_app in created_apps:
         started_result = web.start_app(created_app.id)
-        if started_result.is_failure:
+        if started_result.failure:
             return r[Sequence[m.Web.ApplicationResponse]].fail(started_result.error)
 
     listed_running_apps = web.list_apps()
-    if listed_running_apps.is_failure:
+    if listed_running_apps.failure:
         return r[Sequence[m.Web.ApplicationResponse]].fail(listed_running_apps.error)
 
     for created_app in created_apps:
         stopped_result = web.stop_app(created_app.id)
-        if stopped_result.is_failure:
+        if stopped_result.failure:
             return r[Sequence[m.Web.ApplicationResponse]].fail(stopped_result.error)
 
     final_apps: list[m.Web.ApplicationResponse] = []
     for created_app in created_apps:
-        current_result = web.get_app(created_app.id)
-        if current_result.is_failure:
+        current_result = web.fetch_app(created_app.id)
+        if current_result.failure:
             return r[Sequence[m.Web.ApplicationResponse]].fail(current_result.error)
         final_apps.append(current_result.value)
     return r[Sequence[m.Web.ApplicationResponse]].ok(final_apps)

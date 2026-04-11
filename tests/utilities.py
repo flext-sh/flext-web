@@ -103,7 +103,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             @staticmethod
             def _wrap_result[T](result: r[T]) -> r[BaseModel]:
                 """Wrap a typed result into `r[BaseModel]` for generic helpers."""
-                if result.is_success:
+                if result.success:
                     value = result.value
                     if isinstance(value, BaseModel):
                         return r[BaseModel].ok(value)
@@ -116,7 +116,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 message: str = "Operation should succeed",
             ) -> None:
                 """Assert that a result succeeded."""
-                if not result.is_success:
+                if not result.success:
                     raise AssertionError(f"{message}: {result.error}")
 
             @staticmethod
@@ -125,7 +125,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 message: str = "Operation should fail",
             ) -> None:
                 """Assert that a result failed."""
-                if result.is_success:
+                if result.success:
                     raise AssertionError(message)
 
             @staticmethod

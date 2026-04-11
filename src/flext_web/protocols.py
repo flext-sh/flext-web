@@ -150,7 +150,7 @@ class FlextWebProtocols(FlextProtocols):
 
     s Integration:
     - Base web service implementation follows Service protocol
-    - Methods: execute(), validate_business_rules(), get_service_info()
+    - Methods: execute(), validate_business_rules(), service_info()
     - Type-safe web service lifecycle management
 
     FlextModels Integration:
@@ -263,14 +263,14 @@ class FlextWebProtocols(FlextProtocols):
                     openapi_url=c.Web.WebApi.OPENAPI_URL,
                 ),
             )
-            if fastapi_result.is_success:
+            if fastapi_result.success:
                 return r[tuple[flask.Flask | FastAPI, str, str]].ok((
                     fastapi_result.value,
                     c.Web.WebFramework.FRAMEWORK_FASTAPI,
                     c.Web.WebFramework.INTERFACE_ASGI,
                 ))
             flask_result = app_service.create_flask_app()
-            if flask_result.is_success:
+            if flask_result.success:
                 return r[tuple[flask.Flask | FastAPI, str, str]].ok((
                     flask_result.value,
                     c.Web.WebFramework.FRAMEWORK_FLASK,
@@ -559,7 +559,7 @@ class FlextWebProtocols(FlextProtocols):
                 framework_result = FlextWebProtocols.Web.create_framework_app(
                     normalized_name,
                 )
-                if framework_result.is_failure:
+                if framework_result.failure:
                     return r[t.Web.ResponseDict].fail(framework_result.error)
                 app_instance, framework_name, interface_type = framework_result.value
                 app_id = str(uuid4())
@@ -626,7 +626,7 @@ class FlextWebProtocols(FlextProtocols):
                     app_data,
                     app_instance,
                 )
-                if runtime_result.is_failure:
+                if runtime_result.failure:
                     return r[t.Web.ResponseDict].fail(runtime_result.error)
                 updated_app = FlextWebProtocols.Web.copy_response_dict(app_data)
                 updated_app["status"] = c.Web.Status.RUNNING.value
@@ -663,7 +663,7 @@ class FlextWebProtocols(FlextProtocols):
                     app_id,
                     runtime,
                 )
-                if stop_runtime_result.is_failure:
+                if stop_runtime_result.failure:
                     return r[t.Web.ResponseDict].fail(stop_runtime_result.error)
                 updated_app = FlextWebProtocols.Web.copy_response_dict(app_data)
                 updated_app["status"] = c.Web.Status.STOPPED.value
@@ -739,7 +739,7 @@ class FlextWebProtocols(FlextProtocols):
                 return response
 
             @staticmethod
-            def get_request_data(
+            def resolve_request_data(
                 _request: t.Web.RequestDict,
             ) -> t.Web.RequestDict:
                 """Extract data from web request.
@@ -787,7 +787,7 @@ class FlextWebProtocols(FlextProtocols):
                 return response
 
             @staticmethod
-            def get_request_data(
+            def resolve_request_data(
                 _request: t.Web.RequestDict,
             ) -> t.Web.RequestDict:
                 """Extract data from web request.
@@ -802,7 +802,7 @@ class FlextWebProtocols(FlextProtocols):
                 return deepcopy(_request)
 
             @staticmethod
-            def is_json_request(_request: t.Web.RequestDict) -> bool:
+            def json_request(_request: t.Web.RequestDict) -> bool:
                 """Check if request contains JSON data.
 
                 Args:
@@ -903,7 +903,7 @@ class FlextWebProtocols(FlextProtocols):
             """
 
             @staticmethod
-            def get_by_id(entity_id: str) -> r[t.Web.ResponseDict]:
+            def fetch_by_id(entity_id: str) -> r[t.Web.ResponseDict]:
                 """Return a single app by ID or failure when not found."""
                 app_data = FlextWebProtocols.Web.apps_registry.get(entity_id)
                 if app_data is None:
@@ -1063,7 +1063,7 @@ class FlextWebProtocols(FlextProtocols):
             """
 
             @staticmethod
-            def get_endpoint_url() -> str:
+            def endpoint_url() -> str:
                 """Get the web service endpoint URL.
 
                 Returns:
@@ -1202,8 +1202,8 @@ class FlextWebProtocols(FlextProtocols):
             """
 
             @staticmethod
-            def get_template_config() -> r[t.Web.ResponseDict]:
-                """Get current template engine configuration.
+            def template_config() -> r[t.Web.ResponseDict]:
+                """Return current template engine configuration.
 
                 Returns:
                 r containing configuration data or error details
@@ -1317,7 +1317,7 @@ class FlextWebProtocols(FlextProtocols):
             """
 
             @staticmethod
-            def get_web_health_status() -> t.Web.ResponseDict:
+            def web_health_status() -> t.Web.ResponseDict:
                 """Get web application health status.
 
                 Returns:
@@ -1339,7 +1339,7 @@ class FlextWebProtocols(FlextProtocols):
                 }
 
             @staticmethod
-            def get_web_metrics() -> t.Web.ResponseDict:
+            def web_metrics() -> t.Web.ResponseDict:
                 """Get web application metrics.
 
                 Returns:
@@ -1470,13 +1470,15 @@ class FlextWebProtocols(FlextProtocols):
                         data,
                     )
 
-                def get_request_data(
+                def resolve_request_data(
                     self,
                     _request: t.Web.RequestDict,
                 ) -> t.Web.RequestDict:
                     """Extract data from web request."""
-                    return FlextWebProtocols.Web.WebResponseFormatter.get_request_data(
-                        _request,
+                    return (
+                        FlextWebProtocols.Web.WebResponseFormatter.resolve_request_data(
+                            _request,
+                        )
                     )
 
             class _WebFrameworkInterfaceBase:
@@ -1491,18 +1493,18 @@ class FlextWebProtocols(FlextProtocols):
                         data,
                     )
 
-                def get_request_data(
+                def resolve_request_data(
                     self,
                     _request: t.Web.RequestDict,
                 ) -> t.Web.RequestDict:
                     """Extract data from web request."""
-                    return FlextWebProtocols.Web.WebFrameworkInterface.get_request_data(
+                    return FlextWebProtocols.Web.WebFrameworkInterface.resolve_request_data(
                         _request,
                     )
 
-                def is_json_request(self, _request: t.Web.RequestDict) -> bool:
+                def json_request(self, _request: t.Web.RequestDict) -> bool:
                     """Check if request contains JSON data."""
-                    return FlextWebProtocols.Web.WebFrameworkInterface.is_json_request(
+                    return FlextWebProtocols.Web.WebFrameworkInterface.json_request(
                         _request,
                     )
 
@@ -1550,9 +1552,9 @@ class FlextWebProtocols(FlextProtocols):
             class _WebConnectionBase:
                 """Base implementation of WebConnection for testing."""
 
-                def get_endpoint_url(self) -> str:
+                def endpoint_url(self) -> str:
                     """Get the web service endpoint URL."""
-                    return FlextWebProtocols.Web.WebConnection.get_endpoint_url()
+                    return FlextWebProtocols.Web.WebConnection.endpoint_url()
 
             class _WebTemplateRendererBase:
                 """Base implementation of WebTemplateRenderer for testing."""
@@ -1591,9 +1593,9 @@ class FlextWebProtocols(FlextProtocols):
                         dict(value) if isinstance(value, Mapping) else value
                     )
 
-                def get_template_config(self) -> r[t.Web.ResponseDict]:
-                    """Get current template engine configuration."""
-                    return FlextWebProtocols.Web.WebTemplateEngine.get_template_config()
+                def template_config(self) -> r[t.Web.ResponseDict]:
+                    """Return current template engine configuration."""
+                    return FlextWebProtocols.Web.WebTemplateEngine.template_config()
 
                 def load_template_config(
                     self,
@@ -1627,13 +1629,13 @@ class FlextWebProtocols(FlextProtocols):
             class _WebMonitoringBase:
                 """Base implementation of WebMonitoring for testing."""
 
-                def get_web_health_status(self) -> t.Web.ResponseDict:
+                def web_health_status(self) -> t.Web.ResponseDict:
                     """Get web application health status."""
-                    return FlextWebProtocols.Web.WebMonitoring.get_web_health_status()
+                    return FlextWebProtocols.Web.WebMonitoring.web_health_status()
 
-                def get_web_metrics(self) -> t.Web.ResponseDict:
+                def web_metrics(self) -> t.Web.ResponseDict:
                     """Get web application metrics."""
-                    return FlextWebProtocols.Web.WebMonitoring.get_web_metrics()
+                    return FlextWebProtocols.Web.WebMonitoring.web_metrics()
 
                 def record_web_request(
                     self,
