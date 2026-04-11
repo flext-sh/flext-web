@@ -9,11 +9,10 @@ from types import ModuleType
 import pytest
 from flext_tests import tm
 
-from flext_core import FlextLogger, r
 from flext_web import FlextWebProtocols, web
-from tests import t
+from tests import r, t, u
 
-logger = FlextLogger(__name__)
+logger = u.fetch_logger(__name__)
 
 
 class ExamplesFullFunctionalityTest:

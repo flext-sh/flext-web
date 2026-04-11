@@ -36,7 +36,7 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
         config = self.config
         if self.config_overrides is not None and isinstance(config, FlextWebSettings):
             return config
-        return FlextSettings.get_global().get_namespace("web", FlextWebSettings)
+        return FlextSettings.fetch_global().fetch_namespace("web", FlextWebSettings)
 
 
 __all__ = ["FlextWebServiceBase"]
