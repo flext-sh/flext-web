@@ -1247,7 +1247,7 @@ class FlextWebProtocols(FlextProtocols):
                 for context_key, context_value in context.items():
                     full_context[context_key] = (
                         context_value
-                        if u.is_primitive(context_value)
+                        if u.primitive(context_value)
                         else str(context_value)
                     )
                 rendered = template

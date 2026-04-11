@@ -11,6 +11,7 @@ from typing import override
 import flask
 import pytest
 from fastapi import FastAPI
+from fastapi.routing import APIRoute
 from flext_tests import tm
 
 from flext_core import r
@@ -793,9 +794,11 @@ class TestFlextWebProtocols:
         framework = str(create_result.value["framework"])
         app_instance = p.Web.framework_instances[app_id]
         if framework == "fastapi" and isinstance(app_instance, FastAPI):
-            # paths: list[str] = [
-            #     for route in app_instance.routes
-            # ]
+            paths = [
+                route.path
+                for route in app_instance.routes
+                if isinstance(route, APIRoute)
+            ]
             tm.that(paths, has="/protocol/health")
         elif isinstance(app_instance, flask.Flask):
             routes = [rule.rule for rule in app_instance.url_map.iter_rules()]

@@ -190,7 +190,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     narrow_body: str | t.ScalarMapping | None = (
                         body
                         if isinstance(body, str) or body is None
-                        else {k: v for k, v in body.items() if u.is_primitive(v)}
+                        else {k: v for k, v in body.items() if u.primitive(v)}
                     )
                     return TestsFlextWebUtilities.Web.Tests._wrap_result(
                         t.create_http_request(
@@ -231,7 +231,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     resp_body: str | t.ScalarMapping | None = (
                         body
                         if isinstance(body, str) or body is None
-                        else {k: v for k, v in body.items() if u.is_primitive(v)}
+                        else {k: v for k, v in body.items() if u.primitive(v)}
                     )
                     return TestsFlextWebUtilities.Web.Tests._wrap_result(
                         t.create_http_response(
@@ -264,7 +264,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             body
                             if isinstance(body, str) or body is None
                             else (
-                                {k: v for k, v in body.items() if u.is_primitive(v)}
+                                {k: v for k, v in body.items() if u.primitive(v)}
                                 if isinstance(body, dict)
                                 else None
                             )
@@ -273,9 +273,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             {}
                             if not isinstance(query_params, dict)
                             else {
-                                k: v
-                                for k, v in query_params.items()
-                                if u.is_primitive(v)
+                                k: v for k, v in query_params.items() if u.primitive(v)
                             }
                         )
                         config = t.Web.RequestConfig(
@@ -325,7 +323,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             body
                             if isinstance(body, str) or body is None
                             else (
-                                {k: v for k, v in body.items() if u.is_primitive(v)}
+                                {k: v for k, v in body.items() if u.primitive(v)}
                                 if isinstance(body, dict)
                                 else None
                             )
@@ -395,9 +393,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
                         "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
                     }
-                    app_data.update({
-                        k: v for k, v in kwargs.items() if u.is_primitive(v)
-                    })
+                    app_data.update({k: v for k, v in kwargs.items() if u.primitive(v)})
                     return app_data
                 if data_type == "entity_data":
                     entity_data: dict[str, t.NormalizedValue] = {
@@ -405,7 +401,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         "name": "Test Entity",
                     }
                     entity_data.update({
-                        k: v for k, v in kwargs.items() if u.is_primitive(v)
+                        k: v for k, v in kwargs.items() if u.primitive(v)
                     })
                     return entity_data
                 if data_type == "config_data":
@@ -415,7 +411,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         "debug": True,
                     }
                     config_data.update({
-                        k: v for k, v in kwargs.items() if u.is_primitive(v)
+                        k: v for k, v in kwargs.items() if u.primitive(v)
                     })
                     return config_data
                 if data_type == "request_data":
