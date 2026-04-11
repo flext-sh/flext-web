@@ -15,22 +15,24 @@ from flext_web.__version__ import *
 if _t.TYPE_CHECKING:
     from flext_core.decorators import d
     from flext_core.exceptions import e
+    from flext_core.handlers import h
     from flext_core.mixins import x
     from flext_core.result import r
+    from flext_core.service import s
     from flext_web.api import FlextWeb, web
-    from flext_web.base import FlextWebServiceBase, FlextWebServiceBase as s
-    from flext_web.constants import FlextWebConstants, FlextWebConstants as c
-    from flext_web.models import FlextWebModels, FlextWebModels as m
-    from flext_web.protocols import FlextWebProtocols, FlextWebProtocols as p
+    from flext_web.base import FlextWebServiceBase
+    from flext_web.constants import FlextWebConstants, c
+    from flext_web.models import FlextWebModels, m
+    from flext_web.protocols import FlextWebProtocols, p
     from flext_web.services.app import FlextWebApp
     from flext_web.services.auth import FlextWebAuth
     from flext_web.services.entities import FlextWebEntities
-    from flext_web.services.handlers import FlextWebHandlers, FlextWebHandlers as h
+    from flext_web.services.handlers import FlextWebHandlers
     from flext_web.services.health import FlextWebHealth
     from flext_web.services.web import FlextWebServices
     from flext_web.settings import FlextWebSettings
-    from flext_web.typings import FlextWebTypes, FlextWebTypes as t
-    from flext_web.utilities import FlextWebUtilities, FlextWebUtilities as u
+    from flext_web.typings import FlextWebTypes, t
+    from flext_web.utilities import FlextWebUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
     (".services",),
     build_lazy_import_map(
@@ -53,24 +55,33 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "web",
             ),
             ".base": ("FlextWebServiceBase",),
-            ".constants": ("FlextWebConstants",),
-            ".models": ("FlextWebModels",),
-            ".protocols": ("FlextWebProtocols",),
+            ".constants": (
+                "FlextWebConstants",
+                "c",
+            ),
+            ".models": (
+                "FlextWebModels",
+                "m",
+            ),
+            ".protocols": (
+                "FlextWebProtocols",
+                "p",
+            ),
             ".settings": ("FlextWebSettings",),
-            ".typings": ("FlextWebTypes",),
-            ".utilities": ("FlextWebUtilities",),
+            ".typings": (
+                "FlextWebTypes",
+                "t",
+            ),
+            ".utilities": (
+                "FlextWebUtilities",
+                "u",
+            ),
             "flext_core.decorators": ("d",),
             "flext_core.exceptions": ("e",),
+            "flext_core.handlers": ("h",),
             "flext_core.mixins": ("x",),
             "flext_core.result": ("r",),
-        },
-        alias_groups={
-            ".base": (("s", "FlextWebServiceBase"),),
-            ".constants": (("c", "FlextWebConstants"),),
-            ".models": (("m", "FlextWebModels"),),
-            ".protocols": (("p", "FlextWebProtocols"),),
-            ".typings": (("t", "FlextWebTypes"),),
-            ".utilities": (("u", "FlextWebUtilities"),),
+            "flext_core.service": ("s",),
         },
     ),
     exclude_names=(
@@ -84,6 +95,9 @@ _LAZY_IMPORTS = merge_lazy_imports(
     ),
     module_name=__name__,
 )
+
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__ = [
     "VERSION",
@@ -124,6 +138,3 @@ __all__ = [
     "web",
     "x",
 ]
-
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)

@@ -1,28 +1,28 @@
-# AUTO-GENERATED FILE — DO NOT EDIT MANUALLY.
-# Regenerate with: make gen
-#
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Unit package."""
 
 from __future__ import annotations
 
-from flext_core.lazy import install_lazy_exports
+from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
-_LAZY_IMPORTS = {
-    "test___init__": "tests.unit.test___init__",
-    "test___main__": "tests.unit.test___main__",
-    "test_api": "tests.unit.test_api",
-    "test_app": "tests.unit.test_app",
-    "test_config": "tests.unit.test_config",
-    "test_constants": "tests.unit.test_constants",
-    "test_fields": "tests.unit.test_fields",
-    "test_handlers": "tests.unit.test_handlers",
-    "test_models": "tests.unit.test_models",
-    "test_protocols": "tests.unit.test_protocols",
-    "test_services": "tests.unit.test_services",
-    "test_typings": "tests.unit.test_typings",
-    "test_utilities": "tests.unit.test_utilities",
-    "test_version": "tests.unit.test_version",
-}
+_LAZY_IMPORTS = build_lazy_import_map(
+    {
+        ".test___init__": ("test___init__",),
+        ".test___main__": ("test___main__",),
+        ".test_api": ("test_api",),
+        ".test_app": ("test_app",),
+        ".test_config": ("test_config",),
+        ".test_constants": ("test_constants",),
+        ".test_fields": ("test_fields",),
+        ".test_handlers": ("test_handlers",),
+        ".test_models": ("test_models",),
+        ".test_protocols": ("test_protocols",),
+        ".test_services": ("test_services",),
+        ".test_typings": ("test_typings",),
+        ".test_utilities": ("test_utilities",),
+        ".test_version": ("test_version",),
+    },
+)
 
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

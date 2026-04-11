@@ -12,43 +12,64 @@ from flext_core.lazy import (
 )
 
 if _t.TYPE_CHECKING:
-    from flext_core.decorators import d
-    from flext_core.exceptions import e
-    from flext_core.handlers import h
-    from flext_core.mixins import x
-    from flext_core.result import r
-    from flext_core.service import s
-    from tests.constants import TestsFlextWebConstants, TestsFlextWebConstants as c
+    from flext_tests._fixtures.settings import (
+        reset_settings,
+        settings,
+        settings_factory,
+    )
+    from flext_tests._utilities.matchers import tm
+    from flext_tests.docker import tk
+    from flext_tests.domains import td
+    from flext_tests.files import tf
+    from flext_tests.validator import tv
+
+    from tests.constants import TestsFlextWebConstants, c
     from tests.helpers.models import TestsModels
     from tests.helpers.protocols import TestsProtocols
     from tests.helpers.typings import TestsTypings
     from tests.helpers.utilities import TestsUtilities
-    from tests.models import TestsFlextWebModels, TestsFlextWebModels as m
-    from tests.protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p
-    from tests.typings import TestsFlextWebTypes, TestsFlextWebTypes as t
-    from tests.utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
+    from tests.models import TestsFlextWebModels, m
+    from tests.protocols import TestsFlextWebProtocols, p
+    from tests.typings import TestsFlextWebTypes, t
+    from tests.utilities import TestsFlextWebUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
-    (".helpers",),
+    (
+        ".helpers",
+        ".integration",
+        ".unit",
+    ),
     build_lazy_import_map(
         {
-            ".constants": ("TestsFlextWebConstants",),
-            ".models": ("TestsFlextWebModels",),
-            ".protocols": ("TestsFlextWebProtocols",),
-            ".typings": ("TestsFlextWebTypes",),
-            ".utilities": ("TestsFlextWebUtilities",),
-            "flext_core.decorators": ("d",),
-            "flext_core.exceptions": ("e",),
-            "flext_core.handlers": ("h",),
-            "flext_core.mixins": ("x",),
-            "flext_core.result": ("r",),
-            "flext_core.service": ("s",),
-        },
-        alias_groups={
-            ".constants": (("c", "TestsFlextWebConstants"),),
-            ".models": (("m", "TestsFlextWebModels"),),
-            ".protocols": (("p", "TestsFlextWebProtocols"),),
-            ".typings": (("t", "TestsFlextWebTypes"),),
-            ".utilities": (("u", "TestsFlextWebUtilities"),),
+            ".constants": (
+                "TestsFlextWebConstants",
+                "c",
+            ),
+            ".models": (
+                "TestsFlextWebModels",
+                "m",
+            ),
+            ".protocols": (
+                "TestsFlextWebProtocols",
+                "p",
+            ),
+            ".typings": (
+                "TestsFlextWebTypes",
+                "t",
+            ),
+            ".utilities": (
+                "TestsFlextWebUtilities",
+                "u",
+            ),
+            "flext_tests._fixtures.settings": (
+                "reset_settings",
+                "settings",
+                "settings_factory",
+            ),
+            "flext_tests._utilities.matchers": ("tm",),
+            "flext_tests.docker": ("tk",),
+            "flext_tests.domains": ("td",),
+            "flext_tests.files": ("tf",),
+            "flext_tests.validator": ("tv",),
         },
     ),
     exclude_names=(
@@ -63,6 +84,9 @@ _LAZY_IMPORTS = merge_lazy_imports(
     module_name=__name__,
 )
 
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
+
 __all__ = [
     "TestsFlextWebConstants",
     "TestsFlextWebModels",
@@ -74,17 +98,16 @@ __all__ = [
     "TestsTypings",
     "TestsUtilities",
     "c",
-    "d",
-    "e",
-    "h",
     "m",
     "p",
-    "r",
-    "s",
+    "reset_settings",
+    "settings",
+    "settings_factory",
     "t",
+    "td",
+    "tf",
+    "tk",
+    "tm",
+    "tv",
     "u",
-    "x",
 ]
-
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)

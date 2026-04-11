@@ -14,9 +14,6 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".health": ("FlextWebHealth",),
         ".web": ("FlextWebServices",),
     },
-    alias_groups={
-        ".handlers": (("h", "FlextWebHandlers"),),
-    },
 )
 
 
