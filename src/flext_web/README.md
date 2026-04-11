@@ -22,7 +22,7 @@ from flext_web import c, m, p, t, u, web
 
 status = web.service_status()
 capabilities = web.api_capabilities()
-config = web.settings
+settings = web.settings
 health_service_name = c.Web.WebService.SERVICE_NAME
 app_request_model = m.Web.AppData
 response_payload_type = t.Web.ResponseDict
@@ -42,7 +42,7 @@ flask_result = web.create_flask_app()
 ## Settings
 
 `web.settings` is the registered namespace. Use it directly instead of creating
-parallel config accessors.
+parallel settings accessors.
 
 ```python
 from flext_web import web

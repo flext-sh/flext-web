@@ -527,13 +527,13 @@ class TestFlextWebProtocols:
         """Test WebTemplateEngine methods execution."""
 
         class RealTemplateEngine:
-            def load_template_config(self, config: t.Web.RequestDict) -> r[bool]:
+            def load_template_config(self, settings: t.Web.RequestDict) -> r[bool]:
                 return r[bool].ok(True)
 
             def template_config(self) -> r[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_template_config(self, config: t.Web.RequestDict) -> r[bool]:
+            def validate_template_config(self, settings: t.Web.RequestDict) -> r[bool]:
                 return r[bool].ok(True)
 
             def render(self, template: str, _context: t.Web.RequestDict) -> r[str]:
@@ -728,7 +728,7 @@ class TestFlextWebProtocols:
         tm.that(result.value, has="dashboard")
 
     def test_template_engine_real_behavior(self) -> None:
-        """Test template engine protocol with config and global/filter handling."""
+        """Test template engine protocol with settings and global/filter handling."""
         self._reset_protocol_state()
         engine = _WebTemplateEngineBase()
         tm.ok(engine.load_template_config({"template_dir": "templates"}))

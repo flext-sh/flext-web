@@ -13,23 +13,23 @@ class TestFlextWebFields:
 
     def test_host_field_creation(self) -> None:
         """Test host field creation."""
-        config = web.settings.model_copy(update={"host": "localhost"})
-        tm.that(config.host, eq="localhost")
+        settings = web.settings.model_copy(update={"host": "localhost"})
+        tm.that(settings.host, eq="localhost")
 
     def test_host_field_with_custom_default(self) -> None:
         """Test host field creation with custom default."""
-        config = web.settings.model_copy(update={"host": "0.0.0.0"})
-        tm.that(config.host, eq="0.0.0.0")
+        settings = web.settings.model_copy(update={"host": "0.0.0.0"})
+        tm.that(settings.host, eq="0.0.0.0")
 
     def test_port_field_creation(self) -> None:
         """Test port field creation."""
-        config = web.settings.model_copy(update={"port": 8080})
-        tm.that(config.port, eq=8080)
+        settings = web.settings.model_copy(update={"port": 8080})
+        tm.that(settings.port, eq=8080)
 
     def test_port_field_with_custom_default(self) -> None:
         """Test port field creation with custom default."""
-        config = web.settings.model_copy(update={"port": 3000})
-        tm.that(config.port, eq=3000)
+        settings = web.settings.model_copy(update={"port": 3000})
+        tm.that(settings.port, eq=3000)
 
     def test_url_field_creation(self) -> None:
         """Test URL field creation."""
@@ -38,15 +38,15 @@ class TestFlextWebFields:
 
     def test_app_name_field_creation(self) -> None:
         """Test app name field creation."""
-        config = web.settings.model_copy(update={"app_name": "Test App"})
-        tm.that(config.app_name, eq="Test App")
+        settings = web.settings.model_copy(update={"app_name": "Test App"})
+        tm.that(settings.app_name, eq="Test App")
 
     def test_secret_key_field_creation(self) -> None:
         """Test secret key field creation."""
-        config = web.settings.model_copy(
+        settings = web.settings.model_copy(
             update={"secret_key": "valid-secret-key-32-characters-long"},
         )
-        tm.that(config.secret_key, none=False)
+        tm.that(settings.secret_key, none=False)
 
     def test_http_status_field_creation(self) -> None:
         """Test HTTP status field creation."""

@@ -32,11 +32,11 @@ class FlextWebServices(FlextWebServiceBase[bool]):
     @classmethod
     def create_service(
         cls,
-        config: FlextWebSettings | None = None,
+        settings: FlextWebSettings | None = None,
     ) -> r[Self]:
         """Create a service instance using optional settings overrides."""
-        overrides = config.model_dump() if config is not None else None
-        instance = cls(config_overrides=overrides) if overrides is not None else cls()
+        overrides = settings.model_dump() if settings is not None else None
+        instance = cls(settings_overrides=overrides) if overrides is not None else cls()
         return r[Self](value=instance, success=True)
 
     def authenticate(self, credentials: m.Web.Credentials) -> r[m.Web.AuthResponse]:
@@ -127,7 +127,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
                     if state["service_running"]
                     else c.Web.Status.STOPPED.value
                 ),
-                config=True,
+                settings=True,
             ),
         )
 
@@ -292,7 +292,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         """Return the lazily created auth service."""
         if self._auth_service is None:
             self._auth_service = FlextWebAuth(
-                config_overrides=self.settings.model_dump()
+                settings_overrides=self.settings.model_dump()
             )
         return self._auth_service
 
@@ -300,7 +300,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         """Return the lazily created entity service."""
         if self._entity_service is None:
             self._entity_service = FlextWebEntities(
-                config_overrides=self.settings.model_dump(),
+                settings_overrides=self.settings.model_dump(),
             )
         return self._entity_service
 
@@ -335,7 +335,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         """Return the lazily created health service."""
         if self._health_service is None:
             self._health_service = FlextWebHealth(
-                config_overrides=self.settings.model_dump(),
+                settings_overrides=self.settings.model_dump(),
             )
         return self._health_service
 

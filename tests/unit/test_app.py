@@ -17,21 +17,21 @@ class TestFlextWebApp:
     """Tests for app-related operations through the public facade."""
 
     def test_create_fastapi_app_success(self) -> None:
-        """The service creates FastAPI applications with explicit config."""
-        config = m.Web.FastAPIAppConfig(
+        """The service creates FastAPI applications with explicit settings."""
+        settings = m.Web.FastAPIAppConfig(
             title="Custom Test API",
             version="2.0.0",
             description=c.Web.WebApi.DEFAULT_DESCRIPTION,
         )
-        result = web.create_fastapi_app(config)
+        result = web.create_fastapi_app(settings)
         tm.ok(result)
         tm.that(result.value.title, eq="Custom Test API")
         tm.that(result.value.version, eq="2.0.0")
 
     def test_create_fastapi_app_registers_endpoints(self) -> None:
         """Health and info endpoints are registered on the created app."""
-        config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
-        result = web.create_fastapi_app(config)
+        settings = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
+        result = web.create_fastapi_app(settings)
         tm.ok(result)
         client = TestClient(result.value)
         health_response = client.get("/health")
@@ -42,14 +42,14 @@ class TestFlextWebApp:
         tm.that(info_response.json(), has="title")
 
     def test_create_fastapi_app_uses_settings_defaults(self) -> None:
-        """When no config is passed, the service uses its typed settings."""
+        """When no settings is passed, the service uses its typed settings."""
         result = web.create_fastapi_app()
         tm.ok(result)
         tm.that(result.value.title, eq=web.settings.app_name)
 
     def test_create_fastapi_app_allows_factory_overrides(self) -> None:
         """Factory overrides remain supported without API ceremony."""
-        config = m.Web.FastAPIAppConfig(title="Base API", version="1.0.0")
+        settings = m.Web.FastAPIAppConfig(title="Base API", version="1.0.0")
         factory_config = m.Web.FastAPIAppConfig(
             title="Override API",
             version="2.0.0",
@@ -57,14 +57,14 @@ class TestFlextWebApp:
             redoc_url="/custom-redoc",
             openapi_url="/custom-openapi.json",
         )
-        result = web.create_fastapi_app(config, factory_config)
+        result = web.create_fastapi_app(settings, factory_config)
         tm.ok(result)
         tm.that(result.value.title, eq="Override API")
         tm.that(result.value.openapi_url, eq="/custom-openapi.json")
 
     def test_create_flask_app_success(self) -> None:
         """The service creates Flask apps from typed settings."""
-        config = web.settings.model_copy(
+        settings = web.settings.model_copy(
             update={
                 "app_name": "flext-web-test",
                 "host": "127.0.0.1",
@@ -74,9 +74,9 @@ class TestFlextWebApp:
                 "secret_key": "flask-secret-key-32-characters!",
             }
         )
-        result = web.create_flask_app(config)
+        result = web.create_flask_app(settings)
         tm.ok(result)
-        tm.that(result.value.config["SECRET_KEY"], eq=config.secret_key)
+        tm.that(result.value.settings["SECRET_KEY"], eq=settings.secret_key)
 
     def test_create_flask_app_health_route(self) -> None:
         """The Flask health endpoint returns a JSON response."""
@@ -94,15 +94,15 @@ class TestFlextWebApp:
         """Framework-specific configure hooks stay explicit and separate."""
         fastapi_result = web.create_fastapi_app()
         tm.ok(fastapi_result)
-        config = web.settings.create_web_config().value
+        settings = web.settings.create_web_config().value
         tm.ok(web.configure_fastapi_error_handlers(fastapi_result.value))
         tm.ok(
             web.configure_fastapi_middleware(
                 fastapi_result.value,
-                config,
+                settings,
             ),
         )
-        tm.ok(web.configure_fastapi_routes(fastapi_result.value, config))
+        tm.ok(web.configure_fastapi_routes(fastapi_result.value, settings))
 
     def test_validate_business_rules_success(self) -> None:
         """The app service validates successfully in the default state."""

@@ -33,9 +33,9 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
     @override
     def settings(self) -> FlextWebSettings:
         """Return the typed settings bound to this service runtime."""
-        config = self.config
-        if self.config_overrides is not None and isinstance(config, FlextWebSettings):
-            return config
+        settings = self.settings
+        if self.config_overrides is not None and isinstance(settings, FlextWebSettings):
+            return settings
         return FlextSettings.fetch_global().fetch_namespace("web", FlextWebSettings)
 
 

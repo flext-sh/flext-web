@@ -29,8 +29,8 @@ class TestFlextWebApi:
 
     def test_create_fastapi_app_with_config(self) -> None:
         """The facade respects explicit FastAPI configuration."""
-        config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
-        result = web.create_fastapi_app(config)
+        settings = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
+        result = web.create_fastapi_app(settings)
         tm.ok(result)
         tm.that(result.value.title, eq="Test API")
         tm.that(result.value.version, eq="1.0.0")
@@ -60,7 +60,7 @@ class TestFlextWebApi:
 
     def test_validate_settings_success(self) -> None:
         """Settings validation returns a successful r for valid input."""
-        config = web.settings.model_copy(
+        settings = web.settings.model_copy(
             update={
                 "host": "localhost",
                 "port": 8080,
@@ -69,7 +69,7 @@ class TestFlextWebApi:
                 "secret_key": "test-secret-key-32-characters!!!",
             },
         )
-        result = web.settings.validate_settings(config)
+        result = web.settings.validate_settings(settings)
         tm.ok(result)
         tm.that(result.value, eq=True)
 

@@ -21,10 +21,10 @@ through the facade instead of importing service classes directly.
 ```python
 from flext_web import web
 
-config = web.settings.create_web_config(host="127.0.0.1", port=8080, debug=True).value
+settings = web.settings.create_web_config(host="127.0.0.1", port=8080, debug=True).value
 app_result = web.create_fastapi_app()
 service_result = web.start_service(
-    host=config.host, port=config.port, debug=config.debug_mode
+    host=settings.host, port=settings.port, debug=settings.debug_mode
 )
 ```
 

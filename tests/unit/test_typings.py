@@ -85,29 +85,29 @@ class TestFlextWebModels:
             enable_runtime_validation=True,
         )
         assert result.success, result.error
-        config = result.value
-        tm.that(config.use_pydantic_models is True, eq=True)
-        tm.that(config.enable_runtime_validation is True, eq=True)
+        settings = result.value
+        tm.that(settings.use_pydantic_models is True, eq=True)
+        tm.that(settings.enable_runtime_validation is True, eq=True)
 
     def test_configure_web_types_system_invalid_config(self) -> None:
-        """Test configure_web_types_system with invalid config."""
+        """Test configure_web_types_system with invalid settings."""
         result = t.configure_web_types_system(
             use_pydantic_models=False,
             enable_runtime_validation=False,
         )
         assert result.success, result.error
-        config = result.value
-        tm.that(config.use_pydantic_models is False, eq=True)
-        tm.that(config.enable_runtime_validation is False, eq=True)
+        settings = result.value
+        tm.that(settings.use_pydantic_models is False, eq=True)
+        tm.that(settings.enable_runtime_validation is False, eq=True)
 
     def test_web_types_system_config(self) -> None:
         """Test web_types_system_config method."""
         result = t.web_types_system_config()
         assert result.success, result.error
-        config = result.value
-        tm.that(config.use_pydantic_models is True, eq=True)
-        tm.that(config.enable_runtime_validation is True, eq=True)
-        tm.that(config.models_available, is_=list)
+        settings = result.value
+        tm.that(settings.use_pydantic_models is True, eq=True)
+        tm.that(settings.enable_runtime_validation is True, eq=True)
+        tm.that(settings.models_available, is_=list)
 
     def test_model_creation(self) -> None:
         """Test model creation functionality."""
@@ -123,7 +123,7 @@ class TestFlextWebModels:
         tm.that(app.port, eq=8080)
 
     def test_config_validation(self) -> None:
-        """Test config validation functionality."""
+        """Test settings validation functionality."""
         result = web.settings.create_web_config(host="localhost", port=8080)
         tm.ok(result)
         tm.that(result.value.host, eq="localhost")
@@ -273,13 +273,13 @@ class TestFlextWebModels:
 
     def test_create_application_exception_handling(self) -> None:
         """Test create_application exception handling."""
-        config = t.Web.ApplicationConfig(
+        settings = t.Web.ApplicationConfig(
             name="test-app",
             host="localhost",
             port=8080,
             status="invalid_status",
         )
-        result = t.create_application(config)
+        result = t.create_application(settings)
         assert result.failure, "Invalid status should cause validation failure"
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -297,8 +297,8 @@ class TestFlextWebModels:
             models_available=["Custom.Model"],
         )
         assert result.success, result.error
-        config = result.value
-        tm.that(config.models_available, has="Custom.Model")
+        settings = result.value
+        tm.that(settings.models_available, has="Custom.Model")
 
     def test_web_types_system_config_exception_handling(self) -> None:
         """Test web_types_system_config exception handling."""
@@ -319,8 +319,8 @@ class TestFlextWebModels:
         """Test create_web_request with all valid HTTP methods."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
-            config = t.Web.RequestConfig(url="http://localhost:8080", method=method)
-            result = t.create_web_request(config)
+            settings = t.Web.RequestConfig(url="http://localhost:8080", method=method)
+            result = t.create_web_request(settings)
             assert result.success, (
                 f"Operation should succeed for method {method}: {result.error}"
             )
@@ -363,22 +363,22 @@ class TestFlextWebModels:
 
     def test_types_config_initialization(self) -> None:
         """Test TypesConfig initialization with all parameters."""
-        config = t.TypesConfig(
+        settings = t.TypesConfig(
             use_pydantic_models=False,
             enable_runtime_validation=False,
             models_available=["Custom.Model"],
         )
-        tm.that(config.use_pydantic_models is False, eq=True)
-        tm.that(config.enable_runtime_validation is False, eq=True)
-        tm.that(config.models_available, eq=["Custom.Model"])
+        tm.that(settings.use_pydantic_models is False, eq=True)
+        tm.that(settings.enable_runtime_validation is False, eq=True)
+        tm.that(settings.models_available, eq=["Custom.Model"])
 
     def test_types_config_default_initialization(self) -> None:
         """Test TypesConfig initialization with defaults."""
-        config = t.TypesConfig()
-        tm.that(config.use_pydantic_models is True, eq=True)
-        tm.that(config.enable_runtime_validation is True, eq=True)
-        tm.that(config.models_available, is_=list)
-        tm.that(config.models_available, empty=False)
+        settings = t.TypesConfig()
+        tm.that(settings.use_pydantic_models is True, eq=True)
+        tm.that(settings.enable_runtime_validation is True, eq=True)
+        tm.that(settings.models_available, is_=list)
+        tm.that(settings.models_available, empty=False)
 
     def test_create_http_request_match_case_default(self) -> None:
         """Test create_http_request match/case default branch (line 174-175)."""
@@ -393,8 +393,8 @@ class TestFlextWebModels:
 
     def test_create_web_request_match_case_default(self) -> None:
         """Test create_web_request match/case default branch (line 301-302)."""
-        config = t.Web.RequestConfig(url="http://localhost:8080", method="GET")
-        result = t.create_web_request(config)
+        settings = t.Web.RequestConfig(url="http://localhost:8080", method="GET")
+        result = t.create_web_request(settings)
         assert result.success, result.error
 
     def test_create_web_request_duplicate_validation(self) -> None:
@@ -404,12 +404,12 @@ class TestFlextWebModels:
 
     def test_create_application_exception_path(self) -> None:
         """Test create_application exception handling (line 388)."""
-        config = t.Web.ApplicationConfig(
+        settings = t.Web.ApplicationConfig(
             name="test-app",
             host="localhost",
             port=8080,
         )
-        result = t.create_application(config)
+        result = t.create_application(settings)
         assert result.success, result.error
 
     def test_configure_web_types_system_exception_path(self) -> None:

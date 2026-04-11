@@ -55,7 +55,7 @@ Configuration access is namespaced and direct:
 ```python
 from flext_web import web
 
-config = web.settings
+settings = web.settings
 result = web.settings.create_web_config(host="localhost", port=8080)
 ```
 

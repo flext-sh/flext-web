@@ -67,7 +67,7 @@ class TestFlextWebModels:
 
     def test_web_app_name_reserved_validation(self) -> None:
         """Test WebApp name validation for reserved names."""
-        reserved_names = ["root", "api", "system", "config", "health"]
+        reserved_names = ["root", "api", "system", "settings", "health"]
         for name in reserved_names:
             with pytest.raises(ValidationError):
                 _ = m.Web.Entity(id="test-id", name=name)
@@ -245,32 +245,32 @@ class TestFlextWebModels:
 
     def test_web_app_config_initialization(self) -> None:
         """Test WebAppConfig initialization."""
-        config = m.Web.EntityConfig(
+        settings = m.Web.EntityConfig(
             app_name="Test App",
             host="localhost",
             port=8080,
             debug=True,
             secret_key="test-secret-key-32-characters-long",
         )
-        tm.that(config.app_name, eq="Test App")
-        tm.that(config.host, eq="localhost")
-        tm.that(config.port, eq=8080)
-        tm.that(config.debug is True, eq=True)
-        tm.that(config.secret_key, eq="test-secret-key-32-characters-long")
+        tm.that(settings.app_name, eq="Test App")
+        tm.that(settings.host, eq="localhost")
+        tm.that(settings.port, eq=8080)
+        tm.that(settings.debug is True, eq=True)
+        tm.that(settings.secret_key, eq="test-secret-key-32-characters-long")
 
     def test_app_config_initialization(self) -> None:
         """Test AppConfig initialization."""
-        config = m.Web.AppConfig(
+        settings = m.Web.AppConfig(
             title="Test API",
             version="1.0.0",
             description="Test API Description",
         )
-        tm.that(config.title, eq="Test API")
-        tm.that(config.version, eq="1.0.0")
-        tm.that(config.description, eq="Test API Description")
-        tm.that(config.docs_url, eq="/docs")
-        tm.that(config.redoc_url, eq="/redoc")
-        tm.that(config.openapi_url, eq="/openapi.json")
+        tm.that(settings.title, eq="Test API")
+        tm.that(settings.version, eq="1.0.0")
+        tm.that(settings.description, eq="Test API Description")
+        tm.that(settings.docs_url, eq="/docs")
+        tm.that(settings.redoc_url, eq="/redoc")
+        tm.that(settings.openapi_url, eq="/openapi.json")
 
     def test_create_web_app_factory(self) -> None:
         """Test create_web_app factory method."""

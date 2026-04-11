@@ -111,25 +111,25 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_application(
         cls,
-        config: FlextWebTypes.Web.ApplicationConfig,
+        settings: FlextWebTypes.Web.ApplicationConfig,
     ) -> r[m.Web.Entity]:
         """Create application model instance.
 
         Args:
-            config: Application configuration model
+            settings: Application configuration model
 
         Returns:
             r[Web.Entity]: Success contains application entity,
                                             failure contains error message
 
         """
-        name: str = config.name or ""
-        host: str = config.host or "localhost"
-        port: int = config.port or 8080
-        status: str = config.status or c.Web.Status.STOPPED.value
-        environment: str = config.environment or c.Web.Name.DEVELOPMENT.value
-        debug_mode: bool = config.debug_mode
-        version: int = config.version
+        name: str = settings.name or ""
+        host: str = settings.host or "localhost"
+        port: int = settings.port or 8080
+        status: str = settings.status or c.Web.Status.STOPPED.value
+        environment: str = settings.environment or c.Web.Name.DEVELOPMENT.value
+        debug_mode: bool = settings.debug_mode
+        version: int = settings.version
 
         def create_entity() -> m.Web.Entity:
             """Create application entity."""
@@ -267,26 +267,26 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_web_request(
         cls,
-        config: FlextWebTypes.Web.RequestConfig,
+        settings: FlextWebTypes.Web.RequestConfig,
     ) -> r[m.Web.AppRequest]:
         """Create web request model instance with proper validation.
 
         Args:
-            config: Web request configuration model
+            settings: Web request configuration model
 
         Returns:
             r[Web.AppRequest]: Success contains request model,
                                         failure contains validation error
 
         """
-        url: str = config.url or ""
-        method: str = config.method or c.Web.Method.GET
-        headers = config.headers
-        body = config.body
-        timeout: float = config.timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS
-        query_params = config.query_params
-        client_ip: str = config.client_ip or ""
-        user_agent: str = config.user_agent or ""
+        url: str = settings.url or ""
+        method: str = settings.method or c.Web.Method.GET
+        headers = settings.headers
+        body = settings.body
+        timeout: float = settings.timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS
+        query_params = settings.query_params
+        client_ip: str = settings.client_ip or ""
+        user_agent: str = settings.user_agent or ""
         if not url or not url.strip():
             return r[m.Web.AppRequest].fail("URL is required")
         url_validated = url.strip()
@@ -333,26 +333,26 @@ class FlextWebTypes(FlextTypes):
     @classmethod
     def create_web_response(
         cls,
-        config: FlextWebTypes.Web.ResponseConfig,
+        settings: FlextWebTypes.Web.ResponseConfig,
     ) -> r[m.Web.AppResponse]:
         """Create web response model instance with proper validation.
 
         Args:
-            config: Web response configuration model
+            settings: Web response configuration model
 
         Returns:
             r[Web.AppResponse]: Success contains response model,
                                          failure contains validation error
 
         """
-        status_code: int = config.status_code or 200
-        request_id: str = config.request_id or ""
-        headers = config.headers
-        body = config.body
-        elapsed_time: float = config.elapsed_time or 0.0
-        content_type: str = config.content_type or c.Web.Http.CONTENT_TYPE_JSON
-        content_length: int = config.content_length or 0
-        processing_time_ms: float = config.processing_time_ms or 0.0
+        status_code: int = settings.status_code or 200
+        request_id: str = settings.request_id or ""
+        headers = settings.headers
+        body = settings.body
+        elapsed_time: float = settings.elapsed_time or 0.0
+        content_type: str = settings.content_type or c.Web.Http.CONTENT_TYPE_JSON
+        content_length: int = settings.content_length or 0
+        processing_time_ms: float = settings.processing_time_ms or 0.0
         headers_validated: FlextTypes.StrMapping = headers or {}
 
         def create_response() -> m.Web.AppResponse:
@@ -429,7 +429,7 @@ class FlextWebTypes(FlextTypes):
 
         """
         try:
-            config = cls.TypesConfig(
+            settings = cls.TypesConfig(
                 use_pydantic_models=use_pydantic_models,
                 enable_runtime_validation=enable_runtime_validation,
                 models_available=[
@@ -443,7 +443,7 @@ class FlextWebTypes(FlextTypes):
                 if models_available is None
                 else models_available,
             )
-            return r[FlextWebTypes.TypesConfig].ok(config)
+            return r[FlextWebTypes.TypesConfig].ok(settings)
         except (
             ValueError,
             TypeError,
@@ -466,8 +466,8 @@ class FlextWebTypes(FlextTypes):
 
         """
         try:
-            config = cls.TypesConfig()
-            return r[FlextWebTypes.TypesConfig].ok(config)
+            settings = cls.TypesConfig()
+            return r[FlextWebTypes.TypesConfig].ok(settings)
         except (
             ValueError,
             TypeError,
@@ -478,7 +478,7 @@ class FlextWebTypes(FlextTypes):
             ImportError,
         ) as exc:
             return r[FlextWebTypes.TypesConfig].fail(
-                f"Failed to get web types system config: {exc}",
+                f"Failed to get web types system settings: {exc}",
             )
 
     class Project:

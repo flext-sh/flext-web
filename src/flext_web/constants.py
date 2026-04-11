@@ -261,7 +261,7 @@ class FlextWebConstants(FlextConstants):
                 "root",
                 "api",
                 "system",
-                "config",
+                "settings",
                 "health",
             )
             DANGEROUS_PATTERNS: ClassVar[tuple[str, ...]] = (

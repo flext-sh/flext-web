@@ -251,7 +251,7 @@ class FlextWebProtocols(FlextProtocols):
         ) -> r[tuple[flask.Flask | FastAPI, str, str]]:
             app_service = FlextWebApp()
             fastapi_result = app_service.create_fastapi_app(
-                config=m.Web.FastAPIAppConfig(
+                settings=m.Web.FastAPIAppConfig(
                     title=name,
                     version=c.Web.WebDefaults.VERSION_STRING,
                     description=c.Web.WebApi.DEFAULT_DESCRIPTION,
@@ -394,13 +394,13 @@ class FlextWebProtocols(FlextProtocols):
                 )
             if interface == c.Web.WebFramework.INTERFACE_ASGI:
                 try:
-                    config = uvicorn.Config(
+                    settings = uvicorn.Config(
                         app=app_instance,
                         host=host,
                         port=port,
                         log_level="warning",
                     )
-                    server = uvicorn.Server(config)
+                    server = uvicorn.Server(settings)
                     thread = Thread(
                         target=server.run,
                         daemon=True,
@@ -1217,18 +1217,18 @@ class FlextWebProtocols(FlextProtocols):
 
             @staticmethod
             def load_template_config(
-                config: t.Web.RequestDict,
+                settings: t.Web.RequestDict,
             ) -> r[bool]:
                 """Load template engine configuration.
 
                 Args:
-                config: Template engine configuration
+                settings: Template engine configuration
 
                 Returns:
-                r[bool]: Success contains True if config loaded, failure with error details
+                r[bool]: Success contains True if settings loaded, failure with error details
 
                 """
-                FlextWebProtocols.Web.template_config = deepcopy(config)
+                FlextWebProtocols.Web.template_config = deepcopy(settings)
                 return r[bool].ok(value=True)
 
             @staticmethod
@@ -1265,22 +1265,22 @@ class FlextWebProtocols(FlextProtocols):
 
             @staticmethod
             def validate_template_config(
-                config: t.Web.RequestDict,
+                settings: t.Web.RequestDict,
             ) -> r[bool]:
                 """Validate template engine configuration.
 
                 Args:
-                config: Configuration to validate
+                settings: Configuration to validate
 
                 Returns:
                 r[bool]: Success contains True if valid, failure with error details
 
                 """
                 allowed_keys = {"template_dir", "autoescape", "cache_enabled"}
-                invalid_keys = [key for key in config if key not in allowed_keys]
+                invalid_keys = [key for key in settings if key not in allowed_keys]
                 if invalid_keys:
                     return r[bool].fail(
-                        f"Invalid template config keys: {', '.join(invalid_keys)}",
+                        f"Invalid template settings keys: {', '.join(invalid_keys)}",
                     )
                 return r[bool].ok(value=True)
 
@@ -1599,11 +1599,11 @@ class FlextWebProtocols(FlextProtocols):
 
                 def load_template_config(
                     self,
-                    config: t.Web.RequestDict,
+                    settings: t.Web.RequestDict,
                 ) -> r[bool]:
                     """Load template engine configuration."""
                     return FlextWebProtocols.Web.WebTemplateEngine.load_template_config(
-                        config,
+                        settings,
                     )
 
                 def render(
@@ -1619,11 +1619,11 @@ class FlextWebProtocols(FlextProtocols):
 
                 def validate_template_config(
                     self,
-                    config: t.Web.RequestDict,
+                    settings: t.Web.RequestDict,
                 ) -> r[bool]:
                     """Validate template engine configuration."""
                     return FlextWebProtocols.Web.WebTemplateEngine.validate_template_config(
-                        config,
+                        settings,
                     )
 
             class _WebMonitoringBase:

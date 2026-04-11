@@ -74,7 +74,7 @@ def real_service(real_config: FlextWebSettings) -> FlextWebServices:
 def real_app(real_config: FlextWebSettings) -> Flask:
     """Create real Flask app."""
     app = Flask(__name__)
-    app.config.update(SECRET_KEY=real_config.secret_key, TESTING=True)
+    app.settings.update(SECRET_KEY=real_config.secret_key, TESTING=True)
     return app
 
 
@@ -158,14 +158,14 @@ def docker_manager() -> Generator[tk]:
         pytest.skip(f"tk initialization failed: {e}")
 
 
-def pytest_configure(config: pytest.Config) -> None:
+def pytest_configure(settings: pytest.Config) -> None:
     """Configure pytest markers for real testing."""
-    config.addinivalue_line("markers", "unit: Unit tests with real execution")
-    config.addinivalue_line(
+    settings.addinivalue_line("markers", "unit: Unit tests with real execution")
+    settings.addinivalue_line(
         "markers",
         "integration: Integration tests with real services",
     )
-    config.addinivalue_line("markers", "api: API tests with real HTTP")
-    config.addinivalue_line("markers", "web: Web interface tests with real Flask")
-    config.addinivalue_line("markers", "slow: Slow tests (may take >5 seconds)")
-    config.addinivalue_line("markers", "docker: Tests that require Docker containers")
+    settings.addinivalue_line("markers", "api: API tests with real HTTP")
+    settings.addinivalue_line("markers", "web: Web interface tests with real Flask")
+    settings.addinivalue_line("markers", "slow: Slow tests (may take >5 seconds)")
+    settings.addinivalue_line("markers", "docker: Tests that require Docker containers")

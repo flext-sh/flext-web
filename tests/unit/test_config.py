@@ -12,12 +12,12 @@ class TestFlextWebSettings:
 
     def test_initialization_with_test_environment(self) -> None:
         """The public settings namespace is initialized and typed."""
-        config = web.settings
-        tm.that(config.host, none=False)
-        tm.that(config.port, none=False)
-        tm.that(config.app_name, none=False)
-        tm.that(config.app_name, is_=str)
-        tm.that(config.app_name, empty=False)
+        settings = web.settings
+        tm.that(settings.host, none=False)
+        tm.that(settings.port, none=False)
+        tm.that(settings.app_name, none=False)
+        tm.that(settings.app_name, is_=str)
+        tm.that(settings.app_name, empty=False)
 
     def test_initialization_with_custom_values(self) -> None:
         """Validated overrides can be created through the public namespace."""
@@ -27,11 +27,11 @@ class TestFlextWebSettings:
             debug=True,
         )
         tm.ok(result)
-        config = result.value.model_copy(update={"app_name": "Test App"})
-        tm.that(config.host, eq="0.0.0.0")
-        tm.that(config.port, eq=3000)
-        tm.that(config.debug_mode is True, eq=True)
-        tm.that(config.app_name, eq="Test App")
+        settings = result.value.model_copy(update={"app_name": "Test App"})
+        tm.that(settings.host, eq="0.0.0.0")
+        tm.that(settings.port, eq=3000)
+        tm.that(settings.debug_mode is True, eq=True)
+        tm.that(settings.app_name, eq="Test App")
 
     def test_validation_host_empty(self) -> None:
         """Empty hosts fail through the public settings factory."""
@@ -64,39 +64,39 @@ class TestFlextWebSettings:
 
     def test_ssl_configuration_valid(self) -> None:
         """SSL flags remain accessible on the public settings model."""
-        config = web.settings.model_copy(
+        settings = web.settings.model_copy(
             update={
                 "ssl_enabled": False,
                 "ssl_cert_path": None,
                 "ssl_key_path": None,
             },
         )
-        tm.that(config.ssl_enabled is False, eq=True)
+        tm.that(settings.ssl_enabled is False, eq=True)
 
     def test_computed_fields(self) -> None:
         """Computed fields are available from public settings instances."""
-        config = web.settings.model_copy(update={"ssl_enabled": False})
-        tm.that(config.protocol, eq="http")
+        settings = web.settings.model_copy(update={"ssl_enabled": False})
+        tm.that(settings.protocol, eq="http")
         config_https = web.settings.model_copy(update={"ssl_enabled": False})
         tm.that(config_https.protocol, eq="http")
 
     def test_base_url_generation(self) -> None:
         """The base URL is derived from the public settings model."""
-        config = web.settings.model_copy(
+        settings = web.settings.model_copy(
             update={"host": "localhost", "port": 8080, "ssl_enabled": False},
         )
-        tm.that(config.base_url, eq="http://localhost:8080")
+        tm.that(settings.base_url, eq="http://localhost:8080")
 
     def test_validate_config_success(self) -> None:
         """The namespaced settings instance is valid as exposed."""
-        config = web.settings
-        tm.that(config.host, none=False)
-        tm.that(config.port, none=False)
+        settings = web.settings
+        tm.that(settings.host, none=False)
+        tm.that(settings.port, none=False)
 
     def test_to_dict_method(self) -> None:
         """The public settings model can be serialized with model_dump."""
-        config = web.settings.model_copy(update={"host": "localhost", "port": 8080})
-        config_dict = config.model_dump()
+        settings = web.settings.model_copy(update={"host": "localhost", "port": 8080})
+        config_dict = settings.model_dump()
         tm.that(config_dict["host"], eq="localhost")
         tm.that(config_dict["port"], eq=8080)
         tm.that(config_dict, has="debug_mode")

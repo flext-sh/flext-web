@@ -950,7 +950,7 @@ class FlextWebModels(FlextModels):
                 Field(description="Service capabilities"),
             ]
             status: Annotated[str, Field(description="Service status")]
-            config: Annotated[bool, Field(description="Configuration status")]
+            settings: Annotated[bool, Field(description="Configuration status")]
 
         class WebRequest(FlextModels.Value):
             """Web request model with complete tracking."""

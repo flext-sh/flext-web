@@ -276,7 +276,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 k: v for k, v in query_params.items() if u.primitive(v)
                             }
                         )
-                        config = t.Web.RequestConfig(
+                        settings = t.Web.RequestConfig(
                             url=url,
                             method=method,
                             headers=headers_dict,
@@ -296,7 +296,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                         )
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                            t.create_web_request(config),
+                            t.create_web_request(settings),
                         )
                     except (ValidationError, ValueError, TypeError) as exc:
                         return r[BaseModel].fail(str(exc))
@@ -328,7 +328,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 else None
                             )
                         )
-                        config = t.Web.ResponseConfig(
+                        settings = t.Web.ResponseConfig(
                             status_code=status_code,
                             request_id=(
                                 request_id
@@ -355,7 +355,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                         )
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                            t.create_web_response(config),
+                            t.create_web_response(settings),
                         )
                     except (ValidationError, ValueError, TypeError) as exc:
                         return r[BaseModel].fail(str(exc))
@@ -370,14 +370,14 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         or not isinstance(port, int)
                     ):
                         return r[BaseModel].fail("Invalid parameters for application")
-                    config = t.Web.ApplicationConfig(
+                    settings = t.Web.ApplicationConfig(
                         name=name,
                         host=host,
                         port=port,
                         status=status if isinstance(status, str) else "stopped",
                     )
                     return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                        t.create_application(config),
+                        t.create_application(settings),
                     )
                 raise ValueError(f"Unsupported entry type: {entry_type}")
 

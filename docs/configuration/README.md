@@ -16,7 +16,7 @@ public facade:
 ```python
 from flext_web import web
 
-config = web.settings
+settings = web.settings
 ```
 
 ## Canonical Access
@@ -34,8 +34,8 @@ config_result = web.settings.create_web_config(
 )
 assert config_result.is_success
 
-config = config_result.value
-assert config.base_url == "http://127.0.0.1:8080"
+settings = config_result.value
+assert settings.base_url == "http://127.0.0.1:8080"
 ```
 
 ## Settings Model
