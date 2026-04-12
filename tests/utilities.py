@@ -31,7 +31,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             """Test-specific utilities."""
 
             @staticmethod
-            def _is_numeric(value: t.NormalizedValue | None) -> bool:
+            def _is_numeric(value: t.RecursiveContainer | None) -> bool:
                 """Return whether value is a numeric scalar excluding bool."""
                 return isinstance(value, t.NUMERIC_TYPES) and not isinstance(
                     value,
@@ -39,14 +39,16 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 )
 
             @staticmethod
-            def _to_float(value: t.NormalizedValue | None, *, default: float) -> float:
+            def _to_float(
+                value: t.RecursiveContainer | None, *, default: float
+            ) -> float:
                 """Normalize supported numeric values to float with fallback."""
                 if isinstance(value, t.NUMERIC_TYPES) and not isinstance(value, bool):
                     return float(value)
                 return default
 
             @staticmethod
-            def _to_optional_float(value: t.NormalizedValue | None) -> float | None:
+            def _to_optional_float(value: t.RecursiveContainer | None) -> float | None:
                 """Normalize supported numeric values to float or None."""
                 if isinstance(value, t.NUMERIC_TYPES) and not isinstance(value, bool):
                     return float(value)
@@ -143,7 +145,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             @staticmethod
             def create_entry(
                 entry_type: str,
-                **kwargs: t.NormalizedValue,
+                **kwargs: t.RecursiveContainer,
             ) -> r[BaseModel]:
                 """Create test entities through runtime namespaced MRO factories."""
                 if entry_type == "web_app":
@@ -385,10 +387,10 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             def create_test_data(
                 data_type: str,
                 **kwargs: t.Scalar,
-            ) -> dict[str, t.NormalizedValue]:
+            ) -> dict[str, t.RecursiveContainer]:
                 """Create centralized test data payloads."""
                 if data_type == "app_data":
-                    app_data: dict[str, t.NormalizedValue] = {
+                    app_data: dict[str, t.RecursiveContainer] = {
                         "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
                         "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
                         "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
@@ -396,7 +398,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     app_data.update({k: v for k, v in kwargs.items() if u.primitive(v)})
                     return app_data
                 if data_type == "entity_data":
-                    entity_data: dict[str, t.NormalizedValue] = {
+                    entity_data: dict[str, t.RecursiveContainer] = {
                         "id": "test-entity",
                         "name": "Test Entity",
                     }
@@ -405,7 +407,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     })
                     return entity_data
                 if data_type == "config_data":
-                    config_data: dict[str, t.NormalizedValue] = {
+                    config_data: dict[str, t.RecursiveContainer] = {
                         "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
                         "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
                         "debug": True,
@@ -415,7 +417,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     })
                     return config_data
                 if data_type == "request_data":
-                    request_data: dict[str, t.NormalizedValue] = {
+                    request_data: dict[str, t.RecursiveContainer] = {
                         "method": c.Web.Tests.TestHttp.TEST_METHOD,
                         "url": (
                             f"http://"
@@ -431,7 +433,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     })
                     return request_data
                 if data_type == "response_data":
-                    response_data: dict[str, t.NormalizedValue] = {
+                    response_data: dict[str, t.RecursiveContainer] = {
                         "status_code": 200,
                         "request_id": "test-123",
                     }
@@ -504,7 +506,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def run_parameterized_test(
-                test_cases: Sequence[tuple[t.NormalizedValue, ...]],
+                test_cases: Sequence[tuple[t.RecursiveContainer, ...]],
                 test_function: Callable[..., r[BaseModel]],
                 expected_results: Sequence[bool],
                 test_name: str = "parameterized_test",

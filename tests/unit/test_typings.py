@@ -141,7 +141,7 @@ class TestFlextWebModels:
 
         def process_request_data(
             request: t.HttpRequest,
-        ) -> t.ContainerMapping:
+        ) -> t.RecursiveContainerMapping:
             return {"processed": True, "method": request.method, "url": request.url}
 
         request = t.HttpRequest(url="http://localhost:8080/api/test", method="GET")

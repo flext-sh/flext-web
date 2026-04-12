@@ -538,7 +538,7 @@ class FlextWebModels(FlextModels):
             #     ),
             # ] = c.Web.WebDefaults.VERSION_INT
             metrics: Annotated[
-                t.MutableContainerMapping,
+                t.MutableRecursiveContainerMapping,
                 Field(
                     description="Application metrics",
                 ),
