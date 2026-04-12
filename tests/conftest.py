@@ -23,8 +23,6 @@ from flext_tests import tk
 from flext_web import FlextWebServices, FlextWebSettings, web
 from tests import c, t, u
 
-pytest_plugins = ["flext_tests.conftest_plugin"]
-
 
 @pytest.fixture
 def web_settings(
