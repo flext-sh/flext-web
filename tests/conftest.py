@@ -158,14 +158,14 @@ def docker_manager() -> Generator[tk]:
         pytest.skip(f"tk initialization failed: {e}")
 
 
-def pytest_configure(settings: pytest.Config) -> None:
+def pytest_configure(config: pytest.Config) -> None:
     """Configure pytest markers for real testing."""
-    settings.addinivalue_line("markers", "unit: Unit tests with real execution")
-    settings.addinivalue_line(
+    config.addinivalue_line("markers", "unit: Unit tests with real execution")
+    config.addinivalue_line(
         "markers",
         "integration: Integration tests with real services",
     )
-    settings.addinivalue_line("markers", "api: API tests with real HTTP")
-    settings.addinivalue_line("markers", "web: Web interface tests with real Flask")
-    settings.addinivalue_line("markers", "slow: Slow tests (may take >5 seconds)")
-    settings.addinivalue_line("markers", "docker: Tests that require Docker containers")
+    config.addinivalue_line("markers", "api: API tests with real HTTP")
+    config.addinivalue_line("markers", "web: Web interface tests with real Flask")
+    config.addinivalue_line("markers", "slow: Slow tests (may take >5 seconds)")
+    config.addinivalue_line("markers", "docker: Tests that require Docker containers")

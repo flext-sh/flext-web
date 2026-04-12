@@ -25,7 +25,7 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
 ):
     """Base class for flext-web services with typed `web` settings access."""
 
-    config_type: type | None = Field(
+    settings_type: type[FlextWebSettings] | None = Field(
         default=FlextWebSettings, description="Settings class for web services"
     )
 
@@ -33,8 +33,8 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
     @override
     def settings(self) -> FlextWebSettings:
         """Return the typed settings bound to this service runtime."""
-        settings = self.settings
-        if self.config_overrides is not None and isinstance(settings, FlextWebSettings):
+        settings = super().settings
+        if isinstance(settings, FlextWebSettings):
             return settings
         return FlextSettings.fetch_global().fetch_namespace("web", FlextWebSettings)
 

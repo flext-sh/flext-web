@@ -23,8 +23,7 @@ class FlextWebSettings(FlextSettings):
     """Validated settings for web runtime and HTTP endpoints."""
 
     model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
-        env_prefix="FLEXT_WEB_",
-        extra="ignore",
+        env_prefix="FLEXT_WEB_", extra="ignore"
     )
 
     app_name: Annotated[
