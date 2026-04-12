@@ -154,4 +154,4 @@ class FlextWebHandlers(FlextWebServiceBase[bool]):
         return r[bool].ok(value=True)
 
 
-__all__ = ["FlextWebHandlers"]
+__all__: list[str] = ["FlextWebHandlers"]

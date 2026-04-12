@@ -22,4 +22,4 @@ class TestsFlextWebProtocols(FlextTestsProtocols, FlextWebProtocols):
 
 
 p = TestsFlextWebProtocols
-__all__ = ["TestsFlextWebProtocols", "p"]
+__all__: list[str] = ["TestsFlextWebProtocols", "p"]

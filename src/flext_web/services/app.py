@@ -306,4 +306,4 @@ class FlextWebApp(FlextWebServiceBase[bool]):
         return r[bool].ok(value=True)
 
 
-__all__ = ["FlextWebApp"]
+__all__: list[str] = ["FlextWebApp"]

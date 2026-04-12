@@ -88,7 +88,7 @@ class FlextWebVersion:
 
 
 VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
-__all__ = [
+__all__: list[str] = [
     "VERSION",
     "FlextWebVersion",
     "VersionMetadata",

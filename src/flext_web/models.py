@@ -1322,4 +1322,4 @@ class FlextWebModels(FlextModels):
 
 m = FlextWebModels
 
-__all__ = ["FlextWebModels", "m"]
+__all__: list[str] = ["FlextWebModels", "m"]

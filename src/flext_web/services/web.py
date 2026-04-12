@@ -340,4 +340,4 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         return self._health_service
 
 
-__all__ = ["FlextWebServices"]
+__all__: list[str] = ["FlextWebServices"]

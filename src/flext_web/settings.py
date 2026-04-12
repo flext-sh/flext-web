@@ -171,4 +171,4 @@ class FlextWebSettings(FlextSettings):
         return r[bool].ok(True)
 
 
-__all__ = ["FlextWebSettings"]
+__all__: list[str] = ["FlextWebSettings"]

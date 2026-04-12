@@ -69,4 +69,4 @@ class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
 
 
 c = TestsFlextWebConstants
-__all__ = ["TestsFlextWebConstants", "c"]
+__all__: list[str] = ["TestsFlextWebConstants", "c"]

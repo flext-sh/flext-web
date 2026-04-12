@@ -44,4 +44,4 @@ class FlextWeb(
 web = FlextWeb.instance()
 
 
-__all__ = ["FlextWeb", "web"]
+__all__: list[str] = ["FlextWeb", "web"]

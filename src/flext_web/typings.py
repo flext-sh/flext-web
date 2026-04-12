@@ -504,7 +504,7 @@ class FlextWebTypes(FlextTypes):
 
 t = FlextWebTypes
 
-__all__ = [
+__all__: list[str] = [
     "FlextWebTypes",
     "t",
 ]

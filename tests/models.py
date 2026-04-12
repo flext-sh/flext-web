@@ -22,4 +22,4 @@ class TestsFlextWebModels(FlextTestsModels, FlextWebModels):
 
 
 m = TestsFlextWebModels
-__all__ = ["TestsFlextWebModels", "m"]
+__all__: list[str] = ["TestsFlextWebModels", "m"]

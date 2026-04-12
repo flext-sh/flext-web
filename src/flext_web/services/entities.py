@@ -50,4 +50,4 @@ class FlextWebEntities(FlextWebServiceBase[bool]):
         return r[bool].ok(True)
 
 
-__all__ = ["FlextWebEntities"]
+__all__: list[str] = ["FlextWebEntities"]

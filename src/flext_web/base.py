@@ -39,4 +39,4 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
         return FlextSettings.fetch_global().fetch_namespace("web", FlextWebSettings)
 
 
-__all__ = ["FlextWebServiceBase"]
+__all__: list[str] = ["FlextWebServiceBase"]

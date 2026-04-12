@@ -70,4 +70,4 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 
-__all__ = ["FlextWebCliService", "main"]
+__all__: list[str] = ["FlextWebCliService", "main"]

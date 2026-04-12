@@ -54,4 +54,4 @@ class FlextWebAuth(FlextWebServiceBase[bool]):
         return r[bool].ok(True)
 
 
-__all__ = ["FlextWebAuth"]
+__all__: list[str] = ["FlextWebAuth"]

@@ -1704,4 +1704,4 @@ class FlextWebProtocols(FlextProtocols):
 
 p = FlextWebProtocols
 
-__all__ = ["FlextWebProtocols", "p"]
+__all__: list[str] = ["FlextWebProtocols", "p"]

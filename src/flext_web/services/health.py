@@ -66,4 +66,4 @@ class FlextWebHealth(FlextWebServiceBase[bool]):
         return r[bool].ok(True)
 
 
-__all__ = ["FlextWebHealth"]
+__all__: list[str] = ["FlextWebHealth"]
