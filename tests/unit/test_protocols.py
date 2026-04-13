@@ -14,8 +14,7 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from flext_tests import tm
 
-from flext_core import p, r
-from tests import c, p, t
+from tests import c, p, r, t
 
 _WebAppManagerBase = p.Web.TestBases._WebAppManagerBase
 _WebConnectionBase = p.Web.TestBases._WebConnectionBase
