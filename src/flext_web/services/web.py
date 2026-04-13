@@ -7,7 +7,7 @@ from typing import Self, override
 
 from pydantic import PrivateAttr
 
-from flext_core import r
+from flext_core import p, r
 from flext_web import (
     FlextWebAuth,
     FlextWebEntities,
@@ -33,21 +33,25 @@ class FlextWebServices(FlextWebServiceBase[bool]):
     def create_service(
         cls,
         settings: FlextWebSettings | None = None,
-    ) -> r[Self]:
+    ) -> p.Result[Self]:
         """Create a service instance using optional settings overrides."""
         overrides = settings.model_dump() if settings is not None else None
         instance = cls(settings_overrides=overrides) if overrides is not None else cls()
         return r[Self](value=instance, success=True)
 
-    def authenticate(self, credentials: m.Web.Credentials) -> r[m.Web.AuthResponse]:
+    def authenticate(
+        self, credentials: m.Web.Credentials
+    ) -> p.Result[m.Web.AuthResponse]:
         """Delegate authentication to the canonical auth service."""
         return self._auth().authenticate(credentials)
 
-    def configure_middleware(self) -> r[bool]:
+    def configure_middleware(self) -> p.Result[bool]:
         """Configure protocol-backed middleware state."""
         return p.Web.WebService.configure_middleware()
 
-    def create_app(self, app_data: m.Web.AppData) -> r[m.Web.ApplicationResponse]:
+    def create_app(
+        self, app_data: m.Web.AppData
+    ) -> p.Result[m.Web.ApplicationResponse]:
         """Create an application through the protocol runtime registry."""
         return p.create_app(
             name=app_data.name,
@@ -55,11 +59,11 @@ class FlextWebServices(FlextWebServiceBase[bool]):
             host=app_data.host,
         ).flat_map(self._application_response_from_payload)
 
-    def create_entity(self, data: m.Web.EntityData) -> r[m.Web.EntityData]:
+    def create_entity(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
         """Create a generic entity through the entity service."""
         return self._entities().create(data)
 
-    def dashboard(self) -> r[m.Web.DashboardResponse]:
+    def dashboard(self) -> p.Result[m.Web.DashboardResponse]:
         """Return dashboard data projected from the protocol runtime state."""
         state = p.Web.service_state
         return self.list_apps().map(
@@ -79,16 +83,16 @@ class FlextWebServices(FlextWebServiceBase[bool]):
             ),
         )
 
-    def dashboard_metrics(self) -> r[m.Web.MetricsResponse]:
+    def dashboard_metrics(self) -> p.Result[m.Web.MetricsResponse]:
         """Return health metrics for the dashboard."""
         return self._health().metrics()
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
+    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the web service facade."""
         return self.validate_business_rules()
 
-    def api_capabilities(self) -> r[t.Web.ResponseDict]:
+    def api_capabilities(self) -> p.Result[t.Web.ResponseDict]:
         """Expose the canonical capabilities of the public web facade."""
         return r[t.Web.ResponseDict].ok({
             "application_management": ["create_app", "fetch_app", "list_apps"],
@@ -98,7 +102,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
             "monitoring": ["health_check", "health_status", "dashboard"],
         })
 
-    def fetch_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
+    def fetch_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
         """Return a registered application by identifier."""
         if not u.to_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
@@ -106,11 +110,11 @@ class FlextWebServices(FlextWebServiceBase[bool]):
             self._application_response_from_payload,
         )
 
-    def fetch_entity(self, entity_id: str) -> r[m.Web.EntityData]:
+    def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
         """Return a generic entity by identifier."""
         return self._entities().fetch_entity(entity_id)
 
-    def service_status(self) -> r[m.Web.ServiceResponse]:
+    def service_status(self) -> p.Result[m.Web.ServiceResponse]:
         """Return service status using protocol runtime state and settings."""
         state = p.Web.service_state
         return r[m.Web.ServiceResponse].ok(
@@ -131,7 +135,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
             ),
         )
 
-    def health_check(self) -> r[t.Web.ResponseDict]:
+    def health_check(self) -> p.Result[t.Web.ResponseDict]:
         """Return a simple health payload for external consumers."""
         return self.health_status().map(
             lambda health_response: {
@@ -141,29 +145,29 @@ class FlextWebServices(FlextWebServiceBase[bool]):
             },
         )
 
-    def health_status(self) -> r[m.Web.HealthResponse]:
+    def health_status(self) -> p.Result[m.Web.HealthResponse]:
         """Return structured health status."""
         return self._health().status()
 
-    def initialize_routes(self) -> r[bool]:
+    def initialize_routes(self) -> p.Result[bool]:
         """Initialize protocol-backed routes state."""
         return p.Web.WebService.initialize_routes()
 
-    def list_apps(self) -> r[Sequence[m.Web.ApplicationResponse]]:
+    def list_apps(self) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
         """List all registered applications."""
         return p.list_apps().flat_map(
             self._application_responses_from_payloads,
         )
 
-    def list_entities(self) -> r[Sequence[m.Web.EntityData]]:
+    def list_entities(self) -> p.Result[Sequence[m.Web.EntityData]]:
         """List all generic entities."""
         return self._entities().list_all()
 
-    def register_user(self, user_data: m.Web.UserData) -> r[m.Web.UserResponse]:
+    def register_user(self, user_data: m.Web.UserData) -> p.Result[m.Web.UserResponse]:
         """Delegate registration to the canonical auth service."""
         return self._auth().register_user(user_data)
 
-    def start_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
+    def start_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
         """Start a registered application and project its payload into a model."""
         if not u.to_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
@@ -177,7 +181,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         port: int | None = None,
         *,
         debug: bool | None = None,
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Start the service and ensure a runtime application exists."""
         _ = debug
         init_result = self.initialize_routes()
@@ -194,7 +198,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
             return r[bool].fail(running_app.error)
         return p.Web.WebService.start_service()
 
-    def stop_app(self, app_id: str) -> r[m.Web.ApplicationResponse]:
+    def stop_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
         """Stop a registered application and project its payload into a model."""
         if not u.to_str(app_id):
             return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
@@ -202,7 +206,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
             self._application_response_from_payload,
         )
 
-    def stop_service(self) -> r[bool]:
+    def stop_service(self) -> p.Result[bool]:
         """Stop the service and all running applications."""
         apps_result = self.list_apps()
         if apps_result.failure:
@@ -215,7 +219,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         return p.Web.WebService.stop_service()
 
     @override
-    def validate_business_rules(self) -> r[bool]:
+    def validate_business_rules(self) -> p.Result[bool]:
         """Validate protocol-backed service state invariants."""
         state = p.Web.service_state
         if state["service_running"] and not state["routes_initialized"]:
@@ -229,7 +233,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
     def _application_response_from_payload(
         self,
         payload: t.Web.ResponseDict,
-    ) -> r[m.Web.ApplicationResponse]:
+    ) -> p.Result[m.Web.ApplicationResponse]:
         """Project a protocol payload into the canonical application response model."""
         name = payload.get("name")
         host = payload.get("host")
@@ -276,7 +280,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
     def _application_responses_from_payloads(
         self,
         payloads: Sequence[t.Web.ResponseDict],
-    ) -> r[Sequence[m.Web.ApplicationResponse]]:
+    ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
         """Project a sequence of payloads into response models."""
         responses: list[m.Web.ApplicationResponse] = []
         for payload in payloads:
@@ -308,7 +312,7 @@ class FlextWebServices(FlextWebServiceBase[bool]):
         self,
         host: str | None,
         port: int | None,
-    ) -> r[m.Web.ApplicationResponse]:
+    ) -> p.Result[m.Web.ApplicationResponse]:
         """Return the configured runtime application, creating it when needed."""
         target_name = self.settings.app_name
         target_host = host if host is not None else self.settings.host

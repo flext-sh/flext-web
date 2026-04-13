@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import ClassVar, override
 
-from flext_core import r
+from flext_core import p, r
 from flext_web import FlextWebServiceBase, c, m, u
 
 
@@ -33,7 +33,7 @@ class FlextWebHandlers(FlextWebServiceBase[bool]):
         name: str,
         port: int = c.Web.WebDefaults.PORT,
         host: str = c.Web.WebDefaults.HOST,
-    ) -> r[m.Web.Entity]:
+    ) -> p.Result[m.Web.Entity]:
         """Handle application creation requests.
 
         Args:
@@ -61,7 +61,7 @@ class FlextWebHandlers(FlextWebServiceBase[bool]):
         return app.validate_business_rules().flat_map(lambda _: r[m.Web.Entity].ok(app))
 
     @classmethod
-    def handle_start_app(cls, app: m.Web.Entity) -> r[m.Web.Entity]:
+    def handle_start_app(cls, app: m.Web.Entity) -> p.Result[m.Web.Entity]:
         """Handle application start requests.
 
         Args:
@@ -74,7 +74,7 @@ class FlextWebHandlers(FlextWebServiceBase[bool]):
         return app.start()
 
     @classmethod
-    def handle_stop_app(cls, app: m.Web.Entity) -> r[m.Web.Entity]:
+    def handle_stop_app(cls, app: m.Web.Entity) -> p.Result[m.Web.Entity]:
         """Handle application stop requests.
 
         Args:
@@ -87,7 +87,7 @@ class FlextWebHandlers(FlextWebServiceBase[bool]):
         return app.stop()
 
     @classmethod
-    def handle_system_info(cls) -> r[m.Web.SystemInfo]:
+    def handle_system_info(cls) -> p.Result[m.Web.SystemInfo]:
         """Handle system information requests.
 
         Returns:
@@ -111,7 +111,7 @@ class FlextWebHandlers(FlextWebServiceBase[bool]):
         )
 
     @staticmethod
-    def handle_health_check() -> r[m.Web.HealthStatus]:
+    def handle_health_check() -> p.Result[m.Web.HealthStatus]:
         """Handle health check requests with system status.
 
         Returns:
@@ -133,7 +133,7 @@ class FlextWebHandlers(FlextWebServiceBase[bool]):
         )
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
+    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute web handler service (s requirement).
 
         Returns:
@@ -144,7 +144,7 @@ class FlextWebHandlers(FlextWebServiceBase[bool]):
         return r[bool].ok(value=True)
 
     @override
-    def validate_business_rules(self) -> r[bool]:
+    def validate_business_rules(self) -> p.Result[bool]:
         """Validate business rules for web handlers (s requirement).
 
         Returns:

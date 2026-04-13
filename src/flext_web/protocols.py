@@ -248,7 +248,7 @@ class FlextWebProtocols(FlextProtocols):
         def _create_framework_app(
             cls,
             name: str,
-        ) -> r[tuple[flask.Flask | FastAPI, str, str]]:
+        ) -> p.Result[tuple[flask.Flask | FastAPI, str, str]]:
             app_service = FlextWebApp()
             fastapi_result = app_service.create_fastapi_app(
                 settings=m.Web.FastAPIAppConfig(
@@ -384,7 +384,7 @@ class FlextWebProtocols(FlextProtocols):
             app_id: str,
             app_data: t.Web.ResponseDict,
             app_instance: flask.Flask | FastAPI,
-        ) -> r[m.Web.AppRuntimeInfo]:
+        ) -> p.Result[m.Web.AppRuntimeInfo]:
             host = app_data.get("host")
             port = app_data.get("port")
             interface = app_data.get("interface")
@@ -463,7 +463,7 @@ class FlextWebProtocols(FlextProtocols):
         def _stop_app_runtime(
             app_id: str,
             runtime: m.Web.AppRuntimeInfo,
-        ) -> r[bool]:
+        ) -> p.Result[bool]:
             runner: str = runtime.runner
             server: uvicorn.Server | WSGIServer = runtime.server
             thread: Thread = runtime.thread
@@ -527,7 +527,7 @@ class FlextWebProtocols(FlextProtocols):
                 name: str,
                 port: int,
                 host: str,
-            ) -> r[t.Web.ResponseDict]:
+            ) -> p.Result[t.Web.ResponseDict]:
                 """Create a new web application.
 
                 Args:
@@ -583,7 +583,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[t.Web.ResponseDict].ok(app_data)
 
             @staticmethod
-            def list_apps() -> r[Sequence[t.Web.ResponseDict]]:
+            def list_apps() -> p.Result[Sequence[t.Web.ResponseDict]]:
                 """List all web applications.
 
                 Returns:
@@ -597,7 +597,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[Sequence[t.Web.ResponseDict]].ok(apps)
 
             @staticmethod
-            def start_app(app_id: str) -> r[t.Web.ResponseDict]:
+            def start_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
                 """Start a web application.
 
                 Args:
@@ -635,7 +635,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[t.Web.ResponseDict].ok(updated_app)
 
             @staticmethod
-            def stop_app(app_id: str) -> r[t.Web.ResponseDict]:
+            def stop_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
                 """Stop a running web application.
 
                 Args:
@@ -835,7 +835,7 @@ class FlextWebProtocols(FlextProtocols):
             """
 
             @staticmethod
-            def configure_middleware() -> r[bool]:
+            def configure_middleware() -> p.Result[bool]:
                 """Configure web service middleware.
 
                 Returns:
@@ -846,7 +846,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[bool].ok(value=True)
 
             @staticmethod
-            def initialize_routes() -> r[bool]:
+            def initialize_routes() -> p.Result[bool]:
                 """Initialize web service routes.
 
                 Returns:
@@ -857,7 +857,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[bool].ok(value=True)
 
             @staticmethod
-            def start_service() -> r[bool]:
+            def start_service() -> p.Result[bool]:
                 """Start the web service.
 
                 Returns:
@@ -879,7 +879,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[bool].ok(value=True)
 
             @staticmethod
-            def stop_service() -> r[bool]:
+            def stop_service() -> p.Result[bool]:
                 """Stop the web service.
 
                 Returns:
@@ -903,7 +903,7 @@ class FlextWebProtocols(FlextProtocols):
             """
 
             @staticmethod
-            def fetch_by_id(entity_id: str) -> r[t.Web.ResponseDict]:
+            def fetch_by_id(entity_id: str) -> p.Result[t.Web.ResponseDict]:
                 """Return a single app by ID or failure when not found."""
                 app_data = FlextWebProtocols.Web.apps_registry.get(entity_id)
                 if app_data is None:
@@ -915,7 +915,7 @@ class FlextWebProtocols(FlextProtocols):
                 )
 
             @staticmethod
-            def save(entity: t.Web.ResponseDict) -> r[t.Web.ResponseDict]:
+            def save(entity: t.Web.ResponseDict) -> p.Result[t.Web.ResponseDict]:
                 """Persist an app entity and return a defensive copy."""
                 entity_id = entity.get("id")
                 if not isinstance(entity_id, str):
@@ -928,7 +928,7 @@ class FlextWebProtocols(FlextProtocols):
                 )
 
             @staticmethod
-            def delete(entity_id: str) -> r[bool]:
+            def delete(entity_id: str) -> p.Result[bool]:
                 """Delete an app entity by ID."""
                 removed = FlextWebProtocols.Web.apps_registry.pop(entity_id, None)
                 if removed is None:
@@ -936,7 +936,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[bool].ok(True)
 
             @staticmethod
-            def find_all() -> r[Sequence[t.Web.ResponseDict]]:
+            def find_all() -> p.Result[Sequence[t.Web.ResponseDict]]:
                 """Return all registered app entities as defensive copies."""
                 return r[Sequence[t.Web.ResponseDict]].ok([
                     FlextWebProtocols.Web.copy_response_dict(app)
@@ -946,7 +946,7 @@ class FlextWebProtocols(FlextProtocols):
             @staticmethod
             def find_by_criteria(
                 criteria: t.Web.RequestDict,
-            ) -> r[Sequence[t.Web.ResponseDict]]:
+            ) -> p.Result[Sequence[t.Web.ResponseDict]]:
                 """Find entities by criteria.
 
                 Args:
@@ -979,7 +979,7 @@ class FlextWebProtocols(FlextProtocols):
             @staticmethod
             def handle_request(
                 request: t.Web.RequestDict,
-            ) -> r[t.Web.ResponseDict]:
+            ) -> p.Result[t.Web.ResponseDict]:
                 """Handle web request and return response.
 
                 Args:
@@ -1040,7 +1040,7 @@ class FlextWebProtocols(FlextProtocols):
             def execute(
                 self,
                 command: t.Web.RequestDict,
-            ) -> r[t.Web.ResponseDict]:
+            ) -> p.Result[t.Web.ResponseDict]:
                 """Execute command (extends p.Handler pattern).
 
                 Args:
@@ -1152,7 +1152,7 @@ class FlextWebProtocols(FlextProtocols):
             """
 
             @staticmethod
-            def render_dashboard(data: t.Web.ResponseDict) -> r[str]:
+            def render_dashboard(data: t.Web.ResponseDict) -> p.Result[str]:
                 """Render dashboard template with data.
 
                 Args:
@@ -1171,7 +1171,7 @@ class FlextWebProtocols(FlextProtocols):
             def render_template(
                 template_name: str,
                 context: t.Web.RequestDict,
-            ) -> r[str]:
+            ) -> p.Result[str]:
                 """Render template with context data.
 
                 Args:
@@ -1202,7 +1202,7 @@ class FlextWebProtocols(FlextProtocols):
             """
 
             @staticmethod
-            def template_config() -> r[t.Web.ResponseDict]:
+            def template_config() -> p.Result[t.Web.ResponseDict]:
                 """Return current template engine configuration.
 
                 Returns:
@@ -1218,7 +1218,7 @@ class FlextWebProtocols(FlextProtocols):
             @staticmethod
             def load_template_config(
                 settings: t.Web.RequestDict,
-            ) -> r[bool]:
+            ) -> p.Result[bool]:
                 """Load template engine configuration.
 
                 Args:
@@ -1232,7 +1232,7 @@ class FlextWebProtocols(FlextProtocols):
                 return r[bool].ok(value=True)
 
             @staticmethod
-            def render(template: str, context: t.Web.RequestDict) -> r[str]:
+            def render(template: str, context: t.Web.RequestDict) -> p.Result[str]:
                 """Render template string with context.
 
                 Args:
@@ -1266,7 +1266,7 @@ class FlextWebProtocols(FlextProtocols):
             @staticmethod
             def validate_template_config(
                 settings: t.Web.RequestDict,
-            ) -> r[bool]:
+            ) -> p.Result[bool]:
                 """Validate template engine configuration.
 
                 Args:
@@ -1421,7 +1421,7 @@ class FlextWebProtocols(FlextProtocols):
                     name: str,
                     port: int,
                     host: str,
-                ) -> r[t.Web.ResponseDict]:
+                ) -> p.Result[t.Web.ResponseDict]:
                     """Create a new web application."""
                     return FlextWebProtocols.Web.WebAppManager.create_app(
                         name,
@@ -1429,15 +1429,15 @@ class FlextWebProtocols(FlextProtocols):
                         host,
                     )
 
-                def list_apps(self) -> r[Sequence[t.Web.ResponseDict]]:
+                def list_apps(self) -> p.Result[Sequence[t.Web.ResponseDict]]:
                     """List all web applications."""
                     return FlextWebProtocols.Web.WebAppManager.list_apps()
 
-                def start_app(self, app_id: str) -> r[t.Web.ResponseDict]:
+                def start_app(self, app_id: str) -> p.Result[t.Web.ResponseDict]:
                     """Start a web application."""
                     return FlextWebProtocols.Web.WebAppManager.start_app(app_id)
 
-                def stop_app(self, app_id: str) -> r[t.Web.ResponseDict]:
+                def stop_app(self, app_id: str) -> p.Result[t.Web.ResponseDict]:
                     """Stop a running web application."""
                     return FlextWebProtocols.Web.WebAppManager.stop_app(app_id)
 
@@ -1511,19 +1511,19 @@ class FlextWebProtocols(FlextProtocols):
             class _WebServiceBase:
                 """Base implementation of WebService for testing."""
 
-                def configure_middleware(self) -> r[bool]:
+                def configure_middleware(self) -> p.Result[bool]:
                     """Configure web service middleware."""
                     return FlextWebProtocols.Web.WebService.configure_middleware()
 
-                def initialize_routes(self) -> r[bool]:
+                def initialize_routes(self) -> p.Result[bool]:
                     """Initialize web service routes."""
                     return FlextWebProtocols.Web.WebService.initialize_routes()
 
-                def start_service(self) -> r[bool]:
+                def start_service(self) -> p.Result[bool]:
                     """Start the web service."""
                     return FlextWebProtocols.Web.WebService.start_service()
 
-                def stop_service(self) -> r[bool]:
+                def stop_service(self) -> p.Result[bool]:
                     """Stop the web service."""
                     return FlextWebProtocols.Web.WebService.stop_service()
 
@@ -1533,7 +1533,7 @@ class FlextWebProtocols(FlextProtocols):
                 def find_by_criteria(
                     self,
                     criteria: t.Web.RequestDict,
-                ) -> r[Sequence[t.Web.ResponseDict]]:
+                ) -> p.Result[Sequence[t.Web.ResponseDict]]:
                     """Find entities by criteria."""
                     return FlextWebProtocols.Web.WebRepository.find_by_criteria(
                         criteria,
@@ -1545,7 +1545,7 @@ class FlextWebProtocols(FlextProtocols):
                 def handle_request(
                     self,
                     request: t.Web.RequestDict,
-                ) -> r[t.Web.ResponseDict]:
+                ) -> p.Result[t.Web.ResponseDict]:
                     """Handle web request and return response."""
                     return FlextWebProtocols.Web.WebHandler.handle_request(request)
 
@@ -1559,7 +1559,7 @@ class FlextWebProtocols(FlextProtocols):
             class _WebTemplateRendererBase:
                 """Base implementation of WebTemplateRenderer for testing."""
 
-                def render_dashboard(self, data: t.Web.ResponseDict) -> r[str]:
+                def render_dashboard(self, data: t.Web.ResponseDict) -> p.Result[str]:
                     """Render dashboard template with data."""
                     return FlextWebProtocols.Web.WebTemplateRenderer.render_dashboard(
                         data,
@@ -1569,7 +1569,7 @@ class FlextWebProtocols(FlextProtocols):
                     self,
                     template_name: str,
                     context: t.Web.RequestDict,
-                ) -> r[str]:
+                ) -> p.Result[str]:
                     """Render template with context data."""
                     return FlextWebProtocols.Web.WebTemplateRenderer.render_template(
                         template_name,
@@ -1593,14 +1593,14 @@ class FlextWebProtocols(FlextProtocols):
                         dict(value) if isinstance(value, Mapping) else value
                     )
 
-                def template_config(self) -> r[t.Web.ResponseDict]:
+                def template_config(self) -> p.Result[t.Web.ResponseDict]:
                     """Return current template engine configuration."""
                     return FlextWebProtocols.Web.WebTemplateEngine.template_config()
 
                 def load_template_config(
                     self,
                     settings: t.Web.RequestDict,
-                ) -> r[bool]:
+                ) -> p.Result[bool]:
                     """Load template engine configuration."""
                     return FlextWebProtocols.Web.WebTemplateEngine.load_template_config(
                         settings,
@@ -1610,7 +1610,7 @@ class FlextWebProtocols(FlextProtocols):
                     self,
                     template: str,
                     context: t.Web.RequestDict,
-                ) -> r[str]:
+                ) -> p.Result[str]:
                     """Render template string with context."""
                     return FlextWebProtocols.Web.WebTemplateEngine.render(
                         template,
@@ -1620,7 +1620,7 @@ class FlextWebProtocols(FlextProtocols):
                 def validate_template_config(
                     self,
                     settings: t.Web.RequestDict,
-                ) -> r[bool]:
+                ) -> p.Result[bool]:
                     """Validate template engine configuration."""
                     return FlextWebProtocols.Web.WebTemplateEngine.validate_template_config(
                         settings,
@@ -1682,22 +1682,22 @@ class FlextWebProtocols(FlextProtocols):
                         FlextWebProtocols.Web.web_metrics["errors"] = error_count + 1
 
     @staticmethod
-    def create_app(name: str, port: int, host: str) -> r[t.Web.ResponseDict]:
+    def create_app(name: str, port: int, host: str) -> p.Result[t.Web.ResponseDict]:
         """Create a new web application."""
         return FlextWebProtocols.Web.WebAppManager.create_app(name, port, host)
 
     @staticmethod
-    def start_app(app_id: str) -> r[t.Web.ResponseDict]:
+    def start_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
         """Start a web application."""
         return FlextWebProtocols.Web.WebAppManager.start_app(app_id)
 
     @staticmethod
-    def stop_app(app_id: str) -> r[t.Web.ResponseDict]:
+    def stop_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
         """Stop a web application."""
         return FlextWebProtocols.Web.WebAppManager.stop_app(app_id)
 
     @staticmethod
-    def list_apps() -> r[Sequence[t.Web.ResponseDict]]:
+    def list_apps() -> p.Result[Sequence[t.Web.ResponseDict]]:
         """List all web applications."""
         return FlextWebProtocols.Web.WebAppManager.list_apps()
 

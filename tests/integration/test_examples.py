@@ -10,7 +10,7 @@ import pytest
 from flext_tests import tm
 
 from flext_web import FlextWebProtocols, web
-from tests import r, t, u
+from tests import p, r, t, u
 
 logger = u.fetch_logger(__name__)
 
@@ -24,11 +24,11 @@ class ExamplesFullFunctionalityTest:
             app_id: str,
             app_data: t.Web.ResponseDict,
             app_instance: object,
-        ) -> r[t.Web.ResponseDict]:
+        ) -> p.Result[t.Web.ResponseDict]:
             _ = (app_data, app_instance)
             return r[t.Web.ResponseDict].ok({"runner": "mock", "app_id": app_id})
 
-        def _stop_runtime(app_id: str, runtime: t.Web.ResponseDict) -> r[bool]:
+        def _stop_runtime(app_id: str, runtime: t.Web.ResponseDict) -> p.Result[bool]:
             _ = (app_id, runtime)
             return r[bool].ok(True)
 

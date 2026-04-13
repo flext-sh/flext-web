@@ -112,7 +112,7 @@ class FlextWebTypes(FlextTypes):
     def create_application(
         cls,
         settings: FlextWebTypes.Web.ApplicationConfig,
-    ) -> r[m.Web.Entity]:
+    ) -> p.Result[m.Web.Entity]:
         """Create application model instance.
 
         Args:
@@ -166,7 +166,7 @@ class FlextWebTypes(FlextTypes):
         headers: FlextTypes.StrMapping | None = None,
         body: str | Mapping[str, FlextTypes.Scalar] | None = None,
         timeout: float = c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
-    ) -> r[m.Web.Request]:
+    ) -> p.Result[m.Web.Request]:
         """Create HTTP request model instance with proper validation.
 
         Args:
@@ -225,7 +225,7 @@ class FlextWebTypes(FlextTypes):
         headers: FlextTypes.StrMapping | None = None,
         body: str | Mapping[str, FlextTypes.Scalar] | None = None,
         elapsed_time: float | None = None,
-    ) -> r[m.Web.Response]:
+    ) -> p.Result[m.Web.Response]:
         """Create HTTP response model instance with proper validation.
 
         Args:
@@ -268,7 +268,7 @@ class FlextWebTypes(FlextTypes):
     def create_web_request(
         cls,
         settings: FlextWebTypes.Web.RequestConfig,
-    ) -> r[m.Web.AppRequest]:
+    ) -> p.Result[m.Web.AppRequest]:
         """Create web request model instance with proper validation.
 
         Args:
@@ -334,7 +334,7 @@ class FlextWebTypes(FlextTypes):
     def create_web_response(
         cls,
         settings: FlextWebTypes.Web.ResponseConfig,
-    ) -> r[m.Web.AppResponse]:
+    ) -> p.Result[m.Web.AppResponse]:
         """Create web response model instance with proper validation.
 
         Args:
@@ -416,7 +416,7 @@ class FlextWebTypes(FlextTypes):
         use_pydantic_models: bool = True,
         enable_runtime_validation: bool = True,
         models_available: FlextTypes.StrSequence | None = None,
-    ) -> r[FlextWebTypes.TypesConfig]:
+    ) -> p.Result[FlextWebTypes.TypesConfig]:
         """Configure web types system to use Pydantic models.
 
         Args:
@@ -458,7 +458,7 @@ class FlextWebTypes(FlextTypes):
             )
 
     @classmethod
-    def web_types_system_config(cls) -> r[FlextWebTypes.TypesConfig]:
+    def web_types_system_config(cls) -> p.Result[FlextWebTypes.TypesConfig]:
         """Get current web types system configuration.
 
         Returns:

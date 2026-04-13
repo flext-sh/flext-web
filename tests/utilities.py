@@ -16,7 +16,7 @@ import pytest
 from flext_tests import FlextTestsUtilities
 from pydantic import BaseModel, ValidationError
 
-from flext_core import r
+from flext_core import p, r
 from flext_web import FlextWebUtilities
 from tests import c, m, t
 
@@ -103,7 +103,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 return False
 
             @staticmethod
-            def _wrap_result[T](result: r[T]) -> r[BaseModel]:
+            def _wrap_result[T](result: r[T]) -> p.Result[BaseModel]:
                 """Wrap a typed result into `r[BaseModel]` for generic helpers."""
                 if result.success:
                     value = result.value
@@ -146,7 +146,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             def create_entry(
                 entry_type: str,
                 **kwargs: t.RecursiveContainer,
-            ) -> r[BaseModel]:
+            ) -> p.Result[BaseModel]:
                 """Create test entities through runtime namespaced MRO factories."""
                 if entry_type == "web_app":
                     name = kwargs.get("name")
@@ -496,7 +496,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 *,
                 success: bool = True,
                 **kwargs: t.Scalar,
-            ) -> r[t.Scalar | None]:
+            ) -> p.Result[t.Scalar | None]:
                 """Create standardized test results."""
                 if success:
                     value: t.Scalar | None = kwargs.get("data") or kwargs.get("value")

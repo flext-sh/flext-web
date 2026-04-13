@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import r
+from flext_core import p, r
 from flext_web import FlextWebServiceBase, c, m
 
 
@@ -14,7 +14,7 @@ class FlextWebAuth(FlextWebServiceBase[bool]):
     def authenticate(
         self,
         credentials: m.Web.Credentials,
-    ) -> r[m.Web.AuthResponse]:
+    ) -> p.Result[m.Web.AuthResponse]:
         """Authenticate a user with explicit validation."""
         if credentials.username == c.NONEXISTENT_USERNAME:
             return r[m.Web.AuthResponse].fail("Authentication failed")
@@ -28,15 +28,15 @@ class FlextWebAuth(FlextWebServiceBase[bool]):
         return r[m.Web.AuthResponse].ok(auth_response)
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
+    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the auth namespace service."""
         return r[bool].ok(True)
 
-    def logout(self) -> r[m.Web.EntityData]:
+    def logout(self) -> p.Result[m.Web.EntityData]:
         """Return a successful logout payload."""
         return r[m.Web.EntityData].ok(m.Web.EntityData(data={"success": True}))
 
-    def register_user(self, user_data: m.Web.UserData) -> r[m.Web.UserResponse]:
+    def register_user(self, user_data: m.Web.UserData) -> p.Result[m.Web.UserResponse]:
         """Register a user with explicit domain validation."""
         if user_data.username.isdigit():
             return r[m.Web.UserResponse].fail("Username cannot be numeric-only")
@@ -49,7 +49,7 @@ class FlextWebAuth(FlextWebServiceBase[bool]):
         return r[m.Web.UserResponse].ok(user_response)
 
     @override
-    def validate_business_rules(self) -> r[bool]:
+    def validate_business_rules(self) -> p.Result[bool]:
         """Validate auth namespace invariants."""
         return r[bool].ok(True)
 

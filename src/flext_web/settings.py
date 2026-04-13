@@ -139,7 +139,7 @@ class FlextWebSettings(FlextSettings):
         *,
         debug: bool | None = None,
         secret_key: str | None = None,
-    ) -> r[Self]:
+    ) -> p.Result[Self]:
         """Create web settings with validated overrides."""
         host_value = host if host is not None else c.Web.WebDefaults.HOST
         port_value = port if port is not None else c.Web.WebDefaults.PORT
@@ -162,7 +162,7 @@ class FlextWebSettings(FlextSettings):
             return failure
 
     @classmethod
-    def validate_settings(cls, settings: Self) -> r[bool]:
+    def validate_settings(cls, settings: Self) -> p.Result[bool]:
         """Validate a settings instance against the canonical schema."""
         try:
             _ = cls(**settings.model_dump())

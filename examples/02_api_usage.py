@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from flext_core import r
+from flext_core import p, r
 from flext_web import m, web
 
 
@@ -20,7 +20,7 @@ def _allocate_demo_port() -> int:
     return candidate
 
 
-def check_service_health() -> r[m.Web.HealthResponse]:
+def check_service_health() -> p.Result[m.Web.HealthResponse]:
     """Return structured health information through the public facade."""
     return web.health_status()
 
@@ -29,32 +29,32 @@ def create_application(
     name: str,
     port: int,
     host: str = "127.0.0.1",
-) -> r[m.Web.ApplicationResponse]:
+) -> p.Result[m.Web.ApplicationResponse]:
     """Create an application through the canonical `web` facade."""
     return web.create_app(m.Web.AppData(name=name, host=host, port=port))
 
 
-def start_application(app_id: str) -> r[m.Web.ApplicationResponse]:
+def start_application(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
     """Start an application through the canonical `web` facade."""
     return web.start_app(app_id)
 
 
-def fetch_application_status(app_id: str) -> r[m.Web.ApplicationResponse]:
+def fetch_application_status(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
     """Load a single application projection through the canonical `web` facade."""
     return web.fetch_app(app_id)
 
 
-def stop_application(app_id: str) -> r[m.Web.ApplicationResponse]:
+def stop_application(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
     """Stop an application through the canonical `web` facade."""
     return web.stop_app(app_id)
 
 
-def list_applications() -> r[Sequence[m.Web.ApplicationResponse]]:
+def list_applications() -> p.Result[Sequence[m.Web.ApplicationResponse]]:
     """List application projections through the canonical `web` facade."""
     return web.list_apps()
 
 
-def demo_application_lifecycle() -> r[Sequence[m.Web.ApplicationResponse]]:
+def demo_application_lifecycle() -> p.Result[Sequence[m.Web.ApplicationResponse]]:
     """Demonstrate the canonical public lifecycle flow for flext-web."""
     created_apps: list[m.Web.ApplicationResponse] = []
     first_port = _allocate_demo_port()

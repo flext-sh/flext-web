@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from flext_core import r
+from flext_core import p, r
 from flext_web import FlextWeb, FlextWebSettings, t, web
 
 
@@ -41,7 +41,7 @@ class FlextWebCliService:
         result = cls().run(argv)
         sys.exit(0 if result.success else 1)
 
-    def run(self, argv: t.StrSequence | None = None) -> r[bool]:
+    def run(self, argv: t.StrSequence | None = None) -> p.Result[bool]:
         """Run the public web facade from CLI arguments."""
         args = self.parse_args(argv)
         debug_value = False if args.no_debug else bool(args.debug)

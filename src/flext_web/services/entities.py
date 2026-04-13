@@ -8,7 +8,7 @@ from typing import override
 
 from pydantic import PrivateAttr
 
-from flext_core import r
+from flext_core import p, r
 from flext_web import FlextWebServiceBase, m, u
 
 
@@ -19,7 +19,7 @@ class FlextWebEntities(FlextWebServiceBase[bool]):
         default_factory=lambda: dict[str, m.Web.EntityData](),
     )
 
-    def create(self, data: m.Web.EntityData) -> r[m.Web.EntityData]:
+    def create(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
         """Create an entity with generated identifier."""
         entity_id = str(uuid.uuid4())
         entity = m.Web.EntityData(data={"id": entity_id, **data.data})
@@ -27,11 +27,11 @@ class FlextWebEntities(FlextWebServiceBase[bool]):
         return r[m.Web.EntityData].ok(entity)
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
+    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the entity namespace service."""
         return r[bool].ok(True)
 
-    def fetch_entity(self, entity_id: str) -> r[m.Web.EntityData]:
+    def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
         """Fetch an entity by identifier."""
         if not u.to_str(entity_id):
             return r[m.Web.EntityData].fail("Entity ID cannot be empty")
@@ -40,12 +40,12 @@ class FlextWebEntities(FlextWebServiceBase[bool]):
             return r[m.Web.EntityData].fail(f"Entity not found: {entity_id}")
         return r[m.Web.EntityData].ok(entity)
 
-    def list_all(self) -> r[Sequence[m.Web.EntityData]]:
+    def list_all(self) -> p.Result[Sequence[m.Web.EntityData]]:
         """List all registered entities."""
         return r[Sequence[m.Web.EntityData]].ok(list(self._storage.values()))
 
     @override
-    def validate_business_rules(self) -> r[bool]:
+    def validate_business_rules(self) -> p.Result[bool]:
         """Validate entity namespace invariants."""
         return r[bool].ok(True)
 

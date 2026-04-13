@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import r
+from flext_core import p, r
 from flext_web import (
     FlextWebProtocols,
     FlextWebServiceBase,
@@ -18,11 +18,11 @@ class FlextWebHealth(FlextWebServiceBase[bool]):
     """Health and metrics access backed by protocol runtime state."""
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
+    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the health namespace service."""
         return r[bool].ok(True)
 
-    def metrics(self) -> r[m.Web.MetricsResponse]:
+    def metrics(self) -> p.Result[m.Web.MetricsResponse]:
         """Return metrics projected from the protocol runtime registry."""
         metrics = FlextWebProtocols.Web.WebMonitoring.web_metrics()
         state = FlextWebProtocols.Web.service_state
@@ -43,7 +43,7 @@ class FlextWebHealth(FlextWebServiceBase[bool]):
             ),
         )
 
-    def status(self) -> r[m.Web.HealthResponse]:
+    def status(self) -> p.Result[m.Web.HealthResponse]:
         """Return health status from the protocol runtime registry."""
         payload = FlextWebProtocols.Web.WebMonitoring.web_health_status()
         service_value = payload.get("service")
@@ -61,7 +61,7 @@ class FlextWebHealth(FlextWebServiceBase[bool]):
         )
 
     @override
-    def validate_business_rules(self) -> r[bool]:
+    def validate_business_rules(self) -> p.Result[bool]:
         """Validate health namespace invariants."""
         return r[bool].ok(True)
 

@@ -18,7 +18,7 @@ from wsgiref.simple_server import WSGIServer
 import uvicorn
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from flext_core import FlextModels, r, t
+from flext_core import FlextModels, p, r, t
 from flext_web import c, u
 
 
@@ -622,7 +622,7 @@ class FlextWebModels(FlextModels):
             def add_web_event(
                 self,
                 event_name: str,
-            ) -> r[bool]:
+            ) -> p.Result[bool]:
                 """Add web-specific event (not domain event).
 
                 This is for web application lifecycle events, not DDD domain events.
@@ -645,7 +645,7 @@ class FlextWebModels(FlextModels):
                 data: t.ConfigMap
                 | Mapping[str, t.MetadataOrValue | None]
                 | None = None,
-            ) -> r[FlextModels.Entry]:
+            ) -> p.Result[FlextModels.Entry]:
                 if not event_type.strip():
                     return r[FlextModels.Entry].fail(
                         "Domain event name must be a non-empty string",
@@ -667,7 +667,7 @@ class FlextWebModels(FlextModels):
                     "environment": self.environment,
                 }
 
-            def restart(self) -> r[FlextWebModels.Web.Entity]:
+            def restart(self) -> p.Result[FlextWebModels.Web.Entity]:
                 """Restart the application."""
                 can_restart_validated = self.can_restart
                 if not can_restart_validated:
@@ -691,7 +691,7 @@ class FlextWebModels(FlextModels):
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
-            def start(self) -> r[FlextWebModels.Web.Entity]:
+            def start(self) -> p.Result[FlextWebModels.Web.Entity]:
                 """Start the application."""
                 running_status = c.Web.Status.RUNNING.value
                 already_running = self.status == running_status
@@ -708,7 +708,7 @@ class FlextWebModels(FlextModels):
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
-            def stop(self) -> r[FlextWebModels.Web.Entity]:
+            def stop(self) -> p.Result[FlextWebModels.Web.Entity]:
                 """Stop the application."""
                 running_status = c.Web.Status.RUNNING.value
                 stopped_status = c.Web.Status.STOPPED.value
@@ -726,7 +726,9 @@ class FlextWebModels(FlextModels):
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
-            def update_metrics(self, new_metrics: t.ConfigurationMapping) -> r[bool]:
+            def update_metrics(
+                self, new_metrics: t.ConfigurationMapping
+            ) -> p.Result[bool]:
                 """Update application metrics.
 
                 Returns:
@@ -753,7 +755,7 @@ class FlextWebModels(FlextModels):
                     )
                 return r[bool].ok(value=True)
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 """Validate application business rules (Aggregate validation).
 
                 Fast-fail validation - no fallbacks, explicit checks only.
@@ -1081,7 +1083,7 @@ class FlextWebModels(FlextModels):
             name: str,
             host: str = c.Web.WebDefaults.HOST,
             port: int = c.Web.WebDefaults.PORT,
-        ) -> r[FlextWebModels.Web.Entity]:
+        ) -> p.Result[FlextWebModels.Web.Entity]:
             """Create a web application from direct parameters.
 
             No dict conversion - use direct parameters for type safety.
@@ -1117,7 +1119,7 @@ class FlextWebModels(FlextModels):
             url: str,
             headers: t.StrMapping | None = None,
             body: str | t.ContainerValue | None = None,
-        ) -> r[WebRequest]:
+        ) -> p.Result[WebRequest]:
             """Create a web request model.
 
             Args:
@@ -1158,7 +1160,7 @@ class FlextWebModels(FlextModels):
             status_code: int,
             headers: t.StrMapping | None = None,
             body: str | t.ContainerValue | None = None,
-        ) -> r[WebResponse]:
+        ) -> p.Result[WebResponse]:
             """Create a web response model.
 
             Args:

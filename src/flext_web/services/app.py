@@ -16,7 +16,7 @@ from typing import override
 import flask
 from fastapi import FastAPI
 
-from flext_core import r
+from flext_core import p, r
 from flext_web import FlextWebServiceBase, FlextWebSettings, c, m, t, u
 
 
@@ -30,7 +30,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
     """
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> r[bool]:
+    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the web application service.
 
         Main domain operation for the web application service.
@@ -54,7 +54,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
         @staticmethod
         def create_instance(
             settings: m.Web.FastAPIAppConfig | None = None,
-        ) -> r[FastAPI]:
+        ) -> p.Result[FastAPI]:
             """Create FastAPI application instance with validated configuration.
 
             Args:
@@ -117,7 +117,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
         self,
         settings: m.Web.FastAPIAppConfig | None = None,
         factory_config: m.Web.FastAPIAppConfig | None = None,
-    ) -> r[FastAPI]:
+    ) -> p.Result[FastAPI]:
         """Create FastAPI app with flext-core integration and Pydantic validation.
 
         Single Responsibility: Creates and configures FastAPI application only.
@@ -170,7 +170,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
 
     def create_flask_app(
         self, settings: FlextWebSettings | None = None
-    ) -> r[flask.Flask]:
+    ) -> p.Result[flask.Flask]:
         """Create Flask app with flext-core integration and configuration.
 
         Single Responsibility: Creates and configures Flask application only.
@@ -243,7 +243,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
 
             return info_handler
 
-    def configure_fastapi_error_handlers(self, app: FastAPI) -> r[bool]:
+    def configure_fastapi_error_handlers(self, app: FastAPI) -> p.Result[bool]:
         """Configure FastAPI error handlers (extensible for future needs).
 
         Args:
@@ -261,7 +261,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
         self,
         app: FastAPI,
         settings: FlextWebSettings | None = None,
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Configure FastAPI middleware (extensible for future needs).
 
         Args:
@@ -280,7 +280,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
         self,
         app: FastAPI,
         settings: FlextWebSettings | None = None,
-    ) -> r[bool]:
+    ) -> p.Result[bool]:
         """Configure FastAPI routes (extensible for future needs).
 
         Args:
@@ -296,7 +296,7 @@ class FlextWebApp(FlextWebServiceBase[bool]):
         return r[bool].ok(value=True)
 
     @override
-    def validate_business_rules(self) -> r[bool]:
+    def validate_business_rules(self) -> p.Result[bool]:
         """Validate business rules for web app service (s requirement).
 
         Returns:

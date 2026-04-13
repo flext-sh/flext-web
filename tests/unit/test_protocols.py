@@ -14,7 +14,7 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from flext_tests import tm
 
-from flext_core import r
+from flext_core import p, r
 from tests import c, p, t
 
 _WebAppManagerBase = p.Web.TestBases._WebAppManagerBase
@@ -58,11 +58,11 @@ class TestFlextWebProtocols:
             app_id: str,
             app_data: t.Web.ResponseDict,
             app_instance: flask.Flask | FastAPI,
-        ) -> r[t.Web.ResponseDict]:
+        ) -> p.Result[t.Web.ResponseDict]:
             _ = (app_data, app_instance)
             return r[t.Web.ResponseDict].ok({"runner": "mock", "app_id": app_id})
 
-        def _stop_runtime(app_id: str, runtime: t.Web.ResponseDict) -> r[bool]:
+        def _stop_runtime(app_id: str, runtime: t.Web.ResponseDict) -> p.Result[bool]:
             _ = (app_id, runtime)
             return r[bool].ok(True)
 
@@ -190,21 +190,21 @@ class TestFlextWebProtocols:
             def create_app(self, name: str, port: int, host: str) -> t.Web.ResponseDict:
                 return {"name": name, "host": host, "port": port}
 
-            def start_app(self, app_id: str) -> r[t.Web.ResponseDict]:
+            def start_app(self, app_id: str) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({
                     "name": "test",
                     "host": "localhost",
                     "port": 8080,
                 })
 
-            def stop_app(self, app_id: str) -> r[t.Web.ResponseDict]:
+            def stop_app(self, app_id: str) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({
                     "name": "test",
                     "host": "localhost",
                     "port": 8080,
                 })
 
-            def list_apps(self) -> r[Sequence[t.Web.ResponseDict]]:
+            def list_apps(self) -> p.Result[Sequence[t.Web.ResponseDict]]:
                 return r[Sequence[t.Web.ResponseDict]].ok([
                     {"name": "test", "host": "localhost", "port": 8080},
                 ])
@@ -220,11 +220,11 @@ class TestFlextWebProtocols:
                 raise NotImplementedError(msg)
 
             @override
-            def execute(self) -> r[t.Web.ResponseDict]:
+            def execute(self) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
             @override
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             @override
@@ -329,10 +329,10 @@ class TestFlextWebProtocols:
             ) -> t.Web.RequestDict:
                 return {}
 
-            def execute(self) -> r[t.Web.ResponseDict]:
+            def execute(self) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             def service_info(self) -> t.ScalarMapping:
@@ -391,10 +391,10 @@ class TestFlextWebProtocols:
             def json_request(self, _request: t.Web.RequestDict) -> bool:
                 return False
 
-            def execute(self) -> r[t.Web.ResponseDict]:
+            def execute(self) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             def service_info(self) -> t.ScalarMapping:
@@ -419,22 +419,22 @@ class TestFlextWebProtocols:
         """Test WebService methods execution."""
 
         class RealWebService:
-            def initialize_routes(self) -> r[bool]:
+            def initialize_routes(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
-            def configure_middleware(self) -> r[bool]:
+            def configure_middleware(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
-            def start_service(self) -> r[bool]:
+            def start_service(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
-            def stop_service(self) -> r[bool]:
+            def stop_service(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
-            def execute(self) -> r[t.Web.ResponseDict]:
+            def execute(self) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             def service_info(self) -> t.ScalarMapping:
@@ -456,25 +456,25 @@ class TestFlextWebProtocols:
             def find_by_criteria(
                 self,
                 criteria: t.Web.RequestDict,
-            ) -> r[Sequence[t.Web.ResponseDict]]:
+            ) -> p.Result[Sequence[t.Web.ResponseDict]]:
                 return r[Sequence[t.Web.ResponseDict]].ok([])
 
-            def fetch_by_id(self, entity_id: str) -> r[t.Web.ResponseDict]:
+            def fetch_by_id(self, entity_id: str) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({"id": entity_id})
 
-            def save(self, entity: t.Web.ResponseDict) -> r[t.Web.ResponseDict]:
+            def save(self, entity: t.Web.ResponseDict) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok(entity)
 
-            def delete(self, entity_id: str) -> r[bool]:
+            def delete(self, entity_id: str) -> p.Result[bool]:
                 return r[bool].ok(True)
 
-            def find_all(self) -> r[Sequence[t.Web.ResponseDict]]:
+            def find_all(self) -> p.Result[Sequence[t.Web.ResponseDict]]:
                 return r[Sequence[t.Web.ResponseDict]].ok([])
 
-            def execute(self) -> r[t.Web.ResponseDict]:
+            def execute(self) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             def service_info(self) -> t.ScalarMapping:
@@ -495,16 +495,16 @@ class TestFlextWebProtocols:
                 self,
                 template_name: str,
                 _context: t.Web.RequestDict,
-            ) -> r[str]:
+            ) -> p.Result[str]:
                 return r[str].ok("")
 
-            def render_dashboard(self, data: t.Web.ResponseDict) -> r[str]:
+            def render_dashboard(self, data: t.Web.ResponseDict) -> p.Result[str]:
                 return r[str].ok("<html>Dashboard</html>")
 
-            def execute(self) -> r[t.Web.ResponseDict]:
+            def execute(self) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             def service_info(self) -> t.ScalarMapping:
@@ -527,16 +527,22 @@ class TestFlextWebProtocols:
         """Test WebTemplateEngine methods execution."""
 
         class RealTemplateEngine:
-            def load_template_config(self, settings: t.Web.RequestDict) -> r[bool]:
+            def load_template_config(
+                self, settings: t.Web.RequestDict
+            ) -> p.Result[bool]:
                 return r[bool].ok(True)
 
-            def template_config(self) -> r[t.Web.ResponseDict]:
+            def template_config(self) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_template_config(self, settings: t.Web.RequestDict) -> r[bool]:
+            def validate_template_config(
+                self, settings: t.Web.RequestDict
+            ) -> p.Result[bool]:
                 return r[bool].ok(True)
 
-            def render(self, template: str, _context: t.Web.RequestDict) -> r[str]:
+            def render(
+                self, template: str, _context: t.Web.RequestDict
+            ) -> p.Result[str]:
                 return r[str].ok("")
 
             def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
@@ -545,10 +551,10 @@ class TestFlextWebProtocols:
             def add_global(self, name: str, *, value: t.ContainerValue) -> None:
                 _ = name, value
 
-            def execute(self) -> r[t.Web.ResponseDict]:
+            def execute(self) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             def service_info(self) -> t.ScalarMapping:
@@ -593,10 +599,10 @@ class TestFlextWebProtocols:
             def web_metrics(self) -> t.Web.ResponseDict:
                 return {"requests": 0, "errors": 0, "uptime": "0s"}
 
-            def execute(self) -> r[t.Web.ResponseDict]:
+            def execute(self) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({})
 
-            def validate_business_rules(self) -> r[bool]:
+            def validate_business_rules(self) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             def service_info(self) -> t.ScalarMapping:
