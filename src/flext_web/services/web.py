@@ -7,7 +7,6 @@ from typing import Self, override
 
 from pydantic import PrivateAttr
 
-from flext_core import p, r
 from flext_web import (
     FlextWebAuth,
     FlextWebEntities,
@@ -17,6 +16,7 @@ from flext_web import (
     c,
     m,
     p,
+    r,
     t,
     u,
 )
