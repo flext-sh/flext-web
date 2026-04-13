@@ -9,11 +9,10 @@ from __future__ import annotations
 
 from typing import ClassVar, override
 
-from flext_core import p, r
-from flext_web import FlextWebServiceBase, c, m, u
+from flext_web import c, m, p, r, s, u
 
 
-class FlextWebHandlers(FlextWebServiceBase[bool]):
+class FlextWebHandlers(s[bool]):
     """Consolidated web handler system extending flext-core patterns.
 
     This class serves as the single point of access for all web-specific

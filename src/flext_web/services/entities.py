@@ -8,11 +8,10 @@ from typing import override
 
 from pydantic import PrivateAttr
 
-from flext_core import p, r
-from flext_web import FlextWebServiceBase, m, u
+from flext_web import m, p, r, s, u
 
 
-class FlextWebEntities(FlextWebServiceBase[bool]):
+class FlextWebEntities(s[bool]):
     """In-memory entity CRUD support for flext-web."""
 
     _storage: MutableMapping[str, m.Web.EntityData] = PrivateAttr(

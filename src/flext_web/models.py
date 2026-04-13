@@ -18,11 +18,11 @@ from wsgiref.simple_server import WSGIServer
 import uvicorn
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from flext_core import FlextModels, p, r, t
-from flext_web import c, u
+from flext_core import m
+from flext_web import c, p, r, t, u
 
 
-class FlextWebModels(FlextModels):
+class FlextWebModels(m):
     """Web application models collection.
 
     Provides Pydantic models for web applications with validation.
@@ -38,7 +38,7 @@ class FlextWebModels(FlextModels):
         design principles with Pydantic v2 validation.
         """
 
-        class Message(FlextModels.Value):
+        class Message(m.Value):
             """Generic HTTP message base model with protocol validation.
 
             Represents common HTTP message structure with headers, body,
@@ -190,7 +190,7 @@ class FlextWebModels(FlextModels):
                 success_min, success_max = c.Web.SUCCESS_RANGE
                 return success_min <= self.status_code <= success_max
 
-        class AppRequest(FlextModels.Value):
+        class AppRequest(m.Value):
             """Web request entity with tracking and context information.
 
             Extends generic HTTP request with web application-specific fields
@@ -309,7 +309,7 @@ class FlextWebModels(FlextModels):
                 """
                 return self.url.startswith("https://")
 
-        class AppResponse(FlextModels.Value):
+        class AppResponse(m.Value):
             """Web response entity with tracking and performance metrics.
 
             Extends generic HTTP response with web application-specific fields
@@ -425,7 +425,7 @@ class FlextWebModels(FlextModels):
         # EntityStatus removed - use c.Web.Status instead
         # All status values are now centralized in constants.py
 
-        class Entity(FlextModels.Entity):
+        class Entity(m.Entity):
             """Application entity with identity and lifecycle (Aggregate Root).
 
             Represents a web application as a domain entity with identity,
@@ -645,13 +645,13 @@ class FlextWebModels(FlextModels):
                 data: t.ConfigMap
                 | Mapping[str, t.MetadataOrValue | None]
                 | None = None,
-            ) -> p.Result[FlextModels.Entry]:
+            ) -> p.Result[m.Entry]:
                 if not event_type.strip():
-                    return r[FlextModels.Entry].fail(
+                    return r[m.Entry].fail(
                         "Domain event name must be a non-empty string",
                     )
                 if event_type.isdigit():
-                    return r[FlextModels.Entry].fail(
+                    return r[m.Entry].fail(
                         "Domain event name cannot be numeric-only",
                     )
                 return super().add_domain_event(event_type=event_type, data=data)
@@ -778,7 +778,7 @@ class FlextWebModels(FlextModels):
                     )
                 return r[bool].ok(value=True)
 
-        class EntityConfig(FlextModels.Value):
+        class EntityConfig(m.Value):
             """Application entity configuration (Value Object).
 
             Represents configuration settings for application entities.
@@ -821,13 +821,13 @@ class FlextWebModels(FlextModels):
                 ),
             ] = c.Web.WebDefaults.SECRET_KEY
 
-        class Credentials(FlextModels.Value):
+        class Credentials(m.Value):
             """Authentication credentials model."""
 
             username: Annotated[str, Field(min_length=1, description="Username")]
             password: Annotated[str, Field(min_length=1, description="Password")]
 
-        class UserData(FlextModels.Value):
+        class UserData(m.Value):
             """User registration data model."""
 
             username: Annotated[str, Field(min_length=1, description="Username")]
@@ -839,7 +839,7 @@ class FlextWebModels(FlextModels):
                 ),
             ] = ""
 
-        class AppData(FlextModels.Value):
+        class AppData(m.Value):
             """Application creation data model."""
 
             name: Annotated[
@@ -866,7 +866,7 @@ class FlextWebModels(FlextModels):
                 ),
             ]
 
-        class EntityData(FlextModels.Value):
+        class EntityData(m.Value):
             """Generic entity data model."""
 
             data: Annotated[
@@ -876,14 +876,14 @@ class FlextWebModels(FlextModels):
                 ),
             ] = Field(default_factory=dict)
 
-        class AuthResponse(FlextModels.Value):
+        class AuthResponse(m.Value):
             """Authentication response model."""
 
             token: Annotated[str, Field(description="Authentication token")]
             user_id: Annotated[str, Field(description="User identifier")]
             authenticated: Annotated[bool, Field(description="Authentication status")]
 
-        class UserResponse(FlextModels.Value):
+        class UserResponse(m.Value):
             """User registration response model."""
 
             id: Annotated[str, Field(description="User identifier")]
@@ -891,7 +891,7 @@ class FlextWebModels(FlextModels):
             email: Annotated[str, Field(description="Email address")]
             created: Annotated[bool, Field(description="Creation status")]
 
-        class ApplicationResponse(FlextModels.Value):
+        class ApplicationResponse(m.Value):
             """Application management response model."""
 
             id: Annotated[str, Field(description="Application identifier")]
@@ -906,14 +906,14 @@ class FlextWebModels(FlextModels):
                 """Return whether the projected application is running."""
                 return self.status == c.Web.Status.RUNNING.value
 
-        class HealthResponse(FlextModels.Value):
+        class HealthResponse(m.Value):
             """Health check response model."""
 
             status: Annotated[str, Field(description="Health status")]
             service: Annotated[str, Field(description="Service name")]
             timestamp: Annotated[str, Field(description="Timestamp")]
 
-        class MetricsResponse(FlextModels.Value):
+        class MetricsResponse(m.Value):
             """Metrics response model."""
 
             service_status: Annotated[str, Field(description="Service status")]
@@ -922,7 +922,7 @@ class FlextWebModels(FlextModels):
                 Field(description="Service components"),
             ]
 
-        class DashboardResponse(FlextModels.Value):
+        class DashboardResponse(m.Value):
             """Dashboard response model."""
 
             total_applications: Annotated[int, Field(description="Total applications")]
@@ -943,7 +943,7 @@ class FlextWebModels(FlextModels):
             ]
             timestamp: Annotated[str, Field(description="Timestamp")]
 
-        class ServiceResponse(FlextModels.Value):
+        class ServiceResponse(m.Value):
             """Generic service response model."""
 
             service: Annotated[str, Field(description="Service name")]
@@ -954,7 +954,7 @@ class FlextWebModels(FlextModels):
             status: Annotated[str, Field(description="Service status")]
             settings: Annotated[bool, Field(description="Configuration status")]
 
-        class WebRequest(FlextModels.Value):
+        class WebRequest(m.Value):
             """Web request model with complete tracking."""
 
             method: Annotated[
@@ -996,7 +996,7 @@ class FlextWebModels(FlextModels):
                 ),
             ] = Field(default_factory=lambda: datetime.now(UTC))
 
-        class WebResponse(FlextModels.Value):
+        class WebResponse(m.Value):
             """Web response model with status tracking."""
 
             request_id: Annotated[
@@ -1036,7 +1036,7 @@ class FlextWebModels(FlextModels):
                 ),
             ] = Field(default_factory=lambda: datetime.now(UTC))
 
-        class AppConfig(FlextModels.Value):
+        class AppConfig(m.Value):
             """Application configuration model."""
 
             title: Annotated[
@@ -1296,7 +1296,7 @@ class FlextWebModels(FlextModels):
             timestamp: Annotated[str, Field(description="Status timestamp")]
             components: Annotated[t.StrMapping, Field(description="Component statuses")]
 
-        class AppRuntimeInfo(FlextModels.ArbitraryTypesModel):
+        class AppRuntimeInfo(m.ArbitraryTypesModel):
             """Runtime information for a running web application.
 
             Tracks the server instance, daemon thread, and runner type

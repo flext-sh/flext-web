@@ -16,11 +16,10 @@ from typing import override
 import flask
 from fastapi import FastAPI
 
-from flext_core import p, r
-from flext_web import FlextWebServiceBase, FlextWebSettings, c, m, t, u
+from flext_web import FlextWebSettings, c, m, p, r, s, t, u
 
 
-class FlextWebApp(FlextWebServiceBase[bool]):
+class FlextWebApp(s[bool]):
     """Generic web application coordinator using flext-core patterns and SOLID principles.
 
     Single Responsibility: Coordinates web application creation and configuration.

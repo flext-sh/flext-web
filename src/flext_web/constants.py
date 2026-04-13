@@ -8,13 +8,13 @@ from ipaddress import IPv4Address
 from types import MappingProxyType
 from typing import TYPE_CHECKING, ClassVar, Final
 
-from flext_core import FlextConstants
+from flext_core import c
 
 if TYPE_CHECKING:
     from flext_web import t
 
 
-class FlextWebConstants(FlextConstants):
+class FlextWebConstants(c):
     """Immutable project-specific constants organized by domain."""
 
     class Web:
@@ -145,7 +145,7 @@ class FlextWebConstants(FlextConstants):
         class WebDefaults:
             """Default bootstrap values for web services."""
 
-            HOST: Final[str] = FlextConstants.LOCALHOST
+            HOST: Final[str] = c.LOCALHOST
             PORT: Final[int] = 8080
             APP_NAME: Final[str] = "FLEXT Web"
             ENVIRONMENT: Final[str] = "development"
@@ -160,7 +160,7 @@ class FlextWebConstants(FlextConstants):
             )
             TEST_SECRET_KEY: Final[str] = "test-secret-key-32-characters-long-for-tests"
             TIMEOUT_SECONDS: Final[float] = float(
-                FlextConstants.DEFAULT_TIMEOUT_SECONDS,
+                c.DEFAULT_TIMEOUT_SECONDS,
             )
             HTTP_PROTOCOL: Final[str] = "http"
             HTTPS_PROTOCOL: Final[str] = "https"
@@ -213,7 +213,7 @@ class FlextWebConstants(FlextConstants):
             MIN_SECRET_KEY_LENGTH: Final[int] = 32
             MAX_CONTENT_LENGTH_DEFAULT: Final[int] = 16 * 1024 * 1024
             MIN_CONTENT_LENGTH: Final[int] = 0
-            REQUEST_TIMEOUT_DEFAULT: Final[int] = FlextConstants.DEFAULT_TIMEOUT_SECONDS
+            REQUEST_TIMEOUT_DEFAULT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
             REQUEST_TIMEOUT_MAX: Final[int] = 600
             MAX_URL_LENGTH: Final[int] = 2048
             MIN_URL_LENGTH: Final[int] = 1
@@ -239,7 +239,7 @@ class FlextWebConstants(FlextConstants):
             HEADER_CONTENT_TYPE: Final[str] = "content-type"
             HEADER_CONTENT_LENGTH: Final[str] = "content-length"
             DEFAULT_TIMEOUT_SECONDS: Final[float] = float(
-                FlextConstants.DEFAULT_TIMEOUT_SECONDS,
+                c.DEFAULT_TIMEOUT_SECONDS,
             )
             METHODS: ClassVar[tuple[str, ...]] = (
                 "GET",

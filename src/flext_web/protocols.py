@@ -42,11 +42,11 @@ from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
-from flext_core import FlextProtocols, r
+from flext_core import p, r
 from flext_web import FlextWebApp, c, m, t, u
 
 
-class FlextWebProtocols(FlextProtocols):
+class FlextWebProtocols(p):
     """Hierarchical protocol definitions for FLEXT web ecosystem.
 
     Extends p with web-specific protocol definitions for the
@@ -512,7 +512,7 @@ class FlextWebProtocols(FlextProtocols):
         is_valid_port: ClassVar[Callable[[int], bool]] = _is_valid_port
 
         @runtime_checkable
-        class WebAppManager(FlextProtocols.Service[t.Web.ResponseDict], Protocol):
+        class WebAppManager(p.Service[t.Web.ResponseDict], Protocol):
             """Protocol for web application lifecycle management.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific application management
@@ -673,7 +673,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebResponseFormatter(
-            FlextProtocols.Service[t.Web.ResponseDict],
+            p.Service[t.Web.ResponseDict],
             Protocol,
         ):
             """Protocol for web response formatting.
@@ -755,7 +755,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebFrameworkInterface(
-            FlextProtocols.Service[t.Web.ResponseDict],
+            p.Service[t.Web.ResponseDict],
             Protocol,
         ):
             """Protocol for web framework integration.
@@ -825,7 +825,7 @@ class FlextWebProtocols(FlextProtocols):
                 return False
 
         @runtime_checkable
-        class WebService(FlextProtocols.Service[t.Web.ResponseDict], Protocol):
+        class WebService(p.Service[t.Web.ResponseDict], Protocol):
             """Base web service protocol.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific service operations.
@@ -1053,7 +1053,7 @@ class FlextWebProtocols(FlextProtocols):
                 return FlextWebProtocols.Web.WebHandler.handle_request(command)
 
         @runtime_checkable
-        class WebConnection(FlextProtocols.Service[t.Web.ResponseDict], Protocol):
+        class WebConnection(p.Service[t.Web.ResponseDict], Protocol):
             """Web connection protocol for external systems.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific connection operations.
@@ -1085,7 +1085,7 @@ class FlextWebProtocols(FlextProtocols):
                 return "http://localhost:8080"
 
         @runtime_checkable
-        class WebLogger(FlextProtocols.Service[t.Web.ResponseDict], Protocol):
+        class WebLogger(p.Service[t.Web.ResponseDict], Protocol):
             """Web logging protocol.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific logging operations.
@@ -1140,7 +1140,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateRenderer(
-            FlextProtocols.Service[t.Web.ResponseDict],
+            p.Service[t.Web.ResponseDict],
             Protocol,
         ):
             """Protocol for web template rendering.
@@ -1190,7 +1190,7 @@ class FlextWebProtocols(FlextProtocols):
 
         @runtime_checkable
         class WebTemplateEngine(
-            FlextProtocols.Service[t.Web.ResponseDict],
+            p.Service[t.Web.ResponseDict],
             Protocol,
         ):
             """Protocol for web template engine operations.
@@ -1307,7 +1307,7 @@ class FlextWebProtocols(FlextProtocols):
                 )
 
         @runtime_checkable
-        class WebMonitoring(FlextProtocols.Service[t.Web.ResponseDict], Protocol):
+        class WebMonitoring(p.Service[t.Web.ResponseDict], Protocol):
             """Web monitoring protocol for observability.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific monitoring operations.

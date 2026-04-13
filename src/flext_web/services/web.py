@@ -11,18 +11,18 @@ from flext_web import (
     FlextWebAuth,
     FlextWebEntities,
     FlextWebHealth,
-    FlextWebServiceBase,
     FlextWebSettings,
     c,
     m,
     p,
     r,
+    s,
     t,
     u,
 )
 
 
-class FlextWebServices(FlextWebServiceBase[bool]):
+class FlextWebServices(s[bool]):
     """Public service layer backed by protocol runtime state."""
 
     _auth_service: FlextWebAuth | None = PrivateAttr(default=None)

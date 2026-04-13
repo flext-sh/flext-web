@@ -5,8 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from flext_core import p, r
-from flext_web import FlextWeb, FlextWebSettings, t, web
+from flext_web import FlextWeb, FlextWebSettings, p, r, t, web
 
 
 class FlextWebCliService:

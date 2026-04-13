@@ -13,13 +13,13 @@ from __future__ import annotations
 import re
 from typing import override
 
-from flext_core import FlextUtilities
+from flext_core import u
 
 
-class FlextWebUtilities(FlextUtilities):
+class FlextWebUtilities(u):
     """Web-specific utilities delegating to flext-core.
 
-    Inherits from FlextUtilities and ensures consistency.
+    Inherits from u and ensures consistency.
     Provides only web-domain-specific functionality not available in u.
     All generic operations delegate to flext-core utilities.
     Uses advanced builder/DSL patterns for composition.
@@ -76,4 +76,5 @@ class FlextWebUtilities(FlextUtilities):
 
 
 u = FlextWebUtilities
+
 __all__: list[str] = ["FlextWebUtilities", "u"]

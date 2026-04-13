@@ -4,17 +4,17 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import p, r
 from flext_web import (
-    FlextWebProtocols,
-    FlextWebServiceBase,
     c,
     m,
+    p,
+    r,
+    s,
     u,
 )
 
 
-class FlextWebHealth(FlextWebServiceBase[bool]):
+class FlextWebHealth(s[bool]):
     """Health and metrics access backed by protocol runtime state."""
 
     @override
@@ -24,8 +24,8 @@ class FlextWebHealth(FlextWebServiceBase[bool]):
 
     def metrics(self) -> p.Result[m.Web.MetricsResponse]:
         """Return metrics projected from the protocol runtime registry."""
-        metrics = FlextWebProtocols.Web.WebMonitoring.web_metrics()
-        state = FlextWebProtocols.Web.service_state
+        metrics = p.Web.WebMonitoring.web_metrics()
+        state = p.Web.service_state
         service_status = (
             c.Web.WebResponse.STATUS_OPERATIONAL
             if state["service_running"]
@@ -45,7 +45,7 @@ class FlextWebHealth(FlextWebServiceBase[bool]):
 
     def status(self) -> p.Result[m.Web.HealthResponse]:
         """Return health status from the protocol runtime registry."""
-        payload = FlextWebProtocols.Web.WebMonitoring.web_health_status()
+        payload = p.Web.WebMonitoring.web_health_status()
         service_value = payload.get("service")
         status_value = payload.get("status")
         if not isinstance(service_value, str) or not isinstance(status_value, str):
