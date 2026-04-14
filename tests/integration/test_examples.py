@@ -23,7 +23,7 @@ class ExamplesFullFunctionalityTest:
         def _start_runtime(
             app_id: str,
             app_data: t.Web.ResponseDict,
-            app_instance: object,
+            app_instance: p.Web.FastApiLikeApp | p.Web.FlaskLikeApp,
         ) -> p.Result[t.Web.ResponseDict]:
             _ = (app_data, app_instance)
             return r[t.Web.ResponseDict].ok({"runner": "mock", "app_id": app_id})

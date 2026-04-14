@@ -11,12 +11,15 @@ from __future__ import annotations
 
 import json as _json
 from collections.abc import Callable
-from typing import override
+from typing import TYPE_CHECKING, override
 
 import flask
 from fastapi import FastAPI
 
-from flext_web import FlextWebSettings, c, m, p, r, s, t, u
+from flext_web import FlextWebSettings, c, m, p, r, s, u
+
+if TYPE_CHECKING:
+    from flext_web import t
 
 
 class FlextWebApp(s[bool]):
@@ -186,9 +189,9 @@ class FlextWebApp(s[bool]):
         """
         flask_config = settings if settings is not None else self.settings
         app = flask.Flask(flask_config.app_name)
-        app.settings["SECRET_KEY"] = flask_config.secret_key
-        app.settings["DEBUG"] = flask_config.debug
-        app.settings["TESTING"] = flask_config.testing
+        app.config["SECRET_KEY"] = flask_config.secret_key
+        app.config["DEBUG"] = flask_config.debug
+        app.config["TESTING"] = flask_config.testing
 
         def health_check() -> flask.Response:
             body: str = _json.dumps({

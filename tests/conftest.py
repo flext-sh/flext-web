@@ -70,10 +70,11 @@ def real_service(real_config: FlextWebSettings) -> FlextWebServices:
 
 @pytest.fixture
 def real_app(real_config: FlextWebSettings) -> Flask:
-    """Create real Flask app."""
-    app = Flask(__name__)
-    app.settings.update(SECRET_KEY=real_config.secret_key, TESTING=True)
-    return app
+    """Create a real Flask app through the public `web` facade."""
+    config = real_config.model_copy(update={"testing": True})
+    result = web.create_flask_app(config)
+    assert result.success, f"Flask app creation failed: {result.error}"
+    return result.value
 
 
 @pytest.fixture

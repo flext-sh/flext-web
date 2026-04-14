@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Callable
 
-import flask
 from fastapi.testclient import TestClient
 from flext_tests import tm
 
@@ -76,16 +74,14 @@ class TestFlextWebApp:
         )
         result = web.create_flask_app(settings)
         tm.ok(result)
-        tm.that(result.value.settings["SECRET_KEY"], eq=settings.secret_key)
+        tm.that(result.value.config["SECRET_KEY"], eq=settings.secret_key)
 
     def test_create_flask_app_health_route(self) -> None:
-        """The Flask health endpoint returns a JSON response."""
+        """The Flask health endpoint returns JSON over the public HTTP interface."""
         result = web.create_flask_app()
         tm.ok(result)
-        health_view = result.value.view_functions["health_check"]
-        response_factory: Callable[[], flask.Response] = health_view
-        with result.value.app_context():
-            response = response_factory()
+        client = result.value.test_client()
+        response = client.get("/health")
         payload = json.loads(response.get_data(as_text=True))
         tm.that(response.status_code, eq=200)
         tm.that(payload, has="status")

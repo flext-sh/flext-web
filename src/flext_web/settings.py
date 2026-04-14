@@ -9,13 +9,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Annotated, ClassVar, Self
+from typing import TYPE_CHECKING, Annotated, ClassVar, Self
 
 from pydantic import Field, ValidationError, computed_field, field_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextSettings
-from flext_web import c, p, r, t
+from flext_web import c, p, r
+
+if TYPE_CHECKING:
+    from flext_web import t
 
 
 @FlextSettings.auto_register("web")
@@ -155,10 +158,10 @@ class FlextWebSettings(FlextSettings):
                 debug=debug_value,
                 secret_key=secret_key_value,
             )
-            success: r[Self] = r[Self](value=instance, success=True)
+            success: p.Result[Self] = r[Self](value=instance, success=True)
             return success
         except ValidationError as exc:
-            failure: r[Self] = r[Self](error=str(exc), success=False)
+            failure: p.Result[Self] = r[Self](error=str(exc), success=False)
             return failure
 
     @classmethod

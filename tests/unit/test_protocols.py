@@ -14,7 +14,8 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from flext_tests import tm
 
-from tests import c, p, r, t
+from flext_core import FlextContainer, FlextContext, FlextSettings
+from tests import c, p, r, t, u
 
 _WebAppManagerBase = p.Web.TestBases._WebAppManagerBase
 _WebConnectionBase = p.Web.TestBases._WebConnectionBase
@@ -49,6 +50,36 @@ class TestFlextWebProtocols:
             "uptime": "0s",
             "avg_response_time_ms": 0,
         })
+
+    @staticmethod
+    def _assert_protocol_base_lifecycle() -> None:
+        """Exercise protocol-base lifecycle with a real ephemeral port."""
+        TestFlextWebProtocols._reset_protocol_state()
+        manager = _WebAppManagerBase()
+        test_port = u.Web.Tests.TestPortManager.allocate_port()
+        app_id: str | None = None
+        try:
+            created = manager.create_app("test", test_port, "localhost")
+            tm.ok(created)
+            app_id = str(created.value["id"])
+            tm.that({"fastapi", "flask"}, has=created.value["framework"])
+            tm.that({"asgi", "wsgi"}, has=created.value["interface"])
+            started = manager.start_app(app_id)
+            tm.ok(started)
+            tm.that(started.value["status"], eq=c.Web.Status.RUNNING.value)
+            listed = manager.list_apps()
+            tm.ok(listed)
+            tm.that(len(listed.value), eq=1)
+            tm.that(listed.value[0]["id"], eq=app_id)
+            stopped = manager.stop_app(app_id)
+            tm.ok(stopped)
+            tm.that(stopped.value["status"], eq=c.Web.Status.STOPPED.value)
+        finally:
+            if app_id is not None and app_id in p.Web.apps_registry:
+                app_state = p.Web.apps_registry[app_id]
+                if app_state.get("status") == c.Web.Status.RUNNING.value:
+                    manager.stop_app(app_id)
+            u.Web.Tests.TestPortManager.release_port(test_port)
 
     @pytest.fixture(autouse=True)
     def _mock_runtime_lifecycle(self, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -214,6 +245,21 @@ class TestFlextWebProtocols:
         """Test that protocols are extensible."""
 
         class Custom(p.Web.WebAppManager):
+            @property
+            @override
+            def settings(self) -> p.Settings:
+                return FlextSettings.fetch_global()
+
+            @property
+            @override
+            def container(self) -> p.Container:
+                return FlextContainer()
+
+            @property
+            @override
+            def context(self) -> p.Context:
+                return FlextContext()
+
             def custom_method(self) -> None:
                 msg = "Must use unified test helpers per Rule 3.6"
                 raise NotImplementedError(msg)
@@ -233,6 +279,33 @@ class TestFlextWebProtocols:
             @override
             def valid(self) -> bool:
                 return True
+
+            @override
+            def ok[V](self, value: V) -> p.Result[V]:
+                return r[V].ok(value)
+
+            @override
+            def fail_op(
+                self,
+                operation: str,
+                exc: Exception | str | None = None,
+            ) -> p.Result[t.Web.ResponseDict]:
+                error = str(exc) if exc is not None else operation
+                return r[t.Web.ResponseDict].fail(error)
+
+            @override
+            def fail_val(
+                self,
+                field: str | None = None,
+                value: t.Scalar | None = None,
+                *,
+                error: Exception | str | None = None,
+            ) -> p.Result[t.Web.ResponseDict]:
+                _ = value
+                message = (
+                    str(error) if error is not None else field or "validation failed"
+                )
+                return r[t.Web.ResponseDict].fail(message)
 
     def test_protocol_validation(self) -> None:
         """Test that protocols can be used for validation."""
@@ -269,22 +342,7 @@ class TestFlextWebProtocols:
 
     def test_app_manager_protocol_real_lifecycle_behavior(self) -> None:
         """Validate real app lifecycle behavior from protocol base implementation."""
-        self._reset_protocol_state()
-        manager = _WebAppManagerBase()
-        created = manager.create_app("test", 8080, "localhost")
-        tm.ok(created)
-        app_id = str(created.value["id"])
-        tm.that({"fastapi", "flask"}, has=created.value["framework"])
-        started = manager.start_app(app_id)
-        tm.ok(started)
-        tm.that(started.value["status"], eq=c.Web.Status.RUNNING.value)
-        listed = manager.list_apps()
-        tm.ok(listed)
-        tm.that(len(listed.value), eq=1)
-        tm.that(listed.value[0]["id"], eq=app_id)
-        stopped = manager.stop_app(app_id)
-        tm.ok(stopped)
-        tm.that(stopped.value["status"], eq=c.Web.Status.STOPPED.value)
+        self._assert_protocol_base_lifecycle()
 
     def test_response_formatter_protocol_methods(self) -> None:
         """Test WebResponseFormatter methods execution."""
@@ -619,23 +677,7 @@ class TestFlextWebProtocols:
 
     def test_app_lifecycle_direct_execution_on_protocol_base(self) -> None:
         """Test real app lifecycle behavior through WebAppManager protocol base."""
-        self._reset_protocol_state()
-        manager = _WebAppManagerBase()
-        result = manager.create_app("test", 8080, "localhost")
-        tm.ok(result)
-        app_id = str(result.value["id"])
-        tm.that({"fastapi", "flask"}, has=result.value["framework"])
-        tm.that({"asgi", "wsgi"}, has=result.value["interface"])
-        started = manager.start_app(app_id)
-        tm.ok(started)
-        tm.that(started.value["status"], eq=c.Web.Status.RUNNING.value)
-        listed = manager.list_apps()
-        tm.ok(listed)
-        tm.that(len(listed.value), eq=1)
-        tm.that(listed.value[0]["id"], eq=app_id)
-        stopped = manager.stop_app(app_id)
-        tm.ok(stopped)
-        tm.that(stopped.value["status"], eq=c.Web.Status.STOPPED.value)
+        self._assert_protocol_base_lifecycle()
 
     def test_response_formatter_real_behavior(self) -> None:
         """Test response formatter protocol with real implementation behavior."""

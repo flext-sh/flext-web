@@ -103,7 +103,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 return False
 
             @staticmethod
-            def _wrap_result[T](result: r[T]) -> p.Result[BaseModel]:
+            def _wrap_result[T](result: p.Result[T]) -> p.Result[BaseModel]:
                 """Wrap a typed result into `r[BaseModel]` for generic helpers."""
                 if result.success:
                     value = result.value
@@ -114,7 +114,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def assert_success[T](
-                result: r[T],
+                result: p.Result[T],
                 message: str = "Operation should succeed",
             ) -> None:
                 """Assert that a result succeeded."""
@@ -123,7 +123,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def assert_failure[T](
-                result: r[T],
+                result: p.Result[T],
                 message: str = "Operation should fail",
             ) -> None:
                 """Assert that a result failed."""
@@ -132,7 +132,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def assert_result[T](
-                result: r[T],
+                result: p.Result[T],
                 *,
                 expected_success: bool = True,
             ) -> None:
@@ -507,7 +507,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             @staticmethod
             def run_parameterized_test(
                 test_cases: Sequence[tuple[t.RecursiveContainer, ...]],
-                test_function: Callable[..., r[BaseModel]],
+                test_function: Callable[..., p.Result[BaseModel]],
                 expected_results: Sequence[bool],
                 test_name: str = "parameterized_test",
             ) -> None:
