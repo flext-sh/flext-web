@@ -52,7 +52,7 @@
 
 ## 📊 Status
 
-**Version**: 0.9.9 RC
+**Version**: 0.12.0-dev RC
 **Status**: ✅ Production ready (architectural improvements needed)
 **Coverage**: -
 **Documentation**: ⏳ In progress

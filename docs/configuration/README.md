@@ -32,7 +32,7 @@ config_result = web.settings.create_web_config(
     port=8080,
     debug=True,
 )
-assert config_result.is_success
+assert config_result.success
 
 settings = config_result.value
 assert settings.base_url == "http://127.0.0.1:8080"
@@ -74,10 +74,10 @@ config_result = web.settings.create_web_config(
     port=8080,
     secret_key="development-secret-key-32-characters-long",
 )
-assert config_result.is_success
+assert config_result.success
 
 validation_result = web.settings.validate_settings(config_result.value)
-assert validation_result.is_success
+assert validation_result.success
 ```
 
 Invalid values fail through `r[...]`:
@@ -86,7 +86,7 @@ Invalid values fail through `r[...]`:
 from flext_web import web
 
 result = web.settings.create_web_config(host="", port=-1)
-assert result.is_failure
+assert result.failure
 ```
 
 ## Environment Variables
@@ -118,14 +118,14 @@ config_result = web.settings.create_web_config(
     debug=False,
     secret_key="production-secret-key-32-characters-long",
 )
-assert config_result.is_success
+assert config_result.success
 
 start_result = web.start_service(
     host=config_result.value.host,
     port=config_result.value.port,
     debug=config_result.value.debug_mode,
 )
-assert start_result.is_success
+assert start_result.success
 ```
 
 ## Operational Rules

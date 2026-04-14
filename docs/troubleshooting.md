@@ -27,7 +27,7 @@ Use the registered namespace through `web.settings`:
 from flext_web import web
 
 config_result = web.settings.create_web_config(host="127.0.0.1", port=8080)
-assert config_result.is_success
+assert config_result.success
 ```
 
 If validation fails, inspect the field values being passed to the settings factory.
@@ -39,9 +39,9 @@ When the service does not start, confirm route initialization and middleware set
 ```python
 from flext_web import web
 
-assert web.initialize_routes().is_success
-assert web.configure_middleware().is_success
-assert web.start_service(host="127.0.0.1", port=8080).is_success
+assert web.initialize_routes().success
+assert web.configure_middleware().success
+assert web.start_service(host="127.0.0.1", port=8080).success
 ```
 
 ## Quick Checks

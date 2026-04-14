@@ -26,7 +26,7 @@ from flext_web import web
 settings_result = web.settings.create_web_config(
     host="localhost", port=8080, debug=True
 )
-assert settings_result.is_success
+assert settings_result.success
 
 web.create_fastapi_app()
 web.get_service_status()

@@ -66,9 +66,9 @@ Lifecycle operations stay on the facade:
 ```python
 from flext_web import web
 
-assert web.get_service_status().is_success
-assert web.start_service(host="127.0.0.1", port=8080).is_success
-assert web.stop_service().is_success
+assert web.get_service_status().success
+assert web.start_service(host="127.0.0.1", port=8080).success
+assert web.stop_service().success
 ```
 
 ## Quality Rule
