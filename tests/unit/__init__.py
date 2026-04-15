@@ -21,6 +21,19 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_typings": ("test_typings",),
         ".test_utilities": ("test_utilities",),
         ".test_version": ("test_version",),
+        "flext_web": (
+            "c",
+            "d",
+            "e",
+            "h",
+            "m",
+            "p",
+            "r",
+            "s",
+            "t",
+            "u",
+            "x",
+        ),
     },
 )
 

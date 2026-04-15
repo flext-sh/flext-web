@@ -42,15 +42,15 @@ from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
-from flext_core import p, r, t as core_t
-from flext_web import c, m, u
+from flext_core import p
+from flext_web import c, m, r, u
 
 if TYPE_CHECKING:
     from flext_web import t
 
 type WebResponseDict = dict[
     str,
-    core_t.Scalar | core_t.StrSequence | Mapping[str, core_t.Scalar],
+    t.Scalar | t.StrSequence | Mapping[str, t.Scalar],
 ]
 
 
