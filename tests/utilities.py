@@ -16,9 +16,9 @@ import pytest
 from flext_tests import FlextTestsUtilities
 from pydantic import BaseModel, ValidationError
 
-from flext_core import p, r
+from flext_core import r
 from flext_web import FlextWebUtilities
-from tests import c, m, t
+from tests import c, m, p, t
 
 
 class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
