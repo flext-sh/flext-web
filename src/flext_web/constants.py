@@ -336,3 +336,5 @@ class FlextWebConstants(c):
 
 
 c = FlextWebConstants
+
+__all__: list[str] = ["FlextWebConstants", "c"]

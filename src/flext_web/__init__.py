@@ -13,9 +13,10 @@ from flext_core.lazy import (
 from flext_web.__version__ import *
 
 if _t.TYPE_CHECKING:
-    from flext_core import c, d, e, h, r, x
+    from flext_core import d, e, h, r, x
     from flext_web.api import FlextWeb, web
     from flext_web.base import FlextWebServiceBase, s
+    from flext_web.constants import FlextWebConstants, c
     from flext_web.models import FlextWebModels, m
     from flext_web.protocols import FlextWebProtocols, p
     from flext_web.services.app import FlextWebApp
@@ -49,6 +50,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextWebServiceBase",
                 "s",
             ),
+            ".constants": (
+                "FlextWebConstants",
+                "c",
+            ),
             ".models": (
                 "FlextWebModels",
                 "m",
@@ -57,6 +62,12 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextWebProtocols",
                 "p",
             ),
+            ".services.app": ("FlextWebApp",),
+            ".services.auth": ("FlextWebAuth",),
+            ".services.entities": ("FlextWebEntities",),
+            ".services.handlers": ("FlextWebHandlers",),
+            ".services.health": ("FlextWebHealth",),
+            ".services.web": ("FlextWebServices",),
             ".settings": ("FlextWebSettings",),
             ".typings": (
                 "FlextWebTypes",
@@ -67,7 +78,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "u",
             ),
             "flext_core": (
-                "c",
                 "d",
                 "e",
                 "h",
@@ -95,6 +105,7 @@ __all__: list[str] = [
     "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
+    "FlextWebConstants",
     "FlextWebEntities",
     "FlextWebHandlers",
     "FlextWebHealth",

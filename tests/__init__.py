@@ -36,6 +36,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextWebConstants",
                 "c",
             ),
+            ".helpers.models": ("TestsModels",),
+            ".helpers.protocols": ("TestsProtocols",),
+            ".helpers.typings": ("TestsTypings",),
+            ".helpers.utilities": ("TestsUtilities",),
             ".models": (
                 "TestsFlextWebModels",
                 "m",
