@@ -9,29 +9,26 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, ClassVar, Self
+from typing import Annotated, ClassVar, Self
 
-from pydantic import Field, ValidationError, computed_field, field_validator
+from pydantic import field_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextSettings
-from flext_web import c, p, r
-
-if TYPE_CHECKING:
-    from flext_web import t
+from flext_web import c, m, p, r, t, u
 
 
 @FlextSettings.auto_register("web")
 class FlextWebSettings(FlextSettings):
     """Validated settings for web runtime and HTTP endpoints."""
 
-    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+    model_config: ClassVar[SettingsConfigDict] = m.SettingsConfigDict(
         env_prefix="FLEXT_WEB_", extra="ignore"
     )
 
     app_name: Annotated[
         str,
-        Field(
+        m.Field(
             min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
             max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
             description="Application name",
@@ -39,7 +36,7 @@ class FlextWebSettings(FlextSettings):
     ] = c.Web.WebDefaults.APP_NAME
     host: Annotated[
         str,
-        Field(
+        m.Field(
             min_length=1,
             max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
             description="Bind host",
@@ -47,36 +44,36 @@ class FlextWebSettings(FlextSettings):
     ] = c.Web.WebDefaults.HOST
     port: Annotated[
         t.PortNumber,
-        Field(
+        m.Field(
             description="Bind port",
         ),
     ] = c.Web.WebDefaults.PORT
     debug_mode: Annotated[
         bool,
-        Field(
+        m.Field(
             description="Debug mode",
         ),
     ] = c.Web.WebDefaults.DEBUG_MODE
-    debug: Annotated[bool, Field(description="Flask debug flag")] = False
-    testing: Annotated[bool, Field(description="Flask testing flag")] = False
+    debug: Annotated[bool, m.Field(description="Flask debug flag")] = False
+    testing: Annotated[bool, m.Field(description="Flask testing flag")] = False
     secret_key: Annotated[
         str,
-        Field(
+        m.Field(
             min_length=c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
             description="Application secret key",
         ),
     ] = c.Web.WebDefaults.SECRET_KEY
     ssl_enabled: Annotated[
         bool,
-        Field(description="Enable TLS endpoints"),
+        m.Field(description="Enable TLS endpoints"),
     ] = False
     ssl_cert_path: Annotated[
         str | None,
-        Field(description="TLS certificate file path"),
+        m.Field(description="TLS certificate file path"),
     ] = None
     ssl_key_path: Annotated[
         str | None,
-        Field(description="TLS key file path"),
+        m.Field(description="TLS key file path"),
     ] = None
 
     @field_validator("host")
@@ -118,7 +115,7 @@ class FlextWebSettings(FlextSettings):
         normalized = value.strip()
         return normalized or None
 
-    @computed_field
+    @u.computed_field()
     @property
     def protocol(self) -> str:
         """Return active URL protocol based on TLS setting."""
@@ -128,7 +125,7 @@ class FlextWebSettings(FlextSettings):
             else c.Web.WebDefaults.HTTP_PROTOCOL
         )
 
-    @computed_field
+    @u.computed_field()
     @property
     def base_url(self) -> str:
         """Build base URL from protocol, host, and port."""
@@ -160,7 +157,7 @@ class FlextWebSettings(FlextSettings):
             )
             success: p.Result[Self] = r[Self](value=instance, success=True)
             return success
-        except ValidationError as exc:
+        except c.ValidationError as exc:
             failure: p.Result[Self] = r[Self](error=str(exc), success=False)
             return failure
 
@@ -169,7 +166,7 @@ class FlextWebSettings(FlextSettings):
         """Validate a settings instance against the canonical schema."""
         try:
             _ = cls(**settings.model_dump())
-        except ValidationError as exc:
+        except c.ValidationError as exc:
             return r[bool].fail(str(exc))
         return r[bool].ok(True)
 

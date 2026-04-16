@@ -12,8 +12,6 @@ from __future__ import annotations
 from importlib.metadata import metadata
 from typing import Annotated, Final, Self
 
-from pydantic import Field
-
 from flext_core import FlextModels
 
 _metadata = metadata("flext-web")
@@ -32,14 +30,26 @@ __url__: Final[str] = _metadata.get("Home-Page", "")
 class VersionMetadata(FlextModels.Value):
     """Immutable package version metadata."""
 
-    version: Annotated[str, Field(description="Package version")]
-    version_info: Annotated[tuple[int | str, ...], Field(description="Version tuple")]
-    title: Annotated[str, Field(description="Package title")]
-    description: Annotated[str, Field(description="Package description")]
-    author: Annotated[str, Field(description="Package author")]
-    author_email: Annotated[str, Field(description="Package author email")]
-    license_type: Annotated[str, Field(description="Package license")]
-    url: Annotated[str, Field(description="Package URL")]
+    version: Annotated[str, FlextModels.Field(description="Package version")]
+    version_info: Annotated[
+        tuple[int | str, ...],
+        FlextModels.Field(description="Version tuple"),
+    ]
+    title: Annotated[str, FlextModels.Field(description="Package title")]
+    description: Annotated[
+        str,
+        FlextModels.Field(description="Package description"),
+    ]
+    author: Annotated[str, FlextModels.Field(description="Package author")]
+    author_email: Annotated[
+        str,
+        FlextModels.Field(description="Package author email"),
+    ]
+    license_type: Annotated[
+        str,
+        FlextModels.Field(description="Package license"),
+    ]
+    url: Annotated[str, FlextModels.Field(description="Package URL")]
 
 
 class FlextWebVersion:

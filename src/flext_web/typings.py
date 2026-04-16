@@ -13,8 +13,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Annotated
 
-from pydantic import Field
-
 from flext_core import t
 from flext_web import (
     c,
@@ -63,23 +61,23 @@ class FlextWebTypes(t):
 
             name: Annotated[
                 str,
-                Field(description="App name"),
+                m.Field(description="App name"),
             ] = c.Web.WebDefaults.APP_NAME
             status: Annotated[
                 str,
-                Field(description="App status"),
+                m.Field(description="App status"),
             ] = c.Web.Status.STOPPED.value
             environment: Annotated[
                 str,
-                Field(description="Environment"),
+                m.Field(description="Environment"),
             ] = c.Web.Name.DEVELOPMENT.value
             debug_mode: Annotated[
                 bool,
-                Field(description="Debug"),
+                m.Field(description="Debug"),
             ] = c.Web.WebDefaults.DEBUG_MODE
             version: Annotated[
                 int,
-                Field(description="Version"),
+                m.Field(description="Version"),
             ] = c.Web.WebDefaults.VERSION_INT
 
         class RequestConfig(m.Web.AppRequest):

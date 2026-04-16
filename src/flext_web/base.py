@@ -11,12 +11,10 @@ from __future__ import annotations
 
 from abc import ABC
 from collections.abc import Sequence
-from typing import override
-
-from pydantic import Field
+from typing import Annotated, override
 
 from flext_core import FlextSettings, s, t
-from flext_web import FlextWebSettings
+from flext_web import FlextWebSettings, m
 
 
 class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrModel]](
@@ -25,9 +23,10 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
 ):
     """Base class for flext-web services with typed `web` settings access."""
 
-    settings_type: type[FlextWebSettings] | None = Field(
-        default=FlextWebSettings, description="Settings class for web services"
-    )
+    settings_type: Annotated[
+        type[FlextWebSettings] | None,
+        m.Field(description="Settings class for web services"),
+    ] = FlextWebSettings
 
     @property
     @override
