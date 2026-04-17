@@ -5,8 +5,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Self, override
 
-from pydantic import PrivateAttr
-
 from flext_web import (
     FlextWebAuth,
     FlextWebEntities,
@@ -25,9 +23,11 @@ from flext_web import (
 class FlextWebServices(s[bool]):
     """Public service layer backed by protocol runtime state."""
 
-    _auth_service: FlextWebAuth | None = PrivateAttr(default=None)
-    _entity_service: FlextWebEntities | None = PrivateAttr(default=None)
-    _health_service: FlextWebHealth | None = PrivateAttr(default=None)
+    _auth_service: FlextWebAuth | None = u.PrivateAttr(default_factory=lambda: None)
+    _entity_service: FlextWebEntities | None = u.PrivateAttr(
+        default_factory=lambda: None
+    )
+    _health_service: FlextWebHealth | None = u.PrivateAttr(default_factory=lambda: None)
 
     @classmethod
     def create_service(

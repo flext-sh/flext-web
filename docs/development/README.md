@@ -1,6 +1,5 @@
 # flext-web Development Reference
 
-
 <!-- TOC START -->
 - [Canonical Entry Point](#canonical-entry-point)
 - [Implementation Map](#implementation-map)

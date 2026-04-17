@@ -162,7 +162,7 @@ class FlextWebProtocols(p):
     - Type-safe web service lifecycle management
 
     FlextModels Integration:
-    - Web models satisfy HasModelDump, HasModelFields, Model
+    - Web models satisfy HasModelDump, HasModelu.Fields, Model
     - Pydantic v2 integration through model_dump, model_fields, validate
     - Type-safe web domain model implementation
 

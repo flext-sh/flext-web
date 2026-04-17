@@ -6,15 +6,13 @@ import uuid
 from collections.abc import MutableMapping, Sequence
 from typing import override
 
-from pydantic import PrivateAttr
-
 from flext_web import m, p, r, s, u
 
 
 class FlextWebEntities(s[bool]):
     """In-memory entity CRUD support for flext-web."""
 
-    _storage: MutableMapping[str, m.Web.EntityData] = PrivateAttr(
+    _storage: MutableMapping[str, m.Web.EntityData] = u.PrivateAttr(
         default_factory=lambda: dict[str, m.Web.EntityData](),
     )
 

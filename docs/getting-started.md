@@ -1,6 +1,5 @@
 # Getting Started - flext-web
 
-
 <!-- TOC START -->
 - [Install](#install)
 - [Basic Usage](#basic-usage)

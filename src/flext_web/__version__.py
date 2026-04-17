@@ -30,26 +30,26 @@ __url__: Final[str] = _metadata.get("Home-Page", "")
 class VersionMetadata(FlextModels.Value):
     """Immutable package version metadata."""
 
-    version: Annotated[str, FlextModels.Field(description="Package version")]
+    version: Annotated[str, FlextModels.u.Field(description="Package version")]
     version_info: Annotated[
         tuple[int | str, ...],
-        FlextModels.Field(description="Version tuple"),
+        FlextModels.u.Field(description="Version tuple"),
     ]
-    title: Annotated[str, FlextModels.Field(description="Package title")]
+    title: Annotated[str, FlextModels.u.Field(description="Package title")]
     description: Annotated[
         str,
-        FlextModels.Field(description="Package description"),
+        FlextModels.u.Field(description="Package description"),
     ]
-    author: Annotated[str, FlextModels.Field(description="Package author")]
+    author: Annotated[str, FlextModels.u.Field(description="Package author")]
     author_email: Annotated[
         str,
-        FlextModels.Field(description="Package author email"),
+        FlextModels.u.Field(description="Package author email"),
     ]
     license_type: Annotated[
         str,
-        FlextModels.Field(description="Package license"),
+        FlextModels.u.Field(description="Package license"),
     ]
-    url: Annotated[str, FlextModels.Field(description="Package URL")]
+    url: Annotated[str, FlextModels.u.Field(description="Package URL")]
 
 
 class FlextWebVersion:

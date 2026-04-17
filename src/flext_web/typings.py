@@ -61,23 +61,23 @@ class FlextWebTypes(t):
 
             name: Annotated[
                 str,
-                m.Field(description="App name"),
+                u.Field(description="App name"),
             ] = c.Web.WebDefaults.APP_NAME
             status: Annotated[
                 str,
-                m.Field(description="App status"),
+                u.Field(description="App status"),
             ] = c.Web.Status.STOPPED.value
             environment: Annotated[
                 str,
-                m.Field(description="Environment"),
+                u.Field(description="Environment"),
             ] = c.Web.Name.DEVELOPMENT.value
             debug_mode: Annotated[
                 bool,
-                m.Field(description="Debug"),
+                u.Field(description="Debug"),
             ] = c.Web.WebDefaults.DEBUG_MODE
             version: Annotated[
                 int,
-                m.Field(description="Version"),
+                u.Field(description="Version"),
             ] = c.Web.WebDefaults.VERSION_INT
 
         class RequestConfig(m.Web.AppRequest):

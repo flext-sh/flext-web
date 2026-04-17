@@ -13,8 +13,8 @@ from abc import ABC
 from collections.abc import Sequence
 from typing import Annotated, override
 
-from flext_core import FlextSettings, s, t
-from flext_web import FlextWebSettings, m
+from flext_core import FlextSettings, s
+from flext_web import FlextWebSettings, t, u
 
 
 class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrModel]](
@@ -25,7 +25,7 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
 
     settings_type: Annotated[
         type[FlextWebSettings] | None,
-        m.Field(description="Settings class for web services"),
+        u.Field(description="Settings class for web services"),
     ] = FlextWebSettings
 
     @property

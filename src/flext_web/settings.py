@@ -11,7 +11,6 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar, Self
 
-from pydantic import field_validator
 from pydantic_settings import SettingsConfigDict
 
 from flext_core import FlextSettings
@@ -28,7 +27,7 @@ class FlextWebSettings(FlextSettings):
 
     app_name: Annotated[
         str,
-        m.Field(
+        u.Field(
             min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
             max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
             description="Application name",
@@ -36,7 +35,7 @@ class FlextWebSettings(FlextSettings):
     ] = c.Web.WebDefaults.APP_NAME
     host: Annotated[
         str,
-        m.Field(
+        u.Field(
             min_length=1,
             max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
             description="Bind host",
@@ -44,39 +43,39 @@ class FlextWebSettings(FlextSettings):
     ] = c.Web.WebDefaults.HOST
     port: Annotated[
         t.PortNumber,
-        m.Field(
+        u.Field(
             description="Bind port",
         ),
     ] = c.Web.WebDefaults.PORT
     debug_mode: Annotated[
         bool,
-        m.Field(
+        u.Field(
             description="Debug mode",
         ),
     ] = c.Web.WebDefaults.DEBUG_MODE
-    debug: Annotated[bool, m.Field(description="Flask debug flag")] = False
-    testing: Annotated[bool, m.Field(description="Flask testing flag")] = False
+    debug: Annotated[bool, u.Field(description="Flask debug flag")] = False
+    testing: Annotated[bool, u.Field(description="Flask testing flag")] = False
     secret_key: Annotated[
         str,
-        m.Field(
+        u.Field(
             min_length=c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
             description="Application secret key",
         ),
     ] = c.Web.WebDefaults.SECRET_KEY
     ssl_enabled: Annotated[
         bool,
-        m.Field(description="Enable TLS endpoints"),
+        u.Field(description="Enable TLS endpoints"),
     ] = False
     ssl_cert_path: Annotated[
         str | None,
-        m.Field(description="TLS certificate file path"),
+        u.Field(description="TLS certificate file path"),
     ] = None
     ssl_key_path: Annotated[
         str | None,
-        m.Field(description="TLS key file path"),
+        u.Field(description="TLS key file path"),
     ] = None
 
-    @field_validator("host")
+    @u.field_validator("host")
     @classmethod
     def validate_host(cls, value: str) -> str:
         """Ensure host is non-empty after trimming."""
@@ -86,7 +85,7 @@ class FlextWebSettings(FlextSettings):
             raise ValueError(msg)
         return host_value
 
-    @field_validator("port")
+    @u.field_validator("port")
     @classmethod
     def validate_port(cls, value: int) -> int:
         """Ensure port stays inside the configured range."""
@@ -96,7 +95,7 @@ class FlextWebSettings(FlextSettings):
             raise ValueError(msg)
         return value
 
-    @field_validator("secret_key")
+    @u.field_validator("secret_key")
     @classmethod
     def validate_secret_key(cls, value: str) -> str:
         """Ensure the secret key is present after trimming."""
@@ -106,7 +105,7 @@ class FlextWebSettings(FlextSettings):
             raise ValueError(msg)
         return secret_key
 
-    @field_validator("ssl_cert_path", "ssl_key_path")
+    @u.field_validator("ssl_cert_path", "ssl_key_path")
     @classmethod
     def normalize_optional_path(cls, value: str | None) -> str | None:
         """Normalize optional TLS paths by stripping empty strings."""

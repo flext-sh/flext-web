@@ -1,6 +1,5 @@
 # Development Guide - flext-web
 
-
 <!-- TOC START -->
 - [Current Architecture](#current-architecture)
 - [Development Workflow](#development-workflow)

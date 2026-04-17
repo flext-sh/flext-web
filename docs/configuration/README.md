@@ -1,6 +1,5 @@
 # Configuration Guide - flext-web
 
-
 <!-- TOC START -->
 - [Canonical Access](#canonical-access)
 - [Settings Model](#settings-model)
