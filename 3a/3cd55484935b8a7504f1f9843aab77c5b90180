@@ -1,0 +1,60 @@
+docs/guides/troubleshooting.md
+  h_9db9d35f50cf33 594
+src/flext_web/typings.py
+  h_9db9d35f50cf33 64,68,72,76,80
+src/flext_web/__version__.py
+  h_9db9d35f50cf33 33,36,38,41,43,46,50,52
+src/flext_web/models.py
+  h_9db9d35f50cf33 19,59,62,65,71,74,91,99,105,130,163,170,218,226,232,237,258,261,264,270,273,276,279,282,285,288,292,337,344,347,350,356,359,362,368,371,374,378,384,390,453,456,459,466,494,502,508,513,525,531,538,545,548,553,556,793,801,809,815,821,830-831,836-837,840,850,858,866,877,880,885-887,892-895,900-905,915-917,922,925,932,936,938,941,945,949,954,957,959-960,967,973,981,984,987,993,996,999,1002,1009,1013,1021,1024,1027,1033,1036,1039,1042,1049,1055,1058,1066,1072,1078,1223,1231,1237,1245,1249,1253,1256,1259,1265,1271,1279-1281,1284,1288,1292,1298-1301,1303,1313,1320,1324,1328
+docs/guides/configuration.md
+  h_9db9d35f50cf33 370,384,388
+src/flext_web/services/web.py
+  042872ef4e0005dc 26-30
+src/flext_web/protocols.py
+  h_9db9d35f50cf33 165
+src/flext_web/base.py
+  h_9db9d35f50cf33 28
+  4e92b57578bb124f 16-17
+src/flext_web/services/entities.py
+  h_9db9d35f50cf33 15
+src/flext_web/settings.py
+  h_9db9d35f50cf33 30,38,46,52,56-57,60,67,71,75,78,88,98,108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "3a3cd55484935b8a7504f1f9843aab77c5b90180",
+  "prompts": {
+    "042872ef4e0005dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5bfd9f1e-a74b-4952-b429-f2c6cb088948",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 3,
+      "accepted_lines": 5,
+      "overriden_lines": 0
+    },
+    "4e92b57578bb124f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bf0bbdc7-a737-4dde-9e17-c29f1079a4d5",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "FLEXT Bot",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 5,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
