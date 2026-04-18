@@ -1,6 +1,7 @@
-"""Unit tests for flext_web.version module.
+"""Unit tests for flext_web.__version__ module.
 
-Tests the version management functionality following flext standards.
+Tests the FlextWebVersion class methods and module-level exports
+following the canonical FlextVersion test pattern from flext-core.
 """
 
 from __future__ import annotations
@@ -8,9 +9,7 @@ from __future__ import annotations
 from flext_tests import tm
 
 from flext_web import (
-    VERSION,
     FlextWebVersion,
-    VersionMetadata,
     __author__,
     __author_email__,
     __description__,
@@ -22,46 +21,55 @@ from flext_web import (
 )
 
 
-def assert_version_info() -> None:
-    """Helper to assert version info is valid."""
-    tm.that(__version__, is_=str)
-    tm.that(__version_info__, is_=tuple)
-    tm.that(__version_info__, empty=False)
-    assert isinstance(VERSION, FlextWebVersion)
-
-
 class TestFlextWebVersion:
     """Test suite for FlextWebVersion class."""
 
-    def test_version_initialization(self) -> None:
-        """Test FlextWebVersion initialization."""
-        version = FlextWebVersion(
-            VersionMetadata(
-                version="1.0.0",
-                version_info=(1, 0, 0),
-                title="FLEXT Web",
-                description="Generic HTTP Service",
-                author="FLEXT Team",
-                author_email="flext@example.com",
-                license_type="MIT",
-                url="https://github.com/flext/flext-web",
-            ),
+    def test_resolve_version_string(self) -> None:
+        """Test resolve_version_string returns valid version string."""
+        version = FlextWebVersion.resolve_version_string()
+        tm.that(version, is_=str, none=False, empty=False)
+        tm.that(
+            version,
+            match="^\\d+\\.\\d+\\.\\d+",
+            msg="Version must match semantic versioning",
         )
-        tm.that(version.version, eq="1.0.0")
-        tm.that(version.version_info, eq=(1, 0, 0))
 
-    def test_current_version(self) -> None:
-        """Test current version retrieval."""
-        current = FlextWebVersion.current()
-        tm.that(current.version, is_=str)
-        tm.that(current.version_info, is_=tuple)
-        tm.that(current.version_info, empty=False)
+    def test_resolve_version_info(self) -> None:
+        """Test resolve_version_info returns valid version tuple."""
+        version_info = FlextWebVersion.resolve_version_info()
+        tm.that(version_info, is_=(tuple, list), none=False, empty=False, len=(1, 10))
+        tm.that(
+            version_info[0],
+            is_=int,
+            gt=-1,
+            msg="Major version must be non-negative integer",
+        )
 
-    def test_version_globals(self) -> None:
-        """Test global version variables."""
-        assert_version_info()
-        tm.that(VERSION.version, eq=__version__)
-        tm.that(VERSION.version_info, eq=__version_info__)
+    def test_resolve_package_info(self) -> None:
+        """Test resolve_package_info returns complete package metadata."""
+        info = FlextWebVersion.resolve_package_info()
+        tm.that(info, is_=dict, none=False, empty=False)
+        required_keys = [
+            "name",
+            "version",
+            "description",
+            "author",
+            "author_email",
+            "license",
+            "url",
+        ]
+        tm.that(
+            info,
+            has=required_keys,
+            msg="Package info must contain all required keys",
+        )
+        for key in required_keys:
+            tm.that(
+                info[key],
+                is_=str,
+                none=False,
+                msg=f"Key {key} must be non-empty string",
+            )
 
     def test_version_format(self) -> None:
         """Test version format is valid."""
@@ -69,6 +77,33 @@ class TestFlextWebVersion:
         tm.that(len(version_parts), gte=2)
         version_from_info = ".".join(str(part) for part in __version_info__)
         tm.that(version_from_info, eq=__version__)
+
+    def test_module_level_exports(self) -> None:
+        """Test module-level version exports are consistent with class."""
+        tm.that(
+            __version__,
+            is_=str,
+            none=False,
+            empty=False,
+            match="^\\d+\\.\\d+\\.\\d+",
+        )
+        tm.that(
+            __version_info__,
+            is_=(tuple, list),
+            none=False,
+            empty=False,
+            len=(1, 10),
+        )
+        tm.that(
+            __version__,
+            eq=FlextWebVersion.resolve_version_string(),
+            msg="Module export must match class method",
+        )
+        tm.that(
+            __version_info__,
+            eq=FlextWebVersion.resolve_version_info(),
+            msg="Module export must match class method",
+        )
 
     def test_metadata_constants(self) -> None:
         """Test that metadata constants are properly defined."""
