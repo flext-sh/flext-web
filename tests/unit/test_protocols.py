@@ -9,7 +9,6 @@ from collections.abc import Callable, Sequence
 from typing import override
 
 import flask
-import pytest
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from flext_tests import tm
@@ -80,21 +79,6 @@ class TestFlextWebProtocols:
                 if app_state.get("status") == c.Web.Status.RUNNING.value:
                     manager.stop_app(app_id)
             u.Web.Tests.TestPortManager.release_port(test_port)
-
-    @pytest.fixture(autouse=True)
-    def _mock_runtime_lifecycle(self, monkeypatch: pytest.MonkeyPatch) -> None:
-
-        def _start_runtime(
-            app_id: str,
-            app_data: t.Web.ResponseDict,
-            app_instance: flask.Flask | FastAPI,
-        ) -> p.Result[t.Web.ResponseDict]:
-            _ = (app_data, app_instance)
-            return r[t.Web.ResponseDict].ok({"runner": "mock", "app_id": app_id})
-
-        def _stop_runtime(app_id: str, runtime: t.Web.ResponseDict) -> p.Result[bool]:
-            _ = (app_id, runtime)
-            return r[bool].ok(True)
 
     def test_protocols_inheritance(self) -> None:
         """Test that p has expected Web namespace."""
@@ -293,19 +277,7 @@ class TestFlextWebProtocols:
                 error = str(exc) if exc is not None else operation
                 return r[t.Web.ResponseDict].fail(error)
 
-            @override
-            def fail_val(
-                self,
-                field: str | None = None,
-                value: t.Scalar | None = None,
-                *,
-                error: Exception | str | None = None,
-            ) -> p.Result[t.Web.ResponseDict]:
-                _ = value
-                message = (
-                    str(error) if error is not None else field or "validation failed"
-                )
-                return r[t.Web.ResponseDict].fail(message)
+        _ = Custom
 
     def test_protocol_validation(self) -> None:
         """Test that protocols can be used for validation."""

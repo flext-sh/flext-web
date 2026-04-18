@@ -31,7 +31,7 @@ from collections.abc import Awaitable, Callable, Mapping, Sequence
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import TYPE_CHECKING, ClassVar, Protocol, override, runtime_checkable
+from typing import ClassVar, Protocol, override, runtime_checkable
 from uuid import uuid4
 from wsgiref.simple_server import WSGIServer, make_server
 
@@ -42,11 +42,11 @@ from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
-from flext_core import p
-from flext_web import c, m, r, u
-
-if TYPE_CHECKING:
-    from flext_web import t
+from flext_core import p, r
+from flext_web.constants import c
+from flext_web.models import m
+from flext_web.typings import t
+from flext_web.utilities import u
 
 type WebResponseDict = dict[
     str,

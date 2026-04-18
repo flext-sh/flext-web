@@ -8,12 +8,13 @@ from flext_core import p, r
 from flext_web import m, web
 
 
-def _allocate_demo_port() -> int:
-    """Return a deterministic demo port without binding a real socket."""
+def _allocate_demo_port(*reserved_ports: int) -> int:
+    """Return a deterministic demo port without reusing reserved ports."""
     apps_result = web.list_apps()
     used_ports: set[int] = (
         {app.port for app in apps_result.value} if apps_result.success else set()
     )
+    used_ports.update(reserved_ports)
     candidate = 18080
     while candidate in used_ports:
         candidate += 1
@@ -58,7 +59,7 @@ def demo_application_lifecycle() -> p.Result[Sequence[m.Web.ApplicationResponse]
     """Demonstrate the canonical public lifecycle flow for flext-web."""
     created_apps: list[m.Web.ApplicationResponse] = []
     first_port = _allocate_demo_port()
-    second_port = _allocate_demo_port()
+    second_port = _allocate_demo_port(first_port)
 
     for app_data in (
         m.Web.AppData(name="web-service", host="127.0.0.1", port=first_port),

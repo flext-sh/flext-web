@@ -35,7 +35,7 @@ class TestFlextWebModelsTypings:
 
     def test_app_data_functionality(self) -> None:
         """Test app data functionality."""
-        app = t.ApplicationEntity(
+        app = m.Web.Entity(
             id="test-id",
             name="test-app",
             host="localhost",
@@ -111,7 +111,7 @@ class TestFlextWebModelsTypings:
 
     def test_model_creation(self) -> None:
         """Test model creation functionality."""
-        app = t.ApplicationEntity(
+        app = m.Web.Entity(
             id="test-id",
             name="test-app",
             host="localhost",
@@ -140,11 +140,14 @@ class TestFlextWebModelsTypings:
         """Test that types follow expected usage patterns."""
 
         def process_request_data(
-            request: t.HttpRequest,
+            request: t.Web.RequestConfig,
         ) -> t.RecursiveContainerMapping:
             return {"processed": True, "method": request.method, "url": request.url}
 
-        request = t.HttpRequest(url="http://localhost:8080/api/test", method="GET")
+        request = t.Web.RequestConfig(
+            url="http://localhost:8080/api/test",
+            method="GET",
+        )
         result = process_request_data(request)
         tm.that(result, is_=dict)
         tm.that(result["processed"] is True, eq=True)

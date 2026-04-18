@@ -11,6 +11,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from importlib.metadata import PackageMetadata, metadata
 
 from flext_core import FlextVersion
@@ -19,7 +20,7 @@ from flext_core import FlextVersion
 class FlextWebVersion(FlextVersion):
     """flext-web version — MRO-derived from FlextVersion."""
 
-    _metadata: PackageMetadata = metadata("flext-web")
+    _metadata: PackageMetadata | Mapping[str, str] = metadata("flext-web")
 
 
 __version__ = FlextWebVersion.__version__

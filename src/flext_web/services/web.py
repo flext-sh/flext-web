@@ -35,7 +35,9 @@ class FlextWebServices(s[bool]):
         settings: FlextWebSettings | None = None,
     ) -> p.Result[Self]:
         """Create a service instance using optional settings overrides."""
-        overrides = settings.model_dump() if settings is not None else None
+        overrides = (
+            settings.model_dump(exclude_none=True) if settings is not None else None
+        )
         instance = cls(settings_overrides=overrides) if overrides is not None else cls()
         return r[Self](value=instance, success=True)
 
@@ -72,11 +74,7 @@ class FlextWebServices(s[bool]):
                 running_applications=sum(
                     1 for app in apps if app.status == c.Web.Status.RUNNING.value
                 ),
-                service_status=(
-                    c.Web.WebResponse.STATUS_OPERATIONAL
-                    if state["service_running"]
-                    else c.Web.Status.STOPPED.value
-                ),
+                service_status=self._service_status_label(),
                 routes_initialized=state["routes_initialized"],
                 middleware_configured=state["middleware_configured"],
                 timestamp=u.generate_iso_timestamp(),
@@ -104,9 +102,10 @@ class FlextWebServices(s[bool]):
 
     def fetch_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
         """Return a registered application by identifier."""
-        if not u.to_str(app_id):
-            return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
-        return p.Web.WebRepository.fetch_by_id(app_id).flat_map(
+        app_id_result = self._validated_app_id(app_id)
+        if app_id_result.failure:
+            return r[m.Web.ApplicationResponse].fail(app_id_result.error)
+        return p.Web.WebRepository.fetch_by_id(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
 
@@ -116,7 +115,6 @@ class FlextWebServices(s[bool]):
 
     def service_status(self) -> p.Result[m.Web.ServiceResponse]:
         """Return service status using protocol runtime state and settings."""
-        state = p.Web.service_state
         return r[m.Web.ServiceResponse].ok(
             m.Web.ServiceResponse(
                 service=c.Web.WebService.SERVICE_NAME_API,
@@ -126,11 +124,7 @@ class FlextWebServices(s[bool]):
                     "flask_support",
                     "settings_namespace_registered",
                 ],
-                status=(
-                    c.Web.WebResponse.STATUS_OPERATIONAL
-                    if state["service_running"]
-                    else c.Web.Status.STOPPED.value
-                ),
+                status=self._service_status_label(),
                 settings=True,
             ),
         )
@@ -169,9 +163,10 @@ class FlextWebServices(s[bool]):
 
     def start_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
         """Start a registered application and project its payload into a model."""
-        if not u.to_str(app_id):
-            return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
-        return p.start_app(app_id).flat_map(
+        app_id_result = self._validated_app_id(app_id)
+        if app_id_result.failure:
+            return r[m.Web.ApplicationResponse].fail(app_id_result.error)
+        return p.start_app(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
 
@@ -200,9 +195,10 @@ class FlextWebServices(s[bool]):
 
     def stop_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
         """Stop a registered application and project its payload into a model."""
-        if not u.to_str(app_id):
-            return r[m.Web.ApplicationResponse].fail("Application ID cannot be empty")
-        return p.stop_app(app_id).flat_map(
+        app_id_result = self._validated_app_id(app_id)
+        if app_id_result.failure:
+            return r[m.Web.ApplicationResponse].fail(app_id_result.error)
+        return p.stop_app(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
 
@@ -292,11 +288,27 @@ class FlextWebServices(s[bool]):
             responses.append(response_result.value)
         return r[Sequence[m.Web.ApplicationResponse]].ok(responses)
 
+    @staticmethod
+    def _service_status_label() -> str:
+        """Return the canonical service status label from runtime state."""
+        state = p.Web.service_state
+        if state["service_running"]:
+            return c.Web.WebResponse.STATUS_OPERATIONAL
+        return c.Web.Status.STOPPED.value
+
+    @staticmethod
+    def _validated_app_id(app_id: str) -> p.Result[str]:
+        """Validate app_id and return the normalized identifier."""
+        normalized_app_id = u.to_str(app_id)
+        if not normalized_app_id:
+            return r[str].fail("Application ID cannot be empty")
+        return r[str].ok(normalized_app_id)
+
     def _auth(self) -> FlextWebAuth:
         """Return the lazily created auth service."""
         if self._auth_service is None:
             self._auth_service = FlextWebAuth(
-                settings_overrides=self.settings.model_dump()
+                settings_overrides=self.settings.model_dump(exclude_none=True)
             )
         return self._auth_service
 
@@ -304,7 +316,7 @@ class FlextWebServices(s[bool]):
         """Return the lazily created entity service."""
         if self._entity_service is None:
             self._entity_service = FlextWebEntities(
-                settings_overrides=self.settings.model_dump(),
+                settings_overrides=self.settings.model_dump(exclude_none=True),
             )
         return self._entity_service
 
@@ -339,7 +351,7 @@ class FlextWebServices(s[bool]):
         """Return the lazily created health service."""
         if self._health_service is None:
             self._health_service = FlextWebHealth(
-                settings_overrides=self.settings.model_dump(),
+                settings_overrides=self.settings.model_dump(exclude_none=True),
             )
         return self._health_service
 

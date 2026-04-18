@@ -5,14 +5,17 @@ from __future__ import annotations
 from flext_tests import tm
 
 from flext_web import web
-from tests import m
+from tests import m, u
 
 
 class TestFlextWebHandlers:
     """Tests for handler-backed behavior exposed through `web`."""
 
+    _allocated_ports: list[int]
+
     def setup_method(self) -> None:
         """Reset the public runtime to a stopped state before each test."""
+        self._allocated_ports: list[int] = []
         apps_result = web.list_apps()
         if apps_result.success:
             for app in apps_result.value:
@@ -22,10 +25,25 @@ class TestFlextWebHandlers:
         if status_result.success and status_result.value.status == "operational":
             _ = web.stop_service()
 
+    def teardown_method(self) -> None:
+        """Release ports reserved for each test method."""
+        for port in self._allocated_ports:
+            u.Web.Tests.TestPortManager.release_port(port)
+
+    def _next_port(self) -> int:
+        """Reserve and return a unique port for the current test."""
+        port = u.Web.Tests.TestPortManager.allocate_port()
+        self._allocated_ports.append(port)
+        return port
+
     def test_list_apps_uses_public_registry(self) -> None:
         """Applications are listed through the public facade."""
         create_result = web.create_app(
-            m.Web.AppData(name="test-app", host="localhost", port=8080),
+            m.Web.AppData(
+                name="test-app",
+                host="localhost",
+                port=self._next_port(),
+            ),
         )
         tm.ok(create_result)
         result = web.list_apps()
@@ -45,19 +63,24 @@ class TestFlextWebHandlers:
 
     def test_create_app_through_public_facade(self) -> None:
         """Application creation goes through the public facade."""
+        port = self._next_port()
         result = web.create_app(
-            m.Web.AppData(name="test-app", host="localhost", port=8080),
+            m.Web.AppData(name="test-app", host="localhost", port=port),
         )
         tm.ok(result)
         app = result.value
         tm.that(app.name, eq="test-app")
-        tm.that(app.port, eq=8080)
+        tm.that(app.port, eq=port)
         tm.that(app.host, eq="localhost")
 
     def test_app_registry_integration(self) -> None:
         """Created applications remain visible through the public registry."""
         create_result = web.create_app(
-            m.Web.AppData(name="test-app", host="localhost", port=8080),
+            m.Web.AppData(
+                name="test-app",
+                host="localhost",
+                port=self._next_port(),
+            ),
         )
         tm.ok(create_result)
         app = create_result.value
@@ -70,7 +93,7 @@ class TestFlextWebHandlers:
     def test_protocol_implementation(self) -> None:
         """Public app lifecycle operations remain coherent."""
         create_result = web.create_app(
-            m.Web.AppData(name="test", host="localhost", port=8080),
+            m.Web.AppData(name="test", host="localhost", port=self._next_port()),
         )
         tm.ok(create_result)
         list_result = web.list_apps()
@@ -100,7 +123,11 @@ class TestFlextWebHandlers:
     def test_application_handler_start_stop_cycle(self) -> None:
         """Apps can be started and stopped through the public API."""
         create_result = web.create_app(
-            m.Web.AppData(name="test-app", host="localhost", port=8080),
+            m.Web.AppData(
+                name="test-app",
+                host="localhost",
+                port=self._next_port(),
+            ),
         )
         tm.ok(create_result)
         app_id = create_result.value.id
@@ -136,7 +163,11 @@ class TestFlextWebHandlers:
     def test_handle_start_app(self) -> None:
         """Starting a created app works through the public facade."""
         app_result = web.create_app(
-            m.Web.AppData(name="test-app", host="localhost", port=8080),
+            m.Web.AppData(
+                name="test-app",
+                host="localhost",
+                port=self._next_port(),
+            ),
         )
         tm.ok(app_result)
         result = web.start_app(app_result.value.id)
@@ -146,7 +177,11 @@ class TestFlextWebHandlers:
     def test_handle_stop_app(self) -> None:
         """Stopping a running app works through the public facade."""
         app_result = web.create_app(
-            m.Web.AppData(name="test-app", host="localhost", port=8080),
+            m.Web.AppData(
+                name="test-app",
+                host="localhost",
+                port=self._next_port(),
+            ),
         )
         tm.ok(app_result)
         start_result = web.start_app(app_result.value.id)

@@ -24,7 +24,7 @@ class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrMode
     """Base class for flext-web services with typed `web` settings access."""
 
     settings_type: Annotated[
-        type[FlextWebSettings] | None,
+        type | None,
         u.Field(description="Settings class for web services"),
     ] = FlextWebSettings
 

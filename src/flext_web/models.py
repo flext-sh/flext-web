@@ -12,16 +12,13 @@ import uuid
 from collections.abc import Mapping, MutableSequence
 from datetime import UTC, datetime
 from threading import Thread
-from typing import TYPE_CHECKING, Annotated, ClassVar, override
+from typing import Annotated, ClassVar, override
 from wsgiref.simple_server import WSGIServer
 
 import uvicorn
 
-from flext_core import m
+from flext_core import m, p, t
 from flext_web import c, r, u
-
-if TYPE_CHECKING:
-    from flext_web import p, t
 
 
 class FlextWebModels(m):

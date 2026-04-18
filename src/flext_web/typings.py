@@ -13,14 +13,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Annotated
 
-from flext_core import t
-from flext_web import (
-    c,
-    m,
-    p,
-    r,
-    u,
-)
+from flext_core import p, r, t
+from flext_web import c, m, u
 
 
 class FlextWebTypes(t):
@@ -30,21 +24,6 @@ class FlextWebTypes(t):
     Provides type aliases and factory methods for web operations.
     Follows single unified class per module pattern.
     """
-
-    class HttpMessage(m.Web.Message):
-        """HTTP message model - inherits from m.Web.Message."""
-
-    class HttpRequest(m.Web.Request):
-        """HTTP request model - inherits from m.Web.Request."""
-
-    class HttpResponse(m.Web.Response):
-        """HTTP response model - inherits from m.Web.Response."""
-
-    class ApplicationEntity(m.Web.Entity):
-        """Application entity model - inherits from m.Web.Entity."""
-
-    class AppData(m.Web.ApplicationResponse):
-        """Application data model - inherits from m.Web.ApplicationResponse."""
 
     class Web:
         """Web core type aliases for request/response data.

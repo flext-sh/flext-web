@@ -11,15 +11,14 @@ from __future__ import annotations
 
 import json as _json
 from collections.abc import Callable
-from typing import TYPE_CHECKING, override
+from typing import override
 
 import flask
 from fastapi import FastAPI
 
 from flext_web import FlextWebSettings, c, m, p, r, s, u
 
-if TYPE_CHECKING:
-    from flext_web import t
+type FastApiEndpointPayload = dict[str, str | bool]
 
 
 class FlextWebApp(s[bool]):
@@ -105,10 +104,10 @@ class FlextWebApp(s[bool]):
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
-        def health_check() -> t.Web.ResponseDict:
+        def health_check() -> FastApiEndpointPayload:
             return FlextWebApp.HealthHandler.create_handler()()
 
-        def info_endpoint() -> t.Web.ResponseDict:
+        def info_endpoint() -> FastApiEndpointPayload:
             return FlextWebApp.InfoHandler.create_handler(settings)()
 
         app.add_api_route("/health", health_check, methods=["GET"])
@@ -212,10 +211,10 @@ class FlextWebApp(s[bool]):
         """Health check handler with single responsibility for system health monitoring."""
 
         @staticmethod
-        def create_handler() -> Callable[[], t.Web.ResponseDict]:
+        def create_handler() -> Callable[[], FastApiEndpointPayload]:
             """Create FastAPI health check handler function."""
 
-            def health_check() -> t.Web.ResponseDict:
+            def health_check() -> FastApiEndpointPayload:
                 return {
                     "status": c.Web.WebResponse.STATUS_HEALTHY,
                     "service": c.Web.WebService.SERVICE_NAME,
@@ -230,10 +229,10 @@ class FlextWebApp(s[bool]):
         @staticmethod
         def create_handler(
             settings: m.Web.FastAPIAppConfig,
-        ) -> Callable[[], t.Web.ResponseDict]:
+        ) -> Callable[[], FastApiEndpointPayload]:
             """Create FastAPI info handler function."""
 
-            def info_handler() -> t.Web.ResponseDict:
+            def info_handler() -> FastApiEndpointPayload:
                 return {
                     "service": c.Web.WebService.SERVICE_NAME,
                     "title": settings.title,
