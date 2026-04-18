@@ -16,7 +16,6 @@ from typing import TYPE_CHECKING, Annotated, ClassVar, override
 from wsgiref.simple_server import WSGIServer
 
 import uvicorn
-from pydantic import ConfigDict
 
 from flext_core import m
 from flext_web import c, r, u
@@ -1310,7 +1309,7 @@ class FlextWebModels(m):
             for each started application so it can be stopped cleanly.
             """
 
-            model_config: ClassVar[m.ConfigDict] = ConfigDict(
+            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
                 arbitrary_types_allowed=True,
                 frozen=True,
                 extra="forbid",
