@@ -23,15 +23,6 @@ _LAZY_IMPORTS = build_lazy_import_map(
             "TestsUtilities",
             "u",
         ),
-        "flext_web": (
-            "c",
-            "d",
-            "e",
-            "h",
-            "r",
-            "s",
-            "x",
-        ),
     },
 )
 
