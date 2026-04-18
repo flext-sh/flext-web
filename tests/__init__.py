@@ -38,6 +38,7 @@ if _t.TYPE_CHECKING:
     from tests.unit.test_models import TestFlextWebModels
     from tests.unit.test_protocols import TestFlextWebProtocols
     from tests.unit.test_services import TestFlextWebService
+    from tests.unit.test_typings import TestFlextWebModelsTypings
     from tests.unit.test_utilities import TestFlextWebUtilities
     from tests.unit.test_version import TestFlextWebVersion
     from tests.utilities import TestsFlextWebUtilities, u
@@ -87,6 +88,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.test_models": ("TestFlextWebModels",),
             ".unit.test_protocols": ("TestFlextWebProtocols",),
             ".unit.test_services": ("TestFlextWebService",),
+            ".unit.test_typings": ("TestFlextWebModelsTypings",),
             ".unit.test_utilities": ("TestFlextWebUtilities",),
             ".unit.test_version": ("TestFlextWebVersion",),
             ".utilities": (
@@ -136,6 +138,7 @@ __all__: list[str] = [
     "TestFlextWebHandlers",
     "TestFlextWebInit",
     "TestFlextWebModels",
+    "TestFlextWebModelsTypings",
     "TestFlextWebProtocols",
     "TestFlextWebService",
     "TestFlextWebSettings",

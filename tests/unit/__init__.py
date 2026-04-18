@@ -21,6 +21,7 @@ _LAZY_IMPORTS = build_lazy_import_map(
         ".test_models": ("TestFlextWebModels",),
         ".test_protocols": ("TestFlextWebProtocols",),
         ".test_services": ("TestFlextWebService",),
+        ".test_typings": ("TestFlextWebModelsTypings",),
         ".test_utilities": ("TestFlextWebUtilities",),
         ".test_version": ("TestFlextWebVersion",),
     },
