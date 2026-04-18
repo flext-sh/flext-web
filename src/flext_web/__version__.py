@@ -1,7 +1,9 @@
-"""Package version and metadata information.
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Package version and metadata for flext-web.
 
-Provides version information and package metadata using standard library
-metadata extraction.
+Subclass of ``FlextVersion`` — overrides only ``_metadata``.
+All derived attributes (``__version__``, ``__title__``, etc.) are
+computed automatically via ``FlextVersion.__init_subclass__``.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -9,99 +11,27 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from importlib.metadata import metadata
-from typing import Annotated, Final, Self
+from importlib.metadata import PackageMetadata, metadata
 
-from flext_core import FlextModels
-
-_metadata = metadata("flext-web")
-__version__: Final[str] = _metadata["Version"]
-__version_info__: Final[tuple[int | str, ...]] = tuple(
-    int(part) if part.isdigit() else part for part in __version__.split(".")
-)
-__title__: Final[str] = _metadata["Name"]
-__description__: Final[str] = _metadata["Summary"]
-__author__: Final[str] = _metadata.get("Author", "")
-__author_email__: Final[str] = _metadata.get("Author-Email", "")
-__license__: Final[str] = _metadata.get("License", "")
-__url__: Final[str] = _metadata.get("Home-Page", "")
+from flext_core import FlextVersion
 
 
-class FlextWebVersionMetadata(FlextModels.Value):
-    """Immutable package version metadata."""
+class FlextWebVersion(FlextVersion):
+    """flext-web version — MRO-derived from FlextVersion."""
 
-    version: Annotated[str, FlextModels.Field(description="Package version")]
-    version_info: Annotated[
-        tuple[int | str, ...],
-        FlextModels.Field(description="Version tuple"),
-    ]
-    title: Annotated[str, FlextModels.Field(description="Package title")]
-    description: Annotated[
-        str,
-        FlextModels.Field(description="Package description"),
-    ]
-    author: Annotated[str, FlextModels.Field(description="Package author")]
-    author_email: Annotated[
-        str,
-        FlextModels.Field(description="Package author email"),
-    ]
-    license_type: Annotated[
-        str,
-        FlextModels.Field(description="Package license"),
-    ]
-    url: Annotated[str, FlextModels.Field(description="Package URL")]
+    _metadata: PackageMetadata = metadata("flext-web")
 
 
-class FlextWebVersion:
-    """Structured package metadata.
-
-    Provides metadata access through singleton pattern using importlib.metadata.
-    """
-
-    def __init__(self, metadata: FlextWebVersionMetadata) -> None:
-        """Initialize version metadata.
-
-        Args:
-            metadata: Version metadata model
-
-        """
-        super().__init__()
-        self.version = metadata.version
-        self.version_info = metadata.version_info
-        self.title = metadata.title
-        self.description = metadata.description
-        self.author = metadata.author
-        self.author_email = metadata.author_email
-        self.license = metadata.license_type
-        self.url = metadata.url
-
-    @classmethod
-    def current(cls) -> Self:
-        """Return current package metadata from pyproject.toml.
-
-        Returns:
-            FlextWebVersion: Current package metadata
-
-        """
-        return cls(
-            FlextWebVersionMetadata(
-                version=__version__,
-                version_info=__version_info__,
-                title=__title__,
-                description=__description__,
-                author=__author__,
-                author_email=__author_email__,
-                license_type=__license__,
-                url=__url__,
-            ),
-        )
-
-
-VERSION: Final[FlextWebVersion] = FlextWebVersion.current()
+__version__ = FlextWebVersion.__version__
+__version_info__ = FlextWebVersion.__version_info__
+__title__ = FlextWebVersion.__title__
+__description__ = FlextWebVersion.__description__
+__author__ = FlextWebVersion.__author__
+__author_email__ = FlextWebVersion.__author_email__
+__license__ = FlextWebVersion.__license__
+__url__ = FlextWebVersion.__url__
 __all__: list[str] = [
-    "VERSION",
     "FlextWebVersion",
-    "FlextWebVersionMetadata",
     "__author__",
     "__author_email__",
     "__description__",
