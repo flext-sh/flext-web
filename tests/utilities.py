@@ -13,12 +13,10 @@ from threading import Lock
 from typing import ClassVar
 
 import pytest
-from pydantic import BaseModel, ValidationError
 
-from flext_core import r
 from flext_tests import FlextTestsUtilities
 from flext_web import FlextWebUtilities
-from tests import c, m, p, t
+from tests import c, e, m, p, r, t
 
 
 class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
@@ -103,14 +101,14 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 return False
 
             @staticmethod
-            def _wrap_result[T](result: p.Result[T]) -> p.Result[BaseModel]:
-                """Wrap a typed result into `r[BaseModel]` for generic helpers."""
+            def _wrap_result[T](result: p.Result[T]) -> p.Result[m.BaseModel]:
+                """Wrap a typed result into `r[m.BaseModel]` for generic helpers."""
                 if result.success:
                     value = result.value
-                    if isinstance(value, BaseModel):
-                        return r[BaseModel].ok(value)
-                    return r[BaseModel].fail("Result value is not a BaseModel")
-                return r[BaseModel].fail(result.error or "Unknown error")
+                    if isinstance(value, m.BaseModel):
+                        return r[m.BaseModel].ok(value)
+                    return r[m.BaseModel].fail("Result value is not a m.BaseModel")
+                return r[m.BaseModel].fail(result.error or "Unknown error")
 
             @staticmethod
             def assert_success[T](
@@ -146,7 +144,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             def create_entry(
                 entry_type: str,
                 **kwargs: t.RecursiveContainer,
-            ) -> p.Result[BaseModel]:
+            ) -> p.Result[m.BaseModel]:
                 """Create test entities through runtime namespaced MRO factories."""
                 if entry_type == "web_app":
                     name = kwargs.get("name")
@@ -157,7 +155,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         or not isinstance(host, str)
                         or not isinstance(port, int)
                     ):
-                        return r[BaseModel].fail("Invalid parameters for web_app")
+                        return r[m.BaseModel].fail("Invalid parameters for web_app")
                     try:
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
                             m.Web.create_web_app(
@@ -166,8 +164,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 port=port,
                             ),
                         )
-                    except (ValidationError, ValueError, TypeError) as exc:
-                        return r[BaseModel].fail(str(exc))
+                    except (e.ValidationError, ValueError, TypeError) as exc:
+                        return r[m.BaseModel].fail(str(exc))
                 if entry_type == "http_request":
                     url = kwargs.get("url")
                     method = kwargs.get("method")
@@ -175,15 +173,15 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     body = kwargs.get("body")
                     timeout = kwargs.get("timeout")
                     if not isinstance(url, str) or not isinstance(method, str):
-                        return r[BaseModel].fail(
+                        return r[m.BaseModel].fail(
                             "Invalid parameters for http_request",
                         )
                     if headers is not None and not isinstance(headers, dict):
-                        return r[BaseModel].fail("Invalid headers for http_request")
+                        return r[m.BaseModel].fail("Invalid headers for http_request")
                     if body is not None and not isinstance(body, (str, dict)):
-                        return r[BaseModel].fail("Invalid body for http_request")
+                        return r[m.BaseModel].fail("Invalid body for http_request")
                     if not TestsFlextWebUtilities.Web.Tests._is_numeric(timeout):
-                        return r[BaseModel].fail("Invalid timeout for http_request")
+                        return r[m.BaseModel].fail("Invalid timeout for http_request")
                     narrow_headers: t.StrMapping | None = (
                         {k: str(v) for k, v in headers.items()}
                         if isinstance(headers, dict)
@@ -212,17 +210,17 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     body = kwargs.get("body")
                     elapsed_time = kwargs.get("elapsed_time")
                     if not isinstance(status_code, int):
-                        return r[BaseModel].fail(
+                        return r[m.BaseModel].fail(
                             "Invalid status_code for http_response",
                         )
                     if headers is not None and not isinstance(headers, dict):
-                        return r[BaseModel].fail("Invalid headers for http_response")
+                        return r[m.BaseModel].fail("Invalid headers for http_response")
                     if body is not None and not isinstance(body, (str, dict)):
-                        return r[BaseModel].fail("Invalid body for http_response")
+                        return r[m.BaseModel].fail("Invalid body for http_response")
                     if elapsed_time is not None and not (
                         TestsFlextWebUtilities.Web.Tests._is_numeric(elapsed_time)
                     ):
-                        return r[BaseModel].fail(
+                        return r[m.BaseModel].fail(
                             "Invalid elapsed_time for http_response",
                         )
                     resp_headers: t.StrMapping | None = (
@@ -255,7 +253,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     client_ip = kwargs.get("client_ip")
                     user_agent = kwargs.get("user_agent")
                     if not isinstance(url, str) or not isinstance(method, str):
-                        return r[BaseModel].fail("Invalid parameters for web_request")
+                        return r[m.BaseModel].fail("Invalid parameters for web_request")
                     try:
                         headers_dict: t.StrMapping = (
                             {}
@@ -300,8 +298,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
                             t.create_web_request(settings),
                         )
-                    except (ValidationError, ValueError, TypeError) as exc:
-                        return r[BaseModel].fail(str(exc))
+                    except (e.ValidationError, ValueError, TypeError) as exc:
+                        return r[m.BaseModel].fail(str(exc))
                 if entry_type == "web_response":
                     status_code = kwargs.get("status_code")
                     request_id = kwargs.get("request_id")
@@ -312,7 +310,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     content_length = kwargs.get("content_length")
                     processing_time_ms = kwargs.get("processing_time_ms")
                     if not isinstance(status_code, int):
-                        return r[BaseModel].fail(
+                        return r[m.BaseModel].fail(
                             "Invalid status_code for web_response",
                         )
                     try:
@@ -359,8 +357,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
                             t.create_web_response(settings),
                         )
-                    except (ValidationError, ValueError, TypeError) as exc:
-                        return r[BaseModel].fail(str(exc))
+                    except (e.ValidationError, ValueError, TypeError) as exc:
+                        return r[m.BaseModel].fail(str(exc))
                 if entry_type == "application":
                     name = kwargs.get("name")
                     host = kwargs.get("host")
@@ -371,7 +369,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         or not isinstance(host, str)
                         or not isinstance(port, int)
                     ):
-                        return r[BaseModel].fail("Invalid parameters for application")
+                        return r[m.BaseModel].fail("Invalid parameters for application")
                     settings = t.Web.ApplicationConfig(
                         name=name,
                         host=host,
@@ -507,7 +505,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             @staticmethod
             def run_parameterized_test(
                 test_cases: Sequence[tuple[t.RecursiveContainer, ...]],
-                test_function: Callable[..., p.Result[BaseModel]],
+                test_function: Callable[..., p.Result[m.BaseModel]],
                 expected_results: Sequence[bool],
                 test_name: str = "parameterized_test",
             ) -> None:
@@ -528,7 +526,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 f"{test_name} case {index} should fail",
                             )
                     except (
-                        ValidationError,
+                        e.ValidationError,
                         ValueError,
                         TypeError,
                         RuntimeError,

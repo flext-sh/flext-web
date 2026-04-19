@@ -11,8 +11,6 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar, Self
 
-from pydantic_settings import SettingsConfigDict
-
 from flext_core import FlextSettings
 from flext_web import c, m, p, r, t, u
 
@@ -21,7 +19,7 @@ from flext_web import c, m, p, r, t, u
 class FlextWebSettings(FlextSettings):
     """Validated settings for web runtime and HTTP endpoints."""
 
-    model_config: ClassVar[SettingsConfigDict] = m.SettingsConfigDict(
+    model_config: ClassVar[m.SettingsConfigDict] = m.SettingsConfigDict(
         env_prefix="FLEXT_WEB_", extra="ignore"
     )
 

@@ -6,11 +6,10 @@ Tests the unified m class following flext standards.
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
 
 from flext_tests import tm
 from flext_web import web
-from tests import c, m, t
+from tests import c, e, m, t
 
 
 class TestFlextWebModelsTypings:
@@ -219,14 +218,14 @@ class TestFlextWebModelsTypings:
 
     def test_create_web_request_invalid_method(self) -> None:
         """Test create_web_request with invalid HTTP method."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             _ = t.Web.RequestConfig(
                 url="http://localhost:8080", method="INVALID_METHOD"
             )
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             t.Web.RequestConfig.model_validate({
                 "url": "http://localhost:8080",
                 "method": "GET",
@@ -235,7 +234,7 @@ class TestFlextWebModelsTypings:
 
     def test_create_web_request_invalid_query_params(self) -> None:
         """Test create_web_request with invalid query_params type."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             t.Web.RequestConfig.model_validate({
                 "url": "http://localhost:8080",
                 "method": "GET",
@@ -244,7 +243,7 @@ class TestFlextWebModelsTypings:
 
     def test_create_web_request_exception_handling(self) -> None:
         """Test create_web_request exception handling."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             _ = t.Web.RequestConfig(
                 url="http://localhost:8080",
                 method="GET",
@@ -256,7 +255,7 @@ class TestFlextWebModelsTypings:
 
     def test_create_web_response_invalid_headers(self) -> None:
         """Test create_web_response with invalid headers type."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             t.Web.ResponseConfig.model_validate({
                 "status_code": 200,
                 "request_id": "test-123",
@@ -265,7 +264,7 @@ class TestFlextWebModelsTypings:
 
     def test_create_web_response_exception_handling(self) -> None:
         """Test create_web_response exception handling."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             _ = t.Web.ResponseConfig(
                 status_code=200,
                 request_id="test-123",
@@ -347,7 +346,7 @@ class TestFlextWebModelsTypings:
 
     def test_create_web_request_with_none_values(self) -> None:
         """Test create_web_request with None headers and query_params."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             t.Web.RequestConfig.model_validate({
                 "url": "http://localhost:8080",
                 "method": "GET",
@@ -357,7 +356,7 @@ class TestFlextWebModelsTypings:
 
     def test_create_web_response_with_none_headers(self) -> None:
         """Test create_web_response with None headers."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             t.Web.ResponseConfig.model_validate({
                 "status_code": 200,
                 "request_id": "test-123",
@@ -402,7 +401,7 @@ class TestFlextWebModelsTypings:
 
     def test_create_web_request_duplicate_validation(self) -> None:
         """Test create_web_request duplicate validation path (line 278)."""
-        with pytest.raises(ValidationError):
+        with pytest.raises(e.ValidationError):
             _ = t.Web.RequestConfig(url="http://localhost:8080", method="INVALID")
 
     def test_create_application_exception_path(self) -> None:

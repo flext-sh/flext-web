@@ -48,11 +48,6 @@ from flext_web.models import m
 from flext_web.typings import t
 from flext_web.utilities import u
 
-type WebResponseDict = dict[
-    str,
-    t.Scalar | t.StrSequence | Mapping[str, t.Scalar],
-]
-
 
 class FlextWebProtocols(p):
     """Hierarchical protocol definitions for FLEXT web ecosystem.
@@ -521,7 +516,7 @@ class FlextWebProtocols(p):
         is_valid_port: ClassVar[Callable[[int], bool]] = _is_valid_port
 
         @runtime_checkable
-        class WebAppManager(p.Service[WebResponseDict], Protocol):
+        class WebAppManager(p.Service[t.Web.ResponseDict], Protocol):
             """Protocol for web application lifecycle management.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific application management
@@ -551,25 +546,25 @@ class FlextWebProtocols(p):
                 normalized_name = name.strip()
                 normalized_host = host.strip()
                 if len(normalized_name) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
                     )
                 if normalized_name.isdigit():
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         "Application name cannot be numeric-only",
                     )
                 if not normalized_host:
-                    return r[WebResponseDict].fail("Host cannot be empty")
+                    return r[t.Web.ResponseDict].fail("Host cannot be empty")
                 if not FlextWebProtocols.Web.is_valid_port(port):
                     min_port, max_port = c.Web.WebValidation.PORT_RANGE
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         f"Port must be between {min_port} and {max_port}",
                     )
                 framework_result = FlextWebProtocols.Web.create_framework_app(
                     normalized_name,
                 )
                 if framework_result.failure:
-                    return r[WebResponseDict].fail(framework_result.error)
+                    return r[t.Web.ResponseDict].fail(framework_result.error)
                 app_instance, framework_name, interface_type = framework_result.value
                 app_id = str(uuid4())
                 FlextWebProtocols.Web.configure_framework_app_routes(
@@ -589,7 +584,7 @@ class FlextWebProtocols(p):
                 }
                 FlextWebProtocols.Web.apps_registry[app_id] = app_data
                 FlextWebProtocols.Web.framework_instances[app_id] = app_instance
-                return r[WebResponseDict].ok(app_data)
+                return r[t.Web.ResponseDict].ok(app_data)
 
             @staticmethod
             def list_apps() -> p.Result[Sequence[t.Web.ResponseDict]]:
@@ -603,7 +598,7 @@ class FlextWebProtocols(p):
                     FlextWebProtocols.Web.copy_response_dict(app)
                     for app in FlextWebProtocols.Web.apps_registry.values()
                 ]
-                return r[Sequence[WebResponseDict]].ok(apps)
+                return r[Sequence[t.Web.ResponseDict]].ok(apps)
 
             @staticmethod
             def start_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
@@ -618,16 +613,16 @@ class FlextWebProtocols(p):
                 """
                 app_data = FlextWebProtocols.Web.apps_registry.get(app_id)
                 if app_data is None:
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         f"Application not found: {app_id}",
                     )
                 if app_data.get("status") == c.Web.Status.RUNNING.value:
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         f"Application already running: {app_id}",
                     )
                 app_instance = FlextWebProtocols.Web.framework_instances.get(app_id)
                 if app_instance is None:
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         f"Application runtime instance not found: {app_id}",
                     )
                 runtime_result = FlextWebProtocols.Web.start_app_runtime(
@@ -636,12 +631,12 @@ class FlextWebProtocols(p):
                     app_instance,
                 )
                 if runtime_result.failure:
-                    return r[WebResponseDict].fail(runtime_result.error)
+                    return r[t.Web.ResponseDict].fail(runtime_result.error)
                 updated_app = FlextWebProtocols.Web.copy_response_dict(app_data)
                 updated_app["status"] = c.Web.Status.RUNNING.value
                 FlextWebProtocols.Web.apps_registry[app_id] = updated_app
                 FlextWebProtocols.Web.app_runtimes[app_id] = runtime_result.value
-                return r[WebResponseDict].ok(updated_app)
+                return r[t.Web.ResponseDict].ok(updated_app)
 
             @staticmethod
             def stop_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
@@ -656,16 +651,16 @@ class FlextWebProtocols(p):
                 """
                 app_data = FlextWebProtocols.Web.apps_registry.get(app_id)
                 if app_data is None:
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         f"Application not found: {app_id}",
                     )
                 if app_data.get("status") != c.Web.Status.RUNNING.value:
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         f"Application not running: {app_id}",
                     )
                 runtime = FlextWebProtocols.Web.app_runtimes.get(app_id)
                 if runtime is None:
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         f"Application runtime not found for stop: {app_id}",
                     )
                 stop_runtime_result = FlextWebProtocols.Web.stop_app_runtime(
@@ -673,16 +668,16 @@ class FlextWebProtocols(p):
                     runtime,
                 )
                 if stop_runtime_result.failure:
-                    return r[WebResponseDict].fail(stop_runtime_result.error)
+                    return r[t.Web.ResponseDict].fail(stop_runtime_result.error)
                 updated_app = FlextWebProtocols.Web.copy_response_dict(app_data)
                 updated_app["status"] = c.Web.Status.STOPPED.value
                 FlextWebProtocols.Web.apps_registry[app_id] = updated_app
                 _ = FlextWebProtocols.Web.app_runtimes.pop(app_id, None)
-                return r[WebResponseDict].ok(updated_app)
+                return r[t.Web.ResponseDict].ok(updated_app)
 
         @runtime_checkable
         class WebResponseFormatter(
-            p.Service[WebResponseDict],
+            p.Service[t.Web.ResponseDict],
             Protocol,
         ):
             """Protocol for web response formatting.
@@ -764,7 +759,7 @@ class FlextWebProtocols(p):
 
         @runtime_checkable
         class WebFrameworkInterface(
-            p.Service[WebResponseDict],
+            p.Service[t.Web.ResponseDict],
             Protocol,
         ):
             """Protocol for web framework integration.
@@ -834,7 +829,7 @@ class FlextWebProtocols(p):
                 return False
 
         @runtime_checkable
-        class WebService(p.Service[WebResponseDict], Protocol):
+        class WebService(p.Service[t.Web.ResponseDict], Protocol):
             """Base web service protocol.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific service operations.
@@ -916,10 +911,10 @@ class FlextWebProtocols(p):
                 """Return a single app by ID or failure when not found."""
                 app_data = FlextWebProtocols.Web.apps_registry.get(entity_id)
                 if app_data is None:
-                    return r[WebResponseDict].fail(
+                    return r[t.Web.ResponseDict].fail(
                         f"Application not found: {entity_id}",
                     )
-                return r[WebResponseDict].ok(
+                return r[t.Web.ResponseDict].ok(
                     FlextWebProtocols.Web.copy_response_dict(app_data),
                 )
 
@@ -928,11 +923,11 @@ class FlextWebProtocols(p):
                 """Persist an app entity and return a defensive copy."""
                 entity_id = entity.get("id")
                 if not isinstance(entity_id, str):
-                    return r[WebResponseDict].fail("Entity id(str) is required")
+                    return r[t.Web.ResponseDict].fail("Entity id(str) is required")
                 FlextWebProtocols.Web.apps_registry[entity_id] = (
                     FlextWebProtocols.Web.copy_response_dict(entity)
                 )
-                return r[WebResponseDict].ok(
+                return r[t.Web.ResponseDict].ok(
                     FlextWebProtocols.Web.copy_response_dict(entity),
                 )
 
@@ -947,7 +942,7 @@ class FlextWebProtocols(p):
             @staticmethod
             def find_all() -> p.Result[Sequence[t.Web.ResponseDict]]:
                 """Return all registered app entities as defensive copies."""
-                return r[Sequence[WebResponseDict]].ok([
+                return r[Sequence[t.Web.ResponseDict]].ok([
                     FlextWebProtocols.Web.copy_response_dict(app)
                     for app in FlextWebProtocols.Web.apps_registry.values()
                 ])
@@ -973,7 +968,7 @@ class FlextWebProtocols(p):
                         for key, expected_value in criteria.items()
                     )
                 ]
-                return r[Sequence[WebResponseDict]].ok(matches)
+                return r[Sequence[t.Web.ResponseDict]].ok(matches)
 
         @runtime_checkable
         class WebHandler(Protocol):
@@ -1008,7 +1003,7 @@ class FlextWebProtocols(p):
                         or not isinstance(port, int)
                         or (not isinstance(host, str))
                     ):
-                        return r[WebResponseDict].fail(
+                        return r[t.Web.ResponseDict].fail(
                             "create action requires name(str), port(int), host(str)",
                         )
                     return FlextWebProtocols.Web.WebAppManager.create_app(
@@ -1019,14 +1014,14 @@ class FlextWebProtocols(p):
                 if action == c.Web.WebActions.ACTION_START:
                     app_id = request.get("app_id")
                     if not isinstance(app_id, str):
-                        return r[WebResponseDict].fail(
+                        return r[t.Web.ResponseDict].fail(
                             "start action requires app_id(str)",
                         )
                     return FlextWebProtocols.Web.WebAppManager.start_app(app_id)
                 if action == c.Web.WebActions.ACTION_STOP:
                     app_id = request.get("app_id")
                     if not isinstance(app_id, str):
-                        return r[WebResponseDict].fail(
+                        return r[t.Web.ResponseDict].fail(
                             "stop action requires app_id(str)",
                         )
                     return FlextWebProtocols.Web.WebAppManager.stop_app(app_id)
@@ -1042,7 +1037,7 @@ class FlextWebProtocols(p):
                             ],
                         },
                     )
-                return r[WebResponseDict].ok(
+                return r[t.Web.ResponseDict].ok(
                     FlextWebProtocols.Web.copy_response_dict(request),
                 )
 
@@ -1062,7 +1057,7 @@ class FlextWebProtocols(p):
                 return FlextWebProtocols.Web.WebHandler.handle_request(command)
 
         @runtime_checkable
-        class WebConnection(p.Service[WebResponseDict], Protocol):
+        class WebConnection(p.Service[t.Web.ResponseDict], Protocol):
             """Web connection protocol for external systems.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific connection operations.
@@ -1094,7 +1089,7 @@ class FlextWebProtocols(p):
                 return "http://localhost:8080"
 
         @runtime_checkable
-        class WebLogger(p.Service[WebResponseDict], Protocol):
+        class WebLogger(p.Service[t.Web.ResponseDict], Protocol):
             """Web logging protocol.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific logging operations.
@@ -1149,7 +1144,7 @@ class FlextWebProtocols(p):
 
         @runtime_checkable
         class WebTemplateRenderer(
-            p.Service[WebResponseDict],
+            p.Service[t.Web.ResponseDict],
             Protocol,
         ):
             """Protocol for web template rendering.
@@ -1199,7 +1194,7 @@ class FlextWebProtocols(p):
 
         @runtime_checkable
         class WebTemplateEngine(
-            p.Service[WebResponseDict],
+            p.Service[t.Web.ResponseDict],
             Protocol,
         ):
             """Protocol for web template engine operations.
@@ -1218,7 +1213,7 @@ class FlextWebProtocols(p):
                 r containing configuration data or error details
 
                 """
-                return r[WebResponseDict].ok(
+                return r[t.Web.ResponseDict].ok(
                     FlextWebProtocols.Web.copy_response_dict(
                         FlextWebProtocols.Web.template_config,
                     ),
@@ -1316,7 +1311,7 @@ class FlextWebProtocols(p):
                 )
 
         @runtime_checkable
-        class WebMonitoring(p.Service[WebResponseDict], Protocol):
+        class WebMonitoring(p.Service[t.Web.ResponseDict], Protocol):
             """Web monitoring protocol for observability.
 
             Extends p.Service[t.Web.ResponseDict] with web-specific monitoring operations.
