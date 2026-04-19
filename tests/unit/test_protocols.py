@@ -11,9 +11,9 @@ from typing import override
 import flask
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
-from flext_tests import tm
 
 from flext_core import FlextContainer, FlextContext, FlextSettings
+from flext_tests import tm
 from tests import c, p, r, t, u
 
 _WebAppManagerBase = p.Web.TestBases._WebAppManagerBase

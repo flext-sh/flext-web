@@ -9,7 +9,6 @@ from __future__ import annotations
 from typing import Final
 
 from flext_tests import FlextTestsConstants
-
 from flext_web import FlextWebConstants
 
 

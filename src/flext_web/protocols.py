@@ -1420,7 +1420,13 @@ class FlextWebProtocols(p):
                 ...
 
         class TestBases:
-            """Namespace for test base implementations."""
+            """Namespace for test base implementations.
+
+            Enforcement exemption: namespace holder for reusable test base
+            classes, not a Protocol/ABC.
+            """
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             class _WebAppManagerBase:
                 """Base implementation of WebAppManager for testing."""

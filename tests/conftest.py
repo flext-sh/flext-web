@@ -18,8 +18,8 @@ from pathlib import Path
 
 import pytest
 from flask import Flask
-from flext_tests import tk
 
+from flext_tests import tk
 from flext_web import FlextWebServices, FlextWebSettings, web
 from tests import c, t, u
 

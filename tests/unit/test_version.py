@@ -7,7 +7,6 @@ following the canonical FlextVersion test pattern from flext-core.
 from __future__ import annotations
 
 from flext_tests import tm
-
 from flext_web import (
     FlextWebVersion,
     __author__,

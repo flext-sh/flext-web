@@ -13,7 +13,6 @@ from flext_core.lazy import (
 
 if _t.TYPE_CHECKING:
     from flext_tests import td, tf, tk, tm, tv
-
     from flext_web import d, e, h, r, s, x
     from tests.constants import TestsFlextWebConstants, c
     from tests.helpers.models import TestsModels

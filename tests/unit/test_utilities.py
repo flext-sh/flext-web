@@ -8,8 +8,8 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
-from flext_tests import tm
 
+from flext_tests import tm
 from tests import m, u
 
 

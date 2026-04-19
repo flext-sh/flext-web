@@ -6,9 +6,9 @@ Tests the unified m class following flext standards.
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 from pydantic import ValidationError
 
+from flext_tests import tm
 from flext_web import web
 from tests import c, m, t
 

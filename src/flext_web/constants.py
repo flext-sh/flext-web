@@ -165,6 +165,8 @@ class FlextWebConstants(c):
         class WebResponse:
             """Web response status constants."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             STATUS_SUCCESS: Final[str] = "success"
             STATUS_ERROR: Final[str] = "error"
             STATUS_OPERATIONAL: Final[str] = "operational"

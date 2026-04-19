@@ -7,8 +7,8 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
-from flext_tests import tm
 
+from flext_tests import tm
 from flext_web import FlextWebProtocols, web
 from tests import p, r, t, u
 

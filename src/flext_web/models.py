@@ -50,6 +50,8 @@ class FlextWebModels(m):
 
             """
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             headers: Annotated[
                 t.StrMapping,
                 u.Field(
@@ -209,6 +211,8 @@ class FlextWebModels(m):
 
             """
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             url: Annotated[
                 str,
                 u.Field(
@@ -328,6 +332,8 @@ class FlextWebModels(m):
 
             """
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             status_code: Annotated[
                 t.HttpStatusCode,
                 u.Field(
@@ -443,6 +449,8 @@ class FlextWebModels(m):
                 domain_events: List of domain events
 
             """
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             id: Annotated[
                 str,
@@ -868,6 +876,8 @@ class FlextWebModels(m):
         class EntityData(m.Value):
             """Generic entity data model."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             data: Annotated[
                 t.ConfigurationMapping,
                 u.Field(
@@ -877,6 +887,8 @@ class FlextWebModels(m):
 
         class AuthResponse(m.Value):
             """Authentication response model."""
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             token: Annotated[str, u.Field(description="Authentication token")]
             user_id: Annotated[str, u.Field(description="User identifier")]
@@ -958,6 +970,8 @@ class FlextWebModels(m):
         class WebRequest(m.Value):
             """Web request model with complete tracking."""
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             method: Annotated[
                 c.Web.Method,
                 u.Field(
@@ -999,6 +1013,8 @@ class FlextWebModels(m):
 
         class WebResponse(m.Value):
             """Web response model with status tracking."""
+
+            _flext_enforcement_exempt: ClassVar[bool] = True
 
             request_id: Annotated[
                 str,
