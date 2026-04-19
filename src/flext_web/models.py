@@ -649,7 +649,7 @@ class FlextWebModels(m):
             def add_domain_event(
                 self,
                 event_type: str,
-                data: t.ConfigMap
+                data: m.ConfigMap
                 | Mapping[str, t.MetadataOrValue | None]
                 | None = None,
             ) -> p.Result[m.Entry]:
