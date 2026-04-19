@@ -1,0 +1,16 @@
+src/flext_web/protocols.py
+  h_9db9d35f50cf33 519,549,553,557,560,567,587,601,616,620,625,634,639,654,658,663,671,676,680,762,832,914,917,926,930,945,971,1006,1017,1024,1040,1060,1092,1147,1197,1216,1314
+src/flext_web/settings.py
+  h_9db9d35f50cf33 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "97bc058bb482950f63344aad2b742e11e9ff197b",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
