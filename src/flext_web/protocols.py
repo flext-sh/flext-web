@@ -249,7 +249,7 @@ class FlextWebProtocols(p):
         }
         web_metrics: ClassVar[dict[str, int | str]] = {}
         template_config: ClassVar[t.Web.RequestDict] = {}
-        template_globals: ClassVar[dict[str, t.ContainerValue]] = {}
+        template_globals: ClassVar[dict[str, t.Container]] = {}
         template_filters: ClassVar[dict[str, Callable[[str], str]]] = {}
 
         @classmethod
@@ -1303,7 +1303,7 @@ class FlextWebProtocols(p):
                 """
                 FlextWebProtocols.Web.template_filters[name] = filter_func
 
-            def add_global(self, name: str, *, value: t.ContainerValue) -> None:
+            def add_global(self, name: str, *, value: t.Container) -> None:
                 """Add template global variable.
 
                 Args:
@@ -1602,7 +1602,7 @@ class FlextWebProtocols(p):
                     """Add template filter function."""
                     FlextWebProtocols.Web.template_filters[name] = filter_func
 
-                def add_global(self, name: str, *, value: t.ContainerValue) -> None:
+                def add_global(self, name: str, *, value: t.Container) -> None:
                     """Add template global variable."""
                     FlextWebProtocols.Web.template_globals[name] = (
                         dict(value) if isinstance(value, Mapping) else value

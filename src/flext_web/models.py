@@ -548,7 +548,7 @@ class FlextWebModels(m):
             #     ),
             # ] = c.Web.WebDefaults.VERSION_INT
             metrics: Annotated[
-                t.MutableRecursiveContainerMapping,
+                t.MutableFlatContainerMapping,
                 u.Field(
                     description="Application metrics",
                 ),
@@ -996,7 +996,7 @@ class FlextWebModels(m):
                 ),
             ] = u.Field(default_factory=dict)
             body: Annotated[
-                str | t.ContainerValue | None,
+                str | t.Container | None,
                 u.Field(
                     description="Request body (optional for GET/HEAD)",
                 ),
@@ -1038,7 +1038,7 @@ class FlextWebModels(m):
                 ),
             ] = u.Field(default_factory=dict)
             body: Annotated[
-                str | t.ContainerValue | None,
+                str | t.Container | None,
                 u.Field(
                     description="Response body (optional for 204 No Content)",
                 ),
@@ -1138,7 +1138,7 @@ class FlextWebModels(m):
             method: c.Web.Method,
             url: str,
             headers: t.StrMapping | None = None,
-            body: str | t.ContainerValue | None = None,
+            body: str | t.Container | None = None,
         ) -> p.Result[WebRequest]:
             """Create a web request model.
 
@@ -1179,7 +1179,7 @@ class FlextWebModels(m):
             request_id: str,
             status_code: int,
             headers: t.StrMapping | None = None,
-            body: str | t.ContainerValue | None = None,
+            body: str | t.Container | None = None,
         ) -> p.Result[WebResponse]:
             """Create a web response model.
 
