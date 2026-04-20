@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import json
 
-from fastapi.testclient import TestClient
-
 from flext_tests import tm
+
+from fastapi.testclient import TestClient
 from flext_web import web
 from tests import c, m
 

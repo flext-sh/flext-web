@@ -5,8 +5,9 @@ Tests the package initialization and exports.
 
 from __future__ import annotations
 
-import flext_web
 from flext_tests import tm
+
+import flext_web
 from flext_web import __version__, __version_info__
 from tests import t
 

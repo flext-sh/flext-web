@@ -16,8 +16,8 @@ from threading import Lock
 from typing import ClassVar
 
 import pytest
-
 from flext_tests import FlextTestsUtilities
+
 from flext_web import FlextWebUtilities
 from tests import c, e, m, p, r, t
 

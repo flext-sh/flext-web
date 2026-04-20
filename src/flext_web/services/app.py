@@ -17,7 +17,6 @@ from typing import override
 
 import flask
 from fastapi import FastAPI
-
 from flext_web import FlextWebSettings, c, m, p, r, s, u
 
 type FastApiEndpointPayload = dict[str, str | bool]

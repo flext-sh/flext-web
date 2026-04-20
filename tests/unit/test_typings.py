@@ -10,8 +10,8 @@ from collections.abc import (
 )
 
 import pytest
-
 from flext_tests import tm
+
 from flext_web import web
 from tests import c, e, m, t
 
