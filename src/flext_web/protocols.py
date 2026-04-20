@@ -30,7 +30,6 @@ from __future__ import annotations
 from collections.abc import (
     Awaitable,
     Callable,
-    Mapping,
     Sequence,
 )
 from copy import deepcopy
@@ -1311,9 +1310,7 @@ class FlextWebProtocols(p):
                 value: Global variable value
 
                 """
-                FlextWebProtocols.Web.template_globals[name] = (
-                    dict(value) if isinstance(value, Mapping) else value
-                )
+                FlextWebProtocols.Web.template_globals[name] = value
 
         @runtime_checkable
         class WebMonitoring(p.Service[t.Web.ResponseDict], Protocol):
@@ -1604,9 +1601,7 @@ class FlextWebProtocols(p):
 
                 def add_global(self, name: str, *, value: t.Container) -> None:
                     """Add template global variable."""
-                    FlextWebProtocols.Web.template_globals[name] = (
-                        dict(value) if isinstance(value, Mapping) else value
-                    )
+                    FlextWebProtocols.Web.template_globals[name] = value
 
                 def template_config(self) -> p.Result[t.Web.ResponseDict]:
                     """Return current template engine configuration."""

@@ -648,7 +648,6 @@ class FlextWebModels(m):
                 self.web_events.append(event_name)
                 return r[bool].ok(value=True)
 
-            @override
             def add_domain_event(
                 self,
                 event_type: str,
@@ -656,6 +655,7 @@ class FlextWebModels(m):
                 | Mapping[str, t.MetadataOrValue | None]
                 | None = None,
             ) -> p.Result[m.Entry]:
+                """Create and buffer a domain event for this web application entity."""
                 if not event_type.strip():
                     return r[m.Entry].fail(
                         "Domain event name must be a non-empty string",
@@ -664,7 +664,13 @@ class FlextWebModels(m):
                     return r[m.Entry].fail(
                         "Domain event name cannot be numeric-only",
                     )
-                return super().add_domain_event(event_type=event_type, data=data)
+                entry = u.add_domain_event(
+                    self,
+                    event_type=event_type,
+                    data=data,
+                    aggregate_id=str(self.id),
+                )
+                return r[m.Entry].ok(entry)
 
             def health_status(self) -> t.ConfigurationMapping:
                 """Get comprehensive health status."""
