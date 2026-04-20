@@ -10,7 +10,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json as _json
-from collections.abc import Callable
+from collections.abc import (
+    Callable,
+)
 from typing import override
 
 import flask

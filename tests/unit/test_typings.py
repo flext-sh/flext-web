@@ -5,7 +5,9 @@ Tests the unified m class following flext standards.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import (
+    Mapping,
+)
 
 import pytest
 

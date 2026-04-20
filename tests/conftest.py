@@ -13,7 +13,10 @@ from __future__ import annotations
 
 import os
 import threading
-from collections.abc import Callable, Generator
+from collections.abc import (
+    Callable,
+    Generator,
+)
 from pathlib import Path
 
 import pytest

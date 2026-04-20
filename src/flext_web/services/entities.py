@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import MutableMapping, Sequence
+from collections.abc import (
+    MutableMapping,
+    Sequence,
+)
 from typing import override
 
 from flext_web import m, p, r, s, u

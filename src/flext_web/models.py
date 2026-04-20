@@ -9,7 +9,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import Mapping, MutableSequence
+from collections.abc import (
+    Mapping,
+    MutableSequence,
+)
 from datetime import UTC, datetime
 from threading import Thread
 from typing import Annotated, ClassVar, override

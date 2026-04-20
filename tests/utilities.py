@@ -8,7 +8,10 @@ from __future__ import annotations
 
 import socket
 import time
-from collections.abc import Callable, Sequence
+from collections.abc import (
+    Callable,
+    Sequence,
+)
 from threading import Lock
 from typing import ClassVar
 
