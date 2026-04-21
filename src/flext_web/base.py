@@ -20,7 +20,7 @@ from flext_core import FlextSettings, s
 from flext_web import FlextWebSettings, t, u
 
 
-class FlextWebServiceBase[TDomainResult: t.ValueOrModel | Sequence[t.ValueOrModel]](
+class FlextWebServiceBase[TDomainResult: t.RuntimeData | Sequence[t.RuntimeData]](
     s[TDomainResult],
     ABC,
 ):

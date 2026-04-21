@@ -643,9 +643,7 @@ class FlextWebModels(m):
             def add_domain_event(
                 self,
                 event_type: str,
-                data: m.ConfigMap
-                | Mapping[str, t.MetadataOrValue | None]
-                | None = None,
+                data: m.ConfigMap | Mapping[str, t.MetadataData | None] | None = None,
             ) -> p.Result[m.Entry]:
                 """Create and buffer a domain event for this web application entity."""
                 if not event_type.strip():
