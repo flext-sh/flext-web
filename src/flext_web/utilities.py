@@ -13,7 +13,7 @@ from __future__ import annotations
 import re
 from typing import override
 
-from flext_core import u
+from flext_cli import u
 
 
 class FlextWebUtilities(u):

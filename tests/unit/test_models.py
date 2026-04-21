@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 from flext_tests import tm
 
-from tests import c, e, m, t, u
+from tests import c, m, t, u
 
 
 class TestFlextWebModels:
@@ -59,16 +59,16 @@ class TestFlextWebModels:
         """Test WebApp name validation."""
         app = m.Web.Entity(id="test-id", name="valid-app-name")
         tm.that(app.name, eq="valid-app-name")
-        with pytest.raises(e.ValidationError):
+        with pytest.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="ab")
-        with pytest.raises(e.ValidationError):
+        with pytest.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="a" * 101)
 
     def test_web_app_name_reserved_validation(self) -> None:
         """Test WebApp name validation for reserved names."""
         reserved_names = ["root", "api", "system", "settings", "health"]
         for name in reserved_names:
-            with pytest.raises(e.ValidationError):
+            with pytest.raises(m.ValidationError):
                 _ = m.Web.Entity(id="test-id", name=name)
 
     def test_web_app_name_security_validation(self) -> None:
@@ -80,23 +80,23 @@ class TestFlextWebModels:
             "'; DROP TABLE users; --",
         ]
         for name in dangerous_names:
-            with pytest.raises(e.ValidationError):
+            with pytest.raises(m.ValidationError):
                 _ = m.Web.Entity(id="test-id", name=name)
 
     def test_web_app_port_validation(self) -> None:
         """Test WebApp port validation."""
         app = m.Web.Entity(id="test-id", name="test-app", port=8080)
         tm.that(app.port, eq=8080)
-        with pytest.raises(e.ValidationError):
+        with pytest.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", port=0)
-        with pytest.raises(e.ValidationError):
+        with pytest.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", port=70000)
 
     def test_web_app_status_validation(self) -> None:
         """Test WebApp status validation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         tm.that(app.status, eq="running")
-        with pytest.raises(e.ValidationError):
+        with pytest.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", status="invalid")
 
     def test_web_app_computed_fields(self) -> None:
@@ -486,7 +486,7 @@ class TestFlextWebModels:
         """Test validate_name with max_length validation (lines 404-405)."""
         max_length = c.Web.WebValidation.NAME_LENGTH_RANGE[1]
         long_name = "a" * (max_length + 1)
-        with pytest.raises(e.ValidationError):
+        with pytest.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name=long_name, host="localhost", port=8080)
 
     def test_application_validate_business_rules_success(self) -> None:

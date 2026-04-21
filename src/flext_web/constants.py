@@ -10,7 +10,7 @@ from ipaddress import IPv4Address
 from types import MappingProxyType
 from typing import ClassVar, Final
 
-from flext_core import c, t
+from flext_cli import c, t
 
 
 class FlextWebConstants(c):

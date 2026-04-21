@@ -18,7 +18,7 @@ from threading import Thread
 from typing import Annotated, ClassVar, override
 from wsgiref.simple_server import WSGIServer
 
-from flext_core import m, p, t
+from flext_cli import m, p, t
 
 import uvicorn
 from flext_web import c, r, u

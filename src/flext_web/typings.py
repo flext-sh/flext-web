@@ -15,7 +15,7 @@ from collections.abc import (
 )
 from typing import Annotated
 
-from flext_core import p, r, t
+from flext_cli import p, r, t
 
 from flext_web import c, m, u
 
