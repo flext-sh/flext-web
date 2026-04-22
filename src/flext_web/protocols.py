@@ -39,14 +39,14 @@ from typing import ClassVar, Protocol, override, runtime_checkable
 from uuid import uuid4
 from wsgiref.simple_server import WSGIServer, make_server
 
+import flask
+import uvicorn
+from fastapi import FastAPI
 from flext_cli import p, r
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
-import flask
-import uvicorn
-from fastapi import FastAPI
 from flext_web import c, m, t, u
 
 
