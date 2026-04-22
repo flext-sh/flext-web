@@ -153,10 +153,10 @@ class FlextWebSettings(FlextSettings):
                 debug=debug_value,
                 secret_key=secret_key_value,
             )
-            success: p.Result[Self] = r[Self](value=instance, success=True)
+            success: p.Result[Self] = r[Self].ok(instance)
             return success
         except c.ValidationError as exc:
-            failure: p.Result[Self] = r[Self](error=str(exc), success=False)
+            failure: p.Result[Self] = r[Self].fail(str(exc))
             return failure
 
     @classmethod

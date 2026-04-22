@@ -41,7 +41,7 @@ class FlextWebServices(s[bool]):
             settings.model_dump(exclude_none=True) if settings is not None else None
         )
         instance = cls(settings_overrides=overrides) if overrides is not None else cls()
-        return r[Self](value=instance, success=True)
+        return r[Self].ok(instance)
 
     def authenticate(
         self, credentials: m.Web.Credentials

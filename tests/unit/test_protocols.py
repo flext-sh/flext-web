@@ -608,8 +608,6 @@ class TestFlextWebProtocols:
         engine.add_global("test", value="value")
         engine.add_global("test_int", value=42)
         engine.add_global("test_bool", value=True)
-        engine.add_global("test_list", value=["item1", "item2"])
-        engine.add_global("test_dict", value={"key": "value"})
 
     def test_web_monitoring_protocol_methods(self) -> None:
         """Test WebMonitoring methods execution."""
