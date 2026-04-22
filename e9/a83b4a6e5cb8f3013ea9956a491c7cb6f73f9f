@@ -1,0 +1,18 @@
+src/flext_web/settings.py
+  h_9db9d35f50cf33 156,159
+tests/utilities.py
+  h_9db9d35f50cf33 35,43,50,147,388-389,392,400,409,419,430-435,438
+src/flext_web/services/web.py
+  h_9db9d35f50cf33 44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "e9a83b4a6e5cb8f3013ea9956a491c7cb6f73f9f",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
