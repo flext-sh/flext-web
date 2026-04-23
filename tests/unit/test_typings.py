@@ -5,10 +5,6 @@ Tests the unified m class following flext standards.
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-)
-
 import pytest
 from flext_tests import tm
 
@@ -144,7 +140,7 @@ class TestFlextWebModelsTypings:
 
         def process_request_data(
             request: t.Web.RequestConfig,
-        ) -> Mapping[str, t.Container]:
+        ) -> t.JsonMapping:
             return {"processed": True, "method": request.method, "url": request.url}
 
         request = t.Web.RequestConfig(

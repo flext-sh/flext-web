@@ -580,7 +580,7 @@ class TestFlextWebProtocols:
             def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
                 _ = name, filter_func
 
-            def add_global(self, name: str, *, value: t.Container) -> None:
+            def add_global(self, name: str, *, value: t.JsonValue) -> None:
                 _ = name, value
 
             def execute(self) -> p.Result[t.Web.ResponseDict]:

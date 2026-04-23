@@ -508,7 +508,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def run_parameterized_test(
-                test_cases: Sequence[tuple[t.Container, ...]],
+                test_cases: Sequence[tuple[t.JsonValue, ...]],
                 test_function: Callable[..., p.Result[m.BaseModel]],
                 expected_results: Sequence[bool],
                 test_name: str = "parameterized_test",

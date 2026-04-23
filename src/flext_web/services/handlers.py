@@ -57,9 +57,7 @@ class FlextWebHandlers(s[bool]):
             web_events=[],
             domain_events=[],
         )
-        return app.validate_business_rules().flat_map(
-            lambda _: p.Result[m.Web.Entity].ok(app)
-        )
+        return app.validate_business_rules().flat_map(lambda _: r[m.Web.Entity].ok(app))
 
     @classmethod
     def handle_start_app(cls, app: m.Web.Entity) -> p.Result[m.Web.Entity]:
