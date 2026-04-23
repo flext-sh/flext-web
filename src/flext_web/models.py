@@ -643,7 +643,7 @@ class FlextWebModels(m):
             def add_domain_event(
                 self,
                 event_type: str,
-                data: m.ConfigMap | Mapping[str, t.MetadataData | None] | None = None,
+                data: m.ConfigMap | Mapping[str, t.JsonPayload | None] | None = None,
             ) -> p.Result[m.Entry]:
                 """Create and buffer a domain event for this web application entity."""
                 if not event_type.strip():
@@ -732,9 +732,7 @@ class FlextWebModels(m):
                     )
                 return r[FlextWebModels.Web.Entity].ok(self)
 
-            def update_metrics(
-                self, new_metrics: t.ConfigurationMapping
-            ) -> p.Result[bool]:
+            def update_metrics(self, new_metrics: t.JsonMapping) -> p.Result[bool]:
                 """Update application metrics.
 
                 Returns:

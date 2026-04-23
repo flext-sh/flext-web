@@ -20,7 +20,7 @@ from flext_core import FlextSettings, s
 from flext_web import FlextWebSettings, t, u
 
 
-class FlextWebServiceBase[TDomainResult: t.RuntimeData | Sequence[t.RuntimeData]](
+class FlextWebServiceBase[TDomainResult: t.JsonPayload | Sequence[t.JsonPayload]](
     s[TDomainResult],
     ABC,
 ):

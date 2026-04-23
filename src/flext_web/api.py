@@ -9,8 +9,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar, Self
-
 from flext_web import (
     FlextWebApp,
     FlextWebAuth,
@@ -19,9 +17,11 @@ from flext_web import (
     FlextWebHealth,
     FlextWebServices,
 )
+from flext_web.services.api_runtime import FlextWebApiRuntime
 
 
 class FlextWeb(
+    FlextWebApiRuntime,
     FlextWebApp,
     FlextWebServices,
     FlextWebAuth,
@@ -31,14 +31,7 @@ class FlextWeb(
 ):
     """Canonical public facade composed via MRO."""
 
-    _instance: ClassVar[Self | None] = None
-
-    @classmethod
-    def instance(cls) -> Self:
-        """Return the shared facade instance."""
-        if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
+    pass
 
 
 web = FlextWeb.instance()

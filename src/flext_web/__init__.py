@@ -21,6 +21,7 @@ if _t.TYPE_CHECKING:
     from flext_web.constants import FlextWebConstants, c
     from flext_web.models import FlextWebModels, m
     from flext_web.protocols import FlextWebProtocols, p
+    from flext_web.services.api_runtime import FlextWebApiRuntime
     from flext_web.services.app import FlextWebApp
     from flext_web.services.auth import FlextWebAuth
     from flext_web.services.entities import FlextWebEntities
@@ -64,6 +65,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "FlextWebProtocols",
                 "p",
             ),
+            ".services.api_runtime": ("FlextWebApiRuntime",),
             ".services.app": ("FlextWebApp",),
             ".services.auth": ("FlextWebAuth",),
             ".services.entities": ("FlextWebEntities",),
@@ -105,6 +107,7 @@ install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__: list[str] = [
     "FlextWeb",
+    "FlextWebApiRuntime",
     "FlextWebApp",
     "FlextWebAuth",
     "FlextWebConstants",
