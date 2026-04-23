@@ -33,7 +33,7 @@ class FlextWebApp(s[bool]):
     """
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the web application service.
 
         Main domain operation for the web application service.

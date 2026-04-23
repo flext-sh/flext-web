@@ -27,7 +27,7 @@ class FlextWebAuth(s[bool]):
         return r[m.Web.AuthResponse].ok(auth_response)
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the auth namespace service."""
         return r[bool].ok(True)
 

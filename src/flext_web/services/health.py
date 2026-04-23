@@ -18,7 +18,7 @@ class FlextWebHealth(s[bool]):
     """Health and metrics access backed by protocol runtime state."""
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the health namespace service."""
         return r[bool].ok(True)
 

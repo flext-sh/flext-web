@@ -27,7 +27,7 @@ class FlextWebEntities(s[bool]):
         return r[m.Web.EntityData].ok(entity)
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the entity namespace service."""
         return r[bool].ok(True)
 

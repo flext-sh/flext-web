@@ -132,7 +132,7 @@ class FlextWebHandlers(s[bool]):
         )
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute web handler service (s requirement).
 
         Returns:

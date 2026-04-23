@@ -526,7 +526,7 @@ class TestFlextWebProtocols:
             def render_template(
                 self,
                 template_name: str,
-                _context: t.Web.RequestDict,
+                context: t.Web.RequestDict,
             ) -> p.Result[str]:
                 return r[str].ok("")
 
@@ -573,7 +573,7 @@ class TestFlextWebProtocols:
                 return r[bool].ok(True)
 
             def render(
-                self, template: str, _context: t.Web.RequestDict
+                self, template: str, context: t.Web.RequestDict
             ) -> p.Result[str]:
                 return r[str].ok("")
 

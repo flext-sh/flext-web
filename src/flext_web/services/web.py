@@ -88,7 +88,7 @@ class FlextWebServices(s[bool]):
         return self._health().metrics()
 
     @override
-    def execute(self, **_kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
         """Execute the web service facade."""
         return self.validate_business_rules()
 
