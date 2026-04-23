@@ -13,14 +13,17 @@ from abc import ABC
 from collections.abc import (
     Sequence,
 )
-from typing import Annotated, override
+from typing import Annotated, cast, override
 
 from flext_core import FlextSettings, s
 
 from flext_web import FlextWebSettings, t, u
 
 
-class FlextWebServiceBase[TDomainResult: t.JsonPayload | Sequence[t.JsonPayload]](
+class FlextWebServiceBase[
+    TDomainResult: t.JsonPayload | Sequence[t.JsonPayload],
+    TSettings: FlextSettings = FlextWebSettings,
+](
     s[TDomainResult],
     ABC,
 ):
@@ -33,12 +36,10 @@ class FlextWebServiceBase[TDomainResult: t.JsonPayload | Sequence[t.JsonPayload]
 
     @property
     @override
-    def settings(self) -> FlextWebSettings:
+    def settings(self) -> TSettings:
         """Return the typed settings bound to this service runtime."""
         settings = super().settings
-        if isinstance(settings, FlextWebSettings):
-            return settings
-        return FlextSettings.fetch_global().fetch_namespace("web", FlextWebSettings)
+        return cast("TSettings", settings)
 
 
 s = FlextWebServiceBase
