@@ -54,7 +54,7 @@ class FlextWebModels(m):
             """
 
             headers: Annotated[
-                t.StrMapping,
+                t.MutableStrMapping,
                 u.Field(
                     description="HTTP headers for message",
                 ),
@@ -253,7 +253,7 @@ class FlextWebModels(m):
                 return upper
 
             headers: Annotated[
-                t.StrMapping,
+                t.MutableStrMapping,
                 u.Field(
                     description="HTTP headers",
                 ),
@@ -277,7 +277,7 @@ class FlextWebModels(m):
                 ),
             ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
             query_params: Annotated[
-                t.ConfigurationMapping,
+                t.MutableConfigurationMapping,
                 u.Field(
                     description="Query string parameters",
                 ),
@@ -339,7 +339,7 @@ class FlextWebModels(m):
                 ),
             ]
             headers: Annotated[
-                t.StrMapping,
+                t.MutableStrMapping,
                 u.Field(
                     description="HTTP response headers",
                 ),
@@ -874,7 +874,7 @@ class FlextWebModels(m):
             """Generic entity data model."""
 
             data: Annotated[
-                t.ConfigurationMapping,
+                t.MutableConfigurationMapping,
                 u.Field(
                     description="Entity data dictionary",
                 ),
@@ -978,7 +978,7 @@ class FlextWebModels(m):
                 ),
             ]
             headers: Annotated[
-                t.StrMapping,
+                t.MutableStrMapping,
                 u.Field(
                     description="HTTP headers",
                 ),
@@ -1018,7 +1018,7 @@ class FlextWebModels(m):
                 ),
             ]
             headers: Annotated[
-                t.StrMapping,
+                t.MutableStrMapping,
                 u.Field(
                     description="HTTP response headers",
                 ),
