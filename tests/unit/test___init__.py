@@ -51,6 +51,7 @@ class TestFlextWebInit:
         """Test that __all__ contains all expected exports."""
         expected_exports = {
             "FlextWeb",
+            "FlextWebApiRuntime",
             "FlextWebApp",
             "FlextWebAuth",
             "FlextWebConstants",
