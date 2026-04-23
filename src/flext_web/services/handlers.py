@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar, override
+from typing import ClassVar
 
 from flext_web import c, m, p, r, s, u
 
@@ -131,8 +131,9 @@ class FlextWebHandlers(s[bool]):
             ),
         )
 
-    @override
-    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(
+        self,
+    ) -> p.Result[bool]:
         """Execute web handler service (s requirement).
 
         Returns:
@@ -142,7 +143,6 @@ class FlextWebHandlers(s[bool]):
         """
         return r[bool].ok(value=True)
 
-    @override
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate business rules for web handlers (s requirement).
 

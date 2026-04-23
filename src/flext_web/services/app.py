@@ -13,7 +13,6 @@ import json as _json
 from collections.abc import (
     Callable,
 )
-from typing import override
 
 import flask
 from fastapi import FastAPI
@@ -32,8 +31,9 @@ class FlextWebApp(s[bool]):
     Delegates to flext-core for logging, container management, and error handling.
     """
 
-    @override
-    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(
+        self,
+    ) -> p.Result[bool]:
         """Execute the web application service.
 
         Main domain operation for the web application service.
@@ -298,7 +298,6 @@ class FlextWebApp(s[bool]):
         _ = (app, settings if settings is not None else self.settings)
         return r[bool].ok(value=True)
 
-    @override
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate business rules for web app service (s requirement).
 

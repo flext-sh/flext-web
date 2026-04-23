@@ -1144,14 +1144,14 @@ class FlextWebModels(m):
             # Use u.try_() for unified error handling (DSL pattern)
             def create_request() -> FlextWebModels.Web.WebRequest:
                 """Create request model."""
-                return cls.WebRequest(
-                    method=method,
-                    url=url,
-                    headers=headers_validated,
-                    body=body,
-                    request_id=str(uuid.uuid4()),
-                    timestamp=datetime.now(UTC),
-                )
+                return cls.WebRequest.model_validate({
+                    "method": method,
+                    "url": url,
+                    "headers": dict(headers_validated),
+                    "body": body,
+                    "request_id": str(uuid.uuid4()),
+                    "timestamp": datetime.now(UTC),
+                })
 
             result = u.try_(
                 create_request,
@@ -1185,14 +1185,14 @@ class FlextWebModels(m):
             # Use u.try_() for unified error handling (DSL pattern)
             def create_response() -> FlextWebModels.Web.WebResponse:
                 """Create response model."""
-                return cls.WebResponse(
-                    request_id=request_id,
-                    status_code=status_code,
-                    headers=headers_validated,
-                    body=body,
-                    response_id=str(uuid.uuid4()),
-                    timestamp=datetime.now(UTC),
-                )
+                return cls.WebResponse.model_validate({
+                    "request_id": request_id,
+                    "status_code": status_code,
+                    "headers": dict(headers_validated),
+                    "body": body,
+                    "response_id": str(uuid.uuid4()),
+                    "timestamp": datetime.now(UTC),
+                })
 
             result = u.try_(
                 create_response,

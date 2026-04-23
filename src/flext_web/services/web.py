@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import (
     Sequence,
 )
-from typing import Self, override
+from typing import Self
 
 from flext_web import (
     FlextWebAuth,
@@ -87,8 +87,9 @@ class FlextWebServices(s[bool]):
         """Return health metrics for the dashboard."""
         return self._health().metrics()
 
-    @override
-    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(
+        self,
+    ) -> p.Result[bool]:
         """Execute the web service facade."""
         return self.validate_business_rules()
 
@@ -216,7 +217,6 @@ class FlextWebServices(s[bool]):
                     return r[bool].fail(stop_result.error)
         return p.Web.WebService.stop_service()
 
-    @override
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate protocol-backed service state invariants."""
         state = p.Web.service_state

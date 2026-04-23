@@ -277,25 +277,25 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 k: v for k, v in query_params.items() if u.primitive(v)
                             }
                         )
-                        settings = t.Web.RequestConfig(
-                            url=url,
-                            method=method,
-                            headers=headers_dict,
-                            body=body_value,
-                            timeout=TestsFlextWebUtilities.Web.Tests._to_float(
+                        settings = t.Web.RequestConfig.model_validate({
+                            "url": url,
+                            "method": method,
+                            "headers": dict(headers_dict),
+                            "body": body_value,
+                            "timeout": TestsFlextWebUtilities.Web.Tests._to_float(
                                 timeout,
                                 default=30.0,
                             ),
-                            query_params=query_params_dict,
-                            client_ip=(
+                            "query_params": dict(query_params_dict),
+                            "client_ip": (
                                 client_ip if isinstance(client_ip, str) else "127.0.0.1"
                             ),
-                            user_agent=(
+                            "user_agent": (
                                 user_agent
                                 if isinstance(user_agent, str)
                                 else "test-client"
                             ),
-                        )
+                        })
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
                             t.create_web_request(settings),
                         )
@@ -329,32 +329,32 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 else None
                             )
                         )
-                        settings = t.Web.ResponseConfig(
-                            status_code=status_code,
-                            request_id=(
+                        settings = t.Web.ResponseConfig.model_validate({
+                            "status_code": status_code,
+                            "request_id": (
                                 request_id
                                 if isinstance(request_id, str)
                                 else "test-request"
                             ),
-                            headers=headers_dict,
-                            body=body_value,
-                            elapsed_time=TestsFlextWebUtilities.Web.Tests._to_float(
+                            "headers": dict(headers_dict),
+                            "body": body_value,
+                            "elapsed_time": TestsFlextWebUtilities.Web.Tests._to_float(
                                 elapsed_time,
                                 default=0.0,
                             ),
-                            content_type=(
+                            "content_type": (
                                 content_type
                                 if isinstance(content_type, str)
                                 else "application/json"
                             ),
-                            content_length=(
+                            "content_length": (
                                 content_length if isinstance(content_length, int) else 0
                             ),
-                            processing_time_ms=TestsFlextWebUtilities.Web.Tests._to_float(
+                            "processing_time_ms": TestsFlextWebUtilities.Web.Tests._to_float(
                                 processing_time_ms,
                                 default=0.0,
                             ),
-                        )
+                        })
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
                             t.create_web_response(settings),
                         )

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import override
-
 from flext_web import c, m, p, r, s
 
 
@@ -26,8 +24,9 @@ class FlextWebAuth(s[bool]):
         )
         return r[m.Web.AuthResponse].ok(auth_response)
 
-    @override
-    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(
+        self,
+    ) -> p.Result[bool]:
         """Execute the auth namespace service."""
         return r[bool].ok(True)
 
@@ -47,7 +46,6 @@ class FlextWebAuth(s[bool]):
         )
         return r[m.Web.UserResponse].ok(user_response)
 
-    @override
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate auth namespace invariants."""
         return r[bool].ok(True)

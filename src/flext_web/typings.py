@@ -173,13 +173,13 @@ class FlextWebTypes(t):
 
         def create_request() -> m.Web.Request:
             """Create request model."""
-            return m.Web.Request(
-                url=url,
-                method=method_upper,
-                headers=headers_validated or {},
-                body=body,
-                timeout=timeout,
-            )
+            return m.Web.Request.model_validate({
+                "url": url,
+                "method": method_upper,
+                "headers": dict(headers_validated or {}),
+                "body": body,
+                "timeout": timeout,
+            })
 
         try:
             request = create_request()
@@ -221,12 +221,12 @@ class FlextWebTypes(t):
 
         def create_response() -> m.Web.Response:
             """Create response model."""
-            return m.Web.Response(
-                status_code=status_code,
-                headers=headers_validated or {},
-                body=body,
-                elapsed_time=elapsed_time,
-            )
+            return m.Web.Response.model_validate({
+                "status_code": status_code,
+                "headers": dict(headers_validated or {}),
+                "body": body,
+                "elapsed_time": elapsed_time,
+            })
 
         try:
             response = create_response()
@@ -283,16 +283,16 @@ class FlextWebTypes(t):
 
         def create_request() -> m.Web.AppRequest:
             """Create request model."""
-            return m.Web.AppRequest(
-                url=url_validated,
-                method=method_upper,
-                headers=headers_validated,
-                body=body,
-                timeout=timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
-                query_params=query_params_validated,
-                client_ip=client_ip,
-                user_agent=user_agent,
-            )
+            return m.Web.AppRequest.model_validate({
+                "url": url_validated,
+                "method": method_upper,
+                "headers": dict(headers_validated),
+                "body": body,
+                "timeout": timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
+                "query_params": dict(query_params_validated),
+                "client_ip": client_ip,
+                "user_agent": user_agent,
+            })
 
         try:
             request = create_request()
@@ -335,16 +335,16 @@ class FlextWebTypes(t):
 
         def create_response() -> m.Web.AppResponse:
             """Create response model."""
-            return m.Web.AppResponse(
-                status_code=status_code or 200,
-                request_id=request_id,
-                headers=headers_validated,
-                body=body,
-                elapsed_time=elapsed_time or 0.0,
-                content_type=content_type,
-                content_length=content_length or 0,
-                processing_time_ms=processing_time_ms or 0.0,
-            )
+            return m.Web.AppResponse.model_validate({
+                "status_code": status_code or 200,
+                "request_id": request_id,
+                "headers": dict(headers_validated),
+                "body": body,
+                "elapsed_time": elapsed_time or 0.0,
+                "content_type": content_type,
+                "content_length": content_length or 0,
+                "processing_time_ms": processing_time_ms or 0.0,
+            })
 
         try:
             response = create_response()

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import override
-
 from flext_web import (
     c,
     m,
@@ -17,8 +15,9 @@ from flext_web import (
 class FlextWebHealth(s[bool]):
     """Health and metrics access backed by protocol runtime state."""
 
-    @override
-    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(
+        self,
+    ) -> p.Result[bool]:
         """Execute the health namespace service."""
         return r[bool].ok(True)
 
@@ -60,7 +59,6 @@ class FlextWebHealth(s[bool]):
             ),
         )
 
-    @override
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate health namespace invariants."""
         return r[bool].ok(True)

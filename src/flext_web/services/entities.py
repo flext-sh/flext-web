@@ -7,7 +7,6 @@ from collections.abc import (
     MutableMapping,
     Sequence,
 )
-from typing import override
 
 from flext_web import m, p, r, s, u
 
@@ -26,8 +25,9 @@ class FlextWebEntities(s[bool]):
         self._storage[entity_id] = entity
         return r[m.Web.EntityData].ok(entity)
 
-    @override
-    def execute(self, **kwargs: str | float | bool | None) -> p.Result[bool]:
+    def execute(
+        self,
+    ) -> p.Result[bool]:
         """Execute the entity namespace service."""
         return r[bool].ok(True)
 
@@ -44,7 +44,6 @@ class FlextWebEntities(s[bool]):
         """List all registered entities."""
         return r[Sequence[m.Web.EntityData]].ok(list(self._storage.values()))
 
-    @override
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate entity namespace invariants."""
         return r[bool].ok(True)
