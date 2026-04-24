@@ -12,7 +12,7 @@ from flext_web import web
 from tests import c, m, t
 
 
-class TestFlextWebModelsTypings:
+class TestsFlextWebTypesUnit:
     """Test suite for m unified class."""
 
     def test_typings_structure(self) -> None:

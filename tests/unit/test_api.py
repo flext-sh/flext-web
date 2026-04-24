@@ -8,7 +8,7 @@ from flext_web import web
 from tests import m
 
 
-class TestFlextWebApi:
+class TestsFlextWebApi:
     """Tests for the public `web` facade and its class interface."""
 
     def setup_method(self) -> None:

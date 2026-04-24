@@ -21,7 +21,7 @@ from flext_web import (
 from flext_web.__version__ import FlextWebVersion
 
 
-class TestFlextWebVersion:
+class TestsFlextWebVersion:
     """Test suite for FlextWebVersion class."""
 
     def test_resolve_version_string(self) -> None:

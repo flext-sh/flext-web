@@ -8,7 +8,7 @@ from flext_web import web
 from tests import m
 
 
-class TestFlextWebService:
+class TestsFlextWebService:
     """Tests for the canonical web service layer through `web`."""
 
     def setup_method(self) -> None:

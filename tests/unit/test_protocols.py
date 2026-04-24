@@ -30,7 +30,7 @@ _WebTemplateEngineBase = p.Web.TestBases._WebTemplateEngineBase
 _WebTemplateRendererBase = p.Web.TestBases._WebTemplateRendererBase
 
 
-class TestFlextWebProtocols:
+class TestsFlextWebProtocolsUnit:
     """Test suite for p unified class."""
 
     @staticmethod
@@ -56,7 +56,7 @@ class TestFlextWebProtocols:
     @staticmethod
     def _assert_protocol_base_lifecycle() -> None:
         """Exercise protocol-base lifecycle with a real ephemeral port."""
-        TestFlextWebProtocols._reset_protocol_state()
+        TestsFlextWebProtocolsUnit._reset_protocol_state()
         manager = _WebAppManagerBase()
         test_port = u.Web.Tests.TestPortManager.allocate_port()
         app_id: str | None = None

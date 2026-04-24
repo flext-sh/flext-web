@@ -12,7 +12,7 @@ from flext_web import __version__, __version_info__
 from tests import t
 
 
-class TestFlextWebInit:
+class TestsFlextWebInit:
     """Test suite for flext_web package initialization."""
 
     _WEB_SURFACE = (

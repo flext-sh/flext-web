@@ -7,7 +7,7 @@ from flext_tests import tm
 from flext_web import web
 
 
-class TestFlextWebSettings:
+class TestsFlextWebConfig:
     """Tests for the namespaced settings exposed by `web`."""
 
     def test_initialization_with_test_environment(self) -> None:

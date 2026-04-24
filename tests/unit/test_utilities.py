@@ -13,7 +13,7 @@ from flext_tests import tm
 from tests import m, u
 
 
-class TestFlextWebUtilities:
+class TestsFlextWebUtilitiesUnit:
     """Test suite for u unified class."""
 
     def test_utilities_inheritance(self) -> None:

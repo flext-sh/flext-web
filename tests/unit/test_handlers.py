@@ -8,7 +8,7 @@ from flext_web import web
 from tests import m, u
 
 
-class TestFlextWebHandlers:
+class TestsFlextWebHandlers:
     """Tests for handler-backed behavior exposed through `web`."""
 
     _allocated_ports: list[int]

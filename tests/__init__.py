@@ -27,20 +27,20 @@ if _t.TYPE_CHECKING:
     from tests.models import TestsFlextWebModels, m
     from tests.protocols import TestsFlextWebProtocols, p
     from tests.typings import TestsFlextWebTypes, t
-    from tests.unit.test___init__ import TestFlextWebInit
-    from tests.unit.test___main__ import TestFlextWebCliService, TestMainFunction
-    from tests.unit.test_api import TestFlextWebApi
-    from tests.unit.test_app import TestFlextWebApp
-    from tests.unit.test_config import TestFlextWebSettings
-    from tests.unit.test_constants import TestFlextWebConstants
-    from tests.unit.test_fields import TestFlextWebFields
-    from tests.unit.test_handlers import TestFlextWebHandlers
-    from tests.unit.test_models import TestFlextWebModels
-    from tests.unit.test_protocols import TestFlextWebProtocols
-    from tests.unit.test_services import TestFlextWebService
-    from tests.unit.test_typings import TestFlextWebModelsTypings
-    from tests.unit.test_utilities import TestFlextWebUtilities
-    from tests.unit.test_version import TestFlextWebVersion
+    from tests.unit.test___init__ import TestsFlextWebInit
+    from tests.unit.test___main__ import TestsFlextWebMain
+    from tests.unit.test_api import TestsFlextWebApi
+    from tests.unit.test_app import TestsFlextWebApp
+    from tests.unit.test_config import TestsFlextWebConfig
+    from tests.unit.test_constants import TestsFlextWebConstantsUnit
+    from tests.unit.test_fields import TestsFlextWebFields
+    from tests.unit.test_handlers import TestsFlextWebHandlers
+    from tests.unit.test_models import TestsFlextWebModelsUnit
+    from tests.unit.test_protocols import TestsFlextWebProtocolsUnit
+    from tests.unit.test_services import TestsFlextWebService
+    from tests.unit.test_typings import TestsFlextWebTypesUnit
+    from tests.unit.test_utilities import TestsFlextWebUtilitiesUnit
+    from tests.unit.test_version import TestsFlextWebVersion
     from tests.utilities import TestsFlextWebUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
     (
@@ -74,23 +74,20 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextWebTypes",
                 "t",
             ),
-            ".unit.test___init__": ("TestFlextWebInit",),
-            ".unit.test___main__": (
-                "TestFlextWebCliService",
-                "TestMainFunction",
-            ),
-            ".unit.test_api": ("TestFlextWebApi",),
-            ".unit.test_app": ("TestFlextWebApp",),
-            ".unit.test_config": ("TestFlextWebSettings",),
-            ".unit.test_constants": ("TestFlextWebConstants",),
-            ".unit.test_fields": ("TestFlextWebFields",),
-            ".unit.test_handlers": ("TestFlextWebHandlers",),
-            ".unit.test_models": ("TestFlextWebModels",),
-            ".unit.test_protocols": ("TestFlextWebProtocols",),
-            ".unit.test_services": ("TestFlextWebService",),
-            ".unit.test_typings": ("TestFlextWebModelsTypings",),
-            ".unit.test_utilities": ("TestFlextWebUtilities",),
-            ".unit.test_version": ("TestFlextWebVersion",),
+            ".unit.test___init__": ("TestsFlextWebInit",),
+            ".unit.test___main__": ("TestsFlextWebMain",),
+            ".unit.test_api": ("TestsFlextWebApi",),
+            ".unit.test_app": ("TestsFlextWebApp",),
+            ".unit.test_config": ("TestsFlextWebConfig",),
+            ".unit.test_constants": ("TestsFlextWebConstantsUnit",),
+            ".unit.test_fields": ("TestsFlextWebFields",),
+            ".unit.test_handlers": ("TestsFlextWebHandlers",),
+            ".unit.test_models": ("TestsFlextWebModelsUnit",),
+            ".unit.test_protocols": ("TestsFlextWebProtocolsUnit",),
+            ".unit.test_services": ("TestsFlextWebService",),
+            ".unit.test_typings": ("TestsFlextWebTypesUnit",),
+            ".unit.test_utilities": ("TestsFlextWebUtilitiesUnit",),
+            ".unit.test_version": ("TestsFlextWebVersion",),
             ".utilities": (
                 "TestsFlextWebUtilities",
                 "u",
@@ -130,26 +127,24 @@ install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 __all__: list[str] = [
     "ExamplesFullFunctionalityTest",
     "TestExamples",
-    "TestFlextWebApi",
-    "TestFlextWebApp",
-    "TestFlextWebCliService",
-    "TestFlextWebConstants",
-    "TestFlextWebFields",
-    "TestFlextWebHandlers",
-    "TestFlextWebInit",
-    "TestFlextWebModels",
-    "TestFlextWebModelsTypings",
-    "TestFlextWebProtocols",
-    "TestFlextWebService",
-    "TestFlextWebSettings",
-    "TestFlextWebUtilities",
-    "TestFlextWebVersion",
-    "TestMainFunction",
+    "TestsFlextWebApi",
+    "TestsFlextWebApp",
+    "TestsFlextWebConfig",
     "TestsFlextWebConstants",
+    "TestsFlextWebConstantsUnit",
+    "TestsFlextWebFields",
+    "TestsFlextWebHandlers",
+    "TestsFlextWebInit",
     "TestsFlextWebModels",
+    "TestsFlextWebModelsUnit",
     "TestsFlextWebProtocols",
+    "TestsFlextWebProtocolsUnit",
+    "TestsFlextWebService",
     "TestsFlextWebTypes",
+    "TestsFlextWebTypesUnit",
     "TestsFlextWebUtilities",
+    "TestsFlextWebUtilitiesUnit",
+    "TestsFlextWebVersion",
     "TestsModels",
     "TestsProtocols",
     "TestsTypings",

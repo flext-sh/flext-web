@@ -14,7 +14,7 @@ from flext_tests import tm
 from tests import c
 
 
-class TestFlextWebConstants:
+class TestsFlextWebConstantsUnit:
     """Test suite for c class."""
 
     def test_web_server_constants(self) -> None:

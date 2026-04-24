@@ -11,7 +11,7 @@ from flext_tests import tm
 from tests import c, m, t, u
 
 
-class TestFlextWebModels:
+class TestsFlextWebModelsUnit:
     """Test suite for m class."""
 
     def test_web_app_status_enum(self) -> None:

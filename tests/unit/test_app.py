@@ -11,7 +11,7 @@ from flext_web import web
 from tests import c, m
 
 
-class TestFlextWebApp:
+class TestsFlextWebApp:
     """Tests for app-related operations through the public facade."""
 
     def test_create_fastapi_app_success(self) -> None:

@@ -8,7 +8,7 @@ from flext_web import web
 from tests import m
 
 
-class TestFlextWebFields:
+class TestsFlextWebFields:
     """Test suite for public web field behavior."""
 
     def test_host_field_creation(self) -> None:

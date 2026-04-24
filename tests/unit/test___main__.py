@@ -8,7 +8,7 @@ from flext_tests import tm
 from flext_web import __main__, web
 
 
-class TestFlextWebCliService:
+class TestsFlextWebMain:
     """Tests for the CLI adapter."""
 
     def setup_method(self) -> None:
@@ -50,10 +50,6 @@ class TestFlextWebCliService:
         tm.that(status_result.value.status, eq="operational")
         stop_result = web.stop_service()
         tm.ok(stop_result)
-
-
-class TestMainFunction:
-    """Tests for the console entrypoint."""
 
     def test_main_structure(self) -> None:
         """The module exposes the console callable required by pyproject."""
