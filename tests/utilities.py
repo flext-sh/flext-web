@@ -58,7 +58,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
                 _lock: ClassVar[Lock] = Lock()
                 _allocated_ports: ClassVar[set[int]] = set()
-                _current_port: ClassVar[int] = c.Web.Tests.TestPort.PORT_START
+                _current_port: ClassVar[int] = c.Web.Tests.PORT_START
 
                 @classmethod
                 def allocate_port(cls) -> int:
@@ -66,8 +66,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     with cls._lock:
                         while cls._current_port in cls._allocated_ports:
                             cls._current_port += 1
-                            if cls._current_port > c.Web.Tests.TestPort.PORT_END:
-                                cls._current_port = c.Web.Tests.TestPort.PORT_START
+                            if cls._current_port > c.Web.Tests.PORT_END:
+                                cls._current_port = c.Web.Tests.PORT_START
                         port = cls._current_port
                         cls._allocated_ports.add(port)
                         cls._current_port += 1
@@ -84,7 +84,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     """Reset the allocated test ports."""
                     with cls._lock:
                         cls._allocated_ports.clear()
-                        cls._current_port = c.Web.Tests.TestPort.PORT_START
+                        cls._current_port = c.Web.Tests.PORT_START
 
             @staticmethod
             def wait_for_port(host: str, port: int, timeout: float = 5.0) -> bool:
@@ -315,12 +315,12 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             "Invalid status_code for web_response",
                         )
                     try:
-                        headers_dict: t.StrMapping = (
+                        response_headers_dict: t.StrMapping = (
                             {}
                             if not isinstance(headers, dict)
                             else {k: str(v) for k, v in headers.items()}
                         )
-                        body_value: t.ScalarMapping | str | None = (
+                        response_body_value: t.ScalarMapping | str | None = (
                             body
                             if isinstance(body, str) or body is None
                             else (
@@ -336,8 +336,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 if isinstance(request_id, str)
                                 else "test-request"
                             ),
-                            "headers": dict(headers_dict),
-                            "body": body_value,
+                            "headers": dict(response_headers_dict),
+                            "body": response_body_value,
                             "elapsed_time": TestsFlextWebUtilities.Web.Tests._to_float(
                                 elapsed_time,
                                 default=0.0,
@@ -390,9 +390,9 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 """Create centralized test data payloads."""
                 if data_type == "app_data":
                     app_data: dict[str, t.JsonPayload] = {
-                        "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
-                        "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
-                        "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
+                        "name": c.Web.Tests.TEST_APP_NAME,
+                        "host": c.Web.Tests.DEFAULT_HOST,
+                        "port": c.Web.Tests.DEFAULT_PORT,
                     }
                     app_data.update({k: v for k, v in kwargs.items() if u.primitive(v)})
                     return app_data
@@ -407,8 +407,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     return entity_data
                 if data_type == "config_data":
                     config_data: dict[str, t.JsonPayload] = {
-                        "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
-                        "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
+                        "host": c.Web.Tests.DEFAULT_HOST,
+                        "port": c.Web.Tests.DEFAULT_PORT,
                         "debug": True,
                     }
                     config_data.update({
@@ -417,15 +417,13 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     return config_data
                 if data_type == "request_data":
                     request_data: dict[str, t.JsonPayload] = {
-                        "method": c.Web.Tests.TestHttp.TEST_METHOD,
+                        "method": c.Web.Tests.TEST_METHOD,
                         "url": (
                             f"http://"
-                            f"{c.Web.Tests.TestWeb.DEFAULT_HOST}:"
-                            f"{c.Web.Tests.TestWeb.DEFAULT_PORT}"
+                            f"{c.Web.Tests.DEFAULT_HOST}:"
+                            f"{c.Web.Tests.DEFAULT_PORT}"
                         ),
-                        "headers": {
-                            "Content-Type": (c.Web.Tests.TestHttp.TEST_CONTENT_TYPE)
-                        },
+                        "headers": {"Content-Type": c.Web.Tests.TEST_CONTENT_TYPE},
                     }
                     request_updates: list[tuple[str, t.JsonPayload]] = [
                         (key, value)
@@ -454,9 +452,9 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 """Create a web test application entity."""
                 defaults: dict[str, str | int] = {
                     "id": "test-id",
-                    "name": c.Web.Tests.TestWeb.TEST_APP_NAME,
-                    "host": c.Web.Tests.TestWeb.DEFAULT_HOST,
-                    "port": c.Web.Tests.TestWeb.DEFAULT_PORT,
+                    "name": c.Web.Tests.TEST_APP_NAME,
+                    "host": c.Web.Tests.DEFAULT_HOST,
+                    "port": c.Web.Tests.DEFAULT_PORT,
                 }
                 defaults.update({
                     k: v for k, v in kwargs.items() if isinstance(v, str | int)
@@ -464,32 +462,32 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 id_value = defaults.get("id", "test-id")
                 name_value = defaults.get(
                     "name",
-                    c.Web.Tests.TestWeb.TEST_APP_NAME,
+                    c.Web.Tests.TEST_APP_NAME,
                 )
                 host_value = defaults.get(
                     "host",
-                    c.Web.Tests.TestWeb.DEFAULT_HOST,
+                    c.Web.Tests.DEFAULT_HOST,
                 )
                 port_value = defaults.get(
                     "port",
-                    c.Web.Tests.TestWeb.DEFAULT_PORT,
+                    c.Web.Tests.DEFAULT_PORT,
                 )
                 return m.Web.Entity(
                     id=id_value if isinstance(id_value, str) else "test-id",
                     name=(
                         name_value
                         if isinstance(name_value, str)
-                        else c.Web.Tests.TestWeb.TEST_APP_NAME
+                        else c.Web.Tests.TEST_APP_NAME
                     ),
                     host=(
                         host_value
                         if isinstance(host_value, str)
-                        else c.Web.Tests.TestWeb.DEFAULT_HOST
+                        else c.Web.Tests.DEFAULT_HOST
                     ),
                     port=(
                         port_value
                         if isinstance(port_value, int)
-                        else c.Web.Tests.TestWeb.DEFAULT_PORT
+                        else c.Web.Tests.DEFAULT_PORT
                     ),
                 )
 

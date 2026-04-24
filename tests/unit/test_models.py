@@ -28,7 +28,7 @@ class TestFlextWebModels:
         """Test WebApp initialization with defaults."""
         app = u.Web.Tests.create_test_app()
         tm.that(app.id, eq="test-id")
-        tm.that(app.name, eq=c.Web.Tests.TestWeb.TEST_APP_NAME)
+        tm.that(app.name, eq=c.Web.Tests.TEST_APP_NAME)
         tm.that(app.host, eq=c.Web.WebDefaults.HOST)
         tm.that(app.port, eq=c.Web.WebDefaults.PORT)
         tm.that(app.status, eq="stopped")
