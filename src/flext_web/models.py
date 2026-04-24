@@ -1144,14 +1144,16 @@ class FlextWebModels(m):
             # Use u.try_() for unified error handling (DSL pattern)
             def create_request() -> FlextWebModels.Web.WebRequest:
                 """Create request model."""
-                validated: FlextWebModels.Web.WebRequest = cls.WebRequest.model_validate({
-                    "method": method,
-                    "url": url,
-                    "headers": dict(headers_validated),
-                    "body": body,
-                    "request_id": str(uuid.uuid4()),
-                    "timestamp": datetime.now(UTC),
-                })
+                validated: FlextWebModels.Web.WebRequest = (
+                    cls.WebRequest.model_validate({
+                        "method": method,
+                        "url": url,
+                        "headers": dict(headers_validated),
+                        "body": body,
+                        "request_id": str(uuid.uuid4()),
+                        "timestamp": datetime.now(UTC),
+                    })
+                )
                 return validated
 
             result = u.try_(
@@ -1186,14 +1188,16 @@ class FlextWebModels(m):
             # Use u.try_() for unified error handling (DSL pattern)
             def create_response() -> FlextWebModels.Web.WebResponse:
                 """Create response model."""
-                validated: FlextWebModels.Web.WebResponse = cls.WebResponse.model_validate({
-                    "request_id": request_id,
-                    "status_code": status_code,
-                    "headers": dict(headers_validated),
-                    "body": body,
-                    "response_id": str(uuid.uuid4()),
-                    "timestamp": datetime.now(UTC),
-                })
+                validated: FlextWebModels.Web.WebResponse = (
+                    cls.WebResponse.model_validate({
+                        "request_id": request_id,
+                        "status_code": status_code,
+                        "headers": dict(headers_validated),
+                        "body": body,
+                        "response_id": str(uuid.uuid4()),
+                        "timestamp": datetime.now(UTC),
+                    })
+                )
                 return validated
 
             result = u.try_(

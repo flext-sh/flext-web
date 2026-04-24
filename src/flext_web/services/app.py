@@ -188,7 +188,9 @@ class FlextWebApp(s[bool]):
         failure contains detailed error message
 
         """
-        flask_config: FlextWebSettings = settings if settings is not None else self.settings
+        flask_config: FlextWebSettings = (
+            settings if settings is not None else self.settings
+        )
         app = flask.Flask(flask_config.app_name)
         app.config["SECRET_KEY"] = flask_config.secret_key
         app.config["DEBUG"] = flask_config.debug
