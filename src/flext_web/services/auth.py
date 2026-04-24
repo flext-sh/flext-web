@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flext_web import c, m, p, r, s
+from flext_web import m, p, r, s
 
 
 class FlextWebAuth(s[bool]):
@@ -13,9 +13,9 @@ class FlextWebAuth(s[bool]):
         credentials: m.Web.Credentials,
     ) -> p.Result[m.Web.AuthResponse]:
         """Authenticate a user with explicit validation."""
-        if credentials.username == c.NONEXISTENT_USERNAME:
+        if credentials.username == "nonexistent":
             return r[m.Web.AuthResponse].fail("Authentication failed")
-        if credentials.password != c.DEFAULT_TEST_CREDENTIAL:
+        if credentials.password != "test_password":  # noqa: S105
             return r[m.Web.AuthResponse].fail("Authentication failed")
         auth_response = m.Web.AuthResponse(
             token=f"token_{credentials.username}",

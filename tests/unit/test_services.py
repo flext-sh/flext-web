@@ -5,7 +5,7 @@ from __future__ import annotations
 from flext_tests import tm
 
 from flext_web import web
-from tests import c, m
+from tests import m
 
 
 class TestFlextWebService:
@@ -26,7 +26,7 @@ class TestFlextWebService:
         """Authentication succeeds for the canonical test credentials."""
         credentials = m.Web.Credentials(
             username="testuser",
-            password=c.DEFAULT_TEST_CREDENTIAL,
+            password="test_password",
         )
         result = web.authenticate(credentials)
         tm.ok(result)
@@ -35,7 +35,7 @@ class TestFlextWebService:
     def test_authenticate_failure(self) -> None:
         """Authentication fails for invalid credentials."""
         credentials = m.Web.Credentials(
-            username=c.NONEXISTENT_USERNAME,
+            username="nonexistent",
             password="wrong-password",
         )
         result = web.authenticate(credentials)

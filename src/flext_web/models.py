@@ -531,14 +531,6 @@ class FlextWebModels(m):
                     description="Debug mode enabled flag",
                 ),
             ] = c.Web.WebDefaults.DEBUG_MODE
-            # Mypy internal error workaround: 'version' is inherited from VersionableMixin
-            # version: Annotated[
-            #     int,
-            #     u.Field(
-            #         default=c.Web.WebDefaults.VERSION_INT,
-            #         description="Application version",
-            #     ),
-            # ] = c.Web.WebDefaults.VERSION_INT
             metrics: Annotated[
                 t.MutableJsonMapping,
                 u.Field(
