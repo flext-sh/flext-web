@@ -365,7 +365,7 @@ class TestFlextWebModelsTypings:
 
     def test_types_config_initialization(self) -> None:
         """Test TypesConfig initialization with all parameters."""
-        settings = t.TypesConfig(
+        settings = t.Web.TypesConfig(
             use_pydantic_models=False,
             enable_runtime_validation=False,
             models_available=["Custom.Model"],
@@ -376,7 +376,7 @@ class TestFlextWebModelsTypings:
 
     def test_types_config_default_initialization(self) -> None:
         """Test TypesConfig initialization with defaults."""
-        settings = t.TypesConfig()
+        settings = t.Web.TypesConfig()
         tm.that(settings.use_pydantic_models is True, eq=True)
         tm.that(settings.enable_runtime_validation is True, eq=True)
         tm.that(settings.models_available, is_=list)
