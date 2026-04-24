@@ -7,23 +7,20 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 _LAZY_IMPORTS = build_lazy_import_map(
     {
-        ".test___init__": ("TestFlextWebInit",),
-        ".test___main__": (
-            "TestFlextWebCliService",
-            "TestMainFunction",
-        ),
-        ".test_api": ("TestFlextWebApi",),
-        ".test_app": ("TestFlextWebApp",),
-        ".test_config": ("TestFlextWebSettings",),
-        ".test_constants": ("TestFlextWebConstants",),
-        ".test_fields": ("TestFlextWebFields",),
-        ".test_handlers": ("TestFlextWebHandlers",),
-        ".test_models": ("TestFlextWebModels",),
-        ".test_protocols": ("TestFlextWebProtocols",),
-        ".test_services": ("TestFlextWebService",),
-        ".test_typings": ("TestFlextWebModelsTypings",),
-        ".test_utilities": ("TestFlextWebUtilities",),
-        ".test_version": ("TestFlextWebVersion",),
+        ".test___init__": ("TestsFlextWebInit",),
+        ".test___main__": ("TestsFlextWebMain",),
+        ".test_api": ("TestsFlextWebApi",),
+        ".test_app": ("TestsFlextWebApp",),
+        ".test_config": ("TestsFlextWebConfig",),
+        ".test_constants": ("TestsFlextWebConstantsUnit",),
+        ".test_fields": ("TestsFlextWebFields",),
+        ".test_handlers": ("TestsFlextWebHandlers",),
+        ".test_models": ("TestsFlextWebModelsUnit",),
+        ".test_protocols": ("TestsFlextWebProtocolsUnit",),
+        ".test_services": ("TestsFlextWebService",),
+        ".test_typings": ("TestsFlextWebTypesUnit",),
+        ".test_utilities": ("TestsFlextWebUtilitiesUnit",),
+        ".test_version": ("TestsFlextWebVersion",),
     },
 )
 

@@ -135,6 +135,7 @@ __all__: list[str] = [
     "TestsFlextWebFields",
     "TestsFlextWebHandlers",
     "TestsFlextWebInit",
+    "TestsFlextWebMain",
     "TestsFlextWebModels",
     "TestsFlextWebModelsUnit",
     "TestsFlextWebProtocols",
