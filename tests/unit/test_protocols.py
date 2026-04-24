@@ -260,7 +260,7 @@ class TestFlextWebProtocols:
                 return r[bool].ok(True)
 
             @override
-            def service_info(self) -> t.ScalarMapping:
+            def service_info(self) -> t.JsonMapping:
                 return {"name": "Custom"}
 
             @override
