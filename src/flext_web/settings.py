@@ -117,10 +117,10 @@ class FlextWebSettings(FlextSettings):
     @property
     def protocol(self) -> str:
         """Return active URL protocol based on TLS setting."""
-        return (
+        return str(
             c.Web.WebDefaults.HTTPS_PROTOCOL
             if self.ssl_enabled
-            else c.Web.WebDefaults.HTTP_PROTOCOL
+            else c.Web.WebDefaults.HTTP_PROTOCOL,
         )
 
     @u.computed_field()
@@ -153,7 +153,7 @@ class FlextWebSettings(FlextSettings):
                 debug=debug_value,
                 secret_key=secret_key_value,
             )
-            success: p.Result[Self] = r[Self].ok(instance)
+            success: p.Result[Self] = r.ok(instance)
             return success
         except c.ValidationError as exc:
             failure: p.Result[Self] = r[Self].fail(str(exc))

@@ -179,7 +179,7 @@ class FlextWebModels(m):
                     True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
-                return self.status_code >= c.Web.ERROR_MIN
+                return bool(self.status_code >= c.Web.ERROR_MIN)
 
             @property
             def success(self) -> bool:
@@ -190,7 +190,7 @@ class FlextWebModels(m):
 
                 """
                 success_min, success_max = c.Web.SUCCESS_RANGE
-                return success_min <= self.status_code <= success_max
+                return bool(success_min <= self.status_code <= success_max)
 
         class AppRequest(m.Value):
             """Web request entity with tracking and context information.
@@ -399,7 +399,7 @@ class FlextWebModels(m):
                     True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
-                return self.status_code >= c.Web.ERROR_MIN
+                return bool(self.status_code >= c.Web.ERROR_MIN)
 
             @property
             def success(self) -> bool:
@@ -410,7 +410,7 @@ class FlextWebModels(m):
 
                 """
                 success_min, success_max = c.Web.SUCCESS_RANGE
-                return success_min <= self.status_code <= success_max
+                return bool(success_min <= self.status_code <= success_max)
 
             @property
             def processing_time_seconds(self) -> float:
@@ -420,7 +420,7 @@ class FlextWebModels(m):
                     Processing time in seconds
 
                 """
-                return self.processing_time_ms / 1000  # Convert ms to seconds
+                return float(self.processing_time_ms / 1000)
 
         # APPLICATION MODELS (Aggregates - consistency boundaries)
 
@@ -571,12 +571,12 @@ class FlextWebModels(m):
             @property
             def can_start(self) -> bool:
                 """Check if application can be started."""
-                return self.status == c.Web.Status.STOPPED.value
+                return bool(self.status == c.Web.Status.STOPPED.value)
 
             @property
             def can_stop(self) -> bool:
                 """Check if application can be stopped."""
-                return self.status == c.Web.Status.RUNNING.value
+                return bool(self.status == c.Web.Status.RUNNING.value)
 
             @property
             def healthy(self) -> bool:
@@ -588,7 +588,7 @@ class FlextWebModels(m):
             @property
             def running(self) -> bool:
                 """Check if application is currently running."""
-                return self.status == c.Web.Status.RUNNING.value
+                return bool(self.status == c.Web.Status.RUNNING.value)
 
             @property
             def url(self) -> str:
@@ -908,7 +908,7 @@ class FlextWebModels(m):
             @property
             def running(self) -> bool:
                 """Return whether the projected application is running."""
-                return self.status == c.Web.Status.RUNNING.value
+                return bool(self.status == c.Web.Status.RUNNING.value)
 
         class HealthResponse(m.Value):
             """Health check response model."""
@@ -1144,7 +1144,7 @@ class FlextWebModels(m):
             # Use u.try_() for unified error handling (DSL pattern)
             def create_request() -> FlextWebModels.Web.WebRequest:
                 """Create request model."""
-                return cls.WebRequest.model_validate({
+                validated: FlextWebModels.Web.WebRequest = cls.WebRequest.model_validate({
                     "method": method,
                     "url": url,
                     "headers": dict(headers_validated),
@@ -1152,6 +1152,7 @@ class FlextWebModels(m):
                     "request_id": str(uuid.uuid4()),
                     "timestamp": datetime.now(UTC),
                 })
+                return validated
 
             result = u.try_(
                 create_request,
@@ -1185,7 +1186,7 @@ class FlextWebModels(m):
             # Use u.try_() for unified error handling (DSL pattern)
             def create_response() -> FlextWebModels.Web.WebResponse:
                 """Create response model."""
-                return cls.WebResponse.model_validate({
+                validated: FlextWebModels.Web.WebResponse = cls.WebResponse.model_validate({
                     "request_id": request_id,
                     "status_code": status_code,
                     "headers": dict(headers_validated),
@@ -1193,6 +1194,7 @@ class FlextWebModels(m):
                     "response_id": str(uuid.uuid4()),
                     "timestamp": datetime.now(UTC),
                 })
+                return validated
 
             result = u.try_(
                 create_response,
