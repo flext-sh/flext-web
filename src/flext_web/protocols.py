@@ -1420,6 +1420,8 @@ class FlextWebProtocols(p):
             classes, not a Protocol/ABC.
             """
 
+            _flext_enforcement_exempt: ClassVar[bool] = True
+
             class _WebAppManagerBase:
                 """Base implementation of WebAppManager for testing."""
 
