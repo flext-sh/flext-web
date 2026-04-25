@@ -9,7 +9,7 @@ import pytest
 from flext_tests import tm
 
 from flext_web import web
-from tests import c, m, t
+from tests import c, m, t, u
 
 
 class TestsFlextWebTypesUnit:
@@ -77,37 +77,6 @@ class TestsFlextWebTypesUnit:
     def test_project_types(self) -> None:
         """Test Project types."""
 
-    def test_configure_web_types_system(self) -> None:
-        """Test configure_web_types_system method."""
-        result = t.configure_web_types_system(
-            use_pydantic_models=True,
-            enable_runtime_validation=True,
-        )
-        assert result.success, result.error
-        settings = result.value
-        tm.that(settings.use_pydantic_models is True, eq=True)
-        tm.that(settings.enable_runtime_validation is True, eq=True)
-
-    def test_configure_web_types_system_invalid_config(self) -> None:
-        """Test configure_web_types_system with invalid settings."""
-        result = t.configure_web_types_system(
-            use_pydantic_models=False,
-            enable_runtime_validation=False,
-        )
-        assert result.success, result.error
-        settings = result.value
-        tm.that(settings.use_pydantic_models is False, eq=True)
-        tm.that(settings.enable_runtime_validation is False, eq=True)
-
-    def test_web_types_system_config(self) -> None:
-        """Test web_types_system_config method."""
-        result = t.web_types_system_config()
-        assert result.success, result.error
-        settings = result.value
-        tm.that(settings.use_pydantic_models is True, eq=True)
-        tm.that(settings.enable_runtime_validation is True, eq=True)
-        tm.that(settings.models_available, is_=list)
-
     def test_model_creation(self) -> None:
         """Test model creation functionality."""
         app = m.Web.Entity(
@@ -157,7 +126,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_invalid_method(self) -> None:
         """Test create_http_request with invalid HTTP method."""
-        result = t.create_http_request(
+        result = u.Web.create_http_request(
             url="http://localhost:8080",
             method="INVALID_METHOD",
         )
@@ -167,7 +136,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_invalid_headers(self) -> None:
         """Test create_http_request with invalid headers type."""
-        result = t.create_http_request(
+        result = u.Web.create_http_request(
             url="http://localhost:8080",
             method="GET",
             headers=None,
@@ -176,7 +145,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_exception_handling(self) -> None:
         """Test create_http_request exception handling."""
-        result = t.create_http_request(
+        result = u.Web.create_http_request(
             url="http://localhost:8080",
             method="GET",
             headers={},
@@ -194,12 +163,12 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_response_invalid_headers(self) -> None:
         """Test create_http_response with invalid headers type."""
-        result = t.create_http_response(status_code=200, headers=None)
+        result = u.Web.create_http_response(status_code=200, headers=None)
         tm.that(result.success or result.failure, eq=True)
 
     def test_create_http_response_exception_handling(self) -> None:
         """Test create_http_response exception handling."""
-        result = t.create_http_response(
+        result = u.Web.create_http_response(
             status_code=200,
             headers={},
             body=None,
@@ -281,7 +250,7 @@ class TestsFlextWebTypesUnit:
             port=8080,
             status="invalid_status",
         )
-        result = t.create_application(settings)
+        result = u.Web.create_application(settings)
         assert result.failure, "Invalid status should cause validation failure"
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -291,27 +260,13 @@ class TestsFlextWebTypesUnit:
             eq=True,
         )
 
-    def test_configure_web_types_system_exception_handling(self) -> None:
-        """Test configure_web_types_system exception handling."""
-        result = t.configure_web_types_system(
-            use_pydantic_models=True,
-            enable_runtime_validation=True,
-            models_available=["Custom.Model"],
-        )
-        assert result.success, result.error
-        settings = result.value
-        tm.that(settings.models_available, has="Custom.Model")
-
-    def test_web_types_system_config_exception_handling(self) -> None:
-        """Test web_types_system_config exception handling."""
-        result = t.web_types_system_config()
-        assert result.success, result.error
-
     def test_create_http_request_all_methods(self) -> None:
         """Test create_http_request with all valid HTTP methods."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
-            result = t.create_http_request(url="http://localhost:8080", method=method)
+            result = u.Web.create_http_request(
+                url="http://localhost:8080", method=method
+            )
             assert result.success, (
                 f"Operation should succeed for method {method}: {result.error}"
             )
@@ -322,7 +277,7 @@ class TestsFlextWebTypesUnit:
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
             settings = t.Web.RequestConfig(url="http://localhost:8080", method=method)
-            result = t.create_web_request(settings)
+            result = u.Web.create_web_request(settings)
             assert result.success, (
                 f"Operation should succeed for method {method}: {result.error}"
             )
@@ -330,7 +285,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_with_none_headers(self) -> None:
         """Test create_http_request with None headers."""
-        result = t.create_http_request(
+        result = u.Web.create_http_request(
             url="http://localhost:8080",
             method="GET",
             headers=None,
@@ -340,7 +295,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_response_with_none_headers(self) -> None:
         """Test create_http_response with None headers."""
-        result = t.create_http_response(status_code=200, headers=None)
+        result = u.Web.create_http_response(status_code=200, headers=None)
         assert result.success, result.error
         tm.that(result.value.headers, is_=dict)
 
@@ -363,40 +318,23 @@ class TestsFlextWebTypesUnit:
                 "headers": None,
             })
 
-    def test_types_config_initialization(self) -> None:
-        """Test TypesConfig initialization with all parameters."""
-        settings = t.Web.TypesConfig(
-            use_pydantic_models=False,
-            enable_runtime_validation=False,
-            models_available=["Custom.Model"],
-        )
-        tm.that(settings.use_pydantic_models is False, eq=True)
-        tm.that(settings.enable_runtime_validation is False, eq=True)
-        tm.that(settings.models_available, eq=["Custom.Model"])
-
-    def test_types_config_default_initialization(self) -> None:
-        """Test TypesConfig initialization with defaults."""
-        settings = t.Web.TypesConfig()
-        tm.that(settings.use_pydantic_models is True, eq=True)
-        tm.that(settings.enable_runtime_validation is True, eq=True)
-        tm.that(settings.models_available, is_=list)
-        tm.that(settings.models_available, empty=False)
-
     def test_create_http_request_match_case_default(self) -> None:
         """Test create_http_request match/case default branch (line 174-175)."""
-        result = t.create_http_request(url="http://localhost:8080", method="GET")
+        result = u.Web.create_http_request(url="http://localhost:8080", method="GET")
         assert result.success, result.error
 
     def test_create_http_request_duplicate_validation(self) -> None:
         """Test create_http_request duplicate validation path (line 157)."""
-        result = t.create_http_request(url="http://localhost:8080", method="INVALID")
+        result = u.Web.create_http_request(
+            url="http://localhost:8080", method="INVALID"
+        )
         assert result.failure, "Operation should fail"
         tm.fail(result)
 
     def test_create_web_request_match_case_default(self) -> None:
         """Test create_web_request match/case default branch (line 301-302)."""
         settings = t.Web.RequestConfig(url="http://localhost:8080", method="GET")
-        result = t.create_web_request(settings)
+        result = u.Web.create_web_request(settings)
         assert result.success, result.error
 
     def test_create_web_request_duplicate_validation(self) -> None:
@@ -411,18 +349,5 @@ class TestsFlextWebTypesUnit:
             host="localhost",
             port=8080,
         )
-        result = t.create_application(settings)
-        assert result.success, result.error
-
-    def test_configure_web_types_system_exception_path(self) -> None:
-        """Test configure_web_types_system exception handling (lines 461-462)."""
-        result = t.configure_web_types_system(
-            use_pydantic_models=True,
-            enable_runtime_validation=True,
-        )
-        assert result.success, result.error
-
-    def test_web_types_system_config_exception_path(self) -> None:
-        """Test web_types_system_config exception handling (lines 479-480)."""
-        result = t.web_types_system_config()
+        result = u.Web.create_application(settings)
         assert result.success, result.error

@@ -194,7 +194,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         else {k: v for k, v in body.items() if u.primitive(v)}
                     )
                     return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                        t.create_http_request(
+                        u.Web.create_http_request(
                             url=url,
                             method=method,
                             headers=narrow_headers,
@@ -203,7 +203,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 timeout,
                                 default=30.0,
                             ),
-                        ),
+                        )
                     )
                 if entry_type == "http_response":
                     status_code = kwargs.get("status_code")
@@ -235,7 +235,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         else {k: v for k, v in body.items() if u.primitive(v)}
                     )
                     return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                        t.create_http_response(
+                        u.Web.create_http_response(
                             status_code=status_code,
                             headers=resp_headers,
                             body=resp_body,
@@ -297,7 +297,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                         })
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                            t.create_web_request(settings),
+                            u.Web.create_web_request(settings),
                         )
                     except (e.ValidationError, ValueError, TypeError) as exc:
                         return r[m.BaseModel].fail(str(exc))
@@ -356,7 +356,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                         })
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                            t.create_web_response(settings),
+                            u.Web.create_web_response(settings),
                         )
                     except (e.ValidationError, ValueError, TypeError) as exc:
                         return r[m.BaseModel].fail(str(exc))
@@ -378,7 +378,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         status=status if isinstance(status, str) else "stopped",
                     )
                     return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                        t.create_application(settings),
+                        u.Web.create_application(settings),
                     )
                 raise ValueError(f"Unsupported entry type: {entry_type}")
 
