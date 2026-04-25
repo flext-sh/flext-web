@@ -15,10 +15,8 @@ from typing import override
 
 from flext_cli import u
 
-from flext_web._utilities.web_factories import FlextWebUtilitiesFactories
 
-
-class FlextWebUtilities(FlextWebUtilitiesFactories, u):
+class FlextWebUtilities(u):
     """Web-specific utilities delegating to flext-core.
 
     Inherits from u and ensures consistency.
@@ -26,6 +24,9 @@ class FlextWebUtilities(FlextWebUtilitiesFactories, u):
     All generic operations delegate to flext-core utilities.
     Uses advanced builder/DSL patterns for composition.
     """
+
+    class Web:
+        """Web domain namespace."""
 
     @staticmethod
     @override
@@ -61,7 +62,10 @@ class FlextWebUtilities(FlextWebUtilitiesFactories, u):
 
     @staticmethod
     def slugify(text: str) -> str:
-        """Convert text to URL-safe slug using standard string operations."""
+        """Convert text to URL-safe slug using standard string operations.
+
+        Implements slugification without relying on non-existent DSL builders.
+        """
         if not text:
             return ""
         normalized = text.lower()
