@@ -22,7 +22,7 @@ if _t.TYPE_CHECKING:
     from tests.helpers.utilities import TestsUtilities
     from tests.integration.test_examples import (
         ExamplesFullFunctionalityTest,
-        TestExamples,
+        TestsFlextWebExamples,
     )
     from tests.models import TestsFlextWebModels, m
     from tests.protocols import TestsFlextWebProtocols, p
@@ -60,7 +60,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".helpers.utilities": ("TestsUtilities",),
             ".integration.test_examples": (
                 "ExamplesFullFunctionalityTest",
-                "TestExamples",
+                "TestsFlextWebExamples",
             ),
             ".models": (
                 "TestsFlextWebModels",
@@ -136,12 +136,12 @@ install_lazy_exports(__name__, globals(), _LAZY_IMPORTS)
 
 __all__: list[str] = [
     "ExamplesFullFunctionalityTest",
-    "TestExamples",
     "TestsFlextWebApi",
     "TestsFlextWebApp",
     "TestsFlextWebConfig",
     "TestsFlextWebConstants",
     "TestsFlextWebConstantsUnit",
+    "TestsFlextWebExamples",
     "TestsFlextWebFields",
     "TestsFlextWebHandlers",
     "TestsFlextWebInit",

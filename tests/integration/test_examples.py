@@ -122,7 +122,7 @@ class ExamplesFullFunctionalityTest:
         tm.that(all(app.running is False for app in demo_result.value), eq=True)
 
 
-class TestExamples(ExamplesFullFunctionalityTest):
+class TestsFlextWebExamples(ExamplesFullFunctionalityTest):
     """Collected integration tests for canonical examples."""
 
 
