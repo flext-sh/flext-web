@@ -348,12 +348,6 @@ class FlextWebProtocols(p):
                 )
 
         @staticmethod
-        def _copy_response_dict(
-            data: t.Web.RequestDict | t.Web.ResponseDict,
-        ) -> t.Web.ResponseDict:
-            return deepcopy(data)
-
-        @staticmethod
         def _is_valid_port(port: int) -> bool:
             min_port, max_port = c.Web.WebValidation.PORT_RANGE
             return bool(min_port <= port <= max_port)
@@ -501,9 +495,6 @@ class FlextWebProtocols(p):
         create_framework_app: ClassVar[
             Callable[..., p.Result[tuple[flask.Flask | FastAPI, str, str]]]
         ] = _create_framework_app
-        copy_response_dict: ClassVar[Callable[..., t.Web.ResponseDict]] = (
-            _copy_response_dict
-        )
         configure_framework_app_routes: ClassVar[Callable[..., None]] = (
             _configure_framework_app_routes
         )
@@ -596,7 +587,7 @@ class FlextWebProtocols(p):
 
                 """
                 apps = [
-                    FlextWebProtocols.Web.copy_response_dict(app)
+                    deepcopy(app)
                     for app in FlextWebProtocols.Web.apps_registry.values()
                 ]
                 return r[Sequence[t.Web.ResponseDict]].ok(apps)
@@ -633,7 +624,7 @@ class FlextWebProtocols(p):
                 )
                 if runtime_result.failure:
                     return r[t.Web.ResponseDict].fail(runtime_result.error)
-                updated_app = FlextWebProtocols.Web.copy_response_dict(app_data)
+                updated_app = deepcopy(app_data)
                 updated_app["status"] = c.Web.Status.RUNNING.value
                 FlextWebProtocols.Web.apps_registry[app_id] = updated_app
                 FlextWebProtocols.Web.app_runtimes[app_id] = runtime_result.value
@@ -670,7 +661,7 @@ class FlextWebProtocols(p):
                 )
                 if stop_runtime_result.failure:
                     return r[t.Web.ResponseDict].fail(stop_runtime_result.error)
-                updated_app = FlextWebProtocols.Web.copy_response_dict(app_data)
+                updated_app = deepcopy(app_data)
                 updated_app["status"] = c.Web.Status.STOPPED.value
                 FlextWebProtocols.Web.apps_registry[app_id] = updated_app
                 _ = FlextWebProtocols.Web.app_runtimes.pop(app_id, None)
@@ -706,7 +697,7 @@ class FlextWebProtocols(p):
                 response: t.Web.ResponseDict = {
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
-                response.update(FlextWebProtocols.Web.copy_response_dict(data))
+                response.update(deepcopy(data))
                 return response
 
             @staticmethod
@@ -740,23 +731,8 @@ class FlextWebProtocols(p):
                 response: t.Web.ResponseDict = {
                     "status": c.Web.WebResponse.STATUS_SUCCESS,
                 }
-                response.update(FlextWebProtocols.Web.copy_response_dict(data))
+                response.update(deepcopy(data))
                 return response
-
-            @staticmethod
-            def resolve_request_data(
-                _request: t.Web.RequestDict,
-            ) -> t.Web.RequestDict:
-                """Extract data from web request.
-
-                Args:
-                _request: Web request data
-
-                Returns:
-                Extracted request data dictionary
-
-                """
-                return deepcopy(_request)
 
         @runtime_checkable
         class WebFrameworkInterface(
@@ -788,23 +764,8 @@ class FlextWebProtocols(p):
                 response: t.Web.ResponseDict = {
                     c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
                 }
-                response.update(FlextWebProtocols.Web.copy_response_dict(data))
+                response.update(deepcopy(data))
                 return response
-
-            @staticmethod
-            def resolve_request_data(
-                _request: t.Web.RequestDict,
-            ) -> t.Web.RequestDict:
-                """Extract data from web request.
-
-                Args:
-                _request: Web request data
-
-                Returns:
-                Extracted request data dictionary
-
-                """
-                return deepcopy(_request)
 
             @staticmethod
             def json_request(_request: t.Web.RequestDict) -> bool:
@@ -915,9 +876,7 @@ class FlextWebProtocols(p):
                     return r[t.Web.ResponseDict].fail(
                         f"Application not found: {entity_id}",
                     )
-                return r[t.Web.ResponseDict].ok(
-                    FlextWebProtocols.Web.copy_response_dict(app_data),
-                )
+                return r[t.Web.ResponseDict].ok(deepcopy(app_data))
 
             @staticmethod
             def save(entity: t.Web.ResponseDict) -> p.Result[t.Web.ResponseDict]:
@@ -925,12 +884,8 @@ class FlextWebProtocols(p):
                 entity_id = entity.get("id")
                 if not isinstance(entity_id, str):
                     return r[t.Web.ResponseDict].fail("Entity id(str) is required")
-                FlextWebProtocols.Web.apps_registry[entity_id] = (
-                    FlextWebProtocols.Web.copy_response_dict(entity)
-                )
-                return r[t.Web.ResponseDict].ok(
-                    FlextWebProtocols.Web.copy_response_dict(entity),
-                )
+                FlextWebProtocols.Web.apps_registry[entity_id] = deepcopy(entity)
+                return r[t.Web.ResponseDict].ok(deepcopy(entity))
 
             @staticmethod
             def delete(entity_id: str) -> p.Result[bool]:
@@ -944,7 +899,7 @@ class FlextWebProtocols(p):
             def find_all() -> p.Result[Sequence[t.Web.ResponseDict]]:
                 """Return all registered app entities as defensive copies."""
                 return r[Sequence[t.Web.ResponseDict]].ok([
-                    FlextWebProtocols.Web.copy_response_dict(app)
+                    deepcopy(app)
                     for app in FlextWebProtocols.Web.apps_registry.values()
                 ])
 
@@ -962,7 +917,7 @@ class FlextWebProtocols(p):
 
                 """
                 matches: Sequence[t.Web.ResponseDict] = [
-                    FlextWebProtocols.Web.copy_response_dict(app_data)
+                    deepcopy(app_data)
                     for app_data in FlextWebProtocols.Web.apps_registry.values()
                     if all(
                         app_data.get(key) == expected_value
@@ -1038,9 +993,7 @@ class FlextWebProtocols(p):
                             ],
                         },
                     )
-                return r[t.Web.ResponseDict].ok(
-                    FlextWebProtocols.Web.copy_response_dict(request),
-                )
+                return r[t.Web.ResponseDict].ok(deepcopy(request))
 
             def execute(
                 self,
@@ -1215,9 +1168,7 @@ class FlextWebProtocols(p):
 
                 """
                 return r[t.Web.ResponseDict].ok(
-                    FlextWebProtocols.Web.copy_response_dict(
-                        FlextWebProtocols.Web.template_config,
-                    ),
+                    deepcopy(FlextWebProtocols.Web.template_config),
                 )
 
             @staticmethod
@@ -1479,17 +1430,6 @@ class FlextWebProtocols(p):
                         data,
                     )
 
-                def resolve_request_data(
-                    self,
-                    _request: t.Web.RequestDict,
-                ) -> t.Web.RequestDict:
-                    """Extract data from web request."""
-                    return (
-                        FlextWebProtocols.Web.WebResponseFormatter.resolve_request_data(
-                            _request,
-                        )
-                    )
-
             class _WebFrameworkInterfaceBase:
                 """Base implementation of WebFrameworkInterface for testing."""
 
@@ -1500,15 +1440,6 @@ class FlextWebProtocols(p):
                     """Create a JSON response."""
                     return FlextWebProtocols.Web.WebFrameworkInterface.create_json_response(
                         data,
-                    )
-
-                def resolve_request_data(
-                    self,
-                    _request: t.Web.RequestDict,
-                ) -> t.Web.RequestDict:
-                    """Extract data from web request."""
-                    return FlextWebProtocols.Web.WebFrameworkInterface.resolve_request_data(
-                        _request,
                     )
 
                 def json_request(self, _request: t.Web.RequestDict) -> bool:
@@ -1687,26 +1618,6 @@ class FlextWebProtocols(p):
                             else 0
                         )
                         FlextWebProtocols.Web.web_metrics["errors"] = error_count + 1
-
-    @staticmethod
-    def create_app(name: str, port: int, host: str) -> p.Result[t.Web.ResponseDict]:
-        """Create a new web application."""
-        return FlextWebProtocols.Web.WebAppManager.create_app(name, port, host)
-
-    @staticmethod
-    def start_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
-        """Start a web application."""
-        return FlextWebProtocols.Web.WebAppManager.start_app(app_id)
-
-    @staticmethod
-    def stop_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
-        """Stop a web application."""
-        return FlextWebProtocols.Web.WebAppManager.stop_app(app_id)
-
-    @staticmethod
-    def list_apps() -> p.Result[Sequence[t.Web.ResponseDict]]:
-        """List all web applications."""
-        return FlextWebProtocols.Web.WebAppManager.list_apps()
 
 
 p = FlextWebProtocols

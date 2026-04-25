@@ -59,7 +59,7 @@ class FlextWebServices(s[bool]):
         self, app_data: m.Web.AppData
     ) -> p.Result[m.Web.ApplicationResponse]:
         """Create an application through the protocol runtime registry."""
-        return p.create_app(
+        return p.Web.WebAppManager.create_app(
             name=app_data.name,
             port=app_data.port,
             host=app_data.host,
@@ -154,7 +154,7 @@ class FlextWebServices(s[bool]):
 
     def list_apps(self) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
         """List all registered applications."""
-        return p.list_apps().flat_map(
+        return p.Web.WebAppManager.list_apps().flat_map(
             self._application_responses_from_payloads,
         )
 
@@ -171,7 +171,7 @@ class FlextWebServices(s[bool]):
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
             return r[m.Web.ApplicationResponse].fail(app_id_result.error)
-        return p.start_app(app_id_result.value).flat_map(
+        return p.Web.WebAppManager.start_app(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
 
@@ -203,7 +203,7 @@ class FlextWebServices(s[bool]):
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
             return r[m.Web.ApplicationResponse].fail(app_id_result.error)
-        return p.stop_app(app_id_result.value).flat_map(
+        return p.Web.WebAppManager.stop_app(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
 

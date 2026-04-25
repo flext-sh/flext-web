@@ -7,7 +7,7 @@ import json
 from fastapi.testclient import TestClient
 from flext_tests import tm
 
-from flext_web import web
+from flext_web import FlextWebSettings, web
 from tests import c, m
 
 
@@ -62,15 +62,13 @@ class TestsFlextWebApp:
 
     def test_create_flask_app_success(self) -> None:
         """The service creates Flask apps from typed settings."""
-        settings = web.settings.model_copy(
-            update={
-                "app_name": "flext-web-test",
-                "host": "127.0.0.1",
-                "port": 8123,
-                "debug": True,
-                "debug_mode": True,
-                "secret_key": "flask-secret-key-32-characters!",
-            }
+        settings = FlextWebSettings(
+            app_name="flext-web-test",
+            host="127.0.0.1",
+            port=8123,
+            debug=True,
+            debug_mode=True,
+            secret_key="flask-secret-key-32-characters!",
         )
         result = web.create_flask_app(settings)
         tm.ok(result)

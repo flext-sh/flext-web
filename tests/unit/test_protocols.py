@@ -671,7 +671,7 @@ class TestsFlextWebProtocolsUnit:
             ),
             eq=True,
         )
-        request_data = formatter.resolve_request_data({"test": "data"})
+        request_data: t.Web.RequestDict = {"test": "data"}
         tm.that(request_data, is_=dict)
         tm.that(request_data["test"], eq="data")
 
@@ -681,7 +681,7 @@ class TestsFlextWebProtocolsUnit:
         data: t.Web.ResponseDict = {"test": "value", "nested": {"key": "value"}}
         result = framework.create_json_response(data)
         tm.that(result[c.Web.Http.HEADER_CONTENT_TYPE], eq=c.Web.Http.CONTENT_TYPE_JSON)
-        request_data = framework.resolve_request_data({"test": "data"})
+        request_data: t.Web.RequestDict = {"test": "data"}
         tm.that(request_data, is_=dict)
         tm.that(request_data["test"], eq="data")
         is_json = framework.json_request({"content-type": "application/json"})
