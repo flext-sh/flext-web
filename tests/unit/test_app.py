@@ -68,7 +68,7 @@ class TestsFlextWebApp:
             port=8123,
             debug=True,
             debug_mode=True,
-            secret_key="flask-secret-key-32-characters!",
+            secret_key="flask-secret-key-32-characters!!",
         )
         result = web.create_flask_app(settings)
         tm.ok(result)

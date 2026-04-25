@@ -40,7 +40,7 @@ class TestsFlextWebService:
         )
         result = web.authenticate(credentials)
         tm.fail(result)
-        tm.that(result.error, has="Authentication failed")
+        tm.that(result.error, has="authenticate")
 
     def test_register_user_success(self) -> None:
         """User registration succeeds for valid input."""

@@ -8,7 +8,7 @@ from collections.abc import (
     Sequence,
 )
 
-from flext_web import m, p, r, s, u
+from flext_web import e, m, p, r, s, u
 
 
 class FlextWebEntities(s[bool]):
@@ -34,10 +34,10 @@ class FlextWebEntities(s[bool]):
     def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
         """Fetch an entity by identifier."""
         if not u.to_str(entity_id):
-            return r[m.Web.EntityData].fail("Entity ID cannot be empty")
+            return e.fail_validation("entity_id", error="cannot be empty")
         entity = self._storage.get(entity_id)
         if entity is None:
-            return r[m.Web.EntityData].fail(f"Entity not found: {entity_id}")
+            return e.fail_not_found("entity", entity_id)
         return r[m.Web.EntityData].ok(entity)
 
     def list_all(self) -> p.Result[Sequence[m.Web.EntityData]]:

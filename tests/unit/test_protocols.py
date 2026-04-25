@@ -47,7 +47,7 @@ class TestsFlextWebProtocolsUnit:
     def _assert_protocol_base_lifecycle() -> None:
         """Exercise protocol-base lifecycle with a real ephemeral port."""
         TestsFlextWebProtocolsUnit._reset_protocol_state()
-        manager = p.Web.TestBases._WebAppManagerBase()
+        manager = p.Web.WebAppManager
         test_port = u.Web.Tests.TestPortManager.allocate_port()
         app_id: str | None = None
         try:
@@ -644,7 +644,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_response_formatter_real_behavior(self) -> None:
         """Test response formatter protocol with real implementation behavior."""
-        formatter = p.Web.TestBases._WebResponseFormatterBase()
+        formatter = p.Web.WebResponseFormatter
         data_with_all_types: t.Web.ResponseDict = {
             "string": "value",
             "int": 42,
@@ -677,7 +677,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_framework_interface_real_behavior(self) -> None:
         """Test web framework interface protocol with real request behavior."""
-        framework = p.Web.TestBases._WebFrameworkInterfaceBase()
+        framework = p.Web.WebFrameworkInterface
         data: t.Web.ResponseDict = {"test": "value", "nested": {"key": "value"}}
         result = framework.create_json_response(data)
         tm.that(result[c.Web.Http.HEADER_CONTENT_TYPE], eq=c.Web.Http.CONTENT_TYPE_JSON)
@@ -690,7 +690,7 @@ class TestsFlextWebProtocolsUnit:
     def test_service_protocol_real_behavior(self) -> None:
         """Test web service lifecycle protocol behavior."""
         self._reset_protocol_state()
-        service = p.Web.TestBases._WebServiceBase()
+        service = p.Web.WebService
         start_without_setup = service.start_service()
         tm.fail(start_without_setup)
         tm.ok(service.initialize_routes())
@@ -701,10 +701,10 @@ class TestsFlextWebProtocolsUnit:
     def test_repository_protocol_real_behavior(self) -> None:
         """Test repository protocol criteria filtering behavior."""
         self._reset_protocol_state()
-        manager = p.Web.TestBases._WebAppManagerBase()
+        manager = p.Web.WebAppManager
         created = manager.create_app("repo-app", 8081, "127.0.0.1")
         tm.ok(created)
-        repo = p.Web.TestBases._WebRepositoryBase()
+        repo = p.Web.WebRepository
         result = repo.find_by_criteria({"host": "127.0.0.1"})
         tm.ok(result)
         tm.that(len(result.value), eq=1)
@@ -712,7 +712,7 @@ class TestsFlextWebProtocolsUnit:
     def test_handler_protocol_real_behavior(self) -> None:
         """Test handler protocol create/list action behavior."""
         self._reset_protocol_state()
-        handler = p.Web.TestBases._WebHandlerBase()
+        handler = p.Web.WebHandler
         create_result = handler.handle_request({
             "action": "create",
             "name": "handler-app",
@@ -726,7 +726,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_template_renderer_real_behavior(self) -> None:
         """Test template renderer protocol with real template substitution."""
-        renderer = p.Web.TestBases._WebTemplateRendererBase()
+        renderer = p.Web.WebTemplateRenderer
         result = renderer.render_template("{{key}}-template", {"key": "value"})
         tm.ok(result)
         tm.that(result.value, eq="value-template")
@@ -754,12 +754,12 @@ class TestsFlextWebProtocolsUnit:
     def test_connection_protocol_real_behavior(self) -> None:
         """Test connection protocol endpoint URL from running app."""
         self._reset_protocol_state()
-        manager = p.Web.TestBases._WebAppManagerBase()
+        manager = p.Web.WebAppManager
         created = manager.create_app("endpoint-app", 9090, "127.0.0.1")
         tm.ok(created)
         app_id = str(created.value["id"])
         tm.ok(manager.start_app(app_id))
-        connection = p.Web.TestBases._WebConnectionBase()
+        connection = p.Web.WebConnection
         url = connection.endpoint_url()
         tm.that(url, eq="http://127.0.0.1:9090")
 
@@ -779,7 +779,7 @@ class TestsFlextWebProtocolsUnit:
     def test_protocol_app_lifecycle_end_to_end(self) -> None:
         """TDD lifecycle flow: create, start, stop, and list app states."""
         self._reset_protocol_state()
-        manager = p.Web.TestBases._WebAppManagerBase()
+        manager = p.Web.WebAppManager
         create_result = manager.create_app("lifecycle-app", 7070, "localhost")
         tm.ok(create_result)
         app_id = str(create_result.value["id"])
@@ -797,7 +797,7 @@ class TestsFlextWebProtocolsUnit:
     def test_create_app_configures_protocol_health_route(self) -> None:
         """TDD create_app must register protocol health endpoint."""
         self._reset_protocol_state()
-        manager = p.Web.TestBases._WebAppManagerBase()
+        manager = p.Web.WebAppManager
         create_result = manager.create_app("route-app", 7171, "localhost")
         tm.ok(create_result)
         app_id = str(create_result.value["id"])
@@ -817,7 +817,7 @@ class TestsFlextWebProtocolsUnit:
     def test_start_stop_manage_runtime_registry(self) -> None:
         """TDD lifecycle must persist and cleanup runtime metadata."""
         self._reset_protocol_state()
-        manager = p.Web.TestBases._WebAppManagerBase()
+        manager = p.Web.WebAppManager
         created = manager.create_app("runtime-app", 7272, "localhost")
         tm.ok(created)
         app_id = str(created.value["id"])

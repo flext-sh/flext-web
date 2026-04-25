@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flext_web import m, p, r, s
+from flext_web import e, m, p, r, s
 
 
 class FlextWebAuth(s[bool]):
@@ -14,9 +14,13 @@ class FlextWebAuth(s[bool]):
     ) -> p.Result[m.Web.AuthResponse]:
         """Authenticate a user with explicit validation."""
         if credentials.username == "nonexistent":
-            return r[m.Web.AuthResponse].fail("Authentication failed")
+            return e.fail_auth(
+                "password", credentials.username, error="invalid credentials"
+            )
         if credentials.password != "test_password":  # noqa: S105
-            return r[m.Web.AuthResponse].fail("Authentication failed")
+            return e.fail_auth(
+                "password", credentials.username, error="invalid credentials"
+            )
         auth_response = m.Web.AuthResponse(
             token=f"token_{credentials.username}",
             user_id=credentials.username,
@@ -37,7 +41,7 @@ class FlextWebAuth(s[bool]):
     def register_user(self, user_data: m.Web.UserData) -> p.Result[m.Web.UserResponse]:
         """Register a user with explicit domain validation."""
         if user_data.username.isdigit():
-            return r[m.Web.UserResponse].fail("Username cannot be numeric-only")
+            return e.fail_validation("username", error="cannot be numeric-only")
         user_response = m.Web.UserResponse(
             id=f"user_{user_data.username}",
             username=user_data.username,

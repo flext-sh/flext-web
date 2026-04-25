@@ -14,6 +14,7 @@ from flext_web import (
     FlextWebHealth,
     FlextWebSettings,
     c,
+    e,
     m,
     p,
     r,
@@ -223,10 +224,12 @@ class FlextWebServices(s[bool]):
         """Validate protocol-backed service state invariants."""
         state = p.Web.service_state
         if state["service_running"] and not state["routes_initialized"]:
-            return r[bool].fail("Service cannot be running without initialized routes")
+            return e.fail_validation(
+                "service_state", error="running without initialized routes"
+            )
         if state["service_running"] and not state["middleware_configured"]:
-            return r[bool].fail(
-                "Service cannot be running without configured middleware",
+            return e.fail_validation(
+                "service_state", error="running without configured middleware"
             )
         return r[bool].ok(True)
 
@@ -305,7 +308,7 @@ class FlextWebServices(s[bool]):
         """Validate app_id and return the normalized identifier."""
         normalized_app_id = u.to_str(app_id)
         if not normalized_app_id:
-            return r[str].fail("Application ID cannot be empty")
+            return e.fail_validation("app_id", error="cannot be empty")
         return r[str].ok(normalized_app_id)
 
     def _auth(self) -> FlextWebAuth:
