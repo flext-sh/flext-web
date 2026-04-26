@@ -398,6 +398,7 @@ class FlextWebProtocols(p):
                         host=host,
                         port=port,
                         log_level="warning",
+                        ws="none",
                     )
                     server = uvicorn.Server(settings)
                     thread = Thread(

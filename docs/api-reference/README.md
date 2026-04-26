@@ -19,7 +19,7 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextWebHandlers`, `FlextWebHealth`, `FlextWebSettings`, `FlextWebApiRuntime`, `FlextWebConstants`, `FlextWebAuth` (+9 more)
+- Primary facades: `FlextWebServices`, `FlextWebHealth`, `FlextWebTypes`, `FlextWebConstants`, `FlextWebModels`, `FlextWebApp` (+9 more)
 - Generated module pages: `16`
 
 - [Back to project docs](../index.md)
