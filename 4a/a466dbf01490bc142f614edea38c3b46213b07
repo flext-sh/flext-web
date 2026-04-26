@@ -1,0 +1,14 @@
+src/flext_web/protocols.py
+  h_9db9d35f50cf33 401
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "4aa466dbf01490bc142f614edea38c3b46213b07",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
