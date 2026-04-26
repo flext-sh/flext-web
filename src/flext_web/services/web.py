@@ -238,47 +238,27 @@ class FlextWebServices(s[bool]):
         payload: t.Web.ResponseDict,
     ) -> p.Result[m.Web.ApplicationResponse]:
         """Project a protocol payload into the canonical application response model."""
-        name = payload.get("name")
-        host = payload.get("host")
-        port = payload.get("port")
-        app_id = payload.get("id")
-        status = payload.get("status")
         created_at_raw = payload.get("created_at")
-        if not isinstance(name, str):
-            return r[m.Web.ApplicationResponse].fail(
-                "Application payload is missing name",
-            )
-        if not isinstance(host, str):
-            return r[m.Web.ApplicationResponse].fail(
-                "Application payload is missing host",
-            )
-        if not isinstance(app_id, str):
-            return r[m.Web.ApplicationResponse].fail(
-                "Application payload is missing id",
-            )
-        if not isinstance(status, str):
-            return r[m.Web.ApplicationResponse].fail(
-                "Application payload is missing status",
-            )
-        if not isinstance(port, int):
-            return r[m.Web.ApplicationResponse].fail(
-                "Application payload is missing port",
-            )
         created_at = (
             created_at_raw
             if isinstance(created_at_raw, str)
             else u.generate_iso_timestamp()
         )
-        return r[m.Web.ApplicationResponse].ok(
-            m.Web.ApplicationResponse(
-                id=app_id,
-                name=name,
-                host=host,
-                port=port,
-                status=status,
-                created_at=created_at,
-            ),
-        )
+        response_payload = {
+            "id": payload.get("id"),
+            "name": payload.get("name"),
+            "host": payload.get("host"),
+            "port": payload.get("port"),
+            "status": payload.get("status"),
+            "created_at": created_at,
+        }
+        try:
+            response = m.Web.ApplicationResponse.model_validate(response_payload)
+        except c.ValidationError as exc:
+            return r[m.Web.ApplicationResponse].fail(
+                f"Invalid application payload: {exc}",
+            )
+        return r[m.Web.ApplicationResponse].ok(response)
 
     def _application_responses_from_payloads(
         self,
