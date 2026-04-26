@@ -16,7 +16,6 @@ from collections.abc import (
 from typing import Annotated, override
 
 from flext_core import FlextSettings, s
-
 from flext_web import FlextWebSettings, t, u
 
 

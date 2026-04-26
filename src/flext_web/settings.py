@@ -9,10 +9,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Annotated, ClassVar, Self
+from typing import Annotated, ClassVar, Self, Unpack
 
 from flext_core import FlextSettings
-
 from flext_web import c, m, p, r, t, u
 
 
@@ -113,6 +112,16 @@ class FlextWebSettings(FlextSettings):
         normalized = value.strip()
         return normalized or None
 
+    @u.model_validator(mode="after")
+    def synchronize_debug_flags(self) -> Self:
+        """Keep Flask debug flags aligned from a single effective toggle."""
+        effective_debug = bool(self.debug or self.debug_mode)
+        if self.debug == effective_debug and self.debug_mode == effective_debug:
+            return self
+        return self.model_copy(
+            update={"debug": effective_debug, "debug_mode": effective_debug}
+        )
+
     @u.computed_field()
     @property
     def protocol(self) -> str:
@@ -132,32 +141,19 @@ class FlextWebSettings(FlextSettings):
     @classmethod
     def create_web_config(
         cls,
-        host: str | None = None,
-        port: int | None = None,
-        *,
-        debug: bool | None = None,
-        secret_key: str | None = None,
+        **overrides: Unpack[t.Web.CreateWebConfigKwargs],
     ) -> p.Result[Self]:
         """Create web settings with validated overrides."""
-        host_value = host if host is not None else c.Web.WebDefaults.HOST
-        port_value = port if port is not None else c.Web.WebDefaults.PORT
-        debug_value = debug if debug is not None else c.Web.WebDefaults.DEBUG_MODE
-        secret_key_value = (
-            secret_key if secret_key is not None else c.Web.WebDefaults.SECRET_KEY
-        )
-        try:
-            instance = cls(
-                host=host_value,
-                port=port_value,
-                debug_mode=debug_value,
-                debug=debug_value,
-                secret_key=secret_key_value,
-            )
-            success: p.Result[Self] = r.ok(instance)
-            return success
-        except c.ValidationError as exc:
-            failure: p.Result[Self] = r[Self].fail(str(exc))
-            return failure
+        payload: t.Web.CreateWebConfigKwargs = {}
+        if "host" in overrides:
+            payload["host"] = overrides["host"]
+        if "port" in overrides:
+            payload["port"] = overrides["port"]
+        if "debug" in overrides:
+            payload["debug"] = overrides["debug"]
+        if "secret_key" in overrides:
+            payload["secret_key"] = overrides["secret_key"]
+        return r[Self].create_from_callable(lambda: cls.model_validate(payload))
 
     @classmethod
     def validate_settings(cls, settings: Self) -> p.Result[bool]:

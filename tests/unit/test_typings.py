@@ -188,9 +188,10 @@ class TestsFlextWebTypesUnit:
     def test_create_web_request_invalid_method(self) -> None:
         """Test create_web_request with invalid HTTP method."""
         with pytest.raises(m.ValidationError):
-            _ = t.Web.RequestConfig(
-                url="http://localhost:8080", method="INVALID_METHOD"
-            )
+            t.Web.RequestConfig.model_validate({
+                "url": "http://localhost:8080",
+                "method": "INVALID_METHOD",
+            })
 
     def test_create_web_request_invalid_headers(self) -> None:
         """Test create_web_request with invalid headers type."""
@@ -274,7 +275,10 @@ class TestsFlextWebTypesUnit:
         """Test create_web_request with all valid HTTP methods."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
-            settings = t.Web.RequestConfig(url="http://localhost:8080", method=method)
+            settings = t.Web.RequestConfig.model_validate({
+                "url": "http://localhost:8080",
+                "method": method,
+            })
             result = t.create_web_request(settings)
             assert result.success, (
                 f"Operation should succeed for method {method}: {result.error}"
@@ -336,7 +340,10 @@ class TestsFlextWebTypesUnit:
     def test_create_web_request_duplicate_validation(self) -> None:
         """Test create_web_request duplicate validation path (line 278)."""
         with pytest.raises(m.ValidationError):
-            _ = t.Web.RequestConfig(url="http://localhost:8080", method="INVALID")
+            t.Web.RequestConfig.model_validate({
+                "url": "http://localhost:8080",
+                "method": "INVALID",
+            })
 
     def test_create_application_exception_path(self) -> None:
         """Test create_application exception handling (line 388)."""

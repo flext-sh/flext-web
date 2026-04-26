@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import (
     Mapping,
 )
-from typing import Annotated
+from typing import Annotated, NotRequired, TypedDict
 
 from flext_cli import p, r, t
 
@@ -22,6 +22,14 @@ class FlextWebTypes(t):
 
     class Web:
         """Web domain namespace (flat members per AGENTS.md §149)."""
+
+        class CreateWebConfigKwargs(TypedDict, total=False):
+            """Typed kwargs accepted by ``FlextWebSettings.create_web_config``."""
+
+            host: NotRequired[str]
+            port: NotRequired[t.PortNumber]
+            debug: NotRequired[bool]
+            secret_key: NotRequired[str]
 
         class ApplicationConfig(m.Web.EntityConfig):
             """Application configuration with web-specific defaults."""

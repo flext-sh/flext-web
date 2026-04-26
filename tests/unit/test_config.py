@@ -33,6 +33,13 @@ class TestsFlextWebConfig:
         tm.that(settings.debug_mode is True, eq=True)
         tm.that(settings.app_name, eq="Test App")
 
+    def test_debug_flags_stay_synchronized(self) -> None:
+        """Debug and debug_mode are unified by the settings model itself."""
+        result = web.settings.create_web_config(debug=True)
+        tm.ok(result)
+        tm.that(result.value.debug is True, eq=True)
+        tm.that(result.value.debug_mode is True, eq=True)
+
     def test_validation_host_empty(self) -> None:
         """Empty hosts fail through the public settings factory."""
         result = web.settings.create_web_config(host="")

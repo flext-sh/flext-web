@@ -15,7 +15,7 @@ from collections.abc import (
 )
 from datetime import UTC, datetime
 from threading import Thread
-from typing import Annotated, ClassVar, override
+from typing import Annotated, ClassVar, Literal, override
 from wsgiref.simple_server import WSGIServer
 
 import uvicorn
@@ -94,7 +94,8 @@ class FlextWebModels(m):
                 ),
             ]
             method: Annotated[
-                str,
+                Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+                u.BeforeValidator(str.upper),
                 u.Field(
                     description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
                 ),
@@ -125,25 +126,6 @@ class FlextWebModels(m):
 
                 """
                 return self.url.startswith("https://")
-
-            @u.field_validator("method", mode="before")
-            @classmethod
-            def validate_method(cls, v: str) -> str:
-                """Validate HTTP method is one of the allowed values."""
-                upper = v.upper()
-                valid_methods = {
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE",
-                    "PATCH",
-                    "HEAD",
-                    "OPTIONS",
-                }
-                if upper not in valid_methods:
-                    msg = f"Invalid HTTP method: {v}. Must be one of: {valid_methods}"
-                    raise ValueError(msg)
-                return upper
 
         class Response(Message):
             """HTTP response model with status validation.
@@ -221,7 +203,8 @@ class FlextWebModels(m):
                 ),
             ]
             method: Annotated[
-                str,
+                Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+                u.BeforeValidator(str.upper),
                 u.Field(
                     description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
                 ),
@@ -232,25 +215,6 @@ class FlextWebModels(m):
                     description="Request timeout in seconds",
                 ),
             ] = c.Web.Http.DEFAULT_TIMEOUT_SECONDS
-
-            @u.field_validator("method", mode="before")
-            @classmethod
-            def validate_method(cls, v: str) -> str:
-                """Validate HTTP method is one of the allowed values."""
-                upper = v.upper()
-                valid_methods = {
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE",
-                    "PATCH",
-                    "HEAD",
-                    "OPTIONS",
-                }
-                if upper not in valid_methods:
-                    msg = f"Invalid HTTP method: {v}. Must be one of: {valid_methods}"
-                    raise ValueError(msg)
-                return upper
 
             headers: Annotated[
                 t.MutableStrMapping,
