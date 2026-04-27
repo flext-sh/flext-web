@@ -301,7 +301,9 @@ class FlextWebProtocols(p):
                     ],
                 ) -> StarletteResponse:
                     response = await call_next(request)
-                    FlextWebProtocols.Web.record_request_metric("success", 0)
+                    FlextWebProtocols.Web.record_request_metric(
+                        c.Web.RESPONSE_STATUS_SUCCESS, 0
+                    )
                     return response
 
                 app_instance.middleware("http")(fastapi_metrics_middleware)
@@ -309,7 +311,9 @@ class FlextWebProtocols(p):
             else:
                 # app_instance is flask.Flask (from the if/elif chain above)
                 def flask_metrics_middleware() -> None:
-                    FlextWebProtocols.Web.record_request_metric("success", 0)
+                    FlextWebProtocols.Web.record_request_metric(
+                        c.Web.RESPONSE_STATUS_SUCCESS, 0
+                    )
 
                 app_instance.before_request(flask_metrics_middleware)
 

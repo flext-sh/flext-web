@@ -162,9 +162,15 @@ class FlextWebConstants(c):
         DEFAULT_DEBUG_MODE: Final[bool] = False
         DEFAULT_VERSION_STRING: Final[str] = "1.0.0"
         DEFAULT_VERSION_INT: Final[int] = 1
-        DEFAULT_SECRET_KEY: Final[str] = "default-secret-key-32-characters-long-for-security"
-        DEFAULT_DEV_SECRET_KEY: Final[str] = "dev-secret-key-32-characters-long-for-development"
-        DEFAULT_TEST_SECRET_KEY: Final[str] = "test-secret-key-32-characters-long-for-tests"
+        DEFAULT_SECRET_KEY: Final[str] = (
+            "default-secret-key-32-characters-long-for-security"
+        )
+        DEFAULT_DEV_SECRET_KEY: Final[str] = (
+            "dev-secret-key-32-characters-long-for-development"
+        )
+        DEFAULT_TEST_SECRET_KEY: Final[str] = (
+            "test-secret-key-32-characters-long-for-tests"
+        )
         DEFAULT_TIMEOUT_SECONDS: Final[float] = float(c.DEFAULT_TIMEOUT_SECONDS)
         DEFAULT_HTTP_PROTOCOL: Final[str] = "http"
         DEFAULT_HTTPS_PROTOCOL: Final[str] = "https"
@@ -190,8 +196,12 @@ class FlextWebConstants(c):
         SERVER_MIN_SECRET_KEY_LENGTH: Final[int] = 32
 
         # ===== Flattened from WebSpecific =====
-        DEV_ENVIRONMENT_KEY: Final[str] = "dev-environment-key-32-characters-long-for-dev"
-        TEST_ENVIRONMENT_KEY: Final[str] = "test-environment-key-32-characters-long-for-tests"
+        DEV_ENVIRONMENT_KEY: Final[str] = (
+            "dev-environment-key-32-characters-long-for-dev"
+        )
+        TEST_ENVIRONMENT_KEY: Final[str] = (
+            "test-environment-key-32-characters-long-for-tests"
+        )
         ALL_INTERFACES: Final[str] = str(IPv4Address(0))
         LOCALHOST_IP: Final[str] = str(IPv4Address(2130706433))
         SYSTEM_PORTS_THRESHOLD: Final[int] = 1023
