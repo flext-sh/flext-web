@@ -123,7 +123,7 @@ class FlextWebServices(s[bool]):
         """Return service status using protocol runtime state and settings."""
         return r[m.Web.ServiceResponse].ok(
             m.Web.ServiceResponse(
-                service=c.Web.WebService.SERVICE_NAME_API,
+                service=c.Web.SERVICE_NAME_API,
                 capabilities=[
                     "http_services_available",
                     "fastapi_support",
@@ -280,7 +280,7 @@ class FlextWebServices(s[bool]):
         """Return the canonical service status label from runtime state."""
         state = p.Web.service_state
         if state["service_running"]:
-            return str(c.Web.WebResponse.STATUS_OPERATIONAL)
+            return str(c.Web.RESPONSE_STATUS_OPERATIONAL)
         return str(c.Web.Status.STOPPED.value)
 
     @staticmethod

@@ -15,7 +15,7 @@ from collections.abc import (
 )
 from datetime import UTC, datetime
 from threading import Thread
-from typing import Annotated, ClassVar, Literal, override
+from typing import Annotated, ClassVar, override
 from wsgiref.simple_server import WSGIServer
 
 import uvicorn
@@ -89,23 +89,23 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
+                    max_length=c.Web.VALIDATION_URL_LENGTH_RANGE[1],
                     description="Request URL",
                 ),
             ]
             method: Annotated[
-                Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+                c.Web.Method,
                 u.BeforeValidator(str.upper),
                 u.Field(
                     description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
                 ),
-            ] = "GET"
+            ] = c.Web.Method.GET
             timeout: Annotated[
                 t.PositiveTimeout,
                 u.Field(
                     description="Request timeout in seconds",
                 ),
-            ] = c.Web.Http.DEFAULT_TIMEOUT_SECONDS
+            ] = c.Web.DEFAULT_TIMEOUT_SECONDS
 
             @property
             def has_body(self) -> bool:
@@ -198,23 +198,23 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebValidation.URL_LENGTH_RANGE[1],
+                    max_length=c.Web.VALIDATION_URL_LENGTH_RANGE[1],
                     description="Request URL",
                 ),
             ]
             method: Annotated[
-                Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+                c.Web.Method,
                 u.BeforeValidator(str.upper),
                 u.Field(
                     description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
                 ),
-            ] = "GET"
+            ] = c.Web.Method.GET
             timeout: Annotated[
                 t.PositiveTimeout,
                 u.Field(
                     description="Request timeout in seconds",
                 ),
-            ] = c.Web.Http.DEFAULT_TIMEOUT_SECONDS
+            ] = c.Web.DEFAULT_TIMEOUT_SECONDS
 
             headers: Annotated[
                 t.MutableStrMapping,
@@ -341,7 +341,7 @@ class FlextWebModels(m):
                 u.Field(
                     description="Response content type",
                 ),
-            ] = c.Web.Http.CONTENT_TYPE_JSON
+            ] = c.Web.HTTP_CONTENT_TYPE_JSON
             content_length: Annotated[
                 t.NonNegativeInt,
                 u.Field(
@@ -421,7 +421,7 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebServer.MAX_APP_NAME_LENGTH,
+                    max_length=c.Web.SERVER_MAX_APP_NAME_LENGTH,
                     description="Application name",
                 ),
             ]
@@ -430,9 +430,9 @@ class FlextWebModels(m):
             @classmethod
             def validate_name(cls, v: str) -> str:
                 """Validate application name."""
-                min_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
-                max_length = c.Web.WebValidation.NAME_LENGTH_RANGE[1]
-                reserved_names = c.Web.WebSecurity.RESERVED_NAMES
+                min_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[0]
+                max_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[1]
+                reserved_names = c.Web.SECURITY_RESERVED_NAMES
 
                 if not (min_length <= len(v) <= max_length):
                     msg = (
@@ -444,7 +444,7 @@ class FlextWebModels(m):
                     msg = f"Name '{v}' is reserved and cannot be used"
                     raise ValueError(msg)
 
-                dangerous_patterns = c.Web.WebSecurity.DANGEROUS_PATTERNS
+                dangerous_patterns = c.Web.SECURITY_DANGEROUS_PATTERNS
                 for pattern in dangerous_patterns:
                     if pattern.lower() in v.lower():
                         msg = f"Name contains dangerous pattern: {pattern}"
@@ -456,16 +456,16 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
+                    max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
                     description="Application host address",
                 ),
-            ] = c.Web.WebDefaults.HOST
+            ] = c.Web.DEFAULT_HOST
             port: Annotated[
                 t.PortNumber,
                 u.Field(
                     description="Application port number",
                 ),
-            ] = c.Web.WebDefaults.PORT
+            ] = c.Web.DEFAULT_PORT
             status: Annotated[
                 c.Web.Status | str,
                 u.Field(
@@ -494,7 +494,7 @@ class FlextWebModels(m):
                 u.Field(
                     description="Debug mode enabled flag",
                 ),
-            ] = c.Web.WebDefaults.DEBUG_MODE
+            ] = c.Web.DEFAULT_DEBUG_MODE
             metrics: Annotated[
                 t.MutableJsonMapping,
                 u.Field(
@@ -549,11 +549,11 @@ class FlextWebModels(m):
             @property
             def url(self) -> str:
                 """Get the full URL with conditional protocol selection."""
-                ssl_ports = c.Web.WebSecurity.SSL_PORTS
+                ssl_ports = c.Web.SECURITY_SSL_PORTS
                 protocol = (
-                    c.Web.WebDefaults.HTTPS_PROTOCOL
+                    c.Web.DEFAULT_HTTPS_PROTOCOL
                     if u.in_(self.port, ssl_ports)
-                    else c.Web.WebDefaults.HTTP_PROTOCOL
+                    else c.Web.DEFAULT_HTTP_PROTOCOL
                 )
                 return f"{protocol}://{self.host}:{self.port}"
 
@@ -724,14 +724,14 @@ class FlextWebModels(m):
                     r[bool]: Success contains True if valid, failure with error message
 
                 """
-                min_name_length = c.Web.WebValidation.NAME_LENGTH_RANGE[0]
+                min_name_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[0]
                 if len(self.name) < min_name_length:
                     return r[bool].fail(
                         f"App name must be at least {min_name_length} characters",
                     )
 
-                min_port = c.Web.WebValidation.PORT_RANGE[0]
-                max_port = c.Web.WebValidation.PORT_RANGE[1]
+                min_port = c.Web.VALIDATION_PORT_RANGE[0]
+                max_port = c.Web.VALIDATION_PORT_RANGE[1]
                 if not (min_port <= self.port <= max_port):
                     return r[bool].fail(
                         f"Port must be between {min_port} and {max_port}",
@@ -748,38 +748,38 @@ class FlextWebModels(m):
             app_name: Annotated[
                 str,
                 u.Field(
-                    min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
-                    max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
+                    min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
+                    max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                     description="Application name",
                 ),
-            ] = c.Web.WebDefaults.APP_NAME
+            ] = c.Web.DEFAULT_APP_NAME
             host: Annotated[
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
+                    max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
                     description="Application host address",
                 ),
-            ] = c.Web.WebDefaults.HOST
+            ] = c.Web.DEFAULT_HOST
             port: Annotated[
                 t.PortNumber,
                 u.Field(
                     description="Application port number",
                 ),
-            ] = c.Web.WebDefaults.PORT
+            ] = c.Web.DEFAULT_PORT
             debug: Annotated[
                 bool,
                 u.Field(
                     description="Debug mode flag",
                 ),
-            ] = c.Web.WebDefaults.DEBUG_MODE
+            ] = c.Web.DEFAULT_DEBUG_MODE
             secret_key: Annotated[
                 str,
                 u.Field(
-                    min_length=c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
+                    min_length=c.Web.SECURITY_MIN_SECRET_KEY_LENGTH,
                     description="Application secret key",
                 ),
-            ] = c.Web.WebDefaults.SECRET_KEY
+            ] = c.Web.DEFAULT_SECRET_KEY
 
         class Credentials(m.Value):
             """Authentication credentials model."""
@@ -805,8 +805,8 @@ class FlextWebModels(m):
             name: Annotated[
                 str,
                 u.Field(
-                    min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
-                    max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
+                    min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
+                    max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                     description="Application name",
                 ),
             ]
@@ -814,7 +814,7 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
+                    max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
                     description="Application host",
                 ),
             ]
@@ -929,7 +929,7 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebValidation.MAX_URL_LENGTH,
+                    max_length=c.Web.VALIDATION_MAX_URL_LENGTH,
                     description="Request URL",
                 ),
             ]
@@ -1005,7 +1005,7 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebServer.MAX_APP_NAME_LENGTH,
+                    max_length=c.Web.SERVER_MAX_APP_NAME_LENGTH,
                     description="Application title",
                 ),
             ]
@@ -1014,7 +1014,7 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebSecurity.MAX_DESCRIPTION_LENGTH,
+                    max_length=c.Web.SECURITY_MAX_DESCRIPTION_LENGTH,
                     description="Application description",
                 ),
             ]
@@ -1023,19 +1023,19 @@ class FlextWebModels(m):
                 u.Field(
                     description="Documentation URL",
                 ),
-            ] = c.Web.WebApi.DOCS_URL
+            ] = c.Web.API_DOCS_URL
             redoc_url: Annotated[
                 str,
                 u.Field(
                     description="ReDoc URL",
                 ),
-            ] = c.Web.WebApi.REDOC_URL
+            ] = c.Web.API_REDOC_URL
             openapi_url: Annotated[
                 str,
                 u.Field(
                     description="OpenAPI URL",
                 ),
-            ] = c.Web.WebApi.OPENAPI_URL
+            ] = c.Web.API_OPENAPI_URL
 
         # FACTORY METHODS (Creation patterns)
 
@@ -1043,8 +1043,8 @@ class FlextWebModels(m):
         def create_web_app(
             cls,
             name: str,
-            host: str = c.Web.WebDefaults.HOST,
-            port: int = c.Web.WebDefaults.PORT,
+            host: str = c.Web.DEFAULT_HOST,
+            port: int = c.Web.DEFAULT_PORT,
         ) -> p.Result[FlextWebModels.Web.Entity]:
             """Create a web application from direct parameters.
 
@@ -1184,25 +1184,25 @@ class FlextWebModels(m):
             title: Annotated[
                 str,
                 u.Field(
-                    min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
-                    max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
+                    min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
+                    max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                     description="FastAPI application title",
                 ),
-            ] = c.Web.WebDefaults.APP_NAME
+            ] = c.Web.DEFAULT_APP_NAME
             version: Annotated[
                 str,
                 u.Field(
                     description="Application version",
                 ),
-            ] = c.Web.WebDefaults.VERSION_STRING
+            ] = c.Web.DEFAULT_VERSION_STRING
             description: Annotated[
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.WebSecurity.MAX_DESCRIPTION_LENGTH,
+                    max_length=c.Web.SECURITY_MAX_DESCRIPTION_LENGTH,
                     description="Application description",
                 ),
-            ] = c.Web.WebApi.DEFAULT_DESCRIPTION
+            ] = c.Web.API_DEFAULT_DESCRIPTION
             debug: Annotated[
                 bool,
                 u.Field(description="FastAPI debug mode"),
@@ -1222,19 +1222,19 @@ class FlextWebModels(m):
                 u.Field(
                     description="Documentation URL",
                 ),
-            ] = c.Web.WebApi.DOCS_URL
+            ] = c.Web.API_DOCS_URL
             redoc_url: Annotated[
                 str,
                 u.Field(
                     description="ReDoc URL",
                 ),
-            ] = c.Web.WebApi.REDOC_URL
+            ] = c.Web.API_REDOC_URL
             openapi_url: Annotated[
                 str,
                 u.Field(
                     description="OpenAPI URL",
                 ),
-            ] = c.Web.WebApi.OPENAPI_URL
+            ] = c.Web.API_OPENAPI_URL
 
         class SystemInfo(m.BaseModel):
             """System information response model."""

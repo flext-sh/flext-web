@@ -44,8 +44,8 @@ def setup_test_environment() -> Generator[None]:
     os.environ["FLEXT_ENV"] = "test"
     os.environ["FLEXT_LOG_LEVEL"] = "INFO"
     os.environ["FLEXT_WEB_DEBUG_MODE"] = "true"
-    os.environ["FLEXT_WEB_HOST"] = c.Web.WebDefaults.HOST
-    os.environ["FLEXT_WEB_SECRET_KEY"] = c.Web.WebDefaults.TEST_SECRET_KEY
+    os.environ["FLEXT_WEB_HOST"] = c.Web.DEFAULT_HOST
+    os.environ["FLEXT_WEB_SECRET_KEY"] = c.Web.DEFAULT_TEST_SECRET_KEY
     yield
     os.environ.clear()
     for key, value in original_env.items():
@@ -59,7 +59,7 @@ def real_config() -> FlextWebSettings:
     Fast fail if secret key cannot be provided - no fallback.
     """
     result = web.settings.create_web_config(
-        secret_key=c.Web.WebDefaults.TEST_SECRET_KEY,
+        secret_key=c.Web.DEFAULT_TEST_SECRET_KEY,
     )
     assert result.success, result.error
     return result.value
@@ -129,8 +129,8 @@ def test_app_data() -> t.HeaderMapping:
     """Real application data for testing."""
     return {
         "name": "test-application",
-        "port": c.Web.WebDefaults.PORT + 1001,
-        "host": c.Web.WebDefaults.HOST,
+        "port": c.Web.DEFAULT_PORT + 1001,
+        "host": c.Web.DEFAULT_HOST,
     }
 
 
@@ -144,10 +144,10 @@ def invalid_app_data() -> t.HeaderMapping:
 def production_config() -> t.StrMapping:
     """Production-like configuration for testing."""
     return {
-        "FLEXT_WEB_HOST": c.Web.WebSpecific.ALL_INTERFACES,
-        "FLEXT_WEB_PORT": str(c.Web.WebDefaults.PORT),
+        "FLEXT_WEB_HOST": c.Web.ALL_INTERFACES,
+        "FLEXT_WEB_PORT": str(c.Web.DEFAULT_PORT),
         "FLEXT_WEB_DEBUG": "false",
-        "FLEXT_WEB_SECRET_KEY": c.Web.WebDefaults.DEV_SECRET_KEY,
+        "FLEXT_WEB_SECRET_KEY": c.Web.DEFAULT_DEV_SECRET_KEY,
     }
 
 

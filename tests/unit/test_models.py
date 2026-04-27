@@ -29,8 +29,8 @@ class TestsFlextWebModelsUnit:
         app = u.Web.Tests.create_test_app()
         tm.that(app.id, eq="test-id")
         tm.that(app.name, eq=c.Web.Tests.TEST_APP_NAME)
-        tm.that(app.host, eq=c.Web.WebDefaults.HOST)
-        tm.that(app.port, eq=c.Web.WebDefaults.PORT)
+        tm.that(app.host, eq=c.Web.DEFAULT_HOST)
+        tm.that(app.port, eq=c.Web.DEFAULT_PORT)
         tm.that(app.status, eq="stopped")
         tm.that(app.version, eq=1)
         tm.that(app.environment, eq="development")
@@ -484,7 +484,7 @@ class TestsFlextWebModelsUnit:
 
     def test_application_validate_name_max_length(self) -> None:
         """Test validate_name with max_length validation (lines 404-405)."""
-        max_length = c.Web.WebValidation.NAME_LENGTH_RANGE[1]
+        max_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[1]
         long_name = "a" * (max_length + 1)
         with pytest.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name=long_name, host="localhost", port=8080)

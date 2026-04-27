@@ -26,40 +26,40 @@ class FlextWebSettings(FlextSettings):
     app_name: Annotated[
         str,
         u.Field(
-            min_length=c.Web.WebValidation.NAME_LENGTH_RANGE[0],
-            max_length=c.Web.WebValidation.NAME_LENGTH_RANGE[1],
+            min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
+            max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
             description="Application name",
         ),
-    ] = c.Web.WebDefaults.APP_NAME
+    ] = c.Web.DEFAULT_APP_NAME
     host: Annotated[
         str,
         u.Field(
             min_length=1,
-            max_length=c.Web.WebSecurity.MAX_HOST_LENGTH,
+            max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
             description="Bind host",
         ),
-    ] = c.Web.WebDefaults.HOST
+    ] = c.Web.DEFAULT_HOST
     port: Annotated[
         t.PortNumber,
         u.Field(
             description="Bind port",
         ),
-    ] = c.Web.WebDefaults.PORT
+    ] = c.Web.DEFAULT_PORT
     debug_mode: Annotated[
         bool,
         u.Field(
             description="Debug mode",
         ),
-    ] = c.Web.WebDefaults.DEBUG_MODE
+    ] = c.Web.DEFAULT_DEBUG_MODE
     debug: Annotated[bool, u.Field(description="Flask debug flag")] = False
     testing: Annotated[bool, u.Field(description="Flask testing flag")] = False
     secret_key: Annotated[
         str,
         u.Field(
-            min_length=c.Web.WebSecurity.MIN_SECRET_KEY_LENGTH,
+            min_length=c.Web.SECURITY_MIN_SECRET_KEY_LENGTH,
             description="Application secret key",
         ),
-    ] = c.Web.WebDefaults.SECRET_KEY
+    ] = c.Web.DEFAULT_SECRET_KEY
     ssl_enabled: Annotated[
         bool,
         u.Field(description="Enable TLS endpoints"),
@@ -87,7 +87,7 @@ class FlextWebSettings(FlextSettings):
     @classmethod
     def validate_port(cls, value: int) -> int:
         """Ensure port stays inside the configured range."""
-        min_port, max_port = c.Web.WebValidation.PORT_RANGE
+        min_port, max_port = c.Web.VALIDATION_PORT_RANGE
         if not min_port <= value <= max_port:
             msg = f"Port must be between {min_port} and {max_port}"
             raise ValueError(msg)
@@ -127,9 +127,9 @@ class FlextWebSettings(FlextSettings):
     def protocol(self) -> str:
         """Return active URL protocol based on TLS setting."""
         return str(
-            c.Web.WebDefaults.HTTPS_PROTOCOL
+            c.Web.DEFAULT_HTTPS_PROTOCOL
             if self.ssl_enabled
-            else c.Web.WebDefaults.HTTP_PROTOCOL,
+            else c.Web.DEFAULT_HTTP_PROTOCOL,
         )
 
     @u.computed_field()

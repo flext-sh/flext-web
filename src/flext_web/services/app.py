@@ -70,21 +70,21 @@ class FlextWebApp(s[bool]):
             """
             default_config = m.Web.FastAPIAppConfig(
                 title="FastAPI",
-                version=c.Web.WebDefaults.VERSION_STRING,
-                description=c.Web.WebApi.DEFAULT_DESCRIPTION,
-                docs_url=c.Web.WebApi.DOCS_URL,
-                redoc_url=c.Web.WebApi.REDOC_URL,
-                openapi_url=c.Web.WebApi.OPENAPI_URL,
+                version=c.Web.DEFAULT_VERSION_STRING,
+                description=c.Web.API_DEFAULT_DESCRIPTION,
+                docs_url=c.Web.API_DOCS_URL,
+                redoc_url=c.Web.API_REDOC_URL,
+                openapi_url=c.Web.API_OPENAPI_URL,
             )
             final_config = settings if settings is not None else default_config
             title: str = final_config.title or "FastAPI"
-            version: str = final_config.version or c.Web.WebDefaults.VERSION_STRING
+            version: str = final_config.version or c.Web.DEFAULT_VERSION_STRING
             description: str = (
                 final_config.description or "FlextWeb FastAPI Application"
             )
-            docs_url: str = final_config.docs_url or c.Web.WebApi.DOCS_URL
-            redoc_url: str = final_config.redoc_url or c.Web.WebApi.REDOC_URL
-            openapi_url: str = final_config.openapi_url or c.Web.WebApi.OPENAPI_URL
+            docs_url: str = final_config.docs_url or c.Web.API_DOCS_URL
+            redoc_url: str = final_config.redoc_url or c.Web.API_REDOC_URL
+            openapi_url: str = final_config.openapi_url or c.Web.API_OPENAPI_URL
             try:
                 app = FastAPI(
                     title=title,
@@ -142,10 +142,10 @@ class FlextWebApp(s[bool]):
             else m.Web.FastAPIAppConfig(
                 title=self.settings.app_name,
                 version=self.settings.version,
-                description=c.Web.WebApi.DEFAULT_DESCRIPTION,
-                docs_url=c.Web.WebApi.DOCS_URL,
-                redoc_url=c.Web.WebApi.REDOC_URL,
-                openapi_url=c.Web.WebApi.OPENAPI_URL,
+                description=c.Web.API_DEFAULT_DESCRIPTION,
+                docs_url=c.Web.API_DOCS_URL,
+                redoc_url=c.Web.API_REDOC_URL,
+                openapi_url=c.Web.API_OPENAPI_URL,
             )
         )
         factory_payload = (
@@ -198,8 +198,8 @@ class FlextWebApp(s[bool]):
 
         def health_check() -> flask.Response:
             body: str = _json.dumps({
-                "status": c.Web.WebResponse.STATUS_HEALTHY,
-                "service": c.Web.WebService.SERVICE_NAME_FLASK,
+                "status": c.Web.RESPONSE_STATUS_HEALTHY,
+                "service": c.Web.SERVICE_NAME_FLASK,
                 "timestamp": u.generate_iso_timestamp(),
             })
             response = flask.make_response(body, 200)
@@ -220,8 +220,8 @@ class FlextWebApp(s[bool]):
 
             def health_check() -> FastApiEndpointPayload:
                 return {
-                    "status": c.Web.WebResponse.STATUS_HEALTHY,
-                    "service": c.Web.WebService.SERVICE_NAME,
+                    "status": c.Web.RESPONSE_STATUS_HEALTHY,
+                    "service": c.Web.SERVICE_NAME,
                     "timestamp": u.generate_iso_timestamp(),
                 }
 
@@ -238,7 +238,7 @@ class FlextWebApp(s[bool]):
 
             def info_handler() -> FastApiEndpointPayload:
                 return {
-                    "service": c.Web.WebService.SERVICE_NAME,
+                    "service": c.Web.SERVICE_NAME,
                     "title": settings.title,
                     "version": settings.version,
                     "description": settings.description,

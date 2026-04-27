@@ -256,25 +256,25 @@ class FlextWebProtocols(p):
             try:
                 fastapi_app = FastAPI(
                     title=name,
-                    version=c.Web.WebDefaults.VERSION_STRING,
-                    description=c.Web.WebApi.DEFAULT_DESCRIPTION,
-                    docs_url=c.Web.WebApi.DOCS_URL,
-                    redoc_url=c.Web.WebApi.REDOC_URL,
-                    openapi_url=c.Web.WebApi.OPENAPI_URL,
+                    version=c.Web.DEFAULT_VERSION_STRING,
+                    description=c.Web.API_DEFAULT_DESCRIPTION,
+                    docs_url=c.Web.API_DOCS_URL,
+                    redoc_url=c.Web.API_REDOC_URL,
+                    openapi_url=c.Web.API_OPENAPI_URL,
                 )
             except (RuntimeError, OSError, TypeError, ValueError) as exc:
                 fastapi_error = f"Failed to create FastAPI application: {exc}"
             else:
                 return r[tuple[flask.Flask | FastAPI, str, str]].ok((
                     fastapi_app,
-                    c.Web.WebFramework.FRAMEWORK_FASTAPI,
-                    c.Web.WebFramework.INTERFACE_ASGI,
+                    c.Web.FRAMEWORK_FASTAPI,
+                    c.Web.FRAMEWORK_INTERFACE_ASGI,
                 ))
 
             try:
                 flask_app = flask.Flask(name)
-                flask_app.config["SECRET_KEY"] = c.Web.WebDefaults.SECRET_KEY
-                flask_app.config["DEBUG"] = c.Web.WebDefaults.DEBUG_MODE
+                flask_app.config["SECRET_KEY"] = c.Web.DEFAULT_SECRET_KEY
+                flask_app.config["DEBUG"] = c.Web.DEFAULT_DEBUG_MODE
                 flask_app.config["TESTING"] = False
             except (RuntimeError, OSError, TypeError, ValueError) as exc:
                 return r[tuple[flask.Flask | FastAPI, str, str]].fail(
@@ -283,8 +283,8 @@ class FlextWebProtocols(p):
 
             return r[tuple[flask.Flask | FastAPI, str, str]].ok((
                 flask_app,
-                c.Web.WebFramework.FRAMEWORK_FLASK,
-                c.Web.WebFramework.INTERFACE_WSGI,
+                c.Web.FRAMEWORK_FLASK,
+                c.Web.FRAMEWORK_INTERFACE_WSGI,
             ))
 
         @staticmethod
@@ -322,8 +322,8 @@ class FlextWebProtocols(p):
 
                 def fastapi_health() -> t.Web.ResponseDict:
                     return {
-                        "status": c.Web.WebResponse.STATUS_HEALTHY,
-                        "service": c.Web.WebService.SERVICE_NAME,
+                        "status": c.Web.RESPONSE_STATUS_HEALTHY,
+                        "service": c.Web.SERVICE_NAME,
                         "app_id": app_id,
                     }
 
@@ -336,8 +336,8 @@ class FlextWebProtocols(p):
                 # app_instance is flask.Flask (from the if/elif chain above)
                 def flask_health() -> t.Web.ResponseDict:
                     return {
-                        "status": c.Web.WebResponse.STATUS_HEALTHY,
-                        "service": c.Web.WebService.SERVICE_NAME_FLASK,
+                        "status": c.Web.RESPONSE_STATUS_HEALTHY,
+                        "service": c.Web.SERVICE_NAME_FLASK,
                         "app_id": app_id,
                     }
 
@@ -349,7 +349,7 @@ class FlextWebProtocols(p):
 
         @staticmethod
         def _is_valid_port(port: int) -> bool:
-            min_port, max_port = c.Web.WebValidation.PORT_RANGE
+            min_port, max_port = c.Web.VALIDATION_PORT_RANGE
             return bool(min_port <= port <= max_port)
 
         @staticmethod
@@ -370,7 +370,7 @@ class FlextWebProtocols(p):
             )
             if (
                 isinstance(status, str)
-                and status.lower() == c.Web.WebResponse.STATUS_ERROR
+                and status.lower() == c.Web.RESPONSE_STATUS_ERROR
             ):
                 error_count_value = FlextWebProtocols.Web.web_metrics.get("errors", 0)
                 error_count = (
@@ -391,7 +391,7 @@ class FlextWebProtocols(p):
             runtime_info: m.Web.AppRuntimeInfo | None = None
             if not isinstance(host, str) or not isinstance(port, int):
                 error_message = f"Invalid runtime configuration for app: {app_id}"
-            elif interface == c.Web.WebFramework.INTERFACE_ASGI:
+            elif interface == c.Web.FRAMEWORK_INTERFACE_ASGI:
                 try:
                     settings = uvicorn.Config(
                         app=app_instance,
@@ -410,7 +410,7 @@ class FlextWebProtocols(p):
                     sleep(0.05)
                     if thread.is_alive():
                         runtime_info = m.Web.AppRuntimeInfo(
-                            runner=c.Web.WebFramework.RUNNER_UVICORN,
+                            runner=c.Web.FRAMEWORK_RUNNER_UVICORN,
                             server=server,
                             thread=thread,
                         )
@@ -422,7 +422,7 @@ class FlextWebProtocols(p):
                     error_message = (
                         f"Failed to start ASGI runtime for app {app_id}: {exc}"
                     )
-            elif interface == c.Web.WebFramework.INTERFACE_WSGI and isinstance(
+            elif interface == c.Web.FRAMEWORK_INTERFACE_WSGI and isinstance(
                 app_instance,
                 flask.Flask,
             ):
@@ -437,7 +437,7 @@ class FlextWebProtocols(p):
                     sleep(0.05)
                     if thread.is_alive():
                         runtime_info = m.Web.AppRuntimeInfo(
-                            runner=c.Web.WebFramework.RUNNER_WERKZEUG,
+                            runner=c.Web.FRAMEWORK_RUNNER_WERKZEUG,
                             server=wsgi_server,
                             thread=thread,
                         )
@@ -470,13 +470,13 @@ class FlextWebProtocols(p):
             server: uvicorn.Server | WSGIServer = runtime.server
             thread: Thread = runtime.thread
             try:
-                if runner == c.Web.WebFramework.RUNNER_UVICORN:
+                if runner == c.Web.FRAMEWORK_RUNNER_UVICORN:
                     if not isinstance(server, uvicorn.Server):
                         return r[bool].fail(
                             f"Missing ASGI server instance for app: {app_id}",
                         )
                     server.should_exit = True
-                elif runner == c.Web.WebFramework.RUNNER_WERKZEUG:
+                elif runner == c.Web.FRAMEWORK_RUNNER_WERKZEUG:
                     if not isinstance(server, BaseWSGIServer):
                         return r[bool].fail(
                             f"Missing WSGI server instance for app: {app_id}",
@@ -540,9 +540,9 @@ class FlextWebProtocols(p):
                 """
                 normalized_name = name.strip()
                 normalized_host = host.strip()
-                if len(normalized_name) < c.Web.WebServer.MIN_APP_NAME_LENGTH:
+                if len(normalized_name) < c.Web.SERVER_MIN_APP_NAME_LENGTH:
                     return r[t.Web.ResponseDict].fail(
-                        f"Application name must be at least {c.Web.WebServer.MIN_APP_NAME_LENGTH} characters",
+                        f"Application name must be at least {c.Web.SERVER_MIN_APP_NAME_LENGTH} characters",
                     )
                 if normalized_name.isdigit():
                     return r[t.Web.ResponseDict].fail(
@@ -551,7 +551,7 @@ class FlextWebProtocols(p):
                 if not normalized_host:
                     return r[t.Web.ResponseDict].fail("Host cannot be empty")
                 if not FlextWebProtocols.Web.is_valid_port(port):
-                    min_port, max_port = c.Web.WebValidation.PORT_RANGE
+                    min_port, max_port = c.Web.VALIDATION_PORT_RANGE
                     return r[t.Web.ResponseDict].fail(
                         f"Port must be between {min_port} and {max_port}",
                     )
@@ -698,7 +698,7 @@ class FlextWebProtocols(p):
 
                 """
                 response: t.Web.ResponseDict = {
-                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
+                    c.Web.HTTP_HEADER_CONTENT_TYPE: c.Web.HTTP_CONTENT_TYPE_JSON,
                 }
                 response.update(deepcopy(data))
                 return response
@@ -715,7 +715,7 @@ class FlextWebProtocols(p):
 
                 """
                 result: t.Web.ResponseDict = {
-                    "status": c.Web.WebResponse.STATUS_ERROR,
+                    "status": c.Web.RESPONSE_STATUS_ERROR,
                     "message": str(error),
                 }
                 return result
@@ -732,7 +732,7 @@ class FlextWebProtocols(p):
 
                 """
                 response: t.Web.ResponseDict = {
-                    "status": c.Web.WebResponse.STATUS_SUCCESS,
+                    "status": c.Web.RESPONSE_STATUS_SUCCESS,
                 }
                 response.update(deepcopy(data))
                 return response
@@ -765,7 +765,7 @@ class FlextWebProtocols(p):
 
                 """
                 response: t.Web.ResponseDict = {
-                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
+                    c.Web.HTTP_HEADER_CONTENT_TYPE: c.Web.HTTP_CONTENT_TYPE_JSON,
                 }
                 response.update(deepcopy(data))
                 return response
@@ -781,15 +781,15 @@ class FlextWebProtocols(p):
                 True if request is JSON, False otherwise
 
                 """
-                content_type = _request.get(c.Web.Http.HEADER_CONTENT_TYPE)
+                content_type = _request.get(c.Web.HTTP_HEADER_CONTENT_TYPE)
                 if isinstance(content_type, str):
-                    return c.Web.Http.CONTENT_TYPE_JSON in content_type.lower()
+                    return c.Web.HTTP_CONTENT_TYPE_JSON in content_type.lower()
                 headers = _request.get("headers")
                 if isinstance(headers, dict):
-                    nested_content_type = headers.get(c.Web.Http.HEADER_CONTENT_TYPE)
+                    nested_content_type = headers.get(c.Web.HTTP_HEADER_CONTENT_TYPE)
                     if isinstance(nested_content_type, str):
                         return (
-                            c.Web.Http.CONTENT_TYPE_JSON in nested_content_type.lower()
+                            c.Web.HTTP_CONTENT_TYPE_JSON in nested_content_type.lower()
                         )
                 return False
 
@@ -953,7 +953,7 @@ class FlextWebProtocols(p):
 
                 """
                 action = request.get("action")
-                if action == c.Web.WebActions.ACTION_CREATE:
+                if action == c.Web.ACTION_CREATE:
                     name = request.get("name")
                     port = request.get("port")
                     host = request.get("host")
@@ -970,21 +970,21 @@ class FlextWebProtocols(p):
                         port=port,
                         host=host,
                     )
-                if action == c.Web.WebActions.ACTION_START:
+                if action == c.Web.ACTION_START:
                     app_id = request.get("app_id")
                     if not isinstance(app_id, str):
                         return r[t.Web.ResponseDict].fail(
                             "start action requires app_id(str)",
                         )
                     return FlextWebProtocols.Web.WebAppManager.start_app(app_id)
-                if action == c.Web.WebActions.ACTION_STOP:
+                if action == c.Web.ACTION_STOP:
                     app_id = request.get("app_id")
                     if not isinstance(app_id, str):
                         return r[t.Web.ResponseDict].fail(
                             "stop action requires app_id(str)",
                         )
                     return FlextWebProtocols.Web.WebAppManager.stop_app(app_id)
-                if action == c.Web.WebActions.ACTION_LIST:
+                if action == c.Web.ACTION_LIST:
                     return FlextWebProtocols.Web.WebAppManager.list_apps().map(
                         lambda apps: {
                             "count": len(apps),
@@ -1123,7 +1123,7 @@ class FlextWebProtocols(p):
                 r containing rendered dashboard HTML or error details
 
                 """
-                app_name = data.get("service", c.Web.WebService.SERVICE_NAME)
+                app_name = data.get("service", c.Web.SERVICE_NAME)
                 status = data.get("status", c.Web.Status.STOPPED.value)
                 html = f"<html><body><h1>{app_name}</h1><p>Status: {status}</p></body></html>"
                 return r[str].ok(html)
@@ -1283,10 +1283,10 @@ class FlextWebProtocols(p):
                 """
                 service_running = FlextWebProtocols.Web.service_state["service_running"]
                 return {
-                    "status": c.Web.WebResponse.STATUS_HEALTHY
+                    "status": c.Web.RESPONSE_STATUS_HEALTHY
                     if service_running
                     else c.Web.Status.STOPPED.value,
-                    "service": c.Web.WebService.SERVICE_NAME,
+                    "service": c.Web.SERVICE_NAME,
                     "routes_initialized": FlextWebProtocols.Web.service_state[
                         "routes_initialized"
                     ],

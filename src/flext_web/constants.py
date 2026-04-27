@@ -8,7 +8,7 @@ from collections.abc import (
 from enum import IntEnum, StrEnum, unique
 from ipaddress import IPv4Address
 from types import MappingProxyType
-from typing import ClassVar, Final
+from typing import Final
 
 from flext_cli import c, t
 
@@ -23,6 +23,7 @@ class FlextWebConstants(c):
         organization and to enable composition with other domain constants.
         """
 
+        # ===== Enums (keep these) =====
         @unique
         class Method(StrEnum):
             """Enumeration of supported HTTP methods.
@@ -119,10 +120,20 @@ class FlextWebConstants(c):
             MAINTENANCE = "maintenance"
             DEPLOYING = "deploying"
 
-        STATUS_CODES: ClassVar[t.IntMapping] = MappingProxyType({
+        @unique
+        class ResponseStatus(StrEnum):
+            """Canonical response status tokens for web service payloads."""
+
+            SUCCESS = "success"
+            ERROR = "error"
+            OPERATIONAL = "operational"
+            HEALTHY = "healthy"
+
+        # ===== Status/Code mappings =====
+        STATUS_CODES: Final[t.IntMapping] = MappingProxyType({
             status.name: int(status.value) for status in StatusCode
         })
-        STATUS_RANGES: ClassVar[Mapping[str, tuple[int, int]]] = MappingProxyType({
+        STATUS_RANGES: Final[Mapping[str, tuple[int, int]]] = MappingProxyType({
             "INFORMATIONAL": (100, 199),
             "SUCCESS": (200, 299),
             "REDIRECTION": (300, 399),
@@ -131,209 +142,197 @@ class FlextWebConstants(c):
         })
         SUCCESS_RANGE: Final[tuple[int, int]] = (200, 299)
         ERROR_MIN: Final[int] = 400
-        ENVIRONMENTS: ClassVar[tuple[str, ...]] = tuple(
+
+        # ===== Enum-derived frozensets (not tuples) =====
+        ENVIRONMENTS: Final[frozenset[str]] = frozenset(
             member.value for member in Name.__members__.values()
         )
-        APPLICATION_TYPES: ClassVar[tuple[str, ...]] = tuple(
+        APPLICATION_TYPES: Final[frozenset[str]] = frozenset(
             member.value for member in ApplicationType.__members__.values()
         )
-        STATUSES: ClassVar[tuple[str, ...]] = tuple(
+        STATUSES: Final[frozenset[str]] = frozenset(
             member.value for member in Status.__members__.values()
         )
 
-        class WebDefaults:
-            """Default bootstrap values for web services."""
+        # ===== Flattened from WebDefaults =====
+        DEFAULT_HOST: Final[str] = c.LOCALHOST
+        DEFAULT_PORT: Final[int] = 8080
+        DEFAULT_APP_NAME: Final[str] = "FLEXT Web"
+        DEFAULT_ENVIRONMENT: Final[str] = "development"
+        DEFAULT_DEBUG_MODE: Final[bool] = False
+        DEFAULT_VERSION_STRING: Final[str] = "1.0.0"
+        DEFAULT_VERSION_INT: Final[int] = 1
+        DEFAULT_SECRET_KEY: Final[str] = "default-secret-key-32-characters-long-for-security"
+        DEFAULT_DEV_SECRET_KEY: Final[str] = "dev-secret-key-32-characters-long-for-development"
+        DEFAULT_TEST_SECRET_KEY: Final[str] = "test-secret-key-32-characters-long-for-tests"
+        DEFAULT_TIMEOUT_SECONDS: Final[float] = float(c.DEFAULT_TIMEOUT_SECONDS)
+        DEFAULT_HTTP_PROTOCOL: Final[str] = "http"
+        DEFAULT_HTTPS_PROTOCOL: Final[str] = "https"
 
-            HOST: Final[str] = c.LOCALHOST
-            PORT: Final[int] = 8080
-            APP_NAME: Final[str] = "FLEXT Web"
-            ENVIRONMENT: Final[str] = "development"
-            DEBUG_MODE: Final[bool] = False
-            VERSION_STRING: Final[str] = "1.0.0"
-            VERSION_INT: Final[int] = 1
-            SECRET_KEY: Final[str] = (
-                "default-secret-key-32-characters-long-for-security"
-            )
-            DEV_SECRET_KEY: Final[str] = (
-                "dev-secret-key-32-characters-long-for-development"
-            )
-            TEST_SECRET_KEY: Final[str] = "test-secret-key-32-characters-long-for-tests"
-            TIMEOUT_SECONDS: Final[float] = float(
-                c.DEFAULT_TIMEOUT_SECONDS,
-            )
-            HTTP_PROTOCOL: Final[str] = "http"
-            HTTPS_PROTOCOL: Final[str] = "https"
+        # ===== Flattened from WebResponse (derived from ResponseStatus enum) =====
+        RESPONSE_STATUS_SUCCESS: Final[str] = ResponseStatus.SUCCESS.value
+        RESPONSE_STATUS_ERROR: Final[str] = ResponseStatus.ERROR.value
+        RESPONSE_STATUS_OPERATIONAL: Final[str] = ResponseStatus.OPERATIONAL.value
+        RESPONSE_STATUS_HEALTHY: Final[str] = ResponseStatus.HEALTHY.value
 
-        class WebResponse:
-            """Web response status constants."""
+        # ===== Flattened from WebService =====
+        SERVICE_NAME: Final[str] = "flext-web"
+        SERVICE_NAME_FLASK: Final[str] = "flext-web-flask"
+        SERVICE_NAME_API: Final[str] = "flext-web-api"
+        SERVICE_NAME_HANDLERS: Final[str] = "flext-web-handlers"
+        SERVICE_NAME_SERVICES: Final[str] = "flext-web-services"
 
-            STATUS_SUCCESS: Final[str] = "success"
-            STATUS_ERROR: Final[str] = "error"
-            STATUS_OPERATIONAL: Final[str] = "operational"
-            STATUS_HEALTHY: Final[str] = "healthy"
+        # ===== Flattened from WebServer =====
+        SERVER_MIN_PORT: Final[int] = 1024
+        SERVER_MAX_PORT: Final[int] = 65535
+        SERVER_MIN_APP_NAME_LENGTH: Final[int] = 3
+        SERVER_MAX_APP_NAME_LENGTH: Final[int] = 100
+        SERVER_MIN_SECRET_KEY_LENGTH: Final[int] = 32
 
-        class WebService:
-            """Web service name constants."""
+        # ===== Flattened from WebSpecific =====
+        DEV_ENVIRONMENT_KEY: Final[str] = "dev-environment-key-32-characters-long-for-dev"
+        TEST_ENVIRONMENT_KEY: Final[str] = "test-environment-key-32-characters-long-for-tests"
+        ALL_INTERFACES: Final[str] = str(IPv4Address(0))
+        LOCALHOST_IP: Final[str] = str(IPv4Address(2130706433))
+        SYSTEM_PORTS_THRESHOLD: Final[int] = 1023
+        PRIVILEGED_PORTS_MAX: Final[int] = 1023
 
-            SERVICE_NAME: Final[str] = "flext-web"
-            SERVICE_NAME_FLASK: Final[str] = "flext-web-flask"
-            SERVICE_NAME_API: Final[str] = "flext-web-api"
-            SERVICE_NAME_HANDLERS: Final[str] = "flext-web-handlers"
-            SERVICE_NAME_SERVICES: Final[str] = "flext-web-services"
+        # ===== Flattened from WebValidation =====
+        VALIDATION_PORT_RANGE: Final[tuple[int, int]] = (1, 65535)
+        VALIDATION_NAME_LENGTH_RANGE: Final[tuple[int, int]] = (3, 100)
+        VALIDATION_MIN_SECRET_KEY_LENGTH: Final[int] = 32
+        VALIDATION_MAX_CONTENT_LENGTH_DEFAULT: Final[int] = 16 * 1024 * 1024
+        VALIDATION_MIN_CONTENT_LENGTH: Final[int] = 0
+        VALIDATION_REQUEST_TIMEOUT_DEFAULT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
+        VALIDATION_REQUEST_TIMEOUT_MAX: Final[int] = 600
+        VALIDATION_MAX_URL_LENGTH: Final[int] = 2048
+        VALIDATION_MIN_URL_LENGTH: Final[int] = 1
+        VALIDATION_MAX_HEADER_LENGTH: Final[int] = 8192
+        VALIDATION_MAX_HEADERS_COUNT: Final[int] = 100
+        VALIDATION_CONTENT_LENGTH_RANGE: Final[tuple[int, int]] = (
+            VALIDATION_MIN_CONTENT_LENGTH,
+            VALIDATION_MAX_CONTENT_LENGTH_DEFAULT,
+        )
+        VALIDATION_REQUEST_TIMEOUT_RANGE: Final[tuple[int, int]] = (
+            1,
+            VALIDATION_REQUEST_TIMEOUT_MAX,
+        )
+        VALIDATION_URL_LENGTH_RANGE: Final[tuple[int, int]] = (
+            VALIDATION_MIN_URL_LENGTH,
+            VALIDATION_MAX_URL_LENGTH,
+        )
+        VALIDATION_HEADER_LIMITS: Final[t.IntMapping] = MappingProxyType({
+            "max_length": VALIDATION_MAX_HEADER_LENGTH,
+            "max_count": VALIDATION_MAX_HEADERS_COUNT,
+        })
 
-        class WebServer:
-            """Server boundaries and validation values."""
+        # ===== Flattened from Http =====
+        HTTP_CONTENT_TYPE_JSON: Final[str] = "application/json"
+        HTTP_CONTENT_TYPE_TEXT: Final[str] = "text/plain"
+        HTTP_CONTENT_TYPE_HTML: Final[str] = "text/html"
+        HTTP_HEADER_CONTENT_TYPE: Final[str] = "content-type"
+        HTTP_HEADER_CONTENT_LENGTH: Final[str] = "content-length"
+        HTTP_METHODS: Final[frozenset[str]] = frozenset({
+            Method.GET.value,
+            Method.POST.value,
+            Method.PUT.value,
+            Method.DELETE.value,
+            Method.PATCH.value,
+            Method.HEAD.value,
+            Method.OPTIONS.value,
+        })
+        HTTP_SAFE_METHODS: Final[frozenset[str]] = frozenset({
+            Method.GET.value,
+            Method.HEAD.value,
+            Method.OPTIONS.value,
+        })
 
-            MIN_PORT: Final[int] = 1024
-            MAX_PORT: Final[int] = 65535
-            MIN_APP_NAME_LENGTH: Final[int] = 3
-            MAX_APP_NAME_LENGTH: Final[int] = 100
-            MIN_SECRET_KEY_LENGTH: Final[int] = 32
+        # ===== Flattened from WebSecurity =====
+        SECURITY_MIN_SECRET_KEY_LENGTH: Final[int] = 32
+        SECURITY_RESERVED_NAMES: Final[frozenset[str]] = frozenset({
+            "REDACTED_LDAP_BIND_PASSWORD",
+            "root",
+            "api",
+            "system",
+            "settings",
+            "health",
+        })
+        SECURITY_DANGEROUS_PATTERNS: Final[frozenset[str]] = frozenset({
+            "<script",
+            "javascript:",
+            "data:text/html",
+            "'; DROP TABLE",
+            "--",
+            "/*",
+            "*/",
+        })
+        SECURITY_CORS_DEFAULT_ORIGINS: Final[frozenset[str]] = frozenset({"*"})
+        SECURITY_CORS_SAFE_METHODS: Final[frozenset[str]] = frozenset({
+            Method.GET.value,
+            Method.HEAD.value,
+            Method.OPTIONS.value,
+        })
+        SECURITY_CORS_SAFE_HEADERS: Final[frozenset[str]] = frozenset({
+            "Content-Type",
+            "Authorization",
+        })
+        SECURITY_SESSION_DEFAULTS: Final[t.FeatureFlagMapping] = MappingProxyType({
+            "secure": False,
+            "httponly": True,
+            "samesite": "Lax",
+        })
+        SECURITY_SSL_PORTS: Final[tuple[int, int]] = (443, 8443)
+        SECURITY_SSL_ALT_PORT: Final[int] = 8443
+        SECURITY_SESSION_COOKIE_SECURE_DEFAULT: Final[bool] = False
+        SECURITY_SESSION_COOKIE_HTTPONLY_DEFAULT: Final[bool] = True
+        SECURITY_SESSION_COOKIE_SAMESITE_DEFAULT: Final[str] = "Lax"
+        SECURITY_MAX_DESCRIPTION_LENGTH: Final[int] = 500
+        SECURITY_MAX_HOST_LENGTH: Final[int] = 255
 
-        class WebSpecific:
-            """Deployment specific identifiers and network defaults."""
+        # ===== Flattened from WebFramework =====
+        FRAMEWORK_INTERFACE_ASGI: Final[str] = "asgi"
+        FRAMEWORK_INTERFACE_WSGI: Final[str] = "wsgi"
+        FRAMEWORK_RUNNER_UVICORN: Final[str] = "uvicorn"
+        FRAMEWORK_RUNNER_WERKZEUG: Final[str] = "werkzeug"
+        FRAMEWORK_FASTAPI: Final[str] = "fastapi"
+        FRAMEWORK_FLASK: Final[str] = "flask"
+        FRAMEWORK_INTERFACES: Final[frozenset[str]] = frozenset({
+            FRAMEWORK_INTERFACE_ASGI,
+            FRAMEWORK_INTERFACE_WSGI,
+        })
+        FRAMEWORK_RUNNERS: Final[frozenset[str]] = frozenset({
+            FRAMEWORK_RUNNER_UVICORN,
+            FRAMEWORK_RUNNER_WERKZEUG,
+        })
+        FRAMEWORK_FRAMEWORKS: Final[frozenset[str]] = frozenset({
+            FRAMEWORK_FASTAPI,
+            FRAMEWORK_FLASK,
+        })
 
-            DEV_ENVIRONMENT_KEY: Final[str] = (
-                "dev-environment-key-32-characters-long-for-dev"
-            )
-            TEST_ENVIRONMENT_KEY: Final[str] = (
-                "test-environment-key-32-characters-long-for-tests"
-            )
-            ALL_INTERFACES: Final[str] = str(IPv4Address(0))
-            LOCALHOST_IP: Final[str] = str(IPv4Address(2130706433))
-            SYSTEM_PORTS_THRESHOLD: Final[int] = 1023
-            PRIVILEGED_PORTS_MAX: Final[int] = 1023
+        # ===== Flattened from WebActions =====
+        ACTION_CREATE: Final[str] = "create"
+        ACTION_START: Final[str] = "start"
+        ACTION_STOP: Final[str] = "stop"
+        ACTION_LIST: Final[str] = "list"
+        ACTIONS: Final[frozenset[str]] = frozenset({
+            ACTION_CREATE,
+            ACTION_START,
+            ACTION_STOP,
+            ACTION_LIST,
+        })
 
-        class WebValidation:
-            """Validation constants for configuration and HTTP payloads."""
+        # ===== Flattened from WebMessages =====
+        MESSAGE_ENTITY_SERVICE_READY: Final[str] = "Entity service ready"
+        MESSAGE_CONFIG_LOADED: Final[str] = "loaded"
+        MESSAGE_HANDLERS_REGISTERED: Final[str] = "registered"
 
-            PORT_RANGE: Final[tuple[int, int]] = (1, 65535)
-            NAME_LENGTH_RANGE: Final[tuple[int, int]] = (3, 100)
-            MIN_SECRET_KEY_LENGTH: Final[int] = 32
-            MAX_CONTENT_LENGTH_DEFAULT: Final[int] = 16 * 1024 * 1024
-            MIN_CONTENT_LENGTH: Final[int] = 0
-            REQUEST_TIMEOUT_DEFAULT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
-            REQUEST_TIMEOUT_MAX: Final[int] = 600
-            MAX_URL_LENGTH: Final[int] = 2048
-            MIN_URL_LENGTH: Final[int] = 1
-            MAX_HEADER_LENGTH: Final[int] = 8192
-            MAX_HEADERS_COUNT: Final[int] = 100
-            CONTENT_LENGTH_RANGE: Final[tuple[int, int]] = (
-                MIN_CONTENT_LENGTH,
-                MAX_CONTENT_LENGTH_DEFAULT,
-            )
-            REQUEST_TIMEOUT_RANGE: Final[tuple[int, int]] = (1, REQUEST_TIMEOUT_MAX)
-            URL_LENGTH_RANGE: Final[tuple[int, int]] = (MIN_URL_LENGTH, MAX_URL_LENGTH)
-            HEADER_LIMITS: ClassVar[t.IntMapping] = MappingProxyType({
-                "max_length": MAX_HEADER_LENGTH,
-                "max_count": MAX_HEADERS_COUNT,
-            })
-
-        class Http:
-            """HTTP protocol constants, methods and status codes."""
-
-            CONTENT_TYPE_JSON: Final[str] = "application/json"
-            CONTENT_TYPE_TEXT: Final[str] = "text/plain"
-            CONTENT_TYPE_HTML: Final[str] = "text/html"
-            HEADER_CONTENT_TYPE: Final[str] = "content-type"
-            HEADER_CONTENT_LENGTH: Final[str] = "content-length"
-            DEFAULT_TIMEOUT_SECONDS: Final[float] = float(
-                c.DEFAULT_TIMEOUT_SECONDS,
-            )
-            METHODS: ClassVar[tuple[str, ...]] = (
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "PATCH",
-                "HEAD",
-                "OPTIONS",
-            )
-            SAFE_METHODS: ClassVar[tuple[str, ...]] = ("GET", "HEAD", "OPTIONS")
-
-        class WebSecurity:
-            """Security settings and safe defaults."""
-
-            MIN_SECRET_KEY_LENGTH: Final[int] = 32
-            RESERVED_NAMES: ClassVar[tuple[str, ...]] = (
-                "REDACTED_LDAP_BIND_PASSWORD",
-                "root",
-                "api",
-                "system",
-                "settings",
-                "health",
-            )
-            DANGEROUS_PATTERNS: ClassVar[tuple[str, ...]] = (
-                "<script",
-                "javascript:",
-                "data:text/html",
-                "'; DROP TABLE",
-                "--",
-                "/*",
-                "*/",
-            )
-            CORS_DEFAULT_ORIGINS: ClassVar[tuple[str, ...]] = ("*",)
-            CORS_SAFE_METHODS: ClassVar[tuple[str, ...]] = ("GET", "HEAD", "OPTIONS")
-            CORS_SAFE_HEADERS: ClassVar[tuple[str, ...]] = (
-                "Content-Type",
-                "Authorization",
-            )
-            SESSION_DEFAULTS: ClassVar[t.FeatureFlagMapping] = MappingProxyType({
-                "secure": False,
-                "httponly": True,
-                "samesite": "Lax",
-            })
-            SSL_PORTS: Final[tuple[int, int]] = (443, 8443)
-            SSL_ALT_PORT: Final[int] = 8443
-            SESSION_COOKIE_SECURE_DEFAULT: Final[bool] = False
-            SESSION_COOKIE_HTTPONLY_DEFAULT: Final[bool] = True
-            SESSION_COOKIE_SAMESITE_DEFAULT: Final[str] = "Lax"
-            MAX_DESCRIPTION_LENGTH: Final[int] = 500
-            MAX_HOST_LENGTH: Final[int] = 255
-
-        class WebFramework:
-            """Web framework and runtime constants."""
-
-            INTERFACE_ASGI: Final[str] = "asgi"
-            INTERFACE_WSGI: Final[str] = "wsgi"
-            RUNNER_UVICORN: Final[str] = "uvicorn"
-            RUNNER_WERKZEUG: Final[str] = "werkzeug"
-            FRAMEWORK_FASTAPI: Final[str] = "fastapi"
-            FRAMEWORK_FLASK: Final[str] = "flask"
-            INTERFACES: ClassVar[tuple[str, ...]] = (INTERFACE_ASGI, INTERFACE_WSGI)
-            RUNNERS: ClassVar[tuple[str, ...]] = (RUNNER_UVICORN, RUNNER_WERKZEUG)
-            FRAMEWORKS: ClassVar[tuple[str, ...]] = (FRAMEWORK_FASTAPI, FRAMEWORK_FLASK)
-
-        class WebActions:
-            """Web application management action constants."""
-
-            ACTION_CREATE: Final[str] = "create"
-            ACTION_START: Final[str] = "start"
-            ACTION_STOP: Final[str] = "stop"
-            ACTION_LIST: Final[str] = "list"
-            ACTIONS: ClassVar[tuple[str, ...]] = (
-                ACTION_CREATE,
-                ACTION_START,
-                ACTION_STOP,
-                ACTION_LIST,
-            )
-
-        class WebMessages:
-            """Web service message constants."""
-
-            ENTITY_SERVICE_READY: Final[str] = "Entity service ready"
-            CONFIG_LOADED: Final[str] = "loaded"
-            HANDLERS_REGISTERED: Final[str] = "registered"
-
-        class WebApi:
-            """Web API documentation and endpoint constants."""
-
-            DOCS_URL: Final[str] = "/docs"
-            REDOC_URL: Final[str] = "/redoc"
-            OPENAPI_URL: Final[str] = "/openapi.json"
-            DEFAULT_DESCRIPTION: Final[str] = "Generic HTTP Service"
+        # ===== Flattened from WebApi =====
+        API_DOCS_URL: Final[str] = "/docs"
+        API_REDOC_URL: Final[str] = "/redoc"
+        API_OPENAPI_URL: Final[str] = "/openapi.json"
+        API_DEFAULT_DESCRIPTION: Final[str] = "Generic HTTP Service"
 
 
 c = FlextWebConstants
 
-__all__: list[str] = ["FlextWebConstants", "c"]
+__all__: tuple[str, ...] = ("FlextWebConstants", "c")

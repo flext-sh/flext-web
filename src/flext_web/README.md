@@ -23,7 +23,7 @@ from flext_web import c, m, p, t, u, web
 status = web.service_status()
 capabilities = web.api_capabilities()
 settings = web.settings
-health_service_name = c.Web.WebService.SERVICE_NAME
+health_service_name = c.Web.SERVICE_NAME
 app_request_model = m.Web.AppData
 response_payload_type = t.Web.ResponseDict
 web_protocol = p.Web.WebService

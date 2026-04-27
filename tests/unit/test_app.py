@@ -19,7 +19,7 @@ class TestsFlextWebApp:
         settings = m.Web.FastAPIAppConfig(
             title="Custom Test API",
             version="2.0.0",
-            description=c.Web.WebApi.DEFAULT_DESCRIPTION,
+            description=c.Web.API_DEFAULT_DESCRIPTION,
         )
         result = web.create_fastapi_app(settings)
         tm.ok(result)

@@ -30,8 +30,8 @@ class FlextWebHandlers(s[bool]):
     def handle_create_app(
         cls,
         name: str,
-        port: int = c.Web.WebDefaults.PORT,
-        host: str = c.Web.WebDefaults.HOST,
+        port: int = c.Web.DEFAULT_PORT,
+        host: str = c.Web.DEFAULT_HOST,
     ) -> p.Result[m.Web.Entity]:
         """Handle application creation requests.
 
@@ -119,14 +119,14 @@ class FlextWebHandlers(s[bool]):
         """
         return r[m.Web.HealthStatus].ok(
             m.Web.HealthStatus(
-                status=c.Web.WebResponse.STATUS_HEALTHY,
-                service=c.Web.WebService.SERVICE_NAME,
+                status=c.Web.RESPONSE_STATUS_HEALTHY,
+                service=c.Web.SERVICE_NAME,
                 version="0.9.0",
                 timestamp=u.generate_iso_timestamp(),
                 components={
-                    "web_service": c.Web.WebResponse.STATUS_OPERATIONAL,
-                    "configuration": c.Web.WebMessages.CONFIG_LOADED,
-                    "handlers": c.Web.WebMessages.HANDLERS_REGISTERED,
+                    "web_service": c.Web.RESPONSE_STATUS_OPERATIONAL,
+                    "configuration": c.Web.MESSAGE_CONFIG_LOADED,
+                    "handlers": c.Web.MESSAGE_HANDLERS_REGISTERED,
                 },
             ),
         )

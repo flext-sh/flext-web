@@ -315,7 +315,7 @@ class TestsFlextWebProtocolsUnit:
         class RealResponseFormatter:
             def format_success(self, data: t.Web.ResponseDict) -> t.Web.ResponseDict:
                 response: t.Web.ResponseDict = {
-                    "status": c.Web.WebResponse.STATUS_SUCCESS,
+                    "status": c.Web.RESPONSE_STATUS_SUCCESS,
                 }
                 response.update({
                     key: value
@@ -326,7 +326,7 @@ class TestsFlextWebProtocolsUnit:
 
             def format_error(self, error: Exception) -> t.Web.ResponseDict:
                 result: t.Web.ResponseDict = {
-                    "status": c.Web.WebResponse.STATUS_ERROR,
+                    "status": c.Web.RESPONSE_STATUS_ERROR,
                     "message": str(error),
                 }
                 return result
@@ -336,7 +336,7 @@ class TestsFlextWebProtocolsUnit:
                 data: t.Web.ResponseDict,
             ) -> t.Web.ResponseDict:
                 response: t.Web.ResponseDict = {
-                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
+                    c.Web.HTTP_HEADER_CONTENT_TYPE: c.Web.HTTP_CONTENT_TYPE_JSON,
                 }
                 response.update({
                     key: value
@@ -369,19 +369,19 @@ class TestsFlextWebProtocolsUnit:
             "nested": {"key2": "value2"},
         }
         result = formatter.format_success(data_with_nested)
-        tm.that(result["status"], eq=c.Web.WebResponse.STATUS_SUCCESS)
+        tm.that(result["status"], eq=c.Web.RESPONSE_STATUS_SUCCESS)
         tm.that(result["key1"], eq="value1")
         tm.that(result["nested"], is_=dict)
         error = ValueError("Test error")
         error_result = formatter.format_error(error)
-        tm.that(error_result["status"], eq=c.Web.WebResponse.STATUS_ERROR)
+        tm.that(error_result["status"], eq=c.Web.RESPONSE_STATUS_ERROR)
         tm.that(str(error_result["message"]), has="Test error")
         json_result = formatter.create_json_response(data_with_nested)
-        tm.that(json_result, has=c.Web.Http.HEADER_CONTENT_TYPE)
+        tm.that(json_result, has=c.Web.HTTP_HEADER_CONTENT_TYPE)
         tm.that(
             (
-                json_result[c.Web.Http.HEADER_CONTENT_TYPE]
-                == c.Web.Http.CONTENT_TYPE_JSON
+                json_result[c.Web.HTTP_HEADER_CONTENT_TYPE]
+                == c.Web.HTTP_CONTENT_TYPE_JSON
             ),
             eq=True,
         )
@@ -395,7 +395,7 @@ class TestsFlextWebProtocolsUnit:
                 data: t.Web.ResponseDict,
             ) -> t.Web.ResponseDict:
                 response: t.Web.ResponseDict = {
-                    c.Web.Http.HEADER_CONTENT_TYPE: c.Web.Http.CONTENT_TYPE_JSON,
+                    c.Web.HTTP_HEADER_CONTENT_TYPE: c.Web.HTTP_CONTENT_TYPE_JSON,
                 }
                 response.update({
                     key: value
@@ -431,7 +431,7 @@ class TestsFlextWebProtocolsUnit:
             "nested": {"key": "value"},
         }
         json_response = framework.create_json_response(data)
-        tm.that(json_response, has=c.Web.Http.HEADER_CONTENT_TYPE)
+        tm.that(json_response, has=c.Web.HTTP_HEADER_CONTENT_TYPE)
         request_data = framework.resolve_request_data({})
         tm.that(request_data, is_=dict)
         is_json = framework.json_request({})
@@ -612,8 +612,8 @@ class TestsFlextWebProtocolsUnit:
 
             def web_health_status(self) -> t.Web.ResponseDict:
                 return {
-                    "status": c.Web.WebResponse.STATUS_HEALTHY,
-                    "service": c.Web.WebService.SERVICE_NAME,
+                    "status": c.Web.RESPONSE_STATUS_HEALTHY,
+                    "service": c.Web.SERVICE_NAME,
                 }
 
             def web_metrics(self) -> t.Web.ResponseDict:
@@ -634,7 +634,7 @@ class TestsFlextWebProtocolsUnit:
         monitoring = RealWebMonitoring()
         monitoring.record_web_request({"method": "GET"}, 0.1)
         health = monitoring.web_health_status()
-        tm.that(health["status"], eq=c.Web.WebResponse.STATUS_HEALTHY)
+        tm.that(health["status"], eq=c.Web.RESPONSE_STATUS_HEALTHY)
         metrics = monitoring.web_metrics()
         tm.that(metrics, has="requests")
 
@@ -653,7 +653,7 @@ class TestsFlextWebProtocolsUnit:
             "dict": {"nested": "value"},
         }
         result = formatter.format_success(data_with_all_types)
-        tm.that(result["status"], eq=c.Web.WebResponse.STATUS_SUCCESS)
+        tm.that(result["status"], eq=c.Web.RESPONSE_STATUS_SUCCESS)
         tm.that(result["string"], eq="value")
         tm.that(result["int"], eq=42)
         tm.that(result["bool"] is True, eq=True)
@@ -661,13 +661,13 @@ class TestsFlextWebProtocolsUnit:
         tm.that(result["dict"], is_=dict)
         error = ValueError("Test error message")
         error_result = formatter.format_error(error)
-        tm.that(error_result["status"], eq=c.Web.WebResponse.STATUS_ERROR)
+        tm.that(error_result["status"], eq=c.Web.RESPONSE_STATUS_ERROR)
         tm.that(str(error_result["message"]), has="Test error message")
         json_result = formatter.create_json_response(data_with_all_types)
         tm.that(
             (
-                json_result[c.Web.Http.HEADER_CONTENT_TYPE]
-                == c.Web.Http.CONTENT_TYPE_JSON
+                json_result[c.Web.HTTP_HEADER_CONTENT_TYPE]
+                == c.Web.HTTP_CONTENT_TYPE_JSON
             ),
             eq=True,
         )
@@ -680,7 +680,7 @@ class TestsFlextWebProtocolsUnit:
         framework = p.Web.WebFrameworkInterface
         data: t.Web.ResponseDict = {"test": "value", "nested": {"key": "value"}}
         result = framework.create_json_response(data)
-        tm.that(result[c.Web.Http.HEADER_CONTENT_TYPE], eq=c.Web.Http.CONTENT_TYPE_JSON)
+        tm.that(result[c.Web.HTTP_HEADER_CONTENT_TYPE], eq=c.Web.HTTP_CONTENT_TYPE_JSON)
         request_data: t.Web.RequestDict = {"test": "data"}
         tm.that(request_data, is_=dict)
         tm.that(request_data["test"], eq="data")
@@ -770,7 +770,7 @@ class TestsFlextWebProtocolsUnit:
         monitoring.record_web_request({"method": "GET"}, 0.1)
         health = monitoring.web_health_status()
         tm.that(health["status"], eq=c.Web.Status.STOPPED.value)
-        tm.that(health["service"], eq=c.Web.WebService.SERVICE_NAME)
+        tm.that(health["service"], eq=c.Web.SERVICE_NAME)
         metrics = monitoring.web_metrics()
         tm.that(metrics["requests"], eq=1)
         tm.that(metrics["errors"], eq=0)

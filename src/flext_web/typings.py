@@ -35,7 +35,7 @@ class FlextWebTypes(t):
             """Application configuration with web-specific defaults."""
 
             name: Annotated[str, u.Field(description="App name")] = (
-                c.Web.WebDefaults.APP_NAME
+                c.Web.DEFAULT_APP_NAME
             )
             status: Annotated[str, u.Field(description="App status")] = (
                 c.Web.Status.STOPPED.value
@@ -44,10 +44,10 @@ class FlextWebTypes(t):
                 c.Web.Name.DEVELOPMENT.value
             )
             debug_mode: Annotated[bool, u.Field(description="Debug")] = (
-                c.Web.WebDefaults.DEBUG_MODE
+                c.Web.DEFAULT_DEBUG_MODE
             )
             version: Annotated[int, u.Field(description="Version")] = (
-                c.Web.WebDefaults.VERSION_INT
+                c.Web.DEFAULT_VERSION_INT
             )
 
         class RequestConfig(m.Web.AppRequest):
@@ -101,11 +101,11 @@ class FlextWebTypes(t):
         method: str = c.Web.Method.GET,
         headers: t.StrMapping | None = None,
         body: str | Mapping[str, t.Scalar] | None = None,
-        timeout: float = c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
+        timeout: float = c.Web.DEFAULT_TIMEOUT_SECONDS,
     ) -> p.Result[m.Web.Request]:
         """Create HTTP request model instance with proper validation."""
         method_upper = method.upper()
-        valid_methods = set(c.Web.Http.METHODS)
+        valid_methods = set(c.Web.HTTP_METHODS)
         method_validated = u.guard(method_upper, str, return_value=True)
         if (
             not isinstance(method_validated, str)
@@ -171,7 +171,7 @@ class FlextWebTypes(t):
         if not settings.url or not settings.url.strip():
             return r[m.Web.AppRequest].fail("URL is required")
         method_upper = (settings.method or c.Web.Method.GET).upper()
-        valid_methods = set(c.Web.Http.METHODS)
+        valid_methods = set(c.Web.HTTP_METHODS)
         method_validated = u.guard(method_upper, str, return_value=True)
         if (
             not isinstance(method_validated, str)
@@ -187,7 +187,7 @@ class FlextWebTypes(t):
                 "method": method_upper,
                 "headers": dict(settings.headers or {}),
                 "body": settings.body,
-                "timeout": settings.timeout or c.Web.Http.DEFAULT_TIMEOUT_SECONDS,
+                "timeout": settings.timeout or c.Web.DEFAULT_TIMEOUT_SECONDS,
                 "query_params": dict(settings.query_params or {}),
                 "client_ip": settings.client_ip or "",
                 "user_agent": settings.user_agent or "",
@@ -217,7 +217,7 @@ class FlextWebTypes(t):
                 "headers": dict(settings.headers or {}),
                 "body": settings.body,
                 "elapsed_time": settings.elapsed_time or 0.0,
-                "content_type": (settings.content_type or c.Web.Http.CONTENT_TYPE_JSON),
+                "content_type": (settings.content_type or c.Web.HTTP_CONTENT_TYPE_JSON),
                 "content_length": settings.content_length or 0,
                 "processing_time_ms": settings.processing_time_ms or 0.0,
             })
