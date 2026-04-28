@@ -527,12 +527,12 @@ class FlextWebModels(m):
             @property
             def can_start(self) -> bool:
                 """Check if application can be started."""
-                return bool(self.status == c.Web.Status.STOPPED.value)
+                return self.status == c.Web.Status.STOPPED.value
 
             @property
             def can_stop(self) -> bool:
                 """Check if application can be stopped."""
-                return bool(self.status == c.Web.Status.RUNNING.value)
+                return self.status == c.Web.Status.RUNNING.value
 
             @property
             def healthy(self) -> bool:
