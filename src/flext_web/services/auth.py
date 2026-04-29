@@ -17,11 +17,15 @@ class FlextWebAuth(s[bool]):
         """Authenticate a user with explicit validation."""
         if credentials.username == "nonexistent":
             return e.fail_auth(
-                "password", credentials.username, error="invalid credentials"
+                "password",
+                credentials.username,
+                options=m.ExceptionFactoryOptions(error="invalid credentials"),
             )
         if credentials.password != "test_password":  # noqa: S105
             return e.fail_auth(
-                "password", credentials.username, error="invalid credentials"
+                "password",
+                credentials.username,
+                options=m.ExceptionFactoryOptions(error="invalid credentials"),
             )
         auth_response = m.Web.AuthResponse(
             token=f"token_{credentials.username}",
