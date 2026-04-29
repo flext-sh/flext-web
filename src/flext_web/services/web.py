@@ -6,7 +6,7 @@ from collections.abc import (
     Mapping,
     Sequence,
 )
-from typing import Self
+from typing import Self, override
 
 from flext_web import (
     FlextWebAuth,
@@ -90,6 +90,7 @@ class FlextWebServices(s[bool]):
         """Return health metrics for the dashboard."""
         return self._health().metrics()
 
+    @override
     def execute(
         self,
     ) -> p.Result[bool]:
@@ -280,7 +281,7 @@ class FlextWebServices(s[bool]):
         """Return the canonical service status label from runtime state."""
         state = p.Web.service_state
         if state["service_running"]:
-            return str(c.Web.RESPONSE_STATUS_OPERATIONAL)
+            return c.Web.RESPONSE_STATUS_OPERATIONAL
         return str(c.Web.Status.STOPPED.value)
 
     @staticmethod

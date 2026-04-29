@@ -161,7 +161,7 @@ class FlextWebModels(m):
                     True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
-                return bool(self.status_code >= c.Web.ERROR_MIN)
+                return self.status_code >= c.Web.ERROR_MIN
 
             @property
             def success(self) -> bool:
@@ -172,7 +172,7 @@ class FlextWebModels(m):
 
                 """
                 success_min, success_max = c.Web.SUCCESS_RANGE
-                return bool(success_min <= self.status_code <= success_max)
+                return success_min <= self.status_code <= success_max
 
         class AppRequest(m.Value):
             """Web request entity with tracking and context information.
@@ -363,7 +363,7 @@ class FlextWebModels(m):
                     True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
-                return bool(self.status_code >= c.Web.ERROR_MIN)
+                return self.status_code >= c.Web.ERROR_MIN
 
             @property
             def success(self) -> bool:
@@ -374,7 +374,7 @@ class FlextWebModels(m):
 
                 """
                 success_min, success_max = c.Web.SUCCESS_RANGE
-                return bool(success_min <= self.status_code <= success_max)
+                return success_min <= self.status_code <= success_max
 
             @property
             def processing_time_seconds(self) -> float:
@@ -384,7 +384,7 @@ class FlextWebModels(m):
                     Processing time in seconds
 
                 """
-                return float(self.processing_time_ms / 1000)
+                return self.processing_time_ms / 1000
 
         # APPLICATION MODELS (Aggregates - consistency boundaries)
 
@@ -544,7 +544,7 @@ class FlextWebModels(m):
             @property
             def running(self) -> bool:
                 """Check if application is currently running."""
-                return bool(self.status == c.Web.Status.RUNNING.value)
+                return self.status == c.Web.Status.RUNNING.value
 
             @property
             def url(self) -> str:
@@ -614,7 +614,7 @@ class FlextWebModels(m):
                     self,
                     event_type=event_type,
                     data=data,
-                    aggregate_id=str(self.id),
+                    aggregate_id=self.id,
                 )
                 return r[m.Entry].ok(entry)
 
@@ -864,7 +864,7 @@ class FlextWebModels(m):
             @property
             def running(self) -> bool:
                 """Return whether the projected application is running."""
-                return bool(self.status == c.Web.Status.RUNNING.value)
+                return self.status == c.Web.Status.RUNNING.value
 
         class HealthResponse(m.Value):
             """Health check response model."""

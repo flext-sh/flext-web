@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Annotated, ClassVar, Self, Unpack
+from typing import Annotated, ClassVar, Self
 
 from flext_core import FlextSettings
 from flext_web import c, m, p, r, t, u
@@ -115,7 +115,7 @@ class FlextWebSettings(FlextSettings):
     @u.model_validator(mode="after")
     def synchronize_debug_flags(self) -> Self:
         """Keep Flask debug flags aligned from a single effective toggle."""
-        effective_debug = bool(self.debug or self.debug_mode)
+        effective_debug = self.debug or self.debug_mode
         if self.debug == effective_debug and self.debug_mode == effective_debug:
             return self
         return self.model_copy(
@@ -126,11 +126,12 @@ class FlextWebSettings(FlextSettings):
     @property
     def protocol(self) -> str:
         """Return active URL protocol based on TLS setting."""
-        return str(
+        protocol: str = (
             c.Web.DEFAULT_HTTPS_PROTOCOL
             if self.ssl_enabled
-            else c.Web.DEFAULT_HTTP_PROTOCOL,
+            else c.Web.DEFAULT_HTTP_PROTOCOL
         )
+        return protocol
 
     @u.computed_field()
     @property
@@ -141,18 +142,22 @@ class FlextWebSettings(FlextSettings):
     @classmethod
     def create_web_config(
         cls,
-        **overrides: Unpack[t.Web.CreateWebConfigKwargs],
+        *,
+        host: str | None = None,
+        port: int | None = None,
+        debug: bool | None = None,
+        secret_key: str | None = None,
     ) -> p.Result[Self]:
         """Create web settings with validated overrides."""
-        payload: t.Web.CreateWebConfigKwargs = {}
-        if "host" in overrides:
-            payload["host"] = overrides["host"]
-        if "port" in overrides:
-            payload["port"] = overrides["port"]
-        if "debug" in overrides:
-            payload["debug"] = overrides["debug"]
-        if "secret_key" in overrides:
-            payload["secret_key"] = overrides["secret_key"]
+        payload: t.MutableJsonMapping = {}
+        if host is not None:
+            payload["host"] = host
+        if port is not None:
+            payload["port"] = port
+        if debug is not None:
+            payload["debug"] = debug
+        if secret_key is not None:
+            payload["secret_key"] = secret_key
         return r[Self].create_from_callable(lambda: cls.model_validate(payload))
 
     @classmethod

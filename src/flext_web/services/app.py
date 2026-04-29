@@ -13,6 +13,7 @@ import json as _json
 from collections.abc import (
     Callable,
 )
+from typing import override
 
 import flask
 from fastapi import FastAPI
@@ -31,6 +32,7 @@ class FlextWebApp(s[bool]):
     Delegates to flext-core for logging, container management, and error handling.
     """
 
+    @override
     def execute(
         self,
     ) -> p.Result[bool]:

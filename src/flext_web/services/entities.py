@@ -7,6 +7,7 @@ from collections.abc import (
     MutableMapping,
     Sequence,
 )
+from typing import override
 
 from flext_web import e, m, p, r, s, u
 
@@ -25,6 +26,7 @@ class FlextWebEntities(s[bool]):
         self._storage[entity_id] = entity
         return r[m.Web.EntityData].ok(entity)
 
+    @override
     def execute(
         self,
     ) -> p.Result[bool]:

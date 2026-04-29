@@ -354,7 +354,7 @@ class FlextWebProtocols(p):
         @staticmethod
         def _is_valid_port(port: int) -> bool:
             min_port, max_port = c.Web.VALIDATION_PORT_RANGE
-            return bool(min_port <= port <= max_port)
+            return min_port <= port <= max_port
 
         @staticmethod
         def _record_request_metric(status: str | None, response_time_ms: int) -> None:

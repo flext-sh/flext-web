@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import override
+
 from flext_web import e, m, p, r, s
 
 
@@ -28,6 +30,7 @@ class FlextWebAuth(s[bool]):
         )
         return r[m.Web.AuthResponse].ok(auth_response)
 
+    @override
     def execute(
         self,
     ) -> p.Result[bool]:

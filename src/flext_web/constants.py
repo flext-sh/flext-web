@@ -131,7 +131,7 @@ class FlextWebConstants(c):
 
         # ===== Status/Code mappings =====
         STATUS_CODES: Final[t.IntMapping] = MappingProxyType({
-            status.name: int(status.value) for status in StatusCode
+            status.name: status.value for status in StatusCode
         })
         STATUS_RANGES: Final[Mapping[str, tuple[int, int]]] = MappingProxyType({
             "INFORMATIONAL": (100, 199),

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import override
+
 from flext_web import (
     c,
     m,
@@ -15,6 +17,7 @@ from flext_web import (
 class FlextWebHealth(s[bool]):
     """Health and metrics access backed by protocol runtime state."""
 
+    @override
     def execute(
         self,
     ) -> p.Result[bool]:

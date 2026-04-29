@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import ClassVar, override
 
 from flext_web import c, m, p, r, s, u
 
@@ -131,6 +131,7 @@ class FlextWebHandlers(s[bool]):
             ),
         )
 
+    @override
     def execute(
         self,
     ) -> p.Result[bool]:
