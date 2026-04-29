@@ -44,11 +44,11 @@ class TestsFlextWebConstantsUnit:
 
     def test_web_security_constants(self) -> None:
         """Test web security constants."""
-        tm.that(c.Web.SECURITY_CORS_DEFAULT_ORIGINS, is_=tuple)
+        tm.that(c.Web.SECURITY_CORS_DEFAULT_ORIGINS, is_=frozenset)
         tm.that(c.Web.SECURITY_CORS_DEFAULT_ORIGINS, has="*")
-        tm.that(c.Web.SECURITY_CORS_SAFE_METHODS, is_=tuple)
+        tm.that(c.Web.SECURITY_CORS_SAFE_METHODS, is_=frozenset)
         tm.that(c.Web.SECURITY_CORS_SAFE_METHODS, has="GET")
-        tm.that(c.Web.SECURITY_CORS_SAFE_HEADERS, is_=tuple)
+        tm.that(c.Web.SECURITY_CORS_SAFE_HEADERS, is_=frozenset)
         tm.that(c.Web.SECURITY_CORS_SAFE_HEADERS, has="Content-Type")
         tm.that(c.Web.SECURITY_SESSION_COOKIE_SECURE_DEFAULT is False, eq=True)
         tm.that(c.Web.SECURITY_SESSION_COOKIE_HTTPONLY_DEFAULT is True, eq=True)

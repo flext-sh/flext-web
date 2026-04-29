@@ -16,10 +16,6 @@ if _t.TYPE_CHECKING:
 
     from flext_web import d, e, h, r, s, x
     from tests.constants import TestsFlextWebConstants, c
-    from tests.helpers.models import TestsModels
-    from tests.helpers.protocols import TestsProtocols
-    from tests.helpers.typings import TestsTypings
-    from tests.helpers.utilities import TestsUtilities
     from tests.integration.test_examples import (
         ExamplesFullFunctionalityTest,
         TestsFlextWebExamples,
@@ -44,7 +40,6 @@ if _t.TYPE_CHECKING:
     from tests.utilities import TestsFlextWebUtilities, u
 _LAZY_IMPORTS = merge_lazy_imports(
     (
-        ".helpers",
         ".integration",
         ".unit",
     ),
@@ -54,10 +49,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextWebConstants",
                 "c",
             ),
-            ".helpers.models": ("TestsModels",),
-            ".helpers.protocols": ("TestsProtocols",),
-            ".helpers.typings": ("TestsTypings",),
-            ".helpers.utilities": ("TestsUtilities",),
             ".integration.test_examples": (
                 "ExamplesFullFunctionalityTest",
                 "TestsFlextWebExamples",
@@ -156,10 +147,6 @@ __all__: list[str] = [
     "TestsFlextWebUtilities",
     "TestsFlextWebUtilitiesUnit",
     "TestsFlextWebVersion",
-    "TestsModels",
-    "TestsProtocols",
-    "TestsTypings",
-    "TestsUtilities",
     "c",
     "d",
     "e",

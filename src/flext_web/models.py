@@ -20,8 +20,17 @@ from wsgiref.simple_server import WSGIServer
 
 import uvicorn
 from flext_cli import m, p, t
+from pydantic import TypeAdapter
 
 from flext_web import c, r, u
+
+_METHOD_ADAPTER = TypeAdapter(c.Web.Method)
+
+
+def _coerce_method(v: t.Scalar) -> c.Web.Method:
+    if isinstance(v, str):
+        v = v.upper()
+    return _METHOD_ADAPTER.validate_python(v)
 
 
 class FlextWebModels(m):
@@ -95,7 +104,7 @@ class FlextWebModels(m):
             ]
             method: Annotated[
                 c.Web.Method,
-                u.BeforeValidator(str.upper),
+                u.PlainValidator(_coerce_method),
                 u.Field(
                     description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
                 ),
@@ -204,7 +213,7 @@ class FlextWebModels(m):
             ]
             method: Annotated[
                 c.Web.Method,
-                u.BeforeValidator(str.upper),
+                u.PlainValidator(_coerce_method),
                 u.Field(
                     description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
                 ),
@@ -921,6 +930,7 @@ class FlextWebModels(m):
 
             method: Annotated[
                 c.Web.Method,
+                u.PlainValidator(_coerce_method),
                 u.Field(
                     description="HTTP method",
                 ),
