@@ -27,7 +27,7 @@ class TestsFlextWebConfig:
             debug=True,
         )
         tm.ok(result)
-        settings = result.value.model_copy(update={"app_name": "Test App"})
+        settings = result.value.clone(app_name="Test App")
         tm.that(settings.host, eq="0.0.0.0")
         tm.that(settings.port, eq=3000)
         tm.that(settings.debug_mode is True, eq=True)
@@ -71,26 +71,26 @@ class TestsFlextWebConfig:
 
     def test_ssl_configuration_valid(self) -> None:
         """SSL flags remain accessible on the public settings model."""
-        settings = web.settings.model_copy(
-            update={
-                "ssl_enabled": False,
-                "ssl_cert_path": None,
-                "ssl_key_path": None,
-            },
+        settings = web.settings.clone(
+            ssl_enabled=False,
+            ssl_cert_path=None,
+            ssl_key_path=None,
         )
         tm.that(settings.ssl_enabled is False, eq=True)
 
     def test_computed_fields(self) -> None:
         """Computed fields are available from public settings instances."""
-        settings = web.settings.model_copy(update={"ssl_enabled": False})
+        settings = web.settings.clone(ssl_enabled=False)
         tm.that(settings.protocol, eq="http")
-        config_https = web.settings.model_copy(update={"ssl_enabled": False})
+        config_https = web.settings.clone(ssl_enabled=False)
         tm.that(config_https.protocol, eq="http")
 
     def test_base_url_generation(self) -> None:
         """The base URL is derived from the public settings model."""
-        settings = web.settings.model_copy(
-            update={"host": "localhost", "port": 8080, "ssl_enabled": False},
+        settings = web.settings.clone(
+            host="localhost",
+            port=8080,
+            ssl_enabled=False,
         )
         tm.that(settings.base_url, eq="http://localhost:8080")
 
@@ -102,7 +102,7 @@ class TestsFlextWebConfig:
 
     def test_to_dict_method(self) -> None:
         """The public settings model can be serialized with model_dump."""
-        settings = web.settings.model_copy(update={"host": "localhost", "port": 8080})
+        settings = web.settings.clone(host="localhost", port=8080)
         config_dict = settings.model_dump()
         tm.that(config_dict["host"], eq="localhost")
         tm.that(config_dict["port"], eq=8080)

@@ -60,14 +60,12 @@ class TestsFlextWebApi:
 
     def test_validate_settings_success(self) -> None:
         """Settings validation returns a successful r for valid input."""
-        settings = web.settings.model_copy(
-            update={
-                "host": "localhost",
-                "port": 8080,
-                "debug": True,
-                "debug_mode": True,
-                "secret_key": "test-secret-key-32-characters!!!",
-            },
+        settings = web.settings.clone(
+            host="localhost",
+            port=8080,
+            debug=True,
+            debug_mode=True,
+            secret_key="test-secret-key-32-characters!!!",
         )
         result = web.settings.validate_settings(settings)
         tm.ok(result)

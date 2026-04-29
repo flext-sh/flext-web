@@ -74,7 +74,7 @@ def real_service(real_config: FlextWebSettings) -> FlextWebServices:
 @pytest.fixture
 def real_app(real_config: FlextWebSettings) -> Flask:
     """Create a real Flask app through the public `web` facade."""
-    config = real_config.model_copy(update={"testing": True})
+    config = real_config.clone(testing=True)
     result = web.create_flask_app(config)
     assert result.success, f"Flask app creation failed: {result.error}"
     return result.value
@@ -84,12 +84,10 @@ def real_app(real_config: FlextWebSettings) -> Flask:
 def running_service(real_config: FlextWebSettings) -> Generator[FlextWebServices]:
     """Start a real service through the public `web` facade."""
     test_port = u.Web.Tests.TestPortManager.allocate_port()
-    test_config = real_config.model_copy(
-        update={
-            "host": real_config.host,
-            "port": test_port,
-            "app_name": real_config.app_name,
-        },
+    test_config = real_config.clone(
+        host=real_config.host,
+        port=test_port,
+        app_name=real_config.app_name,
     )
     result = web.create_service(test_config)
     assert result.success, f"Service creation failed: {result.error}"

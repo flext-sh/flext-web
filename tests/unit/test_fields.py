@@ -13,22 +13,22 @@ class TestsFlextWebFields:
 
     def test_host_field_creation(self) -> None:
         """Test host field creation."""
-        settings = web.settings.model_copy(update={"host": "localhost"})
+        settings = web.settings.clone(host="localhost")
         tm.that(settings.host, eq="localhost")
 
     def test_host_field_with_custom_default(self) -> None:
         """Test host field creation with custom default."""
-        settings = web.settings.model_copy(update={"host": "0.0.0.0"})
+        settings = web.settings.clone(host="0.0.0.0")
         tm.that(settings.host, eq="0.0.0.0")
 
     def test_port_field_creation(self) -> None:
         """Test port field creation."""
-        settings = web.settings.model_copy(update={"port": 8080})
+        settings = web.settings.clone(port=8080)
         tm.that(settings.port, eq=8080)
 
     def test_port_field_with_custom_default(self) -> None:
         """Test port field creation with custom default."""
-        settings = web.settings.model_copy(update={"port": 3000})
+        settings = web.settings.clone(port=3000)
         tm.that(settings.port, eq=3000)
 
     def test_url_field_creation(self) -> None:
@@ -38,13 +38,13 @@ class TestsFlextWebFields:
 
     def test_app_name_field_creation(self) -> None:
         """Test app name field creation."""
-        settings = web.settings.model_copy(update={"app_name": "Test App"})
+        settings = web.settings.clone(app_name="Test App")
         tm.that(settings.app_name, eq="Test App")
 
     def test_secret_key_field_creation(self) -> None:
         """Test secret key field creation."""
-        settings = web.settings.model_copy(
-            update={"secret_key": "valid-secret-key-32-characters-long"},
+        settings = web.settings.clone(
+            secret_key="valid-secret-key-32-characters-long",
         )
         tm.that(settings.secret_key, none=False)
 
