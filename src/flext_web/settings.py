@@ -116,11 +116,11 @@ class FlextWebSettings(FlextSettings):
     def synchronize_debug_flags(self) -> Self:
         """Keep Flask debug flags aligned from a single effective toggle."""
         effective_debug = self.debug or self.debug_mode
-        if self.debug == effective_debug and self.debug_mode == effective_debug:
-            return self
-        return self.model_copy(
-            update={"debug": effective_debug, "debug_mode": effective_debug}
-        )
+        if self.debug != effective_debug:
+            self.debug = effective_debug
+        if self.debug_mode != effective_debug:
+            self.debug_mode = effective_debug
+        return self
 
     @u.computed_field()
     @property
