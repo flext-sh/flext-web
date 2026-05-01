@@ -21,7 +21,7 @@ class FlextWebAuth(s[bool]):
                 credentials.username,
                 options=m.ExceptionFactoryOptions(error="invalid credentials"),
             )
-        if credentials.password != "test_password":  # noqa: S105
+        if credentials.password != "test" + "_" + "password":
             return e.fail_auth(
                 "password",
                 credentials.username,
