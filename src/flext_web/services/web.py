@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import (
-    Mapping,
     Sequence,
 )
 from typing import Self, override
@@ -263,7 +262,7 @@ class FlextWebServices(s[bool]):
 
     def _application_responses_from_payloads(
         self,
-        payloads: Sequence[t.Web.ResponseDict],
+        payloads: t.SequenceOf[t.Web.ResponseDict],
     ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
         """Project a sequence of payloads into response models."""
         responses: list[m.Web.ApplicationResponse] = []
@@ -343,7 +342,7 @@ class FlextWebServices(s[bool]):
             )
         return self._health_service
 
-    def _settings_scalar_mapping(self) -> Mapping[str, t.JsonValue]:
+    def _settings_scalar_mapping(self) -> t.MappingKV[str, t.JsonValue]:
         """Produce a JSON-value settings mapping safe for subservice overrides."""
         raw = self.settings.model_dump(exclude_none=True, mode="json")
         return {

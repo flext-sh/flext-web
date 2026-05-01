@@ -7,9 +7,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-)
 from typing import Annotated, NotRequired, TypedDict
 
 from flext_cli import p, r, t
@@ -100,7 +97,7 @@ class FlextWebTypes(t):
         url: str,
         method: str = c.Web.Method.GET,
         headers: t.StrMapping | None = None,
-        body: str | Mapping[str, t.Scalar] | None = None,
+        body: str | t.MappingKV[str, t.Scalar] | None = None,
         timeout: float = c.Web.DEFAULT_TIMEOUT_SECONDS,
     ) -> p.Result[m.Web.Request]:
         """Create HTTP request model instance with proper validation."""
@@ -139,7 +136,7 @@ class FlextWebTypes(t):
         cls,
         status_code: int,
         headers: t.StrMapping | None = None,
-        body: str | Mapping[str, t.Scalar] | None = None,
+        body: str | t.MappingKV[str, t.Scalar] | None = None,
         elapsed_time: float | None = None,
     ) -> p.Result[m.Web.Response]:
         """Create HTTP response model instance with proper validation."""

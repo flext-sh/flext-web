@@ -10,9 +10,6 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from abc import ABC
-from collections.abc import (
-    Sequence,
-)
 from typing import Annotated, override
 
 from flext_core import FlextSettings, s
@@ -20,7 +17,7 @@ from flext_web import FlextWebSettings, t, u
 
 
 class FlextWebServiceBase[
-    TDomainResult: t.JsonPayload | Sequence[t.JsonPayload],
+    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload],
 ](
     s[TDomainResult],
     ABC,

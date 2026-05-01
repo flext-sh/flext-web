@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import (
-    Mapping,
     MutableSequence,
 )
 from datetime import UTC, datetime
@@ -510,7 +509,7 @@ class FlextWebModels(m):
                     description="Application metrics",
                 ),
             ] = u.Field(default_factory=dict)
-            # Note: domain_events is inherited from Entry with type Sequence[DomainEvent]
+            # Note: domain_events is inherited from Entry with type t.SequenceOf[DomainEvent]
             # Use add_event() method to add events instead of direct list manipulation
             web_events: Annotated[
                 MutableSequence[str],
@@ -608,7 +607,9 @@ class FlextWebModels(m):
             def add_domain_event(
                 self,
                 event_type: str,
-                data: m.ConfigMap | Mapping[str, t.JsonPayload | None] | None = None,
+                data: m.ConfigMap
+                | t.MappingKV[str, t.JsonPayload | None]
+                | None = None,
             ) -> p.Result[m.Entry]:
                 """Create and buffer a domain event for this web application entity."""
                 if not event_type.strip():

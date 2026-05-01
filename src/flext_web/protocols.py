@@ -923,7 +923,7 @@ class FlextWebProtocols(p):
                 r containing list of matching entities or error details
 
                 """
-                matches: Sequence[t.Web.ResponseDict] = [
+                matches: t.SequenceOf[t.Web.ResponseDict] = [
                     deepcopy(app_data)
                     for app_data in FlextWebProtocols.Web.apps_registry.values()
                     if all(

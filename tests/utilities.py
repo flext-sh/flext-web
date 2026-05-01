@@ -10,7 +10,6 @@ import socket
 import time
 from collections.abc import (
     Callable,
-    Sequence,
 )
 from threading import Lock
 from typing import ClassVar
@@ -506,9 +505,9 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def run_parameterized_test(
-                test_cases: Sequence[tuple[t.JsonValue, ...]],
+                test_cases: t.SequenceOf[tuple[t.JsonValue, ...]],
                 test_function: Callable[..., p.Result[m.BaseModel]],
-                expected_results: Sequence[bool],
+                expected_results: t.SequenceOf[bool],
                 test_name: str = "parameterized_test",
             ) -> None:
                 """Run standardized parameterized test cases."""
@@ -540,8 +539,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             @staticmethod
             def create_comprehensive_test_suite(
                 entity_type: str,
-                valid_cases: Sequence[t.ScalarMapping],
-                invalid_cases: Sequence[t.ScalarMapping],
+                valid_cases: t.SequenceOf[t.ScalarMapping],
+                invalid_cases: t.SequenceOf[t.ScalarMapping],
                 test_name_prefix: str = "comprehensive",
             ) -> None:
                 """Run comprehensive valid/invalid case suites."""
