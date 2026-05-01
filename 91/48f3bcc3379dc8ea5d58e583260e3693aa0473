@@ -1,0 +1,14 @@
+src/flext_web/services/auth.py
+  h_9db9d35f50cf33 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "9148f3bcc3379dc8ea5d58e583260e3693aa0473",
+  "prompts": {},
+  "humans": {
+    "h_9db9d35f50cf33": {
+      "author": "FLEXT Bot"
+    }
+  }
+}
