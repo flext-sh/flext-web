@@ -276,7 +276,7 @@ class FlextWebProtocols(p):
                 flask_app.config["SECRET_KEY"] = c.Web.DEFAULT_SECRET_KEY
                 flask_app.config["DEBUG"] = c.Web.DEFAULT_DEBUG_MODE
                 flask_app.config["TESTING"] = False
-            except (RuntimeError, OSError, TypeError, ValueError) as exc:
+            except c.EXC_OS_RUNTIME_TYPE as exc:
                 return r[tuple[flask.Flask | FastAPI, str, str]].fail(
                     f"{fastapi_error}; Failed to create Flask application: {exc}",
                 )
