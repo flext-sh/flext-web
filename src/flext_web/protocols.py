@@ -612,14 +612,20 @@ class FlextWebProtocols(p):
                 """
                 app_data = FlextWebProtocols.Web.apps_registry.get(app_id)
                 if app_data is None:
-                    return e.fail_not_found("Application", app_id, result_type=r[t.Web.ResponseDict])
+                    return e.fail_not_found(
+                        "Application", app_id, result_type=r[t.Web.ResponseDict]
+                    )
                 if app_data.get("status") == c.Web.Status.RUNNING.value:
                     return r[t.Web.ResponseDict].fail(
                         f"Application already running: {app_id}",
                     )
                 app_instance = FlextWebProtocols.Web.framework_instances.get(app_id)
                 if app_instance is None:
-                    return e.fail_not_found("Application runtime instance", app_id, result_type=r[t.Web.ResponseDict])
+                    return e.fail_not_found(
+                        "Application runtime instance",
+                        app_id,
+                        result_type=r[t.Web.ResponseDict],
+                    )
                 runtime_result = FlextWebProtocols.Web.start_app_runtime(
                     app_id,
                     app_data,
@@ -646,7 +652,9 @@ class FlextWebProtocols(p):
                 """
                 app_data = FlextWebProtocols.Web.apps_registry.get(app_id)
                 if app_data is None:
-                    return e.fail_not_found("Application", app_id, result_type=r[t.Web.ResponseDict])
+                    return e.fail_not_found(
+                        "Application", app_id, result_type=r[t.Web.ResponseDict]
+                    )
                 if app_data.get("status") != c.Web.Status.RUNNING.value:
                     return r[t.Web.ResponseDict].fail(
                         f"Application not running: {app_id}",
@@ -874,7 +882,9 @@ class FlextWebProtocols(p):
                 """Return a single app by ID or failure when not found."""
                 app_data = FlextWebProtocols.Web.apps_registry.get(entity_id)
                 if app_data is None:
-                    return e.fail_not_found("Application", entity_id, result_type=r[t.Web.ResponseDict])
+                    return e.fail_not_found(
+                        "Application", entity_id, result_type=r[t.Web.ResponseDict]
+                    )
                 return r[t.Web.ResponseDict].ok(deepcopy(app_data))
 
             @staticmethod
@@ -891,7 +901,9 @@ class FlextWebProtocols(p):
                 """Delete an app entity by ID."""
                 removed = FlextWebProtocols.Web.apps_registry.pop(entity_id, None)
                 if removed is None:
-                    return e.fail_not_found("Application", entity_id, result_type=r[bool])
+                    return e.fail_not_found(
+                        "Application", entity_id, result_type=r[bool]
+                    )
                 return r[bool].ok(True)
 
             @staticmethod
