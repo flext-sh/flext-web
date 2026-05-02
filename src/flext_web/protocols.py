@@ -11,12 +11,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import p
-from starlette.responses import Response as StarletteResponse
 
 from flext_web import t
+
+if TYPE_CHECKING:
+    from starlette.responses import Response as StarletteResponse
 
 
 class FlextWebProtocols(p):
@@ -62,4 +64,6 @@ class FlextWebProtocols(p):
                 ...
 
 
-__all__: list[str] = ["FlextWebProtocols"]
+p = FlextWebProtocols
+
+__all__: list[str] = ["FlextWebProtocols", "p"]

@@ -22,12 +22,14 @@ from wsgiref.simple_server import WSGIServer, make_server
 import flask
 import uvicorn
 from fastapi import FastAPI
-from flext_cli import p, r, u
+from flext_cli import e, p, r, u
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
-from flext_web import c, e, m, t
+from flext_web.constants import c
+from flext_web.models import m
+from flext_web.typings import t
 
 
 class FlextWebUtilities(u):

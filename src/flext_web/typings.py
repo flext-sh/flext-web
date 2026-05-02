@@ -9,9 +9,10 @@ from __future__ import annotations
 
 from typing import Annotated, NotRequired, TypedDict
 
-from flext_cli import p, r, t
+from flext_cli import p, r, t, u
 
-from flext_web import c, m, u
+from flext_web.constants import c
+from flext_web.models import m
 
 
 class FlextWebTypes(t):

@@ -18,9 +18,9 @@ from typing import Annotated, ClassVar, override
 from wsgiref.simple_server import WSGIServer
 
 import uvicorn
-from flext_cli import m, p, t
+from flext_cli import m, p, r, t, u
 
-from flext_web import c, r, u
+from flext_web.constants import c
 
 _METHOD_ADAPTER = u.TypeAdapter(c.Web.Method)
 
