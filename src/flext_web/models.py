@@ -19,11 +19,10 @@ from wsgiref.simple_server import WSGIServer
 
 import uvicorn
 from flext_cli import m, p, t
-from pydantic import TypeAdapter
 
 from flext_web import c, r, u
 
-_METHOD_ADAPTER = TypeAdapter(c.Web.Method)
+_METHOD_ADAPTER = u.TypeAdapter(c.Web.Method)
 
 
 def _coerce_method(v: t.Scalar) -> c.Web.Method:
