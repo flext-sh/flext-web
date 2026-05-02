@@ -166,15 +166,7 @@ class FlextWebTypes(t):
                 "user_agent": settings.user_agent or "",
             })
             return r[m.Web.AppRequest].ok(request)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as exc:
+        except c.EXC_BROAD_IO_TYPE as exc:
             return r[m.Web.AppRequest].fail(f"Failed to create web request: {exc}")
 
     @classmethod
