@@ -25,18 +25,18 @@ class TestsFlextWebProtocolsUnit:
 
     @staticmethod
     def _reset_protocol_state() -> None:
-        p.Web.apps_registry.clear()
-        p.Web.framework_instances.clear()
-        p.Web.app_runtimes.clear()
-        p.Web.service_state.update({
+        u.Web.apps_registry.clear()
+        u.Web.framework_instances.clear()
+        u.Web.app_runtimes.clear()
+        u.Web.service_state.update({
             "routes_initialized": False,
             "middleware_configured": False,
             "service_running": False,
         })
-        p.Web.template_config.clear()
-        p.Web.template_filters.clear()
-        p.Web.template_globals.clear()
-        p.Web.web_metrics.update({
+        u.Web.template_config.clear()
+        u.Web.template_filters.clear()
+        u.Web.template_globals.clear()
+        u.Web.web_metrics.update({
             "requests": 0,
             "errors": 0,
             "uptime": "0s",
@@ -47,7 +47,7 @@ class TestsFlextWebProtocolsUnit:
     def _assert_protocol_base_lifecycle() -> None:
         """Exercise protocol-base lifecycle with a real ephemeral port."""
         TestsFlextWebProtocolsUnit._reset_protocol_state()
-        manager = p.Web.WebAppManager
+        manager = u.Web.WebAppManager
         test_port = u.Web.Tests.TestPortManager.allocate_port()
         app_id: str | None = None
         try:
@@ -67,8 +67,8 @@ class TestsFlextWebProtocolsUnit:
             tm.ok(stopped)
             tm.that(stopped.value["status"], eq=c.Web.Status.STOPPED.value)
         finally:
-            if app_id is not None and app_id in p.Web.apps_registry:
-                app_state = p.Web.apps_registry[app_id]
+            if app_id is not None and app_id in u.Web.apps_registry:
+                app_state = u.Web.apps_registry[app_id]
                 if app_state.get("status") == c.Web.Status.RUNNING.value:
                     manager.stop_app(app_id)
             u.Web.Tests.TestPortManager.release_port(test_port)
@@ -81,62 +81,62 @@ class TestsFlextWebProtocolsUnit:
 
     def test_web_app_manager_protocol(self) -> None:
         """Test WebAppManager definition."""
-        protocol = p.Web.WebAppManager
+        protocol = u.Web.WebAppManager
         tm.that(protocol, is_=type)
 
     def test_response_formatter_protocol(self) -> None:
         """Test ResponseFormatter definition."""
-        protocol = p.Web.WebResponseFormatter
+        protocol = u.Web.WebResponseFormatter
         tm.that(protocol, is_=type)
 
     def test_web_framework_interface_protocol(self) -> None:
         """Test WebFrameworkInterface definition."""
-        protocol = p.Web.WebFrameworkInterface
+        protocol = u.Web.WebFrameworkInterface
         tm.that(protocol, is_=type)
 
     def test_template_renderer_protocol(self) -> None:
         """Test TemplateRenderer definition."""
-        protocol = p.Web.WebTemplateRenderer
+        protocol = u.Web.WebTemplateRenderer
         tm.that(protocol, is_=type)
 
     def test_web_service_protocol(self) -> None:
         """Test WebService definition."""
-        protocol = p.Web.WebService
+        protocol = u.Web.WebService
         tm.that(protocol, is_=type)
 
     def test_web_repository_protocol(self) -> None:
         """Test WebRepository definition."""
-        protocol = p.Web.WebRepository
+        protocol = u.Web.WebRepository
         tm.that(protocol, is_=type)
 
     def test_web_handler_protocol(self) -> None:
         """Test WebHandler definition."""
-        protocol = p.Web.WebHandler
+        protocol = u.Web.WebHandler
         tm.that(protocol, is_=type)
         tm.that(callable(protocol), eq=True)
 
     def test_web_template_engine_protocol(self) -> None:
         """Test WebTemplateEngine definition."""
-        protocol = p.Web.WebTemplateEngine
+        protocol = u.Web.WebTemplateEngine
         tm.that(protocol, is_=type)
 
     def test_web_monitoring_protocol(self) -> None:
         """Test WebMonitoring definition."""
-        protocol = p.Web.WebMonitoring
+        protocol = u.Web.WebMonitoring
         tm.that(protocol, is_=type)
 
     def test_protocol_runtime_checkable(self) -> None:
         """Test that protocols are runtime checkable."""
         protocols = [
-            p.Web.WebAppManager,
-            p.Web.WebResponseFormatter,
-            p.Web.WebFrameworkInterface,
-            p.Web.WebTemplateRenderer,
-            p.Web.WebService,
-            p.Web.WebRepository,
-            p.Web.WebHandler,
-            p.Web.WebTemplateEngine,
-            p.Web.WebMonitoring,
+            u.Web.WebAppManager,
+            u.Web.WebResponseFormatter,
+            u.Web.WebFrameworkInterface,
+            u.Web.WebTemplateRenderer,
+            u.Web.WebService,
+            u.Web.WebRepository,
+            u.Web.WebHandler,
+            u.Web.WebTemplateEngine,
+            u.Web.WebMonitoring,
         ]
         for protocol in protocols:
             checkable = getattr(protocol, "__runtime_checkable__", None)
@@ -145,7 +145,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_protocol_method_signatures(self) -> None:
         """Test that protocol methods have correct signatures."""
-        protocol = p.Web.WebAppManager
+        protocol = u.Web.WebAppManager
         create_app_method = protocol.__dict__["create_app"]
         tm.that(callable(create_app_method), eq=True)
         start_app_method = protocol.__dict__["start_app"]
@@ -160,7 +160,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_protocol_type_annotations(self) -> None:
         """Test that protocols have proper type annotations."""
-        protocol = p.Web.WebAppManager
+        protocol = u.Web.WebAppManager
         create_app_annotations = protocol.__dict__["create_app"].__annotations__
         tm.that(create_app_annotations, has="name")
         tm.that(create_app_annotations, has="port")
@@ -169,21 +169,21 @@ class TestsFlextWebProtocolsUnit:
 
     def test_protocol_documentation(self) -> None:
         """Test that protocols have proper documentation."""
-        protocol = p.Web.WebAppManager
+        protocol = u.Web.WebAppManager
         tm.that(protocol.__doc__, none=False)
 
     def test_protocol_consistency(self) -> None:
         """Test that protocols are consistent with implementation."""
         protocols = [
-            p.Web.WebAppManager,
-            p.Web.WebResponseFormatter,
-            p.Web.WebFrameworkInterface,
-            p.Web.WebTemplateRenderer,
-            p.Web.WebService,
-            p.Web.WebRepository,
-            p.Web.WebHandler,
-            p.Web.WebTemplateEngine,
-            p.Web.WebMonitoring,
+            u.Web.WebAppManager,
+            u.Web.WebResponseFormatter,
+            u.Web.WebFrameworkInterface,
+            u.Web.WebTemplateRenderer,
+            u.Web.WebService,
+            u.Web.WebRepository,
+            u.Web.WebHandler,
+            u.Web.WebTemplateEngine,
+            u.Web.WebMonitoring,
         ]
         for protocol in protocols:
             tm.that(protocol, is_=type)
@@ -221,7 +221,7 @@ class TestsFlextWebProtocolsUnit:
     def test_protocol_extensibility(self) -> None:
         """Test that protocols are extensible."""
 
-        class Custom(p.Web.WebAppManager):
+        class Custom(u.Web.WebAppManager):
             @property
             @override
             def settings(self) -> p.Settings:
@@ -644,7 +644,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_response_formatter_real_behavior(self) -> None:
         """Test response formatter protocol with real implementation behavior."""
-        formatter = p.Web.WebResponseFormatter
+        formatter = u.Web.WebResponseFormatter
         data_with_all_types: t.Web.ResponseDict = {
             "string": "value",
             "int": 42,
@@ -677,7 +677,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_framework_interface_real_behavior(self) -> None:
         """Test web framework interface protocol with real request behavior."""
-        framework = p.Web.WebFrameworkInterface
+        framework = u.Web.WebFrameworkInterface
         data: t.Web.ResponseDict = {"test": "value", "nested": {"key": "value"}}
         result = framework.create_json_response(data)
         tm.that(result[c.Web.HTTP_HEADER_CONTENT_TYPE], eq=c.Web.HTTP_CONTENT_TYPE_JSON)
@@ -690,7 +690,7 @@ class TestsFlextWebProtocolsUnit:
     def test_service_protocol_real_behavior(self) -> None:
         """Test web service lifecycle protocol behavior."""
         self._reset_protocol_state()
-        service = p.Web.WebService
+        service = u.Web.WebService
         start_without_setup = service.start_service()
         tm.fail(start_without_setup)
         tm.ok(service.initialize_routes())
@@ -701,10 +701,10 @@ class TestsFlextWebProtocolsUnit:
     def test_repository_protocol_real_behavior(self) -> None:
         """Test repository protocol criteria filtering behavior."""
         self._reset_protocol_state()
-        manager = p.Web.WebAppManager
+        manager = u.Web.WebAppManager
         created = manager.create_app("repo-app", 8081, "127.0.0.1")
         tm.ok(created)
-        repo = p.Web.WebRepository
+        repo = u.Web.WebRepository
         result = repo.find_by_criteria({"host": "127.0.0.1"})
         tm.ok(result)
         tm.that(len(result.value), eq=1)
@@ -712,7 +712,7 @@ class TestsFlextWebProtocolsUnit:
     def test_handler_protocol_real_behavior(self) -> None:
         """Test handler protocol create/list action behavior."""
         self._reset_protocol_state()
-        handler = p.Web.WebHandler
+        handler = u.Web.WebHandler
         create_result = handler.handle_request({
             "action": "create",
             "name": "handler-app",
@@ -726,7 +726,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_template_renderer_real_behavior(self) -> None:
         """Test template renderer protocol with real template substitution."""
-        renderer = p.Web.WebTemplateRenderer
+        renderer = u.Web.WebTemplateRenderer
         result = renderer.render_template("{{key}}-template", {"key": "value"})
         tm.ok(result)
         tm.that(result.value, eq="value-template")
@@ -740,7 +740,7 @@ class TestsFlextWebProtocolsUnit:
     def test_template_engine_real_behavior(self) -> None:
         """Test template engine protocol with settings and global/filter handling."""
         self._reset_protocol_state()
-        engine = p.Web.TestBases._WebTemplateEngineBase()
+        engine = u.Web.TestBases._WebTemplateEngineBase()
         tm.ok(engine.load_template_config({"template_dir": "templates"}))
         tm.ok(engine.template_config())
         tm.ok(engine.validate_template_config({"template_dir": "templates"}))
@@ -754,19 +754,19 @@ class TestsFlextWebProtocolsUnit:
     def test_connection_protocol_real_behavior(self) -> None:
         """Test connection protocol endpoint URL from running app."""
         self._reset_protocol_state()
-        manager = p.Web.WebAppManager
+        manager = u.Web.WebAppManager
         created = manager.create_app("endpoint-app", 9090, "127.0.0.1")
         tm.ok(created)
         app_id = str(created.value["id"])
         tm.ok(manager.start_app(app_id))
-        connection = p.Web.WebConnection
+        connection = u.Web.WebConnection
         url = connection.endpoint_url()
         tm.that(url, eq="http://127.0.0.1:9090")
 
     def test_monitoring_protocol_real_behavior(self) -> None:
         """Test monitoring protocol metrics recording behavior."""
         self._reset_protocol_state()
-        monitoring = p.Web.TestBases._WebMonitoringBase()
+        monitoring = u.Web.TestBases._WebMonitoringBase()
         monitoring.record_web_request({"method": "GET"}, 0.1)
         health = monitoring.web_health_status()
         tm.that(health["status"], eq=c.Web.Status.STOPPED.value)
@@ -779,7 +779,7 @@ class TestsFlextWebProtocolsUnit:
     def test_protocol_app_lifecycle_end_to_end(self) -> None:
         """TDD lifecycle flow: create, start, stop, and list app states."""
         self._reset_protocol_state()
-        manager = p.Web.WebAppManager
+        manager = u.Web.WebAppManager
         create_result = manager.create_app("lifecycle-app", 7070, "localhost")
         tm.ok(create_result)
         app_id = str(create_result.value["id"])
@@ -797,12 +797,12 @@ class TestsFlextWebProtocolsUnit:
     def test_create_app_configures_protocol_health_route(self) -> None:
         """TDD create_app must register protocol health endpoint."""
         self._reset_protocol_state()
-        manager = p.Web.WebAppManager
+        manager = u.Web.WebAppManager
         create_result = manager.create_app("route-app", 7171, "localhost")
         tm.ok(create_result)
         app_id = str(create_result.value["id"])
         framework = str(create_result.value["framework"])
-        app_instance = p.Web.framework_instances[app_id]
+        app_instance = u.Web.framework_instances[app_id]
         if framework == "fastapi" and isinstance(app_instance, FastAPI):
             paths = [
                 route.path
@@ -817,13 +817,13 @@ class TestsFlextWebProtocolsUnit:
     def test_start_stop_manage_runtime_registry(self) -> None:
         """TDD lifecycle must persist and cleanup runtime metadata."""
         self._reset_protocol_state()
-        manager = p.Web.WebAppManager
+        manager = u.Web.WebAppManager
         created = manager.create_app("runtime-app", 7272, "localhost")
         tm.ok(created)
         app_id = str(created.value["id"])
         started = manager.start_app(app_id)
         tm.ok(started)
-        assert app_id in p.Web.app_runtimes
+        assert app_id in u.Web.app_runtimes
         stopped = manager.stop_app(app_id)
         tm.ok(stopped)
-        tm.that(app_id not in p.Web.app_runtimes, eq=True)
+        tm.that(app_id not in u.Web.app_runtimes, eq=True)

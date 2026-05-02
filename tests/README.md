@@ -49,5 +49,5 @@ make check FILES="src/flext_web/api.py tests/unit/test___init__.py"
 ## What is validated
 
 - `web` exposes the full public service surface by MRO composition.
-- `c.Web`, `t.Web`, `p.Web`, `m.Web`, and `u.Web` remain available as SSOT namespaces.
+- `c.Web`, `t.Web`, `u.Web`, `m.Web`, and `u.Web` remain available as SSOT namespaces.
 - Examples stay aligned with the public facade instead of reintroducing parallel APIs.

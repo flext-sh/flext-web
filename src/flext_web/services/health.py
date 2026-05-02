@@ -26,8 +26,8 @@ class FlextWebHealth(s[bool]):
 
     def metrics(self) -> p.Result[m.Web.MetricsResponse]:
         """Return metrics projected from the protocol runtime registry."""
-        metrics = p.Web.WebMonitoring.web_metrics()
-        state = p.Web.service_state
+        metrics = u.Web.WebMonitoring.web_metrics()
+        state = u.Web.service_state
         service_status = (
             c.Web.RESPONSE_STATUS_OPERATIONAL
             if state["service_running"]
@@ -47,7 +47,7 @@ class FlextWebHealth(s[bool]):
 
     def status(self) -> p.Result[m.Web.HealthResponse]:
         """Return health status from the protocol runtime registry."""
-        payload = p.Web.WebMonitoring.web_health_status()
+        payload = u.Web.WebMonitoring.web_health_status()
         service_value = payload.get("service")
         status_value = payload.get("status")
         if not isinstance(service_value, str) or not isinstance(status_value, str):

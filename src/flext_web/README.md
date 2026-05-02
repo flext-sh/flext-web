@@ -4,7 +4,7 @@
 `from flext_web import web, c, t, p, m, u`.
 
 Everything operational goes through `web`. Structural contracts stay under
-`c.Web`, `t.Web`, `p.Web`, `m.Web` and `u.Web`.
+`c.Web`, `t.Web`, `u.Web`, `m.Web` and `u.Web`.
 
 ## Current Structure
 
@@ -26,7 +26,7 @@ settings = web.settings
 health_service_name = c.Web.SERVICE_NAME
 app_request_model = m.Web.AppData
 response_payload_type = t.Web.ResponseDict
-web_protocol = p.Web.WebService
+web_protocol = u.Web.WebService
 app_identifier = u.format_app_id("demo")
 ```
 

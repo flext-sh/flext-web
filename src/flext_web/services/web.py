@@ -53,13 +53,13 @@ class FlextWebServices(s[bool]):
 
     def configure_middleware(self) -> p.Result[bool]:
         """Configure protocol-backed middleware state."""
-        return p.Web.WebService.configure_middleware()
+        return u.Web.WebService.configure_middleware()
 
     def create_app(
         self, app_data: m.Web.AppData
     ) -> p.Result[m.Web.ApplicationResponse]:
         """Create an application through the protocol runtime registry."""
-        return p.Web.WebAppManager.create_app(
+        return u.Web.WebAppManager.create_app(
             name=app_data.name,
             port=app_data.port,
             host=app_data.host,
@@ -71,7 +71,7 @@ class FlextWebServices(s[bool]):
 
     def dashboard(self) -> p.Result[m.Web.DashboardResponse]:
         """Return dashboard data projected from the protocol runtime state."""
-        state = p.Web.service_state
+        state = u.Web.service_state
         return self.list_apps().map(
             lambda apps: m.Web.DashboardResponse(
                 total_applications=len(apps),
@@ -111,7 +111,7 @@ class FlextWebServices(s[bool]):
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
             return r[m.Web.ApplicationResponse].fail(app_id_result.error)
-        return p.Web.WebRepository.fetch_by_id(app_id_result.value).flat_map(
+        return u.Web.WebRepository.fetch_by_id(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
 
@@ -151,11 +151,11 @@ class FlextWebServices(s[bool]):
 
     def initialize_routes(self) -> p.Result[bool]:
         """Initialize protocol-backed routes state."""
-        return p.Web.WebService.initialize_routes()
+        return u.Web.WebService.initialize_routes()
 
     def list_apps(self) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
         """List all registered applications."""
-        return p.Web.WebAppManager.list_apps().flat_map(
+        return u.Web.WebAppManager.list_apps().flat_map(
             self._application_responses_from_payloads,
         )
 
@@ -172,7 +172,7 @@ class FlextWebServices(s[bool]):
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
             return r[m.Web.ApplicationResponse].fail(app_id_result.error)
-        return p.Web.WebAppManager.start_app(app_id_result.value).flat_map(
+        return u.Web.WebAppManager.start_app(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
 
@@ -197,14 +197,14 @@ class FlextWebServices(s[bool]):
         running_app = self.start_app(app_result.value.id)
         if running_app.failure:
             return r[bool].fail(running_app.error)
-        return p.Web.WebService.start_service()
+        return u.Web.WebService.start_service()
 
     def stop_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
         """Stop a registered application and project its payload into a model."""
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
             return r[m.Web.ApplicationResponse].fail(app_id_result.error)
-        return p.Web.WebAppManager.stop_app(app_id_result.value).flat_map(
+        return u.Web.WebAppManager.stop_app(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
 
@@ -218,11 +218,11 @@ class FlextWebServices(s[bool]):
                 stop_result = self.stop_app(app.id)
                 if stop_result.failure:
                     return r[bool].fail(stop_result.error)
-        return p.Web.WebService.stop_service()
+        return u.Web.WebService.stop_service()
 
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate protocol-backed service state invariants."""
-        state = p.Web.service_state
+        state = u.Web.service_state
         if state["service_running"] and not state["routes_initialized"]:
             return e.fail_validation(
                 "service_state", error="running without initialized routes"
@@ -278,7 +278,7 @@ class FlextWebServices(s[bool]):
     @staticmethod
     def _service_status_label() -> str:
         """Return the canonical service status label from runtime state."""
-        state = p.Web.service_state
+        state = u.Web.service_state
         if state["service_running"]:
             return c.Web.RESPONSE_STATUS_OPERATIONAL
         return str(c.Web.Status.STOPPED.value)

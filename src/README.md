@@ -12,7 +12,7 @@ from flext_web import web, c, t, p, m, u
 - `web`: operational entrypoint for runtime, app lifecycle, auth, entities, health, handlers, and framework factories.
 - `c.Web`: constants and enums.
 - `t.Web`: public type contracts.
-- `p.Web`: public protocol contracts and runtime registries.
+- `u.Web`: public protocol contracts and runtime registries.
 - `m.Web`: public models and response projections.
 - `u.Web`: public utilities.
 
