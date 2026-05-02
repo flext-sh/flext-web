@@ -187,15 +187,7 @@ class FlextWebTypes(t):
                 "processing_time_ms": settings.processing_time_ms or 0.0,
             })
             return r[m.Web.AppResponse].ok(response)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as exc:
+        except c.EXC_BROAD_IO_TYPE as exc:
             return r[m.Web.AppResponse].fail(f"Failed to create web response: {exc}")
 
 
