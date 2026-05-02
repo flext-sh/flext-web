@@ -112,15 +112,7 @@ class FlextWebTypes(t):
                 "timeout": timeout,
             })
             return r[m.Web.Request].ok(request)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as exc:
+        except c.EXC_BROAD_IO_TYPE as exc:
             return r[m.Web.Request].fail(f"Failed to create HTTP request: {exc}")
 
     @classmethod

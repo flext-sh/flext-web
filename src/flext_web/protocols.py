@@ -262,7 +262,7 @@ class FlextWebProtocols(p):
                     redoc_url=c.Web.API_REDOC_URL,
                     openapi_url=c.Web.API_OPENAPI_URL,
                 )
-            except (RuntimeError, OSError, TypeError, ValueError) as exc:
+            except c.EXC_OS_RUNTIME_TYPE as exc:
                 fastapi_error = f"Failed to create FastAPI application: {exc}"
             else:
                 return r[tuple[flask.Flask | FastAPI, str, str]].ok((
@@ -422,7 +422,7 @@ class FlextWebProtocols(p):
                         error_message = (
                             f"ASGI runtime exited immediately for app: {app_id}"
                         )
-                except (RuntimeError, OSError, ValueError, TypeError) as exc:
+                except c.EXC_OS_RUNTIME_TYPE as exc:
                     error_message = (
                         f"Failed to start ASGI runtime for app {app_id}: {exc}"
                     )

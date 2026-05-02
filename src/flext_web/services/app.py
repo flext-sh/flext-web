@@ -96,7 +96,7 @@ class FlextWebApp(s[bool]):
                     redoc_url=redoc_url,
                     openapi_url=openapi_url,
                 )
-            except (RuntimeError, OSError, TypeError, ValueError) as exc:
+            except c.EXC_OS_RUNTIME_TYPE as exc:
                 error_msg = f"Failed to create FastAPI application: {exc}"
                 return r[FastAPI].fail(error_msg)
             return r[FastAPI].ok(app)
