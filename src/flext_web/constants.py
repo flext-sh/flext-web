@@ -101,7 +101,7 @@ class FlextWebConstants(c):
             WEBAPP = "webapp"
             SPA = "spa"
             DASHBOARD = "dashboard"
-            ADMIN_PANEL = "REDACTED_LDAP_BIND_PASSWORD-panel"
+            ADMIN_PANEL = "admin-panel"
 
         @unique
         class Status(StrEnum):
@@ -260,7 +260,7 @@ class FlextWebConstants(c):
         # ===== Flattened from WebSecurity =====
         SECURITY_MIN_SECRET_KEY_LENGTH: Final[int] = 32
         SECURITY_RESERVED_NAMES: Final[frozenset[str]] = frozenset({
-            "REDACTED_LDAP_BIND_PASSWORD",
+            "admin",
             "root",
             "api",
             "system",

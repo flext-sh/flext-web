@@ -193,7 +193,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         else {k: v for k, v in body.items() if u.primitive(v)}
                     )
                     return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                        t.create_http_request(
+                        m.Web.Request.create_http_request(
                             url=url,
                             method=method,
                             headers=narrow_headers,
@@ -234,7 +234,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         else {k: v for k, v in body.items() if u.primitive(v)}
                     )
                     return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                        t.create_http_response(
+                        m.Web.Response.create_http_response(
                             status_code=status_code,
                             headers=resp_headers,
                             body=resp_body,
@@ -296,7 +296,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                         })
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                            t.create_web_request(settings),
+                            m.Web.AppRequest.create_web_request(settings),
                         )
                     except (e.ValidationError, ValueError, TypeError) as exc:
                         return r[m.BaseModel].fail(str(exc))
@@ -355,7 +355,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                         })
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                            t.create_web_response(settings),
+                            m.Web.AppResponse.create_web_response(settings),
                         )
                     except (e.ValidationError, ValueError, TypeError) as exc:
                         return r[m.BaseModel].fail(str(exc))
@@ -377,7 +377,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         status=status if isinstance(status, str) else "stopped",
                     )
                     return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                        t.create_application(settings),
+                        m.Web.Entity.create_application(settings),
                     )
                 raise ValueError(f"Unsupported entry type: {entry_type}")
 

@@ -126,7 +126,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_invalid_method(self) -> None:
         """Test create_http_request with invalid HTTP method."""
-        result = t.create_http_request(
+        result = m.Web.Request.create_http_request(
             url="http://localhost:8080",
             method="INVALID_METHOD",
         )
@@ -136,7 +136,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_invalid_headers(self) -> None:
         """Test create_http_request with invalid headers type."""
-        result = t.create_http_request(
+        result = m.Web.Request.create_http_request(
             url="http://localhost:8080",
             method="GET",
             headers=None,
@@ -145,7 +145,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_exception_handling(self) -> None:
         """Test create_http_request exception handling."""
-        result = t.create_http_request(
+        result = m.Web.Request.create_http_request(
             url="http://localhost:8080",
             method="GET",
             headers={},
@@ -163,12 +163,12 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_response_invalid_headers(self) -> None:
         """Test create_http_response with invalid headers type."""
-        result = t.create_http_response(status_code=200, headers=None)
+        result = m.Web.Response.create_http_response(status_code=200, headers=None)
         tm.that(result.success or result.failure, eq=True)
 
     def test_create_http_response_exception_handling(self) -> None:
         """Test create_http_response exception handling."""
-        result = t.create_http_response(
+        result = m.Web.Response.create_http_response(
             status_code=200,
             headers={},
             body=None,
@@ -251,7 +251,7 @@ class TestsFlextWebTypesUnit:
             port=8080,
             status="invalid_status",
         )
-        result = t.create_application(settings)
+        result = m.Web.Entity.create_application(settings)
         assert result.failure, "Invalid status should cause validation failure"
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -265,7 +265,7 @@ class TestsFlextWebTypesUnit:
         """Test create_http_request with all valid HTTP methods."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
-            result = t.create_http_request(url="http://localhost:8080", method=method)
+            result = m.Web.Request.create_http_request(url="http://localhost:8080", method=method)
             assert result.success, (
                 f"Operation should succeed for method {method}: {result.error}"
             )
@@ -279,7 +279,7 @@ class TestsFlextWebTypesUnit:
                 "url": "http://localhost:8080",
                 "method": method,
             })
-            result = t.create_web_request(settings)
+            result = m.Web.AppRequest.create_web_request(settings)
             assert result.success, (
                 f"Operation should succeed for method {method}: {result.error}"
             )
@@ -287,7 +287,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_with_none_headers(self) -> None:
         """Test create_http_request with None headers."""
-        result = t.create_http_request(
+        result = m.Web.Request.create_http_request(
             url="http://localhost:8080",
             method="GET",
             headers=None,
@@ -297,7 +297,7 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_response_with_none_headers(self) -> None:
         """Test create_http_response with None headers."""
-        result = t.create_http_response(status_code=200, headers=None)
+        result = m.Web.Response.create_http_response(status_code=200, headers=None)
         assert result.success, result.error
         tm.that(result.value.headers, is_=dict)
 
@@ -322,19 +322,19 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_match_case_default(self) -> None:
         """Test create_http_request match/case default branch (line 174-175)."""
-        result = t.create_http_request(url="http://localhost:8080", method="GET")
+        result = m.Web.Request.create_http_request(url="http://localhost:8080", method="GET")
         assert result.success, result.error
 
     def test_create_http_request_duplicate_validation(self) -> None:
         """Test create_http_request duplicate validation path (line 157)."""
-        result = t.create_http_request(url="http://localhost:8080", method="INVALID")
+        result = m.Web.Request.create_http_request(url="http://localhost:8080", method="INVALID")
         assert result.failure, "Operation should fail"
         tm.fail(result)
 
     def test_create_web_request_match_case_default(self) -> None:
         """Test create_web_request match/case default branch (line 301-302)."""
         settings = t.Web.RequestConfig(url="http://localhost:8080", method="GET")
-        result = t.create_web_request(settings)
+        result = m.Web.AppRequest.create_web_request(settings)
         assert result.success, result.error
 
     def test_create_web_request_duplicate_validation(self) -> None:
@@ -352,5 +352,5 @@ class TestsFlextWebTypesUnit:
             host="localhost",
             port=8080,
         )
-        result = t.create_application(settings)
+        result = m.Web.Entity.create_application(settings)
         assert result.success, result.error
