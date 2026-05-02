@@ -80,15 +80,7 @@ class FlextWebTypes(t):
                 domain_events=[],
             )
             return r[m.Web.Entity].ok(entity)
-        except (
-            ValueError,
-            TypeError,
-            KeyError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ImportError,
-        ) as exc:
+        except c.EXC_BROAD_IO_TYPE as exc:
             return r[m.Web.Entity].fail(f"Failed to create application: {exc}")
 
     @classmethod
