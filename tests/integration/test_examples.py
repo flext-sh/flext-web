@@ -9,7 +9,7 @@ from types import ModuleType
 import pytest
 from flext_tests import tm
 
-from flext_web import FlextWebProtocols, web
+from flext_web import FlextWebUtilities, web
 from tests import p, r, t, u
 
 logger = u.fetch_logger(__name__)
@@ -33,16 +33,16 @@ class ExamplesFullFunctionalityTest:
             return r[bool].ok(True)
 
         monkeypatch.setattr(
-            FlextWebProtocols.Web, "_start_app_runtime", staticmethod(_start_runtime)
+            FlextWebUtilities.Web, "_start_app_runtime", staticmethod(_start_runtime)
         )
         monkeypatch.setattr(
-            FlextWebProtocols.Web, "_stop_app_runtime", staticmethod(_stop_runtime)
+            FlextWebUtilities.Web, "_stop_app_runtime", staticmethod(_stop_runtime)
         )
         monkeypatch.setattr(
-            FlextWebProtocols.Web, "start_app_runtime", staticmethod(_start_runtime)
+            FlextWebUtilities.Web, "start_app_runtime", staticmethod(_start_runtime)
         )
         monkeypatch.setattr(
-            FlextWebProtocols.Web, "stop_app_runtime", staticmethod(_stop_runtime)
+            FlextWebUtilities.Web, "stop_app_runtime", staticmethod(_stop_runtime)
         )
 
     @staticmethod
