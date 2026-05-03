@@ -188,7 +188,8 @@ class FlextWebModels(m):
                     True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
-                return self.status_code >= c.Web.ERROR_MIN
+                has_error: bool = self.status_code >= c.Web.ERROR_MIN
+                return has_error
 
             @property
             def success(self) -> bool:
@@ -199,7 +200,8 @@ class FlextWebModels(m):
 
                 """
                 success_min, success_max = c.Web.SUCCESS_RANGE
-                return success_min <= self.status_code <= success_max
+                is_success: bool = success_min <= self.status_code <= success_max
+                return is_success
 
             @classmethod
             def create_http_response(
@@ -418,7 +420,8 @@ class FlextWebModels(m):
                     True if status_code >= c.ERROR_MIN, False otherwise
 
                 """
-                return self.status_code >= c.Web.ERROR_MIN
+                has_error: bool = self.status_code >= c.Web.ERROR_MIN
+                return has_error
 
             @property
             def success(self) -> bool:
@@ -429,7 +432,8 @@ class FlextWebModels(m):
 
                 """
                 success_min, success_max = c.Web.SUCCESS_RANGE
-                return success_min <= self.status_code <= success_max
+                is_success: bool = success_min <= self.status_code <= success_max
+                return is_success
 
             @property
             def processing_time_seconds(self) -> float:
@@ -439,7 +443,8 @@ class FlextWebModels(m):
                     Processing time in seconds
 
                 """
-                return self.processing_time_ms / 1000
+                processing_time_seconds: float = self.processing_time_ms / 1000
+                return processing_time_seconds
 
             @classmethod
             def create_web_response(
@@ -587,29 +592,34 @@ class FlextWebModels(m):
                 stopped = c.Web.Status.STOPPED.value
                 error = c.Web.Status.ERROR.value
                 # Use u.in_() for unified membership check (DSL pattern)
-                return self.status in {running, stopped, error}
+                restartable: bool = self.status in {running, stopped, error}
+                return restartable
 
             @property
             def can_start(self) -> bool:
                 """Check if application can be started."""
-                return self.status == c.Web.Status.STOPPED.value
+                can_start: bool = self.status == c.Web.Status.STOPPED.value
+                return can_start
 
             @property
             def can_stop(self) -> bool:
                 """Check if application can be stopped."""
-                return self.status == c.Web.Status.RUNNING.value
+                can_stop: bool = self.status == c.Web.Status.RUNNING.value
+                return can_stop
 
             @property
             def healthy(self) -> bool:
                 """Check if application is healthy and operational."""
                 running = c.Web.Status.RUNNING.value
                 maintenance = c.Web.Status.MAINTENANCE.value
-                return self.status in {running, maintenance}
+                is_healthy: bool = self.status in {running, maintenance}
+                return is_healthy
 
             @property
             def running(self) -> bool:
                 """Check if application is currently running."""
-                return self.status == c.Web.Status.RUNNING.value
+                is_running: bool = self.status == c.Web.Status.RUNNING.value
+                return is_running
 
             @property
             def url(self) -> str:
@@ -958,7 +968,8 @@ class FlextWebModels(m):
             @property
             def running(self) -> bool:
                 """Return whether the projected application is running."""
-                return self.status == c.Web.Status.RUNNING.value
+                is_running: bool = self.status == c.Web.Status.RUNNING.value
+                return is_running
 
         class HealthResponse(m.Value):
             """Health check response model."""

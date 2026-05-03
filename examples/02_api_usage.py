@@ -25,7 +25,8 @@ def _allocate_demo_port(*reserved_ports: int) -> int:
 
 def check_service_health() -> p.Result[m.Web.HealthResponse]:
     """Return structured health information through the public facade."""
-    return web.health_status()
+    health_result: p.Result[m.Web.HealthResponse] = web.health_status()
+    return health_result
 
 
 def create_application(
@@ -34,27 +35,34 @@ def create_application(
     host: str = "127.0.0.1",
 ) -> p.Result[m.Web.ApplicationResponse]:
     """Create an application through the canonical `web` facade."""
-    return web.create_app(m.Web.AppData(name=name, host=host, port=port))
+    create_result: p.Result[m.Web.ApplicationResponse] = web.create_app(
+        m.Web.AppData(name=name, host=host, port=port)
+    )
+    return create_result
 
 
 def start_application(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
     """Start an application through the canonical `web` facade."""
-    return web.start_app(app_id)
+    start_result: p.Result[m.Web.ApplicationResponse] = web.start_app(app_id)
+    return start_result
 
 
 def fetch_application_status(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
     """Load a single application projection through the canonical `web` facade."""
-    return web.fetch_app(app_id)
+    fetch_result: p.Result[m.Web.ApplicationResponse] = web.fetch_app(app_id)
+    return fetch_result
 
 
 def stop_application(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
     """Stop an application through the canonical `web` facade."""
-    return web.stop_app(app_id)
+    stop_result: p.Result[m.Web.ApplicationResponse] = web.stop_app(app_id)
+    return stop_result
 
 
 def list_applications() -> p.Result[Sequence[m.Web.ApplicationResponse]]:
     """List application projections through the canonical `web` facade."""
-    return web.list_apps()
+    list_result: p.Result[Sequence[m.Web.ApplicationResponse]] = web.list_apps()
+    return list_result
 
 
 def demo_application_lifecycle() -> p.Result[Sequence[m.Web.ApplicationResponse]]:

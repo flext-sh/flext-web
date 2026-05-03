@@ -81,38 +81,38 @@ class TestsFlextWebProtocolsUnit:
 
     def test_web_app_manager_protocol(self) -> None:
         """Test WebAppManager definition."""
-        protocol = u.Web.WebAppManager
+        protocol = p.Web.WebAppManager
         tm.that(protocol, is_=type)
 
     def test_web_service_protocol(self) -> None:
         """Test WebService definition."""
-        protocol = u.Web.WebService
+        protocol = p.Web.WebService
         tm.that(protocol, is_=type)
 
     def test_web_repository_protocol(self) -> None:
         """Test WebRepository definition."""
-        protocol = u.Web.WebRepository
+        protocol = p.Web.WebRepository
         tm.that(protocol, is_=type)
 
     def test_web_handler_protocol(self) -> None:
         """Test WebHandler definition."""
-        protocol = u.Web.WebHandler
+        protocol = p.Web.WebHandler
         tm.that(protocol, is_=type)
         tm.that(callable(protocol), eq=True)
 
     def test_web_template_engine_protocol(self) -> None:
         """Test WebTemplateEngine definition."""
-        protocol = u.Web.WebTemplateEngine
+        protocol = p.Web.WebTemplateEngine
         tm.that(protocol, is_=type)
 
     def test_web_monitoring_protocol(self) -> None:
         """Test WebMonitoring definition."""
-        protocol = u.Web.WebMonitoring
+        protocol = p.Web.WebMonitoring
         tm.that(protocol, is_=type)
 
     def test_protocol_method_signatures(self) -> None:
         """Test that protocol methods have correct signatures."""
-        protocol = u.Web.WebAppManager
+        protocol = p.Web.WebAppManager
         create_app_method = protocol.__dict__["create_app"]
         tm.that(callable(create_app_method), eq=True)
         start_app_method = protocol.__dict__["start_app"]
@@ -127,7 +127,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_protocol_type_annotations(self) -> None:
         """Test that protocols have proper type annotations."""
-        protocol = u.Web.WebAppManager
+        protocol = p.Web.WebAppManager
         create_app_annotations = protocol.__dict__["create_app"].__annotations__
         tm.that(create_app_annotations, has="name")
         tm.that(create_app_annotations, has="port")
@@ -136,7 +136,7 @@ class TestsFlextWebProtocolsUnit:
 
     def test_protocol_documentation(self) -> None:
         """Test that protocols have proper documentation."""
-        protocol = u.Web.WebAppManager
+        protocol = p.Web.WebAppManager
         tm.that(protocol.__doc__, none=False)
 
     def test_protocol_usage_patterns(self) -> None:
@@ -170,7 +170,35 @@ class TestsFlextWebProtocolsUnit:
     def test_protocol_extensibility(self) -> None:
         """Test that protocols are extensible."""
 
-        class Custom(u.Web.WebAppManager):
+        class Custom(p.Web.WebAppManager):
+            @staticmethod
+            @override
+            def create_app(
+                name: str,
+                port: int,
+                host: str,
+            ) -> p.Result[t.Web.ResponseDict]:
+                return r[t.Web.ResponseDict].ok({
+                    "name": name,
+                    "port": port,
+                    "host": host,
+                })
+
+            @staticmethod
+            @override
+            def start_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
+                return r[t.Web.ResponseDict].ok({"id": app_id})
+
+            @staticmethod
+            @override
+            def stop_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
+                return r[t.Web.ResponseDict].ok({"id": app_id})
+
+            @staticmethod
+            @override
+            def list_apps() -> p.Result[Sequence[t.Web.ResponseDict]]:
+                return r[Sequence[t.Web.ResponseDict]].ok([])
+
             @property
             @override
             def settings(self) -> p.Settings:

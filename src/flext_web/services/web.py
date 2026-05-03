@@ -279,9 +279,12 @@ class FlextWebServices(s[bool]):
     def _service_status_label() -> str:
         """Return the canonical service status label from runtime state."""
         state = u.Web.service_state
-        if state["service_running"]:
-            return c.Web.ResponseStatus.OPERATIONAL.value
-        return str(c.Web.Status.STOPPED.value)
+        service_running: bool = state["service_running"]
+        if service_running:
+            operational_label: str = c.Web.ResponseStatus.OPERATIONAL.value
+            return operational_label
+        stopped_label: str = c.Web.Status.STOPPED.value
+        return stopped_label
 
     @staticmethod
     def _validated_app_id(app_id: str) -> p.Result[str]:

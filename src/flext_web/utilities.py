@@ -15,7 +15,7 @@ from collections.abc import Awaitable, Callable, Sequence
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import ClassVar, Protocol, override, runtime_checkable
+from typing import ClassVar, override
 from uuid import uuid4
 from wsgiref.simple_server import WSGIServer, make_server
 
@@ -172,7 +172,8 @@ class FlextWebUtilities(u):
         @staticmethod
         def _is_valid_port(port: int) -> bool:
             min_port, max_port = c.Web.VALIDATION_PORT_RANGE
-            return min_port <= port <= max_port
+            is_valid_port: bool = min_port <= port <= max_port
+            return is_valid_port
 
         @staticmethod
         def _record_request_metric(status: str | None, response_time_ms: int) -> None:
@@ -341,8 +342,7 @@ class FlextWebUtilities(u):
 
         is_valid_port: ClassVar[Callable[[int], bool]] = _is_valid_port
 
-        @runtime_checkable
-        class WebAppManager(p.Service[t.Web.ResponseDict], Protocol):
+        class WebAppManager:
             """Protocol for web application lifecycle management."""
 
             @staticmethod
@@ -470,8 +470,7 @@ class FlextWebUtilities(u):
                 _ = FlextWebUtilities.Web.app_runtimes.pop(app_id, None)
                 return r[t.Web.ResponseDict].ok(updated_app)
 
-        @runtime_checkable
-        class WebService(p.Service[t.Web.ResponseDict], Protocol):
+        class WebService:
             """Base web service protocol."""
 
             @staticmethod
@@ -512,8 +511,7 @@ class FlextWebUtilities(u):
                 state["service_running"] = False
                 return r[bool].ok(value=True)
 
-        @runtime_checkable
-        class WebRepository(Protocol):
+        class WebRepository:
             """Base web repository protocol for data access."""
 
             @staticmethod
@@ -568,8 +566,7 @@ class FlextWebUtilities(u):
                 ]
                 return r[Sequence[t.Web.ResponseDict]].ok(matches)
 
-        @runtime_checkable
-        class WebHandler(Protocol):
+        class WebHandler:
             """Web handler protocol for request/response patterns."""
 
             @staticmethod
@@ -641,11 +638,7 @@ class FlextWebUtilities(u):
                 """Execute command (extends p.Handler pattern)."""
                 return FlextWebUtilities.Web.WebHandler.handle_request(command)
 
-        @runtime_checkable
-        class WebTemplateEngine(
-            p.Service[t.Web.ResponseDict],
-            Protocol,
-        ):
+        class WebTemplateEngine:
             """Protocol for web template engine operations."""
 
             @staticmethod
@@ -707,8 +700,7 @@ class FlextWebUtilities(u):
                 """Add template global variable."""
                 FlextWebUtilities.Web.template_globals[name] = value
 
-        @runtime_checkable
-        class WebMonitoring(p.Service[t.Web.ResponseDict], Protocol):
+        class WebMonitoring:
             """Web monitoring protocol for observability."""
 
             @staticmethod
@@ -747,8 +739,7 @@ class FlextWebUtilities(u):
                 response_time_ms = int(max(response_time, 0) * 1000)
                 FlextWebUtilities.Web.record_request_metric(status, response_time_ms)
 
-        @runtime_checkable
-        class ConfigValue(Protocol):
+        class ConfigValue:
             """Protocol for configuration values."""
 
             value: t.Scalar
