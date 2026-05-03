@@ -292,21 +292,24 @@ class FlextWebUtilities(u):
             server: uvicorn.Server | WSGIServer = runtime.server
             thread: Thread = runtime.thread
             try:
-                if runner == c.Web.FRAMEWORK_RUNNER_UVICORN:
-                    if not isinstance(server, uvicorn.Server):
+                match runner:
+                    case c.Web.FRAMEWORK_RUNNER_UVICORN:
+                        if not isinstance(server, uvicorn.Server):
+                            return r[bool].fail(
+                                f"Missing ASGI server instance for app: {app_id}",
+                            )
+                        server.should_exit = True
+                    case c.Web.FRAMEWORK_RUNNER_WERKZEUG:
+                        if not isinstance(server, BaseWSGIServer):
+                            return r[bool].fail(
+                                f"Missing WSGI server instance for app: {app_id}",
+                            )
+                        server.shutdown()
+                        server.server_close()
+                    case _:
                         return r[bool].fail(
-                            f"Missing ASGI server instance for app: {app_id}",
+                            f"Unsupported runtime runner for app: {app_id}"
                         )
-                    server.should_exit = True
-                elif runner == c.Web.FRAMEWORK_RUNNER_WERKZEUG:
-                    if not isinstance(server, BaseWSGIServer):
-                        return r[bool].fail(
-                            f"Missing WSGI server instance for app: {app_id}",
-                        )
-                    server.shutdown()
-                    server.server_close()
-                else:
-                    return r[bool].fail(f"Unsupported runtime runner for app: {app_id}")
                 thread.join(timeout=2.0)
                 if thread.is_alive():
                     return r[bool].fail(
@@ -351,21 +354,34 @@ class FlextWebUtilities(u):
                 """Create a new web application."""
                 normalized_name = name.strip()
                 normalized_host = host.strip()
+<<<<<<< Updated upstream
                 if len(normalized_name) < c.Web.VALIDATION_NAME_LENGTH_RANGE[0]:
                     return r[t.Web.ResponseDict].fail(
                         f"Application name must be at least {c.Web.VALIDATION_NAME_LENGTH_RANGE[0]} characters",
                     )
                 if normalized_name.isdigit():
                     return r[t.Web.ResponseDict].fail(
+=======
+                min_port, max_port = c.Web.VALIDATION_PORT_RANGE
+                validations: list[tuple[bool, str]] = [
+                    (
+                        len(normalized_name) < c.Web.SERVER_MIN_APP_NAME_LENGTH,
+                        f"Application name must be at least {c.Web.SERVER_MIN_APP_NAME_LENGTH} characters",
+                    ),
+                    (
+                        normalized_name.isdigit(),
+>>>>>>> Stashed changes
                         "Application name cannot be numeric-only",
-                    )
-                if not normalized_host:
-                    return r[t.Web.ResponseDict].fail("Host cannot be empty")
-                if not FlextWebUtilities.Web.is_valid_port(port):
-                    min_port, max_port = c.Web.VALIDATION_PORT_RANGE
-                    return r[t.Web.ResponseDict].fail(
+                    ),
+                    (not normalized_host, "Host cannot be empty"),
+                    (
+                        not FlextWebUtilities.Web.is_valid_port(port),
                         f"Port must be between {min_port} and {max_port}",
-                    )
+                    ),
+                ]
+                for failed, msg in validations:
+                    if failed:
+                        return r[t.Web.ResponseDict].fail(msg)
                 framework_result = FlextWebUtilities.Web.create_framework_app(
                     normalized_name,
                 )
@@ -639,50 +655,61 @@ class FlextWebUtilities(u):
             ) -> p.Result[t.Web.ResponseDict]:
                 """Handle web request and return response."""
                 action = request.get("action")
-                if action == c.Web.ACTION_CREATE:
-                    name = request.get("name")
-                    port = request.get("port")
-                    host = request.get("host")
-                    if (
-                        not isinstance(name, str)
-                        or not isinstance(port, int)
-                        or (not isinstance(host, str))
-                    ):
-                        return r[t.Web.ResponseDict].fail(
-                            "create action requires name(str), port(int), host(str)",
-                        )
-                    return FlextWebUtilities.Web.WebAppManager.create_app(
-                        name=name,
-                        port=port,
-                        host=host,
-                    )
-                if action == c.Web.ACTION_START:
-                    app_id = request.get("app_id")
-                    if not isinstance(app_id, str):
-                        return r[t.Web.ResponseDict].fail(
-                            "start action requires app_id(str)",
-                        )
-                    return FlextWebUtilities.Web.WebAppManager.start_app(app_id)
-                if action == c.Web.ACTION_STOP:
-                    app_id = request.get("app_id")
-                    if not isinstance(app_id, str):
-                        return r[t.Web.ResponseDict].fail(
-                            "stop action requires app_id(str)",
-                        )
-                    return FlextWebUtilities.Web.WebAppManager.stop_app(app_id)
-                if action == c.Web.ACTION_LIST:
-                    return FlextWebUtilities.Web.WebAppManager.list_apps().map(
-                        lambda apps: {
-                            "count": len(apps),
-                            "app_ids": [
+                result: p.Result[t.Web.ResponseDict]
+                match action:
+                    case c.Web.ACTION_CREATE:
+                        name = request.get("name")
+                        port = request.get("port")
+                        host = request.get("host")
+                        if (
+                            not isinstance(name, str)
+                            or not isinstance(port, int)
+                            or not isinstance(host, str)
+                        ):
+                            result = r[t.Web.ResponseDict].fail(
+                                "create action requires name(str), port(int), host(str)",
+                            )
+                        else:
+                            result = FlextWebUtilities.Web.WebAppManager.create_app(
+                                name=name,
+                                port=port,
+                                host=host,
+                            )
+                    case c.Web.ACTION_START:
+                        app_id = request.get("app_id")
+                        if not isinstance(app_id, str):
+                            result = r[t.Web.ResponseDict].fail(
+                                "start action requires app_id(str)",
+                            )
+                        else:
+                            result = FlextWebUtilities.Web.WebAppManager.start_app(
                                 app_id
-                                for app in apps
-                                for app_id in [app.get("id")]
-                                if isinstance(app_id, str)
-                            ],
-                        },
-                    )
-                return r[t.Web.ResponseDict].ok(deepcopy(request))
+                            )
+                    case c.Web.ACTION_STOP:
+                        app_id = request.get("app_id")
+                        if not isinstance(app_id, str):
+                            result = r[t.Web.ResponseDict].fail(
+                                "stop action requires app_id(str)",
+                            )
+                        else:
+                            result = FlextWebUtilities.Web.WebAppManager.stop_app(
+                                app_id
+                            )
+                    case c.Web.ACTION_LIST:
+                        result = FlextWebUtilities.Web.WebAppManager.list_apps().map(
+                            lambda apps: {
+                                "count": len(apps),
+                                "app_ids": [
+                                    app_id
+                                    for app in apps
+                                    for app_id in [app.get("id")]
+                                    if isinstance(app_id, str)
+                                ],
+                            },
+                        )
+                    case _:
+                        result = r[t.Web.ResponseDict].ok(deepcopy(request))
+                return result
 
             def execute(
                 self,
@@ -902,18 +929,16 @@ class FlextWebUtilities(u):
 
             def __int__(self) -> int:
                 """Convert to integer."""
-                if isinstance(self.value, bool):
-                    return int(self.value)
-                if isinstance(self.value, int):
-                    return self.value
-                if isinstance(self.value, float):
-                    return int(self.value)
-                if isinstance(self.value, str):
-                    try:
+                match self.value:
+                    case bool() | int() | float():
                         return int(self.value)
-                    except ValueError:
+                    case str():
+                        try:
+                            return int(self.value)
+                        except ValueError:
+                            return 0
+                    case _:
                         return 0
-                return 0  # datetime case
 
         @runtime_checkable
         class ResponseData(Protocol):
