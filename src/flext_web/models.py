@@ -144,30 +144,15 @@ class FlextWebModels(m):
                 timeout: float = c.Web.DEFAULT_TIMEOUT_SECONDS,
             ) -> p.Result[FlextWebModels.Web.Request]:
                 """Build a validated :class:`Request` from raw HTTP parameters."""
-                method_upper = method.upper()
-                valid_methods = set(c.Web.HTTP_METHODS)
-                method_validated = u.guard(method_upper, str, return_value=True)
-                if (
-                    not isinstance(method_validated, str)
-                    or method_validated not in valid_methods
-                ):
-                    return r[FlextWebModels.Web.Request].fail(
-                        f"Invalid HTTP method: {method}. "
-                        f"Must be one of: {valid_methods}",
-                    )
-                try:
-                    request = cls.model_validate({
+                return r[FlextWebModels.Web.Request].create_from_callable(
+                    lambda: cls.model_validate({
                         "url": url,
-                        "method": method_upper,
+                        "method": method,
                         "headers": dict(headers or {}),
                         "body": body,
                         "timeout": timeout,
-                    })
-                    return r[FlextWebModels.Web.Request].ok(request)
-                except c.EXC_BROAD_IO_TYPE as exc:
-                    return r[FlextWebModels.Web.Request].fail(
-                        f"Failed to create HTTP request: {exc}",
-                    )
+                    }),
+                )
 
         class Response(Message):
             """HTTP response model with status validation.
@@ -225,18 +210,14 @@ class FlextWebModels(m):
                 elapsed_time: float | None = None,
             ) -> p.Result[FlextWebModels.Web.Response]:
                 """Build a validated :class:`Response` from raw HTTP fields."""
-                try:
-                    response = cls.model_validate({
+                return r[FlextWebModels.Web.Response].create_from_callable(
+                    lambda: cls.model_validate({
                         "status_code": status_code,
                         "headers": dict(headers or {}),
                         "body": body,
                         "elapsed_time": elapsed_time,
-                    })
-                    return r[FlextWebModels.Web.Response].ok(response)
-                except c.EXC_BROAD_IO_TYPE as exc:
-                    return r[FlextWebModels.Web.Response].fail(
-                        f"Failed to create HTTP response: {exc}",
-                    )
+                    }),
+                )
 
         class AppRequest(m.Value):
             """Web request entity with tracking and context information.
@@ -344,36 +325,10 @@ class FlextWebModels(m):
                 cls,
                 settings: FlextWebModels.Web.AppRequest,
             ) -> p.Result[FlextWebModels.Web.AppRequest]:
-                """Build a validated :class:`AppRequest` from a config snapshot."""
-                if not settings.url or not settings.url.strip():
-                    return r[FlextWebModels.Web.AppRequest].fail("URL is required")
-                method_upper = (settings.method or c.Web.Method.GET).upper()
-                valid_methods = set(c.Web.HTTP_METHODS)
-                method_validated = u.guard(method_upper, str, return_value=True)
-                if (
-                    not isinstance(method_validated, str)
-                    or method_validated not in valid_methods
-                ):
-                    return r[FlextWebModels.Web.AppRequest].fail(
-                        f"Invalid HTTP method: {settings.method}. "
-                        f"Must be one of: {valid_methods}",
-                    )
-                try:
-                    request = cls.model_validate({
-                        "url": settings.url.strip(),
-                        "method": method_upper,
-                        "headers": dict(settings.headers or {}),
-                        "body": settings.body,
-                        "timeout": settings.timeout or c.Web.DEFAULT_TIMEOUT_SECONDS,
-                        "query_params": dict(settings.query_params or {}),
-                        "client_ip": settings.client_ip or "",
-                        "user_agent": settings.user_agent or "",
-                    })
-                    return r[FlextWebModels.Web.AppRequest].ok(request)
-                except c.EXC_BROAD_IO_TYPE as exc:
-                    return r[FlextWebModels.Web.AppRequest].fail(
-                        f"Failed to create web request: {exc}",
-                    )
+                """Re-validate an :class:`AppRequest` snapshot."""
+                return r[FlextWebModels.Web.AppRequest].create_from_callable(
+                    lambda: cls.model_validate(settings.model_dump()),
+                )
 
         class AppResponse(m.Value):
             """Web response entity with tracking and performance metrics.
@@ -491,25 +446,10 @@ class FlextWebModels(m):
                 cls,
                 settings: FlextWebModels.Web.AppResponse,
             ) -> p.Result[FlextWebModels.Web.AppResponse]:
-                """Build a validated :class:`AppResponse` from a config snapshot."""
-                try:
-                    response = cls.model_validate({
-                        "status_code": settings.status_code or 200,
-                        "request_id": settings.request_id or "",
-                        "headers": dict(settings.headers or {}),
-                        "body": settings.body,
-                        "elapsed_time": settings.elapsed_time or 0.0,
-                        "content_type": (
-                            settings.content_type or c.Web.HTTP_CONTENT_TYPE_JSON
-                        ),
-                        "content_length": settings.content_length or 0,
-                        "processing_time_ms": settings.processing_time_ms or 0.0,
-                    })
-                    return r[FlextWebModels.Web.AppResponse].ok(response)
-                except c.EXC_BROAD_IO_TYPE as exc:
-                    return r[FlextWebModels.Web.AppResponse].fail(
-                        f"Failed to create web response: {exc}",
-                    )
+                """Re-validate an :class:`AppResponse` snapshot."""
+                return r[FlextWebModels.Web.AppResponse].create_from_callable(
+                    lambda: cls.model_validate(settings.model_dump()),
+                )
 
         # APPLICATION MODELS (Aggregates - consistency boundaries)
 
@@ -546,7 +486,7 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.SERVER_MAX_APP_NAME_LENGTH,
+                    max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                     description="Application name",
                 ),
             ]
@@ -871,24 +811,22 @@ class FlextWebModels(m):
                 settings: FlextWebModels.Web.EntityConfig,
             ) -> p.Result[FlextWebModels.Web.Entity]:
                 """Build an :class:`Entity` from an ``EntityConfig`` snapshot."""
-                try:
-                    entity = cls(
-                        name=settings.app_name or "",
-                        host=settings.host or "localhost",
-                        port=settings.port or 8080,
-                        status=getattr(settings, "status", None)
-                        or c.Web.Status.STOPPED.value,
-                        environment=getattr(settings, "environment", None)
-                        or c.Web.Name.DEVELOPMENT.value,
+                return r[FlextWebModels.Web.Entity].create_from_callable(
+                    lambda: cls(
+                        name=settings.app_name,
+                        host=settings.host,
+                        port=settings.port,
+                        status=getattr(
+                            settings, "status", c.Web.Status.STOPPED.value,
+                        ),
+                        environment=getattr(
+                            settings, "environment", c.Web.Name.DEVELOPMENT.value,
+                        ),
                         debug_mode=getattr(settings, "debug_mode", False),
                         version=getattr(settings, "version", 0),
                         domain_events=[],
-                    )
-                    return r[FlextWebModels.Web.Entity].ok(entity)
-                except c.EXC_BROAD_IO_TYPE as exc:
-                    return r[FlextWebModels.Web.Entity].fail(
-                        f"Failed to create application: {exc}",
-                    )
+                    ),
+                )
 
         class EntityConfig(m.Value):
             """Application entity configuration (Value Object).
@@ -1158,7 +1096,7 @@ class FlextWebModels(m):
                 str,
                 u.Field(
                     min_length=1,
-                    max_length=c.Web.SERVER_MAX_APP_NAME_LENGTH,
+                    max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                     description="Application title",
                 ),
             ]

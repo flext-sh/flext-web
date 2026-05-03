@@ -132,7 +132,7 @@ class TestsFlextWebTypesUnit:
         )
         tm.fail(result)
         assert result.error is not None
-        tm.that(result.error, has="Invalid HTTP method")
+        tm.that(result.error, has="method")
 
     def test_create_http_request_invalid_headers(self) -> None:
         """Test create_http_request with invalid headers type."""

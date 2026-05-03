@@ -280,7 +280,7 @@ class FlextWebServices(s[bool]):
         """Return the canonical service status label from runtime state."""
         state = u.Web.service_state
         if state["service_running"]:
-            return c.Web.RESPONSE_STATUS_OPERATIONAL
+            return c.Web.ResponseStatus.OPERATIONAL.value
         return str(c.Web.Status.STOPPED.value)
 
     @staticmethod

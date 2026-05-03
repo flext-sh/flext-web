@@ -120,7 +120,7 @@ class FlextWebUtilities(u):
                 ) -> StarletteResponse:
                     response = await call_next(request)
                     FlextWebUtilities.Web.record_request_metric(
-                        c.Web.RESPONSE_STATUS_SUCCESS, 0
+                        c.Web.ResponseStatus.SUCCESS.value, 0
                     )
                     return response
 
@@ -130,7 +130,7 @@ class FlextWebUtilities(u):
                 # app_instance is flask.Flask (from the if/elif chain above)
                 def flask_metrics_middleware() -> None:
                     FlextWebUtilities.Web.record_request_metric(
-                        c.Web.RESPONSE_STATUS_SUCCESS, 0
+                        c.Web.ResponseStatus.SUCCESS.value, 0
                     )
 
                 app_instance.before_request(flask_metrics_middleware)
@@ -144,7 +144,7 @@ class FlextWebUtilities(u):
 
                 def fastapi_health() -> t.Web.ResponseDict:
                     return {
-                        "status": c.Web.RESPONSE_STATUS_HEALTHY,
+                        "status": c.Web.ResponseStatus.HEALTHY.value,
                         "service": c.Web.SERVICE_NAME,
                         "app_id": app_id,
                     }
@@ -158,7 +158,7 @@ class FlextWebUtilities(u):
                 # app_instance is flask.Flask (from the if/elif chain above)
                 def flask_health() -> t.Web.ResponseDict:
                     return {
-                        "status": c.Web.RESPONSE_STATUS_HEALTHY,
+                        "status": c.Web.ResponseStatus.HEALTHY.value,
                         "service": c.Web.SERVICE_NAME_FLASK,
                         "app_id": app_id,
                     }
@@ -192,7 +192,7 @@ class FlextWebUtilities(u):
             )
             if (
                 isinstance(status, str)
-                and status.lower() == c.Web.RESPONSE_STATUS_ERROR
+                and status.lower() == c.Web.ResponseStatus.ERROR.value
             ):
                 error_count_value = FlextWebUtilities.Web.web_metrics.get("errors", 0)
                 error_count = (
@@ -351,9 +351,9 @@ class FlextWebUtilities(u):
                 """Create a new web application."""
                 normalized_name = name.strip()
                 normalized_host = host.strip()
-                if len(normalized_name) < c.Web.SERVER_MIN_APP_NAME_LENGTH:
+                if len(normalized_name) < c.Web.VALIDATION_NAME_LENGTH_RANGE[0]:
                     return r[t.Web.ResponseDict].fail(
-                        f"Application name must be at least {c.Web.SERVER_MIN_APP_NAME_LENGTH} characters",
+                        f"Application name must be at least {c.Web.VALIDATION_NAME_LENGTH_RANGE[0]} characters",
                     )
                 if normalized_name.isdigit():
                     return r[t.Web.ResponseDict].fail(
@@ -484,7 +484,7 @@ class FlextWebUtilities(u):
             def format_error(error: Exception) -> t.Web.ResponseDict:
                 """Format error response data."""
                 result: t.Web.ResponseDict = {
-                    "status": c.Web.RESPONSE_STATUS_ERROR,
+                    "status": c.Web.ResponseStatus.ERROR.value,
                     "message": str(error),
                 }
                 return result
@@ -493,7 +493,7 @@ class FlextWebUtilities(u):
             def format_success(data: t.Web.ResponseDict) -> t.Web.ResponseDict:
                 """Format successful response data."""
                 response: t.Web.ResponseDict = {
-                    "status": c.Web.RESPONSE_STATUS_SUCCESS,
+                    "status": c.Web.ResponseStatus.SUCCESS.value,
                 }
                 response.update(deepcopy(data))
                 return response
@@ -854,7 +854,7 @@ class FlextWebUtilities(u):
                 """Get web application health status."""
                 service_running = FlextWebUtilities.Web.service_state["service_running"]
                 return {
-                    "status": c.Web.RESPONSE_STATUS_HEALTHY
+                    "status": c.Web.ResponseStatus.HEALTHY.value
                     if service_running
                     else c.Web.Status.STOPPED.value,
                     "service": c.Web.SERVICE_NAME,

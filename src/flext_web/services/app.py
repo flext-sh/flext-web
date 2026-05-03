@@ -200,7 +200,7 @@ class FlextWebApp(s[bool]):
 
         def health_check() -> flask.Response:
             body: str = _json.dumps({
-                "status": c.Web.RESPONSE_STATUS_HEALTHY,
+                "status": c.Web.ResponseStatus.HEALTHY.value,
                 "service": c.Web.SERVICE_NAME_FLASK,
                 "timestamp": u.generate_iso_timestamp(),
             })
@@ -222,7 +222,7 @@ class FlextWebApp(s[bool]):
 
             def health_check() -> FastApiEndpointPayload:
                 return {
-                    "status": c.Web.RESPONSE_STATUS_HEALTHY,
+                    "status": c.Web.ResponseStatus.HEALTHY.value,
                     "service": c.Web.SERVICE_NAME,
                     "timestamp": u.generate_iso_timestamp(),
                 }

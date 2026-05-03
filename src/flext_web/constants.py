@@ -158,15 +158,12 @@ class FlextWebConstants(c):
         DEFAULT_HOST: Final[str] = c.LOCALHOST
         DEFAULT_PORT: Final[int] = 8080
         DEFAULT_APP_NAME: Final[str] = "FLEXT Web"
-        DEFAULT_ENVIRONMENT: Final[str] = "development"
+        DEFAULT_ENVIRONMENT: Final[str] = Name.DEVELOPMENT.value
         DEFAULT_DEBUG_MODE: Final[bool] = False
         DEFAULT_VERSION_STRING: Final[str] = "1.0.0"
         DEFAULT_VERSION_INT: Final[int] = 1
         DEFAULT_SECRET_KEY: Final[str] = (
             "default-secret-key-32-characters-long-for-security"
-        )
-        DEFAULT_DEV_SECRET_KEY: Final[str] = (
-            "dev-secret-key-32-characters-long-for-development"
         )
         DEFAULT_TEST_SECRET_KEY: Final[str] = (
             "test-secret-key-32-characters-long-for-tests"
@@ -175,33 +172,12 @@ class FlextWebConstants(c):
         DEFAULT_HTTP_PROTOCOL: Final[str] = "http"
         DEFAULT_HTTPS_PROTOCOL: Final[str] = "https"
 
-        # ===== Flattened from WebResponse (derived from ResponseStatus enum) =====
-        RESPONSE_STATUS_SUCCESS: Final[str] = ResponseStatus.SUCCESS.value
-        RESPONSE_STATUS_ERROR: Final[str] = ResponseStatus.ERROR.value
-        RESPONSE_STATUS_OPERATIONAL: Final[str] = ResponseStatus.OPERATIONAL.value
-        RESPONSE_STATUS_HEALTHY: Final[str] = ResponseStatus.HEALTHY.value
-
         # ===== Flattened from WebService =====
         SERVICE_NAME: Final[str] = "flext-web"
         SERVICE_NAME_FLASK: Final[str] = "flext-web-flask"
         SERVICE_NAME_API: Final[str] = "flext-web-api"
-        SERVICE_NAME_HANDLERS: Final[str] = "flext-web-handlers"
-        SERVICE_NAME_SERVICES: Final[str] = "flext-web-services"
-
-        # ===== Flattened from WebServer =====
-        SERVER_MIN_PORT: Final[int] = 1024
-        SERVER_MAX_PORT: Final[int] = 65535
-        SERVER_MIN_APP_NAME_LENGTH: Final[int] = 3
-        SERVER_MAX_APP_NAME_LENGTH: Final[int] = 100
-        SERVER_MIN_SECRET_KEY_LENGTH: Final[int] = 32
 
         # ===== Flattened from WebSpecific =====
-        DEV_ENVIRONMENT_KEY: Final[str] = (
-            "dev-environment-key-32-characters-long-for-dev"
-        )
-        TEST_ENVIRONMENT_KEY: Final[str] = (
-            "test-environment-key-32-characters-long-for-tests"
-        )
         ALL_INTERFACES: Final[str] = str(IPv4Address(0))
         LOCALHOST_IP: Final[str] = str(IPv4Address(2130706433))
         SYSTEM_PORTS_THRESHOLD: Final[int] = 1023
@@ -210,7 +186,6 @@ class FlextWebConstants(c):
         # ===== Flattened from WebValidation =====
         VALIDATION_PORT_RANGE: Final[tuple[int, int]] = (1, 65535)
         VALIDATION_NAME_LENGTH_RANGE: Final[tuple[int, int]] = (3, 100)
-        VALIDATION_MIN_SECRET_KEY_LENGTH: Final[int] = 32
         VALIDATION_MAX_CONTENT_LENGTH_DEFAULT: Final[int] = 16 * 1024 * 1024
         VALIDATION_MIN_CONTENT_LENGTH: Final[int] = 0
         VALIDATION_REQUEST_TIMEOUT_DEFAULT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
@@ -242,20 +217,9 @@ class FlextWebConstants(c):
         HTTP_CONTENT_TYPE_HTML: Final[str] = "text/html"
         HTTP_HEADER_CONTENT_TYPE: Final[str] = "content-type"
         HTTP_HEADER_CONTENT_LENGTH: Final[str] = "content-length"
-        HTTP_METHODS: Final[frozenset[str]] = frozenset({
-            Method.GET.value,
-            Method.POST.value,
-            Method.PUT.value,
-            Method.DELETE.value,
-            Method.PATCH.value,
-            Method.HEAD.value,
-            Method.OPTIONS.value,
-        })
-        HTTP_SAFE_METHODS: Final[frozenset[str]] = frozenset({
-            Method.GET.value,
-            Method.HEAD.value,
-            Method.OPTIONS.value,
-        })
+        HTTP_METHODS: Final[frozenset[str]] = frozenset(
+            member.value for member in Method.__members__.values()
+        )
 
         # ===== Flattened from WebSecurity =====
         SECURITY_MIN_SECRET_KEY_LENGTH: Final[int] = 32
@@ -278,9 +242,7 @@ class FlextWebConstants(c):
         })
         SECURITY_CORS_DEFAULT_ORIGINS: Final[frozenset[str]] = frozenset({"*"})
         SECURITY_CORS_SAFE_METHODS: Final[frozenset[str]] = frozenset({
-            Method.GET.value,
-            Method.HEAD.value,
-            Method.OPTIONS.value,
+            Method.GET.value, Method.HEAD.value, Method.OPTIONS.value,
         })
         SECURITY_CORS_SAFE_HEADERS: Final[frozenset[str]] = frozenset({
             "Content-Type",

@@ -119,12 +119,12 @@ class FlextWebHandlers(s[bool]):
         """
         return r[m.Web.HealthStatus].ok(
             m.Web.HealthStatus(
-                status=c.Web.RESPONSE_STATUS_HEALTHY,
+                status=c.Web.ResponseStatus.HEALTHY.value,
                 service=c.Web.SERVICE_NAME,
                 version="0.9.0",
                 timestamp=u.generate_iso_timestamp(),
                 components={
-                    "web_service": c.Web.RESPONSE_STATUS_OPERATIONAL,
+                    "web_service": c.Web.ResponseStatus.OPERATIONAL.value,
                     "configuration": c.Web.MESSAGE_CONFIG_LOADED,
                     "handlers": c.Web.MESSAGE_HANDLERS_REGISTERED,
                 },

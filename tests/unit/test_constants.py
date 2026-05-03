@@ -21,19 +21,15 @@ class TestsFlextWebConstantsUnit:
         """Test web server constants."""
         tm.that(c.Web.DEFAULT_HOST, eq="localhost")
         tm.that(c.Web.DEFAULT_PORT, eq=8080)
-        tm.that(c.Web.SERVER_MIN_PORT, eq=1024)
-        tm.that(c.Web.SERVER_MAX_PORT, eq=65535)
-        tm.that(c.Web.SERVER_MIN_APP_NAME_LENGTH, eq=3)
-        tm.that(c.Web.SERVER_MAX_APP_NAME_LENGTH, eq=100)
-        tm.that(c.Web.SERVER_MIN_SECRET_KEY_LENGTH, eq=32)
+        tm.that(c.Web.VALIDATION_PORT_RANGE, eq=(1, 65535))
+        tm.that(c.Web.VALIDATION_NAME_LENGTH_RANGE, eq=(3, 100))
+        tm.that(c.Web.SECURITY_MIN_SECRET_KEY_LENGTH, eq=32)
 
     def test_web_specific_constants(self) -> None:
         """Test web-specific constants."""
         tm.that(c.Web.DEFAULT_HOST, eq="localhost")
         tm.that(c.Web.DEFAULT_PORT, eq=8080)
-        tm.that(len(c.Web.DEFAULT_DEV_SECRET_KEY), gte=32)
-        tm.that(len(c.Web.DEV_ENVIRONMENT_KEY), gte=32)
-        tm.that(len(c.Web.TEST_ENVIRONMENT_KEY), gte=32)
+        tm.that(len(c.Web.DEFAULT_TEST_SECRET_KEY), gte=32)
         tm.that(c.Web.ALL_INTERFACES, eq="0.0.0.0")
         tm.that(c.Web.LOCALHOST_IP, eq="127.0.0.1")
         tm.that(c.Web.SYSTEM_PORTS_THRESHOLD, eq=1023)
@@ -72,7 +68,7 @@ class TestsFlextWebConstantsUnit:
         tm.that(c.Web.DEFAULT_PORT, is_=int)
         tm.that(c.Web.VALIDATION_PORT_RANGE, is_=tuple)
         tm.that(c.Web.VALIDATION_NAME_LENGTH_RANGE, is_=tuple)
-        tm.that(c.Web.SERVER_MIN_SECRET_KEY_LENGTH, is_=int)
+        tm.that(c.Web.SECURITY_MIN_SECRET_KEY_LENGTH, is_=int)
 
     def test_environment_type_values(self) -> None:
         """Test that environment type values are valid."""

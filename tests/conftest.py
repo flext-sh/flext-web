@@ -143,7 +143,7 @@ def production_config() -> t.StrMapping:
         "FLEXT_WEB_HOST": c.Web.ALL_INTERFACES,
         "FLEXT_WEB_PORT": str(c.Web.DEFAULT_PORT),
         "FLEXT_WEB_DEBUG": "false",
-        "FLEXT_WEB_SECRET_KEY": c.Web.DEFAULT_DEV_SECRET_KEY,
+        "FLEXT_WEB_SECRET_KEY": c.Web.DEFAULT_SECRET_KEY,
     }
 
 

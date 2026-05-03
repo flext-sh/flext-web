@@ -29,7 +29,7 @@ class FlextWebHealth(s[bool]):
         metrics = u.Web.WebMonitoring.web_metrics()
         state = u.Web.service_state
         service_status = (
-            c.Web.RESPONSE_STATUS_OPERATIONAL
+            c.Web.ResponseStatus.OPERATIONAL.value
             if state["service_running"]
             else c.Web.Status.STOPPED.value
         )
