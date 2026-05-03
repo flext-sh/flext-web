@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-)
 from enum import IntEnum, StrEnum, unique
 from ipaddress import IPv4Address
 from types import MappingProxyType
@@ -130,25 +127,12 @@ class FlextWebConstants(c):
             HEALTHY = "healthy"
 
         # ===== Status/Code mappings =====
-        STATUS_CODES: Final[t.IntMapping] = MappingProxyType({
-            status.name: status.value for status in StatusCode
-        })
-        STATUS_RANGES: Final[Mapping[str, tuple[int, int]]] = MappingProxyType({
-            "INFORMATIONAL": (100, 199),
-            "SUCCESS": (200, 299),
-            "REDIRECTION": (300, 399),
-            "CLIENT_ERROR": (400, 499),
-            "SERVER_ERROR": (500, 599),
-        })
         SUCCESS_RANGE: Final[tuple[int, int]] = (200, 299)
         ERROR_MIN: Final[int] = 400
 
         # ===== Enum-derived frozensets (not tuples) =====
         ENVIRONMENTS: Final[frozenset[str]] = frozenset(
             member.value for member in Name.__members__.values()
-        )
-        APPLICATION_TYPES: Final[frozenset[str]] = frozenset(
-            member.value for member in ApplicationType.__members__.values()
         )
         STATUSES: Final[frozenset[str]] = frozenset(
             member.value for member in Status.__members__.values()
@@ -161,7 +145,6 @@ class FlextWebConstants(c):
         DEFAULT_ENVIRONMENT: Final[str] = Name.DEVELOPMENT.value
         DEFAULT_DEBUG_MODE: Final[bool] = False
         DEFAULT_VERSION_STRING: Final[str] = "1.0.0"
-        DEFAULT_VERSION_INT: Final[int] = 1
         DEFAULT_SECRET_KEY: Final[str] = (
             "default-secret-key-32-characters-long-for-security"
         )
@@ -206,20 +189,9 @@ class FlextWebConstants(c):
             VALIDATION_MIN_URL_LENGTH,
             VALIDATION_MAX_URL_LENGTH,
         )
-        VALIDATION_HEADER_LIMITS: Final[t.IntMapping] = MappingProxyType({
-            "max_length": VALIDATION_MAX_HEADER_LENGTH,
-            "max_count": VALIDATION_MAX_HEADERS_COUNT,
-        })
 
         # ===== Flattened from Http =====
         HTTP_CONTENT_TYPE_JSON: Final[str] = "application/json"
-        HTTP_CONTENT_TYPE_TEXT: Final[str] = "text/plain"
-        HTTP_CONTENT_TYPE_HTML: Final[str] = "text/html"
-        HTTP_HEADER_CONTENT_TYPE: Final[str] = "content-type"
-        HTTP_HEADER_CONTENT_LENGTH: Final[str] = "content-length"
-        HTTP_METHODS: Final[frozenset[str]] = frozenset(
-            member.value for member in Method.__members__.values()
-        )
 
         # ===== Flattened from WebSecurity =====
         SECURITY_MIN_SECRET_KEY_LENGTH: Final[int] = 32
@@ -270,33 +242,14 @@ class FlextWebConstants(c):
         FRAMEWORK_RUNNER_WERKZEUG: Final[str] = "werkzeug"
         FRAMEWORK_FASTAPI: Final[str] = "fastapi"
         FRAMEWORK_FLASK: Final[str] = "flask"
-        FRAMEWORK_INTERFACES: Final[frozenset[str]] = frozenset({
-            FRAMEWORK_INTERFACE_ASGI,
-            FRAMEWORK_INTERFACE_WSGI,
-        })
-        FRAMEWORK_RUNNERS: Final[frozenset[str]] = frozenset({
-            FRAMEWORK_RUNNER_UVICORN,
-            FRAMEWORK_RUNNER_WERKZEUG,
-        })
-        FRAMEWORK_FRAMEWORKS: Final[frozenset[str]] = frozenset({
-            FRAMEWORK_FASTAPI,
-            FRAMEWORK_FLASK,
-        })
 
         # ===== Flattened from WebActions =====
         ACTION_CREATE: Final[str] = "create"
         ACTION_START: Final[str] = "start"
         ACTION_STOP: Final[str] = "stop"
         ACTION_LIST: Final[str] = "list"
-        ACTIONS: Final[frozenset[str]] = frozenset({
-            ACTION_CREATE,
-            ACTION_START,
-            ACTION_STOP,
-            ACTION_LIST,
-        })
 
         # ===== Flattened from WebMessages =====
-        MESSAGE_ENTITY_SERVICE_READY: Final[str] = "Entity service ready"
         MESSAGE_CONFIG_LOADED: Final[str] = "loaded"
         MESSAGE_HANDLERS_REGISTERED: Final[str] = "registered"
 
