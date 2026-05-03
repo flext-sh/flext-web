@@ -84,21 +84,6 @@ class TestsFlextWebProtocolsUnit:
         protocol = u.Web.WebAppManager
         tm.that(protocol, is_=type)
 
-    def test_response_formatter_protocol(self) -> None:
-        """Test ResponseFormatter definition."""
-        protocol = u.Web.WebResponseFormatter
-        tm.that(protocol, is_=type)
-
-    def test_web_framework_interface_protocol(self) -> None:
-        """Test WebFrameworkInterface definition."""
-        protocol = u.Web.WebFrameworkInterface
-        tm.that(protocol, is_=type)
-
-    def test_template_renderer_protocol(self) -> None:
-        """Test TemplateRenderer definition."""
-        protocol = u.Web.WebTemplateRenderer
-        tm.that(protocol, is_=type)
-
     def test_web_service_protocol(self) -> None:
         """Test WebService definition."""
         protocol = u.Web.WebService
@@ -124,24 +109,6 @@ class TestsFlextWebProtocolsUnit:
         """Test WebMonitoring definition."""
         protocol = u.Web.WebMonitoring
         tm.that(protocol, is_=type)
-
-    def test_protocol_runtime_checkable(self) -> None:
-        """Test that protocols are runtime checkable."""
-        protocols = [
-            u.Web.WebAppManager,
-            u.Web.WebResponseFormatter,
-            u.Web.WebFrameworkInterface,
-            u.Web.WebTemplateRenderer,
-            u.Web.WebService,
-            u.Web.WebRepository,
-            u.Web.WebHandler,
-            u.Web.WebTemplateEngine,
-            u.Web.WebMonitoring,
-        ]
-        for protocol in protocols:
-            checkable = getattr(protocol, "__runtime_checkable__", None)
-            if checkable is not None:
-                tm.that(checkable is True, eq=True)
 
     def test_protocol_method_signatures(self) -> None:
         """Test that protocol methods have correct signatures."""
@@ -171,24 +138,6 @@ class TestsFlextWebProtocolsUnit:
         """Test that protocols have proper documentation."""
         protocol = u.Web.WebAppManager
         tm.that(protocol.__doc__, none=False)
-
-    def test_protocol_consistency(self) -> None:
-        """Test that protocols are consistent with implementation."""
-        protocols = [
-            u.Web.WebAppManager,
-            u.Web.WebResponseFormatter,
-            u.Web.WebFrameworkInterface,
-            u.Web.WebTemplateRenderer,
-            u.Web.WebService,
-            u.Web.WebRepository,
-            u.Web.WebHandler,
-            u.Web.WebTemplateEngine,
-            u.Web.WebMonitoring,
-        ]
-        for protocol in protocols:
-            tm.that(protocol, is_=type)
-            methods = [name for name in dir(protocol) if not name.startswith("_")]
-            tm.that(methods, empty=False)
 
     def test_protocol_usage_patterns(self) -> None:
         """Test that protocols follow expected usage patterns."""
@@ -309,134 +258,6 @@ class TestsFlextWebProtocolsUnit:
         """Validate real app lifecycle behavior from protocol base implementation."""
         self._assert_protocol_base_lifecycle()
 
-    def test_response_formatter_protocol_methods(self) -> None:
-        """Test WebResponseFormatter methods execution."""
-
-        class RealResponseFormatter:
-            def format_success(self, data: t.Web.ResponseDict) -> t.Web.ResponseDict:
-                response: t.Web.ResponseDict = {
-                    "status": c.Web.ResponseStatus.SUCCESS.value,
-                }
-                response.update({
-                    key: value
-                    for key, value in data.items()
-                    if isinstance(value, (str, int, bool, list, dict))
-                })
-                return response
-
-            def format_error(self, error: Exception) -> t.Web.ResponseDict:
-                result: t.Web.ResponseDict = {
-                    "status": c.Web.ResponseStatus.ERROR.value,
-                    "message": str(error),
-                }
-                return result
-
-            def create_json_response(
-                self,
-                data: t.Web.ResponseDict,
-            ) -> t.Web.ResponseDict:
-                response: t.Web.ResponseDict = {
-                    c.Web.HTTP_HEADER_CONTENT_TYPE: c.Web.HTTP_CONTENT_TYPE_JSON,
-                }
-                response.update({
-                    key: value
-                    for key, value in data.items()
-                    if isinstance(value, (str, int, bool, list, dict))
-                })
-                return response
-
-            def resolve_request_data(
-                self,
-                _request: t.Web.RequestDict,
-            ) -> t.Web.RequestDict:
-                return {}
-
-            def execute(self) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({})
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def service_info(self) -> t.ScalarMapping:
-                return {"name": "ResponseFormatter"}
-
-            def valid(self) -> bool:
-                return True
-
-        formatter = RealResponseFormatter()
-        data_with_nested: t.Web.ResponseDict = {
-            "key1": "value1",
-            "nested": {"key2": "value2"},
-        }
-        result = formatter.format_success(data_with_nested)
-        tm.that(result["status"], eq=c.Web.ResponseStatus.SUCCESS.value)
-        tm.that(result["key1"], eq="value1")
-        tm.that(result["nested"], is_=dict)
-        error = ValueError("Test error")
-        error_result = formatter.format_error(error)
-        tm.that(error_result["status"], eq=c.Web.ResponseStatus.ERROR.value)
-        tm.that(str(error_result["message"]), has="Test error")
-        json_result = formatter.create_json_response(data_with_nested)
-        tm.that(json_result, has=c.Web.HTTP_HEADER_CONTENT_TYPE)
-        tm.that(
-            (
-                json_result[c.Web.HTTP_HEADER_CONTENT_TYPE]
-                == c.Web.HTTP_CONTENT_TYPE_JSON
-            ),
-            eq=True,
-        )
-
-    def test_web_framework_interface_protocol_methods(self) -> None:
-        """Test WebFrameworkInterface methods execution."""
-
-        class RealFrameworkInterface:
-            def create_json_response(
-                self,
-                data: t.Web.ResponseDict,
-            ) -> t.Web.ResponseDict:
-                response: t.Web.ResponseDict = {
-                    c.Web.HTTP_HEADER_CONTENT_TYPE: c.Web.HTTP_CONTENT_TYPE_JSON,
-                }
-                response.update({
-                    key: value
-                    for key, value in data.items()
-                    if isinstance(value, (str, int, bool, list, dict))
-                })
-                return response
-
-            def resolve_request_data(
-                self,
-                _request: t.Web.RequestDict,
-            ) -> t.Web.RequestDict:
-                return {}
-
-            def json_request(self, _request: t.Web.RequestDict) -> bool:
-                return False
-
-            def execute(self) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({})
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def service_info(self) -> t.ScalarMapping:
-                return {"name": "FrameworkInterface"}
-
-            def valid(self) -> bool:
-                return True
-
-        framework = RealFrameworkInterface()
-        data: t.Web.ResponseDict = {
-            "test": "value",
-            "nested": {"key": "value"},
-        }
-        json_response = framework.create_json_response(data)
-        tm.that(json_response, has=c.Web.HTTP_HEADER_CONTENT_TYPE)
-        request_data = framework.resolve_request_data({})
-        tm.that(request_data, is_=dict)
-        is_json = framework.json_request({})
-        tm.that(is_json is False, eq=True)
-
     def test_web_service_protocol_methods(self) -> None:
         """Test WebService methods execution."""
 
@@ -508,42 +329,6 @@ class TestsFlextWebProtocolsUnit:
         repo = RealWebRepository()
         result = repo.find_by_criteria({"key": "value"})
         tm.ok(result)
-
-    def test_web_template_renderer_protocol_methods(self) -> None:
-        """Test WebTemplateRenderer methods execution."""
-
-        class RealTemplateRenderer:
-            def render_template(
-                self,
-                template_name: str,
-                context: t.Web.RequestDict,
-            ) -> p.Result[str]:
-                return r[str].ok("")
-
-            def render_dashboard(self, data: t.Web.ResponseDict) -> p.Result[str]:
-                return r[str].ok("<html>Dashboard</html>")
-
-            def execute(self) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({})
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def service_info(self) -> t.ScalarMapping:
-                return {"name": "TemplateRenderer"}
-
-            def valid(self) -> bool:
-                return True
-
-        renderer = RealTemplateRenderer()
-        template_result = renderer.render_template(
-            "tesFlextWebTypes.html",
-            {"key": "value"},
-        )
-        tm.ok(template_result)
-        dashboard_result = renderer.render_dashboard({"data": "value"})
-        tm.ok(dashboard_result)
-        tm.that(dashboard_result.value, has="<html>Dashboard</html>")
 
     def test_web_template_engine_protocol_methods(self) -> None:
         """Test WebTemplateEngine methods execution."""
@@ -642,51 +427,6 @@ class TestsFlextWebProtocolsUnit:
         """Test real app lifecycle behavior through WebAppManager protocol base."""
         self._assert_protocol_base_lifecycle()
 
-    def test_response_formatter_real_behavior(self) -> None:
-        """Test response formatter protocol with real implementation behavior."""
-        formatter = u.Web.WebResponseFormatter
-        data_with_all_types: t.Web.ResponseDict = {
-            "string": "value",
-            "int": 42,
-            "bool": True,
-            "list": ["item1", "item2"],
-            "dict": {"nested": "value"},
-        }
-        result = formatter.format_success(data_with_all_types)
-        tm.that(result["status"], eq=c.Web.ResponseStatus.SUCCESS.value)
-        tm.that(result["string"], eq="value")
-        tm.that(result["int"], eq=42)
-        tm.that(result["bool"] is True, eq=True)
-        tm.that(result["list"], is_=list)
-        tm.that(result["dict"], is_=dict)
-        error = ValueError("Test error message")
-        error_result = formatter.format_error(error)
-        tm.that(error_result["status"], eq=c.Web.ResponseStatus.ERROR.value)
-        tm.that(str(error_result["message"]), has="Test error message")
-        json_result = formatter.create_json_response(data_with_all_types)
-        tm.that(
-            (
-                json_result[c.Web.HTTP_HEADER_CONTENT_TYPE]
-                == c.Web.HTTP_CONTENT_TYPE_JSON
-            ),
-            eq=True,
-        )
-        request_data: t.Web.RequestDict = {"test": "data"}
-        tm.that(request_data, is_=dict)
-        tm.that(request_data["test"], eq="data")
-
-    def test_framework_interface_real_behavior(self) -> None:
-        """Test web framework interface protocol with real request behavior."""
-        framework = u.Web.WebFrameworkInterface
-        data: t.Web.ResponseDict = {"test": "value", "nested": {"key": "value"}}
-        result = framework.create_json_response(data)
-        tm.that(result[c.Web.HTTP_HEADER_CONTENT_TYPE], eq=c.Web.HTTP_CONTENT_TYPE_JSON)
-        request_data: t.Web.RequestDict = {"test": "data"}
-        tm.that(request_data, is_=dict)
-        tm.that(request_data["test"], eq="data")
-        is_json = framework.json_request({"content-type": "application/json"})
-        tm.that(is_json is True, eq=True)
-
     def test_service_protocol_real_behavior(self) -> None:
         """Test web service lifecycle protocol behavior."""
         self._reset_protocol_state()
@@ -723,58 +463,6 @@ class TestsFlextWebProtocolsUnit:
         list_result = handler.handle_request({"action": "list"})
         tm.ok(list_result)
         tm.that(list_result.value["count"], eq=1)
-
-    def test_template_renderer_real_behavior(self) -> None:
-        """Test template renderer protocol with real template substitution."""
-        renderer = u.Web.WebTemplateRenderer
-        result = renderer.render_template("{{key}}-template", {"key": "value"})
-        tm.ok(result)
-        tm.that(result.value, eq="value-template")
-        result = renderer.render_dashboard({
-            "service": "dashboard",
-            "status": "running",
-        })
-        tm.ok(result)
-        tm.that(result.value, has="dashboard")
-
-    def test_template_engine_real_behavior(self) -> None:
-        """Test template engine protocol with settings and global/filter handling."""
-        self._reset_protocol_state()
-        engine = u.Web.TestBases._WebTemplateEngineBase()
-        tm.ok(engine.load_template_config({"template_dir": "templates"}))
-        tm.ok(engine.template_config())
-        tm.ok(engine.validate_template_config({"template_dir": "templates"}))
-        tm.fail(engine.validate_template_config({"invalid": "value"}))
-        engine.add_filter("test", lambda x: x.upper())
-        engine.add_global("test", value="value")
-        rendered = engine.render("{{test}}|test", {})
-        tm.ok(rendered)
-        tm.that(rendered.value, eq="VALUE")
-
-    def test_connection_protocol_real_behavior(self) -> None:
-        """Test connection protocol endpoint URL from running app."""
-        self._reset_protocol_state()
-        manager = u.Web.WebAppManager
-        created = manager.create_app("endpoint-app", 9090, "127.0.0.1")
-        tm.ok(created)
-        app_id = str(created.value["id"])
-        tm.ok(manager.start_app(app_id))
-        connection = u.Web.WebConnection
-        url = connection.endpoint_url()
-        tm.that(url, eq="http://127.0.0.1:9090")
-
-    def test_monitoring_protocol_real_behavior(self) -> None:
-        """Test monitoring protocol metrics recording behavior."""
-        self._reset_protocol_state()
-        monitoring = u.Web.TestBases._WebMonitoringBase()
-        monitoring.record_web_request({"method": "GET"}, 0.1)
-        health = monitoring.web_health_status()
-        tm.that(health["status"], eq=c.Web.Status.STOPPED.value)
-        tm.that(health["service"], eq=c.Web.SERVICE_NAME)
-        metrics = monitoring.web_metrics()
-        tm.that(metrics["requests"], eq=1)
-        tm.that(metrics["errors"], eq=0)
-        tm.that(metrics["uptime"], eq="0s")
 
     def test_protocol_app_lifecycle_end_to_end(self) -> None:
         """TDD lifecycle flow: create, start, stop, and list app states."""

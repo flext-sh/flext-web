@@ -27,14 +27,6 @@ class TestsFlextWebApi:
         result = web.create_fastapi_app()
         tm.ok(result)
 
-    def test_create_fastapi_app_with_config(self) -> None:
-        """The facade respects explicit FastAPI configuration."""
-        settings = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
-        result = web.create_fastapi_app(settings)
-        tm.ok(result)
-        tm.that(result.value.title, eq="Test API")
-        tm.that(result.value.version, eq="1.0.0")
-
     def test_settings_factory_success(self) -> None:
         """Validated settings can be built through the settings class."""
         result = web.settings.create_web_config(

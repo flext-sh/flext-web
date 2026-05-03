@@ -1093,45 +1093,6 @@ class FlextWebModels(m):
                 ),
             ] = u.Field(default_factory=lambda: datetime.now(UTC))
 
-        class AppConfig(m.Value):
-            """Application configuration model."""
-
-            title: Annotated[
-                str,
-                u.Field(
-                    min_length=1,
-                    max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
-                    description="Application title",
-                ),
-            ]
-            version: Annotated[str, u.Field(description="Application version")]
-            description: Annotated[
-                str,
-                u.Field(
-                    min_length=1,
-                    max_length=c.Web.SECURITY_MAX_DESCRIPTION_LENGTH,
-                    description="Application description",
-                ),
-            ]
-            docs_url: Annotated[
-                str,
-                u.Field(
-                    description="Documentation URL",
-                ),
-            ] = c.Web.API_DOCS_URL
-            redoc_url: Annotated[
-                str,
-                u.Field(
-                    description="ReDoc URL",
-                ),
-            ] = c.Web.API_REDOC_URL
-            openapi_url: Annotated[
-                str,
-                u.Field(
-                    description="OpenAPI URL",
-                ),
-            ] = c.Web.API_OPENAPI_URL
-
         # FACTORY METHODS (Creation patterns)
 
         @classmethod

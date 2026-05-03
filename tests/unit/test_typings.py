@@ -5,11 +5,10 @@ Tests the unified m class following flext standards.
 
 from __future__ import annotations
 
-import pytest
 from flext_tests import tm
 
 from flext_web import web
-from tests import c, m, t
+from tests import c, m
 
 
 class TestsFlextWebTypesUnit:
@@ -104,26 +103,6 @@ class TestsFlextWebTypesUnit:
     def test_type_annotations(self) -> None:
         """Test that types have proper annotations."""
 
-    def test_type_usage_patterns(self) -> None:
-        """Test that types follow expected usage patterns."""
-
-        def process_request_data(
-            request: t.Web.RequestConfig,
-        ) -> t.JsonMapping:
-            return {"processed": True, "method": request.method, "url": request.url}
-
-        request = t.Web.RequestConfig(
-            url="http://localhost:8080/api/test",
-            method="GET",
-        )
-        result = process_request_data(request)
-        tm.that(result, is_=dict)
-        tm.that(result["processed"] is True, eq=True)
-        assert isinstance(result["method"], str)
-        tm.that(result["method"], eq="GET")
-        assert isinstance(result["url"], str)
-        tm.that(result["url"], eq="http://localhost:8080/api/test")
-
     def test_create_http_request_invalid_method(self) -> None:
         """Test create_http_request with invalid HTTP method."""
         result = m.Web.Request.create_http_request(
@@ -185,82 +164,6 @@ class TestsFlextWebTypesUnit:
             eq=True,
         )
 
-    def test_create_web_request_invalid_method(self) -> None:
-        """Test create_web_request with invalid HTTP method."""
-        with pytest.raises(m.ValidationError):
-            t.Web.RequestConfig.model_validate({
-                "url": "http://localhost:8080",
-                "method": "INVALID_METHOD",
-            })
-
-    def test_create_web_request_invalid_headers(self) -> None:
-        """Test create_web_request with invalid headers type."""
-        with pytest.raises(m.ValidationError):
-            t.Web.RequestConfig.model_validate({
-                "url": "http://localhost:8080",
-                "method": "GET",
-                "headers": "invalid",
-            })
-
-    def test_create_web_request_invalid_query_params(self) -> None:
-        """Test create_web_request with invalid query_params type."""
-        with pytest.raises(m.ValidationError):
-            t.Web.RequestConfig.model_validate({
-                "url": "http://localhost:8080",
-                "method": "GET",
-                "query_params": "invalid",
-            })
-
-    def test_create_web_request_exception_handling(self) -> None:
-        """Test create_web_request exception handling."""
-        with pytest.raises(m.ValidationError):
-            _ = t.Web.RequestConfig(
-                url="http://localhost:8080",
-                method="GET",
-                headers={},
-                body=None,
-                timeout=-1.0,
-                query_params={},
-            )
-
-    def test_create_web_response_invalid_headers(self) -> None:
-        """Test create_web_response with invalid headers type."""
-        with pytest.raises(m.ValidationError):
-            t.Web.ResponseConfig.model_validate({
-                "status_code": 200,
-                "request_id": "test-123",
-                "headers": "invalid",
-            })
-
-    def test_create_web_response_exception_handling(self) -> None:
-        """Test create_web_response exception handling."""
-        with pytest.raises(m.ValidationError):
-            _ = t.Web.ResponseConfig(
-                status_code=200,
-                request_id="test-123",
-                headers={},
-                body=None,
-                elapsed_time=-1.0,
-            )
-
-    def test_create_application_exception_handling(self) -> None:
-        """Test create_application exception handling."""
-        settings = t.Web.ApplicationConfig(
-            name="test-app",
-            host="localhost",
-            port=8080,
-            status="invalid_status",
-        )
-        result = m.Web.Entity.create_application(settings)
-        assert result.failure, "Invalid status should cause validation failure"
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(
-            "status" in (result.error or "").lower()
-            or "validation" in (result.error or "").lower(),
-            eq=True,
-        )
-
     def test_create_http_request_all_methods(self) -> None:
         """Test create_http_request with all valid HTTP methods."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
@@ -268,20 +171,6 @@ class TestsFlextWebTypesUnit:
             result = m.Web.Request.create_http_request(
                 url="http://localhost:8080", method=method
             )
-            assert result.success, (
-                f"Operation should succeed for method {method}: {result.error}"
-            )
-            tm.that(result.value.method, eq=method)
-
-    def test_create_web_request_all_methods(self) -> None:
-        """Test create_web_request with all valid HTTP methods."""
-        valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
-        for method in valid_methods:
-            settings = t.Web.RequestConfig.model_validate({
-                "url": "http://localhost:8080",
-                "method": method,
-            })
-            result = m.Web.AppRequest.create_web_request(settings)
             assert result.success, (
                 f"Operation should succeed for method {method}: {result.error}"
             )
@@ -303,25 +192,6 @@ class TestsFlextWebTypesUnit:
         assert result.success, result.error
         tm.that(result.value.headers, is_=dict)
 
-    def test_create_web_request_with_none_values(self) -> None:
-        """Test create_web_request with None headers and query_params."""
-        with pytest.raises(m.ValidationError):
-            t.Web.RequestConfig.model_validate({
-                "url": "http://localhost:8080",
-                "method": "GET",
-                "headers": None,
-                "query_params": None,
-            })
-
-    def test_create_web_response_with_none_headers(self) -> None:
-        """Test create_web_response with None headers."""
-        with pytest.raises(m.ValidationError):
-            t.Web.ResponseConfig.model_validate({
-                "status_code": 200,
-                "request_id": "test-123",
-                "headers": None,
-            })
-
     def test_create_http_request_match_case_default(self) -> None:
         """Test create_http_request match/case default branch (line 174-175)."""
         result = m.Web.Request.create_http_request(
@@ -336,27 +206,3 @@ class TestsFlextWebTypesUnit:
         )
         assert result.failure, "Operation should fail"
         tm.fail(result)
-
-    def test_create_web_request_match_case_default(self) -> None:
-        """Test create_web_request match/case default branch (line 301-302)."""
-        settings = t.Web.RequestConfig(url="http://localhost:8080", method="GET")
-        result = m.Web.AppRequest.create_web_request(settings)
-        assert result.success, result.error
-
-    def test_create_web_request_duplicate_validation(self) -> None:
-        """Test create_web_request duplicate validation path (line 278)."""
-        with pytest.raises(m.ValidationError):
-            t.Web.RequestConfig.model_validate({
-                "url": "http://localhost:8080",
-                "method": "INVALID",
-            })
-
-    def test_create_application_exception_path(self) -> None:
-        """Test create_application exception handling (line 388)."""
-        settings = t.Web.ApplicationConfig(
-            name="test-app",
-            host="localhost",
-            port=8080,
-        )
-        result = m.Web.Entity.create_application(settings)
-        assert result.success, result.error

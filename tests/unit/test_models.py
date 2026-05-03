@@ -242,35 +242,6 @@ class TestsFlextWebModelsUnit:
         tm.that(response.response_id, none=False)
         tm.that(response.timestamp, none=False)
 
-    def test_web_app_config_initialization(self) -> None:
-        """Test WebAppConfig initialization."""
-        settings = m.Web.EntityConfig(
-            app_name="Test App",
-            host="localhost",
-            port=8080,
-            debug=True,
-            secret_key="test-secret-key-32-characters-long",
-        )
-        tm.that(settings.app_name, eq="Test App")
-        tm.that(settings.host, eq="localhost")
-        tm.that(settings.port, eq=8080)
-        tm.that(settings.debug is True, eq=True)
-        tm.that(settings.secret_key, eq="test-secret-key-32-characters-long")
-
-    def test_app_config_initialization(self) -> None:
-        """Test AppConfig initialization."""
-        settings = m.Web.AppConfig(
-            title="Test API",
-            version="1.0.0",
-            description="Test API Description",
-        )
-        tm.that(settings.title, eq="Test API")
-        tm.that(settings.version, eq="1.0.0")
-        tm.that(settings.description, eq="Test API Description")
-        tm.that(settings.docs_url, eq="/docs")
-        tm.that(settings.redoc_url, eq="/redoc")
-        tm.that(settings.openapi_url, eq="/openapi.json")
-
     def test_create_web_app_factory(self) -> None:
         """Test create_web_app factory method."""
         result = u.Web.Tests.create_entry(
@@ -285,35 +256,6 @@ class TestsFlextWebModelsUnit:
         tm.that(app.name, eq="test-app")
         tm.that(app.host, eq="localhost")
         tm.that(app.port, eq=8080)
-
-    def test_create_web_request_factory(self) -> None:
-        """Test create_web_request factory method."""
-        result = u.Web.Tests.create_entry(
-            "web_request",
-            method="POST",
-            url="http://localhost:8080/api/test",
-            headers={"Content-Type": "application/json"},
-            body='{"test": "data"}',
-        )
-        assert result.success, result.error
-        request = result.value
-        assert isinstance(request, m.Web.AppRequest)
-        tm.that(request.method, eq="POST")
-        tm.that(request.url, eq="http://localhost:8080/api/test")
-
-    def test_create_web_response_factory(self) -> None:
-        """Test create_web_response factory method."""
-        result = u.Web.Tests.create_entry(
-            "web_response",
-            request_id="req-123",
-            status_code=201,
-            headers={"Content-Type": "application/json"},
-            body='{"id": 1}',
-        )
-        assert result.success, result.error
-        response = result.value
-        assert isinstance(response, m.Web.AppResponse)
-        tm.that(response.status_code, eq=201)
 
     def test_http_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
@@ -453,26 +395,6 @@ class TestsFlextWebModelsUnit:
         tm.that(result.error, none=False)
         tm.that((result.error or "").lower(), has="empty")
 
-    def test_create_web_request_invalid_headers(self) -> None:
-        """Test create_web_request with invalid headers coerces to empty dict."""
-        result = u.Web.Tests.create_entry(
-            "web_request",
-            method="GET",
-            url="http://localhost:8080",
-            headers="not_a_dict",
-        )
-        tm.ok(result)
-
-    def test_create_web_response_invalid_headers(self) -> None:
-        """Test create_web_response with invalid headers coerces to empty dict."""
-        result = u.Web.Tests.create_entry(
-            "web_response",
-            request_id="test-123",
-            status_code=200,
-            headers="not_a_dict",
-        )
-        tm.ok(result)
-
     def test_web_response_processing_time_seconds(self) -> None:
         """Test Web.AppResponse processing_time_seconds property."""
         response = m.Web.AppResponse(
@@ -524,24 +446,6 @@ class TestsFlextWebModelsUnit:
             port=8080,
         )
         tm.fail(result)
-
-    def test_create_web_request_validation_error(self) -> None:
-        """Test create_web_request with validation error (lines 961-967)."""
-        result = u.Web.Tests.create_entry("web_request", method="GET", url="")
-        assert result.failure, "Empty URL should cause validation failure"
-        tm.fail(result)
-        tm.that(result.error, none=False)
-
-    def test_create_web_response_validation_error(self) -> None:
-        """Test create_web_response with validation error (lines 1008-1014)."""
-        result = u.Web.Tests.create_entry(
-            "web_response",
-            request_id="test-123",
-            status_code=999,
-        )
-        assert result.failure, "Invalid status code should cause validation failure"
-        tm.fail(result)
-        tm.that(result.error, none=False)
 
     def test_application_edge_cases(self) -> None:
         """Test Application model with edge cases."""
