@@ -354,23 +354,15 @@ class FlextWebUtilities(u):
                 """Create a new web application."""
                 normalized_name = name.strip()
                 normalized_host = host.strip()
-<<<<<<< Updated upstream
-                if len(normalized_name) < c.Web.VALIDATION_NAME_LENGTH_RANGE[0]:
-                    return r[t.Web.ResponseDict].fail(
-                        f"Application name must be at least {c.Web.VALIDATION_NAME_LENGTH_RANGE[0]} characters",
-                    )
-                if normalized_name.isdigit():
-                    return r[t.Web.ResponseDict].fail(
-=======
                 min_port, max_port = c.Web.VALIDATION_PORT_RANGE
+                min_name_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[0]
                 validations: list[tuple[bool, str]] = [
                     (
-                        len(normalized_name) < c.Web.SERVER_MIN_APP_NAME_LENGTH,
-                        f"Application name must be at least {c.Web.SERVER_MIN_APP_NAME_LENGTH} characters",
+                        len(normalized_name) < min_name_length,
+                        f"Application name must be at least {min_name_length} characters",
                     ),
                     (
                         normalized_name.isdigit(),
->>>>>>> Stashed changes
                         "Application name cannot be numeric-only",
                     ),
                     (not normalized_host, "Host cannot be empty"),
