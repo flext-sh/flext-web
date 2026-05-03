@@ -265,7 +265,9 @@ class TestsFlextWebTypesUnit:
         """Test create_http_request with all valid HTTP methods."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
-            result = m.Web.Request.create_http_request(url="http://localhost:8080", method=method)
+            result = m.Web.Request.create_http_request(
+                url="http://localhost:8080", method=method
+            )
             assert result.success, (
                 f"Operation should succeed for method {method}: {result.error}"
             )
@@ -322,12 +324,16 @@ class TestsFlextWebTypesUnit:
 
     def test_create_http_request_match_case_default(self) -> None:
         """Test create_http_request match/case default branch (line 174-175)."""
-        result = m.Web.Request.create_http_request(url="http://localhost:8080", method="GET")
+        result = m.Web.Request.create_http_request(
+            url="http://localhost:8080", method="GET"
+        )
         assert result.success, result.error
 
     def test_create_http_request_duplicate_validation(self) -> None:
         """Test create_http_request duplicate validation path (line 157)."""
-        result = m.Web.Request.create_http_request(url="http://localhost:8080", method="INVALID")
+        result = m.Web.Request.create_http_request(
+            url="http://localhost:8080", method="INVALID"
+        )
         assert result.failure, "Operation should fail"
         tm.fail(result)
 

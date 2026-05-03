@@ -817,10 +817,14 @@ class FlextWebModels(m):
                         host=settings.host,
                         port=settings.port,
                         status=getattr(
-                            settings, "status", c.Web.Status.STOPPED.value,
+                            settings,
+                            "status",
+                            c.Web.Status.STOPPED.value,
                         ),
                         environment=getattr(
-                            settings, "environment", c.Web.Name.DEVELOPMENT.value,
+                            settings,
+                            "environment",
+                            c.Web.Name.DEVELOPMENT.value,
                         ),
                         debug_mode=getattr(settings, "debug_mode", False),
                         version=getattr(settings, "version", 0),

@@ -242,7 +242,9 @@ class FlextWebConstants(c):
         })
         SECURITY_CORS_DEFAULT_ORIGINS: Final[frozenset[str]] = frozenset({"*"})
         SECURITY_CORS_SAFE_METHODS: Final[frozenset[str]] = frozenset({
-            Method.GET.value, Method.HEAD.value, Method.OPTIONS.value,
+            Method.GET.value,
+            Method.HEAD.value,
+            Method.OPTIONS.value,
         })
         SECURITY_CORS_SAFE_HEADERS: Final[frozenset[str]] = frozenset({
             "Content-Type",
