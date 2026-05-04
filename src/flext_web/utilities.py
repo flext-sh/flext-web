@@ -10,7 +10,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import re
 from collections.abc import Awaitable, Callable, Sequence
 from copy import deepcopy
 from threading import Thread
@@ -791,7 +790,7 @@ class FlextWebUtilities(u):
         if not cleaned:
             msg = f"Application name cannot be empty: {name}"
             raise ValueError(msg)
-        normalized_for_id = re.sub(r"[^\w\s-]+", "", cleaned)
+        normalized_for_id = c.Web.SLUG_NON_WORD_RE.sub("", cleaned)
         slug = FlextWebUtilities.slugify(normalized_for_id)
         if not slug:
             msg = f"Cannot format application name '{name}' to valid ID"
@@ -807,8 +806,8 @@ class FlextWebUtilities(u):
         if not text:
             return ""
         normalized = text.lower()
-        cleaned = re.sub(r"[^\w\s-]+", " ", normalized)
-        words = re.split(r"[-\s]+", cleaned)
+        cleaned = c.Web.SLUG_NON_WORD_RE.sub(" ", normalized)
+        words = c.Web.SLUG_SPLIT_RE.split(cleaned)
         truthy_words = [word for word in words if word]
         return "-".join(truthy_words)
 

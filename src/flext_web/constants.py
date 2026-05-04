@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import re
 from enum import IntEnum, StrEnum, unique
 from ipaddress import IPv4Address
 from types import MappingProxyType
-from typing import Final
+from typing import ClassVar, Final
 
 from flext_cli import c, t
 
@@ -19,6 +20,10 @@ class FlextWebConstants(c):
         All web-specific constants are organized here for better namespace
         organization and to enable composition with other domain constants.
         """
+
+        # === Regex authority for the Web domain ===
+        SLUG_NON_WORD_RE: ClassVar[re.Pattern[str]] = re.compile(r"[^\w\s-]+")
+        SLUG_SPLIT_RE: ClassVar[re.Pattern[str]] = re.compile(r"[-\s]+")
 
         # ===== Enums (keep these) =====
         @unique
