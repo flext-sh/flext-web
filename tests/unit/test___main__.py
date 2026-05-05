@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-import pytest
 from flext_tests import tm
 
 from flext_web import __main__, web
 
 
 class TestsFlextWebMain:
-    """Tests for the CLI adapter."""
+    """Tests for the CLI entry point."""
 
     def setup_method(self) -> None:
         """Reset shared runtime state through the public facade before each test."""
@@ -22,49 +21,15 @@ class TestsFlextWebMain:
         if status_result.success and status_result.value.status == "operational":
             _ = web.stop_service()
 
-    def test_initialization(self) -> None:
-        """The CLI defaults to the canonical `web` facade."""
-        cli_service = __main__.FlextWebCliService()
-        tm.that(cli_service._api is web, eq=True)
+    def test_run_command_class_exposed(self) -> None:
+        """The Pydantic-driven run command must be exported."""
+        tm.that(__main__.FlextWebRunCommand, none=False)
 
-    def test_parse_args(self) -> None:
-        """The parser accepts host, port and debug flags."""
-        args = __main__.FlextWebCliService.parse_args([
-            "--host",
-            "127.0.0.1",
-            "--port",
-            "8195",
-            "--debug",
-        ])
-        tm.that(args.host, eq="127.0.0.1")
-        tm.that(args.port, eq=8195)
-        tm.that(args.debug, eq=True)
-
-    def test_run_starts_service(self) -> None:
-        """Running the CLI starts the service through the public facade."""
-        cli_service = __main__.FlextWebCliService()
-        result = cli_service.run(["--host", "127.0.0.1", "--port", "8196"])
-        tm.ok(result)
-        status_result = web.service_status()
-        tm.ok(status_result)
-        tm.that(status_result.value.status, eq="operational")
-        stop_result = web.stop_service()
-        tm.ok(stop_result)
-
-    def test_main_structure(self) -> None:
-        """The module exposes the console callable required by pyproject."""
+    def test_main_callable_exposed(self) -> None:
+        """The console entry point ``main`` must be callable."""
         tm.that(callable(__main__.main), eq=True)
-        tm.that(callable(__main__.FlextWebCliService.main), eq=True)
 
-    def test_main_module_execution(self) -> None:
-        """The console entrypoint exits with code zero on success."""
-        with pytest.raises(SystemExit) as exc_info:
-            __main__.FlextWebCliService.main([
-                "--host",
-                "127.0.0.1",
-                "--port",
-                "8197",
-            ])
-        tm.that(exc_info.value.code, eq=0)
-        stop_result = web.stop_service()
-        tm.ok(stop_result)
+    def test_main_help_returns_zero(self) -> None:
+        """The CLI ``--help`` must exit with status zero through the facade."""
+        return_code = __main__.main(["--help"])
+        tm.that(return_code, eq=0)

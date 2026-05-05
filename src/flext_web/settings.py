@@ -11,12 +11,11 @@ from __future__ import annotations
 
 from typing import Annotated, ClassVar, Self
 
-from flext_core import FlextSettings
+from flext_core import FlextSettingsBase
 from flext_web import c, m, p, r, t, u
 
 
-@FlextSettings.auto_register("web")
-class FlextWebSettings(FlextSettings):
+class FlextWebSettings(FlextSettingsBase):
     """Validated settings for web runtime and HTTP endpoints."""
 
     model_config: ClassVar[m.SettingsConfigDict] = m.SettingsConfigDict(
@@ -31,6 +30,10 @@ class FlextWebSettings(FlextSettings):
             description="Application name",
         ),
     ] = c.Web.DEFAULT_APP_NAME
+    version: Annotated[
+        str,
+        u.Field(description="API/service semantic version"),
+    ] = c.Web.DEFAULT_VERSION_STRING
     host: Annotated[
         str,
         u.Field(
