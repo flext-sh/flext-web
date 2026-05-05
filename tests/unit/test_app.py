@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-import json
-
+from flext_cli import u as cli_u
 from flext_tests import tm
 
 from flext_web import FlextWebSettings, web
@@ -38,7 +37,7 @@ class TestsFlextWebApp:
         tm.ok(result)
         client = result.value.test_client()
         response = client.get("/health")
-        payload = json.loads(response.get_data(as_text=True))
+        payload = cli_u.Cli.json_loads(response.get_data(as_text=True)).unwrap()
         tm.that(response.status_code, eq=200)
         tm.that(payload, has="status")
 

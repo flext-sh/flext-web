@@ -2,56 +2,46 @@
 
 from __future__ import annotations
 
-import argparse
 import sys
+from typing import Annotated, override
 
-from flext_web import FlextWeb, FlextWebSettings, p, r, t, web
+from flext_cli import cli, m as cli_m, u as cli_u
+
+from flext_web import FlextWebSettings, p, r, s, t, web
 
 
-class FlextWebCliService:
-    """CLI adapter over the canonical `web` facade."""
+class FlextWebRunCommand(s[bool]):
+    """Pydantic-driven CLI command for running the flext-web service."""
 
-    def __init__(self, api: FlextWeb | None = None) -> None:
-        """Initialize the CLI with a facade instance."""
-        super().__init__()
-        self._api = api if api is not None else web
+    host: Annotated[
+        str | None,
+        cli_u.Field(default=None, description="Bind host (overrides settings)."),
+    ] = None
+    port: Annotated[
+        int | None,
+        cli_u.Field(default=None, description="Bind port (overrides settings)."),
+    ] = None
+    debug: Annotated[
+        bool,
+        cli_u.Field(default=False, description="Enable debug mode."),
+    ] = False
+    no_debug: Annotated[
+        bool,
+        cli_u.Field(default=False, description="Force disable debug mode."),
+    ] = False
 
-    @staticmethod
-    def build_parser() -> argparse.ArgumentParser:
-        """Build the CLI argument parser."""
-        parser = argparse.ArgumentParser(prog="flext-web")
-        parser.add_argument("--host", default=None)
-        parser.add_argument("--port", type=int, default=None)
-        parser.add_argument("--debug", action="store_true")
-        parser.add_argument("--no-debug", action="store_true")
-        return parser
-
-    @classmethod
-    def parse_args(
-        cls,
-        argv: t.StrSequence | None = None,
-    ) -> argparse.Namespace:
-        """Parse CLI arguments."""
-        return cls.build_parser().parse_args(list(argv) if argv is not None else None)
-
-    @classmethod
-    def main(cls, argv: t.StrSequence | None = None) -> None:
-        """CLI entry point following the console script contract."""
-        result = cls().run(argv)
-        sys.exit(0 if result.success else 1)
-
-    def run(self, argv: t.StrSequence | None = None) -> p.Result[bool]:
-        """Run the public web facade from CLI arguments."""
-        args = self.parse_args(argv)
-        debug_value = False if args.no_debug else bool(args.debug)
+    @override
+    def execute(self) -> p.Result[bool]:
+        """Apply CLI overrides and start the public web facade."""
+        debug_value = False if self.no_debug else self.debug
         config_result = FlextWebSettings.create_web_config(
-            host=args.host,
-            port=args.port,
+            host=self.host,
+            port=self.port,
             debug=debug_value,
         )
         if config_result.failure:
             return r[bool].fail(config_result.error)
-        service_result = self._api.create_service(config_result.value)
+        service_result = web.create_service(config_result.value)
         if service_result.failure:
             return r[bool].fail(service_result.error)
         return service_result.value.start_service(
@@ -61,12 +51,38 @@ class FlextWebCliService:
         )
 
 
-def main() -> None:
+def _build_app() -> t.Cli.CliApp:
+    app = cli.create_app_with_common_params(
+        name="flext-web",
+        help_text="flext-web HTTP service launcher.",
+    )
+    cli.register_result_routes(
+        app,
+        [
+            cli_m.Cli.ResultCommandRoute(
+                name="run",
+                help_text="Start the flext-web service.",
+                model_cls=FlextWebRunCommand,
+                handler=lambda params: params.execute(),
+            ),
+        ],
+    )
+    return app
+
+
+def main(argv: t.StrSequence | None = None) -> int:
     """Console script shim required by pyproject entry points."""
-    FlextWebCliService.main(sys.argv[1:])
+    app = _build_app()
+    outcome = cli.execute_app(
+        app,
+        prog_name="flext-web",
+        args=list(argv) if argv is not None else sys.argv[1:],
+    )
+    return 0 if outcome.success else 1
 
 
 if __name__ == "__main__":
-    main()
+    cli.exit(main())
 
-__all__: list[str] = ["FlextWebCliService", "main"]
+
+__all__: list[str] = ["FlextWebRunCommand", "main"]
