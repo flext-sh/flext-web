@@ -17,11 +17,9 @@ from flext_web import (
     FlextWebHealth,
     FlextWebServices,
 )
-from flext_web.services.api_runtime import FlextWebApiRuntime
 
 
 class FlextWeb(
-    FlextWebApiRuntime,
     FlextWebApp,
     FlextWebServices,
     FlextWebAuth,
@@ -34,7 +32,7 @@ class FlextWeb(
     pass
 
 
-web = FlextWeb.instance()
+web = FlextWeb.fetch_global()
 
 
 __all__: list[str] = ["FlextWeb", "web"]
