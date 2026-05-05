@@ -22,8 +22,8 @@ class FlextWebConstants(c):
         """
 
         # === Regex authority for the Web domain ===
-        SLUG_NON_WORD_RE: ClassVar[re.Pattern[str]] = re.compile(r"[^\w\s-]+")
-        SLUG_SPLIT_RE: ClassVar[re.Pattern[str]] = re.compile(r"[-\s]+")
+        SLUG_NON_WORD_RE: ClassVar[t.RegexPattern] = re.compile(r"[^\w\s-]+")
+        SLUG_SPLIT_RE: ClassVar[t.RegexPattern] = re.compile(r"[-\s]+")
 
         # ===== Enums (keep these) =====
         @unique
