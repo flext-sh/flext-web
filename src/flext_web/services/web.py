@@ -17,13 +17,13 @@ from flext_web import (
     m,
     p,
     r,
-    s,
     t,
     u,
 )
+from flext_web.base import s
 
 
-class FlextWebServices(s[bool]):
+class FlextWebServices(s):
     """Public service layer backed by protocol runtime state."""
 
     _auth_service: FlextWebAuth | None = u.PrivateAttr(default_factory=lambda: None)
@@ -345,7 +345,7 @@ class FlextWebServices(s[bool]):
             )
         return self._health_service
 
-    def _settings_scalar_mapping(self) -> t.MappingKV[str, t.JsonValue]:
+    def _settings_scalar_mapping(self) -> t.JsonMapping:
         """Produce a JSON-value settings mapping safe for subservice overrides."""
         raw = self.settings.model_dump(exclude_none=True, mode="json")
         return {

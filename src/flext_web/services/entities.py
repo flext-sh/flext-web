@@ -9,10 +9,11 @@ from collections.abc import (
 )
 from typing import override
 
-from flext_web import e, m, p, r, s, u
+from flext_web import e, m, p, r, u
+from flext_web.base import s
 
 
-class FlextWebEntities(s[bool]):
+class FlextWebEntities(s):
     """In-memory entity CRUD support for flext-web."""
 
     _storage: MutableMapping[str, m.Web.EntityData] = u.PrivateAttr(

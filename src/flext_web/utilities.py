@@ -61,7 +61,7 @@ class FlextWebUtilities(u):
 
         template_config: ClassVar[t.Web.RequestDict] = {}
 
-        template_globals: ClassVar[dict[str, t.JsonValue]] = {}
+        template_globals: ClassVar[t.JsonDict] = {}
 
         template_filters: ClassVar[dict[str, Callable[[str], str]]] = {}
 

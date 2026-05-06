@@ -9,12 +9,12 @@ from flext_web import (
     m,
     p,
     r,
-    s,
     u,
 )
+from flext_web.base import s
 
 
-class FlextWebHealth(s[bool]):
+class FlextWebHealth(s):
     """Health and metrics access backed by protocol runtime state."""
 
     @override

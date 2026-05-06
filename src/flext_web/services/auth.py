@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_web import e, m, p, r, s
+from flext_web import e, m, p, r
+from flext_web.base import s
 
 
-class FlextWebAuth(s[bool]):
+class FlextWebAuth(s):
     """Authentication operations for the public web facade."""
 
     def authenticate(

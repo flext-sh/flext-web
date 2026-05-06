@@ -18,12 +18,13 @@ from typing import override
 import flask
 from fastapi import FastAPI
 
-from flext_web import FlextWebSettings, c, m, p, r, s, u
+from flext_web import FlextWebSettings, c, m, p, r, u
+from flext_web.base import s
 
 type FastApiEndpointPayload = dict[str, str | bool]
 
 
-class FlextWebApp(s[bool]):
+class FlextWebApp(s):
     """Generic web application coordinator using flext-core patterns and SOLID principles.
 
     Single Responsibility: Coordinates web application creation and configuration.

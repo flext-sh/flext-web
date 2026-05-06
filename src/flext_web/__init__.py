@@ -23,7 +23,6 @@ from flext_web.__version__ import (
 
 if _t.TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
-
     from flext_web.api import FlextWeb, web
     from flext_web.base import FlextWebServiceBase, s
     from flext_web.constants import FlextWebConstants, c

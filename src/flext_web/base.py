@@ -12,14 +12,14 @@ from __future__ import annotations
 from abc import ABC
 from typing import Annotated, override
 
-from flext_core import FlextSettings, s
+from flext_core import FlextService
 from flext_web import FlextWebSettings, t, u
 
 
 class FlextWebServiceBase[
-    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload],
+    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload] = bool,
 ](
-    s[TDomainResult],
+    FlextService[TDomainResult],
     ABC,
 ):
     """Base class for flext-web services with typed `web` settings access."""
@@ -33,7 +33,7 @@ class FlextWebServiceBase[
     @override
     def settings(self) -> FlextWebSettings:
         """Return the typed web settings bound to this service runtime."""
-        return FlextSettings.fetch_global().fetch_namespace("web", FlextWebSettings)
+        return FlextWebSettings.fetch_global()
 
 
 s = FlextWebServiceBase
