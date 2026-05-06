@@ -14,7 +14,6 @@ from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Protocol, override, runtime_checkable
 
 from flext_cli import p
-
 from flext_web import t
 
 if TYPE_CHECKING:

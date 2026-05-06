@@ -247,4 +247,4 @@ class FlextWebConstants(c):
 
 c = FlextWebConstants
 
-__all__: tuple[str, ...] = ("FlextWebConstants", "c")
+__all__: t.StrSequence = ("FlextWebConstants", "c")

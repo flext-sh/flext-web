@@ -351,7 +351,7 @@ class FlextWebServices(s):
         return {
             key: value
             for key, value in raw.items()
-            if isinstance(value, (str, int, float, bool))
+            if isinstance(value, t.PRIMITIVES_TYPES)
         }
 
 
