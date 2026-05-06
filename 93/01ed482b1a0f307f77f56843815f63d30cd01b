@@ -1,0 +1,54 @@
+src/flext_web/utilities.py
+  s_552d8e4891a938::t_75ad9fcca9accf 64
+src/flext_web/base.py
+  s_5a9c2b140a8456::t_91ead4a7a01910 20
+  h_5cf852cc46bf92 36
+  s_5a9c2b140a8456::t_d77521b0e6d477 15,22
+src/flext_web/services/health.py
+  s_5a9c2b140a8456::t_febbe3bac04c6f 14
+src/flext_web/services/auth.py
+  s_5a9c2b140a8456::t_febbe3bac04c6f 7-8
+src/flext_web/services/handlers.py
+  s_5a9c2b140a8456::t_febbe3bac04c6f 12-13
+src/flext_web/services/entities.py
+  s_5a9c2b140a8456::t_febbe3bac04c6f 12-13
+src/flext_web/api.py
+  s_5a9c2b140a8456::t_364d93ce044009 12-17
+src/flext_web/services/web.py
+  s_5a9c2b140a8456::t_febbe3bac04c6f 23
+  s_552d8e4891a938::t_224e779f9bac1b 348
+  s_5a9c2b140a8456::t_8eca5786edf7bd 26
+src/flext_web/services/app.py
+  s_5a9c2b140a8456::t_febbe3bac04c6f 21-22
+pyproject.toml
+  s_5a9c2b140a8456::t_798050011a7364 155,530-571,575
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "9301ed482b1a0f307f77f56843815f63d30cd01b",
+  "prompts": {},
+  "humans": {
+    "h_5cf852cc46bf92": {
+      "author": "FLEXT Bot <team@flext.sh>"
+    }
+  },
+  "sessions": {
+    "s_552d8e4891a938": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "35c0040b-2ae9-466e-90aa-7721509e1e19",
+        "model": "unknown"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>"
+    },
+    "s_5a9c2b140a8456": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019dfddc-86ee-79a0-b5bf-0433a8110b6a",
+        "model": "gpt-5.5"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>"
+    }
+  }
+}
