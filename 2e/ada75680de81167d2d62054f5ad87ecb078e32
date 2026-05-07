@@ -1,0 +1,19 @@
+src/flext_web/protocols.py
+  s_0290f35b98ef0c::t_5378def8bb32ed 14,207-215,232
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "2eada75680de81167d2d62054f5ad87ecb078e32",
+  "prompts": {},
+  "sessions": {
+    "s_0290f35b98ef0c": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "0c4cc853-563f-48ad-a39a-f49b587090b8",
+        "model": "unknown"
+      },
+      "human_author": "FLEXT Bot <team@flext.sh>"
+    }
+  }
+}
