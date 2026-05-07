@@ -9,7 +9,7 @@ from flext_cli import cli, m as cli_m, u as cli_u
 from flext_web import FlextWebSettings, p, r, s, t, web
 
 
-class FlextWebRunCommand(s[bool]):
+class FlextWebRunCommand(s):
     """Pydantic-driven CLI command for running the flext-web service."""
 
     host: Annotated[

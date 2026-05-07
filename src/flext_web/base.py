@@ -10,24 +10,19 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from abc import ABC
-from typing import Annotated, override
+from typing import ClassVar, override
 
 from flext_core import FlextService
-from flext_web import FlextWebSettings, t, u
+from flext_web import FlextWebSettings
 
 
-class FlextWebServiceBase[
-    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload] = bool,
-](
-    FlextService[TDomainResult],
+class FlextWebServiceBase(
+    FlextService[bool],
     ABC,
 ):
     """Base class for flext-web services with typed `web` settings access."""
 
-    settings_type: Annotated[
-        type | None,
-        u.Field(description="Settings class for web services"),
-    ] = FlextWebSettings
+    _settings_type: ClassVar[type[FlextWebSettings]] = FlextWebSettings
 
     @property
     @override

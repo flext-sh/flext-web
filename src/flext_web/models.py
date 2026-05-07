@@ -329,7 +329,7 @@ class FlextWebModels(m):
             ) -> p.Result[FlextWebModels.Web.AppRequest]:
                 """Re-validate an :class:`AppRequest` snapshot."""
                 return r[FlextWebModels.Web.AppRequest].create_from_callable(
-                    lambda: cls.model_validate(settings.model_dump()),
+                    lambda: cls.model_validate(settings),
                 )
 
         class AppResponse(m.Value):
@@ -453,7 +453,7 @@ class FlextWebModels(m):
             ) -> p.Result[FlextWebModels.Web.AppResponse]:
                 """Re-validate an :class:`AppResponse` snapshot."""
                 return r[FlextWebModels.Web.AppResponse].create_from_callable(
-                    lambda: cls.model_validate(settings.model_dump()),
+                    lambda: cls.model_validate(settings),
                 )
 
         # APPLICATION MODELS (Aggregates - consistency boundaries)
