@@ -11,13 +11,10 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import TYPE_CHECKING, Protocol, override, runtime_checkable
+from typing import Protocol, override, runtime_checkable
 
 from flext_cli import p
 from flext_web import t
-
-if TYPE_CHECKING:
-    from starlette.responses import Response as StarletteResponse
 
 
 class FlextWebProtocols(p):
@@ -208,6 +205,15 @@ class FlextWebProtocols(p):
                 ...
 
         @runtime_checkable
+        class FrameworkResponse(Protocol):
+            """Protocol for framework response objects exposed by middleware."""
+
+            @property
+            def status_code(self) -> int:
+                """Return the HTTP status code."""
+                ...
+
+        @runtime_checkable
         class FastApiLikeApp(Protocol):
             """Duck-type protocol for FastAPI-like framework apps."""
 
@@ -223,7 +229,7 @@ class FlextWebProtocols(p):
             def middleware(
                 self,
                 middleware_type: str,
-            ) -> Callable[..., Callable[..., StarletteResponse]]:
+            ) -> Callable[..., Callable[..., FlextWebProtocols.Web.FrameworkResponse]]:
                 """Register middleware."""
                 ...
 
