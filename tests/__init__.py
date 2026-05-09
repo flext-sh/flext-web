@@ -14,7 +14,8 @@ from flext_core.lazy import (
 if _t.TYPE_CHECKING:
     from flext_tests import td, tf, tk, tm, tv
 
-    from flext_web import d, e, h, r, s, x
+    from flext_web import d, e, h, r, x
+    from tests.base import TestsFlextWebServiceBase, s
     from tests.constants import TestsFlextWebConstants, c
     from tests.integration.test_examples import (
         ExamplesFullFunctionalityTest,
@@ -22,6 +23,7 @@ if _t.TYPE_CHECKING:
     )
     from tests.models import TestsFlextWebModels, m
     from tests.protocols import TestsFlextWebProtocols, p
+    from tests.settings import TestsFlextWebSettings
     from tests.typings import TestsFlextWebTypes, t
     from tests.unit.test___init__ import TestsFlextWebInit
     from tests.unit.test___main__ import TestsFlextWebMain
@@ -45,6 +47,10 @@ _LAZY_IMPORTS = merge_lazy_imports(
     ),
     build_lazy_import_map(
         {
+            ".base": (
+                "TestsFlextWebServiceBase",
+                "s",
+            ),
             ".constants": (
                 "TestsFlextWebConstants",
                 "c",
@@ -61,6 +67,7 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "TestsFlextWebProtocols",
                 "p",
             ),
+            ".settings": ("TestsFlextWebSettings",),
             ".typings": (
                 "TestsFlextWebTypes",
                 "t",
@@ -95,7 +102,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
                 "e",
                 "h",
                 "r",
-                "s",
                 "x",
             ),
         },
@@ -142,6 +148,8 @@ __all__: list[str] = [
     "TestsFlextWebProtocols",
     "TestsFlextWebProtocolsUnit",
     "TestsFlextWebService",
+    "TestsFlextWebServiceBase",
+    "TestsFlextWebSettings",
     "TestsFlextWebTypes",
     "TestsFlextWebTypesUnit",
     "TestsFlextWebUtilities",
