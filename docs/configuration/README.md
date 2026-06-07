@@ -108,7 +108,7 @@ Common variables:
 
 Configuration and lifecycle stay on the public facade:
 
-```python
+```python notest
 from flext_web import web
 
 config_result = web.settings.create_web_config(

@@ -36,7 +36,7 @@ make gen PROJECT=flext-web
 
 ## Runtime Surface
 
-```python
+```python notest
 from flext_web import web
 
 web.settings

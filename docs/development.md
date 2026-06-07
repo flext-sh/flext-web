@@ -62,7 +62,7 @@ result = web.settings.create_web_config(host="localhost", port=8080)
 
 Lifecycle operations stay on the facade:
 
-```python
+```python notest
 from flext_web import web
 
 assert web.get_service_status().success

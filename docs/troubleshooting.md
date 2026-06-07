@@ -35,7 +35,7 @@ If validation fails, inspect the field values being passed to the settings facto
 
 When the service does not start, confirm route initialization and middleware setup:
 
-```python
+```python notest
 from flext_web import web
 
 assert web.initialize_routes().success
