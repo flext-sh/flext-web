@@ -12,7 +12,7 @@ import uuid
 from collections.abc import (
     MutableSequence,
 )
-from datetime import UTC, datetime
+from datetime import datetime
 from threading import Thread
 from typing import Annotated, ClassVar, override
 from wsgiref.simple_server import WSGIServer
@@ -56,7 +56,7 @@ class FlextWebModels(m):
             Attributes:
                 headers: HTTP headers dictionary mapping header names to values
                 body: Message body as string, dict, or None for no body
-                timestamp: UTC timestamp when message was created
+                timestamp: Timestamp when message was created (configured timezone)
 
             """
 
@@ -75,9 +75,9 @@ class FlextWebModels(m):
             timestamp: Annotated[
                 datetime,
                 u.Field(
-                    description="UTC timestamp of message creation",
+                    description="Timestamp of message creation (configured timezone)",
                 ),
-            ] = u.Field(default_factory=lambda: datetime.now(UTC))
+            ] = u.Field(default_factory=lambda: u.now())
 
         class Request(Message):
             """HTTP request model with complete validation.
@@ -280,7 +280,7 @@ class FlextWebModels(m):
                 u.Field(
                     description="Request timestamp",
                 ),
-            ] = u.Field(default_factory=lambda: datetime.now(UTC))
+            ] = u.Field(default_factory=lambda: u.now())
             request_id: Annotated[
                 str,
                 u.Field(
@@ -376,7 +376,7 @@ class FlextWebModels(m):
                 u.Field(
                     description="Response timestamp",
                 ),
-            ] = u.Field(default_factory=lambda: datetime.now(UTC))
+            ] = u.Field(default_factory=lambda: u.now())
             elapsed_time: Annotated[
                 t.NonNegativeFloat,
                 u.Field(
@@ -1062,7 +1062,7 @@ class FlextWebModels(m):
                 u.Field(
                     description="Request timestamp",
                 ),
-            ] = u.Field(default_factory=lambda: datetime.now(UTC))
+            ] = u.Field(default_factory=lambda: u.now())
 
         class WebResponse(m.Value):
             """Web response model with status tracking."""
@@ -1102,7 +1102,7 @@ class FlextWebModels(m):
                 u.Field(
                     description="Response timestamp",
                 ),
-            ] = u.Field(default_factory=lambda: datetime.now(UTC))
+            ] = u.Field(default_factory=lambda: u.now())
 
         # FACTORY METHODS (Creation patterns)
 
@@ -1174,7 +1174,7 @@ class FlextWebModels(m):
                         "headers": dict(headers_validated),
                         "body": body,
                         "request_id": str(uuid.uuid4()),
-                        "timestamp": datetime.now(UTC),
+                        "timestamp": u.now(),
                     })
                 )
                 return validated
@@ -1218,7 +1218,7 @@ class FlextWebModels(m):
                         "headers": dict(headers_validated),
                         "body": body,
                         "response_id": str(uuid.uuid4()),
-                        "timestamp": datetime.now(UTC),
+                        "timestamp": u.now(),
                     })
                 )
                 return validated
