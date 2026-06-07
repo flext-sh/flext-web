@@ -1,0 +1,22 @@
+src/flext_web/models.py
+  s_9942ef7a89ba9a::t_6f2c1f4059c104 15
+  s_9942ef7a89ba9a::t_8ff0e9ace25041 59
+  s_9942ef7a89ba9a::t_c1293018367b6d 78
+  s_9942ef7a89ba9a::t_26e433c090ce4f 80,283,379,1065,1105,1177,1221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "59e09248b54735f3d803dd9bceb099718299699d",
+  "prompts": {},
+  "sessions": {
+    "s_9942ef7a89ba9a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "84fb5cb9-a1bd-4654-9339-7a49b63e96d1",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Zed <hi@zed.dev>"
+    }
+  }
+}
