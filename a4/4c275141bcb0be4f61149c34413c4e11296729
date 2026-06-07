@@ -1,0 +1,39 @@
+examples/README.md
+  s_73cbfc60e45e37::t_0e88f4c12da8b1 17
+docs/guides/development.md
+  s_73cbfc60e45e37::t_9700100ddd8906 152,169,189,228,313,404,432
+docs/guides/testing.md
+  s_73cbfc60e45e37::t_a8687efbc2a30e 76,128,176,219,292,333,357,396,439,471,517,588,611,638,658,700
+docs/guides/troubleshooting.md
+  s_73cbfc60e45e37::t_4c100414b5ebec 88,118,139,148,175,196,210,225,255,291,300,315,325,348,357,372,380,397,408,430,442,453,490,527,558,619,642,722,733,771,784,795,808
+docs/guides/configuration.md
+  s_73cbfc60e45e37::t_e948f992ce75c8 106,144,164,178,231,264,308,344,380,417,455
+docs/getting-started.md
+  s_73cbfc60e45e37::t_7e8b9353319299 22
+docs/development.md
+  s_73cbfc60e45e37::t_e99a9763c50ae7 65
+docs/configuration/README.md
+  s_73cbfc60e45e37::t_c5963d2d951791 111
+docs/guides/getting-started.md
+  s_73cbfc60e45e37::t_86312d818a9173 101,133,154,207,278
+docs/troubleshooting.md
+  s_73cbfc60e45e37::t_2178a35fb9281c 38
+docs/development/README.md
+  s_73cbfc60e45e37::t_9846ec0baf91c8 39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a44c275141bcb0be4f61149c34413c4e11296729",
+  "prompts": {},
+  "sessions": {
+    "s_73cbfc60e45e37": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "80f2c44c-f1f2-49a0-8035-ccac60ac602b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Zed <hi@zed.dev>"
+    }
+  }
+}
