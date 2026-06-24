@@ -3,15 +3,15 @@
 # flext-web API Overview
 
 - Package: `flext_web`
-- Version: ``
+- Version: `0.12.0-dev`
 - Description: FLEXT Web - Modern Web Interface for FLEXT Platform
 - Project class: `platform`
 - Keywords: `enterprise`, `flask`, `flext`, `frontend`, `typed`, `web`
-- Main facades: `FlextWebServices`, `FlextWebHealth`, `FlextWebTypes`, `FlextWebConstants`, `FlextWebModels`, `FlextWebApp`, `FlextWebAuth`, `FlextWebServiceBase` (+7 more)
+- Main facades: _none_
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextWebServices`, `FlextWebHealth`, `FlextWebTypes`, `FlextWebConstants`, `FlextWebModels`, `FlextWebApp`, `FlextWebAuth`, `web`, `FlextWebServiceBase`, `FlextWebSettings` (+6 more)
+- Public symbol exports: `FlextWebTypes`, `web`, `FlextWebHealth`, `FlextWebEntities`, `FlextWebUtilities`, `FlextWebProtocols`, `FlextWeb`, `FlextWebServiceBase`, `FlextWebConstants`, `FlextWebApp` (+5 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `16`
+- Generated module pages: `14`
 
 ## Next Pages
 

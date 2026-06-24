@@ -19,7 +19,7 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextWebServices`, `FlextWebHealth`, `FlextWebTypes`, `FlextWebConstants`, `FlextWebModels`, `FlextWebApp` (+9 more)
-- Generated module pages: `16`
+- Primary facades: _none_
+- Generated module pages: `14`
 
 - [Back to project docs](../index.md)
