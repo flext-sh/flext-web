@@ -1,14 +1,5 @@
 # Development Guide - flext-web
 
-<!-- TOC START -->
-- [Current Architecture](#current-architecture)
-- [Development Workflow](#development-workflow)
-- [Public API Rule](#public-api-rule)
-- [Settings Rule](#settings-rule)
-- [Service Rule](#service-rule)
-- [Quality Rule](#quality-rule)
-<!-- TOC END -->
-
 ## Current Architecture
 
 `flext-web` is centered on one canonical public facade:
@@ -62,7 +53,7 @@ result = web.settings.create_web_config(host="localhost", port=8080)
 
 Lifecycle operations stay on the facade:
 
-```python notest
+```python
 from flext_web import web
 
 assert web.get_service_status().success

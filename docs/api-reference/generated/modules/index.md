@@ -4,13 +4,11 @@
 
 These pages are generated from public modules and their docstrings.
 
-- [flext_web](flext_web.md)
 - [flext_web.api](api.md)
 - [flext_web.base](base.md)
 - [flext_web.constants](constants.md)
 - [flext_web.models](models.md)
 - [flext_web.protocols](protocols.md)
-- [flext_web.services.api_runtime](services/api_runtime.md)
 - [flext_web.services.app](services/app.md)
 - [flext_web.services.auth](services/auth.md)
 - [flext_web.services.entities](services/entities.md)

@@ -1,12 +1,5 @@
 # Troubleshooting - flext-web
 
-<!-- TOC START -->
-- [Import Errors](#import-errors)
-- [Settings Issues](#settings-issues)
-- [Runtime Issues](#runtime-issues)
-- [Quick Checks](#quick-checks)
-<!-- TOC END -->
-
 ## Import Errors
 
 If importing the public facade fails, verify the workspace and generated exports:
@@ -35,7 +28,7 @@ If validation fails, inspect the field values being passed to the settings facto
 
 When the service does not start, confirm route initialization and middleware setup:
 
-```python notest
+```python
 from flext_web import web
 
 assert web.initialize_routes().success

@@ -1,11 +1,5 @@
 # Getting Started - flext-web
 
-<!-- TOC START -->
-- [Install](#install)
-- [Basic Usage](#basic-usage)
-- [Working Pattern](#working-pattern)
-<!-- TOC END -->
-
 `flext-web` exposes its canonical public facade as `web`.
 
 ## Install
@@ -19,7 +13,7 @@ python -c "from flext_web import web; print('Import successful')"
 
 ## Basic Usage
 
-```python notest
+```python
 from flext_web import web
 
 settings_result = web.settings.create_web_config(

@@ -1,14 +1,5 @@
 # Configuration Guide - flext-web
 
-<!-- TOC START -->
-- [Canonical Access](#canonical-access)
-- [Settings Model](#settings-model)
-- [Validation](#validation)
-- [Environment Variables](#environment-variables)
-- [Service Bootstrap](#service-bootstrap)
-- [Operational Rules](#operational-rules)
-<!-- TOC END -->
-
 `flext-web` exposes configuration through the registered namespace on the
 public facade:
 
@@ -108,7 +99,7 @@ Common variables:
 
 Configuration and lifecycle stay on the public facade:
 
-```python notest
+```python
 from flext_web import web
 
 config_result = web.settings.create_web_config(

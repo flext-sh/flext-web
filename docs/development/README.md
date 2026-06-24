@@ -1,13 +1,5 @@
 # flext-web Development Reference
 
-<!-- TOC START -->
-- [Canonical Entry Point](#canonical-entry-point)
-- [Implementation Map](#implementation-map)
-- [Development Commands](#development-commands)
-- [Runtime Surface](#runtime-surface)
-- [Contribution Guardrails](#contribution-guardrails)
-<!-- TOC END -->
-
 This reference tracks the current implementation, not historical or target
 architectures.
 
@@ -36,7 +28,7 @@ make gen PROJECT=flext-web
 
 ## Runtime Surface
 
-```python notest
+```python
 from flext_web import web
 
 web.settings
