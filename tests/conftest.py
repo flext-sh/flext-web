@@ -11,7 +11,8 @@ from collections.abc import Generator
 
 import pytest
 
-from tests import c, u
+from tests.constants import c
+from tests.utilities import u
 
 
 @pytest.fixture(autouse=True)

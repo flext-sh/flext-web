@@ -11,7 +11,7 @@ from collections.abc import (
 
 from flext_tests import tm
 
-from tests import c
+from tests.constants import c
 
 
 class TestsFlextWebConstantsUnit:

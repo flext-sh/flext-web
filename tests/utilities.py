@@ -15,10 +15,13 @@ from threading import Lock
 from typing import ClassVar
 
 import pytest
-from flext_tests import FlextTestsUtilities
+from flext_tests import FlextTestsUtilities, e, r
 
 from flext_web import FlextWebUtilities
-from tests import c, e, m, p, r, t
+from tests.constants import c
+from tests.models import m
+from tests.protocols import p
+from tests.typings import t
 
 
 class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):

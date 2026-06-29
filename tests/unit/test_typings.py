@@ -8,7 +8,8 @@ from __future__ import annotations
 from flext_tests import tm
 
 from flext_web import web
-from tests import c, m
+from tests.constants import c
+from tests.models import m
 
 
 class TestsFlextWebTypesUnit:

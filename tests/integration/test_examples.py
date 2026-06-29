@@ -7,10 +7,12 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
-from flext_tests import tm
+from flext_tests import r, tm
 
 from flext_web import FlextWebUtilities, web
-from tests import p, r, t, u
+from tests.protocols import p
+from tests.typings import t
+from tests.utilities import u
 
 logger = u.fetch_logger(__name__)
 

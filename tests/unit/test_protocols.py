@@ -14,10 +14,13 @@ from typing import override
 import flask
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
-from flext_tests import tm
+from flext_tests import r, tm
 
 from flext_core import FlextContainer, FlextContext, FlextSettings
-from tests import c, p, r, t, u
+from tests.constants import c
+from tests.protocols import p
+from tests.typings import t
+from tests.utilities import u
 
 
 class TestsFlextWebProtocolsUnit:

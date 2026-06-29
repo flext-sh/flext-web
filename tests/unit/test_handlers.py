@@ -5,7 +5,8 @@ from __future__ import annotations
 from flext_tests import tm
 
 from flext_web import web
-from tests import m, u
+from tests.models import m
+from tests.utilities import u
 
 
 class TestsFlextWebHandlers:
