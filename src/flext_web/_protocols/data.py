@@ -1,4 +1,4 @@
-"""Web data-access protocol shard.
+"""Web data-access and request-handling protocol shard.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -14,7 +14,7 @@ from flext_web import t
 
 
 class FlextWebProtocolsData:
-    """Data-access protocol shard."""
+    """Data-access protocol shard: repository and handler patterns."""
 
     class Web:
         """Web data protocols."""

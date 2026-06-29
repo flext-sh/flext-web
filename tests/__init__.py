@@ -12,34 +12,42 @@ from flext_core.lazy import (
 )
 
 if _t.TYPE_CHECKING:
-    from flext_tests import td, tf, tk, tm, tv
+    from flext_tests import td as td, tf as tf, tk as tk, tm as tm, tv as tv
 
-    from flext_web import d, e, h, r, x
-    from tests.base import TestsFlextWebServiceBase, s
-    from tests.constants import TestsFlextWebConstants, c
+    from flext_web import d as d, e as e, h as h, r as r, x as x
+    from tests.base import TestsFlextWebServiceBase as TestsFlextWebServiceBase, s as s
+    from tests.constants import TestsFlextWebConstants as TestsFlextWebConstants, c as c
     from tests.integration.test_examples import (
-        ExamplesFullFunctionalityTest,
-        TestsFlextWebExamples,
+        ExamplesFullFunctionalityTest as ExamplesFullFunctionalityTest,
+        TestsFlextWebExamples as TestsFlextWebExamples,
     )
-    from tests.models import TestsFlextWebModels, m
-    from tests.protocols import TestsFlextWebProtocols, p
-    from tests.settings import TestsFlextWebSettings
-    from tests.typings import TestsFlextWebTypes, t
-    from tests.unit.test___init__ import TestsFlextWebInit
-    from tests.unit.test___main__ import TestsFlextWebMain
-    from tests.unit.test_api import TestsFlextWebApi
-    from tests.unit.test_app import TestsFlextWebApp
-    from tests.unit.test_config import TestsFlextWebConfig
-    from tests.unit.test_constants import TestsFlextWebConstantsUnit
-    from tests.unit.test_fields import TestsFlextWebFields
-    from tests.unit.test_handlers import TestsFlextWebHandlers
-    from tests.unit.test_models import TestsFlextWebModelsUnit
-    from tests.unit.test_protocols import TestsFlextWebProtocolsUnit
-    from tests.unit.test_services import TestsFlextWebService
-    from tests.unit.test_typings import TestsFlextWebTypesUnit
-    from tests.unit.test_utilities import TestsFlextWebUtilitiesUnit
-    from tests.unit.test_version import TestsFlextWebVersion
-    from tests.utilities import TestsFlextWebUtilities, u
+    from tests.models import TestsFlextWebModels as TestsFlextWebModels, m as m
+    from tests.protocols import TestsFlextWebProtocols as TestsFlextWebProtocols, p as p
+    from tests.settings import TestsFlextWebSettings as TestsFlextWebSettings
+    from tests.typings import TestsFlextWebTypes as TestsFlextWebTypes, t as t
+    from tests.unit.test___init__ import TestsFlextWebInit as TestsFlextWebInit
+    from tests.unit.test___main__ import TestsFlextWebMain as TestsFlextWebMain
+    from tests.unit.test_api import TestsFlextWebApi as TestsFlextWebApi
+    from tests.unit.test_app import TestsFlextWebApp as TestsFlextWebApp
+    from tests.unit.test_config import TestsFlextWebConfig as TestsFlextWebConfig
+    from tests.unit.test_constants import (
+        TestsFlextWebConstantsUnit as TestsFlextWebConstantsUnit,
+    )
+    from tests.unit.test_fields import TestsFlextWebFields as TestsFlextWebFields
+    from tests.unit.test_handlers import TestsFlextWebHandlers as TestsFlextWebHandlers
+    from tests.unit.test_models import (
+        TestsFlextWebModelsUnit as TestsFlextWebModelsUnit,
+    )
+    from tests.unit.test_protocols import (
+        TestsFlextWebProtocolsUnit as TestsFlextWebProtocolsUnit,
+    )
+    from tests.unit.test_services import TestsFlextWebService as TestsFlextWebService
+    from tests.unit.test_typings import TestsFlextWebTypesUnit as TestsFlextWebTypesUnit
+    from tests.unit.test_utilities import (
+        TestsFlextWebUtilitiesUnit as TestsFlextWebUtilitiesUnit,
+    )
+    from tests.unit.test_version import TestsFlextWebVersion as TestsFlextWebVersion
+    from tests.utilities import TestsFlextWebUtilities as TestsFlextWebUtilities, u as u
 _LAZY_IMPORTS = merge_lazy_imports(
     (
         ".integration",

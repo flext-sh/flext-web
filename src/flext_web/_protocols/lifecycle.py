@@ -14,7 +14,7 @@ from flext_web import t
 
 
 class FlextWebProtocolsLifecycle:
-    """Application lifecycle protocol shard."""
+    """Lifecycle protocol shard: application and service management."""
 
     class Web:
         """Web lifecycle protocols."""

@@ -1,3 +1,10 @@
-"""Protocol namespace shards for FLEXT Web."""
+"""FLEXT Web protocol shards.
 
-__all__: list[str] = []
+Internal package: ``flext_web.protocols`` re-exports the composed facade.
+Do not import directly from here; use ``from flext_web import p``.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
