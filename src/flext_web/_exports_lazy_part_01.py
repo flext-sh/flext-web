@@ -7,12 +7,8 @@ from flext_core.lazy import build_lazy_import_map
 
 FLEXT_WEB_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
     {
-        "._protocols.config": ("FlextWebProtocolsConfig",),
-        "._protocols.data": ("FlextWebProtocolsData",),
-        "._protocols.framework": ("FlextWebProtocolsFramework",),
-        "._protocols.lifecycle": ("FlextWebProtocolsLifecycle",),
-        "._protocols.monitoring": ("FlextWebProtocolsMonitoring",),
-        "._protocols.template": ("FlextWebProtocolsTemplate",),
+        "._models": ("_models",),
+        "._protocols": ("_protocols",),
         ".api": (
             "FlextWeb",
             "web",

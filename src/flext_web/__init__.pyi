@@ -1,32 +1,32 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-
-from flext_core import d, e, h, r, x
+from flext_core import d as d, e as e, h as h, r as r, x as x
+from flext_web import services as services
 from flext_web.__version__ import (
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
+    __author__ as __author__,
+    __author_email__ as __author_email__,
+    __description__ as __description__,
+    __license__ as __license__,
+    __title__ as __title__,
+    __url__ as __url__,
+    __version__ as __version__,
+    __version_info__ as __version_info__,
 )
-from flext_web.api import FlextWeb, web
-from flext_web.base import FlextWebServiceBase, s
-from flext_web.constants import FlextWebConstants, c
-from flext_web.models import FlextWebModels, m
-from flext_web.protocols import FlextWebProtocols, p
-from flext_web.services.app import FlextWebApp
-from flext_web.services.auth import FlextWebAuth
-from flext_web.services.entities import FlextWebEntities
-from flext_web.services.handlers import FlextWebHandlers
-from flext_web.services.health import FlextWebHealth
-from flext_web.services.web import FlextWebServices
-from flext_web.settings import FlextWebSettings
-from flext_web.typings import FlextWebTypes, t
-from flext_web.utilities import FlextWebUtilities, u
+from flext_web.api import FlextWeb as FlextWeb, web as web
+from flext_web.base import FlextWebServiceBase as FlextWebServiceBase, s as s
+from flext_web.constants import FlextWebConstants as FlextWebConstants, c as c
+from flext_web.models import FlextWebModels as FlextWebModels, m as m
+from flext_web.protocols import FlextWebProtocols as FlextWebProtocols, p as p
+from flext_web.services.app import FlextWebApp as FlextWebApp
+from flext_web.services.auth import FlextWebAuth as FlextWebAuth
+from flext_web.services.entities import FlextWebEntities as FlextWebEntities
+from flext_web.services.handlers import FlextWebHandlers as FlextWebHandlers
+from flext_web.services.health import FlextWebHealth as FlextWebHealth
+from flext_web.services.web import FlextWebServices as FlextWebServices
+from flext_web.settings import FlextWebSettings as FlextWebSettings
+from flext_web.typings import FlextWebTypes as FlextWebTypes, t as t
+from flext_web.utilities import FlextWebUtilities as FlextWebUtilities, u as u
 
-__all__: tuple[str, ...] = (
+__all__ = (
     "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
@@ -57,6 +57,7 @@ __all__: tuple[str, ...] = (
     "p",
     "r",
     "s",
+    "services",
     "t",
     "u",
     "web",
