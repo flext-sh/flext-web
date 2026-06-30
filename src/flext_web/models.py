@@ -24,15 +24,6 @@ from flext_web._models import (
 
 class FlextWebModels(
     m,
-    FlextWebModelsHttp,
-    FlextWebModelsWebMessage,
-    FlextWebModelsEntity,
-    FlextWebModelsAuth,
-    FlextWebModelsResponses,
-    FlextWebModelsWebRequest,
-    FlextWebModelsConfig,
-    FlextWebModelsSystem,
-    FlextWebModelsFactory,
 ):
     """Web application models collection.
 
