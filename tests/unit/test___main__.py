@@ -1,49 +1,35 @@
-"""Unit tests for flext_web.__main__ module.
-
-Tests the CLI entry point functionality following flext standards.
-"""
+"""Unit tests for flext_web.__main__."""
 
 from __future__ import annotations
 
-import pytest
-from tests import m
+from flext_tests import tm
 
-from flext_web import __main__
-
-
-class TestFlextWebCliService:
-    """Test suite for FlextWebCliService class."""
-
-    def test_initialization(self) -> None:
-        """Test FlextWebCliService initialization."""
-        cli_service = __main__.FlextWebCliService()
-        assert cli_service is not None
-        assert hasattr(cli_service, "_logger")
-        assert hasattr(cli_service, "_api")
-
-    def test_log_status_and_return(self) -> None:
-        """Test _log_status_and_return method."""
-        cli_service = __main__.FlextWebCliService()
-        status = m.Web.ServiceResponse(
-            service="test-service",
-            status="healthy",
-            capabilities=["http_services_available"],
-            config=True,
-        )
-        result = cli_service._log_status_and_return(status)
-        assert result is True
+from flext_web import __main__, web
 
 
-class TestMainFunction:
-    """Test suite for main() function."""
+class TestsFlextWebMain:
+    """Tests for the CLI entry point."""
 
-    def test_main_structure(self) -> None:
-        """Test main function structure and imports."""
-        assert callable(__main__.FlextWebCliService.main)
-        assert hasattr(__main__.FlextWebCliService, "main")
+    def setup_method(self) -> None:
+        """Reset shared runtime state through the public facade before each test."""
+        apps_result = web.list_apps()
+        if apps_result.success:
+            for app in apps_result.value:
+                if app.status == "running":
+                    _ = web.stop_app(app.id)
+        status_result = web.service_status()
+        if status_result.success and status_result.value.status == "operational":
+            _ = web.stop_service()
 
-    def test_main_module_execution(self) -> None:
-        """Test __main__ module execution (line 78)."""
-        with pytest.raises(SystemExit) as exc_info:
-            __main__.FlextWebCliService.main()
-        assert exc_info.value.code == 0
+    def test_run_command_class_exposed(self) -> None:
+        """The Pydantic-driven run command must be exported."""
+        tm.that(__main__.FlextWebRunCommand, none=False)
+
+    def test_main_callable_exposed(self) -> None:
+        """The console entry point ``main`` must be callable."""
+        tm.that(callable(__main__.main), eq=True)
+
+    def test_main_help_returns_zero(self) -> None:
+        """The CLI ``--help`` must exit with status zero through the facade."""
+        return_code = __main__.main(["--help"])
+        tm.that(return_code, eq=0)

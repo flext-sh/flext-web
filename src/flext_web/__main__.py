@@ -1,72 +1,87 @@
-"""Generic HTTP CLI Service - flext-cli Integration.
-
-Domain-agnostic CLI service using flext-cli exclusively for all CLI operations.
-Follows SOLID principles with single responsibility and proper delegation.
-
-Copyright (c) 2025 FLEXT Contributors
-SPDX-License-Identifier: MIT
-"""
+"""Console entry point for flext-web."""
 
 from __future__ import annotations
 
 import sys
+from typing import Annotated, override
 
-from flext_core import FlextLogger, r
+from flext_cli import cli, m as cli_m, u as cli_u
+from flext_web import FlextWebSettings, p, r, s, t, web
 
-from flext_web import FlextWebApi, FlextWebModels
+
+class FlextWebRunCommand(s):
+    """Pydantic-driven CLI command for running the flext-web service."""
+
+    host: Annotated[
+        str | None,
+        cli_u.Field(default=None, description="Bind host (overrides settings)."),
+    ] = None
+    port: Annotated[
+        int | None,
+        cli_u.Field(default=None, description="Bind port (overrides settings)."),
+    ] = None
+    debug: Annotated[
+        bool,
+        cli_u.Field(default=False, description="Enable debug mode."),
+    ] = False
+    no_debug: Annotated[
+        bool,
+        cli_u.Field(default=False, description="Force disable debug mode."),
+    ] = False
+
+    @override
+    def execute(self) -> p.Result[bool]:
+        """Apply CLI overrides and start the public web facade."""
+        debug_value = False if self.no_debug else self.debug
+        config_result = FlextWebSettings.create_web_config(
+            host=self.host,
+            port=self.port,
+            debug=debug_value,
+        )
+        if config_result.failure:
+            return r[bool].fail(config_result.error)
+        service_result = web.create_service(config_result.value)
+        if service_result.failure:
+            return r[bool].fail(service_result.error)
+        return service_result.value.start_service(
+            host=config_result.value.host,
+            port=config_result.value.port,
+            debug=debug_value,
+        )
 
 
-class FlextWebCliService:
-    """Generic HTTP CLI service.
+def _build_app() -> t.Cli.CliApp:
+    app = cli.create_app_with_common_params(
+        name="flext-web",
+        help_text="flext-web HTTP service launcher.",
+    )
+    cli.register_result_routes(
+        app,
+        [
+            cli_m.Cli.ResultCommandRoute(
+                name="run",
+                help_text="Start the flext-web service.",
+                model_cls=FlextWebRunCommand,
+                handler=lambda params: params.execute(),
+            ),
+        ],
+    )
+    return app
 
-    Single Responsibility: Provides HTTP service operations.
-    Uses FlextWebApi for HTTP operations following SOLID patterns.
-    """
 
-    def __init__(self) -> None:
-        """Initialize HTTP service."""
-        super().__init__()
-        self._logger = FlextLogger(__name__)
-        self._api = FlextWebApi()
-
-    @staticmethod
-    def main() -> None:
-        """CLI entry point - static method following flext-core patterns."""
-        logger = FlextLogger(__name__)
-        cli_service = FlextWebCliService()
-        result = cli_service.run()
-        if result.is_failure:
-            _ = logger.error(f"Service failed: {result.error}")
-            sys.exit(1)
-        sys.exit(0)
-
-    def run(self) -> r[bool]:
-        """Run HTTP service operations.
-
-        Returns:
-            r[bool]: Success contains True if service is operational,
-                             failure contains error message
-
-        """
-        status_result = self._api.get_service_status()
-        return status_result.map(self._log_status_and_return)
-
-    def _log_status_and_return(
-        self, status_data: FlextWebModels.Web.ServiceResponse
-    ) -> bool:
-        """Log service status and return True for success - internal state management.
-
-        Args:
-            status_data: Service status response data
-
-        Returns:
-            bool: Always True when called (indicates successful status check)
-
-        """
-        _ = self._logger.info(f"Service status: {status_data.service}")
-        return True
+def main(argv: t.StrSequence | None = None) -> int:
+    """Console script shim required by pyproject entry points."""
+    app = _build_app()
+    outcome = cli.execute_app(
+        app,
+        prog_name="flext-web",
+        args=list(argv) if argv is not None else sys.argv[1:],
+    )
+    return 0 if outcome.success else 1
 
 
 if __name__ == "__main__":
-    FlextWebCliService.main()
-__all__ = ["FlextWebCliService"]
+    cli.exit(main())
+
+
+__all__: list[str] = ["FlextWebRunCommand", "main"]

@@ -1,134 +1,124 @@
-"""Unit tests for flext_web.config module.
+"""Unit tests for public web settings behavior."""
 
-Tests the web configuration functionality following flext standards.
+from __future__ import annotations
 
-NOTE: Some validation tests are marked with xfail due to a known issue in
-FlextSettings (flext-core) where Pydantic Field constraints (ge, le, min_length)
-are not enforced. See: FlextSettings bypasses Field validation constraints.
-"""
+from flext_tests import tm
 
-import pytest
-from pydantic import ValidationError
-from tests import FlextWebSettings
+from flext_web import web
 
 
-class TestFlextWebSettings:
-    """Test suite for FlextWebSettings class."""
+class TestsFlextWebConfig:
+    """Tests for the namespaced settings exposed by `web`."""
 
     def test_initialization_with_test_environment(self) -> None:
-        """Test FlextWebSettings initialization with test environment variables.
-
-        NOTE: FlextSettings may load values from environment variables, which
-        can override Field defaults. Therefore we only verify that values are
-        present and of correct type, not specific values.
-        """
-        config = FlextWebSettings()
-        assert config.host is not None
-        assert config.port is not None
-        assert config.app_name is not None
-        assert isinstance(config.app_name, str)
-        assert len(config.app_name) > 0
+        """The public settings namespace is initialized and typed."""
+        settings = web.settings
+        tm.that(settings.host, none=False)
+        tm.that(settings.port, none=False)
+        tm.that(settings.app_name, none=False)
+        tm.that(settings.app_name, is_=str)
+        tm.that(settings.app_name, empty=False)
 
     def test_initialization_with_custom_values(self) -> None:
-        """Test FlextWebSettings initialization with custom values."""
-        config = FlextWebSettings(
-            host="0.0.0.0", port=3000, debug_mode=True, app_name="Test App"
+        """Validated overrides can be created through the public namespace."""
+        result = web.settings.create_web_config(
+            host="0.0.0.0",
+            port=3000,
+            debug=True,
         )
-        assert config.host == "0.0.0.0"
-        assert config.port == 3000
-        assert config.debug_mode is True
-        assert config.app_name == "Test App"
+        tm.ok(result)
+        settings = result.value.clone(app_name="Test App")
+        tm.that(settings.host, eq="0.0.0.0")
+        tm.that(settings.port, eq=3000)
+        tm.that(settings.debug_mode is True, eq=True)
+        tm.that(settings.app_name, eq="Test App")
 
-    @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
-    )
+    def test_debug_flags_stay_synchronized(self) -> None:
+        """Debug and debug_mode are unified by the settings model itself."""
+        result = web.settings.create_web_config(debug=True)
+        tm.ok(result)
+        tm.that(result.value.debug is True, eq=True)
+        tm.that(result.value.debug_mode is True, eq=True)
+
     def test_validation_host_empty(self) -> None:
-        """Test host validation with empty string.
-
-        Expected: ValidationError for min_length=1 violation
-        Actual: FlextSettings accepts empty string (bug in flext-core)
-        """
-        with pytest.raises(ValidationError):
-            _ = FlextWebSettings(host="")
+        """Empty hosts fail through the public settings factory."""
+        result = web.settings.create_web_config(host="")
+        tm.fail(result)
 
     def test_validation_port_range(self) -> None:
-        """Test port validation within valid range."""
-        config = FlextWebSettings(port=8080)
-        assert config.port == 8080
+        """Valid ports pass through the public settings factory."""
+        result = web.settings.create_web_config(port=8080)
+        tm.ok(result)
+        tm.that(result.value.port, eq=8080)
 
-    @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
-    )
     def test_validation_port_out_of_range(self) -> None:
-        """Test port validation outside valid range.
+        """Invalid ports fail through the public settings factory."""
+        result = web.settings.create_web_config(port=70000)
+        tm.fail(result)
 
-        Expected: ValidationError for le=65535 violation
-        Actual: FlextSettings accepts out-of-range port (bug in flext-core)
-        """
-        with pytest.raises(ValidationError):
-            _ = FlextWebSettings(port=70000)
-
-    @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
-    )
     def test_validation_secret_key_too_short(self) -> None:
-        """Test secret key validation with too short key.
-
-        Expected: ValidationError for min_length=32 violation
-        Actual: FlextSettings accepts short secret key (bug in flext-core)
-        """
-        with pytest.raises(ValidationError):
-            _ = FlextWebSettings(secret_key="short")
+        """Short secret keys fail through the public settings factory."""
+        result = web.settings.create_web_config(secret_key="short")
+        tm.fail(result)
 
     def test_validation_secret_key_valid(self) -> None:
-        """Test secret key validation with valid key."""
-        config = FlextWebSettings(secret_key="valid-secret-key-32-characters-long")
-        assert config.secret_key is not None
+        """Valid secret keys are accepted by the public settings factory."""
+        result = web.settings.create_web_config(
+            secret_key="valid-secret-key-32-characters-long",
+        )
+        tm.ok(result)
+        tm.that(result.value.secret_key, none=False)
 
     def test_ssl_configuration_valid(self) -> None:
-        """Test SSL configuration with valid cert and key paths."""
-        config = FlextWebSettings(
-            ssl_enabled=False, ssl_cert_path=None, ssl_key_path=None
+        """SSL flags remain accessible on the public settings model."""
+        settings = web.settings.clone(
+            ssl_enabled=False,
+            ssl_cert_path=None,
+            ssl_key_path=None,
         )
-        assert config.ssl_enabled is False
+        tm.that(settings.ssl_enabled is False, eq=True)
 
     def test_computed_fields(self) -> None:
-        """Test computed fields."""
-        config = FlextWebSettings(ssl_enabled=False)
-        assert config.protocol == "http"
-        config_https = FlextWebSettings(ssl_enabled=False)
-        assert config_https.protocol == "http"
+        """Computed fields are available from public settings instances."""
+        settings = web.settings.clone(ssl_enabled=False)
+        tm.that(settings.protocol, eq="http")
+        config_https = web.settings.clone(ssl_enabled=False)
+        tm.that(config_https.protocol, eq="http")
 
     def test_base_url_generation(self) -> None:
-        """Test base URL generation."""
-        config = FlextWebSettings(host="localhost", port=8080, ssl_enabled=False)
-        assert config.base_url == "http://localhost:8080"
+        """The base URL is derived from the public settings model."""
+        settings = web.settings.clone(
+            host="localhost",
+            port=8080,
+            ssl_enabled=False,
+        )
+        tm.that(settings.base_url, eq="http://localhost:8080")
 
     def test_validate_config_success(self) -> None:
-        """Test config validation with Pydantic."""
-        config = FlextWebSettings()
-        assert config.host is not None
-        assert config.port is not None
+        """The namespaced settings instance is valid as exposed."""
+        settings = web.settings
+        tm.that(settings.host, none=False)
+        tm.that(settings.port, none=False)
 
     def test_to_dict_method(self) -> None:
-        """Test config to dict conversion using Pydantic model_dump."""
-        config = FlextWebSettings(host="localhost", port=8080)
-        config_dict = config.model_dump()
-        assert config_dict["host"] == "localhost"
-        assert config_dict["port"] == 8080
-        assert "debug_mode" in config_dict
+        """The public settings model can be serialized with model_dump."""
+        settings = web.settings.clone(host="localhost", port=8080)
+        config_dict = settings.model_dump()
+        tm.that(config_dict["host"], eq="localhost")
+        tm.that(config_dict["port"], eq=8080)
+        tm.that(config_dict, has="debug_mode")
 
     def test_create_web_config_factory(self) -> None:
-        """Test web config direct instantiation with Pydantic."""
-        config = FlextWebSettings(host="test", port=9000)
-        assert config.host == "test"
-        assert config.port == 9000
+        """The public factory returns validated web settings."""
+        result = web.settings.create_web_config(host="test", port=9000)
+        tm.ok(result)
+        tm.that(result.value.host, eq="test")
+        tm.that(result.value.port, eq=9000)
 
     def test_create_web_config_class_method(self) -> None:
-        """Test create_web_config class method."""
-        result = FlextWebSettings.create_web_config()
-        assert result.is_success
-        config = result.value
-        assert isinstance(config, FlextWebSettings)
-        assert config.host is not None
-        assert config.port is not None
+        """The namespaced factory returns the canonical settings type."""
+        result = web.settings.create_web_config()
+        tm.ok(result)
+        tm.that(result.value, is_=type(web.settings))
+        tm.that(result.value.host, none=False)
+        tm.that(result.value.port, none=False)

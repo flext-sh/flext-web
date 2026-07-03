@@ -1,91 +1,156 @@
-"""FLEXT Web Tests - Test infrastructure and utilities.
-
-Provides TestsFlextWeb classes extending FlextTests and FlextWeb for comprehensive testing.
-Centralized runtime aliases: c, p, m, r, t, u, s from tests and flext_web.
-
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-"""
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Tests package."""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from flext_core.lazy import cleanup_submodule_namespace, lazy_getattr
+from flext_core.lazy import (
+    build_lazy_import_map,
+    install_lazy_exports,
+    merge_lazy_imports,
+)
 
 if TYPE_CHECKING:
-    from flext_core import r
-
-    from flext_web import (
-        FlextWebApi,
-        FlextWebApp,
-        FlextWebHandlers,
-        FlextWebServices,
-        FlextWebServices as s,
-        FlextWebSettings,
-        _ApplicationConfig,
-        _WebRequestConfig,
-        _WebResponseConfig,
+    from flext_tests import (
+        d as d,
+        e as e,
+        h as h,
+        r as r,
+        td as td,
+        tf as tf,
+        tk as tk,
+        tm as tm,
+        tv as tv,
+        x as x,
     )
-    from tests.constants import TestsFlextWebConstants, TestsFlextWebConstants as c
-    from tests.models import TestsFlextWebModels, TestsFlextWebModels as m
-    from tests.protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p
-    from tests.typings import TestsFlextWebTypes, TestsFlextWebTypes as t
-    from tests.utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
-_LAZY_IMPORTS: dict[str, tuple[str, str]] = {
-    "FlextWebApi": ("flext_web", "FlextWebApi"),
-    "FlextWebApp": ("flext_web", "FlextWebApp"),
-    "FlextWebHandlers": ("flext_web", "FlextWebHandlers"),
-    "FlextWebServices": ("flext_web", "FlextWebServices"),
-    "FlextWebSettings": ("flext_web", "FlextWebSettings"),
-    "TestsFlextWebConstants": ("tests.constants", "TestsFlextWebConstants"),
-    "TestsFlextWebModels": ("tests.models", "TestsFlextWebModels"),
-    "TestsFlextWebProtocols": ("tests.protocols", "TestsFlextWebProtocols"),
-    "TestsFlextWebTypes": ("tests.typings", "TestsFlextWebTypes"),
-    "TestsFlextWebUtilities": ("tests.utilities", "TestsFlextWebUtilities"),
-    "_ApplicationConfig": ("flext_web", "_ApplicationConfig"),
-    "_WebRequestConfig": ("flext_web", "_WebRequestConfig"),
-    "_WebResponseConfig": ("flext_web", "_WebResponseConfig"),
-    "c": ("tests.constants", "TestsFlextWebConstants"),
-    "m": ("tests.models", "TestsFlextWebModels"),
-    "p": ("tests.protocols", "TestsFlextWebProtocols"),
-    "r": ("flext_core", "r"),
-    "s": ("flext_web", "FlextWebServices"),
-    "t": ("tests.typings", "TestsFlextWebTypes"),
-    "u": ("tests.utilities", "TestsFlextWebUtilities"),
-}
-__all__ = [
-    "FlextWebApi",
-    "FlextWebApp",
-    "FlextWebHandlers",
-    "FlextWebServices",
-    "FlextWebSettings",
-    "TestsFlextWebConstants",
-    "TestsFlextWebModels",
-    "TestsFlextWebProtocols",
-    "TestsFlextWebTypes",
-    "TestsFlextWebUtilities",
-    "_ApplicationConfig",
-    "_WebRequestConfig",
-    "_WebResponseConfig",
-    "c",
-    "m",
-    "p",
-    "r",
-    "s",
-    "t",
-    "u",
-]
+
+    from tests.base import TestsFlextWebServiceBase as TestsFlextWebServiceBase, s as s
+    from tests.constants import TestsFlextWebConstants as TestsFlextWebConstants, c as c
+    from tests.integration.test_examples import (
+        ExamplesFullFunctionalityTest as ExamplesFullFunctionalityTest,
+        TestsFlextWebExamples as TestsFlextWebExamples,
+    )
+    from tests.models import TestsFlextWebModels as TestsFlextWebModels, m as m
+    from tests.protocols import TestsFlextWebProtocols as TestsFlextWebProtocols, p as p
+    from tests.settings import TestsFlextWebSettings as TestsFlextWebSettings
+    from tests.typings import TestsFlextWebTypes as TestsFlextWebTypes, t as t
+    from tests.unit.test___init__ import TestsFlextWebInit as TestsFlextWebInit
+    from tests.unit.test___main__ import TestsFlextWebMain as TestsFlextWebMain
+    from tests.unit.test_api import TestsFlextWebApi as TestsFlextWebApi
+    from tests.unit.test_app import TestsFlextWebApp as TestsFlextWebApp
+    from tests.unit.test_config import TestsFlextWebConfig as TestsFlextWebConfig
+    from tests.unit.test_constants import (
+        TestsFlextWebConstantsUnit as TestsFlextWebConstantsUnit,
+    )
+    from tests.unit.test_fields import TestsFlextWebFields as TestsFlextWebFields
+    from tests.unit.test_handlers import TestsFlextWebHandlers as TestsFlextWebHandlers
+    from tests.unit.test_models import (
+        TestsFlextWebModelsUnit as TestsFlextWebModelsUnit,
+    )
+    from tests.unit.test_protocols import (
+        TestsFlextWebProtocolsUnit as TestsFlextWebProtocolsUnit,
+    )
+    from tests.unit.test_services import TestsFlextWebService as TestsFlextWebService
+    from tests.unit.test_typings import TestsFlextWebTypesUnit as TestsFlextWebTypesUnit
+    from tests.unit.test_utilities import (
+        TestsFlextWebUtilitiesUnit as TestsFlextWebUtilitiesUnit,
+    )
+    from tests.unit.test_version import TestsFlextWebVersion as TestsFlextWebVersion
+    from tests.utilities import TestsFlextWebUtilities as TestsFlextWebUtilities, u as u
+_LAZY_IMPORTS = merge_lazy_imports(
+    (
+        ".integration",
+        ".unit",
+    ),
+    build_lazy_import_map(
+        {
+            ".base": (
+                "TestsFlextWebServiceBase",
+                "s",
+            ),
+            ".conftest": ("conftest",),
+            ".constants": (
+                "TestsFlextWebConstants",
+                "c",
+            ),
+            ".integration": ("integration",),
+            ".integration.test_examples": (
+                "ExamplesFullFunctionalityTest",
+                "TestsFlextWebExamples",
+            ),
+            ".models": (
+                "TestsFlextWebModels",
+                "m",
+            ),
+            ".protocols": (
+                "TestsFlextWebProtocols",
+                "p",
+            ),
+            ".settings": ("TestsFlextWebSettings",),
+            ".typings": (
+                "TestsFlextWebTypes",
+                "t",
+            ),
+            ".unit": ("unit",),
+            ".unit.test___init__": ("TestsFlextWebInit",),
+            ".unit.test___main__": ("TestsFlextWebMain",),
+            ".unit.test_api": ("TestsFlextWebApi",),
+            ".unit.test_app": ("TestsFlextWebApp",),
+            ".unit.test_config": ("TestsFlextWebConfig",),
+            ".unit.test_constants": ("TestsFlextWebConstantsUnit",),
+            ".unit.test_fields": ("TestsFlextWebFields",),
+            ".unit.test_handlers": ("TestsFlextWebHandlers",),
+            ".unit.test_models": ("TestsFlextWebModelsUnit",),
+            ".unit.test_protocols": ("TestsFlextWebProtocolsUnit",),
+            ".unit.test_services": ("TestsFlextWebService",),
+            ".unit.test_typings": ("TestsFlextWebTypesUnit",),
+            ".unit.test_utilities": ("TestsFlextWebUtilitiesUnit",),
+            ".unit.test_version": ("TestsFlextWebVersion",),
+            ".utilities": (
+                "TestsFlextWebUtilities",
+                "u",
+            ),
+            "flext_tests": (
+                "d",
+                "e",
+                "h",
+                "r",
+                "td",
+                "tf",
+                "tk",
+                "tm",
+                "tv",
+                "x",
+            ),
+        },
+    ),
+    exclude_names=(
+        "cleanup_submodule_namespace",
+        "install_lazy_exports",
+        "lazy_getattr",
+        "logger",
+        "merge_lazy_imports",
+        "output",
+        "output_reporting",
+        "pytest_addoption",
+        "pytest_collect_file",
+        "pytest_collection_modifyitems",
+        "pytest_configure",
+        "pytest_runtest_setup",
+        "pytest_runtest_teardown",
+        "pytest_sessionfinish",
+        "pytest_sessionstart",
+        "pytest_terminal_summary",
+        "pytest_warning_recorded",
+    ),
+    module_name=__name__,
+)
 
 
-def __getattr__(name: str) -> Any:
-    """Lazy-load module attributes on first access (PEP 562)."""
-    return lazy_getattr(name, _LAZY_IMPORTS, globals(), __name__)
-
-
-def __dir__() -> list[str]:
-    """Return list of available attributes for dir() and autocomplete."""
-    return sorted(__all__)
-
-
-cleanup_submodule_namespace(__name__, _LAZY_IMPORTS)
+install_lazy_exports(
+    __name__,
+    globals(),
+    _LAZY_IMPORTS,
+    publish_all=False,
+)

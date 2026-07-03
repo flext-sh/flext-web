@@ -1,200 +1,85 @@
-"""Unit tests for flext_web.api module.
+"""Unit tests for the canonical flext-web facade."""
 
-Tests the main API facade functionality following flext standards.
+from __future__ import annotations
 
-NOTE: Some tests are marked with xfail due to a known issue in FlextSettings
-(flext-core) where Pydantic Field constraints (ge, le, min_length) are not
-enforced. Additionally, FlextWebSettings loads from environment variables,
-which may override Field defaults in test environments.
-"""
+from flext_tests import tm
 
-import pytest
-from pydantic import ValidationError
-from tests import FlextWebApi, FlextWebSettings, c, m
-from tests.conftest import create_test_result
+from flext_web import web
+from tests.models import m
 
 
-class TestFlextWebApi:
-    """Test suite for FlextWebApi class."""
+class TestsFlextWebApi:
+    """Tests for the public `web` facade and its class interface."""
 
-    def test_initialization(self) -> None:
-        """Test FlextWebApi initialization."""
-        api = FlextWebApi()
-        assert api is not None
-        assert hasattr(api, "_container")
-        assert hasattr(api, "_logger")
+    def setup_method(self) -> None:
+        """Stop any running public runtime before each test."""
+        apps_result = web.list_apps()
+        if apps_result.success:
+            for app in apps_result.value:
+                if app.status == "running":
+                    _ = web.stop_app(app.id)
+        status_result = web.service_status()
+        if status_result.success and status_result.value.status == "operational":
+            _ = web.stop_service()
 
     def test_create_fastapi_app_success(self) -> None:
-        """Test successful FastAPI app creation."""
-        result = FlextWebApi.create_fastapi_app()
-        assert result.is_success
-        app = result.value
-        assert app is not None
+        """The facade creates FastAPI applications directly."""
+        result = web.create_fastapi_app()
+        tm.ok(result)
 
-    def test_create_fastapi_app_with_config(self) -> None:
-        """Test FastAPI app creation with configuration."""
-        config = m.Web.FastAPIAppConfig(title="Test API", version="1.0.0")
-        result = FlextWebApi.create_fastapi_app(config)
-        assert result.is_success
-        app = result.value
-        assert app is not None
-
-    def test_create_fastapi_app_with_invalid_config(self) -> None:
-        """Test FastAPI app creation with invalid config - REAL validation."""
-        try:
-            invalid_config = m.Web.FastAPIAppConfig(title="", version="1.0.0")
-            result = FlextWebApi.create_fastapi_app(invalid_config)
-            assert result.is_failure or result.is_success
-        except ValidationError:
-            pass
-
-    def test_create_http_config_success(self) -> None:
-        """Test HTTP configuration creation."""
-        result = FlextWebApi.create_http_config(host="localhost", port=8080, debug=True)
-        assert result.is_success
-        config = result.value
-        assert config.host == "localhost"
-        assert config.port == 8080
-
-    def test_create_http_config_with_none_debug(self) -> None:
-        """Test HTTP configuration creation with debug=None."""
-        result = FlextWebApi.create_http_config(host="localhost", port=8080, debug=None)
-        assert result.is_success
-
-    def test_create_http_config_edge_cases(self) -> None:
-        """Test HTTP configuration creation with edge cases."""
-        result = FlextWebApi.create_http_config(
-            host="localhost", port=65535, debug=True
-        )
-        assert result.is_success
-        result = FlextWebApi.create_http_config(host="localhost", port=1, debug=True)
-        assert result.is_success
-        long_host = "a" * 253
-        result = FlextWebApi.create_http_config(host=long_host, port=8080, debug=True)
-        assert result.is_success
-
-    @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
-    )
-    def test_create_http_config_invalid_cases(self) -> None:
-        """Test HTTP configuration creation with invalid inputs.
-
-        Expected: r.fail() for invalid port/host values
-        Actual: FlextSettings accepts invalid values (bug in flext-core)
-        """
-        result = FlextWebApi.create_http_config(host="localhost", port=-1, debug=True)
-        assert result.is_failure
-        result = FlextWebApi.create_http_config(
-            host="localhost", port=65536, debug=True
-        )
-        assert result.is_failure
-        result = FlextWebApi.create_http_config(host="", port=8080, debug=True)
-        assert result.is_failure
-
-    def test_http_config_result_consistency(self) -> None:
-        """Test that HTTP config results follow r patterns.
-
-        NOTE: The empty host validation test is removed because FlextSettings
-        does not enforce Field constraints due to a bug in flext-core.
-        See test_create_http_config_invalid_cases for validation tests.
-        """
-        success_result = FlextWebApi.create_http_config(
-            host="localhost", port=8080, debug=True
-        )
-        assert success_result.is_success
-        assert success_result.value is not None
-        assert success_result.error is None
-        test_success = create_test_result(success=True, data="test")
-        test_failure = create_test_result(success=False, error="test error")
-        assert test_success.is_success
-        assert test_success.value == "test"
-        assert test_failure.is_failure
-        assert test_failure.error == "test error"
-
-    def test_create_http_config_with_defaults(self) -> None:
-        """Test HTTP configuration creation with defaults."""
-        result = FlextWebApi.create_http_config()
-        assert result.is_success
-
-    @pytest.mark.parametrize(
-        ("host", "port", "debug", "should_succeed"),
-        [("localhost", 8080, True, True), ("0.0.0.0", 80, True, True)],
-    )
-    def test_http_config_parametrized(
-        self, host: str, port: int, debug: bool, should_succeed: bool
-    ) -> None:
-        """Test HTTP configuration creation with parametrized cases.
-
-        NOTE: Validation failure cases are moved to test_http_config_parametrized_validation
-        because FlextSettings does not enforce Field constraints due to a bug in flext-core.
-
-        NOTE: debug=False cases are not tested because FlextWebSettings may load
-        debug=True from environment variables, overriding the passed value.
-        """
-        result = FlextWebApi.create_http_config(host=host, port=port, debug=debug)
-        if should_succeed:
-            assert result.is_success, (
-                f"Expected success for {host}:{port}, got: {result.error}"
-            )
-            config = result.value
-            assert config.host == host
-            assert config.port == port
-
-    @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
-    )
-    @pytest.mark.parametrize(
-        ("host", "port"), [("", 8080), ("localhost", -1), ("localhost", 65536)]
-    )
-    def test_http_config_parametrized_validation(self, host: str, port: int) -> None:
-        """Test HTTP configuration creation with invalid inputs (parametrized).
-
-        Expected: r.fail() for invalid port/host values
-        Actual: FlextSettings accepts invalid values (bug in flext-core)
-        """
-        result = FlextWebApi.create_http_config(host=host, port=port, debug=True)
-        assert result.is_failure, f"Expected failure for {host}:{port}, but succeeded"
-        assert result.error is not None
-
-    def test_validate_http_config_success(self) -> None:
-        """Test HTTP configuration validation."""
-        config = FlextWebSettings(
+    def test_settings_factory_success(self) -> None:
+        """Validated settings can be built through the settings class."""
+        result = web.settings.create_web_config(
             host="localhost",
             port=8080,
             debug=True,
-            secret_key=c.Web.WebDefaults.DEV_SECRET_KEY,
         )
-        result = FlextWebApi.validate_http_config(config)
-        assert result.is_success
-        assert result.value is True
+        tm.ok(result)
+        tm.that(result.value.host, eq="localhost")
+        tm.that(result.value.port, eq=8080)
+        tm.that(result.value.debug_mode, eq=True)
 
-    @pytest.mark.xfail(
-        reason="FlextSettings bug: Field constraints not enforced", strict=False
-    )
-    def test_validate_http_config_invalid(self) -> None:
-        """Test HTTP configuration validation with invalid data.
+    def test_settings_factory_rejects_invalid_values(self) -> None:
+        """Invalid settings fail without xfail wrappers."""
+        invalid_port = web.settings.create_web_config(
+            host="localhost",
+            port=-1,
+            debug=True,
+        )
+        tm.fail(invalid_port)
+        invalid_host = web.settings.create_web_config(host="", port=8080)
+        tm.fail(invalid_host)
 
-        Expected: ValidationError for port=-1 (Field constraint ge=0)
-        Actual: FlextSettings accepts invalid port (bug in flext-core)
-        """
-        with pytest.raises(ValidationError):
-            _ = FlextWebSettings(port=-1)
+    def test_validate_settings_success(self) -> None:
+        """Settings validation returns a successful r for valid input."""
+        settings = web.settings.clone(
+            host="localhost",
+            port=8080,
+            debug=True,
+            debug_mode=True,
+            secret_key="test-secret-key-32-characters!!!",
+        )
+        result = web.settings.validate_settings(settings)
+        tm.ok(result)
+        tm.that(result.value, eq=True)
 
     def test_get_service_status(self) -> None:
-        """Test service status retrieval."""
-        result = FlextWebApi.get_service_status()
-        assert result.is_success
+        """The facade exposes structured service status."""
+        result = web.service_status()
+        tm.ok(result)
         status = result.value
-        assert isinstance(status, m.Web.ServiceResponse)
-        assert "http_services_available" in status.capabilities
-        assert status.service == "flext-web-api"
-        assert status.status == "operational"
+        tm.that(status, is_=m.Web.ServiceResponse)
+        tm.that(status.service, eq="flext-web-api")
+        tm.that(status.capabilities, has="settings_namespace_registered")
 
     def test_get_api_capabilities(self) -> None:
-        """Test API capabilities retrieval."""
-        result = FlextWebApi.get_api_capabilities()
-        assert result.is_success
+        """The facade reports its canonical public capabilities."""
+        result = web.api_capabilities()
+        tm.ok(result)
         capabilities = result.value
-        assert isinstance(capabilities, dict)
-        assert "application_management" in capabilities
-        assert "service_management" in capabilities
+        tm.that(capabilities, has="application_management")
+        tm.that(capabilities, has="framework_management")
+        tm.that(capabilities, has="service_management")
+
+    def test_settings_property_uses_registered_namespace(self) -> None:
+        """The facade exposes typed settings through `web.settings`."""

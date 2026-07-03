@@ -1,11 +1,4 @@
-"""Constants for flext-web tests.
-
-Provides TestsFlextWebConstants, extending FlextTestsConstants with flext-web-specific
-constants using COMPOSITION INHERITANCE.
-
-Inheritance hierarchy:
-- FlextTestsConstants (flext_tests) - Provides .Tests.* namespace
-- FlextWebConstants (production) - Provides .Web.* namespace
+"""Test constants for flext-web.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -21,94 +14,22 @@ from flext_web import FlextWebConstants
 
 
 class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
-    """Constants for flext-web tests using COMPOSITION INHERITANCE.
-
-    MANDATORY: Inherits from BOTH:
-    1. FlextTestsConstants - for test infrastructure (.Tests.*)
-    2. FlextWebConstants - for domain constants (.Web.*)
-
-    Access patterns:
-    - c.Tests.Docker.* (container testing)
-    - c.Tests.Matcher.* (assertion messages)
-    - c.Tests.Factory.* (test data generation)
-    - c.Web.* (domain constants from production)
-    - c.Web.Tests.TestWeb.* (project-specific test data)
-    - c.Web.Tests.TestPort.* (port allocation for test isolation)
-
-    Rules:
-    - NEVER duplicate constants from FlextTestsConstants or FlextWebConstants
-    - Only flext-web-specific test constants allowed (not generic for other projects)
-    - All generic constants come from FlextTestsConstants
-    - All production constants come from FlextWebConstants
-    """
+    """Test constants for flext-web."""
 
     class Web(FlextWebConstants.Web):
-        """Project-specific test protocols.
+        """Web domain test constants."""
 
-        Extends FlextTestsProtocols.Tests with Web-specific protocols.
-        """
+        class Tests(FlextTestsConstants.Tests):
+            """Test-specific constants."""
 
-        class Tests:
-            """Tests Web-specific test protocols."""
-
-            class Paths:
-                """Test path constants."""
-
-                TEST_INPUT_DIR: Final[str] = "tests/fixtures/data/input"
-                TEST_OUTPUT_DIR: Final[str] = "tests/fixtures/data/output"
-                TEST_TEMP_PREFIX: Final[str] = "flext_web_test_"
-
-            class TestWeb:
-                """Web test server constants."""
-
-                DEFAULT_HOST: Final[str] = "localhost"
-                DEFAULT_PORT: Final[int] = 8080
-                TEST_APP_NAME: Final[str] = "TestApplication"
-                CONNECTION_TIMEOUT: Final[float] = 5.0
-                OPERATION_TIMEOUT: Final[float] = 10.0
-
-            class TestPort:
-                """Port allocation constants for test isolation."""
-
-                PORT_START: Final[int] = 9000
-                PORT_END: Final[int] = 9999
-
-            class TestHttp:
-                """HTTP test constants."""
-
-                TEST_ENDPOINT: Final[str] = "/test"
-                TEST_METHOD: Final[str] = "GET"
-                TEST_CONTENT_TYPE: Final[str] = "application/json"
-
-            class Literals:
-                """Literal type aliases for test constants (Python 3.13 pattern).
-
-                These type aliases reuse production Literals from FlextWebConstants.Web
-                to ensure consistency between tests and production code.
-                All Literal types are at FlextWebConstants.Web.Literals namespace.
-                """
-
-                type HttpMethodLiteral = (
-                    FlextWebConstants.Web.Literals.HttpMethodLiteral
-                )
-                type EnvironmentNameLiteral = (
-                    FlextWebConstants.Web.Literals.EnvironmentNameLiteral
-                )
-                type ApplicationStatusLiteral = (
-                    FlextWebConstants.Web.Literals.ApplicationStatusLiteral
-                )
-                type ApplicationTypeLiteral = (
-                    FlextWebConstants.Web.Literals.ApplicationTypeLiteral
-                )
-                type ResponseStatusLiteral = (
-                    FlextWebConstants.Web.Literals.ResponseStatusLiteral
-                )
-                type ProtocolLiteral = FlextWebConstants.Web.Literals.ProtocolLiteral
-                type ContentTypeLiteral = (
-                    FlextWebConstants.Web.Literals.ContentTypeLiteral
-                )
-                type SameSiteLiteral = FlextWebConstants.Web.Literals.SameSiteLiteral
+            DEFAULT_HOST: Final[str] = "localhost"
+            DEFAULT_PORT: Final[int] = 8080
+            TEST_APP_NAME: Final[str] = "TestApplication"
+            PORT_START: Final[int] = 9000
+            PORT_END: Final[int] = 9999
+            TEST_METHOD: Final[str] = "GET"
+            TEST_CONTENT_TYPE: Final[str] = "application/json"
 
 
 c = TestsFlextWebConstants
-__all__ = ["TestsFlextWebConstants", "c"]
+__all__: list[str] = ["TestsFlextWebConstants", "c"]

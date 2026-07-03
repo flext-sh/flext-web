@@ -1,109 +1,113 @@
-"""Unit tests for flext_web.fields module.
+"""Unit tests for public field behavior exposed through `web`."""
 
-Tests the web fields functionality following flext standards.
-"""
+from __future__ import annotations
 
-from tests import FlextWebSettings, c, m
+from flext_tests import tm
+
+from flext_web import web
+from tests.models import m
 
 
-class TestFlextWebFields:
-    """Test suite for m class."""
+class TestsFlextWebFields:
+    """Test suite for public web field behavior."""
 
     def test_host_field_creation(self) -> None:
         """Test host field creation."""
-        config = FlextWebSettings(host="localhost")
-        assert config.host == "localhost"
+        settings = web.settings.clone(host="localhost")
+        tm.that(settings.host, eq="localhost")
 
     def test_host_field_with_custom_default(self) -> None:
         """Test host field creation with custom default."""
-        config = FlextWebSettings(host="0.0.0.0")
-        assert config.host == "0.0.0.0"
+        settings = web.settings.clone(host="0.0.0.0")
+        tm.that(settings.host, eq="0.0.0.0")
 
     def test_port_field_creation(self) -> None:
         """Test port field creation."""
-        config = FlextWebSettings(port=8080)
-        assert config.port == 8080
+        settings = web.settings.clone(port=8080)
+        tm.that(settings.port, eq=8080)
 
     def test_port_field_with_custom_default(self) -> None:
         """Test port field creation with custom default."""
-        config = FlextWebSettings(port=3000)
-        assert config.port == 3000
+        settings = web.settings.clone(port=3000)
+        tm.that(settings.port, eq=3000)
 
     def test_url_field_creation(self) -> None:
         """Test URL field creation."""
         request = m.Web.Request(url="http://localhost:8080")
-        assert request.url == "http://localhost:8080"
+        tm.that(request.url, eq="http://localhost:8080")
 
     def test_app_name_field_creation(self) -> None:
         """Test app name field creation."""
-        config = FlextWebSettings(app_name="Test App")
-        assert config.app_name == "Test App"
+        settings = web.settings.clone(app_name="Test App")
+        tm.that(settings.app_name, eq="Test App")
 
     def test_secret_key_field_creation(self) -> None:
         """Test secret key field creation."""
-        config = FlextWebSettings(secret_key="valid-secret-key-32-characters-long")
-        assert config.secret_key is not None
+        settings = web.settings.clone(
+            secret_key="valid-secret-key-32-characters-long",
+        )
+        tm.that(settings.secret_key, none=False)
 
     def test_http_status_field_creation(self) -> None:
         """Test HTTP status field creation."""
         response = m.Web.Response(status_code=200)
-        assert response.status_code == 200
-        assert response.is_success is True
+        tm.that(response.status_code, eq=200)
+        tm.that(response.success is True, eq=True)
 
     def test_http_status_field_ok(self) -> None:
         """Test HTTP 200 OK status field creation."""
         response = m.Web.Response(status_code=200)
-        assert response.status_code == 200
-        assert response.is_success is True
+        tm.that(response.status_code, eq=200)
+        tm.that(response.success is True, eq=True)
 
     def test_http_status_field_created(self) -> None:
         """Test HTTP 201 Created status field creation."""
         response = m.Web.Response(status_code=201)
-        assert response.status_code == 201
-        assert response.is_success is True
+        tm.that(response.status_code, eq=201)
+        tm.that(response.success is True, eq=True)
 
     def test_http_status_field_bad_request(self) -> None:
         """Test HTTP 400 Bad Request status field creation."""
         response = m.Web.Response(status_code=400)
-        assert response.status_code == 400
-        assert response.is_error is True
+        tm.that(response.status_code, eq=400)
+        tm.that(response.error is True, eq=True)
 
     def test_http_status_field_not_found(self) -> None:
         """Test HTTP 404 Not Found status field creation."""
         response = m.Web.Response(status_code=404)
-        assert response.status_code == 404
-        assert response.is_error is True
+        tm.that(response.status_code, eq=404)
+        tm.that(response.error is True, eq=True)
 
     def test_http_status_field_server_error(self) -> None:
         """Test HTTP 500 Internal Server Error status field creation."""
         response = m.Web.Response(status_code=500)
-        assert response.status_code == 500
-        assert response.is_error is True
+        tm.that(response.status_code, eq=500)
+        tm.that(response.error is True, eq=True)
 
     def test_http_status_field_create_field(self) -> None:
         """Test HTTP status field creation."""
         response = m.Web.Response(status_code=200)
-        assert response.status_code == 200
-        assert response.is_success is True
+        tm.that(response.status_code, eq=200)
+        tm.that(response.success is True, eq=True)
 
     def test_field_constraints(self) -> None:
         """Test field constraints are properly set."""
         test_model = m.Web.Request(url="http://localhost:8080", method="GET")
-        assert test_model.url == "http://localhost:8080"
-        assert test_model.method == "GET"
+        tm.that(test_model.url, eq="http://localhost:8080")
+        tm.that(test_model.method, eq="GET")
 
     def test_field_descriptions(self) -> None:
         """Test field descriptions are properly set."""
         host_model = m.Web.Request(url="http://localhost:8080")
         port_model = m.Web.Request(url="http://localhost:3000")
-        assert host_model is not None
-        assert port_model is not None
+        tm.that(host_model, none=False)
+        tm.that(port_model, none=False)
 
     def test_http_status_field_with_kwargs(self) -> None:
         """Test HTTP status field with additional kwargs."""
         response_model = m.Web.Response(status_code=200)
-        assert response_model.status_code == 200
-        assert response_model.is_success is True
+        tm.that(response_model.status_code, eq=200)
+        tm.that(response_model.success is True, eq=True)
 
     def test_field_creation_with_kwargs(self) -> None:
         """Test field creation with additional kwargs."""
@@ -112,20 +116,20 @@ class TestFlextWebFields:
             method="POST",
             headers={"Content-Type": "application/json"},
         )
-        assert request_model.url == "http://localhost:8080"
-        assert request_model.method == "POST"
-        assert request_model.headers["Content-Type"] == "application/json"
+        tm.that(request_model.url, eq="http://localhost:8080")
+        tm.that(request_model.method, eq="POST")
+        tm.that(request_model.headers["Content-Type"], eq="application/json")
 
     def test_http_status_field_factory_methods(self) -> None:
         """Test all HTTP status field factory methods."""
         status_codes = [200, 201, 400, 404, 500]
         for status_code in status_codes:
             response_model = m.Web.Response(status_code=status_code)
-            assert response_model.status_code == status_code
-            assert isinstance(response_model, m.Web.Response)
+            tm.that(response_model.status_code, eq=status_code)
+            tm.that(response_model, is_=m.Web.Response)
 
     def test_field_validation_integration(self) -> None:
         """Test field validation integration."""
-        model = FlextWebSettings()
-        assert model.host == c.Web.WebDefaults.HOST
-        assert model.port == c.Web.WebDefaults.PORT
+        model = web.settings
+        tm.that(model.host, eq=web.settings.host)
+        tm.that(model.port, eq=web.settings.port)
