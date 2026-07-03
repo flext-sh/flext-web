@@ -1,5 +1,6 @@
 """Model factory methods for flext-web.
 
+from flext_web.utilities import u
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -8,8 +9,7 @@ from __future__ import annotations
 
 import uuid
 
-from flext_cli import p, r, t
-from flext_core import u
+from flext_cli import p, r, t, u
 from flext_web.constants import c
 
 from ._entity import FlextWebModelsEntity
