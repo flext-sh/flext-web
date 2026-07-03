@@ -20,22 +20,24 @@ __version__: Final[str] = _metadata["Version"]
 __version_info__: Final[tuple[int | str, ...]] = tuple(
     int(part) if part.isdigit() else part for part in __version__.split(".")
 )
-__title__: Final[str] = _metadata["Name"]
-__description__: Final[str] = _metadata["Summary"]
-__author__: Final[str] = _metadata["Author"]
-__author_email__: Final[str] = _metadata["Author-Email"]
+__title__: Final[str] = _metadata.get("Name", "") or ""
+__description__: Final[str] = _metadata.get("Summary", "") or ""
+__author__: Final[str] = _metadata.get("Author", "") or ""
+__author_email__: Final[str] = _metadata.get("Author-Email", "") or ""
 __license__: Final[str] = _metadata.get("License", "")
-__url__: Final[str] = _metadata.get("Home-Page", "")
+__url__: Final[str] = _metadata.get("Home-Page", "") or ""
 
 
 class _VersionMetadata(FlextModels.Value):
+    """Version metadata model for constructor."""
+
     version: Annotated[str, Field(description="Package version")]
     version_info: Annotated[tuple[int | str, ...], Field(description="Version tuple")]
     title: Annotated[str, Field(description="Package title")]
     description: Annotated[str, Field(description="Package description")]
     author: Annotated[str, Field(description="Package author")]
     author_email: Annotated[str, Field(description="Package author email")]
-    license_type: Annotated[str, Field(description="Package license")]
+    license_type: Annotated[str | None, Field(description="Package license")]
     url: Annotated[str, Field(description="Package URL")]
 
 
@@ -59,7 +61,7 @@ class FlextWebVersion:
         self.description = metadata.description
         self.author = metadata.author
         self.author_email = metadata.author_email
-        self.license = metadata.license_type
+        self.license = metadata.license_type or ""
         self.url = metadata.url
 
     @classmethod
