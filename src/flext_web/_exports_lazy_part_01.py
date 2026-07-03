@@ -45,6 +45,13 @@ FLEXT_WEB_LAZY_IMPORTS_PART_01 = build_lazy_import_map(
             "FlextWebUtilities",
             "u",
         ),
+        "flext_core": (
+            "d",
+            "e",
+            "h",
+            "r",
+            "x",
+        ),
     },
 )
 
