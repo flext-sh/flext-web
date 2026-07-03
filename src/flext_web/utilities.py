@@ -26,10 +26,22 @@ from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
 from flext_cli import e, p, r, u
+from flext_core import (
+    FlextUtilitiesConversion,
+    FlextUtilitiesDomain,
+    FlextUtilitiesGuardsTypeCore,
+    FlextUtilitiesReliability,
+)
 from flext_web import c, m, t
 
 
-class FlextWebUtilities(u):
+class FlextWebUtilities(
+    u,
+    FlextUtilitiesConversion,
+    FlextUtilitiesDomain,
+    FlextUtilitiesGuardsTypeCore,
+    FlextUtilitiesReliability,
+):
     """Web-specific utilities delegating to flext-core.
 
     Inherits from u and ensures consistency.
@@ -389,7 +401,7 @@ class FlextWebUtilities(u):
                     "port": port,
                     "host": normalized_host,
                     "status": c.Web.Status.STOPPED.value,
-                    "created_at": u.generate_iso_timestamp(),
+                    "created_at": FlextWebUtilities.generate_iso_timestamp(),
                     "framework": framework_name,
                     "interface": interface_type,
                 }
@@ -660,7 +672,7 @@ class FlextWebUtilities(u):
                 for context_key, context_value in context.items():
                     full_context[context_key] = (
                         context_value
-                        if u.primitive(context_value)
+                        if FlextWebUtilities.primitive(context_value)
                         else str(context_value)
                     )
                 rendered = template
@@ -722,7 +734,9 @@ class FlextWebUtilities(u):
                 """Get web application metrics."""
                 metrics: t.Web.ResponseDict = {}
                 for key, val in FlextWebUtilities.Web.web_metrics.items():
-                    metrics[key] = u.to_int(val) if isinstance(val, float) else val
+                    metrics[key] = (
+                        FlextWebUtilities.to_int(val) if isinstance(val, float) else val
+                    )
                 return metrics
 
             def record_web_request(
