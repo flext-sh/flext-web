@@ -31,6 +31,7 @@ class FlextWeb(
 
 
 web = FlextWeb.fetch_global()
+"""Shared FlextWeb facade instance."""
 
 
 __all__: list[str] = ["FlextWeb", "web"]
