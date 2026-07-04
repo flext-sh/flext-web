@@ -69,7 +69,8 @@ class FlextWebModelsResponses:
             """Dashboard response model."""
 
             total_applications: Annotated[
-                int, u.Field(description="Total applications")
+                int,
+                u.Field(description="Total applications"),
             ]
             running_applications: Annotated[
                 int,

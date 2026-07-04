@@ -6,13 +6,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import m, p, r, t, u
 from flext_web import c
 
 from ._base import FlextWebModelsBase
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class FlextWebModelsHttp:
@@ -51,7 +53,7 @@ class FlextWebModelsHttp:
                 u.Field(
                     description="Timestamp of message creation (configured timezone)",
                 ),
-            ] = u.Field(default_factory=lambda: u.now())
+            ] = u.Field(default_factory=u.now)
 
         class Request(Message):
             """HTTP request model with complete validation.

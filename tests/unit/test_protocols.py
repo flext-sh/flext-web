@@ -366,7 +366,8 @@ class TestsFlextWebProtocolsUnit:
 
         class RealTemplateEngine:
             def load_template_config(
-                self, settings: t.Web.RequestDict
+                self,
+                settings: t.Web.RequestDict,
             ) -> p.Result[bool]:
                 return r[bool].ok(True)
 
@@ -374,12 +375,15 @@ class TestsFlextWebProtocolsUnit:
                 return r[t.Web.ResponseDict].ok({})
 
             def validate_template_config(
-                self, settings: t.Web.RequestDict
+                self,
+                settings: t.Web.RequestDict,
             ) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             def render(
-                self, template: str, context: t.Web.RequestDict
+                self,
+                template: str,
+                context: t.Web.RequestDict,
             ) -> p.Result[str]:
                 return r[str].ok("")
 

@@ -28,7 +28,7 @@ class FlextWebServices(s):
 
     _auth_service: FlextWebAuth | None = u.PrivateAttr(default_factory=lambda: None)
     _entity_service: FlextWebEntities | None = u.PrivateAttr(
-        default_factory=lambda: None
+        default_factory=lambda: None,
     )
     _health_service: FlextWebHealth | None = u.PrivateAttr(default_factory=lambda: None)
 
@@ -46,7 +46,8 @@ class FlextWebServices(s):
         return ok_result
 
     def authenticate(
-        self, credentials: m.Web.Credentials
+        self,
+        credentials: m.Web.Credentials,
     ) -> p.Result[m.Web.AuthResponse]:
         """Delegate authentication to the canonical auth service."""
         return self._auth().authenticate(credentials)
@@ -56,7 +57,8 @@ class FlextWebServices(s):
         return u.Web.WebService.configure_middleware()
 
     def create_app(
-        self, app_data: m.Web.AppData
+        self,
+        app_data: m.Web.AppData,
     ) -> p.Result[m.Web.ApplicationResponse]:
         """Create an application through the protocol runtime registry."""
         return u.Web.WebAppManager.create_app(
@@ -225,11 +227,13 @@ class FlextWebServices(s):
         state = u.Web.service_state
         if state["service_running"] and not state["routes_initialized"]:
             return e.fail_validation(
-                "service_state", error="running without initialized routes"
+                "service_state",
+                error="running without initialized routes",
             )
         if state["service_running"] and not state["middleware_configured"]:
             return e.fail_validation(
-                "service_state", error="running without configured middleware"
+                "service_state",
+                error="running without configured middleware",
             )
         return r[bool].ok(True)
 
@@ -298,7 +302,7 @@ class FlextWebServices(s):
         """Return the lazily created auth service."""
         if self._auth_service is None:
             self._auth_service = FlextWebAuth(
-                settings_overrides=self._settings_scalar_mapping()
+                settings_overrides=self._settings_scalar_mapping(),
             )
         return self._auth_service
 

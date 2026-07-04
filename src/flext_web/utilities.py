@@ -14,15 +14,13 @@ from collections.abc import Awaitable, Callable, Sequence
 from copy import deepcopy
 from threading import Thread
 from time import sleep
-from typing import ClassVar, override
+from typing import TYPE_CHECKING, ClassVar, override
 from uuid import uuid4
 from wsgiref.simple_server import WSGIServer, make_server
 
 import flask
 import uvicorn
 from fastapi import FastAPI
-from starlette.requests import Request as StarletteRequest
-from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
 from flext_cli import e, p, r, u
@@ -33,6 +31,10 @@ from flext_core import (
     FlextUtilitiesReliability,
 )
 from flext_web import c, m, t
+
+if TYPE_CHECKING:
+    from starlette.requests import Request as StarletteRequest
+    from starlette.responses import Response as StarletteResponse
 
 
 class FlextWebUtilities(
@@ -129,7 +131,8 @@ class FlextWebUtilities(
                 ) -> StarletteResponse:
                     response = await call_next(request)
                     FlextWebUtilities.Web.record_request_metric(
-                        c.Web.ResponseStatus.SUCCESS.value, 0
+                        c.Web.ResponseStatus.SUCCESS.value,
+                        0,
                     )
                     return response
 
@@ -139,7 +142,8 @@ class FlextWebUtilities(
                 # app_instance is flask.Flask (from the if/elif chain above)
                 def flask_metrics_middleware() -> None:
                     FlextWebUtilities.Web.record_request_metric(
-                        c.Web.ResponseStatus.SUCCESS.value, 0
+                        c.Web.ResponseStatus.SUCCESS.value,
+                        0,
                     )
 
                 app_instance.before_request(flask_metrics_middleware)
@@ -318,7 +322,7 @@ class FlextWebUtilities(
                         server.server_close()
                     case _:
                         return r[bool].fail(
-                            f"Unsupported runtime runner for app: {app_id}"
+                            f"Unsupported runtime runner for app: {app_id}",
                         )
                 thread.join(timeout=2.0)
                 if thread.is_alive():
@@ -424,7 +428,9 @@ class FlextWebUtilities(
                 app_data = FlextWebUtilities.Web.apps_registry.get(app_id)
                 if app_data is None:
                     return e.fail_not_found(
-                        "Application", app_id, result_type=r[t.Web.ResponseDict]
+                        "Application",
+                        app_id,
+                        result_type=r[t.Web.ResponseDict],
                     )
                 if app_data.get("status") == c.Web.Status.RUNNING.value:
                     return r[t.Web.ResponseDict].fail(
@@ -456,7 +462,9 @@ class FlextWebUtilities(
                 app_data = FlextWebUtilities.Web.apps_registry.get(app_id)
                 if app_data is None:
                     return e.fail_not_found(
-                        "Application", app_id, result_type=r[t.Web.ResponseDict]
+                        "Application",
+                        app_id,
+                        result_type=r[t.Web.ResponseDict],
                     )
                 if app_data.get("status") != c.Web.Status.RUNNING.value:
                     return r[t.Web.ResponseDict].fail(
@@ -529,7 +537,9 @@ class FlextWebUtilities(
                 app_data = FlextWebUtilities.Web.apps_registry.get(entity_id)
                 if app_data is None:
                     return e.fail_not_found(
-                        "Application", entity_id, result_type=r[t.Web.ResponseDict]
+                        "Application",
+                        entity_id,
+                        result_type=r[t.Web.ResponseDict],
                     )
                 return r[t.Web.ResponseDict].ok(deepcopy(app_data))
 
@@ -548,7 +558,9 @@ class FlextWebUtilities(
                 removed = FlextWebUtilities.Web.apps_registry.pop(entity_id, None)
                 if removed is None:
                     return e.fail_not_found(
-                        "Application", entity_id, result_type=r[bool]
+                        "Application",
+                        entity_id,
+                        result_type=r[bool],
                     )
                 return r[bool].ok(True)
 
@@ -612,7 +624,7 @@ class FlextWebUtilities(
                             )
                         else:
                             result = FlextWebUtilities.Web.WebAppManager.start_app(
-                                app_id
+                                app_id,
                             )
                     case c.Web.ACTION_STOP:
                         app_id = request.get("app_id")
@@ -622,7 +634,7 @@ class FlextWebUtilities(
                             )
                         else:
                             result = FlextWebUtilities.Web.WebAppManager.stop_app(
-                                app_id
+                                app_id,
                             )
                     case c.Web.ACTION_LIST:
                         result = FlextWebUtilities.Web.WebAppManager.list_apps().map(

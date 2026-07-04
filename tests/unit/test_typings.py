@@ -5,12 +5,16 @@ Tests the unified m class following flext standards.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from flext_tests import tm
 
 from flext_web import web
 from tests.constants import c
 from tests.models import m
-from tests.typings import t
+
+if TYPE_CHECKING:
+    from tests.typings import t
 
 
 class TestsFlextWebTypesUnit:
@@ -171,7 +175,8 @@ class TestsFlextWebTypesUnit:
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
             result = m.Web.Request.create_http_request(
-                url="http://localhost:8080", method=method
+                url="http://localhost:8080",
+                method=method,
             )
             assert result.success, (
                 f"Operation should succeed for method {method}: {result.error}"
@@ -197,14 +202,16 @@ class TestsFlextWebTypesUnit:
     def test_create_http_request_match_case_default(self) -> None:
         """Test create_http_request match/case default branch (line 174-175)."""
         result = m.Web.Request.create_http_request(
-            url="http://localhost:8080", method="GET"
+            url="http://localhost:8080",
+            method="GET",
         )
         assert result.success, result.error
 
     def test_create_http_request_duplicate_validation(self) -> None:
         """Test create_http_request duplicate validation path (line 157)."""
         result = m.Web.Request.create_http_request(
-            url="http://localhost:8080", method="INVALID"
+            url="http://localhost:8080",
+            method="INVALID",
         )
         assert result.failure, "Operation should fail"
         tm.fail(result)

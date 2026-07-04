@@ -5,13 +5,17 @@ Tests the web models functionality following flext standards.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 from flext_tests import tm
 
 from tests.constants import c
 from tests.models import m
-from tests.typings import t
 from tests.utilities import u
+
+if TYPE_CHECKING:
+    from tests.typings import t
 
 
 class TestsFlextWebModelsUnit:
@@ -478,15 +482,24 @@ class TestsFlextWebModelsUnit:
     def test_application_invalid_cases(self) -> None:
         """Test Application model with invalid inputs."""
         result = u.Web.Tests.create_entry(
-            "web_app", name="", host="localhost", port=8080
+            "web_app",
+            name="",
+            host="localhost",
+            port=8080,
         )
         tm.fail(result)
         result = u.Web.Tests.create_entry(
-            "web_app", name=None, host="localhost", port=8080
+            "web_app",
+            name=None,
+            host="localhost",
+            port=8080,
         )
         tm.fail(result)
         result = u.Web.Tests.create_entry(
-            "web_app", name="test", host="localhost", port=0
+            "web_app",
+            name="test",
+            host="localhost",
+            port=0,
         )
         tm.fail(result)
         result = u.Web.Tests.create_entry("web_app", name="test", host="", port=8080)
@@ -564,7 +577,10 @@ class TestsFlextWebModelsUnit:
         )
         tm.ok(result)
         result = u.Web.Tests.create_entry(
-            "web_app", name="x", host="localhost", port=8080
+            "web_app",
+            name="x",
+            host="localhost",
+            port=8080,
         )
         tm.fail(result)
         max_name = "x" * 100

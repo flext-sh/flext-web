@@ -8,11 +8,8 @@ from __future__ import annotations
 
 import socket
 import time
-from collections.abc import (
-    Callable,
-)
 from threading import Lock
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 from flext_tests import FlextTestsUtilities, e, r
@@ -20,8 +17,14 @@ from flext_tests import FlextTestsUtilities, e, r
 from flext_web import FlextWebUtilities
 from tests.constants import c
 from tests.models import m
-from tests.protocols import p
 from tests.typings import t
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Callable,
+    )
+
+    from tests.protocols import p
 
 
 class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
@@ -223,7 +226,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 timeout,
                                 default=30.0,
                             ),
-                        )
+                        ),
                     )
                 if entry_type == "http_response":
                     status_code = kwargs.get("status_code")

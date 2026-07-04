@@ -27,8 +27,6 @@ class FlextWeb(
 ):
     """Canonical public facade composed via MRO."""
 
-    pass
-
 
 web = FlextWeb.fetch_global()
 """Shared FlextWeb facade instance."""

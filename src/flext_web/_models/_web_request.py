@@ -7,13 +7,15 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import m, t, u
 from flext_web import c
 
 from ._base import FlextWebModelsBase
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class FlextWebModelsWebRequest:
@@ -63,7 +65,7 @@ class FlextWebModelsWebRequest:
                 u.Field(
                     description="Request timestamp",
                 ),
-            ] = u.Field(default_factory=lambda: u.now())
+            ] = u.Field(default_factory=u.now)
 
         class WebResponse(m.Value):
             """Web response model with status tracking."""
@@ -103,7 +105,7 @@ class FlextWebModelsWebRequest:
                 u.Field(
                     description="Response timestamp",
                 ),
-            ] = u.Field(default_factory=lambda: u.now())
+            ] = u.Field(default_factory=u.now)
 
 
 __all__: list[str] = ["FlextWebModelsWebRequest"]

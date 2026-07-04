@@ -35,7 +35,7 @@ def create_application(
 ) -> p.Result[m.Web.ApplicationResponse]:
     """Create an application through the canonical `web` facade."""
     create_result: p.Result[m.Web.ApplicationResponse] = web.create_app(
-        m.Web.AppData(name=name, host=host, port=port)
+        m.Web.AppData(name=name, host=host, port=port),
     )
     return create_result
 

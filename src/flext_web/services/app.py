@@ -10,15 +10,17 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json as _json
-from collections.abc import (
-    Callable,
-)
-from typing import override
+from typing import TYPE_CHECKING, override
 
 import flask
 from fastapi import FastAPI
 
 from flext_web import FlextWebSettings, c, m, p, r, s, t, u
+
+if TYPE_CHECKING:
+    from collections.abc import (
+        Callable,
+    )
 
 
 class FlextWebApp(s):
@@ -172,7 +174,8 @@ class FlextWebApp(s):
         return result
 
     def create_flask_app(
-        self, settings: FlextWebSettings | None = None
+        self,
+        settings: FlextWebSettings | None = None,
     ) -> p.Result[flask.Flask]:
         """Create Flask app with flext-core integration and configuration.
 

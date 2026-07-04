@@ -88,7 +88,8 @@ class TestsFlextWebHandlers:
         list_result = web.list_apps()
         tm.ok(list_result)
         tm.that(
-            any(listed_app.id == app.id for listed_app in list_result.value), eq=True
+            any(listed_app.id == app.id for listed_app in list_result.value),
+            eq=True,
         )
 
     def test_protocol_implementation(self) -> None:
