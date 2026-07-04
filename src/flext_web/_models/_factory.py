@@ -10,7 +10,7 @@ from __future__ import annotations
 import uuid
 
 from flext_cli import p, r, t, u
-from flext_web.constants import c
+from flext_web import c
 
 from ._entity import FlextWebModelsEntity
 from ._web_request import FlextWebModelsWebRequest

@@ -10,6 +10,7 @@ from flext_tests import tm
 from flext_web import web
 from tests.constants import c
 from tests.models import m
+from tests.typings import t
 
 
 class TestsFlextWebTypesUnit:
@@ -50,7 +51,7 @@ class TestsFlextWebTypesUnit:
 
     def test_health_response_functionality(self) -> None:
         """Test health response functionality."""
-        health_data: dict[str, str | int] = {
+        health_data: t.MappingKV[str, str | int] = {
             "status": "healthy",
             "service": "test-service",
             "version": "1.0.0",

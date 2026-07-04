@@ -11,7 +11,7 @@ from collections.abc import MutableSequence
 from typing import Annotated, override
 
 from flext_cli import m, p, r, t, u
-from flext_web.constants import c
+from flext_web import c
 
 
 class FlextWebModelsEntity:

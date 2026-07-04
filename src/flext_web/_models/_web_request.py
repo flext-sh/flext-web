@@ -11,9 +11,9 @@ from datetime import datetime
 from typing import Annotated
 
 from flext_cli import m, t, u
-from flext_web.constants import c
+from flext_web import c
 
-from ._base import _coerce_method
+from ._base import FlextWebModelsBase
 
 
 class FlextWebModelsWebRequest:
@@ -27,7 +27,7 @@ class FlextWebModelsWebRequest:
 
             method: Annotated[
                 c.Web.Method,
-                u.PlainValidator(_coerce_method),
+                u.PlainValidator(FlextWebModelsBase.coerce_method),
                 u.Field(
                     description="HTTP method",
                 ),

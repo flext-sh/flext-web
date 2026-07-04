@@ -18,10 +18,7 @@ from typing import override
 import flask
 from fastapi import FastAPI
 
-from flext_web import FlextWebSettings, c, m, p, r, u
-from flext_web.base import s
-
-type FastApiEndpointPayload = dict[str, str | bool]
+from flext_web import FlextWebSettings, c, m, p, r, s, t, u
 
 
 class FlextWebApp(s):
@@ -109,10 +106,10 @@ class FlextWebApp(s):
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
-        def health_check() -> FastApiEndpointPayload:
+        def health_check() -> t.Web.FastApiEndpointPayload:
             return FlextWebApp.HealthHandler.create_handler()()
 
-        def info_endpoint() -> FastApiEndpointPayload:
+        def info_endpoint() -> t.Web.FastApiEndpointPayload:
             return FlextWebApp.InfoHandler.create_handler(settings)()
 
         app.add_api_route("/health", health_check, methods=["GET"])
@@ -218,10 +215,10 @@ class FlextWebApp(s):
         """Health check handler with single responsibility for system health monitoring."""
 
         @staticmethod
-        def create_handler() -> Callable[[], FastApiEndpointPayload]:
+        def create_handler() -> Callable[[], t.Web.FastApiEndpointPayload]:
             """Create FastAPI health check handler function."""
 
-            def health_check() -> FastApiEndpointPayload:
+            def health_check() -> t.Web.FastApiEndpointPayload:
                 return {
                     "status": c.Web.ResponseStatus.HEALTHY.value,
                     "service": c.Web.SERVICE_NAME,
@@ -236,10 +233,10 @@ class FlextWebApp(s):
         @staticmethod
         def create_handler(
             settings: m.Web.FastAPIAppConfig,
-        ) -> Callable[[], FastApiEndpointPayload]:
+        ) -> Callable[[], t.Web.FastApiEndpointPayload]:
             """Create FastAPI info handler function."""
 
-            def info_handler() -> FastApiEndpointPayload:
+            def info_handler() -> t.Web.FastApiEndpointPayload:
                 return {
                     "service": c.Web.SERVICE_NAME,
                     "title": settings.title,

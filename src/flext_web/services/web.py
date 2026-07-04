@@ -17,10 +17,10 @@ from flext_web import (
     m,
     p,
     r,
+    s,
     t,
     u,
 )
-from flext_web.base import s
 
 
 class FlextWebServices(s):

@@ -9,8 +9,7 @@ from collections.abc import (
 )
 from typing import override
 
-from flext_web import e, m, p, r, u
-from flext_web.base import s
+from flext_web import e, m, p, r, s, u
 
 
 class FlextWebEntities(s):

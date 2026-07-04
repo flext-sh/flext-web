@@ -9,6 +9,7 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_web._models._auth import FlextWebModelsAuth as FlextWebModelsAuth
+    from flext_web._models._base import FlextWebModelsBase as FlextWebModelsBase
     from flext_web._models._config import FlextWebModelsConfig as FlextWebModelsConfig
     from flext_web._models._entity import FlextWebModelsEntity as FlextWebModelsEntity
     from flext_web._models._factory import (
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
 _LAZY_IMPORTS = build_lazy_import_map(
     {
         "._auth": ("FlextWebModelsAuth",),
+        "._base": ("FlextWebModelsBase",),
         "._config": ("FlextWebModelsConfig",),
         "._entity": ("FlextWebModelsEntity",),
         "._factory": ("FlextWebModelsFactory",),

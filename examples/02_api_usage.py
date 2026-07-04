@@ -6,8 +6,7 @@ from collections.abc import (
     Sequence,
 )
 
-from flext_core import p, r
-from flext_web import m, web
+from flext_web import m, p, r, web
 
 
 def _allocate_demo_port(*reserved_ports: int) -> int:

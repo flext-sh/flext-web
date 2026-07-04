@@ -10,9 +10,9 @@ from datetime import datetime
 from typing import Annotated
 
 from flext_cli import m, p, r, t, u
-from flext_web.constants import c
+from flext_web import c
 
-from ._base import _coerce_method
+from ._base import FlextWebModelsBase
 
 
 class FlextWebModelsHttp:
@@ -76,7 +76,7 @@ class FlextWebModelsHttp:
             ]
             method: Annotated[
                 c.Web.Method,
-                u.PlainValidator(_coerce_method),
+                u.PlainValidator(FlextWebModelsBase.coerce_method),
                 u.Field(
                     description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
                 ),

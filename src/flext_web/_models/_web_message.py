@@ -10,7 +10,7 @@ import uuid
 from typing import Annotated
 
 from flext_cli import p, r, t, u
-from flext_web.constants import c
+from flext_web import c
 
 from ._http import FlextWebModelsHttp
 

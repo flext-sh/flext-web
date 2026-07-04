@@ -9,9 +9,9 @@ from flext_web import (
     m,
     p,
     r,
+    s,
     u,
 )
-from flext_web.base import s
 
 
 class FlextWebHealth(s):

@@ -66,14 +66,32 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 def allocate_port(cls) -> int:
                     """Allocate a unique port for testing."""
                     with cls._lock:
-                        while cls._current_port in cls._allocated_ports:
+                        for _ in range(
+                            c.Web.Tests.PORT_START,
+                            c.Web.Tests.PORT_END + 1,
+                        ):
+                            port = cls._current_port
                             cls._current_port += 1
                             if cls._current_port > c.Web.Tests.PORT_END:
                                 cls._current_port = c.Web.Tests.PORT_START
-                        port = cls._current_port
-                        cls._allocated_ports.add(port)
-                        cls._current_port += 1
-                        return port
+                            if port in cls._allocated_ports:
+                                continue
+                            if cls._port_available(port):
+                                cls._allocated_ports.add(port)
+                                return port
+                        msg = "No available TCP port in flext-web test range"
+                        raise RuntimeError(msg)
+
+                @staticmethod
+                def _port_available(port: int) -> bool:
+                    """Return whether localhost can bind the candidate test port."""
+                    try:
+                        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                            sock.bind((c.Web.Tests.DEFAULT_HOST, port))
+                    except OSError:
+                        return False
+                    return True
 
                 @classmethod
                 def release_port(cls, port: int) -> None:
@@ -252,10 +270,10 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             def create_test_data(
                 data_type: str,
                 **kwargs: t.JsonPayload,
-            ) -> dict[str, t.JsonPayload]:
+            ) -> t.MutableMappingKV[str, t.JsonPayload]:
                 """Create centralized test data payloads."""
                 if data_type == "app_data":
-                    app_data: dict[str, t.JsonPayload] = {
+                    app_data: t.MutableMappingKV[str, t.JsonPayload] = {
                         "name": c.Web.Tests.TEST_APP_NAME,
                         "host": c.Web.Tests.DEFAULT_HOST,
                         "port": c.Web.Tests.DEFAULT_PORT,
@@ -263,7 +281,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     app_data.update({k: v for k, v in kwargs.items() if u.primitive(v)})
                     return app_data
                 if data_type == "entity_data":
-                    entity_data: dict[str, t.JsonPayload] = {
+                    entity_data: t.MutableMappingKV[str, t.JsonPayload] = {
                         "id": "test-entity",
                         "name": "Test Entity",
                     }
@@ -272,7 +290,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     })
                     return entity_data
                 if data_type == "config_data":
-                    config_data: dict[str, t.JsonPayload] = {
+                    config_data: t.MutableMappingKV[str, t.JsonPayload] = {
                         "host": c.Web.Tests.DEFAULT_HOST,
                         "port": c.Web.Tests.DEFAULT_PORT,
                         "debug": True,
@@ -282,7 +300,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     })
                     return config_data
                 if data_type == "request_data":
-                    request_data: dict[str, t.JsonPayload] = {
+                    request_data: t.MutableMappingKV[str, t.JsonPayload] = {
                         "method": c.Web.Tests.TEST_METHOD,
                         "url": (
                             f"http://"
@@ -299,7 +317,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     request_data.update(request_updates)
                     return request_data
                 if data_type == "response_data":
-                    response_data: dict[str, t.JsonPayload] = {
+                    response_data: t.MutableMappingKV[str, t.JsonPayload] = {
                         "status_code": 200,
                         "request_id": "test-123",
                     }
@@ -316,7 +334,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 **kwargs: t.Scalar,
             ) -> m.Web.Entity:
                 """Create a web test application entity."""
-                defaults: dict[str, str | int] = {
+                defaults: t.MutableMappingKV[str, str | int] = {
                     "id": "test-id",
                     "name": c.Web.Tests.TEST_APP_NAME,
                     "host": c.Web.Tests.DEFAULT_HOST,

@@ -24,6 +24,7 @@ class FlextWebTypes(t):
             str,
             t.Scalar | t.StrSequence | t.ConfigurationMapping,
         ]
+        type FastApiEndpointPayload = t.MappingKV[str, str | bool]
 
 
 t = FlextWebTypes

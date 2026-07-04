@@ -11,6 +11,7 @@ from __future__ import annotations
 from flext_cli import m
 from flext_web._models import (
     FlextWebModelsAuth,
+    FlextWebModelsBase,
     FlextWebModelsConfig,
     FlextWebModelsEntity,
     FlextWebModelsFactory,
@@ -24,6 +25,16 @@ from flext_web._models import (
 
 class FlextWebModels(
     m,
+    FlextWebModelsBase,
+    FlextWebModelsHttp,
+    FlextWebModelsWebMessage,
+    FlextWebModelsEntity,
+    FlextWebModelsAuth,
+    FlextWebModelsResponses,
+    FlextWebModelsWebRequest,
+    FlextWebModelsConfig,
+    FlextWebModelsSystem,
+    FlextWebModelsFactory,
 ):
     """Web application models collection.
 

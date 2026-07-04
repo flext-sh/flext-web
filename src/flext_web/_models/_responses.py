@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import Annotated
 
 from flext_cli import m, t, u
-from flext_web.constants import c
+from flext_web import c
 
 
 class FlextWebModelsResponses:

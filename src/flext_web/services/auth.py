@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_web import e, m, p, r
-from flext_web.base import s
+from flext_web import e, m, p, r, s
 
 
 class FlextWebAuth(s):
