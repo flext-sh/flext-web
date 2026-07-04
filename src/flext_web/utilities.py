@@ -215,6 +215,99 @@ class FlextWebUtilities(
                 FlextWebUtilities.Web.web_metrics["errors"] = error_count + 1
 
         @staticmethod
+        def _start_uvicorn_runtime(
+            app_id: str,
+            app_instance: FastAPI,
+            host: str,
+            port: int,
+        ) -> p.Result[m.Web.AppRuntimeInfo]:
+            """Start an ASGI runtime using uvicorn."""
+            try:
+                settings = uvicorn.Config(
+                    app=app_instance,
+                    host=host,
+                    port=port,
+                    log_level="warning",
+                    ws="none",
+                )
+                server = uvicorn.Server(settings)
+            except c.EXC_OS_RUNTIME_TYPE as exc:
+                return r[m.Web.AppRuntimeInfo].fail(
+                    f"Failed to start ASGI runtime for app {app_id}: {exc}",
+                )
+            try:
+                thread = Thread(
+                    target=server.run,
+                    daemon=True,
+                    name=f"flext-web-{app_id}",
+                )
+                thread.start()
+                sleep(0.05)
+                if thread.is_alive():
+                    runtime_info = m.Web.AppRuntimeInfo(
+                        runner=c.Web.FRAMEWORK_RUNNER_UVICORN,
+                        server=server,
+                        thread=thread,
+                    )
+                    return r[m.Web.AppRuntimeInfo].ok(runtime_info)
+                return r[m.Web.AppRuntimeInfo].fail(
+                    f"ASGI runtime exited immediately for app: {app_id}",
+                )
+            except c.EXC_OS_RUNTIME_TYPE as exc:
+                return r[m.Web.AppRuntimeInfo].fail(
+                    f"Failed to start ASGI runtime for app {app_id}: {exc}",
+                )
+
+        @staticmethod
+        def _start_werkzeug_runtime(
+            app_id: str,
+            app_instance: flask.Flask,
+            host: str,
+            port: int,
+        ) -> p.Result[m.Web.AppRuntimeInfo]:
+            """Start a WSGI runtime using werkzeug."""
+            try:
+                wsgi_server: WSGIServer = make_server(host, port, app_instance)
+            except (
+                RuntimeError,
+                OSError,
+                ValueError,
+                TypeError,
+                AttributeError,
+            ) as exc:
+                return r[m.Web.AppRuntimeInfo].fail(
+                    f"Failed to start WSGI runtime for app {app_id}: {exc}",
+                )
+            try:
+                thread = Thread(
+                    target=wsgi_server.serve_forever,
+                    daemon=True,
+                    name=f"flext-web-{app_id}",
+                )
+                thread.start()
+                sleep(0.05)
+                if thread.is_alive():
+                    runtime_info = m.Web.AppRuntimeInfo(
+                        runner=c.Web.FRAMEWORK_RUNNER_WERKZEUG,
+                        server=wsgi_server,
+                        thread=thread,
+                    )
+                    return r[m.Web.AppRuntimeInfo].ok(runtime_info)
+                return r[m.Web.AppRuntimeInfo].fail(
+                    f"WSGI runtime exited immediately for app: {app_id}",
+                )
+            except (
+                RuntimeError,
+                OSError,
+                ValueError,
+                TypeError,
+                AttributeError,
+            ) as exc:
+                return r[m.Web.AppRuntimeInfo].fail(
+                    f"Failed to start WSGI runtime for app {app_id}: {exc}",
+                )
+
+        @staticmethod
         def _start_app_runtime(
             app_id: str,
             app_data: t.Web.ResponseDict,
@@ -223,109 +316,76 @@ class FlextWebUtilities(
             host = app_data.get("host")
             port = app_data.get("port")
             interface = app_data.get("interface")
-            error_message = f"Unsupported app interface for runtime start: {interface}"
-            runtime_info: m.Web.AppRuntimeInfo | None = None
             if not isinstance(host, str) or not isinstance(port, int):
-                error_message = f"Invalid runtime configuration for app: {app_id}"
-            elif interface == c.Web.FRAMEWORK_INTERFACE_ASGI:
-                try:
-                    settings = uvicorn.Config(
-                        app=app_instance,
-                        host=host,
-                        port=port,
-                        log_level="warning",
-                        ws="none",
+                return r[m.Web.AppRuntimeInfo].fail(
+                    f"Invalid runtime configuration for app: {app_id}",
+                )
+            if interface == c.Web.FRAMEWORK_INTERFACE_ASGI:
+                if isinstance(app_instance, FastAPI):
+                    start_asgi = getattr(
+                        FlextWebUtilities.Web,
+                        "_start_uvicorn_runtime",
                     )
-                    server = uvicorn.Server(settings)
-                    thread = Thread(
-                        target=server.run,
-                        daemon=True,
-                        name=f"flext-web-{app_id}",
-                    )
-                    thread.start()
-                    sleep(0.05)
-                    if thread.is_alive():
-                        runtime_info = m.Web.AppRuntimeInfo(
-                            runner=c.Web.FRAMEWORK_RUNNER_UVICORN,
-                            server=server,
-                            thread=thread,
-                        )
-                    else:
-                        error_message = (
-                            f"ASGI runtime exited immediately for app: {app_id}"
-                        )
-                except c.EXC_OS_RUNTIME_TYPE as exc:
-                    error_message = (
-                        f"Failed to start ASGI runtime for app {app_id}: {exc}"
-                    )
-            elif interface == c.Web.FRAMEWORK_INTERFACE_WSGI and isinstance(
+                    return start_asgi(app_id, app_instance, host, port)
+                return r[m.Web.AppRuntimeInfo].fail(
+                    f"ASGI runtime requires a FastAPI app: {app_id}",
+                )
+            if interface == c.Web.FRAMEWORK_INTERFACE_WSGI and isinstance(
                 app_instance,
                 flask.Flask,
             ):
-                try:
-                    wsgi_server: WSGIServer = make_server(host, port, app_instance)
-                    thread = Thread(
-                        target=wsgi_server.serve_forever,
-                        daemon=True,
-                        name=f"flext-web-{app_id}",
-                    )
-                    thread.start()
-                    sleep(0.05)
-                    if thread.is_alive():
-                        runtime_info = m.Web.AppRuntimeInfo(
-                            runner=c.Web.FRAMEWORK_RUNNER_WERKZEUG,
-                            server=wsgi_server,
-                            thread=thread,
-                        )
-                    else:
-                        error_message = (
-                            f"WSGI runtime exited immediately for app: {app_id}"
-                        )
-                except (
-                    RuntimeError,
-                    OSError,
-                    ValueError,
-                    TypeError,
-                    AttributeError,
-                ) as exc:
-                    error_message = (
-                        f"Failed to start WSGI runtime for app {app_id}: {exc}"
-                    )
-            return (
-                r[m.Web.AppRuntimeInfo].ok(runtime_info)
-                if runtime_info is not None
-                else r[m.Web.AppRuntimeInfo].fail(error_message)
+                start_wsgi = getattr(
+                    FlextWebUtilities.Web,
+                    "_start_werkzeug_runtime",
+                )
+                return start_wsgi(app_id, app_instance, host, port)
+            return r[m.Web.AppRuntimeInfo].fail(
+                f"Unsupported app interface for runtime start: {interface}",
             )
+
+        @staticmethod
+        def _stop_runner(
+            runner: str,
+            server: uvicorn.Server | WSGIServer,
+            app_id: str,
+        ) -> p.Result[bool]:
+            """Stop the underlying server runner."""
+            match runner:
+                case c.Web.FRAMEWORK_RUNNER_UVICORN:
+                    if not isinstance(server, uvicorn.Server):
+                        return r[bool].fail(
+                            f"Missing ASGI server instance for app: {app_id}",
+                        )
+                    server.should_exit = True
+                case c.Web.FRAMEWORK_RUNNER_WERKZEUG:
+                    if not isinstance(server, BaseWSGIServer):
+                        return r[bool].fail(
+                            f"Missing WSGI server instance for app: {app_id}",
+                        )
+                    server.shutdown()
+                    server.server_close()
+                case _:
+                    return r[bool].fail(
+                        f"Unsupported runtime runner for app: {app_id}",
+                    )
+            return r[bool].ok(True)
 
         @staticmethod
         def _stop_app_runtime(
             app_id: str,
             runtime: m.Web.AppRuntimeInfo,
         ) -> p.Result[bool]:
-            runner: str = runtime.runner
-            server: uvicorn.Server | WSGIServer = runtime.server
-            thread: Thread = runtime.thread
             try:
-                match runner:
-                    case c.Web.FRAMEWORK_RUNNER_UVICORN:
-                        if not isinstance(server, uvicorn.Server):
-                            return r[bool].fail(
-                                f"Missing ASGI server instance for app: {app_id}",
-                            )
-                        server.should_exit = True
-                    case c.Web.FRAMEWORK_RUNNER_WERKZEUG:
-                        if not isinstance(server, BaseWSGIServer):
-                            return r[bool].fail(
-                                f"Missing WSGI server instance for app: {app_id}",
-                            )
-                        server.shutdown()
-                        server.server_close()
-                    case _:
-                        return r[bool].fail(
-                            f"Unsupported runtime runner for app: {app_id}",
-                        )
-                thread.join(timeout=2.0)
-                if thread.is_alive():
+                stop_runner = getattr(FlextWebUtilities.Web, "_stop_runner")
+                stop_result = stop_runner(
+                    runtime.runner,
+                    runtime.server,
+                    app_id,
+                )
+                if stop_result.failure:
+                    return stop_result
+                runtime.thread.join(timeout=2.0)
+                if runtime.thread.is_alive():
                     return r[bool].fail(
                         f"Runtime thread did not stop cleanly for app: {app_id}",
                     )
