@@ -24,7 +24,7 @@ logger = u.fetch_logger(__name__)
 class ExamplesFullFunctionalityTest:
     """Shared example assertions exercised through collected subclasses."""
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture
     def _mock_runtime_lifecycle(self, monkeypatch: pytest.MonkeyPatch) -> None:
         def _start_runtime(
             app_id: str,
