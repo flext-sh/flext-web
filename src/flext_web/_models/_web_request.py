@@ -7,15 +7,13 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from typing import TYPE_CHECKING, Annotated
+from datetime import datetime
+from typing import Annotated
 
 from flext_cli import m, t, u
 from flext_web import c
 
 from ._base import FlextWebModelsBase
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 
 class FlextWebModelsWebRequest:

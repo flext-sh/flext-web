@@ -6,15 +6,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, ClassVar
+from threading import Thread
+from typing import Annotated, ClassVar
+from wsgiref.simple_server import WSGIServer
+
+import uvicorn
 
 from flext_cli import m, t, u
-
-if TYPE_CHECKING:
-    from threading import Thread
-    from wsgiref.simple_server import WSGIServer
-
-    import uvicorn
 
 
 class FlextWebModelsSystem:

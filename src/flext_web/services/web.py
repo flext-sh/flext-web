@@ -38,10 +38,7 @@ class FlextWebServices(s):
         settings: FlextWebSettings | None = None,
     ) -> p.Result[Self]:
         """Create a service instance using optional settings overrides."""
-        overrides = (
-            settings.model_dump(exclude_none=True) if settings is not None else None
-        )
-        instance = cls(settings_overrides=overrides) if overrides is not None else cls()
+        instance = cls.with_settings(settings) if settings is not None else cls()
         ok_result: p.Result[Self] = r.ok(instance)
         return ok_result
 
@@ -301,16 +298,16 @@ class FlextWebServices(s):
     def _auth(self) -> FlextWebAuth:
         """Return the lazily created auth service."""
         if self._auth_service is None:
-            self._auth_service = FlextWebAuth(
-                settings_overrides=self._settings_scalar_mapping(),
+            self._auth_service = FlextWebAuth.with_settings(
+                self._runtime_settings_clone(),
             )
         return self._auth_service
 
     def _entities(self) -> FlextWebEntities:
         """Return the lazily created entity service."""
         if self._entity_service is None:
-            self._entity_service = FlextWebEntities(
-                settings_overrides=self._settings_scalar_mapping(),
+            self._entity_service = FlextWebEntities.with_settings(
+                self._runtime_settings_clone(),
             )
         return self._entity_service
 
@@ -344,19 +341,16 @@ class FlextWebServices(s):
     def _health(self) -> FlextWebHealth:
         """Return the lazily created health service."""
         if self._health_service is None:
-            self._health_service = FlextWebHealth(
-                settings_overrides=self._settings_scalar_mapping(),
+            self._health_service = FlextWebHealth.with_settings(
+                self._runtime_settings_clone(),
             )
         return self._health_service
 
-    def _settings_scalar_mapping(self) -> t.JsonMapping:
-        """Produce a JSON-value settings mapping safe for subservice overrides."""
-        raw = self.settings.model_dump(exclude_none=True, mode="json")
-        return {
-            key: value
-            for key, value in raw.items()
-            if isinstance(value, t.PRIMITIVES_TYPES)
-        }
+    def _runtime_settings_clone(self) -> FlextWebSettings:
+        """Produce a FlextWebSettings clone safe for subservice injection."""
+        return FlextWebSettings.model_validate(
+            self.settings.model_dump(exclude_none=True, mode="json"),
+        )
 
 
 __all__: list[str] = ["FlextWebServices"]

@@ -16,7 +16,8 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from flext_tests import r, tm
 
-from flext_core import FlextContainer, FlextContext, FlextSettings
+from flext_cli.settings import FlextCliSettings
+from flext_core import FlextContainer, FlextContext
 from tests.constants import c
 from tests.protocols import p
 from tests.typings import t
@@ -205,7 +206,7 @@ class TestsFlextWebProtocolsUnit:
             @property
             @override
             def settings(self) -> p.Settings:
-                return FlextSettings.fetch_global()
+                return FlextCliSettings.fetch_global()
 
             @property
             @override
