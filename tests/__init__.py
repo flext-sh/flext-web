@@ -39,12 +39,21 @@ if TYPE_CHECKING:
     from tests.unit.test___main__ import TestsFlextWebMain as TestsFlextWebMain
     from tests.unit.test_api import TestsFlextWebApi as TestsFlextWebApi
     from tests.unit.test_app import TestsFlextWebApp as TestsFlextWebApp
+    from tests.unit.test_auth_service import TestsFlextWebAuth as TestsFlextWebAuth
     from tests.unit.test_config import TestsFlextWebConfig as TestsFlextWebConfig
     from tests.unit.test_constants import (
         TestsFlextWebConstantsUnit as TestsFlextWebConstantsUnit,
     )
+    from tests.unit.test_entities_service import (
+        TestsFlextWebEntities as TestsFlextWebEntities,
+    )
+    from tests.unit.test_factory import TestsFlextWebFactory as TestsFlextWebFactory
     from tests.unit.test_fields import TestsFlextWebFields as TestsFlextWebFields
     from tests.unit.test_handlers import TestsFlextWebHandlers as TestsFlextWebHandlers
+    from tests.unit.test_handlers_direct import (
+        TestsFlextWebHandlersDirect as TestsFlextWebHandlersDirect,
+    )
+    from tests.unit.test_health import TestsFlextWebHealth as TestsFlextWebHealth
     from tests.unit.test_models import (
         TestsFlextWebModelsUnit as TestsFlextWebModelsUnit,
     )
@@ -57,6 +66,9 @@ if TYPE_CHECKING:
         TestsFlextWebUtilitiesUnit as TestsFlextWebUtilitiesUnit,
     )
     from tests.unit.test_version import TestsFlextWebVersion as TestsFlextWebVersion
+    from tests.unit.test_web_services_direct import (
+        TestsFlextWebServicesDirect as TestsFlextWebServicesDirect,
+    )
     from tests.utilities import TestsFlextWebUtilities as TestsFlextWebUtilities, u as u
 _LAZY_IMPORTS = merge_lazy_imports(
     (
@@ -97,16 +109,22 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".unit.test___main__": ("TestsFlextWebMain",),
             ".unit.test_api": ("TestsFlextWebApi",),
             ".unit.test_app": ("TestsFlextWebApp",),
+            ".unit.test_auth_service": ("TestsFlextWebAuth",),
             ".unit.test_config": ("TestsFlextWebConfig",),
             ".unit.test_constants": ("TestsFlextWebConstantsUnit",),
+            ".unit.test_entities_service": ("TestsFlextWebEntities",),
+            ".unit.test_factory": ("TestsFlextWebFactory",),
             ".unit.test_fields": ("TestsFlextWebFields",),
             ".unit.test_handlers": ("TestsFlextWebHandlers",),
+            ".unit.test_handlers_direct": ("TestsFlextWebHandlersDirect",),
+            ".unit.test_health": ("TestsFlextWebHealth",),
             ".unit.test_models": ("TestsFlextWebModelsUnit",),
             ".unit.test_protocols": ("TestsFlextWebProtocolsUnit",),
             ".unit.test_services": ("TestsFlextWebService",),
             ".unit.test_typings": ("TestsFlextWebTypesUnit",),
             ".unit.test_utilities": ("TestsFlextWebUtilitiesUnit",),
             ".unit.test_version": ("TestsFlextWebVersion",),
+            ".unit.test_web_services_direct": ("TestsFlextWebServicesDirect",),
             ".utilities": (
                 "TestsFlextWebUtilities",
                 "u",
