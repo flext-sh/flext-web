@@ -8,22 +8,12 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_web._protocols.config import (
-        FlextWebProtocolsConfig as FlextWebProtocolsConfig,
-    )
-    from flext_web._protocols.data import FlextWebProtocolsData as FlextWebProtocolsData
-    from flext_web._protocols.framework import (
-        FlextWebProtocolsFramework as FlextWebProtocolsFramework,
-    )
-    from flext_web._protocols.lifecycle import (
-        FlextWebProtocolsLifecycle as FlextWebProtocolsLifecycle,
-    )
-    from flext_web._protocols.monitoring import (
-        FlextWebProtocolsMonitoring as FlextWebProtocolsMonitoring,
-    )
-    from flext_web._protocols.template import (
-        FlextWebProtocolsTemplate as FlextWebProtocolsTemplate,
-    )
+    from flext_web._protocols.config import FlextWebProtocolsConfig
+    from flext_web._protocols.data import FlextWebProtocolsData
+    from flext_web._protocols.framework import FlextWebProtocolsFramework
+    from flext_web._protocols.lifecycle import FlextWebProtocolsLifecycle
+    from flext_web._protocols.monitoring import FlextWebProtocolsMonitoring
+    from flext_web._protocols.template import FlextWebProtocolsTemplate
 _LAZY_IMPORTS = build_lazy_import_map(
     {
         ".config": ("FlextWebProtocolsConfig",),
