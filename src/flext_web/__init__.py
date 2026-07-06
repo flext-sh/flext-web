@@ -19,7 +19,13 @@ from flext_web.__version__ import (
 from flext_web._exports import FLEXT_WEB_LAZY_IMPORTS
 
 if TYPE_CHECKING:
-    from flext_core._root_typing_parts import d as d, e as e, h as h, r as r, x as x
+    from flext_core._root_typing_parts.facades import (
+        d as d,
+        e as e,
+        h as h,
+        r as r,
+        x as x,
+    )
     from flext_web.api import FlextWeb as FlextWeb, web as web
     from flext_web.base import FlextWebServiceBase as FlextWebServiceBase, s as s
     from flext_web.constants import FlextWebConstants as FlextWebConstants, c as c

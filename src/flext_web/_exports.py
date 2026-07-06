@@ -3,12 +3,57 @@
 
 from __future__ import annotations
 
-from flext_core.lazy import merge_lazy_imports
-from flext_web._exports_lazy_part_01 import FLEXT_WEB_LAZY_IMPORTS_PART_01
+from flext_core.lazy import build_lazy_import_map, merge_lazy_imports
 
-_LOCAL_LAZY_IMPORTS = {
-    **FLEXT_WEB_LAZY_IMPORTS_PART_01,
-}
+_LOCAL_LAZY_IMPORTS = build_lazy_import_map(
+    {
+        "._models": ("_models",),
+        "._protocols": ("_protocols",),
+        ".api": (
+            "FlextWeb",
+            "web",
+        ),
+        ".base": (
+            "FlextWebServiceBase",
+            "s",
+        ),
+        ".constants": (
+            "FlextWebConstants",
+            "c",
+        ),
+        ".models": (
+            "FlextWebModels",
+            "m",
+        ),
+        ".protocols": (
+            "FlextWebProtocols",
+            "p",
+        ),
+        ".services": ("services",),
+        ".services.app": ("FlextWebApp",),
+        ".services.auth": ("FlextWebAuth",),
+        ".services.entities": ("FlextWebEntities",),
+        ".services.handlers": ("FlextWebHandlers",),
+        ".services.health": ("FlextWebHealth",),
+        ".services.web": ("FlextWebServices",),
+        ".settings": ("FlextWebSettings",),
+        ".typings": (
+            "FlextWebTypes",
+            "t",
+        ),
+        ".utilities": (
+            "FlextWebUtilities",
+            "u",
+        ),
+        "flext_core._root_typing_parts.facades": (
+            "d",
+            "e",
+            "h",
+            "r",
+            "x",
+        ),
+    },
+)
 
 FLEXT_WEB_LAZY_IMPORTS = merge_lazy_imports(
     (".services",),
