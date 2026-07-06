@@ -22,21 +22,21 @@ from flext_web.__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import d, e, h, r, x
-    from flext_web.api import FlextWeb, web
-    from flext_web.base import FlextWebServiceBase, s
-    from flext_web.constants import FlextWebConstants, c
-    from flext_web.models import FlextWebModels, m
-    from flext_web.protocols import FlextWebProtocols, p
-    from flext_web.services.app import FlextWebApp
-    from flext_web.services.auth import FlextWebAuth
-    from flext_web.services.entities import FlextWebEntities
-    from flext_web.services.handlers import FlextWebHandlers
-    from flext_web.services.health import FlextWebHealth
-    from flext_web.services.web import FlextWebServices
-    from flext_web.settings import FlextWebSettings
-    from flext_web.typings import FlextWebTypes, t
-    from flext_web.utilities import FlextWebUtilities, u
+    from flext_cli import d as d, e as e, h as h, r as r, x as x
+    from flext_web.api import FlextWeb as FlextWeb, web as web
+    from flext_web.base import FlextWebServiceBase as FlextWebServiceBase, s as s
+    from flext_web.constants import FlextWebConstants as FlextWebConstants, c as c
+    from flext_web.models import FlextWebModels as FlextWebModels, m as m
+    from flext_web.protocols import FlextWebProtocols as FlextWebProtocols, p as p
+    from flext_web.services.app import FlextWebApp as FlextWebApp
+    from flext_web.services.auth import FlextWebAuth as FlextWebAuth
+    from flext_web.services.entities import FlextWebEntities as FlextWebEntities
+    from flext_web.services.handlers import FlextWebHandlers as FlextWebHandlers
+    from flext_web.services.health import FlextWebHealth as FlextWebHealth
+    from flext_web.services.web import FlextWebServices as FlextWebServices
+    from flext_web.settings import FlextWebSettings as FlextWebSettings
+    from flext_web.typings import FlextWebTypes as FlextWebTypes, t as t
+    from flext_web.utilities import FlextWebUtilities as FlextWebUtilities, u as u
 _LAZY_IMPORTS = merge_lazy_imports(
     (".services",),
     build_lazy_import_map(
