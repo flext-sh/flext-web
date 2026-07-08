@@ -9,8 +9,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated
 
-from flext_cli import m, p, r, t, u
-from flext_web import c
+from flext_cli import m, u
+from flext_web import c, p, r, t
 
 from ._base import FlextWebModelsBase
 

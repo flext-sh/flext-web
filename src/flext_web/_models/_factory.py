@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import uuid
 
-from flext_cli import p, r, t, u
-from flext_web import c
+from flext_cli import u
+from flext_web import c, p, r, t
 
 from ._entity import FlextWebModelsEntity
 from ._web_request import FlextWebModelsWebRequest
