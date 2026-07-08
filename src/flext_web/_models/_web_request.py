@@ -10,7 +10,8 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
-from flext_web import c, m, t, u
+from flext_cli import m
+from flext_web import c, t, u
 
 from ._base import FlextWebModelsBase
 
