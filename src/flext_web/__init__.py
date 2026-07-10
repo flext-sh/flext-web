@@ -34,13 +34,13 @@ if TYPE_CHECKING:
     from flext_web.services.handlers import FlextWebHandlers as FlextWebHandlers
     from flext_web.services.health import FlextWebHealth as FlextWebHealth
     from flext_web.services.web import FlextWebServices as FlextWebServices
-    from flext_web.settings import FlextWebSettings as FlextWebSettings
     from flext_web.typings import FlextWebTypes as FlextWebTypes, t as t
     from flext_web.utilities import FlextWebUtilities as FlextWebUtilities, u as u
 _LAZY_IMPORTS = merge_lazy_imports(
     (".services",),
     build_lazy_import_map(
         {
+            "._settings": ("FlextWebSettings", "settings"),
             ".api": (
                 "FlextWeb",
                 "web",
@@ -67,7 +67,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
             ".services.handlers": ("FlextWebHandlers",),
             ".services.health": ("FlextWebHealth",),
             ".services.web": ("FlextWebServices",),
-            ".settings": ("FlextWebSettings",),
             ".typings": (
                 "FlextWebTypes",
                 "t",
@@ -109,6 +108,8 @@ _LAZY_IMPORTS = merge_lazy_imports(
 
 
 __all__: tuple[str, ...] = (
+    "FlextWebSettings",
+    "settings",
     "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
@@ -120,7 +121,6 @@ __all__: tuple[str, ...] = (
     "FlextWebProtocols",
     "FlextWebServiceBase",
     "FlextWebServices",
-    "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
     "__author__",

@@ -17,7 +17,6 @@ class TestsFlextWebServiceBase(tests_s):
     @override
     def fetch_settings(cls) -> TestsFlextWebSettings:
         """Return the typed Web+Tests settings singleton."""
-        return TestsFlextWebSettings.fetch_global()
 
     @classmethod
     @override

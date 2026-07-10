@@ -11,13 +11,13 @@ from flext_web import (
     FlextWebAuth,
     FlextWebEntities,
     FlextWebHealth,
-    FlextWebSettings,
     c,
     e,
     m,
     p,
     r,
     s,
+    settings,
     t,
     u,
 )
@@ -35,7 +35,6 @@ class FlextWebServices(s):
     @classmethod
     def create_service(
         cls,
-        settings: FlextWebSettings | None = None,
     ) -> p.Result[Self]:
         """Create a service instance using optional settings overrides."""
         instance = cls.with_settings(settings) if settings is not None else cls()
@@ -317,9 +316,9 @@ class FlextWebServices(s):
         port: int | None,
     ) -> p.Result[m.Web.ApplicationResponse]:
         """Return the configured runtime application, creating it when needed."""
-        target_name = self.settings.app_name
-        target_host = host if host is not None else self.settings.host
-        target_port = port if port is not None else self.settings.port
+        target_name = settings.Web.app_name
+        target_host = host if host is not None else settings.Web.host
+        target_port = port if port is not None else settings.Web.port
         apps_result = self.list_apps()
         if apps_result.failure:
             return r[m.Web.ApplicationResponse].fail(apps_result.error)
@@ -345,12 +344,6 @@ class FlextWebServices(s):
                 self._runtime_settings_clone(),
             )
         return self._health_service
-
-    def _runtime_settings_clone(self) -> FlextWebSettings:
-        """Produce a FlextWebSettings clone safe for subservice injection."""
-        return FlextWebSettings.model_validate(
-            self.settings.model_dump(exclude_none=True, mode="json"),
-        )
 
 
 __all__: list[str] = ["FlextWebServices"]

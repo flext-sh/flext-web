@@ -33,19 +33,16 @@ class FlextWebRunCommand(s):
     def execute(self) -> p.Result[bool]:
         """Apply CLI overrides and start the public web facade."""
         debug_value = False if self.no_debug else self.debug
-        config_result = FlextWebSettings.create_web_config(
-            host=self.host,
-            port=self.port,
+        web_settings = FlextWebSettings.fetch_global().clone(
+            Web={"host": self.host, "port": self.port},
             debug=debug_value,
         )
-        if config_result.failure:
-            return r[bool].fail(config_result.error)
-        service_result = web.create_service(config_result.value)
+        service_result = web.create_service(web_settings)
         if service_result.failure:
             return r[bool].fail(service_result.error)
         return service_result.value.start_service(
-            host=config_result.value.host,
-            port=config_result.value.port,
+            host=web_settings.Web.host,
+            port=web_settings.Web.port,
             debug=debug_value,
         )
 

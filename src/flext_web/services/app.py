@@ -142,8 +142,8 @@ class FlextWebApp(s):
             settings
             if settings is not None
             else m.Web.FastAPIAppConfig(
-                title=self.settings.app_name,
-                version=self.settings.version,
+                title=settings.Web.app_name,
+                version=settings.Web.version,
                 description=c.Web.API_DEFAULT_DESCRIPTION,
                 docs_url=c.Web.API_DOCS_URL,
                 redoc_url=c.Web.API_REDOC_URL,
@@ -191,13 +191,10 @@ class FlextWebApp(s):
         failure contains detailed error message
 
         """
-        flask_config: FlextWebSettings = (
-            settings if settings is not None else self.settings
-        )
-        app = flask.Flask(flask_config.app_name)
-        app.config["SECRET_KEY"] = flask_config.secret_key
-        app.config["DEBUG"] = flask_config.debug
-        app.config["TESTING"] = flask_config.testing
+        app = flask.Flask(settings.Web.app_name)
+        app.config["SECRET_KEY"] = settings.Web.secret_key
+        app.config["DEBUG"] = settings.debug
+        app.config["TESTING"] = settings.Web.testing
 
         def health_check() -> flask.Response:
             body: str = _json.dumps({
@@ -211,7 +208,7 @@ class FlextWebApp(s):
 
         app.add_url_rule("/health", "health_check", health_check)
 
-        self.logger.info("Flask application created", app_name=flask_config.app_name)
+        self.logger.info("Flask application created", app_name=settings.Web.app_name)
         return r[flask.Flask].ok(app)
 
     class HealthHandler:
@@ -243,7 +240,7 @@ class FlextWebApp(s):
                 return {
                     "service": c.Web.SERVICE_NAME,
                     "title": settings.title,
-                    "version": settings.version,
+                    "version": settings.Web.version,
                     "description": settings.description,
                     "debug": settings.debug,
                     "timestamp": u.generate_iso_timestamp(),
@@ -268,39 +265,35 @@ class FlextWebApp(s):
     def configure_fastapi_middleware(
         self,
         app: FastAPI,
-        settings: FlextWebSettings | None = None,
     ) -> p.Result[bool]:
         """Configure FastAPI middleware (extensible for future needs).
 
         Args:
             app: FastAPI application instance
-            settings: Web configuration model
 
         Returns:
             r[bool]: Success contains True if middleware configured,
                               failure contains error message
 
         """
-        _ = (app, settings if settings is not None else self.settings)
+        _ = app
         return r[bool].ok(value=True)
 
     def configure_fastapi_routes(
         self,
         app: FastAPI,
-        settings: FlextWebSettings | None = None,
     ) -> p.Result[bool]:
         """Configure FastAPI routes (extensible for future needs).
 
         Args:
             app: FastAPI application instance
-            settings: Web configuration model
 
         Returns:
             r[bool]: Success contains True if routes configured,
                               failure contains error message
 
         """
-        _ = (app, settings if settings is not None else self.settings)
+        _ = app
         return r[bool].ok(value=True)
 
     def validate_business_rules(self) -> p.Result[bool]:
