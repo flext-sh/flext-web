@@ -18,10 +18,10 @@ from typing import TYPE_CHECKING, Annotated
 from pydantic import BaseModel, Field
 from pydantic_settings import SettingsConfigDict
 
-from flext_core import FlextSettings
+from flext_cli import FlextCliSettings
 
 
-class FlextWebSettings(FlextSettings):
+class FlextWebSettings(FlextCliSettings):
     """Web runtime settings; all project fields under ``settings.Web.*``."""
 
     model_config = SettingsConfigDict(
@@ -33,8 +33,12 @@ class FlextWebSettings(FlextSettings):
     class _Web(BaseModel):
         """Namespaced web runtime settings."""
 
-        app_name: Annotated[str, Field(default="FLEXT Web", description="Application name")]
-        version: Annotated[str, Field(default="1.0.0", description="Service semantic version")]
+        app_name: Annotated[
+            str, Field(default="FLEXT Web", description="Application name")
+        ]
+        version: Annotated[
+            str, Field(default="1.0.0", description="Service semantic version")
+        ]
         host: Annotated[str, Field(default="localhost", description="Bind host")]
         port: Annotated[int, Field(default=8080, description="Bind port")]
         debug_mode: Annotated[bool, Field(default=False, description="Debug mode")]
@@ -46,7 +50,9 @@ class FlextWebSettings(FlextSettings):
                 description="Application secret key",
             ),
         ]
-        ssl_enabled: Annotated[bool, Field(default=False, description="Enable TLS endpoints")]
+        ssl_enabled: Annotated[
+            bool, Field(default=False, description="Enable TLS endpoints")
+        ]
         ssl_cert_path: Annotated[
             str | None,
             Field(default=None, description="TLS certificate file path"),

@@ -108,8 +108,6 @@ _LAZY_IMPORTS = merge_lazy_imports(
 
 
 __all__: tuple[str, ...] = (
-    "FlextWebSettings",
-    "settings",
     "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
@@ -121,6 +119,7 @@ __all__: tuple[str, ...] = (
     "FlextWebProtocols",
     "FlextWebServiceBase",
     "FlextWebServices",
+    "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
     "__author__",
@@ -139,6 +138,7 @@ __all__: tuple[str, ...] = (
     "p",
     "r",
     "s",
+    "settings",
     "t",
     "u",
     "web",
