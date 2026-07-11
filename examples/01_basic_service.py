@@ -6,20 +6,21 @@ from flext_web import web
 
 
 def main() -> None:
-    """Start flext-web using validated settings and the public facade."""
-    config_result = web.settings.create_web_config(
-        host="127.0.0.1",
-        port=8000,
+    """Start flext-web using validated namespaced settings and the facade."""
+    # Settings are validated at construction; overrides go through clone().
+    settings = web.settings.clone(
+        Web={
+            "host": "127.0.0.1",
+            "port": 8000,
+            "secret_key": "dev-secret-key-32-characters-long",
+        },
         debug=True,
-        secret_key="dev-secret-key-32-characters-long",
     )
-    if config_result.failure:
-        return
     try:
         _ = web.start_service(
-            host=config_result.value.host,
-            port=config_result.value.port,
-            debug=config_result.value.debug_mode,
+            host=settings.Web.host,
+            port=settings.Web.port,
+            debug=settings.debug,
         )
     except KeyboardInterrupt:
         return

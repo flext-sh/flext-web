@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_web import c, m, settings, t, u
+from flext_web import FlextWebSettings, c, m, t, u
 
 
 class FlextWebModelsConfig:
@@ -39,7 +39,9 @@ class FlextWebModelsConfig:
             title: Annotated[
                 str,
                 u.Field(
-                    default_factory=lambda: settings.Web.app_name,
+                    # Resolve the current global singleton lazily (the module-level
+                    # `settings` capture goes stale when the singleton is replaced).
+                    default_factory=lambda: FlextWebSettings.fetch_global().Web.app_name,
                     min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
                     max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                     description="FastAPI application title",
@@ -48,7 +50,7 @@ class FlextWebModelsConfig:
             version: Annotated[
                 str,
                 u.Field(
-                    default_factory=lambda: settings.Web.version,
+                    default_factory=lambda: FlextWebSettings.fetch_global().Web.version,
                     description="Application version",
                 ),
             ]

@@ -17,6 +17,7 @@ from fastapi.routing import APIRoute
 from flext_tests import r, tm
 
 from flext_core import FlextContainer, FlextContext
+from flext_web import FlextWebSettings
 from tests.constants import c
 from tests.protocols import p
 from tests.typings import t
@@ -201,6 +202,16 @@ class TestsFlextWebProtocolsUnit:
             @override
             def list_apps() -> p.Result[Sequence[t.Web.ResponseDict]]:
                 return r[Sequence[t.Web.ResponseDict]].ok([])
+
+            @property
+            @override
+            def settings(self) -> p.Settings:
+                return FlextWebSettings.fetch_global()
+
+            @settings.setter
+            @override
+            def settings(self, value: p.Settings, /) -> None:
+                """Test double keeps the global settings; setter satisfies the protocol."""
 
             @property
             @override
