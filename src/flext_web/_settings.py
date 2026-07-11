@@ -31,7 +31,7 @@ class FlextWebSettings(FlextCliSettings):
     )
 
     class _Web(BaseModel):
-        """Namespaced web runtime settings."""
+        """Namespaced web runtime settings (pure declaration)."""
 
         app_name: Annotated[
             str, Field(default="FLEXT Web", description="Application name")
@@ -39,14 +39,25 @@ class FlextWebSettings(FlextCliSettings):
         version: Annotated[
             str, Field(default="1.0.0", description="Service semantic version")
         ]
-        host: Annotated[str, Field(default="localhost", description="Bind host")]
-        port: Annotated[int, Field(default=8080, description="Bind port")]
-        debug_mode: Annotated[bool, Field(default=False, description="Debug mode")]
+        host: Annotated[
+            str,
+            Field(
+                default="localhost",
+                min_length=1,
+                pattern=r"\S",
+                description="Bind host",
+            ),
+        ]
+        port: Annotated[
+            int,
+            Field(default=8080, ge=1, le=65535, description="Bind port"),
+        ]
         testing: Annotated[bool, Field(default=False, description="Testing flag")]
         secret_key: Annotated[
             str,
             Field(
                 default="default-secret-key-32-characters-long-for-security",
+                min_length=32,
                 description="Application secret key",
             ),
         ]
