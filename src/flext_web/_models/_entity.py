@@ -11,7 +11,7 @@ from collections.abc import MutableSequence
 from typing import Annotated, override
 
 from flext_cli import m
-from flext_web import c, p, r, t, u
+from flext_web import c, p, r, settings, t, u
 
 
 class FlextWebModelsEntity:
@@ -84,17 +84,19 @@ class FlextWebModelsEntity:
             host: Annotated[
                 str,
                 u.Field(
+                    default_factory=lambda: settings.Web.host,
                     min_length=1,
                     max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
                     description="Application host address",
                 ),
-            ] = c.Web.DEFAULT_HOST
+            ]
             port: Annotated[
                 t.PortNumber,
                 u.Field(
+                    default_factory=lambda: settings.Web.port,
                     description="Application port number",
                 ),
-            ] = c.Web.DEFAULT_PORT
+            ]
             status: Annotated[
                 c.Web.Status | str,
                 u.Field(
@@ -121,9 +123,10 @@ class FlextWebModelsEntity:
             debug_mode: Annotated[
                 bool,
                 u.Field(
+                    default_factory=lambda: settings.debug,
                     description="Debug mode enabled flag",
                 ),
-            ] = c.Web.DEFAULT_DEBUG_MODE
+            ]
             metrics: Annotated[
                 t.MutableJsonMapping,
                 u.Field(
@@ -179,7 +182,7 @@ class FlextWebModelsEntity:
 
             @property
             def url(self) -> str:
-                """Get the full URL with conditional protocol selection."""
+                """Full URL with conditional protocol selection."""
                 ssl_ports = c.Web.SECURITY_SSL_PORTS
                 protocol = (
                     c.Web.DEFAULT_HTTPS_PROTOCOL
@@ -403,38 +406,43 @@ class FlextWebModelsEntity:
             app_name: Annotated[
                 str,
                 u.Field(
+                    default_factory=lambda: settings.Web.app_name,
                     min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
                     max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                     description="Application name",
                 ),
-            ] = c.Web.DEFAULT_APP_NAME
+            ]
             host: Annotated[
                 str,
                 u.Field(
+                    default_factory=lambda: settings.Web.host,
                     min_length=1,
                     max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
                     description="Application host address",
                 ),
-            ] = c.Web.DEFAULT_HOST
+            ]
             port: Annotated[
                 t.PortNumber,
                 u.Field(
+                    default_factory=lambda: settings.Web.port,
                     description="Application port number",
                 ),
-            ] = c.Web.DEFAULT_PORT
+            ]
             debug: Annotated[
                 bool,
                 u.Field(
+                    default_factory=lambda: settings.debug,
                     description="Debug mode flag",
                 ),
-            ] = c.Web.DEFAULT_DEBUG_MODE
+            ]
             secret_key: Annotated[
                 str,
                 u.Field(
+                    default_factory=lambda: settings.Web.secret_key,
                     min_length=c.Web.SECURITY_MIN_SECRET_KEY_LENGTH,
                     description="Application secret key",
                 ),
-            ] = c.Web.DEFAULT_SECRET_KEY
+            ]
 
 
 __all__: list[str] = ["FlextWebModelsEntity"]
