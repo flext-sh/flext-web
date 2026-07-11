@@ -6,7 +6,7 @@ import sys
 from typing import Annotated, override
 
 from flext_cli import cli, m as cli_m, u as cli_u
-from flext_web import p, r, s, settings, t, web
+from flext_web import FlextWebSettings, p, r, s, settings, t, web
 
 
 class FlextWebRunCommand(s):
@@ -33,10 +33,19 @@ class FlextWebRunCommand(s):
     def execute(self) -> p.Result[bool]:
         """Apply CLI overrides and start the public web facade."""
         debug_value = False if self.no_debug else self.debug
-        web_settings = settings.clone(
-            Web={"host": self.host, "port": self.port},
-            debug=debug_value,
+        # Only non-None CLI values override the settings SSOT; invalid values
+        # (e.g. port=0) surface as a Result failure, never a raised exception.
+        web_overrides: dict[str, str | int] = {}
+        if self.host is not None:
+            web_overrides["host"] = self.host
+        if self.port is not None:
+            web_overrides["port"] = self.port
+        settings_result = r[FlextWebSettings].create_from_callable(
+            lambda: settings.clone(Web=web_overrides, debug=debug_value),
         )
+        if settings_result.failure:
+            return r[bool].fail(settings_result.error)
+        web_settings = settings_result.value
         service_result = web.create_service(web_settings)
         if service_result.failure:
             return r[bool].fail(service_result.error)

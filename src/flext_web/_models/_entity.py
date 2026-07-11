@@ -81,22 +81,23 @@ class FlextWebModelsEntity:
 
                 return v
 
+            # Assignment form (= u.Field(default_factory=...)) is required on
+            # m.Entity subclasses: pyrefly loses Annotated-only defaults through
+            # the TimestampedModel chain (same pattern as the `id` field above).
             host: Annotated[
                 str,
                 u.Field(
-                    default_factory=lambda: settings.Web.host,
                     min_length=1,
                     max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
                     description="Application host address",
                 ),
-            ]
+            ] = u.Field(default_factory=lambda: settings.Web.host)
             port: Annotated[
                 t.PortNumber,
                 u.Field(
-                    default_factory=lambda: settings.Web.port,
                     description="Application port number",
                 ),
-            ]
+            ] = u.Field(default_factory=lambda: settings.Web.port)
             status: Annotated[
                 c.Web.Status | str,
                 u.Field(
@@ -123,10 +124,9 @@ class FlextWebModelsEntity:
             debug_mode: Annotated[
                 bool,
                 u.Field(
-                    default_factory=lambda: settings.debug,
                     description="Debug mode enabled flag",
                 ),
-            ]
+            ] = u.Field(default_factory=lambda: settings.debug)
             metrics: Annotated[
                 t.MutableJsonMapping,
                 u.Field(
