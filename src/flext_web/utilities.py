@@ -31,7 +31,7 @@ from flext_core import (
     FlextUtilitiesGuardsTypeCore,
     FlextUtilitiesReliability,
 )
-from flext_web import c, t
+from flext_web import c, settings, t
 from flext_web._settings import FlextWebSettings
 
 if TYPE_CHECKING:
@@ -130,7 +130,7 @@ class FlextWebUtilities(
             try:
                 fastapi_app = FastAPI(
                     title=name,
-                    version=c.Web.DEFAULT_VERSION_STRING,
+                    version=settings.Web.version,
                     description=c.Web.API_DEFAULT_DESCRIPTION,
                     docs_url=c.Web.API_DOCS_URL,
                     redoc_url=c.Web.API_REDOC_URL,
@@ -147,8 +147,8 @@ class FlextWebUtilities(
 
             try:
                 flask_app = flask.Flask(name)
-                flask_app.config["SECRET_KEY"] = c.Web.DEFAULT_SECRET_KEY
-                flask_app.config["DEBUG"] = c.Web.DEFAULT_DEBUG_MODE
+                flask_app.config["SECRET_KEY"] = settings.Web.secret_key
+                flask_app.config["DEBUG"] = settings.debug
                 flask_app.config["TESTING"] = False
             except c.EXC_OS_RUNTIME_TYPE as exc:
                 return r[tuple[flask.Flask | FastAPI, str, str]].fail(

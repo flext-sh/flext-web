@@ -72,7 +72,6 @@ class FlextWebApp(s):
             """
             default_config = m.Web.FastAPIAppConfig(
                 title="FastAPI",
-                version=c.Web.DEFAULT_VERSION_STRING,
                 description=c.Web.API_DEFAULT_DESCRIPTION,
                 docs_url=c.Web.API_DOCS_URL,
                 redoc_url=c.Web.API_REDOC_URL,
@@ -80,7 +79,7 @@ class FlextWebApp(s):
             )
             final_config = settings if settings is not None else default_config
             title: str = final_config.title or "FastAPI"
-            version: str = final_config.version or c.Web.DEFAULT_VERSION_STRING
+            version: str = final_config.version
             description: str = (
                 final_config.description or "FlextWeb FastAPI Application"
             )

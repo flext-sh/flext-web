@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import ClassVar, override
 
-from flext_web import c, m, p, r, s, u
+from flext_web import c, m, p, r, s, settings, u
 
 
 class FlextWebHandlers(s):
@@ -30,8 +30,8 @@ class FlextWebHandlers(s):
     def handle_create_app(
         cls,
         name: str,
-        port: int = c.Web.DEFAULT_PORT,
-        host: str = c.Web.DEFAULT_HOST,
+        port: int = settings.Web.port,
+        host: str = settings.Web.host,
     ) -> p.Result[m.Web.Entity]:
         """Handle application creation requests.
 
