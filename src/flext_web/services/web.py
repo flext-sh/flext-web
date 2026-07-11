@@ -11,6 +11,7 @@ from flext_web import (
     FlextWebAuth,
     FlextWebEntities,
     FlextWebHealth,
+    FlextWebSettings,
     c,
     e,
     m,
@@ -35,11 +36,16 @@ class FlextWebServices(s):
     @classmethod
     def create_service(
         cls,
+        settings: FlextWebSettings | None = None,
     ) -> p.Result[Self]:
         """Create a service instance using optional settings overrides."""
         instance = cls.with_settings(settings) if settings is not None else cls()
         ok_result: p.Result[Self] = r.ok(instance)
         return ok_result
+
+    def _runtime_settings_clone(self) -> FlextWebSettings:
+        """Return a clone of the bound runtime settings for child services."""
+        return self.settings.clone()
 
     def authenticate(
         self,

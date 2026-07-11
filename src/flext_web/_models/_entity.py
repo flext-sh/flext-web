@@ -374,9 +374,9 @@ class FlextWebModelsEntity:
                 """Build an :class:`Entity` from an ``EntityConfig`` snapshot."""
                 return r[FlextWebModelsEntity.Web.Entity].create_from_callable(
                     lambda: cls(
-                        name=settings.Web.app_name,
-                        host=settings.Web.host,
-                        port=settings.Web.port,
+                        name=settings.app_name,
+                        host=settings.host,
+                        port=settings.port,
                         status=getattr(
                             settings,
                             "status",

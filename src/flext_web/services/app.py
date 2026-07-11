@@ -138,17 +138,14 @@ class FlextWebApp(s):
         failure contains detailed error message
 
         """
-        fastapi_config = (
-            settings
-            if settings is not None
-            else m.Web.FastAPIAppConfig(
-                title=settings.Web.app_name,
-                version=settings.Web.version,
-                description=c.Web.API_DEFAULT_DESCRIPTION,
-                docs_url=c.Web.API_DOCS_URL,
-                redoc_url=c.Web.API_REDOC_URL,
-                openapi_url=c.Web.API_OPENAPI_URL,
-            )
+        web_defaults = FlextWebSettings.fetch_global().Web
+        fastapi_config = settings or m.Web.FastAPIAppConfig(
+            title=web_defaults.app_name,
+            version=web_defaults.version,
+            description=c.Web.API_DEFAULT_DESCRIPTION,
+            docs_url=c.Web.API_DOCS_URL,
+            redoc_url=c.Web.API_REDOC_URL,
+            openapi_url=c.Web.API_OPENAPI_URL,
         )
         factory_payload = (
             factory_config
@@ -191,10 +188,11 @@ class FlextWebApp(s):
         failure contains detailed error message
 
         """
-        app = flask.Flask(settings.Web.app_name)
-        app.config["SECRET_KEY"] = settings.Web.secret_key
-        app.config["DEBUG"] = settings.debug
-        app.config["TESTING"] = settings.Web.testing
+        web_settings = settings or FlextWebSettings.fetch_global()
+        app = flask.Flask(web_settings.Web.app_name)
+        app.config["SECRET_KEY"] = web_settings.Web.secret_key
+        app.config["DEBUG"] = web_settings.debug
+        app.config["TESTING"] = web_settings.Web.testing
 
         def health_check() -> flask.Response:
             body: str = _json.dumps({
@@ -208,7 +206,7 @@ class FlextWebApp(s):
 
         app.add_url_rule("/health", "health_check", health_check)
 
-        self.logger.info("Flask application created", app_name=settings.Web.app_name)
+        self.logger.info("Flask application created", app_name=web_settings.Web.app_name)
         return r[flask.Flask].ok(app)
 
     class HealthHandler:
@@ -240,7 +238,7 @@ class FlextWebApp(s):
                 return {
                     "service": c.Web.SERVICE_NAME,
                     "title": settings.title,
-                    "version": settings.Web.version,
+                    "version": settings.version,
                     "description": settings.description,
                     "debug": settings.debug,
                     "timestamp": u.generate_iso_timestamp(),

@@ -27,7 +27,11 @@ class FlextWebServiceBase(
     @property
     @override
     def settings(self) -> FlextWebSettings:
-        """Return the typed web settings bound to this service runtime."""
+        """Typed web settings bound to this runtime (falls back to the global)."""
+        runtime = self.runtime_settings
+        if runtime is not None:
+            return FlextWebSettings.model_validate(runtime)
+        return FlextWebSettings.fetch_global()
 
 
 s = FlextWebServiceBase
