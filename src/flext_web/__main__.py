@@ -6,7 +6,7 @@ import sys
 from typing import Annotated, override
 
 from flext_cli import cli, m as cli_m, u as cli_u
-from flext_web import FlextWebSettings, p, r, s, t, web
+from flext_web import p, r, s, settings, t, web
 
 
 class FlextWebRunCommand(s):
@@ -33,7 +33,7 @@ class FlextWebRunCommand(s):
     def execute(self) -> p.Result[bool]:
         """Apply CLI overrides and start the public web facade."""
         debug_value = False if self.no_debug else self.debug
-        web_settings = FlextWebSettings.fetch_global().clone(
+        web_settings = settings.clone(
             Web={"host": self.host, "port": self.port},
             debug=debug_value,
         )

@@ -137,10 +137,7 @@ class FlextWebApp(s):
         failure contains detailed error message
 
         """
-        web_defaults = FlextWebSettings.fetch_global().Web
         fastapi_config = settings or m.Web.FastAPIAppConfig(
-            title=web_defaults.app_name,
-            version=web_defaults.version,
             description=c.Web.API_DEFAULT_DESCRIPTION,
             docs_url=c.Web.API_DOCS_URL,
             redoc_url=c.Web.API_REDOC_URL,
@@ -187,7 +184,7 @@ class FlextWebApp(s):
         failure contains detailed error message
 
         """
-        web_settings = settings or FlextWebSettings.fetch_global()
+        web_settings = settings or self.settings
         app = flask.Flask(web_settings.Web.app_name)
         app.config["SECRET_KEY"] = web_settings.Web.secret_key
         app.config["DEBUG"] = web_settings.debug
