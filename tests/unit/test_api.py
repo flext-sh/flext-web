@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import pytest
 from flext_tests import tm
 
-from flext_web import web
+from flext_web import c, web
 from tests.models import m
 
 
@@ -29,39 +30,33 @@ class TestsFlextWebApi:
 
     def test_settings_factory_success(self) -> None:
         """Validated settings can be built through the settings class."""
-        result = web.settings.create_web_config(
-            host="localhost",
-            port=8080,
+        settings = web.settings.clone(
+            Web={"host": "localhost", "port": 8080},
             debug=True,
         )
-        tm.ok(result)
-        tm.that(result.value.host, eq="localhost")
-        tm.that(result.value.port, eq=8080)
-        tm.that(result.value.debug_mode, eq=True)
+        tm.that(settings.Web.host, eq="localhost")
+        tm.that(settings.Web.port, eq=8080)
+        tm.that(settings.debug, eq=True)
 
     def test_settings_factory_rejects_invalid_values(self) -> None:
-        """Invalid settings fail without xfail wrappers."""
-        invalid_port = web.settings.create_web_config(
-            host="localhost",
-            port=-1,
-            debug=True,
-        )
-        tm.fail(invalid_port)
-        invalid_host = web.settings.create_web_config(host="", port=8080)
-        tm.fail(invalid_host)
+        """Invalid settings fail validation without xfail wrappers."""
+        with pytest.raises(c.ValidationError):
+            _ = web.settings.clone(Web={"host": "localhost", "port": -1}, debug=True)
+        with pytest.raises(c.ValidationError):
+            _ = web.settings.clone(Web={"host": "", "port": 8080})
 
     def test_validate_settings_success(self) -> None:
-        """Settings validation returns a successful r for valid input."""
+        """Settings validation succeeds for a valid namespaced instance."""
         settings = web.settings.clone(
-            host="localhost",
-            port=8080,
+            Web={
+                "host": "localhost",
+                "port": 8080,
+                "secret_key": "test-secret-key-32-characters!!!",
+            },
             debug=True,
-            debug_mode=True,
-            secret_key="test-secret-key-32-characters!!!",
         )
-        result = web.settings.validate_settings(settings)
-        tm.ok(result)
-        tm.that(result.value, eq=True)
+        validated = type(settings).model_validate(settings.model_dump())
+        tm.that(validated.Web.host, eq="localhost")
 
     def test_get_service_status(self) -> None:
         """The facade exposes structured service status."""

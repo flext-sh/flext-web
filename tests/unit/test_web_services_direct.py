@@ -29,10 +29,10 @@ class TestsFlextWebServicesDirect:
 
     def test_create_service_with_settings(self) -> None:
         """create_service accepts settings overrides."""
-        settings = FlextWebSettings(app_name="direct-test")
+        settings = FlextWebSettings(Web={"app_name": "direct-test"})
         result = FlextWebServices.create_service(settings)
         tm.ok(result)
-        tm.that(result.value.settings.app_name, eq="direct-test")
+        tm.that(result.value.settings.Web.app_name, eq="direct-test")
 
     def test_create_service_without_settings(self) -> None:
         """create_service works without settings."""
@@ -114,7 +114,7 @@ class TestsFlextWebServicesDirect:
         service = FlextWebServices()
         result = service._get_or_create_runtime_application("localhost", 8080)
         tm.ok(result)
-        tm.that(result.value.name, eq=service.settings.app_name)
+        tm.that(result.value.name, eq=service.settings.Web.app_name)
 
     def test_get_or_create_runtime_application_returns_existing(self) -> None:
         """Existing runtime application is returned when matched."""

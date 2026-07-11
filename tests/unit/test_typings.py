@@ -97,10 +97,9 @@ class TestsFlextWebTypesUnit:
 
     def test_config_validation(self) -> None:
         """Test settings validation functionality."""
-        result = web.settings.create_web_config(host="localhost", port=8080)
-        tm.ok(result)
-        tm.that(result.value.host, eq="localhost")
-        tm.that(result.value.port, eq=8080)
+        settings = web.settings.clone(Web={"host": "localhost", "port": 8080})
+        tm.that(settings.Web.host, eq="localhost")
+        tm.that(settings.Web.port, eq=8080)
 
     def test_type_consistency(self) -> None:
         """Test that types are consistent with t."""

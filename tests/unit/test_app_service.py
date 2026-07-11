@@ -31,7 +31,7 @@ class TestsFlextWebApp:
         service = FlextWebApp()
         result = service.create_fastapi_app()
         tm.ok(result)
-        tm.that(result.value.title, eq=FlextWebSettings().app_name)
+        tm.that(result.value.title, eq=FlextWebSettings().Web.app_name)
 
     def test_create_fastapi_app_with_custom_config(self) -> None:
         """Service creates a FastAPI app with custom config."""
@@ -44,7 +44,7 @@ class TestsFlextWebApp:
     def test_create_flask_app(self) -> None:
         """Service creates a Flask app."""
         service = FlextWebApp()
-        settings = FlextWebSettings(app_name="flask-test")
+        settings = FlextWebSettings(Web={"app_name": "flask-test"})
         result = service.create_flask_app(settings=settings)
         tm.ok(result)
         tm.that(result.value.name, eq="flask-test")

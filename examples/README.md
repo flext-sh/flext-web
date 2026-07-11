@@ -8,8 +8,11 @@ This directory shows the current public usage pattern for `flext-web`:
 ```python
 from flext_web import web
 
-settings = web.settings.create_web_config(host="127.0.0.1", port=8000, debug=True).value
-_ = web.start_service(host=settings.host, port=settings.port, debug=settings.debug_mode)
+settings = web.settings.clone(
+    Web={"host": "127.0.0.1", "port": 8000},
+    debug=True,
+)
+_ = web.start_service(host=settings.Web.host, port=settings.Web.port, debug=settings.debug)
 ```
 
 ## API Usage

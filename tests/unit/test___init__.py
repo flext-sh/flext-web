@@ -84,6 +84,7 @@ class TestsFlextWebInit:
             "p",
             "r",
             "s",
+            "settings",
             "t",
             "u",
             "web",

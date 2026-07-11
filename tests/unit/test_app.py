@@ -15,21 +15,22 @@ class TestsFlextWebApp:
         """When no settings is passed, the service uses its typed settings."""
         result = web.create_fastapi_app()
         tm.ok(result)
-        tm.that(result.value.title, eq=web.settings.app_name)
+        tm.that(result.value.title, eq=web.settings.Web.app_name)
 
     def test_create_flask_app_success(self) -> None:
         """The service creates Flask apps from typed settings."""
         settings = FlextWebSettings(
-            app_name="flext-web-test",
-            host="127.0.0.1",
-            port=8123,
+            Web={
+                "app_name": "flext-web-test",
+                "host": "127.0.0.1",
+                "port": 8123,
+                "secret_key": "flask-secret-key-32-characters!!",
+            },
             debug=True,
-            debug_mode=True,
-            secret_key="flask-secret-key-32-characters!!",
         )
         result = web.create_flask_app(settings)
         tm.ok(result)
-        tm.that(result.value.config["SECRET_KEY"], eq=settings.secret_key)
+        tm.that(result.value.config["SECRET_KEY"], eq=settings.Web.secret_key)
 
     def test_create_flask_app_health_route(self) -> None:
         """The Flask health endpoint returns JSON over the public HTTP interface."""
@@ -45,15 +46,9 @@ class TestsFlextWebApp:
         """Framework-specific configure hooks stay explicit and separate."""
         fastapi_result = web.create_fastapi_app()
         tm.ok(fastapi_result)
-        settings = web.settings.create_web_config().value
         tm.ok(web.configure_fastapi_error_handlers(fastapi_result.value))
-        tm.ok(
-            web.configure_fastapi_middleware(
-                fastapi_result.value,
-                settings,
-            ),
-        )
-        tm.ok(web.configure_fastapi_routes(fastapi_result.value, settings))
+        tm.ok(web.configure_fastapi_middleware(fastapi_result.value))
+        tm.ok(web.configure_fastapi_routes(fastapi_result.value))
 
     def test_validate_business_rules_success(self) -> None:
         """The app service validates successfully in the default state."""

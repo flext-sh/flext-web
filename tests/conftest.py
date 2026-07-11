@@ -11,11 +11,24 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from flext_web import FlextWebSettings
 from tests.constants import c
 from tests.utilities import u
 
 if TYPE_CHECKING:
     from collections.abc import Generator
+
+
+def pytest_runtest_setup(item: pytest.Item) -> None:
+    """Reset the web settings singleton before each test for isolation."""
+    _ = item
+    FlextWebSettings.reset_for_testing()
+
+
+def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None) -> None:
+    """Reset the web settings singleton after each test to prevent leaks."""
+    _ = item, nextitem
+    FlextWebSettings.reset_for_testing()
 
 
 @pytest.fixture
