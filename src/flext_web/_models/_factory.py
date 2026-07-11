@@ -10,7 +10,7 @@ from __future__ import annotations
 import uuid
 
 from flext_cli import u
-from flext_web import c, p, r, t
+from flext_web import c, p, r, settings, t
 
 from ._entity import FlextWebModelsEntity
 from ._web_request import FlextWebModelsWebRequest
@@ -26,8 +26,8 @@ class FlextWebModelsFactory:
         def create_web_app(
             cls,
             name: str,
-            host: str = c.Web.DEFAULT_HOST,
-            port: int = c.Web.DEFAULT_PORT,
+            host: str = settings.Web.host,
+            port: int = settings.Web.port,
         ) -> p.Result[FlextWebModelsEntity.Web.Entity]:
             """Create a web application from direct parameters.
 
