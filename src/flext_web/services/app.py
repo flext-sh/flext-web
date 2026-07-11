@@ -206,7 +206,9 @@ class FlextWebApp(s):
 
         app.add_url_rule("/health", "health_check", health_check)
 
-        self.logger.info("Flask application created", app_name=web_settings.Web.app_name)
+        self.logger.info(
+            "Flask application created", app_name=web_settings.Web.app_name
+        )
         return r[flask.Flask].ok(app)
 
     class HealthHandler:

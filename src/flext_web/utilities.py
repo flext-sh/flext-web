@@ -32,6 +32,7 @@ from flext_core import (
     FlextUtilitiesReliability,
 )
 from flext_web import c, t
+from flext_web._settings import FlextWebSettings
 
 if TYPE_CHECKING:
     from starlette.requests import Request as StarletteRequest
@@ -79,6 +80,41 @@ class FlextWebUtilities(
         template_globals: ClassVar[t.JsonDict] = {}
 
         template_filters: ClassVar[dict[str, Callable[[str], str]]] = {}
+
+        @staticmethod
+        def validate_port(port: int) -> bool:
+            """Return whether the port is within the permitted range."""
+            minimum, maximum = c.Web.VALIDATION_PORT_RANGE
+            return minimum <= port <= maximum
+
+        @staticmethod
+        def validate_secret_key(secret_key: str) -> bool:
+            """Return whether the secret key meets the minimum length."""
+            stripped = secret_key.strip()
+            return len(stripped) >= c.Web.SECURITY_MIN_SECRET_KEY_LENGTH
+
+        @staticmethod
+        def protocol(*, ssl_enabled: bool) -> str:
+            """Return the wire protocol implied by the TLS flag."""
+            return (
+                c.Web.DEFAULT_HTTPS_PROTOCOL
+                if ssl_enabled
+                else c.Web.DEFAULT_HTTP_PROTOCOL
+            )
+
+        @staticmethod
+        def base_url(*, host: str, port: int, ssl_enabled: bool) -> str:
+            """Return the base URL composed from host, port, and TLS flag."""
+            scheme = FlextWebUtilities.Web.protocol(ssl_enabled=ssl_enabled)
+            return f"{scheme}://{host}:{port}"
+
+        @staticmethod
+        def validate_settings(settings: p.Settings) -> p.Result[bool]:
+            """Re-validate a web settings instance through its own model."""
+            return r[bool].create_from_callable(
+                lambda: FlextWebSettings.model_validate(settings.model_dump())
+                is not None,
+            )
 
         @staticmethod
         def app_runtime_info_model() -> type:
