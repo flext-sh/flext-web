@@ -142,5 +142,5 @@ class TestsFlextWebExamples(ExamplesFullFunctionalityTest):
 
 
 def main() -> int:
-    """Module entry point kept for the generated test exports."""
+    """Provide the module entry point kept for the generated test exports."""
     return 0
