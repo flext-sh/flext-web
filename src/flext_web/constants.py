@@ -126,19 +126,7 @@ class FlextWebConstants(c):
             member.value for member in Status.__members__.values()
         )
 
-        # ===== Flattened from WebDefaults =====
-        DEFAULT_HOST: Final[str] = c.LOCALHOST
-        DEFAULT_PORT: Final[int] = 8080
-        DEFAULT_APP_NAME: Final[str] = "FLEXT Web"
-        DEFAULT_ENVIRONMENT: Final[str] = Name.DEVELOPMENT.value
-        DEFAULT_DEBUG_MODE: Final[bool] = False
-        DEFAULT_VERSION_STRING: Final[str] = "1.0.0"
-        DEFAULT_SECRET_KEY: Final[str] = (
-            "default-secret-key-32-characters-long-for-security"
-        )
-        DEFAULT_TEST_SECRET_KEY: Final[str] = (
-            "test-secret-key-32-characters-long-for-tests"
-        )
+        # ===== HTTP client / protocol defaults =====
         DEFAULT_TIMEOUT_SECONDS: Final[float] = float(c.DEFAULT_TIMEOUT_SECONDS)
         DEFAULT_HTTP_PROTOCOL: Final[str] = "http"
         DEFAULT_HTTPS_PROTOCOL: Final[str] = "https"

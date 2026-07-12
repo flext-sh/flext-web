@@ -19,17 +19,12 @@ class TestsFlextWebConstantsUnit:
 
     def test_web_server_constants(self) -> None:
         """Test web server constants."""
-        tm.that(c.Web.DEFAULT_HOST, eq="localhost")
-        tm.that(c.Web.DEFAULT_PORT, eq=8080)
         tm.that(c.Web.VALIDATION_PORT_RANGE, eq=(1, 65535))
         tm.that(c.Web.VALIDATION_NAME_LENGTH_RANGE, eq=(3, 100))
         tm.that(c.Web.SECURITY_MIN_SECRET_KEY_LENGTH, eq=32)
 
     def test_web_specific_constants(self) -> None:
         """Test web-specific constants."""
-        tm.that(c.Web.DEFAULT_HOST, eq="localhost")
-        tm.that(c.Web.DEFAULT_PORT, eq=8080)
-        tm.that(len(c.Web.DEFAULT_TEST_SECRET_KEY), gte=32)
         tm.that(c.Web.ALL_INTERFACES, eq="0.0.0.0")
         tm.that(c.Web.LOCALHOST_IP, eq="127.0.0.1")
         tm.that(c.Web.SYSTEM_PORTS_THRESHOLD, eq=1023)
@@ -64,8 +59,6 @@ class TestsFlextWebConstantsUnit:
 
     def test_constants_are_immutable(self) -> None:
         """Test that constants are properly defined and immutable."""
-        tm.that(c.Web.DEFAULT_HOST, is_=str)
-        tm.that(c.Web.DEFAULT_PORT, is_=int)
         tm.that(c.Web.VALIDATION_PORT_RANGE, is_=tuple)
         tm.that(c.Web.VALIDATION_NAME_LENGTH_RANGE, is_=tuple)
         tm.that(c.Web.SECURITY_MIN_SECRET_KEY_LENGTH, is_=int)
@@ -80,7 +73,6 @@ class TestsFlextWebConstantsUnit:
     def test_security_constants_types(self) -> None:
         """Test that security constants have correct types."""
         tm.that(c.Web.SECURITY_MIN_SECRET_KEY_LENGTH, is_=int)
-        tm.that(c.Web.DEFAULT_SECRET_KEY, is_=str)
         tm.that(c.Web.SECURITY_SSL_PORTS, is_=tuple)
         tm.that(c.Web.SECURITY_SESSION_DEFAULTS, is_=Mapping)
 

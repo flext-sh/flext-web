@@ -17,9 +17,9 @@ class TestsFlextWebSettings:
     def test_default_settings(self) -> None:
         """Default settings are valid."""
         settings = FlextWebSettings()
-        tm.that(settings.Web.app_name, eq=c.Web.DEFAULT_APP_NAME)
-        tm.that(settings.Web.host, eq=c.Web.DEFAULT_HOST)
-        tm.that(settings.Web.port, eq=c.Web.DEFAULT_PORT)
+        tm.that(settings.Web.app_name, eq="FLEXT Web")
+        tm.that(settings.Web.host, eq="localhost")
+        tm.that(settings.Web.port, eq=8080)
 
     def test_host_validator_rejects_empty(self) -> None:
         """Host field constraint rejects blank strings."""
