@@ -26,7 +26,7 @@ class FlextWebProtocolsFramework:
 
             @property
             def status_code(self) -> int:
-                """Return the HTTP status code."""
+                """The HTTP status code."""
                 ...
 
         @runtime_checkable

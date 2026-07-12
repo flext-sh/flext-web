@@ -44,7 +44,7 @@ class FlextWebModelsResponses:
 
             @property
             def running(self) -> bool:
-                """Return whether the projected application is running."""
+                """Whether the projected application is running."""
                 is_running: bool = self.status == c.Web.Status.RUNNING.value
                 return is_running
 
