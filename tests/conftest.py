@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING
 import pytest
 
 from flext_web import FlextWebSettings
-from tests.constants import c
 from tests.utilities import u
 
 if TYPE_CHECKING:
@@ -38,7 +37,7 @@ def setup_test_environment() -> Generator[None]:
         "FLEXT_ENV": "test",
         "FLEXT_LOG_LEVEL": "INFO",
         "FLEXT_WEB_DEBUG_MODE": "true",
-        "FLEXT_WEB_HOST": c.Web.DEFAULT_HOST,
-        "FLEXT_WEB_SECRET_KEY": c.Web.DEFAULT_TEST_SECRET_KEY,
+        "FLEXT_WEB_WEB__HOST": "localhost",
+        "FLEXT_WEB_WEB__SECRET_KEY": "test-secret-key-32-characters-long-for-tests",
     }):
         yield

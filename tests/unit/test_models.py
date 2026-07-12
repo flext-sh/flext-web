@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 import pytest
 from flext_tests import tm
 
+from flext_web import settings
 from tests.constants import c
 from tests.models import m
 from tests.utilities import u
@@ -36,8 +37,8 @@ class TestsFlextWebModelsUnit:
         app = u.Web.Tests.create_test_app()
         tm.that(app.id, eq="test-id")
         tm.that(app.name, eq=c.Web.Tests.TEST_APP_NAME)
-        tm.that(app.host, eq=c.Web.DEFAULT_HOST)
-        tm.that(app.port, eq=c.Web.DEFAULT_PORT)
+        tm.that(app.host, eq=settings.Web.host)
+        tm.that(app.port, eq=settings.Web.port)
         tm.that(app.status, eq="stopped")
         tm.that(app.version, eq=1)
         tm.that(app.environment, eq="development")

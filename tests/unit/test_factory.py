@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from flext_tests import tm
 
-from flext_web import m
+from flext_web import m, settings
 from tests.constants import c
 
 
@@ -15,13 +15,13 @@ class TestsFlextWebFactory:
         """Factory creates a valid web app entity."""
         result = m.Web.create_web_app(
             name="factory-app",
-            host=c.Web.DEFAULT_HOST,
-            port=c.Web.DEFAULT_PORT,
+            host=settings.Web.host,
+            port=settings.Web.port,
         )
         tm.ok(result)
         tm.that(result.value.name, eq="factory-app")
-        tm.that(result.value.host, eq=c.Web.DEFAULT_HOST)
-        tm.that(result.value.port, eq=c.Web.DEFAULT_PORT)
+        tm.that(result.value.host, eq=settings.Web.host)
+        tm.that(result.value.port, eq=settings.Web.port)
 
     def test_create_web_request_success(self) -> None:
         """Factory creates a valid web request model."""
