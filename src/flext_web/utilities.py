@@ -112,8 +112,9 @@ class FlextWebUtilities(
         def validate_settings(settings: p.Settings) -> p.Result[bool]:
             """Re-validate a web settings instance through its own model."""
             return r[bool].create_from_callable(
-                lambda: FlextWebSettings.model_validate(settings.model_dump())
-                is not None,
+                lambda: (
+                    FlextWebSettings.model_validate(settings.model_dump()) is not None
+                ),
             )
 
         @staticmethod

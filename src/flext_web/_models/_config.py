@@ -41,7 +41,9 @@ class FlextWebModelsConfig:
                 u.Field(
                     # Resolve the current global singleton lazily (the module-level
                     # `settings` capture goes stale when the singleton is replaced).
-                    default_factory=lambda: FlextWebSettings.fetch_global().Web.app_name,
+                    default_factory=lambda: (
+                        FlextWebSettings.fetch_global().Web.app_name
+                    ),
                     min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
                     max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                     description="FastAPI application title",
