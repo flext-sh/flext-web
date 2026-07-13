@@ -28,10 +28,7 @@ class FlextWebHandlers(s):
 
     @classmethod
     def handle_create_app(
-        cls,
-        name: str,
-        port: int = settings.Web.port,
-        host: str = settings.Web.host,
+        cls, name: str, port: int = settings.Web.port, host: str = settings.Web.host
     ) -> p.Result[m.Web.Entity]:
         """Handle application creation requests.
 
@@ -106,7 +103,7 @@ class FlextWebHandlers(s):
                     "api_endpoints",
                     "web_dashboard",
                 ],
-            ),
+            )
         )
 
     @staticmethod
@@ -128,13 +125,11 @@ class FlextWebHandlers(s):
                     "configuration": c.Web.MESSAGE_CONFIG_LOADED,
                     "handlers": c.Web.MESSAGE_HANDLERS_REGISTERED,
                 },
-            ),
+            )
         )
 
     @override
-    def execute(
-        self,
-    ) -> p.Result[bool]:
+    def execute(self) -> p.Result[bool]:
         """Execute web handler service (s requirement).
 
         Returns:

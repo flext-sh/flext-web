@@ -42,52 +42,23 @@ if TYPE_CHECKING:
     from flext_web.utilities import FlextWebUtilities as FlextWebUtilities, u as u
 _LAZY_IMPORTS = merge_lazy_imports(
     (".services",),
-    build_lazy_import_map(
-        {
-            "._settings": ("FlextWebSettings", "settings"),
-            ".api": (
-                "FlextWeb",
-                "web",
-            ),
-            ".base": (
-                "FlextWebServiceBase",
-                "s",
-            ),
-            ".constants": (
-                "FlextWebConstants",
-                "c",
-            ),
-            ".models": (
-                "FlextWebModels",
-                "m",
-            ),
-            ".protocols": (
-                "FlextWebProtocols",
-                "p",
-            ),
-            ".services.app": ("FlextWebApp",),
-            ".services.auth": ("FlextWebAuth",),
-            ".services.entities": ("FlextWebEntities",),
-            ".services.handlers": ("FlextWebHandlers",),
-            ".services.health": ("FlextWebHealth",),
-            ".services.web": ("FlextWebServices",),
-            ".typings": (
-                "FlextWebTypes",
-                "t",
-            ),
-            ".utilities": (
-                "FlextWebUtilities",
-                "u",
-            ),
-            "flext_cli": (
-                "d",
-                "e",
-                "h",
-                "r",
-                "x",
-            ),
-        },
-    ),
+    build_lazy_import_map({
+        "._settings": ("FlextWebSettings", "settings"),
+        ".api": ("FlextWeb", "web"),
+        ".base": ("FlextWebServiceBase", "s"),
+        ".constants": ("FlextWebConstants", "c"),
+        ".models": ("FlextWebModels", "m"),
+        ".protocols": ("FlextWebProtocols", "p"),
+        ".services.app": ("FlextWebApp",),
+        ".services.auth": ("FlextWebAuth",),
+        ".services.entities": ("FlextWebEntities",),
+        ".services.handlers": ("FlextWebHandlers",),
+        ".services.health": ("FlextWebHealth",),
+        ".services.web": ("FlextWebServices",),
+        ".typings": ("FlextWebTypes", "t"),
+        ".utilities": ("FlextWebUtilities", "u"),
+        "flext_cli": ("d", "e", "h", "r", "x"),
+    }),
     exclude_names=(
         "cleanup_submodule_namespace",
         "install_lazy_exports",
@@ -150,9 +121,4 @@ __all__: tuple[str, ...] = (
 )
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    public_exports=__all__,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

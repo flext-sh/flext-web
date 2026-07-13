@@ -40,12 +40,9 @@ class FlextWebModelsEntity:
 
             """
 
-            id: Annotated[
-                str,
-                u.Field(
-                    description="Unique application identifier",
-                ),
-            ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
+            id: Annotated[str, u.Field(description="Unique application identifier")] = (
+                u.Field(default_factory=lambda: str(uuid.uuid4()))
+            )
             name: Annotated[
                 str,
                 u.Field(
@@ -93,16 +90,10 @@ class FlextWebModelsEntity:
                 ),
             ] = u.Field(default_factory=lambda: settings.Web.host)
             port: Annotated[
-                t.PortNumber,
-                u.Field(
-                    description="Application port number",
-                ),
+                t.PortNumber, u.Field(description="Application port number")
             ] = u.Field(default_factory=lambda: settings.Web.port)
             status: Annotated[
-                c.Web.Status | str,
-                u.Field(
-                    description="Current application status",
-                ),
+                c.Web.Status | str, u.Field(description="Current application status")
             ] = c.Web.Status.STOPPED.value
 
             @u.field_validator("status", mode="before")
@@ -116,28 +107,17 @@ class FlextWebModelsEntity:
                 return v
 
             environment: Annotated[
-                str,
-                u.Field(
-                    description="Deployment environment",
-                ),
+                str, u.Field(description="Deployment environment")
             ] = c.Web.Name.DEVELOPMENT.value
             debug_mode: Annotated[
-                bool,
-                u.Field(
-                    description="Debug mode enabled flag",
-                ),
+                bool, u.Field(description="Debug mode enabled flag")
             ] = u.Field(default_factory=lambda: settings.debug)
             metrics: Annotated[
-                t.MutableJsonMapping,
-                u.Field(
-                    description="Application metrics",
-                ),
+                t.MutableJsonMapping, u.Field(description="Application metrics")
             ] = u.Field(default_factory=dict)
             web_events: Annotated[
                 MutableSequence[str],
-                u.Field(
-                    description="Web-specific events (application lifecycle)",
-                ),
+                u.Field(description="Web-specific events (application lifecycle)"),
             ] = u.Field(default_factory=list)
 
             @override
@@ -210,10 +190,7 @@ class FlextWebModelsEntity:
                 """
                 return u.format_app_id(name)
 
-            def add_web_event(
-                self,
-                event_name: str,
-            ) -> p.Result[bool]:
+            def add_web_event(self, event_name: str) -> p.Result[bool]:
                 """Add web-specific event (not domain event).
 
                 This is for web application lifecycle events, not DDD domain events.
@@ -239,17 +216,12 @@ class FlextWebModelsEntity:
                 """Create and buffer a domain event for this web application entity."""
                 if not event_type.strip():
                     return r[m.Entry].fail(
-                        "Domain event name must be a non-empty string",
+                        "Domain event name must be a non-empty string"
                     )
                 if event_type.isdigit():
-                    return r[m.Entry].fail(
-                        "Domain event name cannot be numeric-only",
-                    )
+                    return r[m.Entry].fail("Domain event name cannot be numeric-only")
                 entry = u.add_domain_event(
-                    self,
-                    event_type=event_type,
-                    data=data,
-                    aggregate_id=self.id,
+                    self, event_type=event_type, data=data, aggregate_id=self.id
                 )
                 return r[m.Entry].ok(entry)
 
@@ -269,7 +241,7 @@ class FlextWebModelsEntity:
                 can_restart_validated = self.can_restart
                 if not can_restart_validated:
                     return r[FlextWebModelsEntity.Web.Entity].fail(
-                        "Cannot restart in current state",
+                        "Cannot restart in current state"
                     )
                 starting_status = c.Web.Status.STARTING.value
                 running_status = c.Web.Status.RUNNING.value
@@ -277,13 +249,13 @@ class FlextWebModelsEntity:
                 restart_event_result = self.add_web_event("ApplicationRestarting")
                 if restart_event_result.failure:  # pragma: no cover
                     return r[FlextWebModelsEntity.Web.Entity].fail(
-                        f"Failed to add web event: {restart_event_result.error}",
+                        f"Failed to add web event: {restart_event_result.error}"
                     )
                 self.status = running_status
                 start_event_result = self.add_web_event("ApplicationStarted")
                 if start_event_result.failure:  # pragma: no cover
                     return r[FlextWebModelsEntity.Web.Entity].fail(
-                        f"Failed to add web event: {start_event_result.error}",
+                        f"Failed to add web event: {start_event_result.error}"
                     )
                 return r[FlextWebModelsEntity.Web.Entity].ok(self)
 
@@ -292,14 +264,12 @@ class FlextWebModelsEntity:
                 running_status = c.Web.Status.RUNNING.value
                 already_running = self.status == running_status
                 if already_running:
-                    return r[FlextWebModelsEntity.Web.Entity].fail(
-                        "already running",
-                    )
+                    return r[FlextWebModelsEntity.Web.Entity].fail("already running")
                 self.status = running_status
                 event_result = self.add_web_event("ApplicationStarted")
                 if event_result.failure:  # pragma: no cover
                     return r[FlextWebModelsEntity.Web.Entity].fail(
-                        f"Failed to add web event: {event_result.error}",
+                        f"Failed to add web event: {event_result.error}"
                     )
                 return r[FlextWebModelsEntity.Web.Entity].ok(self)
 
@@ -309,14 +279,12 @@ class FlextWebModelsEntity:
                 stopped_status = c.Web.Status.STOPPED.value
                 not_running = self.status != running_status
                 if not_running:
-                    return r[FlextWebModelsEntity.Web.Entity].fail(
-                        "not running",
-                    )
+                    return r[FlextWebModelsEntity.Web.Entity].fail("not running")
                 self.status = stopped_status
                 event_result = self.add_web_event("ApplicationStopped")
                 if event_result.failure:  # pragma: no cover
                     return r[FlextWebModelsEntity.Web.Entity].fail(
-                        f"Failed to add web event: {event_result.error}",
+                        f"Failed to add web event: {event_result.error}"
                     )
                 return r[FlextWebModelsEntity.Web.Entity].ok(self)
 
@@ -336,13 +304,13 @@ class FlextWebModelsEntity:
                 }
                 if not all(key in supported_metrics for key in new_metrics):
                     return r[bool].fail(
-                        "Metrics must be a dict of supported metric keys",
+                        "Metrics must be a dict of supported metric keys"
                     )
                 self.metrics.update(new_metrics)
                 event_result = self.add_web_event("MetricsUpdated")
                 if event_result.failure:  # pragma: no cover
                     return r[bool].fail(
-                        f"Failed to add web event: {event_result.error}",
+                        f"Failed to add web event: {event_result.error}"
                     )
                 return r[bool].ok(value=True)
 
@@ -358,21 +326,20 @@ class FlextWebModelsEntity:
                 min_name_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[0]
                 if len(self.name) < min_name_length:
                     return r[bool].fail(
-                        f"App name must be at least {min_name_length} characters",
+                        f"App name must be at least {min_name_length} characters"
                     )
 
                 min_port = c.Web.VALIDATION_PORT_RANGE[0]
                 max_port = c.Web.VALIDATION_PORT_RANGE[1]
                 if not (min_port <= self.port <= max_port):
                     return r[bool].fail(
-                        f"Port must be between {min_port} and {max_port}",
+                        f"Port must be between {min_port} and {max_port}"
                     )
                 return r[bool].ok(value=True)
 
             @classmethod
             def create_application(
-                cls,
-                settings: FlextWebModelsEntity.Web.EntityConfig,
+                cls, settings: FlextWebModelsEntity.Web.EntityConfig
             ) -> p.Result[FlextWebModelsEntity.Web.Entity]:
                 """Build an :class:`Entity` from an ``EntityConfig`` snapshot."""
                 return r[FlextWebModelsEntity.Web.Entity].create_from_callable(
@@ -380,20 +347,14 @@ class FlextWebModelsEntity:
                         name=settings.app_name,
                         host=settings.host,
                         port=settings.port,
-                        status=getattr(
-                            settings,
-                            "status",
-                            c.Web.Status.STOPPED.value,
-                        ),
+                        status=getattr(settings, "status", c.Web.Status.STOPPED.value),
                         environment=getattr(
-                            settings,
-                            "environment",
-                            c.Web.Name.DEVELOPMENT.value,
+                            settings, "environment", c.Web.Name.DEVELOPMENT.value
                         ),
                         debug_mode=getattr(settings, "debug_mode", False),
                         version=getattr(settings, "version", 0),
                         domain_events=[],
-                    ),
+                    )
                 )
 
         class EntityConfig(m.Value):

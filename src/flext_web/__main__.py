@@ -21,12 +21,10 @@ class FlextWebRunCommand(s):
         cli_u.Field(default=None, description="Bind port (overrides settings)."),
     ] = None
     debug: Annotated[
-        bool,
-        cli_u.Field(default=False, description="Enable debug mode."),
+        bool, cli_u.Field(default=False, description="Enable debug mode.")
     ] = False
     no_debug: Annotated[
-        bool,
-        cli_u.Field(default=False, description="Force disable debug mode."),
+        bool, cli_u.Field(default=False, description="Force disable debug mode.")
     ] = False
 
     @override
@@ -41,7 +39,7 @@ class FlextWebRunCommand(s):
         if self.port is not None:
             web_overrides["port"] = self.port
         settings_result = r[FlextWebSettings].create_from_callable(
-            lambda: settings.clone(Web=web_overrides, debug=debug_value),
+            lambda: settings.clone(Web=web_overrides, debug=debug_value)
         )
         if settings_result.failure:
             return r[bool].fail(settings_result.error)
@@ -50,16 +48,13 @@ class FlextWebRunCommand(s):
         if service_result.failure:
             return r[bool].fail(service_result.error)
         return service_result.value.start_service(
-            host=web_settings.Web.host,
-            port=web_settings.Web.port,
-            debug=debug_value,
+            host=web_settings.Web.host, port=web_settings.Web.port, debug=debug_value
         )
 
 
 def _build_app() -> cli_p.Cli.Application:
     app = cli.create_app_with_common_params(
-        name="flext-web",
-        help_text="flext-web HTTP service launcher.",
+        name="flext-web", help_text="flext-web HTTP service launcher."
     )
     cli.register_result_routes(
         app,
@@ -69,7 +64,7 @@ def _build_app() -> cli_p.Cli.Application:
                 help_text="Start the flext-web service.",
                 model_cls=FlextWebRunCommand,
                 handler=lambda params: params.execute(),
-            ),
+            )
         ],
     )
     return app

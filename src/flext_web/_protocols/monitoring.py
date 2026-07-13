@@ -33,9 +33,7 @@ class FlextWebProtocolsMonitoring:
                 ...
 
             def record_web_request(
-                self,
-                request: t.Web.RequestDict,
-                response_time: float,
+                self, request: t.Web.RequestDict, response_time: float
             ) -> None:
                 """Record a request observation."""
                 ...

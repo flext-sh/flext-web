@@ -24,10 +24,7 @@ class FlextWebModelsFactory:
 
         @classmethod
         def create_web_app(
-            cls,
-            name: str,
-            host: str = settings.Web.host,
-            port: int = settings.Web.port,
+            cls, name: str, host: str = settings.Web.host, port: int = settings.Web.port
         ) -> p.Result[FlextWebModelsEntity.Web.Entity]:
             """Create a web application from direct parameters.
 
@@ -94,10 +91,7 @@ class FlextWebModelsFactory:
                 )
                 return validated
 
-            result = u.try_(
-                create_request,
-                catch=Exception,
-            )
+            result = u.try_(create_request, catch=Exception)
             return result.map_error(lambda exc: f"Failed to create web request: {exc}")
 
         @classmethod
@@ -137,10 +131,7 @@ class FlextWebModelsFactory:
                 )
                 return validated
 
-            result = u.try_(
-                create_response,
-                catch=Exception,
-            )
+            result = u.try_(create_response, catch=Exception)
             return result.map_error(lambda exc: f"Failed to create web response: {exc}")
 
 

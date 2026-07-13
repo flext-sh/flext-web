@@ -16,10 +16,7 @@ from flext_core import FlextService
 from flext_web import FlextWebSettings
 
 
-class FlextWebServiceBase(
-    FlextService[bool],
-    ABC,
-):
+class FlextWebServiceBase(FlextService[bool], ABC):
     """Base class for flext-web services with typed `web` settings access."""
 
     _settings_type: ClassVar[type[FlextWebSettings]] = FlextWebSettings

@@ -24,21 +24,14 @@ if TYPE_CHECKING:
     from flext_web._protocols.template import (
         FlextWebProtocolsTemplate as FlextWebProtocolsTemplate,
     )
-_LAZY_IMPORTS = build_lazy_import_map(
-    {
-        ".config": ("FlextWebProtocolsConfig",),
-        ".data": ("FlextWebProtocolsData",),
-        ".framework": ("FlextWebProtocolsFramework",),
-        ".lifecycle": ("FlextWebProtocolsLifecycle",),
-        ".monitoring": ("FlextWebProtocolsMonitoring",),
-        ".template": ("FlextWebProtocolsTemplate",),
-    },
-)
+_LAZY_IMPORTS = build_lazy_import_map({
+    ".config": ("FlextWebProtocolsConfig",),
+    ".data": ("FlextWebProtocolsData",),
+    ".framework": ("FlextWebProtocolsFramework",),
+    ".lifecycle": ("FlextWebProtocolsLifecycle",),
+    ".monitoring": ("FlextWebProtocolsMonitoring",),
+    ".template": ("FlextWebProtocolsTemplate",),
+})
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    publish_all=False,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

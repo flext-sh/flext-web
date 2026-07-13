@@ -61,31 +61,24 @@ class FlextWebModelsResponses:
 
             service_status: Annotated[str, u.Field(description="Service status")]
             components: Annotated[
-                t.StrSequence,
-                u.Field(description="Service components"),
+                t.StrSequence, u.Field(description="Service components")
             ]
 
         class DashboardResponse(m.Value):
             """Dashboard response model."""
 
             total_applications: Annotated[
-                int,
-                u.Field(description="Total applications"),
+                int, u.Field(description="Total applications")
             ]
             running_applications: Annotated[
-                int,
-                u.Field(description="Running applications"),
+                int, u.Field(description="Running applications")
             ]
             service_status: Annotated[str, u.Field(description="Service status")]
             routes_initialized: Annotated[
-                bool,
-                u.Field(description="Routes initialization status"),
+                bool, u.Field(description="Routes initialization status")
             ]
             middleware_configured: Annotated[
-                bool,
-                u.Field(
-                    description="Middleware configuration status",
-                ),
+                bool, u.Field(description="Middleware configuration status")
             ]
             timestamp: Annotated[str, u.Field(description="Timestamp")]
 
@@ -94,8 +87,7 @@ class FlextWebModelsResponses:
 
             service: Annotated[str, u.Field(description="Service name")]
             capabilities: Annotated[
-                t.StrSequence,
-                u.Field(description="Service capabilities"),
+                t.StrSequence, u.Field(description="Service capabilities")
             ]
             status: Annotated[str, u.Field(description="Service status")]
             settings: Annotated[bool, u.Field(description="Configuration status")]

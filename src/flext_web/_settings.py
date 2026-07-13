@@ -25,9 +25,7 @@ class FlextWebSettings(FlextCliSettings):
     """Web runtime settings; all project fields under ``settings.Web.*``."""
 
     model_config = SettingsConfigDict(
-        env_prefix="FLEXT_WEB_",
-        env_nested_delimiter="__",
-        extra="ignore",
+        env_prefix="FLEXT_WEB_", env_nested_delimiter="__", extra="ignore"
     )
 
     class _Web(BaseModel):
@@ -49,8 +47,7 @@ class FlextWebSettings(FlextCliSettings):
             ),
         ]
         port: Annotated[
-            int,
-            Field(default=8080, ge=1, le=65535, description="Bind port"),
+            int, Field(default=8080, ge=1, le=65535, description="Bind port")
         ]
         testing: Annotated[bool, Field(default=False, description="Testing flag")]
         secret_key: Annotated[
@@ -65,12 +62,10 @@ class FlextWebSettings(FlextCliSettings):
             bool, Field(default=False, description="Enable TLS endpoints")
         ]
         ssl_cert_path: Annotated[
-            str | None,
-            Field(default=None, description="TLS certificate file path"),
+            str | None, Field(default=None, description="TLS certificate file path")
         ]
         ssl_key_path: Annotated[
-            str | None,
-            Field(default=None, description="TLS key file path"),
+            str | None, Field(default=None, description="TLS key file path")
         ]
 
     if TYPE_CHECKING:

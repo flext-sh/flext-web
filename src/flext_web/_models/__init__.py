@@ -26,25 +26,18 @@ if TYPE_CHECKING:
     from flext_web._models._web_request import (
         FlextWebModelsWebRequest as FlextWebModelsWebRequest,
     )
-_LAZY_IMPORTS = build_lazy_import_map(
-    {
-        "._auth": ("FlextWebModelsAuth",),
-        "._base": ("FlextWebModelsBase",),
-        "._config": ("FlextWebModelsConfig",),
-        "._entity": ("FlextWebModelsEntity",),
-        "._factory": ("FlextWebModelsFactory",),
-        "._http": ("FlextWebModelsHttp",),
-        "._responses": ("FlextWebModelsResponses",),
-        "._system": ("FlextWebModelsSystem",),
-        "._web_message": ("FlextWebModelsWebMessage",),
-        "._web_request": ("FlextWebModelsWebRequest",),
-    },
-)
+_LAZY_IMPORTS = build_lazy_import_map({
+    "._auth": ("FlextWebModelsAuth",),
+    "._base": ("FlextWebModelsBase",),
+    "._config": ("FlextWebModelsConfig",),
+    "._entity": ("FlextWebModelsEntity",),
+    "._factory": ("FlextWebModelsFactory",),
+    "._http": ("FlextWebModelsHttp",),
+    "._responses": ("FlextWebModelsResponses",),
+    "._system": ("FlextWebModelsSystem",),
+    "._web_message": ("FlextWebModelsWebMessage",),
+    "._web_request": ("FlextWebModelsWebRequest",),
+})
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    publish_all=False,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

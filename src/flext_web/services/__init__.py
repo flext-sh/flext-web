@@ -14,21 +14,14 @@ if TYPE_CHECKING:
     from flext_web.services.handlers import FlextWebHandlers as FlextWebHandlers
     from flext_web.services.health import FlextWebHealth as FlextWebHealth
     from flext_web.services.web import FlextWebServices as FlextWebServices
-_LAZY_IMPORTS = build_lazy_import_map(
-    {
-        ".app": ("FlextWebApp",),
-        ".auth": ("FlextWebAuth",),
-        ".entities": ("FlextWebEntities",),
-        ".handlers": ("FlextWebHandlers",),
-        ".health": ("FlextWebHealth",),
-        ".web": ("FlextWebServices",),
-    },
-)
+_LAZY_IMPORTS = build_lazy_import_map({
+    ".app": ("FlextWebApp",),
+    ".auth": ("FlextWebAuth",),
+    ".entities": ("FlextWebEntities",),
+    ".handlers": ("FlextWebHandlers",),
+    ".health": ("FlextWebHealth",),
+    ".web": ("FlextWebServices",),
+})
 
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    publish_all=False,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
