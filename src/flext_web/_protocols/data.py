@@ -64,8 +64,7 @@ class FlextWebProtocolsData:
                 ...
 
             def execute(
-                self,
-                command: t.Web.RequestDict,
+                self, command: t.Web.RequestDict
             ) -> p.Result[t.Web.ResponseDict]:
                 """Execute a handler command."""
                 ...

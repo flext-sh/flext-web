@@ -65,38 +65,22 @@ class FlextWebModelsConfig:
                     description="Application description",
                 ),
             ] = c.Web.API_DEFAULT_DESCRIPTION
-            debug: Annotated[
-                bool,
-                u.Field(description="FastAPI debug mode"),
-            ] = False
-            testing: Annotated[
-                bool,
-                u.Field(description="FastAPI testing mode"),
-            ] = False
+            debug: Annotated[bool, u.Field(description="FastAPI debug mode")] = False
+            testing: Annotated[bool, u.Field(description="FastAPI testing mode")] = (
+                False
+            )
             middlewares: Annotated[
-                t.StrSequence,
-                u.Field(
-                    description="List of middleware objects",
-                ),
+                t.StrSequence, u.Field(description="List of middleware objects")
             ] = u.Field(default_factory=list)
-            docs_url: Annotated[
-                str,
-                u.Field(
-                    description="Documentation URL",
-                ),
-            ] = c.Web.API_DOCS_URL
-            redoc_url: Annotated[
-                str,
-                u.Field(
-                    description="ReDoc URL",
-                ),
-            ] = c.Web.API_REDOC_URL
-            openapi_url: Annotated[
-                str,
-                u.Field(
-                    description="OpenAPI URL",
-                ),
-            ] = c.Web.API_OPENAPI_URL
+            docs_url: Annotated[str, u.Field(description="Documentation URL")] = (
+                c.Web.API_DOCS_URL
+            )
+            redoc_url: Annotated[str, u.Field(description="ReDoc URL")] = (
+                c.Web.API_REDOC_URL
+            )
+            openapi_url: Annotated[str, u.Field(description="OpenAPI URL")] = (
+                c.Web.API_OPENAPI_URL
+            )
 
 
 __all__: list[str] = ["FlextWebModelsConfig"]

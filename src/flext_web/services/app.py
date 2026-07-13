@@ -10,9 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json as _json
-from collections.abc import (
-    Callable,
-)
+from collections.abc import Callable
 from typing import override
 
 import flask
@@ -31,9 +29,7 @@ class FlextWebApp(s):
     """
 
     @override
-    def execute(
-        self,
-    ) -> p.Result[bool]:
+    def execute(self) -> p.Result[bool]:
         """Execute the web application service.
 
         Main domain operation for the web application service.
@@ -100,8 +96,7 @@ class FlextWebApp(s):
 
     @staticmethod
     def _configure_fastapi_endpoints(
-        app: FastAPI,
-        settings: m.Web.FastAPIAppConfig,
+        app: FastAPI, settings: m.Web.FastAPIAppConfig
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
@@ -154,7 +149,7 @@ class FlextWebApp(s):
             )
         )
         result = self.FastAPIFactory.create_instance(factory_payload).map(
-            lambda app: self._configure_fastapi_endpoints(app, fastapi_config),
+            lambda app: self._configure_fastapi_endpoints(app, fastapi_config)
         )
         if result.success:
             self.logger.info(
@@ -165,8 +160,7 @@ class FlextWebApp(s):
         return result
 
     def create_flask_app(
-        self,
-        settings: FlextWebSettings | None = None,
+        self, settings: FlextWebSettings | None = None
     ) -> p.Result[flask.Flask]:
         """Create Flask app with flext-core integration and configuration.
 
@@ -256,10 +250,7 @@ class FlextWebApp(s):
         _ = app
         return r[bool].ok(value=True)
 
-    def configure_fastapi_middleware(
-        self,
-        app: FastAPI,
-    ) -> p.Result[bool]:
+    def configure_fastapi_middleware(self, app: FastAPI) -> p.Result[bool]:
         """Configure FastAPI middleware (extensible for future needs).
 
         Args:
@@ -273,10 +264,7 @@ class FlextWebApp(s):
         _ = app
         return r[bool].ok(value=True)
 
-    def configure_fastapi_routes(
-        self,
-        app: FastAPI,
-    ) -> p.Result[bool]:
+    def configure_fastapi_routes(self, app: FastAPI) -> p.Result[bool]:
         """Configure FastAPI routes (extensible for future needs).
 
         Args:

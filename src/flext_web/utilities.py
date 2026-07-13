@@ -111,7 +111,7 @@ class FlextWebUtilities(u):
             # honest contract is an identity check against the canonical
             # model, already validated at its boundary.
             return r[bool].create_from_callable(
-                lambda: isinstance(settings, FlextWebSettings),
+                lambda: isinstance(settings, FlextWebSettings)
             )
 
         @staticmethod
@@ -122,8 +122,7 @@ class FlextWebUtilities(u):
 
         @classmethod
         def _create_framework_app(
-            cls,
-            name: str,
+            cls, name: str
         ) -> p.Result[tuple[flask.Flask | FastAPI, str, str]]:
             try:
                 fastapi_app = FastAPI(
@@ -150,7 +149,7 @@ class FlextWebUtilities(u):
                 flask_app.config["TESTING"] = False
             except c.EXC_OS_RUNTIME_TYPE as exc:
                 return r[tuple[flask.Flask | FastAPI, str, str]].fail(
-                    f"{fastapi_error}; Failed to create Flask application: {exc}",
+                    f"{fastapi_error}; Failed to create Flask application: {exc}"
                 )
 
             return r[tuple[flask.Flask | FastAPI, str, str]].ok((
@@ -168,14 +167,12 @@ class FlextWebUtilities(u):
                 async def fastapi_metrics_middleware(
                     request: StarletteRequest,
                     call_next: Callable[
-                        [StarletteRequest],
-                        Awaitable[StarletteResponse],
+                        [StarletteRequest], Awaitable[StarletteResponse]
                     ],
                 ) -> StarletteResponse:
                     response = await call_next(request)
                     FlextWebUtilities.Web.record_request_metric(
-                        c.Web.ResponseStatus.SUCCESS.value,
-                        0,
+                        c.Web.ResponseStatus.SUCCESS.value, 0
                     )
                     return response
 
@@ -185,16 +182,14 @@ class FlextWebUtilities(u):
                 # app_instance is flask.Flask (from the if/elif chain above)
                 def flask_metrics_middleware() -> None:
                     FlextWebUtilities.Web.record_request_metric(
-                        c.Web.ResponseStatus.SUCCESS.value,
-                        0,
+                        c.Web.ResponseStatus.SUCCESS.value, 0
                     )
 
                 app_instance.before_request(flask_metrics_middleware)
 
         @staticmethod
         def _configure_framework_app_routes(
-            app_instance: flask.Flask | FastAPI,
-            app_id: str,
+            app_instance: flask.Flask | FastAPI, app_id: str
         ) -> None:
             if isinstance(app_instance, FastAPI):
 
@@ -206,9 +201,7 @@ class FlextWebUtilities(u):
                     }
 
                 app_instance.add_api_route(
-                    "/protocol/health",
-                    fastapi_health,
-                    methods=["GET"],
+                    "/protocol/health", fastapi_health, methods=["GET"]
                 )
             else:
                 # app_instance is flask.Flask (from the if/elif chain above)
@@ -220,9 +213,7 @@ class FlextWebUtilities(u):
                     }
 
                 app_instance.add_url_rule(
-                    "/protocol/health",
-                    "flask_health",
-                    flask_health,
+                    "/protocol/health", "flask_health", flask_health
                 )
 
         @staticmethod
@@ -245,7 +236,7 @@ class FlextWebUtilities(u):
                 previous_avg * request_count + response_time_ms
             ) / next_count
             FlextWebUtilities.Web.web_metrics["avg_response_time_ms"] = int(
-                average_response_time_ms,
+                average_response_time_ms
             )
             if (
                 isinstance(status, str)
@@ -259,10 +250,7 @@ class FlextWebUtilities(u):
 
         @staticmethod
         def _start_uvicorn_runtime(
-            app_id: str,
-            app_instance: FastAPI,
-            host: str,
-            port: int,
+            app_id: str, app_instance: FastAPI, host: str, port: int
         ) -> p.Result[m.Web.AppRuntimeInfo]:
             """Start an ASGI runtime using uvicorn."""
             app_runtime_model = FlextWebUtilities.Web.app_runtime_info_model()
@@ -277,13 +265,11 @@ class FlextWebUtilities(u):
                 server = uvicorn.Server(settings)
             except c.EXC_OS_RUNTIME_TYPE as exc:
                 return r[app_runtime_model].fail(
-                    f"Failed to start ASGI runtime for app {app_id}: {exc}",
+                    f"Failed to start ASGI runtime for app {app_id}: {exc}"
                 )
             try:
                 thread = Thread(
-                    target=server.run,
-                    daemon=True,
-                    name=f"flext-web-{app_id}",
+                    target=server.run, daemon=True, name=f"flext-web-{app_id}"
                 )
                 thread.start()
                 sleep(0.05)
@@ -295,19 +281,16 @@ class FlextWebUtilities(u):
                     )
                     return r[app_runtime_model].ok(runtime_info)
                 return r[app_runtime_model].fail(
-                    f"ASGI runtime exited immediately for app: {app_id}",
+                    f"ASGI runtime exited immediately for app: {app_id}"
                 )
             except c.EXC_OS_RUNTIME_TYPE as exc:
                 return r[app_runtime_model].fail(
-                    f"Failed to start ASGI runtime for app {app_id}: {exc}",
+                    f"Failed to start ASGI runtime for app {app_id}: {exc}"
                 )
 
         @staticmethod
         def _start_werkzeug_runtime(
-            app_id: str,
-            app_instance: flask.Flask,
-            host: str,
-            port: int,
+            app_id: str, app_instance: flask.Flask, host: str, port: int
         ) -> p.Result[m.Web.AppRuntimeInfo]:
             """Start a WSGI runtime using werkzeug."""
             app_runtime_model = FlextWebUtilities.Web.app_runtime_info_model()
@@ -321,7 +304,7 @@ class FlextWebUtilities(u):
                 AttributeError,
             ) as exc:
                 return r[app_runtime_model].fail(
-                    f"Failed to start WSGI runtime for app {app_id}: {exc}",
+                    f"Failed to start WSGI runtime for app {app_id}: {exc}"
                 )
             try:
                 thread = Thread(
@@ -339,7 +322,7 @@ class FlextWebUtilities(u):
                     )
                     return r[app_runtime_model].ok(runtime_info)
                 return r[app_runtime_model].fail(
-                    f"WSGI runtime exited immediately for app: {app_id}",
+                    f"WSGI runtime exited immediately for app: {app_id}"
                 )
             except (
                 RuntimeError,
@@ -349,7 +332,7 @@ class FlextWebUtilities(u):
                 AttributeError,
             ) as exc:
                 return r[app_runtime_model].fail(
-                    f"Failed to start WSGI runtime for app {app_id}: {exc}",
+                    f"Failed to start WSGI runtime for app {app_id}: {exc}"
                 )
 
         @staticmethod
@@ -364,76 +347,62 @@ class FlextWebUtilities(u):
             interface = app_data.get("interface")
             if not isinstance(host, str) or not isinstance(port, int):
                 return r[app_runtime_model].fail(
-                    f"Invalid runtime configuration for app: {app_id}",
+                    f"Invalid runtime configuration for app: {app_id}"
                 )
             if interface == c.Web.FRAMEWORK_INTERFACE_ASGI:
                 if isinstance(app_instance, FastAPI):
                     start_asgi = getattr(
-                        FlextWebUtilities.Web,
-                        "_start_uvicorn_runtime",
+                        FlextWebUtilities.Web, "_start_uvicorn_runtime"
                     )
                     return start_asgi(app_id, app_instance, host, port)
                 return r[app_runtime_model].fail(
-                    f"ASGI runtime requires a FastAPI app: {app_id}",
+                    f"ASGI runtime requires a FastAPI app: {app_id}"
                 )
             if interface == c.Web.FRAMEWORK_INTERFACE_WSGI and isinstance(
-                app_instance,
-                flask.Flask,
+                app_instance, flask.Flask
             ):
-                start_wsgi = getattr(
-                    FlextWebUtilities.Web,
-                    "_start_werkzeug_runtime",
-                )
+                start_wsgi = getattr(FlextWebUtilities.Web, "_start_werkzeug_runtime")
                 return start_wsgi(app_id, app_instance, host, port)
             return r[app_runtime_model].fail(
-                f"Unsupported app interface for runtime start: {interface}",
+                f"Unsupported app interface for runtime start: {interface}"
             )
 
         @staticmethod
         def _stop_runner(
-            runner: str,
-            server: uvicorn.Server | WSGIServer,
-            app_id: str,
+            runner: str, server: uvicorn.Server | WSGIServer, app_id: str
         ) -> p.Result[bool]:
             """Stop the underlying server runner."""
             match runner:
                 case c.Web.FRAMEWORK_RUNNER_UVICORN:
                     if not isinstance(server, uvicorn.Server):
                         return r[bool].fail(
-                            f"Missing ASGI server instance for app: {app_id}",
+                            f"Missing ASGI server instance for app: {app_id}"
                         )
                     server.should_exit = True
                 case c.Web.FRAMEWORK_RUNNER_WERKZEUG:
                     if not isinstance(server, BaseWSGIServer):
                         return r[bool].fail(
-                            f"Missing WSGI server instance for app: {app_id}",
+                            f"Missing WSGI server instance for app: {app_id}"
                         )
                     server.shutdown()
                     server.server_close()
                 case _:
-                    return r[bool].fail(
-                        f"Unsupported runtime runner for app: {app_id}",
-                    )
+                    return r[bool].fail(f"Unsupported runtime runner for app: {app_id}")
             return r[bool].ok(True)
 
         @staticmethod
         def _stop_app_runtime(
-            app_id: str,
-            runtime: m.Web.AppRuntimeInfo,
+            app_id: str, runtime: m.Web.AppRuntimeInfo
         ) -> p.Result[bool]:
             try:
                 stop_runner = getattr(FlextWebUtilities.Web, "_stop_runner")
-                stop_result = stop_runner(
-                    runtime.runner,
-                    runtime.server,
-                    app_id,
-                )
+                stop_result = stop_runner(runtime.runner, runtime.server, app_id)
                 if stop_result.failure:
                     return stop_result
                 runtime.thread.join(timeout=2.0)
                 if runtime.thread.is_alive():
                     return r[bool].fail(
-                        f"Runtime thread did not stop cleanly for app: {app_id}",
+                        f"Runtime thread did not stop cleanly for app: {app_id}"
                     )
             except (RuntimeError, AttributeError, OSError) as exc:
                 return r[bool].fail(f"Failed to stop app runtime {app_id}: {exc}")
@@ -466,9 +435,7 @@ class FlextWebUtilities(u):
 
             @staticmethod
             def create_app(
-                name: str,
-                port: int,
-                host: str,
+                name: str, port: int, host: str
             ) -> p.Result[t.Web.ResponseDict]:
                 """Create a new web application."""
                 normalized_name = name.strip()
@@ -494,15 +461,14 @@ class FlextWebUtilities(u):
                     if failed:
                         return r[t.Web.ResponseDict].fail(msg)
                 framework_result = FlextWebUtilities.Web.create_framework_app(
-                    normalized_name,
+                    normalized_name
                 )
                 if framework_result.failure:
                     return r[t.Web.ResponseDict].fail(framework_result.error)
                 app_instance, framework_name, interface_type = framework_result.value
                 app_id = str(uuid4())
                 FlextWebUtilities.Web.configure_framework_app_routes(
-                    app_instance,
-                    app_id,
+                    app_instance, app_id
                 )
                 FlextWebUtilities.Web.configure_framework_app_middleware(app_instance)
                 app_data: t.Web.ResponseDict = {
@@ -534,13 +500,11 @@ class FlextWebUtilities(u):
                 app_data = FlextWebUtilities.Web.apps_registry.get(app_id)
                 if app_data is None:
                     return e.fail_not_found(
-                        "Application",
-                        app_id,
-                        result_type=r[t.Web.ResponseDict],
+                        "Application", app_id, result_type=r[t.Web.ResponseDict]
                     )
                 if app_data.get("status") == c.Web.Status.RUNNING.value:
                     return r[t.Web.ResponseDict].fail(
-                        f"Application already running: {app_id}",
+                        f"Application already running: {app_id}"
                     )
                 app_instance = FlextWebUtilities.Web.framework_instances.get(app_id)
                 if app_instance is None:
@@ -550,9 +514,7 @@ class FlextWebUtilities(u):
                         result_type=r[t.Web.ResponseDict],
                     )
                 runtime_result = FlextWebUtilities.Web.start_app_runtime(
-                    app_id,
-                    app_data,
-                    app_instance,
+                    app_id, app_data, app_instance
                 )
                 if runtime_result.failure:
                     return r[t.Web.ResponseDict].fail(runtime_result.error)
@@ -568,22 +530,19 @@ class FlextWebUtilities(u):
                 app_data = FlextWebUtilities.Web.apps_registry.get(app_id)
                 if app_data is None:
                     return e.fail_not_found(
-                        "Application",
-                        app_id,
-                        result_type=r[t.Web.ResponseDict],
+                        "Application", app_id, result_type=r[t.Web.ResponseDict]
                     )
                 if app_data.get("status") != c.Web.Status.RUNNING.value:
                     return r[t.Web.ResponseDict].fail(
-                        f"Application not running: {app_id}",
+                        f"Application not running: {app_id}"
                     )
                 runtime = FlextWebUtilities.Web.app_runtimes.get(app_id)
                 if runtime is None:
                     return r[t.Web.ResponseDict].fail(
-                        f"Application runtime not found for stop: {app_id}",
+                        f"Application runtime not found for stop: {app_id}"
                     )
                 stop_runtime_result = FlextWebUtilities.Web.stop_app_runtime(
-                    app_id,
-                    runtime,
+                    app_id, runtime
                 )
                 if stop_runtime_result.failure:
                     return r[t.Web.ResponseDict].fail(stop_runtime_result.error)
@@ -614,11 +573,11 @@ class FlextWebUtilities(u):
                 state = FlextWebUtilities.Web.service_state
                 if not state["routes_initialized"]:
                     return r[bool].fail(
-                        "Routes must be initialized before starting service",
+                        "Routes must be initialized before starting service"
                     )
                 if not state["middleware_configured"]:
                     return r[bool].fail(
-                        "Middleware must be configured before starting service",
+                        "Middleware must be configured before starting service"
                     )
                 if state["service_running"]:
                     return r[bool].fail("Service is already running")
@@ -643,9 +602,7 @@ class FlextWebUtilities(u):
                 app_data = FlextWebUtilities.Web.apps_registry.get(entity_id)
                 if app_data is None:
                     return e.fail_not_found(
-                        "Application",
-                        entity_id,
-                        result_type=r[t.Web.ResponseDict],
+                        "Application", entity_id, result_type=r[t.Web.ResponseDict]
                     )
                 return r[t.Web.ResponseDict].ok(deepcopy(app_data))
 
@@ -664,9 +621,7 @@ class FlextWebUtilities(u):
                 removed = FlextWebUtilities.Web.apps_registry.pop(entity_id, None)
                 if removed is None:
                     return e.fail_not_found(
-                        "Application",
-                        entity_id,
-                        result_type=r[bool],
+                        "Application", entity_id, result_type=r[bool]
                     )
                 return r[bool].ok(True)
 
@@ -714,33 +669,31 @@ class FlextWebUtilities(u):
                             or not isinstance(host, str)
                         ):
                             result = r[t.Web.ResponseDict].fail(
-                                "create action requires name(str), port(int), host(str)",
+                                "create action requires name(str), port(int), host(str)"
                             )
                         else:
                             result = FlextWebUtilities.Web.WebAppManager.create_app(
-                                name=name,
-                                port=port,
-                                host=host,
+                                name=name, port=port, host=host
                             )
                     case c.Web.ACTION_START:
                         app_id = request.get("app_id")
                         if not isinstance(app_id, str):
                             result = r[t.Web.ResponseDict].fail(
-                                "start action requires app_id(str)",
+                                "start action requires app_id(str)"
                             )
                         else:
                             result = FlextWebUtilities.Web.WebAppManager.start_app(
-                                app_id,
+                                app_id
                             )
                     case c.Web.ACTION_STOP:
                         app_id = request.get("app_id")
                         if not isinstance(app_id, str):
                             result = r[t.Web.ResponseDict].fail(
-                                "stop action requires app_id(str)",
+                                "stop action requires app_id(str)"
                             )
                         else:
                             result = FlextWebUtilities.Web.WebAppManager.stop_app(
-                                app_id,
+                                app_id
                             )
                     case c.Web.ACTION_LIST:
                         result = FlextWebUtilities.Web.WebAppManager.list_apps().map(
@@ -752,15 +705,14 @@ class FlextWebUtilities(u):
                                     for app_id in [app.get("id")]
                                     if isinstance(app_id, str)
                                 ],
-                            },
+                            }
                         )
                     case _:
                         result = r[t.Web.ResponseDict].ok(deepcopy(request))
                 return result
 
             def execute(
-                self,
-                command: t.Web.RequestDict,
+                self, command: t.Web.RequestDict
             ) -> p.Result[t.Web.ResponseDict]:
                 """Execute command (extends p.Handler pattern)."""
                 return FlextWebUtilities.Web.WebHandler.handle_request(command)
@@ -772,13 +724,11 @@ class FlextWebUtilities(u):
             def template_config() -> p.Result[t.Web.ResponseDict]:
                 """Return current template engine configuration."""
                 return r[t.Web.ResponseDict].ok(
-                    deepcopy(FlextWebUtilities.Web.template_config),
+                    deepcopy(FlextWebUtilities.Web.template_config)
                 )
 
             @staticmethod
-            def load_template_config(
-                settings: t.Web.RequestDict,
-            ) -> p.Result[bool]:
+            def load_template_config(settings: t.Web.RequestDict) -> p.Result[bool]:
                 """Load template engine configuration."""
                 FlextWebUtilities.Web.template_config = deepcopy(settings)
                 return r[bool].ok(value=True)
@@ -807,15 +757,13 @@ class FlextWebUtilities(u):
                 return r[str].ok(rendered)
 
             @staticmethod
-            def validate_template_config(
-                settings: t.Web.RequestDict,
-            ) -> p.Result[bool]:
+            def validate_template_config(settings: t.Web.RequestDict) -> p.Result[bool]:
                 """Validate template engine configuration."""
                 allowed_keys = {"template_dir", "autoescape", "cache_enabled"}
                 invalid_keys = [key for key in settings if key not in allowed_keys]
                 if invalid_keys:
                     return r[bool].fail(
-                        f"Invalid template settings keys: {', '.join(invalid_keys)}",
+                        f"Invalid template settings keys: {', '.join(invalid_keys)}"
                     )
                 return r[bool].ok(value=True)
 
@@ -858,9 +806,7 @@ class FlextWebUtilities(u):
                 return metrics
 
             def record_web_request(
-                self,
-                request: t.Web.RequestDict,
-                response_time: float,
+                self, request: t.Web.RequestDict, response_time: float
             ) -> None:
                 """Record web request metrics."""
                 status_value = request.get("status")

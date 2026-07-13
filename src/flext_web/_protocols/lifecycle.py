@@ -25,9 +25,7 @@ class FlextWebProtocolsLifecycle:
 
             @staticmethod
             def create_app(
-                name: str,
-                port: int,
-                host: str,
+                name: str, port: int, host: str
             ) -> p.Result[t.Web.ResponseDict]:
                 """Create a new web application."""
                 ...

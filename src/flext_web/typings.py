@@ -16,20 +16,11 @@ class FlextWebTypes(t):
     class Web:
         """Web domain namespace (flat members per AGENTS.md §149)."""
 
-        type RequestDict = dict[
-            str,
-            t.Scalar | t.StrSequence | t.ConfigurationMapping,
-        ]
-        type ResponseDict = dict[
-            str,
-            t.Scalar | t.StrSequence | t.ConfigurationMapping,
-        ]
+        type RequestDict = dict[str, t.Scalar | t.StrSequence | t.ConfigurationMapping]
+        type ResponseDict = dict[str, t.Scalar | t.StrSequence | t.ConfigurationMapping]
         type FastApiEndpointPayload = t.MappingKV[str, str | bool]
 
 
 t = FlextWebTypes
 
-__all__: list[str] = [
-    "FlextWebTypes",
-    "t",
-]
+__all__: list[str] = ["FlextWebTypes", "t"]

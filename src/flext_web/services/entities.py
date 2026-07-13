@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import (
-    MutableMapping,
-    Sequence,
-)
+from collections.abc import MutableMapping, Sequence
 from typing import override
 
 from flext_web import e, m, p, r, s, u
@@ -16,7 +13,7 @@ class FlextWebEntities(s):
     """In-memory entity CRUD support for flext-web."""
 
     _storage: MutableMapping[str, m.Web.EntityData] = u.PrivateAttr(
-        default_factory=dict[str, m.Web.EntityData],
+        default_factory=dict[str, m.Web.EntityData]
     )
 
     def create(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
@@ -27,9 +24,7 @@ class FlextWebEntities(s):
         return r[m.Web.EntityData].ok(entity)
 
     @override
-    def execute(
-        self,
-    ) -> p.Result[bool]:
+    def execute(self) -> p.Result[bool]:
         """Execute the entity namespace service."""
         return r[bool].ok(True)
 
