@@ -5,13 +5,11 @@ Tests the web constants functionality following flext standards.
 
 from __future__ import annotations
 
-from collections.abc import (
-    Mapping,
-)
+from collections.abc import Mapping
 
 from flext_tests import tm
 
-from tests.constants import c
+from tests import c
 
 
 class TestsFlextWebConstantsUnit:

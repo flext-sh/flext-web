@@ -13,9 +13,7 @@ class TestsFlextWebHandlersDirect:
     def test_handle_create_app_success(self) -> None:
         """Handler creates a valid application entity."""
         result = FlextWebHandlers.handle_create_app(
-            name="handler-app",
-            port=8080,
-            host="localhost",
+            name="handler-app", port=8080, host="localhost"
         )
         tm.ok(result)
         tm.that(result.value.name, eq="handler-app")

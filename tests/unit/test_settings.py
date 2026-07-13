@@ -52,7 +52,7 @@ class TestsFlextWebSettings:
         tm.that(settings.Web.ssl_cert_path, eq=None)
         tm.that(settings.Web.ssl_key_path, eq=None)
         custom = FlextWebSettings(
-            Web={"ssl_cert_path": "/tmp/cert.pem", "ssl_key_path": "/tmp/key.pem"},
+            Web={"ssl_cert_path": "/tmp/cert.pem", "ssl_key_path": "/tmp/key.pem"}
         )
         tm.that(custom.Web.ssl_cert_path, eq="/tmp/cert.pem")
         tm.that(custom.Web.ssl_key_path, eq="/tmp/key.pem")
@@ -90,8 +90,7 @@ class TestsFlextWebSettings:
     def test_clone_applies_namespaced_overrides(self) -> None:
         """Clone applies validated overrides inside the Web namespace."""
         settings = FlextWebSettings().clone(
-            Web={"host": "127.0.0.1", "port": 9090, "secret_key": "a" * 32},
-            debug=True,
+            Web={"host": "127.0.0.1", "port": 9090, "secret_key": "a" * 32}, debug=True
         )
         tm.that(settings.Web.host, eq="127.0.0.1")
         tm.that(settings.Web.port, eq=9090)

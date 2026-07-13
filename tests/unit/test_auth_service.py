@@ -13,10 +13,7 @@ class TestsFlextWebAuth:
     def test_authenticate_success(self) -> None:
         """Auth service accepts canonical credentials."""
         auth = FlextWebAuth()
-        credentials = m.Web.Credentials(
-            username="testuser",
-            password="test_password",
-        )
+        credentials = m.Web.Credentials(username="testuser", password="test_password")
         result = auth.authenticate(credentials)
         tm.ok(result)
         tm.that(result.value.user_id, eq="testuser")
@@ -26,8 +23,7 @@ class TestsFlextWebAuth:
         """Auth service rejects unknown username."""
         auth = FlextWebAuth()
         credentials = m.Web.Credentials(
-            username="nonexistent",
-            password="test_password",
+            username="nonexistent", password="test_password"
         )
         result = auth.authenticate(credentials)
         tm.fail(result)
@@ -36,10 +32,7 @@ class TestsFlextWebAuth:
     def test_authenticate_wrong_password(self) -> None:
         """Auth service rejects wrong password."""
         auth = FlextWebAuth()
-        credentials = m.Web.Credentials(
-            username="testuser",
-            password="wrong-password",
-        )
+        credentials = m.Web.Credentials(username="testuser", password="wrong-password")
         result = auth.authenticate(credentials)
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -62,9 +55,7 @@ class TestsFlextWebAuth:
         """Registration succeeds for valid user data."""
         auth = FlextWebAuth()
         user_data = m.Web.UserData(
-            username="newuser",
-            email="newuser@example.com",
-            password="password123",
+            username="newuser", email="newuser@example.com", password="password123"
         )
         result = auth.register_user(user_data)
         tm.ok(result)
@@ -74,9 +65,7 @@ class TestsFlextWebAuth:
         """Registration rejects numeric-only usernames."""
         auth = FlextWebAuth()
         user_data = m.Web.UserData(
-            username="12345",
-            email="numeric@example.com",
-            password="password123",
+            username="12345", email="numeric@example.com", password="password123"
         )
         result = auth.register_user(user_data)
         tm.fail(result)

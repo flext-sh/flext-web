@@ -10,13 +10,13 @@ import pytest
 from flext_tests import r, tm
 
 from flext_web import FlextWebUtilities, web
-from tests.typings import t
-from tests.utilities import u
+from tests import t
+from tests import u
 
 if TYPE_CHECKING:
     from types import ModuleType
 
-    from tests.protocols import p
+    from tests import p
 
 logger = u.fetch_logger(__name__)
 
@@ -39,24 +39,16 @@ class ExamplesFullFunctionalityTest:
             return r[bool].ok(True)
 
         monkeypatch.setattr(
-            FlextWebUtilities.Web,
-            "_start_app_runtime",
-            staticmethod(_start_runtime),
+            FlextWebUtilities.Web, "_start_app_runtime", staticmethod(_start_runtime)
         )
         monkeypatch.setattr(
-            FlextWebUtilities.Web,
-            "_stop_app_runtime",
-            staticmethod(_stop_runtime),
+            FlextWebUtilities.Web, "_stop_app_runtime", staticmethod(_stop_runtime)
         )
         monkeypatch.setattr(
-            FlextWebUtilities.Web,
-            "start_app_runtime",
-            staticmethod(_start_runtime),
+            FlextWebUtilities.Web, "start_app_runtime", staticmethod(_start_runtime)
         )
         monkeypatch.setattr(
-            FlextWebUtilities.Web,
-            "stop_app_runtime",
-            staticmethod(_stop_runtime),
+            FlextWebUtilities.Web, "stop_app_runtime", staticmethod(_stop_runtime)
         )
 
     @staticmethod
@@ -120,8 +112,7 @@ class ExamplesFullFunctionalityTest:
         list_result = module.list_applications()
         tm.ok(list_result)
         tm.that(
-            any(app.id == create_result.value.id for app in list_result.value),
-            eq=True,
+            any(app.id == create_result.value.id for app in list_result.value), eq=True
         )
 
         stop_result = module.stop_application(create_result.value.id)

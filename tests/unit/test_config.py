@@ -23,8 +23,7 @@ class TestsFlextWebConfig:
     def test_initialization_with_custom_values(self) -> None:
         """Validated overrides are created through the namespaced clone API."""
         settings = web.settings.clone(
-            Web={"host": "0.0.0.0", "port": 3000, "app_name": "Test App"},
-            debug=True,
+            Web={"host": "0.0.0.0", "port": 3000, "app_name": "Test App"}, debug=True
         )
         tm.that(settings.Web.host, eq="0.0.0.0")
         tm.that(settings.Web.port, eq=3000)
@@ -59,14 +58,14 @@ class TestsFlextWebConfig:
     def test_validation_secret_key_valid(self) -> None:
         """Valid secret keys are accepted by namespaced validation."""
         settings = web.settings.clone(
-            Web={"secret_key": "valid-secret-key-32-characters-long"},
+            Web={"secret_key": "valid-secret-key-32-characters-long"}
         )
         tm.that(settings.Web.secret_key, none=False)
 
     def test_ssl_configuration_valid(self) -> None:
         """SSL flags remain accessible on the public settings model."""
         settings = web.settings.clone(
-            Web={"ssl_enabled": False, "ssl_cert_path": None, "ssl_key_path": None},
+            Web={"ssl_enabled": False, "ssl_cert_path": None, "ssl_key_path": None}
         )
         tm.that(settings.Web.ssl_enabled is False, eq=True)
 
@@ -80,7 +79,7 @@ class TestsFlextWebConfig:
     def test_base_url_generation(self) -> None:
         """The base URL is derived from the settings namespace via u.Web."""
         settings = web.settings.clone(
-            Web={"host": "localhost", "port": 8080, "ssl_enabled": False},
+            Web={"host": "localhost", "port": 8080, "ssl_enabled": False}
         )
         tm.that(
             u.Web.base_url(

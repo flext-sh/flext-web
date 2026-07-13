@@ -13,7 +13,7 @@ import flext_web
 from flext_web import __version__, __version_info__
 
 if TYPE_CHECKING:
-    from tests.typings import t
+    from tests import t
 
 
 class TestsFlextWebInit:
@@ -91,7 +91,7 @@ class TestsFlextWebInit:
             "x",
         }
         module_all: t.StrSequence = getattr(flext_web, "__all__", [])
-        assert set(module_all) == expected_exports
+        tm.that(set(module_all), eq=expected_exports)
 
     def test_imports_are_classes_or_modules(self) -> None:
         """Test that imported items are of correct types."""

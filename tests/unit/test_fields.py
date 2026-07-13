@@ -5,7 +5,7 @@ from __future__ import annotations
 from flext_tests import tm
 
 from flext_web import web
-from tests.models import m
+from tests import m
 
 
 class TestsFlextWebFields:
@@ -44,7 +44,7 @@ class TestsFlextWebFields:
     def test_secret_key_field_creation(self) -> None:
         """Test secret key field creation."""
         settings = web.settings.clone(
-            Web={"secret_key": "valid-secret-key-32-characters-long"},
+            Web={"secret_key": "valid-secret-key-32-characters-long"}
         )
         tm.that(settings.Web.secret_key, none=False)
 

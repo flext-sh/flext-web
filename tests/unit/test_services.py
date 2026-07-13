@@ -5,7 +5,7 @@ from __future__ import annotations
 from flext_tests import tm
 
 from flext_web import web
-from tests.models import m
+from tests import m
 
 
 class TestsFlextWebService:
@@ -24,10 +24,7 @@ class TestsFlextWebService:
 
     def test_authenticate_success(self) -> None:
         """Authentication succeeds for the canonical test credentials."""
-        credentials = m.Web.Credentials(
-            username="testuser",
-            password="test_password",
-        )
+        credentials = m.Web.Credentials(username="testuser", password="test_password")
         result = web.authenticate(credentials)
         tm.ok(result)
         tm.that(result.value.user_id, eq="testuser")
@@ -35,8 +32,7 @@ class TestsFlextWebService:
     def test_authenticate_failure(self) -> None:
         """Authentication fails for invalid credentials."""
         credentials = m.Web.Credentials(
-            username="nonexistent",
-            password="wrong-password",
+            username="nonexistent", password="wrong-password"
         )
         result = web.authenticate(credentials)
         tm.fail(result)
@@ -46,10 +42,8 @@ class TestsFlextWebService:
         """User registration succeeds for valid input."""
         result = web.register_user(
             m.Web.UserData(
-                username="newuser",
-                email="newuser@example.com",
-                password="password123",
-            ),
+                username="newuser", email="newuser@example.com", password="password123"
+            )
         )
         tm.ok(result)
         tm.that(result.value.created, eq=True)
@@ -58,17 +52,15 @@ class TestsFlextWebService:
         """Numeric-only usernames are rejected."""
         result = web.register_user(
             m.Web.UserData(
-                username="12345",
-                email="numeric@example.com",
-                password="password123",
-            ),
+                username="12345", email="numeric@example.com", password="password123"
+            )
         )
         tm.fail(result)
 
     def test_create_get_list_app_cycle(self) -> None:
         """Applications are created through protocol-backed runtime state."""
         create_result = web.create_app(
-            m.Web.AppData(name="test-app", host="127.0.0.1", port=8182),
+            m.Web.AppData(name="test-app", host="127.0.0.1", port=8182)
         )
         tm.ok(create_result)
         app = create_result.value
@@ -78,14 +70,13 @@ class TestsFlextWebService:
         tm.ok(list_result)
         tm.that(get_result.value.id, eq=app.id)
         tm.that(
-            any(listed_app.id == app.id for listed_app in list_result.value),
-            eq=True,
+            any(listed_app.id == app.id for listed_app in list_result.value), eq=True
         )
 
     def test_start_and_stop_app_cycle(self) -> None:
         """Applications transition through running and stopped states."""
         create_result = web.create_app(
-            m.Web.AppData(name="runtime-app", host="127.0.0.1", port=8183),
+            m.Web.AppData(name="runtime-app", host="127.0.0.1", port=8183)
         )
         tm.ok(create_result)
         app_id = create_result.value.id

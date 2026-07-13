@@ -10,8 +10,8 @@ from unittest.mock import patch
 import pytest
 from flext_tests import tm
 
-from tests.models import m
-from tests.utilities import u
+from tests import m
+from tests import u
 
 
 class TestsFlextWebUtilitiesUnit:
@@ -97,12 +97,10 @@ class TestsFlextWebUtilitiesUnit:
         """Test format_app_id when name becomes empty after stripping."""
         with (
             patch(
-                "flext_web.utilities.FlextWebUtilities.safe_string",
-                return_value="   ",
+                "flext_web.utilities.FlextWebUtilities.safe_string", return_value="   "
             ),
             pytest.raises(
-                ValueError,
-                match="Cannot format application name 'test' to valid ID",
+                ValueError, match="Cannot format application name 'test' to valid ID"
             ),
         ):
             _ = u.format_app_id("test")
@@ -111,8 +109,7 @@ class TestsFlextWebUtilitiesUnit:
         """Test format_app_id when slugify results in empty string."""
         with (
             patch(
-                "flext_web.utilities.FlextWebUtilities.safe_string",
-                return_value="test",
+                "flext_web.utilities.FlextWebUtilities.safe_string", return_value="test"
             ),
             patch("flext_web.utilities.u.slugify", return_value=""),
             pytest.raises(ValueError, match="Cannot format application name"),

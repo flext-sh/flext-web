@@ -15,16 +15,14 @@ import pytest
 from flext_tests import FlextTestsUtilities, e, r
 
 from flext_web import FlextWebUtilities
-from tests.constants import c
-from tests.models import m
-from tests.typings import t
+from tests import c
+from tests import m
+from tests import t
 
 if TYPE_CHECKING:
-    from collections.abc import (
-        Callable,
-    )
+    from collections.abc import Callable
 
-    from tests.protocols import p
+    from tests import p
 
 
 class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
@@ -40,8 +38,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             def _is_numeric(value: t.JsonPayload | None) -> bool:
                 """Return whether value is a numeric scalar excluding bool."""
                 return isinstance(value, t.NUMERIC_TYPES) and not isinstance(
-                    value,
-                    bool,
+                    value, bool
                 )
 
             @staticmethod
@@ -70,8 +67,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     """Allocate a unique port for testing."""
                     with cls._lock:
                         for _ in range(
-                            c.Web.Tests.PORT_START,
-                            c.Web.Tests.PORT_END + 1,
+                            c.Web.Tests.PORT_START, c.Web.Tests.PORT_END + 1
                         ):
                             port = cls._current_port
                             cls._current_port += 1
@@ -136,8 +132,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def assert_success[T](
-                result: p.Result[T],
-                message: str = "Operation should succeed",
+                result: p.Result[T], message: str = "Operation should succeed"
             ) -> None:
                 """Assert that a result succeeded."""
                 if not result.success:
@@ -145,8 +140,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def assert_failure[T](
-                result: p.Result[T],
-                message: str = "Operation should fail",
+                result: p.Result[T], message: str = "Operation should fail"
             ) -> None:
                 """Assert that a result failed."""
                 if result.success:
@@ -154,9 +148,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def assert_result[T](
-                result: p.Result[T],
-                *,
-                expected_success: bool = True,
+                result: p.Result[T], *, expected_success: bool = True
             ) -> None:
                 """Assert result state according to expectation."""
                 if expected_success:
@@ -166,8 +158,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def create_entry(
-                entry_type: str,
-                **kwargs: t.JsonPayload | None,
+                entry_type: str, **kwargs: t.JsonPayload | None
             ) -> p.Result[m.BaseModel]:
                 """Create test entities through runtime namespaced MRO factories."""
                 if entry_type == "web_app":
@@ -182,11 +173,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return r[m.BaseModel].fail("Invalid parameters for web_app")
                     try:
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
-                            m.Web.create_web_app(
-                                name=name,
-                                host=host,
-                                port=port,
-                            ),
+                            m.Web.create_web_app(name=name, host=host, port=port)
                         )
                     except (e.ValidationError, ValueError, TypeError) as exc:
                         return r[m.BaseModel].fail(str(exc))
@@ -198,7 +185,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     timeout = kwargs.get("timeout")
                     if not isinstance(url, str) or not isinstance(method, str):
                         return r[m.BaseModel].fail(
-                            "Invalid parameters for http_request",
+                            "Invalid parameters for http_request"
                         )
                     if headers is not None and not isinstance(headers, dict):
                         return r[m.BaseModel].fail("Invalid headers for http_request")
@@ -223,10 +210,9 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             headers=narrow_headers,
                             body=narrow_body,
                             timeout=TestsFlextWebUtilities.Web.Tests._to_float(
-                                timeout,
-                                default=30.0,
+                                timeout, default=30.0
                             ),
-                        ),
+                        )
                     )
                 if entry_type == "http_response":
                     status_code = kwargs.get("status_code")
@@ -235,7 +221,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     elapsed_time = kwargs.get("elapsed_time")
                     if not isinstance(status_code, int):
                         return r[m.BaseModel].fail(
-                            "Invalid status_code for http_response",
+                            "Invalid status_code for http_response"
                         )
                     if headers is not None and not isinstance(headers, dict):
                         return r[m.BaseModel].fail("Invalid headers for http_response")
@@ -245,7 +231,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         TestsFlextWebUtilities.Web.Tests._is_numeric(elapsed_time)
                     ):
                         return r[m.BaseModel].fail(
-                            "Invalid elapsed_time for http_response",
+                            "Invalid elapsed_time for http_response"
                         )
                     resp_headers: t.StrMapping | None = (
                         {k: str(v) for k, v in headers.items()}
@@ -263,16 +249,15 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             headers=resp_headers,
                             body=resp_body,
                             elapsed_time=TestsFlextWebUtilities.Web.Tests._to_optional_float(
-                                elapsed_time,
+                                elapsed_time
                             ),
-                        ),
+                        )
                     )
                 raise ValueError(f"Unsupported entry type: {entry_type}")
 
             @staticmethod
             def create_test_data(
-                data_type: str,
-                **kwargs: t.JsonPayload,
+                data_type: str, **kwargs: t.JsonPayload
             ) -> t.MutableMappingKV[str, t.JsonPayload]:
                 """Create centralized test data payloads."""
                 if data_type == "app_data":
@@ -333,9 +318,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 raise ValueError(f"Unsupported data type: {data_type}")
 
             @staticmethod
-            def create_test_app(
-                **kwargs: t.Scalar,
-            ) -> m.Web.Entity:
+            def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:
                 """Create a web test application entity."""
                 defaults: t.MutableMappingKV[str, str | int] = {
                     "id": "test-id",
@@ -347,18 +330,9 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     k: v for k, v in kwargs.items() if isinstance(v, str | int)
                 })
                 id_value = defaults.get("id", "test-id")
-                name_value = defaults.get(
-                    "name",
-                    c.Web.Tests.TEST_APP_NAME,
-                )
-                host_value = defaults.get(
-                    "host",
-                    c.Web.Tests.DEFAULT_HOST,
-                )
-                port_value = defaults.get(
-                    "port",
-                    c.Web.Tests.DEFAULT_PORT,
-                )
+                name_value = defaults.get("name", c.Web.Tests.TEST_APP_NAME)
+                host_value = defaults.get("host", c.Web.Tests.DEFAULT_HOST)
+                port_value = defaults.get("port", c.Web.Tests.DEFAULT_PORT)
                 return m.Web.Entity(
                     id=id_value if isinstance(id_value, str) else "test-id",
                     name=(
@@ -380,9 +354,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
 
             @staticmethod
             def create_test_result(
-                *,
-                success: bool = True,
-                **kwargs: t.Scalar,
+                *, success: bool = True, **kwargs: t.Scalar
             ) -> p.Result[t.Scalar | None]:
                 """Create standardized test results."""
                 if success:
@@ -400,19 +372,17 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             ) -> None:
                 """Run standardized parameterized test cases."""
                 for index, (test_case, expected_success) in enumerate(
-                    zip(test_cases, expected_results, strict=True),
+                    zip(test_cases, expected_results, strict=True)
                 ):
                     try:
                         result = test_function(*test_case)
                         if expected_success:
                             TestsFlextWebUtilities.Web.Tests.assert_success(
-                                result,
-                                f"{test_name} case {index} should succeed",
+                                result, f"{test_name} case {index} should succeed"
                             )
                         else:
                             TestsFlextWebUtilities.Web.Tests.assert_failure(
-                                result,
-                                f"{test_name} case {index} should fail",
+                                result, f"{test_name} case {index} should fail"
                             )
                     except (
                         e.ValidationError,
@@ -421,7 +391,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         RuntimeError,
                     ) as exc:
                         pytest.fail(
-                            f"{test_name} case {index} raised unexpected exception: {exc}",
+                            f"{test_name} case {index} raised unexpected exception: {exc}"
                         )
 
             @staticmethod
@@ -435,22 +405,18 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 for index, params in enumerate(valid_cases):
                     test_name = f"{test_name_prefix}_valid_case_{index}"
                     result = TestsFlextWebUtilities.Web.Tests.create_entry(
-                        entity_type,
-                        **params,
+                        entity_type, **params
                     )
                     TestsFlextWebUtilities.Web.Tests.assert_success(
-                        result,
-                        f"{test_name} should succeed",
+                        result, f"{test_name} should succeed"
                     )
                 for index, params in enumerate(invalid_cases):
                     test_name = f"{test_name_prefix}_invalid_case_{index}"
                     result = TestsFlextWebUtilities.Web.Tests.create_entry(
-                        entity_type,
-                        **params,
+                        entity_type, **params
                     )
                     TestsFlextWebUtilities.Web.Tests.assert_failure(
-                        result,
-                        f"{test_name} should fail",
+                        result, f"{test_name} should fail"
                     )
 
 

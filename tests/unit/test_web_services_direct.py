@@ -242,7 +242,7 @@ class TestsFlextWebServicesDirect:
         """stop_service fails when stopping a running app fails."""
         service = FlextWebServices()
         create_result = service.create_app(
-            m.Web.AppData(name="running-app", host="localhost", port=8080),
+            m.Web.AppData(name="running-app", host="localhost", port=8080)
         )
         tm.ok(create_result)
         app_id = create_result.value.id

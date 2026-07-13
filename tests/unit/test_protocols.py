@@ -5,10 +5,7 @@ Tests the unified p class following flext standards.
 
 from __future__ import annotations
 
-from collections.abc import (
-    Callable,
-    Sequence,
-)
+from collections.abc import Callable, Sequence
 from typing import override
 
 import flask
@@ -18,10 +15,10 @@ from flext_tests import r, tm
 
 from flext_core import FlextContainer, FlextContext
 from flext_web import FlextWebSettings
-from tests.constants import c
-from tests.protocols import p
-from tests.typings import t
-from tests.utilities import u
+from tests import c
+from tests import p
+from tests import t
+from tests import u
 
 
 class TestsFlextWebProtocolsUnit:
@@ -166,7 +163,7 @@ class TestsFlextWebProtocolsUnit:
 
             def list_apps(self) -> p.Result[Sequence[t.Web.ResponseDict]]:
                 return r[Sequence[t.Web.ResponseDict]].ok([
-                    {"name": "test", "host": "localhost", "port": 8080},
+                    {"name": "test", "host": "localhost", "port": 8080}
                 ])
 
         MockAppManager()
@@ -178,9 +175,7 @@ class TestsFlextWebProtocolsUnit:
             @staticmethod
             @override
             def create_app(
-                name: str,
-                port: int,
-                host: str,
+                name: str, port: int, host: str
             ) -> p.Result[t.Web.ResponseDict]:
                 return r[t.Web.ResponseDict].ok({
                     "name": name,
@@ -249,9 +244,7 @@ class TestsFlextWebProtocolsUnit:
 
             @override
             def fail_op(
-                self,
-                operation: str,
-                exc: Exception | str | None = None,
+                self, operation: str, exc: Exception | str | None = None
             ) -> p.Result[t.Web.ResponseDict]:
                 error = str(exc) if exc is not None else operation
                 return r[t.Web.ResponseDict].fail(error)
@@ -283,9 +276,7 @@ class TestsFlextWebProtocolsUnit:
                 msg = "Must use unified test helpers per Rule 3.6"
                 raise NotImplementedError(msg)
 
-        def validate_app_manager(
-            obj: ValidAppManager | InvalidAppManager,
-        ) -> bool:
+        def validate_app_manager(obj: ValidAppManager | InvalidAppManager) -> bool:
             return hasattr(obj, "create_app") and hasattr(obj, "start_app")
 
         tm.that(validate_app_manager(ValidAppManager()), eq=True)
@@ -334,8 +325,7 @@ class TestsFlextWebProtocolsUnit:
 
         class RealWebRepository:
             def find_by_criteria(
-                self,
-                criteria: t.Web.RequestDict,
+                self, criteria: t.Web.RequestDict
             ) -> p.Result[Sequence[t.Web.ResponseDict]]:
                 return r[Sequence[t.Web.ResponseDict]].ok([])
 
@@ -372,8 +362,7 @@ class TestsFlextWebProtocolsUnit:
 
         class RealTemplateEngine:
             def load_template_config(
-                self,
-                settings: t.Web.RequestDict,
+                self, settings: t.Web.RequestDict
             ) -> p.Result[bool]:
                 return r[bool].ok(True)
 
@@ -381,15 +370,12 @@ class TestsFlextWebProtocolsUnit:
                 return r[t.Web.ResponseDict].ok({})
 
             def validate_template_config(
-                self,
-                settings: t.Web.RequestDict,
+                self, settings: t.Web.RequestDict
             ) -> p.Result[bool]:
                 return r[bool].ok(True)
 
             def render(
-                self,
-                template: str,
-                context: t.Web.RequestDict,
+                self, template: str, context: t.Web.RequestDict
             ) -> p.Result[str]:
                 return r[str].ok("")
 
@@ -430,9 +416,7 @@ class TestsFlextWebProtocolsUnit:
 
         class RealWebMonitoring:
             def record_web_request(
-                self,
-                request: t.Web.RequestDict,
-                response_time: float,
+                self, request: t.Web.RequestDict, response_time: float
             ) -> None:
                 pass
 
@@ -552,7 +536,7 @@ class TestsFlextWebProtocolsUnit:
         app_id = str(created.value["id"])
         started = manager.start_app(app_id)
         tm.ok(started)
-        assert app_id in u.Web.app_runtimes
+        tm.that(u.Web.app_runtimes, has=app_id)
         stopped = manager.stop_app(app_id)
         tm.ok(stopped)
         tm.that(app_id not in u.Web.app_runtimes, eq=True)

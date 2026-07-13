@@ -5,7 +5,7 @@ from __future__ import annotations
 from flext_tests import tm
 
 from flext_web import m, settings
-from tests.constants import c
+from tests import c
 
 
 class TestsFlextWebFactory:
@@ -14,9 +14,7 @@ class TestsFlextWebFactory:
     def test_create_web_app_success(self) -> None:
         """Factory creates a valid web app entity."""
         result = m.Web.create_web_app(
-            name="factory-app",
-            host=settings.Web.host,
-            port=settings.Web.port,
+            name="factory-app", host=settings.Web.host, port=settings.Web.port
         )
         tm.ok(result)
         tm.that(result.value.name, eq="factory-app")
@@ -38,10 +36,7 @@ class TestsFlextWebFactory:
 
     def test_create_web_request_failure(self) -> None:
         """Factory returns failure for an invalid request model."""
-        result = m.Web.create_web_request(
-            method=c.Web.Method.GET,
-            url="",
-        )
+        result = m.Web.create_web_request(method=c.Web.Method.GET, url="")
         tm.fail(result)
         tm.that(result.error, none=False)
 
@@ -59,9 +54,6 @@ class TestsFlextWebFactory:
 
     def test_create_web_response_failure(self) -> None:
         """Factory returns failure for an invalid response model."""
-        result = m.Web.create_web_response(
-            request_id="",
-            status_code=99,
-        )
+        result = m.Web.create_web_response(request_id="", status_code=99)
         tm.fail(result)
         tm.that(result.error, none=False)
