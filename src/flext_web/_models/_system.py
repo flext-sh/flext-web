@@ -12,7 +12,8 @@ from wsgiref.simple_server import WSGIServer
 
 import uvicorn
 
-from flext_web import m, t, u
+from flext_cli import m, u
+from flext_web import t
 
 
 class FlextWebModelsSystem:

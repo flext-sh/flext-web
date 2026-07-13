@@ -10,17 +10,15 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json as _json
-from typing import TYPE_CHECKING, override
+from collections.abc import (
+    Callable,
+)
+from typing import override
 
 import flask
 from fastapi import FastAPI
 
 from flext_web import FlextWebSettings, c, m, p, r, s, t, u
-
-if TYPE_CHECKING:
-    from collections.abc import (
-        Callable,
-    )
 
 
 class FlextWebApp(s):

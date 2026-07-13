@@ -15,13 +15,15 @@ from copy import deepcopy
 from importlib import import_module
 from threading import Thread
 from time import sleep
-from typing import TYPE_CHECKING, ClassVar, override
+from typing import ClassVar, override
 from uuid import uuid4
 from wsgiref.simple_server import WSGIServer, make_server
 
 import flask
 import uvicorn
 from fastapi import FastAPI
+from starlette.requests import Request as StarletteRequest
+from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
 from flext_cli import e, p, r, u
@@ -31,23 +33,11 @@ from flext_core import (
     FlextUtilitiesGuardsTypeCore,
     FlextUtilitiesReliability,
 )
-from flext_web import c, settings, t
+from flext_web import c, m, settings, t
 from flext_web._settings import FlextWebSettings
 
-if TYPE_CHECKING:
-    from starlette.requests import Request as StarletteRequest
-    from starlette.responses import Response as StarletteResponse
 
-    from flext_web import m
-
-
-class FlextWebUtilities(
-    u,
-    FlextUtilitiesConversion,
-    FlextUtilitiesDomain,
-    FlextUtilitiesGuardsTypeCore,
-    FlextUtilitiesReliability,
-):
+class FlextWebUtilities(u):
     """Web-specific utilities delegating to flext-core.
 
     Inherits from u and ensures consistency.
@@ -56,9 +46,12 @@ class FlextWebUtilities(
     Uses advanced builder/DSL patterns for composition.
     """
 
-    class Web:
-        """Web runtime helpers, state, and implementations."""
-
+    class Web(
+        FlextUtilitiesConversion,
+        FlextUtilitiesDomain,
+        FlextUtilitiesGuardsTypeCore,
+        FlextUtilitiesReliability,
+    ):
         """Web domain-specific protocols."""
 
         apps_registry: ClassVar[dict[str, t.Web.ResponseDict]] = {}
