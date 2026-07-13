@@ -103,11 +103,15 @@ class FlextWebUtilities(u):
 
         @staticmethod
         def validate_settings(settings: p.Settings) -> p.Result[bool]:
-            """Re-validate a web settings instance through its own model."""
+            """Check that a settings instance is a validated FlextWebSettings."""
+            # NOTE (multi-agent, mro-f8vk / kimi): the old
+            # model_dump -> model_validate roundtrip is forbidden (U14/U19:
+            # validated models are reused directly) and its `is not None`
+            # comparison was always True (reportUnnecessaryComparison). The
+            # honest contract is an identity check against the canonical
+            # model, already validated at its boundary.
             return r[bool].create_from_callable(
-                lambda: (
-                    FlextWebSettings.model_validate(settings.model_dump()) is not None
-                ),
+                lambda: isinstance(settings, FlextWebSettings),
             )
 
         @staticmethod

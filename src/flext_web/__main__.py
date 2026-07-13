@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 from typing import Annotated, override
 
-from flext_cli import cli, m as cli_m, u as cli_u
+from flext_cli import cli, m as cli_m, p as cli_p, u as cli_u
 from flext_web import FlextWebSettings, p, r, s, settings, t, web
 
 
@@ -56,7 +56,7 @@ class FlextWebRunCommand(s):
         )
 
 
-def _build_app() -> t.Cli.CliApp:
+def _build_app() -> cli_p.Cli.Application:
     app = cli.create_app_with_common_params(
         name="flext-web",
         help_text="flext-web HTTP service launcher.",
