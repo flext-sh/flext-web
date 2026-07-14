@@ -181,7 +181,7 @@ class FlextWebServices(s):
         init_result = self.initialize_routes()
         if init_result.failure:
             return init_result
-        middleware_result = settingsure_middleware()
+        middleware_result = configure_middleware()
         if middleware_result.failure:
             return middleware_result
         app_result = self._get_or_create_runtime_application(host=host, port=port)
