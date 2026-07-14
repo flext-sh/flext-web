@@ -27,12 +27,6 @@ from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
 from flext_cli import e, p, r, u
-from flext_core import (
-    FlextUtilitiesConversion,
-    FlextUtilitiesDomain,
-    FlextUtilitiesGuardsTypeCore,
-    FlextUtilitiesReliability,
-)
 from flext_web import c, m, settings, t
 from flext_web._settings import FlextWebSettings
 
@@ -46,12 +40,7 @@ class FlextWebUtilities(u):
     Uses advanced builder/DSL patterns for composition.
     """
 
-    class Web(
-        FlextUtilitiesConversion,
-        FlextUtilitiesDomain,
-        FlextUtilitiesGuardsTypeCore,
-        FlextUtilitiesReliability,
-    ):
+    class Web(u):
         """Web domain-specific protocols."""
 
         apps_registry: ClassVar[dict[str, t.Web.ResponseDict]] = {}
