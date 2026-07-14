@@ -10,9 +10,9 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 if TYPE_CHECKING:
     from tests.constants import TestsFlextWebConstants as TestsFlextWebConstants, c as c
     from tests.typings import TestsFlextWebTypes as TestsFlextWebTypes, t as t
-    from tests.protocols import TestsFlextWebProtocols as TestsFlextWebProtocols, p as p
+    from tests.protocols import TestsFlextWebProtocols as TestsFlextWebProtocols, p
     from tests.models import TestsFlextWebModels as TestsFlextWebModels, m as m
-    from tests.utilities import TestsFlextWebUtilities as TestsFlextWebUtilities, u as u
+    from tests.utilities import TestsFlextWebUtilities as TestsFlextWebUtilities, u
     from tests.base import TestsFlextWebServiceBase as TestsFlextWebServiceBase, s as s
 
 _LAZY_IMPORTS = build_lazy_import_map(

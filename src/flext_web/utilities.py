@@ -206,12 +206,6 @@ class FlextWebUtilities(u):
                 )
 
         @staticmethod
-        def _is_valid_port(port: int) -> bool:
-            min_port, max_port = c.Web.VALIDATION_PORT_RANGE
-            is_valid_port: bool = min_port <= port <= max_port
-            return is_valid_port
-
-        @staticmethod
         def _record_request_metric(status: str | None, response_time_ms: int) -> None:
             request_count_value = FlextWebUtilities.Web.web_metrics.get("requests", 0)
             request_count = (
@@ -417,8 +411,6 @@ class FlextWebUtilities(u):
 
         stop_app_runtime: ClassVar[Callable[..., p.Result[bool]]] = _stop_app_runtime
 
-        is_valid_port: ClassVar[Callable[[int], bool]] = _is_valid_port
-
         class WebAppManager:
             """Protocol for web application lifecycle management."""
 
@@ -442,7 +434,7 @@ class FlextWebUtilities(u):
                     ),
                     (not normalized_host, "Host cannot be empty"),
                     (
-                        not FlextWebUtilities.Web.is_valid_port(port),
+                        not FlextWebUtilities.Web.validate_port(port),
                         f"Port must be between {min_port} and {max_port}",
                     ),
                 ]

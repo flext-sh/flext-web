@@ -24,9 +24,9 @@ from flext_web.__version__ import FlextWebVersion
 class TestsFlextWebVersion:
     """Test suite for FlextWebVersion class."""
 
-    def test_resolve_version_string(self) -> None:
-        """Test resolve_version_string returns valid version string."""
-        version = FlextWebVersion.resolve_version_string()
+    def test_class_version_string(self) -> None:
+        """The MRO-derived class version is a semantic version string."""
+        version = FlextWebVersion.__version__
         tm.that(version, is_=str, none=False, empty=False)
         tm.that(
             version,
@@ -34,9 +34,9 @@ class TestsFlextWebVersion:
             msg="Version must match semantic versioning",
         )
 
-    def test_resolve_version_info(self) -> None:
-        """Test resolve_version_info returns valid version tuple."""
-        version_info = FlextWebVersion.resolve_version_info()
+    def test_class_version_info(self) -> None:
+        """The MRO-derived class version tuple starts with a valid major version."""
+        version_info = FlextWebVersion.__version_info__
         tm.that(version_info, is_=(tuple, list), none=False, empty=False, len=(1, 10))
         tm.that(
             version_info[0],
@@ -45,9 +45,17 @@ class TestsFlextWebVersion:
             msg="Major version must be non-negative integer",
         )
 
-    def test_resolve_package_info(self) -> None:
-        """Test resolve_package_info returns complete package metadata."""
-        info = FlextWebVersion.resolve_package_info()
+    def test_class_package_metadata(self) -> None:
+        """The version facade publishes every package metadata field."""
+        info = {
+            "name": FlextWebVersion.__title__,
+            "version": FlextWebVersion.__version__,
+            "description": FlextWebVersion.__description__,
+            "author": FlextWebVersion.__author__,
+            "author_email": FlextWebVersion.__author_email__,
+            "license": FlextWebVersion.__license__,
+            "url": FlextWebVersion.__url__,
+        }
         tm.that(info, is_=dict, none=False, empty=False)
         required_keys = [
             "name",
@@ -86,13 +94,13 @@ class TestsFlextWebVersion:
         )
         tm.that(
             __version__,
-            eq=FlextWebVersion.resolve_version_string(),
-            msg="Module export must match class method",
+            eq=FlextWebVersion.__version__,
+            msg="Module export must match the version facade",
         )
         tm.that(
             __version_info__,
-            eq=FlextWebVersion.resolve_version_info(),
-            msg="Module export must match class method",
+            eq=FlextWebVersion.__version_info__,
+            msg="Module export must match the version facade",
         )
 
     def test_metadata_constants(self) -> None:
