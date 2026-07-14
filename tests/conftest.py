@@ -14,8 +14,8 @@ import pytest
 from flext_web import FlextWebSettings
 from tests import u
 
-if TYPE_CHECKING:
-    from collections.abc import Generator
+from collections.abc import Generator
+
 
 
 def pytest_runtest_setup(item: pytest.Item) -> None:

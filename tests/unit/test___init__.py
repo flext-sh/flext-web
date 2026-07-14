@@ -12,8 +12,8 @@ from flext_tests import tm
 import flext_web
 from flext_web import __version__, __version_info__
 
-if TYPE_CHECKING:
-    from tests import t
+from tests import t
+
 
 
 class TestsFlextWebInit:

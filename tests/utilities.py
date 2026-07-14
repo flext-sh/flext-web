@@ -19,10 +19,10 @@ from tests import c
 from tests import m
 from tests import t
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
+from collections.abc import Callable
 
-    from tests import p
+from tests import p
+
 
 
 class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):

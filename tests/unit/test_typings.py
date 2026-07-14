@@ -13,8 +13,8 @@ from flext_web import web
 from tests import c
 from tests import m
 
-if TYPE_CHECKING:
-    from tests import t
+from tests import t
+
 
 
 class TestsFlextWebTypesUnit:

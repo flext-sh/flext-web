@@ -176,7 +176,7 @@ class FlextWebApp(s):
         failure contains detailed error message
 
         """
-        web_settings = settings or self.settings
+        web_settings = settings or settings
         app = flask.Flask(web_settings.Web.app_name)
         app.config["SECRET_KEY"] = web_settings.Web.secret_key
         app.config["DEBUG"] = web_settings.debug

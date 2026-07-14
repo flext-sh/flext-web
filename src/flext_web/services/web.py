@@ -40,7 +40,7 @@ class FlextWebServices(s):
 
     def _runtime_settings_clone(self) -> FlextWebSettings:
         """Return a clone of the bound runtime settings for child services."""
-        return self.settings.clone()
+        return settings.clone()
 
     def authenticate(
         self, credentials: m.Web.Credentials
@@ -181,7 +181,7 @@ class FlextWebServices(s):
         init_result = self.initialize_routes()
         if init_result.failure:
             return init_result
-        middleware_result = self.configure_middleware()
+        middleware_result = settingsure_middleware()
         if middleware_result.failure:
             return middleware_result
         app_result = self._get_or_create_runtime_application(host=host, port=port)

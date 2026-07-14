@@ -13,10 +13,10 @@ from flext_web import FlextWebUtilities, web
 from tests import t
 from tests import u
 
-if TYPE_CHECKING:
-    from types import ModuleType
+from types import ModuleType
 
-    from tests import p
+from tests import p
+
 
 logger = u.fetch_logger(__name__)
 
