@@ -27,12 +27,6 @@ from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
 from flext_cli import e, p, r, u
-from flext_core import (
-    FlextUtilitiesConversion,
-    FlextUtilitiesDomain,
-    FlextUtilitiesGuardsTypeCore,
-    FlextUtilitiesReliability,
-)
 from flext_web import c, m, settings, t
 from flext_web._settings import FlextWebSettings
 
@@ -46,12 +40,7 @@ class FlextWebUtilities(u):
     Uses advanced builder/DSL patterns for composition.
     """
 
-    class Web(
-        FlextUtilitiesConversion,
-        FlextUtilitiesDomain,
-        FlextUtilitiesGuardsTypeCore,
-        FlextUtilitiesReliability,
-    ):
+    class Web(u):
         """Web domain-specific protocols."""
 
         apps_registry: ClassVar[dict[str, t.Web.ResponseDict]] = {}
@@ -215,12 +204,6 @@ class FlextWebUtilities(u):
                 app_instance.add_url_rule(
                     "/protocol/health", "flask_health", flask_health
                 )
-
-        @staticmethod
-        def _is_valid_port(port: int) -> bool:
-            min_port, max_port = c.Web.VALIDATION_PORT_RANGE
-            is_valid_port: bool = min_port <= port <= max_port
-            return is_valid_port
 
         @staticmethod
         def _record_request_metric(status: str | None, response_time_ms: int) -> None:
@@ -428,8 +411,6 @@ class FlextWebUtilities(u):
 
         stop_app_runtime: ClassVar[Callable[..., p.Result[bool]]] = _stop_app_runtime
 
-        is_valid_port: ClassVar[Callable[[int], bool]] = _is_valid_port
-
         class WebAppManager:
             """Protocol for web application lifecycle management."""
 
@@ -453,7 +434,7 @@ class FlextWebUtilities(u):
                     ),
                     (not normalized_host, "Host cannot be empty"),
                     (
-                        not FlextWebUtilities.Web.is_valid_port(port),
+                        not FlextWebUtilities.Web.validate_port(port),
                         f"Port must be between {min_port} and {max_port}",
                     ),
                 ]
