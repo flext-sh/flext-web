@@ -56,7 +56,7 @@ class FlextWebModelsSystem:
             for each started application so it can be stopped cleanly.
             """
 
-            model_config: ClassVar[t.ConfigDict] = m.ConfigDict(
+            model_config: ClassVar[t.ConfigDict] = t.ConfigDict(
                 arbitrary_types_allowed=True, frozen=True, extra="forbid"
             )
             runner: Annotated[
