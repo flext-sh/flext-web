@@ -10,7 +10,7 @@ from collections.abc import Sequence
 from typing import Protocol, runtime_checkable
 
 from flext_cli import p
-from flext_web import p, t
+from flext_web import t
 
 
 class FlextWebProtocolsLifecycle:

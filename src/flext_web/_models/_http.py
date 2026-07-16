@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import Annotated
 
 from flext_cli import m, p, u
-from flext_web import c, p, r, t
+from flext_web import c, r, t
 
 from ._base import FlextWebModelsBase
 
