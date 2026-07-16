@@ -16,30 +16,30 @@ class FlextWebEntities(s):
         default_factory=dict[str, m.Web.EntityData]
     )
 
-    def create(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
+    def create(self, data: m.Web.EntityData) -> p.Result[p.Web.EntityData]:
         """Create an entity with generated identifier."""
         entity_id = str(uuid.uuid4())
         entity = m.Web.EntityData(data={"id": entity_id, **data.data})
         self._storage[entity_id] = entity
-        return r[m.Web.EntityData].ok(entity)
+        return r[p.Web.EntityData].ok(entity)
 
     @override
     def execute(self) -> p.Result[bool]:
         """Execute the entity namespace service."""
         return r[bool].ok(True)
 
-    def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
+    def fetch_entity(self, entity_id: str) -> p.Result[p.Web.EntityData]:
         """Fetch an entity by identifier."""
         if not u.to_str(entity_id):
             return e.fail_validation("entity_id", error="cannot be empty")
         entity = self._storage.get(entity_id)
         if entity is None:
             return e.fail_not_found("entity", entity_id)
-        return r[m.Web.EntityData].ok(entity)
+        return r[p.Web.EntityData].ok(entity)
 
-    def list_all(self) -> p.Result[Sequence[m.Web.EntityData]]:
+    def list_all(self) -> p.Result[Sequence[p.Web.EntityData]]:
         """List all registered entities."""
-        return r[Sequence[m.Web.EntityData]].ok(list(self._storage.values()))
+        return r[Sequence[p.Web.EntityData]].ok(list(self._storage.values()))
 
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate entity namespace invariants."""

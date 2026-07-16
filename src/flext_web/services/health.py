@@ -15,7 +15,7 @@ class FlextWebHealth(s):
         """Execute the health namespace service."""
         return r[bool].ok(True)
 
-    def metrics(self) -> p.Result[m.Web.MetricsResponse]:
+    def metrics(self) -> p.Result[p.Web.MetricsResponse]:
         """Return metrics projected from the protocol runtime registry."""
         metrics = u.Web.WebMonitoring.web_metrics()
         state = u.Web.service_state
@@ -29,20 +29,20 @@ class FlextWebHealth(s):
             "errors",
             "avg_response_time_ms",
         ]
-        return r[m.Web.MetricsResponse].ok(
+        return r[p.Web.MetricsResponse].ok(
             m.Web.MetricsResponse(service_status=service_status, components=components)
         )
 
-    def status(self) -> p.Result[m.Web.HealthResponse]:
+    def status(self) -> p.Result[p.Web.HealthResponse]:
         """Return health status from the protocol runtime registry."""
         payload = u.Web.WebMonitoring.web_health_status()
         service_value = payload.get("service")
         status_value = payload.get("status")
         if not isinstance(service_value, str) or not isinstance(status_value, str):
-            return r[m.Web.HealthResponse].fail(
+            return r[p.Web.HealthResponse].fail(
                 "Health monitoring payload is incomplete"
             )
-        return r[m.Web.HealthResponse].ok(
+        return r[p.Web.HealthResponse].ok(
             m.Web.HealthResponse(
                 status=status_value,
                 service=service_value,

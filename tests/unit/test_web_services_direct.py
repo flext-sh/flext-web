@@ -232,7 +232,7 @@ class TestsFlextWebServicesDirect:
         with patch.object(
             FlextWebServices,
             "start_app",
-            return_value=r[m.Web.ApplicationResponse].fail("start failed"),
+            return_value=r[p.Web.ApplicationResponse].fail("start failed"),
         ):
             result = service.start_service(host="localhost", port=8080)
             tm.fail(result)
@@ -250,7 +250,7 @@ class TestsFlextWebServicesDirect:
         with patch.object(
             FlextWebServices,
             "stop_app",
-            return_value=r[m.Web.ApplicationResponse].fail("stop failed"),
+            return_value=r[p.Web.ApplicationResponse].fail("stop failed"),
         ):
             result = service.stop_service()
             tm.fail(result)
@@ -262,7 +262,7 @@ class TestsFlextWebServicesDirect:
         with patch.object(
             FlextWebServices,
             "list_apps",
-            return_value=r[Sequence[m.Web.ApplicationResponse]].fail("list failed"),
+            return_value=r[Sequence[p.Web.ApplicationResponse]].fail("list failed"),
         ):
             result = service._get_or_create_runtime_application("localhost", 8080)
             tm.fail(result)

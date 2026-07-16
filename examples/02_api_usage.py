@@ -22,9 +22,9 @@ def _allocate_demo_port(*reserved_ports: int) -> int:
     return candidate
 
 
-def check_service_health() -> p.Result[m.Web.HealthResponse]:
+def check_service_health() -> p.Result[p.Web.HealthResponse]:
     """Return structured health information through the public facade."""
-    health_result: p.Result[m.Web.HealthResponse] = web.health_status()
+    health_result: p.Result[p.Web.HealthResponse] = web.health_status()
     return health_result
 
 
@@ -32,41 +32,41 @@ def create_application(
     name: str,
     port: int,
     host: str = "127.0.0.1",
-) -> p.Result[m.Web.ApplicationResponse]:
+) -> p.Result[p.Web.ApplicationResponse]:
     """Create an application through the canonical `web` facade."""
-    create_result: p.Result[m.Web.ApplicationResponse] = web.create_app(
+    create_result: p.Result[p.Web.ApplicationResponse] = web.create_app(
         m.Web.AppData(name=name, host=host, port=port),
     )
     return create_result
 
 
-def start_application(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
+def start_application(app_id: str) -> p.Result[p.Web.ApplicationResponse]:
     """Start an application through the canonical `web` facade."""
-    start_result: p.Result[m.Web.ApplicationResponse] = web.start_app(app_id)
+    start_result: p.Result[p.Web.ApplicationResponse] = web.start_app(app_id)
     return start_result
 
 
-def fetch_application_status(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
+def fetch_application_status(app_id: str) -> p.Result[p.Web.ApplicationResponse]:
     """Load a single application projection through the canonical `web` facade."""
-    fetch_result: p.Result[m.Web.ApplicationResponse] = web.fetch_app(app_id)
+    fetch_result: p.Result[p.Web.ApplicationResponse] = web.fetch_app(app_id)
     return fetch_result
 
 
-def stop_application(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
+def stop_application(app_id: str) -> p.Result[p.Web.ApplicationResponse]:
     """Stop an application through the canonical `web` facade."""
-    stop_result: p.Result[m.Web.ApplicationResponse] = web.stop_app(app_id)
+    stop_result: p.Result[p.Web.ApplicationResponse] = web.stop_app(app_id)
     return stop_result
 
 
-def list_applications() -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+def list_applications() -> p.Result[Sequence[p.Web.ApplicationResponse]]:
     """List application projections through the canonical `web` facade."""
-    list_result: p.Result[Sequence[m.Web.ApplicationResponse]] = web.list_apps()
+    list_result: p.Result[Sequence[p.Web.ApplicationResponse]] = web.list_apps()
     return list_result
 
 
-def demo_application_lifecycle() -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+def demo_application_lifecycle() -> p.Result[Sequence[p.Web.ApplicationResponse]]:
     """Demonstrate the canonical public lifecycle flow for flext-web."""
-    created_apps: list[m.Web.ApplicationResponse] = []
+    created_apps: list[p.Web.ApplicationResponse] = []
     first_port = _allocate_demo_port()
     second_port = _allocate_demo_port(first_port)
 
@@ -76,30 +76,30 @@ def demo_application_lifecycle() -> p.Result[Sequence[m.Web.ApplicationResponse]
     ):
         created_result = web.create_app(app_data)
         if created_result.failure:
-            return r[Sequence[m.Web.ApplicationResponse]].fail(created_result.error)
+            return r[Sequence[p.Web.ApplicationResponse]].fail(created_result.error)
         created_apps.append(created_result.value)
 
     for created_app in created_apps:
         started_result = web.start_app(created_app.id)
         if started_result.failure:
-            return r[Sequence[m.Web.ApplicationResponse]].fail(started_result.error)
+            return r[Sequence[p.Web.ApplicationResponse]].fail(started_result.error)
 
     listed_running_apps = web.list_apps()
     if listed_running_apps.failure:
-        return r[Sequence[m.Web.ApplicationResponse]].fail(listed_running_apps.error)
+        return r[Sequence[p.Web.ApplicationResponse]].fail(listed_running_apps.error)
 
     for created_app in created_apps:
         stopped_result = web.stop_app(created_app.id)
         if stopped_result.failure:
-            return r[Sequence[m.Web.ApplicationResponse]].fail(stopped_result.error)
+            return r[Sequence[p.Web.ApplicationResponse]].fail(stopped_result.error)
 
-    final_apps: list[m.Web.ApplicationResponse] = []
+    final_apps: list[p.Web.ApplicationResponse] = []
     for created_app in created_apps:
         current_result = web.fetch_app(created_app.id)
         if current_result.failure:
-            return r[Sequence[m.Web.ApplicationResponse]].fail(current_result.error)
+            return r[Sequence[p.Web.ApplicationResponse]].fail(current_result.error)
         final_apps.append(current_result.value)
-    return r[Sequence[m.Web.ApplicationResponse]].ok(final_apps)
+    return r[Sequence[p.Web.ApplicationResponse]].ok(final_apps)
 
 
 def main() -> None:

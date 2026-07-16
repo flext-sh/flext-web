@@ -12,7 +12,7 @@ class FlextWebAuth(s):
 
     def authenticate(
         self, credentials: m.Web.Credentials
-    ) -> p.Result[m.Web.AuthResponse]:
+    ) -> p.Result[p.Web.AuthResponse]:
         """Authenticate a user with explicit validation."""
         if credentials.username == "nonexistent":
             return e.fail_auth(
@@ -31,18 +31,18 @@ class FlextWebAuth(s):
             user_id=credentials.username,
             authenticated=True,
         )
-        return r[m.Web.AuthResponse].ok(auth_response)
+        return r[p.Web.AuthResponse].ok(auth_response)
 
     @override
     def execute(self) -> p.Result[bool]:
         """Execute the auth namespace service."""
         return r[bool].ok(True)
 
-    def logout(self) -> p.Result[m.Web.EntityData]:
+    def logout(self) -> p.Result[p.Web.EntityData]:
         """Return a successful logout payload."""
-        return r[m.Web.EntityData].ok(m.Web.EntityData(data={"success": True}))
+        return r[p.Web.EntityData].ok(m.Web.EntityData(data={"success": True}))
 
-    def register_user(self, user_data: m.Web.UserData) -> p.Result[m.Web.UserResponse]:
+    def register_user(self, user_data: m.Web.UserData) -> p.Result[p.Web.UserResponse]:
         """Register a user with explicit domain validation."""
         if user_data.username.isdigit():
             return e.fail_validation("username", error="cannot be numeric-only")
@@ -52,7 +52,7 @@ class FlextWebAuth(s):
             email=user_data.email,
             created=True,
         )
-        return r[m.Web.UserResponse].ok(user_response)
+        return r[p.Web.UserResponse].ok(user_response)
 
     def validate_business_rules(self) -> p.Result[bool]:
         """Validate auth namespace invariants."""

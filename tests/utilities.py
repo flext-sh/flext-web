@@ -121,14 +121,14 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 return False
 
             @staticmethod
-            def _wrap_result[T](result: p.Result[T]) -> p.Result[m.BaseModel]:
-                """Wrap a typed result into `r[m.BaseModel]` for generic helpers."""
+            def _wrap_result[T](result: p.Result[T]) -> p.Result[p.BaseModel]:
+                """Wrap a typed result into `r[p.BaseModel]` for generic helpers."""
                 if result.success:
                     value = result.value
                     if isinstance(value, m.BaseModel):
-                        return r[m.BaseModel].ok(value)
-                    return r[m.BaseModel].fail("Result value is not a m.BaseModel")
-                return r[m.BaseModel].fail(result.error or "Unknown error")
+                        return r[p.BaseModel].ok(value)
+                    return r[p.BaseModel].fail("Result value is not a m.BaseModel")
+                return r[p.BaseModel].fail(result.error or "Unknown error")
 
             @staticmethod
             def assert_success[T](
@@ -159,7 +159,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             @staticmethod
             def create_entry(
                 entry_type: str, **kwargs: t.JsonPayload | None
-            ) -> p.Result[m.BaseModel]:
+            ) -> p.Result[p.BaseModel]:
                 """Create test entities through runtime namespaced MRO factories."""
                 if entry_type == "web_app":
                     name = kwargs.get("name")
@@ -170,13 +170,13 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         or not isinstance(host, str)
                         or not isinstance(port, int)
                     ):
-                        return r[m.BaseModel].fail("Invalid parameters for web_app")
+                        return r[p.BaseModel].fail("Invalid parameters for web_app")
                     try:
                         return TestsFlextWebUtilities.Web.Tests._wrap_result(
                             m.Web.create_web_app(name=name, host=host, port=port)
                         )
                     except (e.ValidationError, ValueError, TypeError) as exc:
-                        return r[m.BaseModel].fail(str(exc))
+                        return r[p.BaseModel].fail(str(exc))
                 if entry_type == "http_request":
                     url = kwargs.get("url")
                     method = kwargs.get("method")
@@ -184,15 +184,15 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     body = kwargs.get("body")
                     timeout = kwargs.get("timeout")
                     if not isinstance(url, str) or not isinstance(method, str):
-                        return r[m.BaseModel].fail(
+                        return r[p.BaseModel].fail(
                             "Invalid parameters for http_request"
                         )
                     if headers is not None and not isinstance(headers, dict):
-                        return r[m.BaseModel].fail("Invalid headers for http_request")
+                        return r[p.BaseModel].fail("Invalid headers for http_request")
                     if body is not None and not isinstance(body, (str, dict)):
-                        return r[m.BaseModel].fail("Invalid body for http_request")
+                        return r[p.BaseModel].fail("Invalid body for http_request")
                     if not TestsFlextWebUtilities.Web.Tests._is_numeric(timeout):
-                        return r[m.BaseModel].fail("Invalid timeout for http_request")
+                        return r[p.BaseModel].fail("Invalid timeout for http_request")
                     narrow_headers: t.StrMapping | None = (
                         {k: str(v) for k, v in headers.items()}
                         if isinstance(headers, dict)
@@ -220,17 +220,17 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     body = kwargs.get("body")
                     elapsed_time = kwargs.get("elapsed_time")
                     if not isinstance(status_code, int):
-                        return r[m.BaseModel].fail(
+                        return r[p.BaseModel].fail(
                             "Invalid status_code for http_response"
                         )
                     if headers is not None and not isinstance(headers, dict):
-                        return r[m.BaseModel].fail("Invalid headers for http_response")
+                        return r[p.BaseModel].fail("Invalid headers for http_response")
                     if body is not None and not isinstance(body, (str, dict)):
-                        return r[m.BaseModel].fail("Invalid body for http_response")
+                        return r[p.BaseModel].fail("Invalid body for http_response")
                     if elapsed_time is not None and not (
                         TestsFlextWebUtilities.Web.Tests._is_numeric(elapsed_time)
                     ):
-                        return r[m.BaseModel].fail(
+                        return r[p.BaseModel].fail(
                             "Invalid elapsed_time for http_response"
                         )
                     resp_headers: t.StrMapping | None = (
@@ -318,7 +318,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 raise ValueError(f"Unsupported data type: {data_type}")
 
             @staticmethod
-            def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:
+            def create_test_app(**kwargs: t.Scalar) -> p.Web.Entity:
                 """Create a web test application entity."""
                 defaults: t.MutableMappingKV[str, str | int] = {
                     "id": "test-id",
@@ -366,7 +366,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             @staticmethod
             def run_parameterized_test(
                 test_cases: t.SequenceOf[tuple[t.JsonValue, ...]],
-                test_function: Callable[..., p.Result[m.BaseModel]],
+                test_function: Callable[..., p.Result[p.BaseModel]],
                 expected_results: t.SequenceOf[bool],
                 test_name: str = "parameterized_test",
             ) -> None:

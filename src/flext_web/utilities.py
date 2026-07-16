@@ -234,7 +234,7 @@ class FlextWebUtilities(u):
         @staticmethod
         def _start_uvicorn_runtime(
             app_id: str, app_instance: FastAPI, host: str, port: int
-        ) -> p.Result[m.Web.AppRuntimeInfo]:
+        ) -> p.Result[p.Web.AppRuntimeInfo]:
             """Start an ASGI runtime using uvicorn."""
             app_runtime_model = FlextWebUtilities.Web.app_runtime_info_model()
             try:
@@ -274,7 +274,7 @@ class FlextWebUtilities(u):
         @staticmethod
         def _start_werkzeug_runtime(
             app_id: str, app_instance: flask.Flask, host: str, port: int
-        ) -> p.Result[m.Web.AppRuntimeInfo]:
+        ) -> p.Result[p.Web.AppRuntimeInfo]:
             """Start a WSGI runtime using werkzeug."""
             app_runtime_model = FlextWebUtilities.Web.app_runtime_info_model()
             try:
@@ -323,7 +323,7 @@ class FlextWebUtilities(u):
             app_id: str,
             app_data: t.Web.ResponseDict,
             app_instance: flask.Flask | FastAPI,
-        ) -> p.Result[m.Web.AppRuntimeInfo]:
+        ) -> p.Result[p.Web.AppRuntimeInfo]:
             app_runtime_model = FlextWebUtilities.Web.app_runtime_info_model()
             host = app_data.get("host")
             port = app_data.get("port")
@@ -405,7 +405,7 @@ class FlextWebUtilities(u):
             _configure_framework_app_middleware
         )
 
-        start_app_runtime: ClassVar[Callable[..., p.Result[m.Web.AppRuntimeInfo]]] = (
+        start_app_runtime: ClassVar[Callable[..., p.Result[p.Web.AppRuntimeInfo]]] = (
             _start_app_runtime
         )
 
