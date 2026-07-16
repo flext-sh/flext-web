@@ -3,15 +3,15 @@
 # flext-web API Overview
 
 - Package: `flext_web`
-- Version: `0.12.0-dev`
+- Version: `0.12.0`
 - Description: FLEXT Web - Modern Web Interface for FLEXT Platform
 - Doc summary: Flext Web package.
-- Classifiers: `Development Status :: 4 - Beta`, `Development Status :: 5 - Production/Stable`, `Framework :: Flask`, `Intended Audience :: Developers`, `Operating System :: OS Independent`, `Programming Language :: Python :: 3 :: Only` (+4 more)
+- Classifiers: `Development Status :: 3 - Alpha`, `Framework :: Flask`, `Intended Audience :: Developers`, `Operating System :: OS Independent`, `Programming Language :: Python :: 3 :: Only`, `Programming Language :: Python :: 3.13` (+3 more)
 - Project class: `platform`
 - Keywords: `enterprise`, `flask`, `flext`, `frontend`, `typed`, `web`
-- Main facades: _none_
+- Main facades: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`, `FlextWebHealth`, `FlextWebModels` (+6 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextWebHandlers`, `FlextWebServices`, `FlextWebApp`, `FlextWebEntities`, `settings`, `FlextWebHealth`, `FlextWebServiceBase`, `FlextWebUtilities`, `web`, `FlextWebProtocols` (+6 more)
+- Public symbol exports: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`, `FlextWebHealth`, `FlextWebModels`, `FlextWebProtocols`, `FlextWebServiceBase` (+6 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `13`
 
