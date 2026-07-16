@@ -16,7 +16,7 @@ class FlextWebEntities(s):
         default_factory=dict[str, m.Web.EntityData]
     )
 
-    def create(self, data: m.Web.EntityData) -> p.Result[p.Web.EntityData]:
+    def create(self, data: p.Web.EntityData) -> p.Result[p.Web.EntityData]:
         """Create an entity with generated identifier."""
         entity_id = str(uuid.uuid4())
         entity = m.Web.EntityData(data={"id": entity_id, **data.data})

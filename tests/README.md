@@ -3,7 +3,7 @@
 The test suite is anchored on the canonical public surface:
 
 ```python
-from flext_web import web, c, t, p, m, u
+from flext_web import web, c, t, p, m, p, u
 ```
 
 ## Current structure

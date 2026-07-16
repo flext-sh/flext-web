@@ -375,7 +375,7 @@ class FlextWebUtilities(u):
 
         @staticmethod
         def _stop_app_runtime(
-            app_id: str, runtime: m.Web.AppRuntimeInfo
+            app_id: str, runtime: p.Web.AppRuntimeInfo
         ) -> p.Result[bool]:
             try:
                 stop_runner = getattr(FlextWebUtilities.Web, "_stop_runner")

@@ -12,7 +12,7 @@ from flext_tests import tm
 import flext_web
 from flext_web import __version__, __version_info__
 
-from tests import t
+from tests import p, t
 
 
 
@@ -100,7 +100,7 @@ class TestsFlextWebInit:
         tm.that(__version__, is_=str)
 
     def test_web_and_aliases_define_the_public_surface(self) -> None:
-        """The package exposes the canonical `web, c, t, p, m, u` surface."""
+        """The package exposes the canonical `web, c, t, p, m, p, u` surface."""
         for _name in self._WEB_SURFACE:
             pass
         for alias_name in ("c", "t", "p", "m", "u"):

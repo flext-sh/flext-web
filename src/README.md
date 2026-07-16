@@ -4,7 +4,7 @@
 public structural namespaces:
 
 ```python
-from flext_web import web, c, t, p, m, u
+from flext_web import web, c, t, p, m, p, u
 ```
 
 ## Public contract

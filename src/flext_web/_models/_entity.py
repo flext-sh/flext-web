@@ -209,7 +209,7 @@ class FlextWebModelsEntity:
             def add_domain_event(
                 self,
                 event_type: str,
-                data: m.ConfigMap
+                data: p.ConfigMap
                 | t.MappingKV[str, t.JsonPayload | None]
                 | None = None,
             ) -> p.Result[p.Entry]:

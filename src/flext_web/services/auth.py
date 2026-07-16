@@ -11,7 +11,7 @@ class FlextWebAuth(s):
     """Authentication operations for the public web facade."""
 
     def authenticate(
-        self, credentials: m.Web.Credentials
+        self, credentials: p.Web.Credentials
     ) -> p.Result[p.Web.AuthResponse]:
         """Authenticate a user with explicit validation."""
         if credentials.username == "nonexistent":
@@ -42,7 +42,7 @@ class FlextWebAuth(s):
         """Return a successful logout payload."""
         return r[p.Web.EntityData].ok(m.Web.EntityData(data={"success": True}))
 
-    def register_user(self, user_data: m.Web.UserData) -> p.Result[p.Web.UserResponse]:
+    def register_user(self, user_data: p.Web.UserData) -> p.Result[p.Web.UserResponse]:
         """Register a user with explicit domain validation."""
         if user_data.username.isdigit():
             return e.fail_validation("username", error="cannot be numeric-only")

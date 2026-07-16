@@ -13,7 +13,7 @@ from flext_web import web
 from tests import c
 from tests import m
 
-from tests import t
+from tests import p, t
 
 
 

@@ -17,7 +17,7 @@ from flext_core import FlextContainer, FlextContext
 from flext_web import FlextWebSettings
 from tests import c
 from tests import p
-from tests import t
+from tests import p, t
 from tests import u
 
 

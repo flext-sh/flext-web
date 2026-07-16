@@ -43,7 +43,7 @@ class FlextWebServices(s):
         return settings.clone()
 
     def authenticate(
-        self, credentials: m.Web.Credentials
+        self, credentials: p.Web.Credentials
     ) -> p.Result[p.Web.AuthResponse]:
         """Delegate authentication to the canonical auth service."""
         return self._auth().authenticate(credentials)
@@ -53,14 +53,14 @@ class FlextWebServices(s):
         return u.Web.WebService.configure_middleware()
 
     def create_app(
-        self, app_data: m.Web.AppData
+        self, app_data: p.Web.AppData
     ) -> p.Result[p.Web.ApplicationResponse]:
         """Create an application through the protocol runtime registry."""
         return u.Web.WebAppManager.create_app(
             name=app_data.name, port=app_data.port, host=app_data.host
         ).flat_map(self._application_response_from_payload)
 
-    def create_entity(self, data: m.Web.EntityData) -> p.Result[p.Web.EntityData]:
+    def create_entity(self, data: p.Web.EntityData) -> p.Result[p.Web.EntityData]:
         """Create a generic entity through the entity service."""
         return self._entities().create(data)
 
@@ -68,7 +68,7 @@ class FlextWebServices(s):
         """Return dashboard data projected from the protocol runtime state."""
         state = u.Web.service_state
         return self.list_apps().map(
-            lambda apps: m.Web.DashboardResponse(
+            lambda apps: p.Web.DashboardResponse(
                 total_applications=len(apps),
                 running_applications=sum(
                     1 for app in apps if app.status == c.Web.Status.RUNNING.value
@@ -156,7 +156,7 @@ class FlextWebServices(s):
         """List all generic entities."""
         return self._entities().list_all()
 
-    def register_user(self, user_data: m.Web.UserData) -> p.Result[p.Web.UserResponse]:
+    def register_user(self, user_data: p.Web.UserData) -> p.Result[p.Web.UserResponse]:
         """Delegate registration to the canonical auth service."""
         return self._auth().register_user(user_data)
 

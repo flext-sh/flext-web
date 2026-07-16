@@ -57,7 +57,7 @@ class FlextWebHandlers(s):
         return app.validate_business_rules().flat_map(lambda _: r[p.Web.Entity].ok(app))
 
     @classmethod
-    def handle_start_app(cls, app: m.Web.Entity) -> p.Result[p.Web.Entity]:
+    def handle_start_app(cls, app: p.Web.Entity) -> p.Result[p.Web.Entity]:
         """Handle application start requests.
 
         Args:
@@ -70,7 +70,7 @@ class FlextWebHandlers(s):
         return app.start()
 
     @classmethod
-    def handle_stop_app(cls, app: m.Web.Entity) -> p.Result[p.Web.Entity]:
+    def handle_stop_app(cls, app: p.Web.Entity) -> p.Result[p.Web.Entity]:
         """Handle application stop requests.
 
         Args:

@@ -10,7 +10,7 @@ import pytest
 from flext_tests import r, tm
 
 from flext_web import FlextWebUtilities, web
-from tests import t
+from tests import p, t
 from tests import u
 
 from types import ModuleType
