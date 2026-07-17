@@ -6,6 +6,8 @@ following the canonical FlextVersion test pattern from flext-core.
 
 from __future__ import annotations
 
+from packaging.version import Version
+
 from flext_tests import tm
 
 from flext_web import (
@@ -35,9 +37,10 @@ class TestsFlextWebVersion:
         )
 
     def test_class_version_info(self) -> None:
-        """The MRO-derived class version tuple starts with a valid major version."""
+        """The MRO-derived class version info is a three-integer release tuple."""
         version_info = FlextWebVersion.__version_info__
-        tm.that(version_info, is_=(tuple, list), none=False, empty=False, len=(1, 10))
+        tm.that(version_info, is_=tuple, none=False, empty=False, len=3)
+        tm.that(all(isinstance(component, int) for component in version_info), eq=True)
         tm.that(
             version_info[0],
             is_=int,
@@ -78,20 +81,15 @@ class TestsFlextWebVersion:
             )
 
     def test_version_format(self) -> None:
-        """Test version format is valid."""
-        version_parts = __version__.split(".")
-        tm.that(len(version_parts), gte=2)
-        version_from_info = ".".join(str(part) for part in __version_info__)
-        tm.that(version_from_info, eq=__version__)
+        """The exported version info matches the PEP 440 release triple."""
+        tm.that(__version_info__, eq=Version(__version__).release)
 
     def test_module_level_exports(self) -> None:
         """Test module-level version exports are consistent with class."""
         tm.that(
             __version__, is_=str, none=False, empty=False, match="^\\d+\\.\\d+\\.\\d+"
         )
-        tm.that(
-            __version_info__, is_=(tuple, list), none=False, empty=False, len=(1, 10)
-        )
+        tm.that(__version_info__, is_=tuple, none=False, empty=False, len=3)
         tm.that(
             __version__,
             eq=FlextWebVersion.__version__,
