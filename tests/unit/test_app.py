@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from flext_tests import tm
-
 from flext_cli import u as cli_u
+from flext_tests import tm
 from flext_web import FlextWebSettings, web
 
 

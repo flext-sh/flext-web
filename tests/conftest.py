@@ -7,15 +7,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from typing import TYPE_CHECKING
 
 import pytest
 
 from flext_web import FlextWebSettings
 from tests import u
-
-from collections.abc import Generator
-
 
 
 def pytest_runtest_setup(item: pytest.Item) -> None:

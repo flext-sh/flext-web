@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from flext_tests import tm
-
 from flext_web import web
 from tests import m
 

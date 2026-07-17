@@ -5,9 +5,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from unittest.mock import patch
 
-from flext_tests import tm
-
 from flext_cli import r
+from flext_tests import tm
 from flext_web import FlextWebServices, FlextWebSettings, c, m, p, t, u
 
 

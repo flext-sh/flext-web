@@ -8,15 +8,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+
 from flext_tests import tm
-
 from flext_web import settings
-from tests import c
-from tests import m
-from tests import u
-
-from tests import p, t
-
+from tests import c, m, p, t, u
 
 
 class TestsFlextWebModelsUnit:

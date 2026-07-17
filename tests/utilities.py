@@ -8,21 +8,15 @@ from __future__ import annotations
 
 import socket
 import time
+from collections.abc import Callable
 from threading import Lock
 from typing import TYPE_CHECKING, ClassVar
 
 import pytest
+
 from flext_tests import FlextTestsUtilities, e, r
-
 from flext_web import FlextWebUtilities
-from tests import c
-from tests import m
-from tests import p, t
-
-from collections.abc import Callable
-
-from tests import p
-
+from tests import c, m, p, t
 
 
 class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):

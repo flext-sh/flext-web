@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
+from flext_tests import tm
 from flext_web import c, u, web
 
 

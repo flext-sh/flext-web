@@ -4,19 +4,14 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+from types import ModuleType
 from typing import TYPE_CHECKING
 
 import pytest
+
 from flext_tests import r, tm
-
 from flext_web import FlextWebUtilities, web
-from tests import p, t
-from tests import u
-
-from types import ModuleType
-
-from tests import p
-
+from tests import p, t, u
 
 logger = u.fetch_logger(__name__)
 
