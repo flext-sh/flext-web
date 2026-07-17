@@ -127,7 +127,7 @@ class FlextWebModelsEntity:
 
             @property
             def can_restart(self) -> bool:
-                """Check if application can be restarted using u.in_() DSL pattern."""
+                """Whether application can be restarted using u.in_() DSL pattern."""
                 running = c.Web.Status.RUNNING.value
                 stopped = c.Web.Status.STOPPED.value
                 error = c.Web.Status.ERROR.value
@@ -136,19 +136,19 @@ class FlextWebModelsEntity:
 
             @property
             def can_start(self) -> bool:
-                """Check if application can be started."""
+                """Whether application can be started."""
                 can_start: bool = self.status == c.Web.Status.STOPPED.value
                 return can_start
 
             @property
             def can_stop(self) -> bool:
-                """Check if application can be stopped."""
+                """Whether application can be stopped."""
                 can_stop: bool = self.status == c.Web.Status.RUNNING.value
                 return can_stop
 
             @property
             def healthy(self) -> bool:
-                """Check if application is healthy and operational."""
+                """Whether application is healthy and operational."""
                 running = c.Web.Status.RUNNING.value
                 maintenance = c.Web.Status.MAINTENANCE.value
                 is_healthy: bool = self.status in {running, maintenance}
@@ -156,7 +156,7 @@ class FlextWebModelsEntity:
 
             @property
             def running(self) -> bool:
-                """Check if application is currently running."""
+                """Whether application is currently running."""
                 is_running: bool = self.status == c.Web.Status.RUNNING.value
                 return is_running
 
