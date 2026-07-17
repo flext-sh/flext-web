@@ -15,20 +15,22 @@ from copy import deepcopy
 from importlib import import_module
 from threading import Thread
 from time import sleep
-from typing import ClassVar, override
+from typing import ClassVar, override, TYPE_CHECKING
 from uuid import uuid4
 from wsgiref.simple_server import WSGIServer, make_server
 
 import flask
 import uvicorn
 from fastapi import FastAPI
-from starlette.requests import Request as StarletteRequest
-from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
 from flext_cli import e, p, r, u
 from flext_web import c, m, settings, t
 from flext_web._settings import FlextWebSettings
+
+if TYPE_CHECKING:
+    from starlette.responses import Response as StarletteResponse
+    from starlette.requests import Request as StarletteRequest
 
 
 class FlextWebUtilities(u):

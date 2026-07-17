@@ -6,11 +6,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable, TYPE_CHECKING
 
 from flext_cli import p
 from flext_web import t
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class FlextWebProtocolsLifecycle:

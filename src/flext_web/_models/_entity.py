@@ -7,11 +7,13 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import MutableSequence
-from typing import Annotated, override
+from typing import Annotated, override, TYPE_CHECKING
 
 from flext_cli import m
 from flext_web import c, p, r, settings, t, u
+
+if TYPE_CHECKING:
+    from collections.abc import MutableSequence
 
 
 class FlextWebModelsEntity:

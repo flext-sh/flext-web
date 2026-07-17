@@ -6,10 +6,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Callable
-from typing import Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable, TYPE_CHECKING
 
-from flext_web import t
+
+if TYPE_CHECKING:
+    from flext_web import t
+    from collections.abc import Callable
 
 
 class FlextWebProtocolsFramework:
