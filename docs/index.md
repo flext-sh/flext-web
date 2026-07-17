@@ -2,7 +2,7 @@
 
 # flext-web Documentation
 
-- Version: `0.12.0`
+- Version: `0.20.0`
 - Project class: `platform`
 - Package: `flext_web`
 - Description: FLEXT Web - Modern Web Interface for FLEXT Platform

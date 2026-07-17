@@ -3,7 +3,7 @@
 # flext-web API Overview
 
 - Package: `flext_web`
-- Version: `0.12.0`
+- Version: `0.20.0`
 - Description: FLEXT Web - Modern Web Interface for FLEXT Platform
 - Doc summary: Flext Web package.
 - Classifiers: `Development Status :: 3 - Alpha`, `Framework :: Flask`, `Intended Audience :: Developers`, `Operating System :: OS Independent`, `Programming Language :: Python :: 3 :: Only`, `Programming Language :: Python :: 3.13` (+3 more)
