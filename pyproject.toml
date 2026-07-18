@@ -711,7 +711,7 @@ in_place = true
 sort_first = [ "build-system", "dependency-groups", "project", "tool" ]
 
 [tool.uv]
-required-version = "==0.9.21"
+required-version = "==0.11.29"
 
 
 [tool.vulture]
