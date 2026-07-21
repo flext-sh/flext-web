@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from typing import Annotated, override, TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated, override
 
 from flext_cli import m
 from flext_web import c, p, r, settings, t, u

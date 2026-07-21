@@ -5,13 +5,11 @@ Tests the web models functionality following flext standards.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import pytest
 
 from flext_tests import tm
 from flext_web import settings
-from tests import c, m, p, t, u
+from tests import c, m, t, u
 
 
 class TestsFlextWebModelsUnit:

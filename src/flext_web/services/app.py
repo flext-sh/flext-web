@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json as _json
-from typing import override, TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 import flask
 from fastapi import FastAPI

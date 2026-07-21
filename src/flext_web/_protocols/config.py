@@ -6,8 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Protocol, override, runtime_checkable, TYPE_CHECKING
-
+from typing import TYPE_CHECKING, Protocol, override, runtime_checkable
 
 if TYPE_CHECKING:
     from flext_web import t

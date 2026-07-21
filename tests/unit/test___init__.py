@@ -5,12 +5,10 @@ Tests the package initialization and exports.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import flext_web
 from flext_tests import tm
 from flext_web import __version__, __version_info__
-from tests import p, t
+from tests import t
 
 
 class TestsFlextWebInit:

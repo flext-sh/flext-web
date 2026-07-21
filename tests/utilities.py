@@ -10,7 +10,7 @@ import socket
 import time
 from collections.abc import Callable
 from threading import Lock
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
 import pytest
 

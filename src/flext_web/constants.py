@@ -6,7 +6,7 @@ import re
 from enum import IntEnum, StrEnum, unique
 from ipaddress import IPv4Address
 from types import MappingProxyType
-from typing import ClassVar, Final, TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar, Final
 
 from flext_cli import c
 
