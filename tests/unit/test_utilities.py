@@ -8,10 +8,10 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
-from flext_tests import tm
 
-from tests import m
-from tests import u
+from flext_tests import tm
+from tests import m, u
+import contextlib
 
 
 class TestsFlextWebUtilitiesUnit:
@@ -50,10 +50,8 @@ class TestsFlextWebUtilitiesUnit:
 
     def test_validation_error_handling(self) -> None:
         """Test validation error handling."""
-        try:
+        with contextlib.suppress(ValueError, TypeError):
             _ = m.Web.Entity(name="", host="localhost", port=8080)
-        except (ValueError, TypeError):
-            pass
 
     def test_slugify_functionality(self) -> None:
         """Test slugify functionality."""

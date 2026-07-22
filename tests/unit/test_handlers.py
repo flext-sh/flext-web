@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 from flext_tests import tm
-
 from flext_web import web
-from tests import m
-from tests import u
+from tests import m, u
 
 
 class TestsFlextWebHandlers:

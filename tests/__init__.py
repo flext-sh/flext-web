@@ -8,27 +8,20 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from tests.constants import TestsFlextWebConstants as TestsFlextWebConstants, c as c
-    from tests.typings import TestsFlextWebTypes as TestsFlextWebTypes, t as t
-    from tests.protocols import TestsFlextWebProtocols as TestsFlextWebProtocols, p
-    from tests.models import TestsFlextWebModels as TestsFlextWebModels, m as m
-    from tests.utilities import TestsFlextWebUtilities as TestsFlextWebUtilities, u
     from tests.base import TestsFlextWebServiceBase as TestsFlextWebServiceBase, s as s
+    from tests.constants import TestsFlextWebConstants as TestsFlextWebConstants, c as c
+    from tests.models import TestsFlextWebModels as TestsFlextWebModels, m as m
+    from tests.protocols import TestsFlextWebProtocols as TestsFlextWebProtocols, p
+    from tests.typings import TestsFlextWebTypes as TestsFlextWebTypes, t as t
+    from tests.utilities import TestsFlextWebUtilities as TestsFlextWebUtilities, u
 
-_LAZY_IMPORTS = build_lazy_import_map(
-    {
-        ".constants": ("TestsFlextWebConstants", "c"),
-        ".typings": ("TestsFlextWebTypes", "t"),
-        ".protocols": ("TestsFlextWebProtocols", "p"),
-        ".models": ("TestsFlextWebModels", "m"),
-        ".utilities": ("TestsFlextWebUtilities", "u"),
-        ".base": ("TestsFlextWebServiceBase", "s"),
-    },
-)
+_LAZY_IMPORTS = build_lazy_import_map({
+    ".constants": ("TestsFlextWebConstants", "c"),
+    ".typings": ("TestsFlextWebTypes", "t"),
+    ".protocols": ("TestsFlextWebProtocols", "p"),
+    ".models": ("TestsFlextWebModels", "m"),
+    ".utilities": ("TestsFlextWebUtilities", "u"),
+    ".base": ("TestsFlextWebServiceBase", "s"),
+})
 
-install_lazy_exports(
-    __name__,
-    globals(),
-    _LAZY_IMPORTS,
-    publish_all=False,
-)
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)

@@ -18,9 +18,7 @@ def main() -> None:
     )
     try:
         _ = web.start_service(
-            host=settings.Web.host,
-            port=settings.Web.port,
-            debug=settings.debug,
+            host=settings.Web.host, port=settings.Web.port, debug=settings.debug
         )
     except KeyboardInterrupt:
         return

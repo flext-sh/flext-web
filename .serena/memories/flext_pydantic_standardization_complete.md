@@ -74,10 +74,12 @@ class ProjectConstants(FlextConstants):
 
     class Defaults:
         """Project default values."""
+
         PROJECT_FIELD: Final[str] = "default_value"
 
     class Validation:
         """Project validation constants."""
+
         MIN_PROJECT_LENGTH: Final[int] = 1
 ```
 

@@ -7,11 +7,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from flext_tests import r, tm
 
+from flext_tests import r, tm
 from flext_web import FlextWebUtilities, web
-from tests import t
-from tests import u
+from tests import t, u
 
 if TYPE_CHECKING:
     from types import ModuleType

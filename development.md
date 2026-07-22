@@ -55,8 +55,7 @@ Configuration access is namespaced and direct:
 from flext_web import FlextWebSettings, settings
 
 runtime_settings = FlextWebSettings(
-    Web={"host": "localhost", "port": 8080},
-    debug=settings.debug,
+    Web={"host": "localhost", "port": 8080}, debug=settings.debug
 )
 assert runtime_settings.Web.host == "localhost"
 ```

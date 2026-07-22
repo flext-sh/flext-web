@@ -25,16 +25,16 @@ external boundary when explicit validated overrides are required.
 ```python
 from flext_web import FlextWebSettings, u
 
-runtime_settings = FlextWebSettings(
-    Web={"host": "127.0.0.1", "port": 8080},
-    debug=True,
-)
+runtime_settings = FlextWebSettings(Web={"host": "127.0.0.1", "port": 8080}, debug=True)
 assert u.Web.validate_settings(runtime_settings).unwrap()
-assert u.Web.base_url(
-    host=runtime_settings.Web.host,
-    port=runtime_settings.Web.port,
-    ssl_enabled=runtime_settings.Web.ssl_enabled,
-) == "http://127.0.0.1:8080"
+assert (
+    u.Web.base_url(
+        host=runtime_settings.Web.host,
+        port=runtime_settings.Web.port,
+        ssl_enabled=runtime_settings.Web.ssl_enabled,
+    )
+    == "http://127.0.0.1:8080"
+)
 ```
 
 ## Settings Model
@@ -72,7 +72,7 @@ runtime_settings = FlextWebSettings(
         "host": "localhost",
         "port": 8080,
         "secret_key": "development-secret-key-32-characters-long",
-    },
+    }
 )
 assert u.Web.validate_settings(runtime_settings).unwrap()
 ```

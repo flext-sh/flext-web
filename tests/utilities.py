@@ -12,12 +12,10 @@ from threading import Lock
 from typing import TYPE_CHECKING, ClassVar
 
 import pytest
-from flext_tests import FlextTestsUtilities, e, r
 
+from flext_tests import FlextTestsUtilities, e, r
 from flext_web import FlextWebUtilities
-from tests import c
-from tests import m
-from tests import t
+from tests import c, m, t
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -136,7 +134,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             ) -> None:
                 """Assert that a result succeeded."""
                 if not result.success:
-                    raise AssertionError(f"{message}: {result.error}")
+                    msg = f"{message}: {result.error}"
+                    raise AssertionError(msg)
 
             @staticmethod
             def assert_failure[T](
@@ -253,7 +252,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             ),
                         )
                     )
-                raise ValueError(f"Unsupported entry type: {entry_type}")
+                msg = f"Unsupported entry type: {entry_type}"
+                raise ValueError(msg)
 
             @staticmethod
             def create_test_data(
@@ -315,7 +315,8 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         if isinstance(v, int | str | float | bool)
                     })
                     return response_data
-                raise ValueError(f"Unsupported data type: {data_type}")
+                msg = f"Unsupported data type: {data_type}"
+                raise ValueError(msg)
 
             @staticmethod
             def create_test_app(**kwargs: t.Scalar) -> m.Web.Entity:

@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import (
-    Sequence,
-)
+from collections.abc import Sequence
 
 from flext_web import m, p, r, web
 
@@ -29,13 +27,11 @@ def check_service_health() -> p.Result[m.Web.HealthResponse]:
 
 
 def create_application(
-    name: str,
-    port: int,
-    host: str = "127.0.0.1",
+    name: str, port: int, host: str = "127.0.0.1"
 ) -> p.Result[m.Web.ApplicationResponse]:
     """Create an application through the canonical `web` facade."""
     create_result: p.Result[m.Web.ApplicationResponse] = web.create_app(
-        m.Web.AppData(name=name, host=host, port=port),
+        m.Web.AppData(name=name, host=host, port=port)
     )
     return create_result
 
