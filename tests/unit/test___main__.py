@@ -20,14 +20,6 @@ class TestsFlextWebMain:
         if status_result.success and status_result.value.status == "operational":
             _ = web.stop_service()
 
-    def test_run_command_class_exposed(self) -> None:
-        """The Pydantic-driven run command must be exported."""
-        tm.that(__main__.FlextWebRunCommand, none=False)
-
-    def test_main_callable_exposed(self) -> None:
-        """The console entry point ``main`` must be callable."""
-        tm.that(callable(__main__.main), eq=True)
-
     def test_main_help_returns_zero(self) -> None:
         """The CLI ``--help`` must exit with status zero through the facade."""
         return_code = __main__.main(["--help"])

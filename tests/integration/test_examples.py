@@ -6,49 +6,18 @@ import importlib.util
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import pytest
-
-from flext_tests import r, tm
-from flext_web import FlextWebUtilities, web
-from tests import t, u
+from flext_tests import tm
+from flext_web import web
+from tests import u
 
 if TYPE_CHECKING:
     from types import ModuleType
-
-    from tests import p
 
 logger = u.fetch_logger(__name__)
 
 
 class ExamplesFullFunctionalityTest:
     """Shared example assertions exercised through collected subclasses."""
-
-    @pytest.fixture
-    def _mock_runtime_lifecycle(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        def _start_runtime(
-            app_id: str,
-            app_data: t.Web.ResponseDict,
-            app_instance: p.Web.FastApiLikeApp | p.Web.FlaskLikeApp,
-        ) -> p.Result[t.Web.ResponseDict]:
-            _ = (app_data, app_instance)
-            return r[t.Web.ResponseDict].ok({"runner": "mock", "app_id": app_id})
-
-        def _stop_runtime(app_id: str, runtime: t.Web.ResponseDict) -> p.Result[bool]:
-            _ = (app_id, runtime)
-            return r[bool].ok(True)
-
-        monkeypatch.setattr(
-            FlextWebUtilities.Web, "_start_app_runtime", staticmethod(_start_runtime)
-        )
-        monkeypatch.setattr(
-            FlextWebUtilities.Web, "_stop_app_runtime", staticmethod(_stop_runtime)
-        )
-        monkeypatch.setattr(
-            FlextWebUtilities.Web, "start_app_runtime", staticmethod(_start_runtime)
-        )
-        monkeypatch.setattr(
-            FlextWebUtilities.Web, "stop_app_runtime", staticmethod(_stop_runtime)
-        )
 
     @staticmethod
     def _example_path(file_name: str) -> Path:

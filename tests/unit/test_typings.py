@@ -1,34 +1,23 @@
-"""Comprehensive unit tests for flext_web.typings module.
+"""Unit tests for the flext_web model/typing surface (`m.Web`).
 
-Tests the unified m class following flext standards.
+Every test constructs real models through the public `m` facade and asserts
+observable behavior or validation outcomes. Empty tests, tautologies
+(`result.success or result.failure`, asserting on a local literal), facade-only
+type checks, and implementation-line-coupled duplicates are prohibited and absent.
 """
 
 from __future__ import annotations
-
-from typing import TYPE_CHECKING
 
 from flext_tests import tm
 from flext_web import web
 from tests import c, m
 
-if TYPE_CHECKING:
-    from tests import t
-
 
 class TestsFlextWebTypesUnit:
-    """Test suite for m unified class."""
-
-    def test_typings_structure(self) -> None:
-        """Test that m has proper structure."""
-
-    def test_core_web_types(self) -> None:
-        """Test Core web types."""
-
-    def test_application_types(self) -> None:
-        """Test Application types."""
+    """Real-behavior tests for the web model surface via `m.Web`."""
 
     def test_model_functionality(self) -> None:
-        """Test Pydantic model functionality."""
+        """WebRequest and AppResponse carry through their constructed values."""
         request = m.Web.WebRequest(url="http://localhost:8080", method=c.Web.Method.GET)
         tm.that(request.url, eq="http://localhost:8080")
         tm.that(request.method, eq=c.Web.Method.GET)
@@ -36,7 +25,7 @@ class TestsFlextWebTypesUnit:
         tm.that(response.status_code, eq=200)
 
     def test_app_data_functionality(self) -> None:
-        """Test app data functionality."""
+        """Entity exposes its fields and derives the running flag from status."""
         app = m.Web.Entity(
             id="test-id", name="test-app", host="localhost", port=8080, status="running"
         )
@@ -47,24 +36,11 @@ class TestsFlextWebTypesUnit:
         tm.that(app.status, eq="running")
         tm.that(app.running is True, eq=True)
 
-    def test_health_response_functionality(self) -> None:
-        """Test health response functionality."""
-        health_data: t.MappingKV[str, str | int] = {
-            "status": "healthy",
-            "service": "test-service",
-            "version": "1.0.0",
-            "applications": 5,
-            "timestamp": "2025-01-01T00:00:00Z",
-            "service_id": "test-service-123",
-        }
-        tm.that(health_data, is_=dict)
-        tm.that(health_data["status"], eq="healthy")
-
     def test_request_context_functionality(self) -> None:
-        """Test request context functionality."""
+        """AppRequest preserves method, url, headers and query params."""
         request = m.Web.AppRequest(
             url="http://localhost:8080/api/test",
-            method="GET",
+            method=c.Web.Method.GET,
             headers={"Content-Type": "application/json"},
             query_params={"param1": "value1"},
         )
@@ -73,11 +49,8 @@ class TestsFlextWebTypesUnit:
         tm.that(request.headers["Content-Type"], eq="application/json")
         tm.that(request.query_params["param1"], eq="value1")
 
-    def test_project_types(self) -> None:
-        """Test Project types."""
-
     def test_model_creation(self) -> None:
-        """Test model creation functionality."""
+        """Entity can be created without an explicit status."""
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         tm.that(app.id, eq="test-id")
         tm.that(app.name, eq="test-app")
@@ -85,36 +58,21 @@ class TestsFlextWebTypesUnit:
         tm.that(app.port, eq=8080)
 
     def test_config_validation(self) -> None:
-        """Test settings validation functionality."""
+        """Settings clone applies the overridden Web host and port."""
         settings = web.settings.clone(Web={"host": "localhost", "port": 8080})
         tm.that(settings.Web.host, eq="localhost")
         tm.that(settings.Web.port, eq=8080)
 
-    def test_type_consistency(self) -> None:
-        """Test that types are consistent with t."""
-        m.Web.AppRequest(url="https://example.com")
-
-    def test_type_annotations(self) -> None:
-        """Test that types have proper annotations."""
-
     def test_create_http_request_invalid_method(self) -> None:
-        """Test create_http_request with invalid HTTP method."""
+        """An invalid HTTP method fails with a method-related error."""
         result = m.Web.Request.create_http_request(
             url="http://localhost:8080", method="INVALID_METHOD"
         )
         tm.fail(result)
-        tm.that(result.error, none=False)
         tm.that(result.error, has="method")
 
-    def test_create_http_request_invalid_headers(self) -> None:
-        """Test create_http_request with invalid headers type."""
-        result = m.Web.Request.create_http_request(
-            url="http://localhost:8080", method="GET", headers=None
-        )
-        tm.that(result.success or result.failure, eq=True)
-
     def test_create_http_request_exception_handling(self) -> None:
-        """Test create_http_request exception handling."""
+        """A negative timeout fails validation."""
         result = m.Web.Request.create_http_request(
             url="http://localhost:8080",
             method="GET",
@@ -123,37 +81,20 @@ class TestsFlextWebTypesUnit:
             timeout=-1.0,
         )
         tm.fail(result)
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(
-            "timeout" in (result.error or "").lower()
-            or "validation" in (result.error or "").lower(),
-            eq=True,
-        )
-
-    def test_create_http_response_invalid_headers(self) -> None:
-        """Test create_http_response with invalid headers type."""
-        result = m.Web.Response.create_http_response(status_code=200, headers=None)
-        tm.that(result.success or result.failure, eq=True)
+        error = (result.error or "").lower()
+        tm.that("timeout" in error or "validation" in error, eq=True)
 
     def test_create_http_response_exception_handling(self) -> None:
-        """Test create_http_response exception handling."""
+        """A negative elapsed_time fails validation."""
         result = m.Web.Response.create_http_response(
             status_code=200, headers={}, body=None, elapsed_time=-1.0
         )
         tm.fail(result)
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(
-            (
-                "elapsed_time" in (result.error or "").lower()
-                or "validation" in (result.error or "").lower()
-            ),
-            eq=True,
-        )
+        error = (result.error or "").lower()
+        tm.that("elapsed_time" in error or "validation" in error, eq=True)
 
     def test_create_http_request_all_methods(self) -> None:
-        """Test create_http_request with all valid HTTP methods."""
+        """Every valid HTTP method yields a request carrying that method."""
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
             result = m.Web.Request.create_http_request(
@@ -163,30 +104,15 @@ class TestsFlextWebTypesUnit:
             tm.that(result.value.method, eq=method)
 
     def test_create_http_request_with_none_headers(self) -> None:
-        """Test create_http_request with None headers."""
+        """None headers normalize to an empty dict on the created request."""
         result = m.Web.Request.create_http_request(
             url="http://localhost:8080", method="GET", headers=None
         )
         tm.ok(result)
-        tm.that(result.value.headers, is_=dict)
+        tm.that(result.value.headers, eq={})
 
     def test_create_http_response_with_none_headers(self) -> None:
-        """Test create_http_response with None headers."""
+        """None headers normalize to an empty dict on the created response."""
         result = m.Web.Response.create_http_response(status_code=200, headers=None)
         tm.ok(result)
-        tm.that(result.value.headers, is_=dict)
-
-    def test_create_http_request_match_case_default(self) -> None:
-        """Test create_http_request match/case default branch (line 174-175)."""
-        result = m.Web.Request.create_http_request(
-            url="http://localhost:8080", method="GET"
-        )
-        tm.ok(result)
-
-    def test_create_http_request_duplicate_validation(self) -> None:
-        """Test create_http_request duplicate validation path (line 157)."""
-        result = m.Web.Request.create_http_request(
-            url="http://localhost:8080", method="INVALID"
-        )
-        tm.fail(result)
-        tm.fail(result)
+        tm.that(result.value.headers, eq={})

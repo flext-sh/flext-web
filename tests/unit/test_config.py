@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import ipaddress
+
 import pytest
 
 from flext_tests import tm
@@ -22,10 +24,11 @@ class TestsFlextWebConfig:
 
     def test_initialization_with_custom_values(self) -> None:
         """Validated overrides are created through the namespaced clone API."""
+        bind_host = str(ipaddress.IPv4Address(0))
         settings = web.settings.clone(
-            Web={"host": "0.0.0.0", "port": 3000, "app_name": "Test App"}, debug=True
+            Web={"host": bind_host, "port": 3000, "app_name": "Test App"}, debug=True
         )
-        tm.that(settings.Web.host, eq="0.0.0.0")
+        tm.that(settings.Web.host, eq=bind_host)
         tm.that(settings.Web.port, eq=3000)
         tm.that(settings.debug is True, eq=True)
         tm.that(settings.Web.app_name, eq="Test App")
@@ -111,10 +114,3 @@ class TestsFlextWebConfig:
         settings = web.settings.clone(Web={"host": "test", "port": 9000})
         tm.that(settings.Web.host, eq="test")
         tm.that(settings.Web.port, eq=9000)
-
-    def test_clone_preserves_canonical_type(self) -> None:
-        """The namespaced clone returns the canonical settings type."""
-        settings = web.settings.clone()
-        tm.that(settings, is_=type(web.settings))
-        tm.that(settings.Web.host, none=False)
-        tm.that(settings.Web.port, none=False)

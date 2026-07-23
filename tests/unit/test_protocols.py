@@ -1,25 +1,24 @@
-"""Comprehensive unit tests for flext_web.protocols module.
+"""Unit tests for the flext_web protocol surface.
 
-Tests the unified p class following flext standards.
+Every test exercises the real protocol-backed runtime through the public `u.Web`
+surface and asserts observable behavior. Facade-only assertions (is-a-type,
+callable, __doc__, __annotations__), empty tests, local protocol-simulating
+classes, and duplicates are intentionally absent: they validate structure, not
+behavior, and are prohibited.
 """
 
 from __future__ import annotations
-
-from collections.abc import Callable, Sequence
-from typing import override
 
 import flask
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 
-from flext_core import FlextContainer, FlextContext
-from flext_tests import r, tm
-from flext_web import FlextWebSettings
-from tests import c, p, t, u
+from flext_tests import tm
+from tests import c, u
 
 
 class TestsFlextWebProtocolsUnit:
-    """Test suite for p unified class."""
+    """Real-behavior tests for the web protocol runtime via `u.Web`."""
 
     @staticmethod
     def _reset_protocol_state() -> None:
@@ -71,386 +70,12 @@ class TestsFlextWebProtocolsUnit:
                     manager.stop_app(app_id)
             u.Web.Tests.TestPortManager.release_port(test_port)
 
-    def test_protocols_inheritance(self) -> None:
-        """Test that p has expected Web namespace."""
-
-    def test_web_protocols_structure(self) -> None:
-        """Test p structure."""
-
-    def test_web_app_manager_protocol(self) -> None:
-        """Test WebAppManager definition."""
-        protocol = p.Web.WebAppManager
-        tm.that(protocol, is_=type)
-
-    def test_web_service_protocol(self) -> None:
-        """Test WebService definition."""
-        protocol = p.Web.WebService
-        tm.that(protocol, is_=type)
-
-    def test_web_repository_protocol(self) -> None:
-        """Test WebRepository definition."""
-        protocol = p.Web.WebRepository
-        tm.that(protocol, is_=type)
-
-    def test_web_handler_protocol(self) -> None:
-        """Test WebHandler definition."""
-        protocol = p.Web.WebHandler
-        tm.that(protocol, is_=type)
-        tm.that(callable(protocol), eq=True)
-
-    def test_web_template_engine_protocol(self) -> None:
-        """Test WebTemplateEngine definition."""
-        protocol = p.Web.WebTemplateEngine
-        tm.that(protocol, is_=type)
-
-    def test_web_monitoring_protocol(self) -> None:
-        """Test WebMonitoring definition."""
-        protocol = p.Web.WebMonitoring
-        tm.that(protocol, is_=type)
-
-    def test_protocol_method_signatures(self) -> None:
-        """Test that protocol methods have correct signatures."""
-        protocol = p.Web.WebAppManager
-        create_app_method = protocol.__dict__["create_app"]
-        tm.that(callable(create_app_method), eq=True)
-        start_app_method = protocol.__dict__["start_app"]
-        tm.that(callable(start_app_method), eq=True)
-        stop_app_method = protocol.__dict__["stop_app"]
-        tm.that(callable(stop_app_method), eq=True)
-        list_apps_method = protocol.__dict__["list_apps"]
-        tm.that(callable(list_apps_method), eq=True)
-
-    def test_protocol_inheritance_chain(self) -> None:
-        """Test that protocols properly inherit from base protocols."""
-
-    def test_protocol_type_annotations(self) -> None:
-        """Test that protocols have proper type annotations."""
-        protocol = p.Web.WebAppManager
-        create_app_annotations = protocol.__dict__["create_app"].__annotations__
-        tm.that(create_app_annotations, has="name")
-        tm.that(create_app_annotations, has="port")
-        tm.that(create_app_annotations, has="host")
-        tm.that(create_app_annotations, has="return")
-
-    def test_protocol_documentation(self) -> None:
-        """Test that protocols have proper documentation."""
-        protocol = p.Web.WebAppManager
-        tm.that(protocol.__doc__, none=False)
-
-    def test_protocol_usage_patterns(self) -> None:
-        """Test that protocols follow expected usage patterns."""
-
-        class MockAppManager:
-            def create_app(self, name: str, port: int, host: str) -> t.Web.ResponseDict:
-                return {"name": name, "host": host, "port": port}
-
-            def start_app(self, app_id: str) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({
-                    "name": "test",
-                    "host": "localhost",
-                    "port": 8080,
-                })
-
-            def stop_app(self, app_id: str) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({
-                    "name": "test",
-                    "host": "localhost",
-                    "port": 8080,
-                })
-
-            def list_apps(self) -> p.Result[Sequence[t.Web.ResponseDict]]:
-                return r[Sequence[t.Web.ResponseDict]].ok([
-                    {"name": "test", "host": "localhost", "port": 8080}
-                ])
-
-        MockAppManager()
-
-    def test_protocol_extensibility(self) -> None:
-        """Test that protocols are extensible."""
-
-        class Custom(p.Web.WebAppManager):
-            @staticmethod
-            @override
-            def create_app(
-                name: str, port: int, host: str
-            ) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({
-                    "name": name,
-                    "port": port,
-                    "host": host,
-                })
-
-            @staticmethod
-            @override
-            def start_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({"id": app_id})
-
-            @staticmethod
-            @override
-            def stop_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({"id": app_id})
-
-            @staticmethod
-            @override
-            def list_apps() -> p.Result[Sequence[t.Web.ResponseDict]]:
-                return r[Sequence[t.Web.ResponseDict]].ok([])
-
-            @property
-            @override
-            def settings(self) -> p.Settings:
-                return FlextWebSettings.fetch_global()
-
-            @settings.setter
-            @override
-            def settings(self, value: p.Settings, /) -> None:
-                """Test double keeps the global settings; setter satisfies the protocol."""
-
-            @property
-            @override
-            def container(self) -> p.Container:
-                return FlextContainer()
-
-            @property
-            @override
-            def context(self) -> p.Context:
-                return FlextContext()
-
-            def custom_method(self) -> None:
-                msg = "Must use unified test helpers per Rule 3.6"
-                raise NotImplementedError(msg)
-
-            @override
-            def execute(self) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({})
-
-            @override
-            def validate_business_rules(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            @override
-            def service_info(self) -> t.JsonMapping:
-                return {"name": "Custom"}
-
-            @override
-            def valid(self) -> bool:
-                return True
-
-            @override
-            def ok[V](self, value: V) -> p.Result[V]:
-                return r[V].ok(value)
-
-            @override
-            def fail_op(
-                self, operation: str, exc: Exception | str | None = None
-            ) -> p.Result[t.Web.ResponseDict]:
-                error = str(exc) if exc is not None else operation
-                return r[t.Web.ResponseDict].fail(error)
-
-        _ = Custom
-
-    def test_protocol_validation(self) -> None:
-        """Test that protocols can be used for validation."""
-
-        class ValidAppManager:
-            def create_app(self, name: str, port: int, host: str) -> None:
-                msg = "Must use unified test helpers per Rule 3.6"
-                raise NotImplementedError(msg)
-
-            def start_app(self, app_id: str) -> None:
-                msg = "Must use unified test helpers per Rule 3.6"
-                raise NotImplementedError(msg)
-
-            def stop_app(self, app_id: str) -> None:
-                msg = "Must use unified test helpers per Rule 3.6"
-                raise NotImplementedError(msg)
-
-            def list_apps(self) -> None:
-                msg = "Must use unified test helpers per Rule 3.6"
-                raise NotImplementedError(msg)
-
-        class InvalidAppManager:
-            def create_app(self, name: str, port: int, host: str) -> None:
-                msg = "Must use unified test helpers per Rule 3.6"
-                raise NotImplementedError(msg)
-
-        def validate_app_manager(obj: ValidAppManager | InvalidAppManager) -> bool:
-            return hasattr(obj, "create_app") and hasattr(obj, "start_app")
-
-        tm.that(validate_app_manager(ValidAppManager()), eq=True)
-        tm.that(not validate_app_manager(InvalidAppManager()), eq=True)
-
     def test_app_manager_protocol_real_lifecycle_behavior(self) -> None:
-        """Validate real app lifecycle behavior from protocol base implementation."""
-        self._assert_protocol_base_lifecycle()
-
-    def test_web_service_protocol_methods(self) -> None:
-        """Test WebService methods execution."""
-
-        class RealWebService:
-            def initialize_routes(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def configure_middleware(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def start_service(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def stop_service(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def execute(self) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({})
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def service_info(self) -> t.ScalarMapping:
-                return {"name": "WebService"}
-
-            def valid(self) -> bool:
-                return True
-
-        service = RealWebService()
-        tm.ok(service.initialize_routes())
-        tm.ok(service.configure_middleware())
-        tm.ok(service.start_service())
-        tm.ok(service.stop_service())
-
-    def test_web_repository_protocol_methods(self) -> None:
-        """Test WebRepository methods execution."""
-
-        class RealWebRepository:
-            def find_by_criteria(
-                self, criteria: t.Web.RequestDict
-            ) -> p.Result[Sequence[t.Web.ResponseDict]]:
-                return r[Sequence[t.Web.ResponseDict]].ok([])
-
-            def fetch_by_id(self, entity_id: str) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({"id": entity_id})
-
-            def save(self, entity: t.Web.ResponseDict) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok(entity)
-
-            def delete(self, entity_id: str) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def find_all(self) -> p.Result[Sequence[t.Web.ResponseDict]]:
-                return r[Sequence[t.Web.ResponseDict]].ok([])
-
-            def execute(self) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({})
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def service_info(self) -> t.ScalarMapping:
-                return {"name": "WebRepository"}
-
-            def valid(self) -> bool:
-                return True
-
-        repo = RealWebRepository()
-        result = repo.find_by_criteria({"key": "value"})
-        tm.ok(result)
-
-    def test_web_template_engine_protocol_methods(self) -> None:
-        """Test WebTemplateEngine methods execution."""
-
-        class RealTemplateEngine:
-            def load_template_config(
-                self, settings: t.Web.RequestDict
-            ) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def template_config(self) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({})
-
-            def validate_template_config(
-                self, settings: t.Web.RequestDict
-            ) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def render(
-                self, template: str, context: t.Web.RequestDict
-            ) -> p.Result[str]:
-                return r[str].ok("")
-
-            def add_filter(self, name: str, filter_func: Callable[[str], str]) -> None:
-                _ = name, filter_func
-
-            def add_global(self, name: str, *, value: t.JsonValue) -> None:
-                _ = name, value
-
-            def execute(self) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({})
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def service_info(self) -> t.ScalarMapping:
-                return {"name": "TemplateEngine"}
-
-            def valid(self) -> bool:
-                return True
-
-        engine = RealTemplateEngine()
-        tm.ok(engine.load_template_config({"key": "value"}))
-        tm.ok(engine.template_config())
-        tm.ok(engine.validate_template_config({"key": "value"}))
-        tm.ok(engine.render("template", {"key": "value"}))
-
-        def filter_func(x: str) -> str:
-            return x
-
-        engine.add_filter("test", filter_func)
-        engine.add_global("test", value="value")
-        engine.add_global("test_int", value=42)
-        engine.add_global("test_bool", value=True)
-
-    def test_web_monitoring_protocol_methods(self) -> None:
-        """Test WebMonitoring methods execution."""
-
-        class RealWebMonitoring:
-            def record_web_request(
-                self, request: t.Web.RequestDict, response_time: float
-            ) -> None:
-                pass
-
-            def web_health_status(self) -> t.Web.ResponseDict:
-                return {
-                    "status": c.Web.ResponseStatus.HEALTHY.value,
-                    "service": c.Web.SERVICE_NAME,
-                }
-
-            def web_metrics(self) -> t.Web.ResponseDict:
-                return {"requests": 0, "errors": 0, "uptime": "0s"}
-
-            def execute(self) -> p.Result[t.Web.ResponseDict]:
-                return r[t.Web.ResponseDict].ok({})
-
-            def validate_business_rules(self) -> p.Result[bool]:
-                return r[bool].ok(True)
-
-            def service_info(self) -> t.ScalarMapping:
-                return {"name": "WebMonitoring"}
-
-            def valid(self) -> bool:
-                return True
-
-        monitoring = RealWebMonitoring()
-        monitoring.record_web_request({"method": "GET"}, 0.1)
-        health = monitoring.web_health_status()
-        tm.that(health["status"], eq=c.Web.ResponseStatus.HEALTHY.value)
-        metrics = monitoring.web_metrics()
-        tm.that(metrics, has="requests")
-
-    def test_app_lifecycle_direct_execution_on_protocol_base(self) -> None:
-        """Test real app lifecycle behavior through WebAppManager protocol base."""
+        """App manager creates, starts, lists and stops a real app."""
         self._assert_protocol_base_lifecycle()
 
     def test_service_protocol_real_behavior(self) -> None:
-        """Test web service lifecycle protocol behavior."""
+        """Service rejects start before setup, then runs the real lifecycle."""
         self._reset_protocol_state()
         service = u.Web.WebService
         start_without_setup = service.start_service()
@@ -461,7 +86,7 @@ class TestsFlextWebProtocolsUnit:
         tm.ok(service.stop_service())
 
     def test_repository_protocol_real_behavior(self) -> None:
-        """Test repository protocol criteria filtering behavior."""
+        """Repository returns apps matching real criteria."""
         self._reset_protocol_state()
         manager = u.Web.WebAppManager
         created = manager.create_app("repo-app", 8081, "127.0.0.1")
@@ -472,7 +97,7 @@ class TestsFlextWebProtocolsUnit:
         tm.that(len(result.value), eq=1)
 
     def test_handler_protocol_real_behavior(self) -> None:
-        """Test handler protocol create/list action behavior."""
+        """Handler creates then lists apps via real request dispatch."""
         self._reset_protocol_state()
         handler = u.Web.WebHandler
         create_result = handler.handle_request({
@@ -487,7 +112,7 @@ class TestsFlextWebProtocolsUnit:
         tm.that(list_result.value["count"], eq=1)
 
     def test_protocol_app_lifecycle_end_to_end(self) -> None:
-        """TDD lifecycle flow: create, start, stop, and list app states."""
+        """Create, list, start, and stop transition through real app states."""
         self._reset_protocol_state()
         manager = u.Web.WebAppManager
         create_result = manager.create_app("lifecycle-app", 7070, "localhost")
@@ -505,7 +130,7 @@ class TestsFlextWebProtocolsUnit:
         tm.that(stop_result.value["status"], eq=c.Web.Status.STOPPED.value)
 
     def test_create_app_configures_protocol_health_route(self) -> None:
-        """TDD create_app must register protocol health endpoint."""
+        """create_app registers the real /protocol/health endpoint."""
         self._reset_protocol_state()
         manager = u.Web.WebAppManager
         create_result = manager.create_app("route-app", 7171, "localhost")
@@ -525,7 +150,7 @@ class TestsFlextWebProtocolsUnit:
             tm.that(routes, has="/protocol/health")
 
     def test_start_stop_manage_runtime_registry(self) -> None:
-        """TDD lifecycle must persist and cleanup runtime metadata."""
+        """Runtime metadata persists on start and is cleaned up on stop."""
         self._reset_protocol_state()
         manager = u.Web.WebAppManager
         created = manager.create_app("runtime-app", 7272, "localhost")

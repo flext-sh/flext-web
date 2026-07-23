@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import ipaddress
+
 from flext_tests import tm
 from flext_web import web
-from tests import m
+from tests import c, m
 
 
 class TestsFlextWebFields:
@@ -17,8 +19,9 @@ class TestsFlextWebFields:
 
     def test_host_field_with_custom_default(self) -> None:
         """Test host field creation with custom default."""
-        settings = web.settings.clone(Web={"host": "0.0.0.0"})
-        tm.that(settings.Web.host, eq="0.0.0.0")
+        bind_host = str(ipaddress.IPv4Address(0))
+        settings = web.settings.clone(Web={"host": bind_host})
+        tm.that(settings.Web.host, eq=bind_host)
 
     def test_port_field_creation(self) -> None:
         """Test port field creation."""
@@ -91,7 +94,7 @@ class TestsFlextWebFields:
 
     def test_field_constraints(self) -> None:
         """Test field constraints are properly set."""
-        test_model = m.Web.Request(url="http://localhost:8080", method="GET")
+        test_model = m.Web.Request(url="http://localhost:8080", method=c.Web.Method.GET)
         tm.that(test_model.url, eq="http://localhost:8080")
         tm.that(test_model.method, eq="GET")
 
@@ -112,7 +115,7 @@ class TestsFlextWebFields:
         """Test field creation with additional kwargs."""
         request_model = m.Web.Request(
             url="http://localhost:8080",
-            method="POST",
+            method=c.Web.Method.POST,
             headers={"Content-Type": "application/json"},
         )
         tm.that(request_model.url, eq="http://localhost:8080")

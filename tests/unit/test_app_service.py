@@ -43,7 +43,7 @@ class TestsFlextWebApp:
     def test_create_flask_app(self) -> None:
         """Service creates a Flask app."""
         service = FlextWebApp()
-        settings = FlextWebSettings(Web={"app_name": "flask-test"})
+        settings = FlextWebSettings().clone(Web={"app_name": "flask-test"})
         result = service.create_flask_app(settings=settings)
         tm.ok(result)
         tm.that(result.value.name, eq="flask-test")

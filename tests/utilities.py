@@ -33,21 +33,21 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
             """Test-specific utilities."""
 
             @staticmethod
-            def _is_numeric(value: t.JsonPayload | None) -> bool:
+            def is_numeric(value: t.JsonPayload | None) -> bool:
                 """Return whether value is a numeric scalar excluding bool."""
                 return isinstance(value, t.NUMERIC_TYPES) and not isinstance(
                     value, bool
                 )
 
             @staticmethod
-            def _to_float(value: t.JsonPayload | None, *, default: float) -> float:
+            def to_float(value: t.JsonPayload | None, *, default: float) -> float:
                 """Normalize supported numeric values to float with fallback."""
                 if isinstance(value, t.NUMERIC_TYPES) and not isinstance(value, bool):
                     return float(value)
                 return default
 
             @staticmethod
-            def _to_optional_float(value: t.JsonPayload | None) -> float | None:
+            def to_optional_float(value: t.JsonPayload | None) -> float | None:
                 """Normalize supported numeric values to float or None."""
                 if isinstance(value, t.NUMERIC_TYPES) and not isinstance(value, bool):
                     return float(value)
@@ -119,7 +119,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 return False
 
             @staticmethod
-            def _wrap_result[T](result: p.Result[T]) -> p.Result[m.BaseModel]:
+            def wrap_result[T](result: p.Result[T]) -> p.Result[m.BaseModel]:
                 """Wrap a typed result into `r[m.BaseModel]` for generic helpers."""
                 if result.success:
                     value = result.value
@@ -171,7 +171,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     ):
                         return r[m.BaseModel].fail("Invalid parameters for web_app")
                     try:
-                        return TestsFlextWebUtilities.Web.Tests._wrap_result(
+                        return TestsFlextWebUtilities.Web.Tests.wrap_result(
                             m.Web.create_web_app(name=name, host=host, port=port)
                         )
                     except (e.ValidationError, ValueError, TypeError) as exc:
@@ -190,7 +190,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         return r[m.BaseModel].fail("Invalid headers for http_request")
                     if body is not None and not isinstance(body, (str, dict)):
                         return r[m.BaseModel].fail("Invalid body for http_request")
-                    if not TestsFlextWebUtilities.Web.Tests._is_numeric(timeout):
+                    if not TestsFlextWebUtilities.Web.Tests.is_numeric(timeout):
                         return r[m.BaseModel].fail("Invalid timeout for http_request")
                     narrow_headers: t.StrMapping | None = (
                         {k: str(v) for k, v in headers.items()}
@@ -202,13 +202,13 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         if isinstance(body, str) or body is None
                         else {k: v for k, v in body.items() if u.primitive(v)}
                     )
-                    return TestsFlextWebUtilities.Web.Tests._wrap_result(
+                    return TestsFlextWebUtilities.Web.Tests.wrap_result(
                         m.Web.Request.create_http_request(
                             url=url,
                             method=method,
                             headers=narrow_headers,
                             body=narrow_body,
-                            timeout=TestsFlextWebUtilities.Web.Tests._to_float(
+                            timeout=TestsFlextWebUtilities.Web.Tests.to_float(
                                 timeout, default=30.0
                             ),
                         )
@@ -227,7 +227,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                     if body is not None and not isinstance(body, (str, dict)):
                         return r[m.BaseModel].fail("Invalid body for http_response")
                     if elapsed_time is not None and not (
-                        TestsFlextWebUtilities.Web.Tests._is_numeric(elapsed_time)
+                        TestsFlextWebUtilities.Web.Tests.is_numeric(elapsed_time)
                     ):
                         return r[m.BaseModel].fail(
                             "Invalid elapsed_time for http_response"
@@ -242,12 +242,12 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                         if isinstance(body, str) or body is None
                         else {k: v for k, v in body.items() if u.primitive(v)}
                     )
-                    return TestsFlextWebUtilities.Web.Tests._wrap_result(
+                    return TestsFlextWebUtilities.Web.Tests.wrap_result(
                         m.Web.Response.create_http_response(
                             status_code=status_code,
                             headers=resp_headers,
                             body=resp_body,
-                            elapsed_time=TestsFlextWebUtilities.Web.Tests._to_optional_float(
+                            elapsed_time=TestsFlextWebUtilities.Web.Tests.to_optional_float(
                                 elapsed_time
                             ),
                         )

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from flext_tests import tm
@@ -24,38 +26,40 @@ class TestsFlextWebSettings:
     def test_host_validator_rejects_empty(self) -> None:
         """Host field constraint rejects blank strings."""
         with pytest.raises(c.ValidationError):
-            _ = FlextWebSettings(Web={"host": "   "})
+            _ = FlextWebSettings().clone(Web={"host": "   "})
 
     def test_port_validator_rejects_out_of_range(self) -> None:
         """Port field constraint rejects out-of-range values."""
         with pytest.raises(c.ValidationError):
-            _ = FlextWebSettings(Web={"port": 70000})
+            _ = FlextWebSettings().clone(Web={"port": 70000})
 
     def test_port_constraint_lower_bound(self) -> None:
         """Port field constraint rejects zero."""
         with pytest.raises(c.ValidationError):
-            _ = FlextWebSettings(Web={"port": 0})
+            _ = FlextWebSettings().clone(Web={"port": 0})
 
     def test_secret_key_validator_rejects_short(self) -> None:
         """Secret key field constraint rejects short values."""
         with pytest.raises(c.ValidationError):
-            _ = FlextWebSettings(Web={"secret_key": "short"})
+            _ = FlextWebSettings().clone(Web={"secret_key": "short"})
 
     def test_secret_key_minimum_length_accepted(self) -> None:
         """A 32-character secret key satisfies the field constraint."""
-        settings = FlextWebSettings(Web={"secret_key": "a" * 32})
+        settings = FlextWebSettings().clone(Web={"secret_key": "a" * 32})
         tm.that(settings.Web.secret_key, eq="a" * 32)
 
-    def test_optional_ssl_paths(self) -> None:
+    def test_optional_ssl_paths(self, tmp_path: Path) -> None:
         """Optional SSL paths default to None and accept explicit values."""
         settings = FlextWebSettings()
         tm.that(settings.Web.ssl_cert_path, eq=None)
         tm.that(settings.Web.ssl_key_path, eq=None)
-        custom = FlextWebSettings(
-            Web={"ssl_cert_path": "/tmp/cert.pem", "ssl_key_path": "/tmp/key.pem"}
+        cert_path = str(tmp_path / "cert.pem")
+        key_path = str(tmp_path / "key.pem")
+        custom = FlextWebSettings().clone(
+            Web={"ssl_cert_path": cert_path, "ssl_key_path": key_path}
         )
-        tm.that(custom.Web.ssl_cert_path, eq="/tmp/cert.pem")
-        tm.that(custom.Web.ssl_key_path, eq="/tmp/key.pem")
+        tm.that(custom.Web.ssl_cert_path, eq=cert_path)
+        tm.that(custom.Web.ssl_key_path, eq=key_path)
 
     def test_debug_flag(self) -> None:
         """The universal debug flag is settable on construction."""
@@ -64,12 +68,12 @@ class TestsFlextWebSettings:
 
     def test_protocol_derived_from_tls_flag(self) -> None:
         """The wire protocol is derived from the TLS flag via u.Web."""
-        http_settings = FlextWebSettings(Web={"ssl_enabled": False})
+        http_settings = FlextWebSettings().clone(Web={"ssl_enabled": False})
         tm.that(
             u.Web.protocol(ssl_enabled=http_settings.Web.ssl_enabled),
             eq=c.Web.DEFAULT_HTTP_PROTOCOL,
         )
-        https_settings = FlextWebSettings(Web={"ssl_enabled": True})
+        https_settings = FlextWebSettings().clone(Web={"ssl_enabled": True})
         tm.that(
             u.Web.protocol(ssl_enabled=https_settings.Web.ssl_enabled),
             eq=c.Web.DEFAULT_HTTPS_PROTOCOL,
@@ -77,7 +81,7 @@ class TestsFlextWebSettings:
 
     def test_base_url_derived_from_namespace(self) -> None:
         """The base URL combines protocol, host, and port via u.Web."""
-        settings = FlextWebSettings(Web={"host": "localhost", "port": 8080})
+        settings = FlextWebSettings().clone(Web={"host": "localhost", "port": 8080})
         tm.that(
             u.Web.base_url(
                 host=settings.Web.host,

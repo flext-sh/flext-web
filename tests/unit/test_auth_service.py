@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from flext_tests import tm
-from flext_web import FlextWebAuth, m
+from flext_web import FlextWebAuth
+from tests import m
+from tests.fixtures import WebAuthFixture
 
 
 class TestsFlextWebAuth:
@@ -11,18 +13,19 @@ class TestsFlextWebAuth:
 
     def test_authenticate_success(self) -> None:
         """Auth service accepts canonical credentials."""
+        authenticator = WebAuthFixture()
         auth = FlextWebAuth()
-        credentials = m.Web.Credentials(username="testuser", password="test_password")
-        result = auth.authenticate(credentials)
+        result = auth.authenticate(authenticator.credentials)
         tm.ok(result)
-        tm.that(result.value.user_id, eq="testuser")
+        tm.that(result.value.user_id, eq=authenticator.credentials.username)
         tm.that(result.value.authenticated is True, eq=True)
 
     def test_authenticate_unknown_user(self) -> None:
         """Auth service rejects unknown username."""
+        authenticator = WebAuthFixture()
         auth = FlextWebAuth()
-        credentials = m.Web.Credentials(
-            username="nonexistent", password="test_password"
+        credentials = authenticator.credentials.model_copy(
+            update={"username": authenticator.rejected_username}
         )
         result = auth.authenticate(credentials)
         tm.fail(result)
@@ -30,8 +33,11 @@ class TestsFlextWebAuth:
 
     def test_authenticate_wrong_password(self) -> None:
         """Auth service rejects wrong password."""
+        authenticator = WebAuthFixture()
         auth = FlextWebAuth()
-        credentials = m.Web.Credentials(username="testuser", password="wrong-password")
+        credentials = authenticator.credentials.model_copy(
+            update={"password": f"invalid-{authenticator.credentials.password}"}
+        )
         result = auth.authenticate(credentials)
         tm.fail(result)
         tm.that(result.error, none=False)
@@ -52,9 +58,12 @@ class TestsFlextWebAuth:
 
     def test_register_user_success(self) -> None:
         """Registration succeeds for valid user data."""
+        credentials = WebAuthFixture().credentials
         auth = FlextWebAuth()
         user_data = m.Web.UserData(
-            username="newuser", email="newuser@example.com", password="password123"
+            username="newuser",
+            email="newuser@example.com",
+            password=credentials.password,
         )
         result = auth.register_user(user_data)
         tm.ok(result)
@@ -62,9 +71,10 @@ class TestsFlextWebAuth:
 
     def test_register_user_numeric_username(self) -> None:
         """Registration rejects numeric-only usernames."""
+        credentials = WebAuthFixture().credentials
         auth = FlextWebAuth()
         user_data = m.Web.UserData(
-            username="12345", email="numeric@example.com", password="password123"
+            username="12345", email="numeric@example.com", password=credentials.password
         )
         result = auth.register_user(user_data)
         tm.fail(result)

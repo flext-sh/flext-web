@@ -5,6 +5,7 @@ Tests the web models functionality following flext standards.
 
 from __future__ import annotations
 
+import ipaddress
 from typing import TYPE_CHECKING
 
 import pytest
@@ -44,17 +45,18 @@ class TestsFlextWebModelsUnit:
 
     def test_web_app_initialization_with_custom_values(self) -> None:
         """Test WebApp initialization with custom values."""
+        bind_host = str(ipaddress.IPv4Address(0))
         app = m.Web.Entity(
             id="test-id",
             name="test-app",
-            host="0.0.0.0",
+            host=bind_host,
             port=3000,
             status="running",
             version=2,
             environment="production",
             debug_mode=True,
         )
-        tm.that(app.host, eq="0.0.0.0")
+        tm.that(app.host, eq=bind_host)
         tm.that(app.port, eq=3000)
         tm.that(app.status, eq="running")
         tm.that(app.version, eq=2)
@@ -248,7 +250,7 @@ class TestsFlextWebModelsUnit:
         )
         tm.ok(result)
         app = result.value
-        tm.that(app, is_=m.Web.Entity)
+        assert isinstance(app, m.Web.Entity)
         tm.that(app.name, eq="test-app")
         tm.that(app.host, eq="localhost")
         tm.that(app.port, eq=8080)
@@ -256,19 +258,25 @@ class TestsFlextWebModelsUnit:
     def test_http_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
         request_with_body = m.Web.Request(
-            url="http://localhost:8080", method="POST", body='{"data": "test"}'
+            url="http://localhost:8080",
+            method=c.Web.Method.POST,
+            body='{"data": "test"}',
         )
         tm.that(request_with_body.has_body is True, eq=True)
         request_without_body = m.Web.Request(
-            url="http://localhost:8080", method="GET", body=None
+            url="http://localhost:8080", method=c.Web.Method.GET, body=None
         )
         tm.that(request_without_body.has_body is False, eq=True)
 
     def test_http_request_secure_property(self) -> None:
         """Test Web.Request secure property."""
-        https_request = m.Web.Request(url="https://localhost:8080", method="GET")
+        https_request = m.Web.Request(
+            url="https://localhost:8080", method=c.Web.Method.GET
+        )
         tm.that(https_request.secure is True, eq=True)
-        http_request = m.Web.Request(url="http://localhost:8080", method="GET")
+        http_request = m.Web.Request(
+            url="http://localhost:8080", method=c.Web.Method.GET
+        )
         tm.that(http_request.secure is False, eq=True)
 
     def test_http_response_is_success_property(self) -> None:
@@ -288,11 +296,13 @@ class TestsFlextWebModelsUnit:
     def test_web_request_has_body_property(self) -> None:
         """Test Web.Request has_body property."""
         request_with_body = m.Web.Request(
-            url="http://localhost:8080", method="POST", body='{"data": "test"}'
+            url="http://localhost:8080",
+            method=c.Web.Method.POST,
+            body='{"data": "test"}',
         )
         tm.that(request_with_body.has_body is True, eq=True)
         request_without_body = m.Web.Request(
-            url="http://localhost:8080", method="GET", body=None
+            url="http://localhost:8080", method=c.Web.Method.GET, body=None
         )
         tm.that(request_without_body.has_body is False, eq=True)
 
@@ -410,13 +420,10 @@ class TestsFlextWebModelsUnit:
             "web_app", name="ab", host="localhost", port=8080
         )
         tm.fail(result)
-        tm.that(result.error, none=False)
+        error = result.error or ""
+
         tm.that(
-            (
-                "Validation failed" in result.error
-                or "at least" in result.error
-                or "between" in result.error
-            ),
+            ("Validation failed" in error or "at least" in error or "between" in error),
             eq=True,
         )
 
@@ -477,14 +484,14 @@ class TestsFlextWebModelsUnit:
         ],
     )
     def test_application_parametrized_creation(
-        self, name: str, host: str, port: int, should_succeed: bool
+        self, *, name: str, host: str, port: int, should_succeed: bool
     ) -> None:
         """Test application creation with parametrized edge cases."""
         result = u.Web.Tests.create_entry("web_app", name=name, host=host, port=port)
         if should_succeed:
             tm.ok(result)
             app = result.value
-            tm.that(app, is_=m.Web.Entity)
+            assert isinstance(app, m.Web.Entity)
             tm.that(app.name, eq=name)
             tm.that(app.host, eq=host)
             tm.that(app.port, eq=port)
