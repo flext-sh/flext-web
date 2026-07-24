@@ -112,7 +112,7 @@ Common variables:
 
 Configuration and lifecycle stay on the public facade:
 
-```python notest
+```python
 from flext_web import FlextWebSettings, web
 
 runtime_settings = FlextWebSettings(

@@ -19,7 +19,7 @@ python -c "from flext_web import web; u.Cli.print('Import successful')"
 
 ## Basic Usage
 
-```python notest
+```python
 from flext_web import web
 
 settings_result = web.settings.create_web_config(

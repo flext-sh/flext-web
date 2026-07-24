@@ -64,7 +64,7 @@ assert runtime_settings.Web.host == "localhost"
 
 Lifecycle operations stay on the facade:
 
-```python notest
+```python
 from flext_web import web
 
 assert web.get_service_status().success
