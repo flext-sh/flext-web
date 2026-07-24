@@ -14,7 +14,7 @@
 cd flext-web
 poetry install
 make setup
-python -c "from flext_web import web; print('Import successful')"
+python -c "from flext_web import web; u.Cli.print('Import successful')"
 ```
 
 ## Basic Usage

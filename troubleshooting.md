@@ -13,7 +13,7 @@ If importing the public facade fails, verify the workspace and generated exports
 
 ```bash
 cd flext-web
-python -c "from flext_web import web; print(web.get_service_status())"
+python -c "from flext_web import web; u.Cli.print(web.get_service_status())"
 make gen
 make check PROJECT=flext-web FILES="src/flext_web/api.py src/flext_web/settings.py"
 ```
