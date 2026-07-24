@@ -7,10 +7,12 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import p
-from flext_web import t
+
+if TYPE_CHECKING:
+    from flext_web import t
 
 
 class FlextWebProtocolsData:
@@ -62,8 +64,7 @@ class FlextWebProtocolsData:
                 ...
 
             def execute(
-                self,
-                command: t.Web.RequestDict,
+                self, command: t.Web.RequestDict
             ) -> p.Result[t.Web.ResponseDict]:
                 """Execute a handler command."""
                 ...

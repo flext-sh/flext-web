@@ -27,10 +27,9 @@ class FlextWeb(
 ):
     """Canonical public facade composed via MRO."""
 
-    pass
 
-
-web = FlextWeb.fetch_global()
+web: FlextWeb = FlextWeb.fetch_global()
+"""Shared FlextWeb facade instance."""
 
 
 __all__: list[str] = ["FlextWeb", "web"]

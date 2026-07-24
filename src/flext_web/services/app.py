@@ -10,18 +10,13 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json as _json
-from collections.abc import (
-    Callable,
-)
+from collections.abc import Callable
 from typing import override
 
 import flask
 from fastapi import FastAPI
 
-from flext_web import FlextWebSettings, c, m, p, r, u
-from flext_web.base import s
-
-type FastApiEndpointPayload = dict[str, str | bool]
+from flext_web import FlextWebSettings, c, m, p, r, s, t, u
 
 
 class FlextWebApp(s):
@@ -34,9 +29,7 @@ class FlextWebApp(s):
     """
 
     @override
-    def execute(
-        self,
-    ) -> p.Result[bool]:
+    def execute(self) -> p.Result[bool]:
         """Execute the web application service.
 
         Main domain operation for the web application service.
@@ -73,7 +66,6 @@ class FlextWebApp(s):
             """
             default_config = m.Web.FastAPIAppConfig(
                 title="FastAPI",
-                version=c.Web.DEFAULT_VERSION_STRING,
                 description=c.Web.API_DEFAULT_DESCRIPTION,
                 docs_url=c.Web.API_DOCS_URL,
                 redoc_url=c.Web.API_REDOC_URL,
@@ -81,7 +73,7 @@ class FlextWebApp(s):
             )
             final_config = settings if settings is not None else default_config
             title: str = final_config.title or "FastAPI"
-            version: str = final_config.version or c.Web.DEFAULT_VERSION_STRING
+            version: str = final_config.version
             description: str = (
                 final_config.description or "FlextWeb FastAPI Application"
             )
@@ -104,15 +96,14 @@ class FlextWebApp(s):
 
     @staticmethod
     def _configure_fastapi_endpoints(
-        app: FastAPI,
-        settings: m.Web.FastAPIAppConfig,
+        app: FastAPI, settings: m.Web.FastAPIAppConfig
     ) -> FastAPI:
         """Configure FastAPI endpoints."""
 
-        def health_check() -> FastApiEndpointPayload:
+        def health_check() -> t.Web.FastApiEndpointPayload:
             return FlextWebApp.HealthHandler.create_handler()()
 
-        def info_endpoint() -> FastApiEndpointPayload:
+        def info_endpoint() -> t.Web.FastApiEndpointPayload:
             return FlextWebApp.InfoHandler.create_handler(settings)()
 
         app.add_api_route("/health", health_check, methods=["GET"])
@@ -139,17 +130,11 @@ class FlextWebApp(s):
         failure contains detailed error message
 
         """
-        fastapi_config = (
-            settings
-            if settings is not None
-            else m.Web.FastAPIAppConfig(
-                title=self.settings.app_name,
-                version=self.settings.version,
-                description=c.Web.API_DEFAULT_DESCRIPTION,
-                docs_url=c.Web.API_DOCS_URL,
-                redoc_url=c.Web.API_REDOC_URL,
-                openapi_url=c.Web.API_OPENAPI_URL,
-            )
+        fastapi_config = settings or m.Web.FastAPIAppConfig(
+            description=c.Web.API_DEFAULT_DESCRIPTION,
+            docs_url=c.Web.API_DOCS_URL,
+            redoc_url=c.Web.API_REDOC_URL,
+            openapi_url=c.Web.API_OPENAPI_URL,
         )
         factory_payload = (
             factory_config
@@ -164,7 +149,7 @@ class FlextWebApp(s):
             )
         )
         result = self.FastAPIFactory.create_instance(factory_payload).map(
-            lambda app: self._configure_fastapi_endpoints(app, fastapi_config),
+            lambda app: self._configure_fastapi_endpoints(app, fastapi_config)
         )
         if result.success:
             self.logger.info(
@@ -191,13 +176,11 @@ class FlextWebApp(s):
         failure contains detailed error message
 
         """
-        flask_config: FlextWebSettings = (
-            settings if settings is not None else self.settings
-        )
-        app = flask.Flask(flask_config.app_name)
-        app.config["SECRET_KEY"] = flask_config.secret_key
-        app.config["DEBUG"] = flask_config.debug
-        app.config["TESTING"] = flask_config.testing
+        web_settings = settings or self.settings
+        app = flask.Flask(web_settings.Web.app_name)
+        app.config["SECRET_KEY"] = web_settings.Web.secret_key
+        app.config["DEBUG"] = web_settings.debug
+        app.config["TESTING"] = web_settings.Web.testing
 
         def health_check() -> flask.Response:
             body: str = _json.dumps({
@@ -211,17 +194,19 @@ class FlextWebApp(s):
 
         app.add_url_rule("/health", "health_check", health_check)
 
-        self.logger.info("Flask application created", app_name=flask_config.app_name)
+        self.logger.info(
+            "Flask application created", app_name=web_settings.Web.app_name
+        )
         return r[flask.Flask].ok(app)
 
     class HealthHandler:
         """Health check handler with single responsibility for system health monitoring."""
 
         @staticmethod
-        def create_handler() -> Callable[[], FastApiEndpointPayload]:
+        def create_handler() -> Callable[[], t.Web.FastApiEndpointPayload]:
             """Create FastAPI health check handler function."""
 
-            def health_check() -> FastApiEndpointPayload:
+            def health_check() -> t.Web.FastApiEndpointPayload:
                 return {
                     "status": c.Web.ResponseStatus.HEALTHY.value,
                     "service": c.Web.SERVICE_NAME,
@@ -236,10 +221,10 @@ class FlextWebApp(s):
         @staticmethod
         def create_handler(
             settings: m.Web.FastAPIAppConfig,
-        ) -> Callable[[], FastApiEndpointPayload]:
+        ) -> Callable[[], t.Web.FastApiEndpointPayload]:
             """Create FastAPI info handler function."""
 
-            def info_handler() -> FastApiEndpointPayload:
+            def info_handler() -> t.Web.FastApiEndpointPayload:
                 return {
                     "service": c.Web.SERVICE_NAME,
                     "title": settings.title,
@@ -265,42 +250,32 @@ class FlextWebApp(s):
         _ = app
         return r[bool].ok(value=True)
 
-    def configure_fastapi_middleware(
-        self,
-        app: FastAPI,
-        settings: FlextWebSettings | None = None,
-    ) -> p.Result[bool]:
+    def configure_fastapi_middleware(self, app: FastAPI) -> p.Result[bool]:
         """Configure FastAPI middleware (extensible for future needs).
 
         Args:
             app: FastAPI application instance
-            settings: Web configuration model
 
         Returns:
             r[bool]: Success contains True if middleware configured,
                               failure contains error message
 
         """
-        _ = (app, settings if settings is not None else self.settings)
+        _ = app
         return r[bool].ok(value=True)
 
-    def configure_fastapi_routes(
-        self,
-        app: FastAPI,
-        settings: FlextWebSettings | None = None,
-    ) -> p.Result[bool]:
+    def configure_fastapi_routes(self, app: FastAPI) -> p.Result[bool]:
         """Configure FastAPI routes (extensible for future needs).
 
         Args:
             app: FastAPI application instance
-            settings: Web configuration model
 
         Returns:
             r[bool]: Success contains True if routes configured,
                               failure contains error message
 
         """
-        _ = (app, settings if settings is not None else self.settings)
+        _ = app
         return r[bool].ok(value=True)
 
     def validate_business_rules(self) -> p.Result[bool]:

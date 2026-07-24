@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 from flext_tests import tm
-
 from flext_web import web
-from tests.models import m
-from tests.utilities import u
+from tests import m, u
 
 
 class TestsFlextWebHandlers:
@@ -40,11 +38,7 @@ class TestsFlextWebHandlers:
     def test_list_apps_uses_public_registry(self) -> None:
         """Applications are listed through the public facade."""
         create_result = web.create_app(
-            m.Web.AppData(
-                name="test-app",
-                host="localhost",
-                port=self._next_port(),
-            ),
+            m.Web.AppData(name="test-app", host="localhost", port=self._next_port())
         )
         tm.ok(create_result)
         result = web.list_apps()
@@ -66,7 +60,7 @@ class TestsFlextWebHandlers:
         """Application creation goes through the public facade."""
         port = self._next_port()
         result = web.create_app(
-            m.Web.AppData(name="test-app", host="localhost", port=port),
+            m.Web.AppData(name="test-app", host="localhost", port=port)
         )
         tm.ok(result)
         app = result.value
@@ -77,11 +71,7 @@ class TestsFlextWebHandlers:
     def test_app_registry_integration(self) -> None:
         """Created applications remain visible through the public registry."""
         create_result = web.create_app(
-            m.Web.AppData(
-                name="test-app",
-                host="localhost",
-                port=self._next_port(),
-            ),
+            m.Web.AppData(name="test-app", host="localhost", port=self._next_port())
         )
         tm.ok(create_result)
         app = create_result.value
@@ -94,7 +84,7 @@ class TestsFlextWebHandlers:
     def test_protocol_implementation(self) -> None:
         """Public app lifecycle operations remain coherent."""
         create_result = web.create_app(
-            m.Web.AppData(name="test", host="localhost", port=self._next_port()),
+            m.Web.AppData(name="test", host="localhost", port=self._next_port())
         )
         tm.ok(create_result)
         list_result = web.list_apps()
@@ -111,24 +101,20 @@ class TestsFlextWebHandlers:
         """Starting an unknown app fails through the public API."""
         result = web.start_app("nonexistent-id")
         tm.fail(result)
-        assert result.error is not None
+        tm.that(result.error, none=False)
         tm.that(result.error, has="not found")
 
     def test_application_handler_stop_app_not_found(self) -> None:
         """Stopping an unknown app fails through the public API."""
         result = web.stop_app("nonexistent-id")
         tm.fail(result)
-        assert result.error is not None
+        tm.that(result.error, none=False)
         tm.that(result.error, has="not found")
 
     def test_application_handler_start_stop_cycle(self) -> None:
         """Apps can be started and stopped through the public API."""
         create_result = web.create_app(
-            m.Web.AppData(
-                name="test-app",
-                host="localhost",
-                port=self._next_port(),
-            ),
+            m.Web.AppData(name="test-app", host="localhost", port=self._next_port())
         )
         tm.ok(create_result)
         app_id = create_result.value.id
@@ -164,11 +150,7 @@ class TestsFlextWebHandlers:
     def test_handle_start_app(self) -> None:
         """Starting a created app works through the public facade."""
         app_result = web.create_app(
-            m.Web.AppData(
-                name="test-app",
-                host="localhost",
-                port=self._next_port(),
-            ),
+            m.Web.AppData(name="test-app", host="localhost", port=self._next_port())
         )
         tm.ok(app_result)
         result = web.start_app(app_result.value.id)
@@ -178,11 +160,7 @@ class TestsFlextWebHandlers:
     def test_handle_stop_app(self) -> None:
         """Stopping a running app works through the public facade."""
         app_result = web.create_app(
-            m.Web.AppData(
-                name="test-app",
-                host="localhost",
-                port=self._next_port(),
-            ),
+            m.Web.AppData(name="test-app", host="localhost", port=self._next_port())
         )
         tm.ok(app_result)
         start_result = web.start_app(app_result.value.id)

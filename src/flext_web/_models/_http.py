@@ -9,10 +9,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated
 
-from flext_cli import m, p, r, t, u
-from flext_web.constants import c
+from flext_cli import m, u
+from flext_web import c, p, r, t
 
-from ._base import _coerce_method
+from ._base import FlextWebModelsBase
 
 
 class FlextWebModelsHttp:
@@ -35,23 +35,18 @@ class FlextWebModelsHttp:
             """
 
             headers: Annotated[
-                t.MutableStrMapping,
-                u.Field(
-                    description="HTTP headers for message",
-                ),
+                t.MutableStrMapping, u.Field(description="HTTP headers for message")
             ] = u.Field(default_factory=dict)
             body: Annotated[
                 str | t.ScalarMapping | None,
-                u.Field(
-                    description="Message body content (optional for GET/HEAD)",
-                ),
+                u.Field(description="Message body content (optional for GET/HEAD)"),
             ] = None
             timestamp: Annotated[
                 datetime,
                 u.Field(
-                    description="Timestamp of message creation (configured timezone)",
+                    description="Timestamp of message creation (configured timezone)"
                 ),
-            ] = u.Field(default_factory=lambda: u.now())
+            ] = u.Field(default_factory=u.now)
 
         class Request(Message):
             """HTTP request model with complete validation.
@@ -76,16 +71,13 @@ class FlextWebModelsHttp:
             ]
             method: Annotated[
                 c.Web.Method,
-                u.PlainValidator(_coerce_method),
+                u.PlainValidator(FlextWebModelsBase.coerce_method),
                 u.Field(
-                    description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
+                    description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)"
                 ),
             ] = c.Web.Method.GET
             timeout: Annotated[
-                t.PositiveTimeout,
-                u.Field(
-                    description="Request timeout in seconds",
-                ),
+                t.PositiveTimeout, u.Field(description="Request timeout in seconds")
             ] = c.Web.DEFAULT_TIMEOUT_SECONDS
 
             @property
@@ -125,7 +117,7 @@ class FlextWebModelsHttp:
                         "headers": dict(headers or {}),
                         "body": body,
                         "timeout": timeout,
-                    }),
+                    })
                 )
 
         class Response(Message):
@@ -141,17 +133,11 @@ class FlextWebModelsHttp:
             """
 
             status_code: Annotated[
-                t.HttpStatusCode,
-                u.Field(
-                    ...,
-                    description="HTTP status code",
-                ),
+                t.HttpStatusCode, u.Field(..., description="HTTP status code")
             ]
             elapsed_time: Annotated[
                 t.NonNegativeFloat | None,
-                u.Field(
-                    description="Response processing time in seconds",
-                ),
+                u.Field(description="Response processing time in seconds"),
             ] = None
 
             @property
@@ -192,7 +178,7 @@ class FlextWebModelsHttp:
                         "headers": dict(headers or {}),
                         "body": body,
                         "elapsed_time": elapsed_time,
-                    }),
+                    })
                 )
 
 

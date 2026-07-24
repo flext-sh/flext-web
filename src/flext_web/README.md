@@ -18,11 +18,11 @@ Everything operational goes through `web`. Structural contracts stay under
 ## Public Usage
 
 ```python
-from flext_web import c, m, p, t, u, web
+from flext_web import c, m, p, settings, t, u, web
 
 status = web.service_status()
 capabilities = web.api_capabilities()
-settings = web.settings
+web_settings = settings.Web
 health_service_name = c.Web.SERVICE_NAME
 app_request_model = m.Web.AppData
 response_payload_type = t.Web.ResponseDict
@@ -41,13 +41,14 @@ flask_result = web.create_flask_app()
 
 ## Settings
 
-`web.settings` is the registered namespace. Use it directly instead of creating
-parallel settings accessors.
+The package-level `settings.Web` namespace is the runtime SSOT. Use the settings
+model only when an external boundary provides explicit overrides.
 
 ```python
-from flext_web import web
+from flext_web import FlextWebSettings, u
 
-config_result = web.settings.create_web_config(host="localhost", port=8080)
+runtime_settings = FlextWebSettings(Web={"host": "localhost", "port": 8080})
+assert u.Web.validate_settings(runtime_settings).unwrap()
 ```
 
 ## Services

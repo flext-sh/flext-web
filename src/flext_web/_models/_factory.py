@@ -1,6 +1,6 @@
 """Model factory methods for flext-web.
 
-from flext_web.utilities import u
+from flext_web import u
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import uuid
 
-from flext_cli import p, r, t, u
-from flext_web.constants import c
+from flext_cli import u
+from flext_web import c, p, r, settings, t
 
 from ._entity import FlextWebModelsEntity
 from ._web_request import FlextWebModelsWebRequest
@@ -24,10 +24,7 @@ class FlextWebModelsFactory:
 
         @classmethod
         def create_web_app(
-            cls,
-            name: str,
-            host: str = c.Web.DEFAULT_HOST,
-            port: int = c.Web.DEFAULT_PORT,
+            cls, name: str, host: str = settings.Web.host, port: int = settings.Web.port
         ) -> p.Result[FlextWebModelsEntity.Web.Entity]:
             """Create a web application from direct parameters.
 
@@ -94,10 +91,7 @@ class FlextWebModelsFactory:
                 )
                 return validated
 
-            result = u.try_(
-                create_request,
-                catch=Exception,
-            )
+            result = u.try_(create_request, catch=Exception)
             return result.map_error(lambda exc: f"Failed to create web request: {exc}")
 
         @classmethod
@@ -137,10 +131,7 @@ class FlextWebModelsFactory:
                 )
                 return validated
 
-            result = u.try_(
-                create_response,
-                catch=Exception,
-            )
+            result = u.try_(create_response, catch=Exception)
             return result.map_error(lambda exc: f"Failed to create web response: {exc}")
 
 

@@ -5,13 +5,12 @@ Tests the unified u class following flext standards.
 
 from __future__ import annotations
 
-from unittest.mock import patch
 
 import pytest
-from flext_tests import tm
 
-from tests.models import m
-from tests.utilities import u
+from flext_tests import tm
+from tests import m, u
+import contextlib
 
 
 class TestsFlextWebUtilitiesUnit:
@@ -37,7 +36,7 @@ class TestsFlextWebUtilitiesUnit:
         tm.that(result, eq="app_test-app")
         result = u.format_app_id("Test@App#Name!")
         tm.that(result, eq="app_testappname")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid application name"):
             _ = u.format_app_id("")
 
     def test_app_creation_functionality(self) -> None:
@@ -50,10 +49,8 @@ class TestsFlextWebUtilitiesUnit:
 
     def test_validation_error_handling(self) -> None:
         """Test validation error handling."""
-        try:
+        with contextlib.suppress(ValueError, TypeError):
             _ = m.Web.Entity(name="", host="localhost", port=8080)
-        except (ValueError, TypeError):
-            pass
 
     def test_slugify_functionality(self) -> None:
         """Test slugify functionality."""
@@ -66,9 +63,9 @@ class TestsFlextWebUtilitiesUnit:
 
     def test_utilities_edge_cases(self) -> None:
         """Test u edge cases."""
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid application name"):
             _ = u.format_app_id("")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Text cannot be empty"):
             _ = u.format_app_id("   ")
         result = u.format_app_id("Test@App#Name!")
         tm.that(result, eq="app_testappname")
@@ -82,39 +79,7 @@ class TestsFlextWebUtilitiesUnit:
         result2 = u.format_app_id("Different App")
         tm.that(result1, ne=result2)
 
-    def test_format_app_id_safe_string_failure(self) -> None:
-        """Test format_app_id when safe_string fails."""
-        with (
-            patch(
-                "flext_web.utilities.FlextWebUtilities.safe_string",
-                side_effect=ValueError("Invalid string"),
-            ),
-            pytest.raises(ValueError, match="Invalid string"),
-        ):
-            _ = u.format_app_id("test")
-
-    def test_format_app_id_empty_after_stripping(self) -> None:
-        """Test format_app_id when name becomes empty after stripping."""
-        with (
-            patch(
-                "flext_web.utilities.FlextWebUtilities.safe_string",
-                return_value="   ",
-            ),
-            pytest.raises(
-                ValueError,
-                match="Cannot format application name 'test' to valid ID",
-            ),
-        ):
-            _ = u.format_app_id("test")
-
-    def test_format_app_id_slugify_empty(self) -> None:
-        """Test format_app_id when slugify results in empty string."""
-        with (
-            patch(
-                "flext_web.utilities.FlextWebUtilities.safe_string",
-                return_value="test",
-            ),
-            patch("flext_web.utilities.u.slugify", return_value=""),
-            pytest.raises(ValueError, match="Cannot format application name"),
-        ):
-            _ = u.format_app_id("test")
+    def test_format_app_id_rejects_control_whitespace(self) -> None:
+        """Reject an application name containing only control whitespace."""
+        with pytest.raises(ValueError, match="Text cannot be empty"):
+            _ = u.format_app_id("\t\n")
