@@ -1,0 +1,112 @@
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.TimestampedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.TimestampedModel: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.TimestampedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.TimestampedModel: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextData.ContextData violates FLEXT Model HARD rules:
+  - FlextModelsContextData.ContextData: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextData.ContextData violates FLEXT Model HARD rules:
+  - FlextModelsContextData.ContextData: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsDomainEvent.Entry violates FLEXT Model HARD rules:
+  - FlextModelsDomainEvent.Entry: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsDomainEvent.Entry violates FLEXT Model HARD rules:
+  - FlextModelsDomainEvent.Entry: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsEntity.Entity violates FLEXT Model HARD rules:
+  - FlextModelsEntity.Entity: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsEntity.Entity violates FLEXT Model HARD rules:
+  - FlextModelsEntity.Entity: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextExport.ContextExport violates FLEXT Model HARD rules:
+  - FlextModelsContextExport.ContextExport: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextExport.ContextExport violates FLEXT Model HARD rules:
+  - FlextModelsContextExport.ContextExport: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsSettings.RetryConfiguration violates FLEXT Model HARD rules:
+  - FlextModelsSettings.RetryConfiguration: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsSettings.RetryConfiguration violates FLEXT Model HARD rules:
+  - FlextModelsSettings.RetryConfiguration: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/flext-core/src/flext_core/models.py:39: FlextMroViolation: 
+FlextModels violates FLEXT Model HARD rules:
+  - FlextModels: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  class FlextModels(
+/home/marlonsc/flext/flext-core/src/flext_core/models.py:39: FlextMroViolation: 
+FlextModels violates FLEXT Model HARD rules:
+  - FlextModels: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  class FlextModels(
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextUtilitiesParserCoerce.ParseOptions violates FLEXT Model HARD rules:
+  - FlextUtilitiesParserCoerce.ParseOptions: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/.venv/lib/python3.13/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextUtilitiesParserCoerce.ParseOptions violates FLEXT Model HARD rules:
+  - FlextUtilitiesParserCoerce.ParseOptions: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/flext-core/src/flext_core/utilities.py:41: FlextMroViolation: 
+FlextUtilities violates FLEXT Model HARD rules:
+  - FlextUtilities: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  class FlextUtilities(
+/home/marlonsc/flext/flext-core/src/flext_core/utilities.py:41: FlextMroViolation: 
+FlextUtilities violates FLEXT Model HARD rules:
+  - FlextUtilities: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  class FlextUtilities(
+ImportError while loading conftest '/home/marlonsc/flext/flext-web/tests/conftest.py'.
+tests/conftest.py:23: in <module>
+    from flask import Flask
+E   ModuleNotFoundError: No module named 'flask'

@@ -18,7 +18,7 @@ class TestsFlextWebApp:
 
     def test_create_flask_app_success(self) -> None:
         """The service creates Flask apps from typed settings."""
-        settings = FlextWebSettings(
+        settings = FlextWebSettings().clone(
             Web={
                 "app_name": "flext-web-test",
                 "host": "127.0.0.1",

@@ -5,6 +5,7 @@ from __future__ import annotations
 from flext_tests import tm
 from flext_web import web
 from tests import m
+from tests.fixtures import WebAuthFixture
 
 
 class TestsFlextWebService:
@@ -23,15 +24,16 @@ class TestsFlextWebService:
 
     def test_authenticate_success(self) -> None:
         """Authentication succeeds for the canonical test credentials."""
-        credentials = m.Web.Credentials(username="testuser", password="test_password")
+        credentials = WebAuthFixture().credentials
         result = web.authenticate(credentials)
         tm.ok(result)
-        tm.that(result.value.user_id, eq="testuser")
+        tm.that(result.value.user_id, eq=credentials.username)
 
     def test_authenticate_failure(self) -> None:
         """Authentication fails for invalid credentials."""
-        credentials = m.Web.Credentials(
-            username="nonexistent", password="wrong-password"
+        canonical = WebAuthFixture()
+        credentials = canonical.credentials.model_copy(
+            update={"username": canonical.rejected_username}
         )
         result = web.authenticate(credentials)
         tm.fail(result)
@@ -39,9 +41,12 @@ class TestsFlextWebService:
 
     def test_register_user_success(self) -> None:
         """User registration succeeds for valid input."""
+        credentials = WebAuthFixture().credentials
         result = web.register_user(
             m.Web.UserData(
-                username="newuser", email="newuser@example.com", password="password123"
+                username="newuser",
+                email="newuser@example.com",
+                password=credentials.password,
             )
         )
         tm.ok(result)
@@ -49,9 +54,12 @@ class TestsFlextWebService:
 
     def test_register_user_rejects_numeric_username(self) -> None:
         """Numeric-only usernames are rejected."""
+        credentials = WebAuthFixture().credentials
         result = web.register_user(
             m.Web.UserData(
-                username="12345", email="numeric@example.com", password="password123"
+                username="12345",
+                email="numeric@example.com",
+                password=credentials.password,
             )
         )
         tm.fail(result)

@@ -16,7 +16,7 @@ _ = web.start_service(
 
 ## API Usage
 
-```python notest
+```python
 from flext_web import m, web
 
 created = web.create_app(m.Web.AppData(name="demo", host="127.0.0.1", port=8080))

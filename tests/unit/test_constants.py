@@ -5,6 +5,7 @@ Tests the web constants functionality following flext standards.
 
 from __future__ import annotations
 
+import ipaddress
 from collections.abc import Mapping
 
 from flext_tests import tm
@@ -22,7 +23,7 @@ class TestsFlextWebConstantsUnit:
 
     def test_web_specific_constants(self) -> None:
         """Test web-specific constants."""
-        tm.that(c.Web.ALL_INTERFACES, eq="0.0.0.0")
+        tm.that(c.Web.ALL_INTERFACES, eq=str(ipaddress.IPv4Address(0)))
         tm.that(c.Web.LOCALHOST_IP, eq="127.0.0.1")
         tm.that(c.Web.SYSTEM_PORTS_THRESHOLD, eq=1023)
         tm.that(c.Web.PRIVILEGED_PORTS_MAX, eq=1023)

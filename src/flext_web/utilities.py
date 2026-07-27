@@ -330,7 +330,11 @@ class FlextWebUtilities(u):
             host = app_data.get("host")
             port = app_data.get("port")
             interface = app_data.get("interface")
-            if not isinstance(host, str) or not isinstance(port, int):
+            if (
+                not isinstance(host, str)
+                or not isinstance(port, int)
+                or not isinstance(interface, str)
+            ):
                 return r[app_runtime_model].fail(
                     f"Invalid runtime configuration for app: {app_id}"
                 )
