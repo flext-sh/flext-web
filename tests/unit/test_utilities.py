@@ -5,12 +5,12 @@ Tests the unified u class following flext standards.
 
 from __future__ import annotations
 
+import contextlib
 
 import pytest
 
 from flext_tests import tm
 from tests import m, u
-import contextlib
 
 
 class TestsFlextWebUtilitiesUnit:
