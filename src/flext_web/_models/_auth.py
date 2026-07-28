@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_cli import m, t, u
-from flext_web.constants import c
+from flext_cli import m, u
+from flext_web import c, t
 
 
 class FlextWebModelsAuth:
@@ -30,10 +30,7 @@ class FlextWebModelsAuth:
             username: Annotated[str, u.Field(min_length=1, description="Username")]
             email: Annotated[str, u.Field(min_length=1, description="Email address")]
             password: Annotated[
-                str,
-                u.Field(
-                    description="Password (empty string if not provided)",
-                ),
+                str, u.Field(description="Password (empty string if not provided)")
             ] = ""
 
         class AppData(m.Value):
@@ -55,22 +52,14 @@ class FlextWebModelsAuth:
                     description="Application host",
                 ),
             ]
-            port: Annotated[
-                t.PortNumber,
-                u.Field(
-                    ...,
-                    description="Application port",
-                ),
-            ]
+            port: Annotated[t.PortNumber, u.Field(..., description="Application port")]
 
         class EntityData(m.Value):
             """Generic entity data model."""
 
             data: Annotated[
                 t.MutableConfigurationMapping,
-                u.Field(
-                    description="Entity data dictionary",
-                ),
+                u.Field(description="Entity data dictionary"),
             ] = u.Field(default_factory=dict)
 
 

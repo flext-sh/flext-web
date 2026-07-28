@@ -6,16 +6,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import t, u
-from flext_web.constants import c
-
-_METHOD_ADAPTER = u.TypeAdapter(c.Web.Method)
+from flext_web import c, t
 
 
-def _coerce_method(v: t.Scalar) -> c.Web.Method:
-    if isinstance(v, str):
-        v = v.upper()
-    return _METHOD_ADAPTER.validate_python(v)
+class FlextWebModelsBase:
+    """Shared model helpers for flext-web model namespaces."""
+
+    @classmethod
+    def coerce_method(cls, value: t.Scalar) -> c.Web.Method:
+        """Coerce user-provided HTTP method values into the Web method enum."""
+        normalized_value = value.upper() if isinstance(value, str) else value
+        return c.Web.Method(normalized_value)
 
 
-__all__: list[str] = ["_coerce_method"]
+__all__: list[str] = ["FlextWebModelsBase"]

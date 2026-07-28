@@ -4,23 +4,14 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_web import (
-    c,
-    m,
-    p,
-    r,
-    u,
-)
-from flext_web.base import s
+from flext_web import c, m, p, r, s, u
 
 
 class FlextWebHealth(s):
     """Health and metrics access backed by protocol runtime state."""
 
     @override
-    def execute(
-        self,
-    ) -> p.Result[bool]:
+    def execute(self) -> p.Result[bool]:
         """Execute the health namespace service."""
         return r[bool].ok(True)
 
@@ -39,10 +30,7 @@ class FlextWebHealth(s):
             "avg_response_time_ms",
         ]
         return r[m.Web.MetricsResponse].ok(
-            m.Web.MetricsResponse(
-                service_status=service_status,
-                components=components,
-            ),
+            m.Web.MetricsResponse(service_status=service_status, components=components)
         )
 
     def status(self) -> p.Result[m.Web.HealthResponse]:
@@ -52,14 +40,14 @@ class FlextWebHealth(s):
         status_value = payload.get("status")
         if not isinstance(service_value, str) or not isinstance(status_value, str):
             return r[m.Web.HealthResponse].fail(
-                "Health monitoring payload is incomplete",
+                "Health monitoring payload is incomplete"
             )
         return r[m.Web.HealthResponse].ok(
             m.Web.HealthResponse(
                 status=status_value,
                 service=service_value,
                 timestamp=u.generate_iso_timestamp(),
-            ),
+            )
         )
 
     def validate_business_rules(self) -> p.Result[bool]:

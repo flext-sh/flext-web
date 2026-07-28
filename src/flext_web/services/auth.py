@@ -4,16 +4,14 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_web import e, m, p, r
-from flext_web.base import s
+from flext_web import e, m, p, r, s
 
 
 class FlextWebAuth(s):
     """Authentication operations for the public web facade."""
 
     def authenticate(
-        self,
-        credentials: m.Web.Credentials,
+        self, credentials: m.Web.Credentials
     ) -> p.Result[m.Web.AuthResponse]:
         """Authenticate a user with explicit validation."""
         if credentials.username == "nonexistent":
@@ -36,9 +34,7 @@ class FlextWebAuth(s):
         return r[m.Web.AuthResponse].ok(auth_response)
 
     @override
-    def execute(
-        self,
-    ) -> p.Result[bool]:
+    def execute(self) -> p.Result[bool]:
         """Execute the auth namespace service."""
         return r[bool].ok(True)
 

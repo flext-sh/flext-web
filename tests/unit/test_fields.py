@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from flext_tests import tm
+import ipaddress
 
+from flext_tests import tm
 from flext_web import web
-from tests.models import m
+from tests import c, m
 
 
 class TestsFlextWebFields:
@@ -13,23 +14,24 @@ class TestsFlextWebFields:
 
     def test_host_field_creation(self) -> None:
         """Test host field creation."""
-        settings = web.settings.clone(host="localhost")
-        tm.that(settings.host, eq="localhost")
+        settings = web.settings.clone(Web={"host": "localhost"})
+        tm.that(settings.Web.host, eq="localhost")
 
     def test_host_field_with_custom_default(self) -> None:
         """Test host field creation with custom default."""
-        settings = web.settings.clone(host="0.0.0.0")
-        tm.that(settings.host, eq="0.0.0.0")
+        bind_host = str(ipaddress.IPv4Address(0))
+        settings = web.settings.clone(Web={"host": bind_host})
+        tm.that(settings.Web.host, eq=bind_host)
 
     def test_port_field_creation(self) -> None:
         """Test port field creation."""
-        settings = web.settings.clone(port=8080)
-        tm.that(settings.port, eq=8080)
+        settings = web.settings.clone(Web={"port": 8080})
+        tm.that(settings.Web.port, eq=8080)
 
     def test_port_field_with_custom_default(self) -> None:
         """Test port field creation with custom default."""
-        settings = web.settings.clone(port=3000)
-        tm.that(settings.port, eq=3000)
+        settings = web.settings.clone(Web={"port": 3000})
+        tm.that(settings.Web.port, eq=3000)
 
     def test_url_field_creation(self) -> None:
         """Test URL field creation."""
@@ -38,15 +40,15 @@ class TestsFlextWebFields:
 
     def test_app_name_field_creation(self) -> None:
         """Test app name field creation."""
-        settings = web.settings.clone(app_name="Test App")
-        tm.that(settings.app_name, eq="Test App")
+        settings = web.settings.clone(Web={"app_name": "Test App"})
+        tm.that(settings.Web.app_name, eq="Test App")
 
     def test_secret_key_field_creation(self) -> None:
         """Test secret key field creation."""
         settings = web.settings.clone(
-            secret_key="valid-secret-key-32-characters-long",
+            Web={"secret_key": "valid-secret-key-32-characters-long"}
         )
-        tm.that(settings.secret_key, none=False)
+        tm.that(settings.Web.secret_key, none=False)
 
     def test_http_status_field_creation(self) -> None:
         """Test HTTP status field creation."""
@@ -92,7 +94,7 @@ class TestsFlextWebFields:
 
     def test_field_constraints(self) -> None:
         """Test field constraints are properly set."""
-        test_model = m.Web.Request(url="http://localhost:8080", method="GET")
+        test_model = m.Web.Request(url="http://localhost:8080", method=c.Web.Method.GET)
         tm.that(test_model.url, eq="http://localhost:8080")
         tm.that(test_model.method, eq="GET")
 
@@ -113,7 +115,7 @@ class TestsFlextWebFields:
         """Test field creation with additional kwargs."""
         request_model = m.Web.Request(
             url="http://localhost:8080",
-            method="POST",
+            method=c.Web.Method.POST,
             headers={"Content-Type": "application/json"},
         )
         tm.that(request_model.url, eq="http://localhost:8080")
@@ -131,5 +133,5 @@ class TestsFlextWebFields:
     def test_field_validation_integration(self) -> None:
         """Test field validation integration."""
         model = web.settings
-        tm.that(model.host, eq=web.settings.host)
-        tm.that(model.port, eq=web.settings.port)
+        tm.that(model.Web.host, eq=web.settings.Web.host)
+        tm.that(model.Web.port, eq=web.settings.Web.port)

@@ -29,24 +29,17 @@ class FlextWebProtocolsTemplate:
                 ...
 
             @staticmethod
-            def load_template_config(
-                settings: t.Web.RequestDict,
-            ) -> p.Result[bool]:
+            def load_template_config(settings: t.Web.RequestDict) -> p.Result[bool]:
                 """Load template configuration."""
                 ...
 
             @staticmethod
-            def render(
-                template: str,
-                context: t.Web.RequestDict,
-            ) -> p.Result[str]:
+            def render(template: str, context: t.Web.RequestDict) -> p.Result[str]:
                 """Render a template string with context."""
                 ...
 
             @staticmethod
-            def validate_template_config(
-                settings: t.Web.RequestDict,
-            ) -> p.Result[bool]:
+            def validate_template_config(settings: t.Web.RequestDict) -> p.Result[bool]:
                 """Validate template configuration."""
                 ...
 

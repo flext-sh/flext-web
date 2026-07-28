@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_cli import m, t, u
-from flext_web.constants import c
+from flext_cli import m, u
+from flext_web import c, t
 
 
 class FlextWebModelsResponses:
@@ -45,7 +45,7 @@ class FlextWebModelsResponses:
 
             @property
             def running(self) -> bool:
-                """Return whether the projected application is running."""
+                """Whether the projected application is running."""
                 is_running: bool = self.status == c.Web.Status.RUNNING.value
                 return is_running
 
@@ -61,8 +61,7 @@ class FlextWebModelsResponses:
 
             service_status: Annotated[str, u.Field(description="Service status")]
             components: Annotated[
-                t.StrSequence,
-                u.Field(description="Service components"),
+                t.StrSequence, u.Field(description="Service components")
             ]
 
         class DashboardResponse(m.Value):
@@ -72,19 +71,14 @@ class FlextWebModelsResponses:
                 int, u.Field(description="Total applications")
             ]
             running_applications: Annotated[
-                int,
-                u.Field(description="Running applications"),
+                int, u.Field(description="Running applications")
             ]
             service_status: Annotated[str, u.Field(description="Service status")]
             routes_initialized: Annotated[
-                bool,
-                u.Field(description="Routes initialization status"),
+                bool, u.Field(description="Routes initialization status")
             ]
             middleware_configured: Annotated[
-                bool,
-                u.Field(
-                    description="Middleware configuration status",
-                ),
+                bool, u.Field(description="Middleware configuration status")
             ]
             timestamp: Annotated[str, u.Field(description="Timestamp")]
 
@@ -93,8 +87,7 @@ class FlextWebModelsResponses:
 
             service: Annotated[str, u.Field(description="Service name")]
             capabilities: Annotated[
-                t.StrSequence,
-                u.Field(description="Service capabilities"),
+                t.StrSequence, u.Field(description="Service capabilities")
             ]
             status: Annotated[str, u.Field(description="Service status")]
             settings: Annotated[bool, u.Field(description="Configuration status")]

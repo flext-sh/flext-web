@@ -22,15 +22,7 @@ from flext_web._protocols.monitoring import FlextWebProtocolsMonitoring
 from flext_web._protocols.template import FlextWebProtocolsTemplate
 
 
-class FlextWebProtocols(
-    p,
-    FlextWebProtocolsLifecycle,
-    FlextWebProtocolsData,
-    FlextWebProtocolsTemplate,
-    FlextWebProtocolsMonitoring,
-    FlextWebProtocolsConfig,
-    FlextWebProtocolsFramework,
-):
+class FlextWebProtocols(p):
     """Web-specific ``@runtime_checkable`` Protocol surface extending ``p``."""
 
     class Web(

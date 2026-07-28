@@ -10,10 +10,10 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
-from flext_cli import m, t, u
-from flext_web.constants import c
+from flext_cli import m, u
+from flext_web import c, t
 
-from ._base import _coerce_method
+from ._base import FlextWebModelsBase
 
 
 class FlextWebModelsWebRequest:
@@ -27,10 +27,8 @@ class FlextWebModelsWebRequest:
 
             method: Annotated[
                 c.Web.Method,
-                u.PlainValidator(_coerce_method),
-                u.Field(
-                    description="HTTP method",
-                ),
+                u.PlainValidator(FlextWebModelsBase.coerce_method),
+                u.Field(description="HTTP method"),
             ] = c.Web.Method.GET
             url: Annotated[
                 str,
@@ -41,36 +39,24 @@ class FlextWebModelsWebRequest:
                 ),
             ]
             headers: Annotated[
-                t.MutableStrMapping,
-                u.Field(
-                    description="HTTP headers",
-                ),
+                t.MutableStrMapping, u.Field(description="HTTP headers")
             ] = u.Field(default_factory=dict)
             body: Annotated[
                 str | t.JsonValue | None,
-                u.Field(
-                    description="Request body (optional for GET/HEAD)",
-                ),
+                u.Field(description="Request body (optional for GET/HEAD)"),
             ] = None
             request_id: Annotated[
-                str,
-                u.Field(
-                    description="Unique request identifier",
-                ),
+                str, u.Field(description="Unique request identifier")
             ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
-            timestamp: Annotated[
-                datetime,
-                u.Field(
-                    description="Request timestamp",
-                ),
-            ] = u.Field(default_factory=lambda: u.now())
+            timestamp: Annotated[datetime, u.Field(description="Request timestamp")] = (
+                u.Field(default_factory=u.now)
+            )
 
         class WebResponse(m.Value):
             """Web response model with status tracking."""
 
             request_id: Annotated[
-                str,
-                u.Field(description="Associated request identifier"),
+                str, u.Field(description="Associated request identifier")
             ]
             status_code: Annotated[
                 int,
@@ -81,29 +67,18 @@ class FlextWebModelsWebRequest:
                 ),
             ]
             headers: Annotated[
-                t.MutableStrMapping,
-                u.Field(
-                    description="HTTP response headers",
-                ),
+                t.MutableStrMapping, u.Field(description="HTTP response headers")
             ] = u.Field(default_factory=dict)
             body: Annotated[
                 str | t.JsonValue | None,
-                u.Field(
-                    description="Response body (optional for 204 No Content)",
-                ),
+                u.Field(description="Response body (optional for 204 No Content)"),
             ] = None
             response_id: Annotated[
-                str,
-                u.Field(
-                    description="Unique response identifier",
-                ),
+                str, u.Field(description="Unique response identifier")
             ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
             timestamp: Annotated[
-                datetime,
-                u.Field(
-                    description="Response timestamp",
-                ),
-            ] = u.Field(default_factory=lambda: u.now())
+                datetime, u.Field(description="Response timestamp")
+            ] = u.Field(default_factory=u.now)
 
 
 __all__: list[str] = ["FlextWebModelsWebRequest"]

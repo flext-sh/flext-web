@@ -1,0 +1,586 @@
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.ManagedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.ManagedModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.EnumManagedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.EnumManagedModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.NormalizedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.NormalizedModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.StrictManagedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.StrictManagedModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.StrictModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.StrictModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.FrozenModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.FrozenModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.ArbitraryTypesModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.ArbitraryTypesModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.StrictBoundaryModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.StrictBoundaryModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.FlexibleInternalModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.FlexibleInternalModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.ImmutableValueModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.ImmutableValueModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.TaggedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.TaggedModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.FlexibleModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.FlexibleModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.DynamicModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.DynamicModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.FrozenDynamicModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.FrozenDynamicModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.ContractModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.ContractModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.FrozenValueModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.FrozenValueModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.TimestampedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.TimestampedModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.TimestampedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.TimestampedModel: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsBase.TimestampedModel violates FLEXT Model HARD rules:
+  - FlextModelsBase.TimestampedModel: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsErrors.StructuredErrorSnapshot violates FLEXT Model HARD rules:
+  - FlextModelsErrors.StructuredErrorSnapshot: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsErrors.ExceptionMetricsSnapshot violates FLEXT Model HARD rules:
+  - FlextModelsErrors.ExceptionMetricsSnapshot: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsErrors.ExceptionMetricsState violates FLEXT Model HARD rules:
+  - FlextModelsErrors.ExceptionMetricsState: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsCollections.GuardCheckSpec violates FLEXT Model HARD rules:
+  - FlextModelsCollections.GuardCheckSpec: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContainer.ServiceRegistration violates FLEXT Model HARD rules:
+  - FlextModelsContainer.ServiceRegistration: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContainer.FactoryRegistration violates FLEXT Model HARD rules:
+  - FlextModelsContainer.FactoryRegistration: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContainer.ResourceRegistration violates FLEXT Model HARD rules:
+  - FlextModelsContainer.ResourceRegistration: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContainer.ContainerConfig violates FLEXT Model HARD rules:
+  - FlextModelsContainer.ContainerConfig: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContainer.ServiceRegistrationSpec violates FLEXT Model HARD rules:
+  - FlextModelsContainer.ServiceRegistrationSpec: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContainer.FactoryDecoratorConfig violates FLEXT Model HARD rules:
+  - FlextModelsContainer.FactoryDecoratorConfig: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextData.ContextData violates FLEXT Model HARD rules:
+  - FlextModelsContextData.ContextData: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextData.ContextData violates FLEXT Model HARD rules:
+  - FlextModelsContextData.ContextData: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextData.ContextData violates FLEXT Model HARD rules:
+  - FlextModelsContextData.ContextData: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsDomainEvent.Entry violates FLEXT Model HARD rules:
+  - FlextModelsDomainEvent.Entry: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsDomainEvent.Entry violates FLEXT Model HARD rules:
+  - FlextModelsDomainEvent.Entry: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsDomainEvent.Entry violates FLEXT Model HARD rules:
+  - FlextModelsDomainEvent.Entry: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsEntity.Entity violates FLEXT Model HARD rules:
+  - FlextModelsEntity.Entity: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsEntity.Entity violates FLEXT Model HARD rules:
+  - FlextModelsEntity.Entity: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsEntity.Entity violates FLEXT Model HARD rules:
+  - FlextModelsEntity.Entity: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsEntity.Value violates FLEXT Model HARD rules:
+  - FlextModelsEntity.Value: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsEntity.AggregateRoot violates FLEXT Model HARD rules:
+  - FlextModelsEntity.AggregateRoot: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextExport.ContextExport violates FLEXT Model HARD rules:
+  - FlextModelsContextExport.ContextExport: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextExport.ContextExport violates FLEXT Model HARD rules:
+  - FlextModelsContextExport.ContextExport: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextExport.ContextExport violates FLEXT Model HARD rules:
+  - FlextModelsContextExport.ContextExport: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextMetadata.ContextMetadata violates FLEXT Model HARD rules:
+  - FlextModelsContextMetadata.ContextMetadata: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextMetadata.ContextDomainData violates FLEXT Model HARD rules:
+  - FlextModelsContextMetadata.ContextDomainData: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextTokens.StructlogProxyToken violates FLEXT Model HARD rules:
+  - FlextModelsContextTokens.StructlogProxyToken: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextTokens.Token violates FLEXT Model HARD rules:
+  - FlextModelsContextTokens.Token: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextScope.ContextScopeData violates FLEXT Model HARD rules:
+  - FlextModelsContextScope.ContextScopeData: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextScope.ContextStatistics violates FLEXT Model HARD rules:
+  - FlextModelsContextScope.ContextStatistics: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextScope.ContextRuntimeState violates FLEXT Model HARD rules:
+  - FlextModelsContextScope.ContextRuntimeState: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsContextScope.ContextContainerState violates FLEXT Model HARD rules:
+  - FlextModelsContextScope.ContextContainerState: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsCqrs.Command violates FLEXT Model HARD rules:
+  - FlextModelsCqrs.Command: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsCqrs.Query violates FLEXT Model HARD rules:
+  - FlextModelsCqrs.Query: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsCqrs.Handler violates FLEXT Model HARD rules:
+  - FlextModelsCqrs.Handler: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsCqrs.Event violates FLEXT Model HARD rules:
+  - FlextModelsCqrs.Event: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.ParamsModel violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.ParamsModel: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.ResourceIdentityParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.ResourceIdentityParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.ExpectedActualTypeParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.ExpectedActualTypeParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.ValidationErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.ValidationErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.ConfigurationErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.ConfigurationErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.ConnectionErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.ConnectionErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.TimeoutErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.TimeoutErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.AuthenticationErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.AuthenticationErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.AuthorizationErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.AuthorizationErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.NotFoundErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.NotFoundErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.ConflictErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.ConflictErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.RateLimitErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.RateLimitErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.CircuitBreakerErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.CircuitBreakerErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.TypeErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.TypeErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.OperationErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.OperationErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.ServiceLookupParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.ServiceLookupParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.RegistryPluginParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.RegistryPluginParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsExceptionParams.AttributeAccessErrorParams violates FLEXT Model HARD rules:
+  - FlextModelsExceptionParams.AttributeAccessErrorParams: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsHandler.RegistrationResult violates FLEXT Model HARD rules:
+  - FlextModelsHandler.RegistrationResult: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsHandler.RegistrationDetails violates FLEXT Model HARD rules:
+  - FlextModelsHandler.RegistrationDetails: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsHandler.ExecutionContext violates FLEXT Model HARD rules:
+  - FlextModelsHandler.ExecutionContext: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsHandler.HandlerRuntimeState violates FLEXT Model HARD rules:
+  - FlextModelsHandler.HandlerRuntimeState: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsHandler.DecoratorConfig violates FLEXT Model HARD rules:
+  - FlextModelsHandler.DecoratorConfig: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsRegistry.RegistryState violates FLEXT Model HARD rules:
+  - FlextModelsRegistry.RegistryState: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsRegistry.RegistrySummary violates FLEXT Model HARD rules:
+  - FlextModelsRegistry.RegistrySummary: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsService.ServiceRuntime violates FLEXT Model HARD rules:
+  - FlextModelsService.ServiceRuntime: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsService.RuntimeBootstrapOptions violates FLEXT Model HARD rules:
+  - FlextModelsService.RuntimeBootstrapOptions: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsService.DependencyContainerCreationOptions violates FLEXT Model HARD rules:
+  - FlextModelsService.DependencyContainerCreationOptions: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsSettings.AutoSettings violates FLEXT Model HARD rules:
+  - FlextModelsSettings.AutoSettings: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsSettings.RetryConfiguration violates FLEXT Model HARD rules:
+  - FlextModelsSettings.RetryConfiguration: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsSettings.RetryConfiguration violates FLEXT Model HARD rules:
+  - FlextModelsSettings.RetryConfiguration: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextModelsSettings.RetryConfiguration violates FLEXT Model HARD rules:
+  - FlextModelsSettings.RetryConfiguration: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/flext_core/models.py:39: FlextMroViolation: 
+FlextModels violates FLEXT Model HARD rules:
+  - FlextModels: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  class FlextModels(
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/flext_core/models.py:39: FlextMroViolation: 
+FlextModels violates FLEXT Model HARD rules:
+  - FlextModels: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  class FlextModels(
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextUtilitiesMapperExtract.ExtractResolvePathPartContext violates FLEXT Model HARD rules:
+  - FlextUtilitiesMapperExtract.ExtractResolvePathPartContext: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextUtilitiesModel.ModelDumpOptions violates FLEXT Model HARD rules:
+  - FlextUtilitiesModel.ModelDumpOptions: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextUtilitiesParserCoerce.ParseOptions violates FLEXT Model HARD rules:
+  - FlextUtilitiesParserCoerce.ParseOptions: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextUtilitiesParserCoerce.ParseOptions violates FLEXT Model HARD rules:
+  - FlextUtilitiesParserCoerce.ParseOptions: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextUtilitiesParserCoerce.ParseOptions violates FLEXT Model HARD rules:
+  - FlextUtilitiesParserCoerce.ParseOptions: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/pydantic/_internal/_model_construction.py:270: FlextMroViolation: 
+FlextUtilitiesReliability.RetryOptions violates FLEXT Model HARD rules:
+  - FlextUtilitiesReliability.RetryOptions: must be nested inside a "FlextRoot*" container class. Wrap in a container whose name starts with "FlextRoot".
+
+Fix: See AGENTS.md § Model governance.
+  super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/flext_core/utilities.py:41: FlextMroViolation: 
+FlextUtilities violates FLEXT Model HARD rules:
+  - FlextUtilities: facade class base must be alias or peer concrete class (R4, R5). Use class Base(t): for Pattern A; class Base(t, FlextPeerXxx): for Pattern B.
+
+Fix: See AGENTS.md § Model governance.
+  class FlextUtilities(
+/home/marlonsc/flext/venv/lib/python3.14/site-packages/flext_core/utilities.py:41: FlextMroViolation: 
+FlextUtilities violates FLEXT Model HARD rules:
+  - FlextUtilities: multi-parent facade must have alias first in MRO (R5). Order bases: alias first (t), then concrete peer (FlextPeerXxx).
+
+Fix: See AGENTS.md § Model governance.
+  class FlextUtilities(
+ImportError while loading conftest '/home/marlonsc/flext/flext-web/tests/conftest.py'.
+tests/conftest.py:23: in <module>
+    from flask import Flask
+E   ModuleNotFoundError: No module named 'flask'

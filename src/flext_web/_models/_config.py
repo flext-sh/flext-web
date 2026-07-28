@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_cli import m, t, u
-from flext_web.constants import c
+from flext_cli import m, u
+from flext_web import FlextWebSettings, c, t
 
 
 class FlextWebModelsConfig:
@@ -40,17 +40,23 @@ class FlextWebModelsConfig:
             title: Annotated[
                 str,
                 u.Field(
+                    # Resolve the current global singleton lazily (the module-level
+                    # `settings` capture goes stale when the singleton is replaced).
+                    default_factory=lambda: (
+                        FlextWebSettings.fetch_global().Web.app_name
+                    ),
                     min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
                     max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                     description="FastAPI application title",
                 ),
-            ] = c.Web.DEFAULT_APP_NAME
+            ]
             version: Annotated[
                 str,
                 u.Field(
+                    default_factory=lambda: FlextWebSettings.fetch_global().Web.version,
                     description="Application version",
                 ),
-            ] = c.Web.DEFAULT_VERSION_STRING
+            ]
             description: Annotated[
                 str,
                 u.Field(
@@ -59,38 +65,22 @@ class FlextWebModelsConfig:
                     description="Application description",
                 ),
             ] = c.Web.API_DEFAULT_DESCRIPTION
-            debug: Annotated[
-                bool,
-                u.Field(description="FastAPI debug mode"),
-            ] = False
-            testing: Annotated[
-                bool,
-                u.Field(description="FastAPI testing mode"),
-            ] = False
+            debug: Annotated[bool, u.Field(description="FastAPI debug mode")] = False
+            testing: Annotated[bool, u.Field(description="FastAPI testing mode")] = (
+                False
+            )
             middlewares: Annotated[
-                t.StrSequence,
-                u.Field(
-                    description="List of middleware objects",
-                ),
+                t.StrSequence, u.Field(description="List of middleware objects")
             ] = u.Field(default_factory=list)
-            docs_url: Annotated[
-                str,
-                u.Field(
-                    description="Documentation URL",
-                ),
-            ] = c.Web.API_DOCS_URL
-            redoc_url: Annotated[
-                str,
-                u.Field(
-                    description="ReDoc URL",
-                ),
-            ] = c.Web.API_REDOC_URL
-            openapi_url: Annotated[
-                str,
-                u.Field(
-                    description="OpenAPI URL",
-                ),
-            ] = c.Web.API_OPENAPI_URL
+            docs_url: Annotated[str, u.Field(description="Documentation URL")] = (
+                c.Web.API_DOCS_URL
+            )
+            redoc_url: Annotated[str, u.Field(description="ReDoc URL")] = (
+                c.Web.API_REDOC_URL
+            )
+            openapi_url: Annotated[str, u.Field(description="OpenAPI URL")] = (
+                c.Web.API_OPENAPI_URL
+            )
 
 
 __all__: list[str] = ["FlextWebModelsConfig"]

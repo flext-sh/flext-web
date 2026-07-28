@@ -22,9 +22,7 @@ from flext_web._models import (
 )
 
 
-class FlextWebModels(
-    m,
-):
+class FlextWebModels(m):
     """Web application models collection.
 
     Provides Pydantic models for web applications with validation.

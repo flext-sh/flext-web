@@ -9,8 +9,8 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
-from flext_cli import p, r, t, u
-from flext_web.constants import c
+from flext_cli import u
+from flext_web import c, p, r, t
 
 from ._http import FlextWebModelsHttp
 
@@ -42,34 +42,22 @@ class FlextWebModelsWebMessage:
             """
 
             request_id: Annotated[
-                str,
-                u.Field(
-                    description="Unique request identifier",
-                ),
+                str, u.Field(description="Unique request identifier")
             ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
             query_params: Annotated[
                 t.MutableConfigurationMapping,
-                u.Field(
-                    description="Query string parameters",
-                ),
+                u.Field(description="Query string parameters"),
             ] = u.Field(default_factory=dict)
-            client_ip: Annotated[
-                str,
-                u.Field(description="Client IP address"),
-            ] = ""
-            user_agent: Annotated[
-                str,
-                u.Field(description="Client user agent"),
-            ] = ""
+            client_ip: Annotated[str, u.Field(description="Client IP address")] = ""
+            user_agent: Annotated[str, u.Field(description="Client user agent")] = ""
 
             @classmethod
             def create_web_request(
-                cls,
-                settings: FlextWebModelsWebMessage.Web.AppRequest,
+                cls, settings: FlextWebModelsWebMessage.Web.AppRequest
             ) -> p.Result[FlextWebModelsWebMessage.Web.AppRequest]:
                 """Re-validate an :class:`AppRequest` snapshot."""
                 return r[FlextWebModelsWebMessage.Web.AppRequest].create_from_callable(
-                    lambda: cls.model_validate(settings),
+                    lambda: cls.model_validate(settings)
                 )
 
         class AppResponse(FlextWebModelsHttp.Web.Response):
@@ -94,37 +82,23 @@ class FlextWebModelsWebMessage:
 
             elapsed_time: Annotated[
                 t.NonNegativeFloat,
-                u.Field(
-                    description="Response elapsed time in seconds",
-                ),
+                u.Field(description="Response elapsed time in seconds"),
             ] = 0.0
             response_id: Annotated[
-                str,
-                u.Field(
-                    description="Unique response identifier",
-                ),
+                str, u.Field(description="Unique response identifier")
             ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
             request_id: Annotated[
-                str,
-                u.Field(description="Associated request identifier"),
+                str, u.Field(description="Associated request identifier")
             ]
             content_type: Annotated[
-                str,
-                u.Field(
-                    description="Response content type",
-                ),
+                str, u.Field(description="Response content type")
             ] = c.Web.HTTP_CONTENT_TYPE_JSON
             content_length: Annotated[
-                t.NonNegativeInt,
-                u.Field(
-                    description="Response body length in bytes",
-                ),
+                t.NonNegativeInt, u.Field(description="Response body length in bytes")
             ] = 0
             processing_time_ms: Annotated[
                 t.NonNegativeFloat,
-                u.Field(
-                    description="Processing time in milliseconds",
-                ),
+                u.Field(description="Processing time in milliseconds"),
             ] = 0.0
 
             @property
@@ -140,12 +114,11 @@ class FlextWebModelsWebMessage:
 
             @classmethod
             def create_web_response(
-                cls,
-                settings: FlextWebModelsWebMessage.Web.AppResponse,
+                cls, settings: FlextWebModelsWebMessage.Web.AppResponse
             ) -> p.Result[FlextWebModelsWebMessage.Web.AppResponse]:
                 """Re-validate an :class:`AppResponse` snapshot."""
                 return r[FlextWebModelsWebMessage.Web.AppResponse].create_from_callable(
-                    lambda: cls.model_validate(settings),
+                    lambda: cls.model_validate(settings)
                 )
 
 

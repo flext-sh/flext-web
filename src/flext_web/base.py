@@ -16,10 +16,7 @@ from flext_core import FlextService
 from flext_web import FlextWebSettings
 
 
-class FlextWebServiceBase(
-    FlextService[bool],
-    ABC,
-):
+class FlextWebServiceBase(FlextService[bool], ABC):
     """Base class for flext-web services with typed `web` settings access."""
 
     _settings_type: ClassVar[type[FlextWebSettings]] = FlextWebSettings
@@ -27,7 +24,10 @@ class FlextWebServiceBase(
     @property
     @override
     def settings(self) -> FlextWebSettings:
-        """Return the typed web settings bound to this service runtime."""
+        """Typed web settings bound to this runtime (falls back to the global)."""
+        runtime = self.runtime_settings
+        if runtime is not None:
+            return FlextWebSettings.model_validate(runtime)
         return FlextWebSettings.fetch_global()
 
 
