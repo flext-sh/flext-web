@@ -39,7 +39,6 @@ class TestsFlextWebVersion:
         """The MRO-derived class version info is a three-integer release tuple."""
         version_info = FlextWebVersion.__version_info__
         tm.that(version_info, is_=tuple, none=False, empty=False, len=3)
-        tm.that(all(isinstance(component, int) for component in version_info), eq=True)
         tm.that(
             version_info[0],
             is_=int,

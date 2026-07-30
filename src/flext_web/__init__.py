@@ -7,28 +7,23 @@ from typing import TYPE_CHECKING
 
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
-from .__version__ import __author__ as __author__
-from .__version__ import __author_email__ as __author_email__
-from .__version__ import __description__ as __description__
-from .__version__ import __license__ as __license__
-from .__version__ import __title__ as __title__
-from .__version__ import __url__ as __url__
-from .__version__ import __version__ as __version__
-from .__version__ import __version_info__ as __version_info__
+from .__version__ import (
+    __author__ as __author__,
+    __author_email__ as __author_email__,
+    __description__ as __description__,
+    __license__ as __license__,
+    __title__ as __title__,
+    __url__ as __url__,
+    __version__ as __version__,
+    __version_info__ as __version_info__,
+)
 
 if TYPE_CHECKING:
-    from flext_cli import d as d
-    from flext_cli import e as e
-    from flext_cli import h as h
-    from flext_cli import r as r
-    from flext_cli import x as x
+    from flext_cli import d as d, e as e, h as h, r as r, x as x
 
-    from ._config import FlextWebConfig as FlextWebConfig
-    from ._config import config as config
-    from ._settings import FlextWebSettings as FlextWebSettings
-    from ._settings import settings as settings
-    from .api import FlextWeb as FlextWeb
-    from .api import web as web
+    from ._config import FlextWebConfig as FlextWebConfig, config as config
+    from ._settings import FlextWebSettings as FlextWebSettings, settings as settings
+    from .api import FlextWeb as FlextWeb, web as web
     from .base import FlextWebServiceBase as FlextWebServiceBase
 
     s: type[FlextWebServiceBase]
