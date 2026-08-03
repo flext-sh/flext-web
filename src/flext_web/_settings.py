@@ -15,10 +15,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated
 
-from pydantic import BaseModel, Field
 from pydantic_settings import SettingsConfigDict
 
-from flext_cli import FlextCliSettings
+from flext_cli import FlextCliSettings, m
 
 
 class FlextWebSettings(FlextCliSettings):
@@ -28,18 +27,18 @@ class FlextWebSettings(FlextCliSettings):
         env_prefix="FLEXT_WEB_", env_nested_delimiter="__", extra="ignore"
     )
 
-    class _Web(BaseModel):
+    class _Web(m.BaseModel):
         """Namespaced web runtime settings (pure declaration)."""
 
         app_name: Annotated[
-            str, Field(default="FLEXT Web", description="Application name")
+            str, m.Field(default="FLEXT Web", description="Application name")
         ]
         version: Annotated[
-            str, Field(default="1.0.0", description="Service semantic version")
+            str, m.Field(default="1.0.0", description="Service semantic version")
         ]
         host: Annotated[
             str,
-            Field(
+            m.Field(
                 default="localhost",
                 min_length=1,
                 pattern=r"\S",
@@ -47,31 +46,31 @@ class FlextWebSettings(FlextCliSettings):
             ),
         ]
         port: Annotated[
-            int, Field(default=8080, ge=1, le=65535, description="Bind port")
+            int, m.Field(default=8080, ge=1, le=65535, description="Bind port")
         ]
-        testing: Annotated[bool, Field(default=False, description="Testing flag")]
+        testing: Annotated[bool, m.Field(default=False, description="Testing flag")]
         secret_key: Annotated[
             str,
-            Field(
+            m.Field(
                 default="default-secret-key-32-characters-long-for-security",
                 min_length=32,
                 description="Application secret key",
             ),
         ]
         ssl_enabled: Annotated[
-            bool, Field(default=False, description="Enable TLS endpoints")
+            bool, m.Field(default=False, description="Enable TLS endpoints")
         ]
         ssl_cert_path: Annotated[
-            str | None, Field(default=None, description="TLS certificate file path")
+            str | None, m.Field(default=None, description="TLS certificate file path")
         ]
         ssl_key_path: Annotated[
-            str | None, Field(default=None, description="TLS key file path")
+            str | None, m.Field(default=None, description="TLS key file path")
         ]
 
     if TYPE_CHECKING:
         Web: _Web
     else:
-        Web: _Web = Field(default_factory=_Web, description="Namespaced web settings.")
+        Web: _Web = m.Field(default_factory=_Web, description="Namespaced web settings.")
 
 
 settings: FlextWebSettings = FlextWebSettings.fetch_global()
