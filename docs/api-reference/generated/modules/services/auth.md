@@ -2,6 +2,10 @@
 
 # flext_web.services.auth
 
+<!-- TOC START -->
+- No sections found
+<!-- TOC END -->
+
 ::: flext_web.services.auth
     options:
       show_root_heading: true

@@ -28,9 +28,7 @@ settings_result = web.settings.create_web_config(
 assert settings_result.success
 
 web.create_fastapi_app()
-web.get_service_status()
-```
-
+web.get_service_status()```
 ## Working Pattern
 
 - Use `web.settings` for configuration access.
