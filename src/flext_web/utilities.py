@@ -108,8 +108,7 @@ class FlextWebUtilities(u):
             """Resolve the runtime model lazily to avoid package cycles."""
             models_module = import_module("flext_web.models")
             return cast(
-                "type[m.Web.AppRuntimeInfo]",
-                models_module.m.Web.AppRuntimeInfo,
+                "type[m.Web.AppRuntimeInfo]", models_module.m.Web.AppRuntimeInfo
             )
 
         @classmethod
@@ -342,18 +341,14 @@ class FlextWebUtilities(u):
                 )
             if interface == c.Web.FRAMEWORK_INTERFACE_ASGI:
                 if isinstance(app_instance, FastAPI):
-                    return cls._start_uvicorn_runtime(
-                        app_id, app_instance, host, port
-                    )
+                    return cls._start_uvicorn_runtime(app_id, app_instance, host, port)
                 return r[app_runtime_model].fail(
                     f"ASGI runtime requires a FastAPI app: {app_id}"
                 )
             if interface == c.Web.FRAMEWORK_INTERFACE_WSGI and isinstance(
                 app_instance, flask.Flask
             ):
-                return cls._start_werkzeug_runtime(
-                    app_id, app_instance, host, port
-                )
+                return cls._start_werkzeug_runtime(app_id, app_instance, host, port)
             return r[app_runtime_model].fail(
                 f"Unsupported app interface for runtime start: {interface}"
             )
@@ -386,9 +381,7 @@ class FlextWebUtilities(u):
             cls, app_id: str, runtime: m.Web.AppRuntimeInfo
         ) -> p.Result[bool]:
             try:
-                stop_result = cls._stop_runner(
-                    runtime.runner, runtime.server, app_id
-                )
+                stop_result = cls._stop_runner(runtime.runner, runtime.server, app_id)
                 if stop_result.failure:
                     return stop_result
                 runtime.thread.join(timeout=2.0)

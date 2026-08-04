@@ -70,7 +70,9 @@ class FlextWebSettings(FlextCliSettings):
     if TYPE_CHECKING:
         Web: _Web
     else:
-        Web: _Web = m.Field(default_factory=_Web, description="Namespaced web settings.")
+        Web: _Web = m.Field(
+            default_factory=_Web, description="Namespaced web settings."
+        )
 
 
 settings: FlextWebSettings = FlextWebSettings.fetch_global()
