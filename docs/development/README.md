@@ -14,9 +14,7 @@ architectures.
 ## Canonical Entry Point
 
 ```python
-from flext_web import web
 ```
-
 ## Implementation Map
 
 - `api.py`: public facade
@@ -45,9 +43,7 @@ web.create_flask_app()
 web.create_app(...)
 web.start_app(...)
 web.start_service(...)
-web.stop_service()
-```
-
+web.stop_service()```
 ## Contribution Guardrails
 
 - Keep `api.py` thin.

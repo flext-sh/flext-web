@@ -2,6 +2,10 @@
 
 # flext_web.services.entities
 
+<!-- TOC START -->
+- No sections found
+<!-- TOC END -->
+
 ::: flext_web.services.entities
     options:
       show_root_heading: true

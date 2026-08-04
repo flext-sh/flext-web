@@ -101,7 +101,6 @@ docker run -v $(pwd)/data:/app/data flext:latest
 ```python
 from __future__ import annotations
 from flext_cli import u
-from flext_core import FlextSettings
 
 # Create dependency injection container
 container = FlextContainer()
@@ -109,9 +108,7 @@ container = FlextContainer()
 # Register services (example)
 # container.bind(IService, ServiceImplementation())
 
-u.Cli.print("FLEXT application initialized!")
-```
-
+u.Cli.print("FLEXT application initialized!")```
 ### 2. Using flext-ldif for LDIF Processing
 
 ```python
@@ -131,15 +128,12 @@ if result.success:
     entries = result.unwrap()
     u.Cli.print(f"Successfully parsed {len(entries)} LDIF entries")
 else:
-    u.Cli.print(f"Failed to parse LDIF: {result.failure()}")
-```
-
+    u.Cli.print(f"Failed to parse LDIF: {result.failure()}")```
 ### 3. Railway-Oriented Error Handling
 
 ```python
 from __future__ import annotations
 from flext_cli import u
-from flext_core import FlextSettings
 
 
 def process_ldif_data(content: str) -> p.Result[str, Exception]:
@@ -168,15 +162,11 @@ result = process_ldif_data(ldif_content)
 if result.success:
     u.Cli.print(f"Success: {result.unwrap()}")
 else:
-    u.Cli.print(f"Error: {result.failure()}")
-```
-
+    u.Cli.print(f"Error: {result.failure()}")```
 ### 4. CQRS Pattern with Commands and Queries
 
 ```python
 from __future__ import annotations
-from flext_cli import u
-from flext_core import FlextSettings
 from dataclasses import dataclass
 
 
@@ -210,9 +200,7 @@ dispatcher.register_handler(GetUserQuery, user_service.get_user)
 
 # Use the dispatcher
 create_result = dispatcher.dispatch(CreateUserCommand("john", "john@example.com"))
-get_result = dispatcher.dispatch(GetUserQuery("user123"))
-```
-
+get_result = dispatcher.dispatch(GetUserQuery("user123"))```
 ## Configuration
 
 ### Basic Configuration
@@ -240,9 +228,7 @@ settings = FlextLdifSettings(
 )
 
 # Use configuration
-ldif = ldif(settings=settings)
-```
-
+ldif = ldif(settings=settings)```
 ## Next Steps
 
 ### Explore the Ecosystem
