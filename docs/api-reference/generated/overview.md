@@ -16,11 +16,16 @@
   :: 3.13` (+3 more)
 - Project class: `platform`
 - Keywords: `enterprise`, `flask`, `flext`, `frontend`, `typed`, `web`
-- Main facades: _none_
-- Alias exports: _none_
-- Public symbol exports: _none_
+- Main facades: `FlextWeb`, `FlextWebConfig`, `FlextWebConstants`,
+  `FlextWebModels`, `FlextWebProtocols`, `FlextWebServiceBase`,
+  `FlextWebSettings`, `FlextWebServices` (+7 more)
+- Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
+- Public symbol exports: `FlextWeb`, `FlextWebConfig`, `FlextWebConstants`,
+  `FlextWebModels`, `FlextWebProtocols`, `FlextWebServiceBase`,
+  `FlextWebSettings`, `FlextWebServices`, `FlextWebHealth`, `FlextWebHandlers`
+  (+8 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `0`
+- Generated module pages: `13`
 
 ## Next Pages
 
