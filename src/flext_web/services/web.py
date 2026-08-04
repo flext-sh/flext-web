@@ -40,7 +40,7 @@ class FlextWebServices(s):
 
     def _runtime_settings_clone(self) -> FlextWebSettings:
         """Return a clone of the bound runtime settings for child services."""
-        return self.settings.clone()
+        return FlextWebSettings.model_validate(self.settings.clone())
 
     def authenticate(
         self, credentials: m.Web.Credentials

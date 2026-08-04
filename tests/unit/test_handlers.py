@@ -14,7 +14,7 @@ class TestsFlextWebHandlers:
 
     def setup_method(self) -> None:
         """Reset the public runtime to a stopped state before each test."""
-        self._allocated_ports: list[int] = []
+        self._allocated_ports = []
         apps_result = web.list_apps()
         if apps_result.success:
             for app in apps_result.value:

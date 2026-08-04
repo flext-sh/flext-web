@@ -42,6 +42,12 @@ if TYPE_CHECKING:
     from .utilities import FlextWebUtilities as FlextWebUtilities
 
     u: type[FlextWebUtilities]
+    from .services.app import FlextWebApp as FlextWebApp
+    from .services.auth import FlextWebAuth as FlextWebAuth
+    from .services.entities import FlextWebEntities as FlextWebEntities
+    from .services.handlers import FlextWebHandlers as FlextWebHandlers
+    from .services.health import FlextWebHealth as FlextWebHealth
+    from .services.web import FlextWebServices as FlextWebServices
 
 _LAZY_MODULES: dict[str, tuple[str, ...]] = {
     "._config": ("FlextWebConfig", "config"),
@@ -53,6 +59,12 @@ _LAZY_MODULES: dict[str, tuple[str, ...]] = {
     ".protocols": ("FlextWebProtocols", "p"),
     ".typings": ("FlextWebTypes", "t"),
     ".utilities": ("FlextWebUtilities", "u"),
+    ".services.app": ("FlextWebApp",),
+    ".services.auth": ("FlextWebAuth",),
+    ".services.entities": ("FlextWebEntities",),
+    ".services.handlers": ("FlextWebHandlers",),
+    ".services.health": ("FlextWebHealth",),
+    ".services.web": ("FlextWebServices",),
     "flext_cli": ("d", "e", "h", "r", "x"),
 }
 
@@ -72,6 +84,12 @@ _PUBLIC_EXPORTS: tuple[str, ...] = (
     "FlextWebProtocols",
     "FlextWebServiceBase",
     "FlextWebSettings",
+    "FlextWebServices",
+    "FlextWebHealth",
+    "FlextWebHandlers",
+    "FlextWebEntities",
+    "FlextWebAuth",
+    "FlextWebApp",
     "FlextWebTypes",
     "FlextWebUtilities",
     "__author__",
