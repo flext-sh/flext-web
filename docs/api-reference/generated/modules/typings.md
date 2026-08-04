@@ -2,6 +2,10 @@
 
 # flext_web.typings
 
+<!-- TOC START -->
+- No sections found
+<!-- TOC END -->
+
 ::: flext_web.typings
     options:
       show_root_heading: true

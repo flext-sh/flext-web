@@ -2,6 +2,10 @@
 
 # flext_web.services.health
 
+<!-- TOC START -->
+- No sections found
+<!-- TOC END -->
+
 ::: flext_web.services.health
     options:
       show_root_heading: true
