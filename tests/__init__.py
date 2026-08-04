@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from tests.constants import TestsFlextWebConstants as TestsFlextWebConstants, c as c
     from tests.models import TestsFlextWebModels as TestsFlextWebModels, m as m
     from tests.protocols import TestsFlextWebProtocols as TestsFlextWebProtocols, p
+    from tests.settings import TestsFlextWebSettings as TestsFlextWebSettings
     from tests.typings import TestsFlextWebTypes as TestsFlextWebTypes, t as t
     from tests.utilities import TestsFlextWebUtilities as TestsFlextWebUtilities, u
 
@@ -22,6 +23,7 @@ _LAZY_IMPORTS = build_lazy_import_map({
     ".models": ("TestsFlextWebModels", "m"),
     ".utilities": ("TestsFlextWebUtilities", "u"),
     ".base": ("TestsFlextWebServiceBase", "s"),
+    ".settings": ("TestsFlextWebSettings",),
 })
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
