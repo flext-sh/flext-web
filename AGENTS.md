@@ -33,6 +33,8 @@ src/flext_web/
 
 - Keep web behavior in the service/facade layer; treat generated declaration facets as data-only.
 - Response payloads typed via `t.Web.*` aliases (never raw dict / `m.Dict`); `_start_app_runtime` narrows the interface via `isinstance` guards.
+- Config/settings canonical pattern: ADR-012.
+- Codemod governance (ast-grep + make mod): ADR-014.
 
 ## Commands
 
