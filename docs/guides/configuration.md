@@ -180,9 +180,7 @@ ldif:
 
 api:
   base_url: http://localhost:8000
-  timeout: 60
-```
-
+  timeout: 60```
 ### Production Environment
 
 ```yaml
@@ -199,9 +197,7 @@ ldif:
 api:
   base_url: https://api.production.com
   timeout: 30
-  retry_attempts: 5
-```
-
+  retry_attempts: 5```
 ## Configuration Validation
 
 All configuration is validated using Pydantic v2 models:
@@ -241,9 +237,7 @@ extended_config = FlextSettings(
 ```bash
 # Never put secrets in configuration files
 export FLEXT_DATABASE_PASSWORD=secret_password
-export FLEXT_API_KEY=your_api_key
-```
-
+export FLEXT_API_KEY=your_api_key```
 ### 2. Validate Configuration Early
 
 ```python

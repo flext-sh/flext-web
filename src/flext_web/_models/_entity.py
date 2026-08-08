@@ -184,9 +184,6 @@ class FlextWebModelsEntity:
                 Returns:
                     Formatted application ID
 
-                Raises:
-                    ValueError: If name cannot be formatted to valid ID
-
                 """
                 return u.format_app_id(name)
 
