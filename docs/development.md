@@ -72,5 +72,4 @@ Changes are not complete until both commands pass:
 
 ```bash
 make check PROJECT=flext-web
-make test PROJECT=flext-web
-```
+make test PROJECT=flext-web```
