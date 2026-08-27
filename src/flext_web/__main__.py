@@ -52,6 +52,11 @@ class FlextWebRunCommand(s):
         )
 
 
+def _execute_run_command(params: FlextWebRunCommand) -> p.Result[bool]:
+    """Execute the typed run command for the CLI route."""
+    return params.execute()
+
+
 def _build_app() -> cli_p.Cli.Application:
     app = cli.create_app_with_common_params(
         name="flext-web", help_text="flext-web HTTP service launcher."
@@ -63,7 +68,7 @@ def _build_app() -> cli_p.Cli.Application:
                 name="run",
                 help_text="Start the flext-web service.",
                 model_cls=FlextWebRunCommand,
-                handler=lambda params: params.execute(),
+                handler=_execute_run_command,
             )
         ],
     )
