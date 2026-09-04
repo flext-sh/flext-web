@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flext_core import FlextWebConstants
+from flext_web import FlextWebConstants
 
 class ExamplesFlextWebConstants(FlextWebConstants):
     """Constants for flextweb."""

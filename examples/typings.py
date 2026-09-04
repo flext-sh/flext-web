@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flext_core import FlextWebTypes
+from flext_web import FlextWebTypes
 
 class ExamplesFlextWebTypes(FlextWebTypes):
     """Type aliases for flextweb."""

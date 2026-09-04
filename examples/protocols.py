@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flext_core import FlextWebProtocols
+from flext_web import FlextWebProtocols
 
 class ExamplesFlextWebProtocols(FlextWebProtocols):
     """Protocol definitions for flextweb."""
