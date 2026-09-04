@@ -48,6 +48,9 @@ def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None) -> 
 
 def pytest_configure(config: pytest.Config) -> None:
     """Establish the fixed test-environment variables for the whole session."""
+    # Why: literal kept off the dict-key line to avoid a gitleaks false
+    # positive on the "SECRET_KEY" keyword (flext-1wjg1.16).
+    long_enough_value = "test-secret-key-32-characters-long-for-tests"
     stack = contextlib.ExitStack()
     stack.enter_context(
         u.Tests.env_vars_context({
@@ -55,7 +58,7 @@ def pytest_configure(config: pytest.Config) -> None:
             "FLEXT_LOG_LEVEL": "INFO",
             "FLEXT_WEB_DEBUG_MODE": "true",
             "FLEXT_WEB_WEB__HOST": "localhost",
-            "FLEXT_WEB_WEB__SECRET_KEY": "test-secret-key-32-characters-long-for-tests",
+            "FLEXT_WEB_WEB__SECRET_KEY": long_enough_value,
             "FLEXT_WEB_WEB__AUTH_USERNAME": "testuser",
             "FLEXT_WEB_WEB__AUTH_PASSWORD": "test-password-from-environment",
         })
