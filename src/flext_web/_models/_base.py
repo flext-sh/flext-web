@@ -15,7 +15,9 @@ class FlextWebModelsBase:
     @classmethod
     def coerce_method(cls, value: t.Scalar) -> c.Web.Method:
         """Coerce user-provided HTTP method values into the Web method enum."""
-        normalized_value = value.upper() if isinstance(value, str) else value
+        # A method is a string token; any other scalar is compared by its text
+        # form and rejected by the enum when it names no method.
+        normalized_value = (value if isinstance(value, str) else str(value)).upper()
         return c.Web.Method(normalized_value)
 
 
