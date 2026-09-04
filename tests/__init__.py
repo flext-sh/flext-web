@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from typing import Final
 
     from .base import TestsFlextWebServiceBase, TestsFlextWebServiceBase as s
-    from .conftest import setup_test_environment
+    from .conftest import pytest_unconfigure
     from .constants import TestsFlextWebConstants, TestsFlextWebConstants as c
     from .fixtures.auth import WebAuthFixture
     from .models import TestsFlextWebModels, TestsFlextWebModels as m
@@ -46,9 +46,9 @@ __all__: tuple[str, ...] = (
     "integration",
     "m",
     "p",
+    "pytest_unconfigure",
     "r",
     "s",
-    "setup_test_environment",
     "t",
     "td",
     "tf",
@@ -64,7 +64,7 @@ _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
             ".base": ("TestsFlextWebServiceBase", "s"),
-            ".conftest": ("setup_test_environment",),
+            ".conftest": ("pytest_unconfigure",),
             ".constants": ("TestsFlextWebConstants", "c"),
             ".fixtures": ("fixtures",),
             ".fixtures.auth": ("WebAuthFixture",),
