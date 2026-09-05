@@ -11,17 +11,6 @@ from tests.fixtures import WebAuthFixture
 class TestsFlextWebService:
     """Tests for the canonical web service layer through `web`."""
 
-    def setup_method(self) -> None:
-        """Stop any running service before each test."""
-        apps_result = web.list_apps()
-        if apps_result.success:
-            for app in apps_result.value:
-                if app.status == "running":
-                    _ = web.stop_app(app.id)
-        status_result = web.service_status()
-        if status_result.success and status_result.value.status == "operational":
-            _ = web.stop_service()
-
     def test_authenticate_success(self) -> None:
         """Authentication succeeds for the canonical test credentials."""
         credentials = WebAuthFixture().credentials
