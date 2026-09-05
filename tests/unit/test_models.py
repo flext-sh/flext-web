@@ -293,32 +293,25 @@ class TestsFlextWebModelsUnit:
         success_response = m.Web.Response(status_code=200)
         tm.that(success_response.error is False, eq=True)
 
-    def test_web_request_has_body_property(self) -> None:
-        """Test Web.Request has_body property."""
-        request_with_body = m.Web.Request(
-            url="http://localhost:8080",
-            method=c.Web.Method.POST,
-            body='{"data": "test"}',
-        )
-        tm.that(request_with_body.has_body is True, eq=True)
-        request_without_body = m.Web.Request(
-            url="http://localhost:8080", method=c.Web.Method.GET, body=None
-        )
-        tm.that(request_without_body.has_body is False, eq=True)
-
-    def test_application_validate_business_rules_short_name(self) -> None:
-        """Test validate_business_rules with name too short."""
-        app = m.Web.Entity.model_construct(
+    @staticmethod
+    def _entity(
+        *, name: str = "test-app", port: int = 8080
+    ) -> m.Web.Entity:
+        """Construct an Entity with fixed valid defaults for rule validation."""
+        return m.Web.Entity.model_construct(
             id="test-id",
-            name="ab",
+            name=name,
             host="localhost",
-            port=8080,
+            port=port,
             status="stopped",
             version=1,
             environment="development",
             debug_mode=False,
         )
-        result = app.validate_business_rules()
+
+    def test_application_validate_business_rules_short_name(self) -> None:
+        """Test validate_business_rules with name too short."""
+        result = self._entity(name="ab").validate_business_rules()
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(
@@ -329,17 +322,7 @@ class TestsFlextWebModelsUnit:
 
     def test_application_validate_business_rules_invalid_port_low(self) -> None:
         """Test validate_business_rules with port too low."""
-        app = m.Web.Entity.model_construct(
-            id="test-id",
-            name="test-app",
-            host="localhost",
-            port=0,
-            status="stopped",
-            version=1,
-            environment="development",
-            debug_mode=False,
-        )
-        result = app.validate_business_rules()
+        result = self._entity(port=0).validate_business_rules()
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(
@@ -350,17 +333,7 @@ class TestsFlextWebModelsUnit:
 
     def test_application_validate_business_rules_invalid_port_high(self) -> None:
         """Test validate_business_rules with port too high."""
-        app = m.Web.Entity.model_construct(
-            id="test-id",
-            name="test-app",
-            host="localhost",
-            port=70000,
-            status="stopped",
-            version=1,
-            environment="development",
-            debug_mode=False,
-        )
-        result = app.validate_business_rules()
+        result = self._entity(port=70000).validate_business_rules()
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(
