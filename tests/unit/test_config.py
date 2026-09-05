@@ -79,10 +79,10 @@ class TestsFlextWebConfig:
         settings_tls = web.settings.clone(Web={"ssl_enabled": True})
         tm.that(u.Web.protocol(ssl_enabled=settings_tls.Web.ssl_enabled), eq="https")
 
-    def test_base_url_generation(self) -> None:
-        """The base URL is derived from the settings namespace via u.Web."""
+    def test_base_url_generation_tls(self) -> None:
+        """The base URL derives its scheme from the TLS flag via u.Web."""
         settings = web.settings.clone(
-            Web={"host": "localhost", "port": 8080, "ssl_enabled": False}
+            Web={"host": "config-host", "port": 8443, "ssl_enabled": True}
         )
         tm.that(
             u.Web.base_url(
@@ -90,7 +90,7 @@ class TestsFlextWebConfig:
                 port=settings.Web.port,
                 ssl_enabled=settings.Web.ssl_enabled,
             ),
-            eq="http://localhost:8080",
+            eq="https://config-host:8443",
         )
 
     def test_validate_config_success(self) -> None:

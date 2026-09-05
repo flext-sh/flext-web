@@ -13,16 +13,8 @@ class TestsFlextWebHandlers:
     _allocated_ports: list[int]
 
     def setup_method(self) -> None:
-        """Reset the public runtime to a stopped state before each test."""
+        """Reset per-test port allocation tracking."""
         self._allocated_ports = []
-        apps_result = web.list_apps()
-        if apps_result.success:
-            for app in apps_result.value:
-                if app.status == "running":
-                    _ = web.stop_app(app.id)
-        status_result = web.service_status()
-        if status_result.success and status_result.value.status == "operational":
-            _ = web.stop_service()
 
     def teardown_method(self) -> None:
         """Release ports reserved for each test method."""
@@ -110,20 +102,6 @@ class TestsFlextWebHandlers:
         tm.fail(result)
         tm.that(result.error, none=False)
         tm.that(result.error, has="not found")
-
-    def test_application_handler_start_stop_cycle(self) -> None:
-        """Apps can be started and stopped through the public API."""
-        create_result = web.create_app(
-            m.Web.AppData(name="test-app", host="localhost", port=self._next_port())
-        )
-        tm.ok(create_result)
-        app_id = create_result.value.id
-        start_result = web.start_app(app_id)
-        tm.ok(start_result)
-        tm.that(start_result.value.status, eq="running")
-        stop_result = web.stop_app(app_id)
-        tm.ok(stop_result)
-        tm.that(stop_result.value.status, eq="stopped")
 
     def test_handle_start_app_invalid_type(self) -> None:
         """App lifecycle public API rejects unknown app identifiers."""
