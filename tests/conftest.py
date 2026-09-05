@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from flext_web import FlextWebSettings
+from flext_web import web
 from tests import u
 
 if TYPE_CHECKING:
@@ -44,6 +45,19 @@ def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None) -> 
         "service_running": False,
     })
     FlextWebSettings.reset_for_testing()
+
+
+@pytest.fixture(autouse=True)
+def reset_web_runtime() -> None:
+    """Stop any running public runtime through the facade before each test."""
+    apps_result = web.list_apps()
+    if apps_result.success:
+        for app in apps_result.value:
+            if app.status == "running":
+                _ = web.stop_app(app.id)
+    status_result = web.service_status()
+    if status_result.success and status_result.value.status == "operational":
+        _ = web.stop_service()
 
 
 @pytest.fixture(autouse=True)
