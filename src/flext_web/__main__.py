@@ -83,7 +83,7 @@ def main(argv: t.StrSequence | None = None) -> int:
         prog_name="flext-web",
         args=list(argv) if argv is not None else sys.argv[1:],
     )
-    return 0 if outcome.success else 1
+    return cli.finalize_result(outcome)
 
 
 if __name__ == "__main__":
