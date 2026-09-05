@@ -82,21 +82,21 @@ class FlextWebModelsHttp:
 
             @property
             def has_body(self) -> bool:
-                """Check if HTTP request has a message body.
-
+                """Whether HTTP request has a message body.
+                
                 Returns:
                 True if body is not None, False otherwise
-
+                
                 """
                 return self.body is not None
 
             @property
             def secure(self) -> bool:
-                """Check if HTTP request uses HTTPS protocol.
-
+                """Whether HTTP request uses HTTPS protocol.
+                
                 Returns:
                 True if URL starts with 'https://', False otherwise
-
+                
                 """
                 return self.url.startswith("https://")
 
@@ -142,22 +142,22 @@ class FlextWebModelsHttp:
 
             @property
             def error(self) -> bool:
-                """Check if HTTP status indicates client or server error.
-
+                """Whether HTTP status indicates client or server error.
+                
                 Returns:
                     True if status_code >= c.ERROR_MIN, False otherwise
-
+                
                 """
                 has_error: bool = self.status_code >= c.Web.ERROR_MIN
                 return has_error
 
             @property
             def success(self) -> bool:
-                """Check if HTTP status indicates success (2xx range).
-
+                """Whether HTTP status indicates success (2xx range).
+                
                 Returns:
                     True if status code in range(*c.SUCCESS_RANGE), False otherwise
-
+                
                 """
                 success_min, success_max = c.Web.SUCCESS_RANGE
                 is_success: bool = success_min <= self.status_code <= success_max
