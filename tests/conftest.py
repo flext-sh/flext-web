@@ -19,10 +19,8 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 
-def pytest_runtest_setup(item: pytest.Item) -> None:
-    """Reset the web settings singleton before each test for isolation."""
-    _ = item
-    FlextWebSettings.reset_for_testing()
+def _reset_web_runtime_state() -> None:
+    """Reset every shared web runtime registry to its pristine state."""
     u.Web.apps_registry.clear()
     u.Web.app_runtimes.clear()
     u.Web.framework_instances.clear()
@@ -31,19 +29,23 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
         "middleware_configured": False,
         "service_running": False,
     })
+    u.Web.template_config.clear()
+    u.Web.template_filters.clear()
+    u.Web.template_globals.clear()
+    u.Web.web_metrics.clear()
+
+
+def pytest_runtest_setup(item: pytest.Item) -> None:
+    """Reset the web settings singleton and runtime state before each test."""
+    _ = item
+    FlextWebSettings.reset_for_testing()
+    _reset_web_runtime_state()
 
 
 def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None) -> None:
-    """Reset the web settings singleton after each test to prevent leaks."""
+    """Reset the web runtime state and settings singleton after each test."""
     _ = item, nextitem
-    u.Web.apps_registry.clear()
-    u.Web.app_runtimes.clear()
-    u.Web.framework_instances.clear()
-    u.Web.service_state.update({
-        "routes_initialized": False,
-        "middleware_configured": False,
-        "service_running": False,
-    })
+    _reset_web_runtime_state()
     FlextWebSettings.reset_for_testing()
 
 

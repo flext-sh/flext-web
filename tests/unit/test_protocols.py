@@ -21,29 +21,8 @@ class TestsFlextWebProtocolsUnit:
     """Real-behavior tests for the web protocol runtime via `u.Web`."""
 
     @staticmethod
-    def _reset_protocol_state() -> None:
-        u.Web.apps_registry.clear()
-        u.Web.framework_instances.clear()
-        u.Web.app_runtimes.clear()
-        u.Web.service_state.update({
-            "routes_initialized": False,
-            "middleware_configured": False,
-            "service_running": False,
-        })
-        u.Web.template_config.clear()
-        u.Web.template_filters.clear()
-        u.Web.template_globals.clear()
-        u.Web.web_metrics.update({
-            "requests": 0,
-            "errors": 0,
-            "uptime": "0s",
-            "avg_response_time_ms": 0,
-        })
-
-    @staticmethod
     def _assert_protocol_base_lifecycle() -> None:
         """Exercise protocol-base lifecycle with a real ephemeral port."""
-        TestsFlextWebProtocolsUnit._reset_protocol_state()
         manager = u.Web.WebAppManager
         test_port = u.Web.Tests.TestPortManager.allocate_port()
         app_id: str | None = None
@@ -76,7 +55,6 @@ class TestsFlextWebProtocolsUnit:
 
     def test_service_protocol_real_behavior(self) -> None:
         """Service rejects start before setup, then runs the real lifecycle."""
-        self._reset_protocol_state()
         service = u.Web.WebService
         start_without_setup = service.start_service()
         tm.fail(start_without_setup)
@@ -87,7 +65,6 @@ class TestsFlextWebProtocolsUnit:
 
     def test_repository_protocol_real_behavior(self) -> None:
         """Repository returns apps matching real criteria."""
-        self._reset_protocol_state()
         manager = u.Web.WebAppManager
         created = manager.create_app("repo-app", 8081, "127.0.0.1")
         tm.ok(created)
@@ -98,7 +75,6 @@ class TestsFlextWebProtocolsUnit:
 
     def test_handler_protocol_real_behavior(self) -> None:
         """Handler creates then lists apps via real request dispatch."""
-        self._reset_protocol_state()
         handler = u.Web.WebHandler
         create_result = handler.handle_request({
             "action": "create",
@@ -113,7 +89,6 @@ class TestsFlextWebProtocolsUnit:
 
     def test_protocol_app_lifecycle_end_to_end(self) -> None:
         """Create, list, start, and stop transition through real app states."""
-        self._reset_protocol_state()
         manager = u.Web.WebAppManager
         create_result = manager.create_app("lifecycle-app", 7070, "localhost")
         tm.ok(create_result)
@@ -131,7 +106,6 @@ class TestsFlextWebProtocolsUnit:
 
     def test_create_app_configures_protocol_health_route(self) -> None:
         """create_app registers the real /protocol/health endpoint."""
-        self._reset_protocol_state()
         manager = u.Web.WebAppManager
         create_result = manager.create_app("route-app", 7171, "localhost")
         tm.ok(create_result)
@@ -151,7 +125,6 @@ class TestsFlextWebProtocolsUnit:
 
     def test_start_stop_manage_runtime_registry(self) -> None:
         """Runtime metadata persists on start and is cleaned up on stop."""
-        self._reset_protocol_state()
         manager = u.Web.WebAppManager
         created = manager.create_app("runtime-app", 7272, "localhost")
         tm.ok(created)

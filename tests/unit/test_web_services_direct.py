@@ -9,19 +9,6 @@ from flext_web import FlextWebServices, FlextWebSettings, u
 class TestsFlextWebServicesDirect:
     """Test suite for FlextWebServices methods."""
 
-    def setup_method(self) -> None:
-        """Reset shared protocol runtime state."""
-        FlextWebSettings.reset_for_testing()
-        u.Web.apps_registry.clear()
-        u.Web.framework_instances.clear()
-        u.Web.app_runtimes.clear()
-        u.Web.service_state.update({
-            "routes_initialized": False,
-            "middleware_configured": False,
-            "service_running": False,
-        })
-        u.Web.web_metrics.clear()
-
     def test_create_service_with_settings(self) -> None:
         """create_service accepts settings overrides."""
         settings = FlextWebSettings().clone(Web={"app_name": "direct-test"})
