@@ -309,38 +309,23 @@ class TestsFlextWebModelsUnit:
             debug_mode=False,
         )
 
-    def test_application_validate_business_rules_short_name(self) -> None:
-        """Test validate_business_rules with name too short."""
-        result = self._entity(name="ab").validate_business_rules()
+    @pytest.mark.parametrize(
+        ("name", "port", "fragments"),
+        [
+            ("ab", 8080, ("name", "at least")),
+            ("test-app", 0, ("port", "between")),
+            ("test-app", 70000, ("port", "between")),
+        ],
+    )
+    def test_application_validate_business_rules_rejects(
+        self, name: str, port: int, fragments: tuple[str, ...]
+    ) -> None:
+        """validate_business_rules rejects entities breaking each rule."""
+        result = self._entity(name=name, port=port).validate_business_rules()
         tm.fail(result)
         tm.that(result.error, none=False)
-        tm.that(
-            "name" in (result.error or "").lower()
-            or "at least" in (result.error or "").lower(),
-            eq=True,
-        )
-
-    def test_application_validate_business_rules_invalid_port_low(self) -> None:
-        """Test validate_business_rules with port too low."""
-        result = self._entity(port=0).validate_business_rules()
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(
-            "port" in (result.error or "").lower()
-            or "between" in (result.error or "").lower(),
-            eq=True,
-        )
-
-    def test_application_validate_business_rules_invalid_port_high(self) -> None:
-        """Test validate_business_rules with port too high."""
-        result = self._entity(port=70000).validate_business_rules()
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(
-            "port" in (result.error or "").lower()
-            or "between" in (result.error or "").lower(),
-            eq=True,
-        )
+        error = (result.error or "").lower()
+        tm.that(any(fragment in error for fragment in fragments), eq=True)
 
     def test_application_update_metrics_invalid_type(self) -> None:
         """Test update_metrics with invalid type."""
