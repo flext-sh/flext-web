@@ -60,9 +60,10 @@ class TestsFlextWebConfig:
 
     def test_validation_secret_key_valid(self) -> None:
         """Valid secret keys are accepted by namespaced validation."""
-        settings = web.settings.clone(
-            Web={"secret_key": "valid-secret-key-32-characters-long"}
-        )
+        # Why: literal kept off the dict-key line to avoid a gitleaks
+        # false positive on the "secret_key" keyword (flext-1wjg1.16).
+        long_enough_value = "valid-secret-key-32-characters-long"
+        settings = web.settings.clone(Web={"secret_key": long_enough_value})
         tm.that(settings.Web.secret_key, none=False)
 
     def test_ssl_configuration_valid(self) -> None:
