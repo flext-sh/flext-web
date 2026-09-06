@@ -294,9 +294,7 @@ class TestsFlextWebModelsUnit:
         tm.that(success_response.error is False, eq=True)
 
     @staticmethod
-    def _entity(
-        *, name: str = "test-app", port: int = 8080
-    ) -> m.Web.Entity:
+    def _entity(*, name: str = "test-app", port: int = 8080) -> m.Web.Entity:
         """Construct an Entity with fixed valid defaults for rule validation."""
         return m.Web.Entity.model_construct(
             id="test-id",

@@ -247,7 +247,9 @@ class FlextWebServices(s):
         try:
             response = m.Web.ApplicationResponse.model_validate(response_payload)
         except c.ValidationError as exc:
-            return r[m.Web.ApplicationResponse].fail(f"Invalid application payload: {exc}", exception=exc)
+            return r[m.Web.ApplicationResponse].fail(
+                f"Invalid application payload: {exc}", exception=exc
+            )
         return r[m.Web.ApplicationResponse].ok(response)
 
     def _application_responses_from_payloads(

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from flext_core import FlextWebUtilities
 
+
 class ExamplesFlextWebUtilities(FlextWebUtilities):
     """Utility functions for flextweb."""
 
