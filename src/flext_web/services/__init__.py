@@ -1,38 +1,22 @@
-# @generated AUTO-GENERATED FILE — Regenerate with: make gen
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Flext Web.services package."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from types import MappingProxyType
+
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from .app import FlextWebApp as FlextWebApp
-    from .auth import FlextWebAuth as FlextWebAuth
-    from .entities import FlextWebEntities as FlextWebEntities
-    from .handlers import FlextWebHandlers as FlextWebHandlers
-    from .health import FlextWebHealth as FlextWebHealth
-    from .web import FlextWebServices as FlextWebServices
-
-_LAZY_MODULES: dict[str, tuple[str, ...]] = {
-    ".app": ("FlextWebApp",),
-    ".auth": ("FlextWebAuth",),
-    ".entities": ("FlextWebEntities",),
-    ".handlers": ("FlextWebHandlers",),
-    ".health": ("FlextWebHealth",),
-    ".web": ("FlextWebServices",),
-}
-
-
-_LAZY_ALIAS_GROUPS: dict[str, tuple[tuple[str, str], ...]] = {}
-
-
-_LAZY_IMPORTS = build_lazy_import_map(
-    _LAZY_MODULES, alias_groups=_LAZY_ALIAS_GROUPS, sort_keys=False
-)
-
-_PUBLIC_EXPORTS: tuple[str, ...] = (
+    from .app import FlextWebApp
+    from .auth import FlextWebAuth
+    from .entities import FlextWebEntities
+    from .handlers import FlextWebHandlers
+    from .health import FlextWebHealth
+    from .web import FlextWebServices
+__all__: tuple[str, ...] = (
     "FlextWebApp",
     "FlextWebAuth",
     "FlextWebEntities",
@@ -41,6 +25,19 @@ _PUBLIC_EXPORTS: tuple[str, ...] = (
     "FlextWebServices",
 )
 
-__all__: tuple[str, ...] = tuple(_PUBLIC_EXPORTS)
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            ".app": ("FlextWebApp",),
+            ".auth": ("FlextWebAuth",),
+            ".entities": ("FlextWebEntities",),
+            ".handlers": ("FlextWebHandlers",),
+            ".health": ("FlextWebHealth",),
+            ".web": ("FlextWebServices",),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
+)
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

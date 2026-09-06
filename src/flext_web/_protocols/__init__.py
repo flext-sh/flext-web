@@ -1,38 +1,22 @@
-# @generated AUTO-GENERATED FILE — Regenerate with: make gen
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Flext Web. Protocols package."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from types import MappingProxyType
+
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from .config import FlextWebProtocolsConfig as FlextWebProtocolsConfig
-    from .data import FlextWebProtocolsData as FlextWebProtocolsData
-    from .framework import FlextWebProtocolsFramework as FlextWebProtocolsFramework
-    from .lifecycle import FlextWebProtocolsLifecycle as FlextWebProtocolsLifecycle
-    from .monitoring import FlextWebProtocolsMonitoring as FlextWebProtocolsMonitoring
-    from .template import FlextWebProtocolsTemplate as FlextWebProtocolsTemplate
-
-_LAZY_MODULES: dict[str, tuple[str, ...]] = {
-    ".config": ("FlextWebProtocolsConfig",),
-    ".data": ("FlextWebProtocolsData",),
-    ".framework": ("FlextWebProtocolsFramework",),
-    ".lifecycle": ("FlextWebProtocolsLifecycle",),
-    ".monitoring": ("FlextWebProtocolsMonitoring",),
-    ".template": ("FlextWebProtocolsTemplate",),
-}
-
-
-_LAZY_ALIAS_GROUPS: dict[str, tuple[tuple[str, str], ...]] = {}
-
-
-_LAZY_IMPORTS = build_lazy_import_map(
-    _LAZY_MODULES, alias_groups=_LAZY_ALIAS_GROUPS, sort_keys=False
-)
-
-_PUBLIC_EXPORTS: tuple[str, ...] = (
+    from .config import FlextWebProtocolsConfig
+    from .data import FlextWebProtocolsData
+    from .framework import FlextWebProtocolsFramework
+    from .lifecycle import FlextWebProtocolsLifecycle
+    from .monitoring import FlextWebProtocolsMonitoring
+    from .template import FlextWebProtocolsTemplate
+__all__: tuple[str, ...] = (
     "FlextWebProtocolsConfig",
     "FlextWebProtocolsData",
     "FlextWebProtocolsFramework",
@@ -41,6 +25,19 @@ _PUBLIC_EXPORTS: tuple[str, ...] = (
     "FlextWebProtocolsTemplate",
 )
 
-__all__: tuple[str, ...] = tuple(_PUBLIC_EXPORTS)
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            ".config": ("FlextWebProtocolsConfig",),
+            ".data": ("FlextWebProtocolsData",),
+            ".framework": ("FlextWebProtocolsFramework",),
+            ".lifecycle": ("FlextWebProtocolsLifecycle",),
+            ".monitoring": ("FlextWebProtocolsMonitoring",),
+            ".template": ("FlextWebProtocolsTemplate",),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
+)
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

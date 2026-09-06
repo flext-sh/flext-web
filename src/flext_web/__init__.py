@@ -1,97 +1,67 @@
-# @generated AUTO-GENERATED FILE — Regenerate with: make gen
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """Flext Web package."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from types import MappingProxyType
+
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
-from .__version__ import (
-    __author__ as __author__,
-    __author_email__ as __author_email__,
-    __description__ as __description__,
-    __license__ as __license__,
-    __title__ as __title__,
-    __url__ as __url__,
-    __version__ as __version__,
-    __version_info__ as __version_info__,
-)
+from .__version__ import __author__ as __author__
+from .__version__ import __author_email__ as __author_email__
+from .__version__ import __description__ as __description__
+from .__version__ import __license__ as __license__
+from .__version__ import __title__ as __title__
+from .__version__ import __url__ as __url__
+from .__version__ import __version__ as __version__
+from .__version__ import __version_info__ as __version_info__
 
 if TYPE_CHECKING:
-    from flext_cli import d as d, e as e, h as h, r as r, x as x
+    from . import services as services
+    from enum import IntEnum, StrEnum, unique
+    from flext_cli import d, e, h, r, x
+    from ipaddress import IPv4Address
+    from typing import ClassVar, Final
 
-    from ._config import FlextWebConfig as FlextWebConfig, config as config
-    from ._settings import FlextWebSettings as FlextWebSettings, settings as settings
-    from .api import FlextWeb as FlextWeb, web as web
-    from .base import FlextWebServiceBase as FlextWebServiceBase
-
-    s: type[FlextWebServiceBase]
-    from .constants import FlextWebConstants as FlextWebConstants
-
-    c: type[FlextWebConstants]
-    from .models import FlextWebModels as FlextWebModels
-
-    m: type[FlextWebModels]
-    from .protocols import FlextWebProtocols as FlextWebProtocols
-
-    p: type[FlextWebProtocols]
-    from .typings import FlextWebTypes as FlextWebTypes
-
-    t: type[FlextWebTypes]
-    from .utilities import FlextWebUtilities as FlextWebUtilities
-
-    u: type[FlextWebUtilities]
-    from .services.app import FlextWebApp as FlextWebApp
-    from .services.auth import FlextWebAuth as FlextWebAuth
-    from .services.entities import FlextWebEntities as FlextWebEntities
-    from .services.handlers import FlextWebHandlers as FlextWebHandlers
-    from .services.health import FlextWebHealth as FlextWebHealth
-    from .services.web import FlextWebServices as FlextWebServices
-
-_LAZY_MODULES: dict[str, tuple[str, ...]] = {
-    "._config": ("FlextWebConfig", "config"),
-    "._settings": ("FlextWebSettings", "settings"),
-    ".api": ("FlextWeb", "web"),
-    ".base": ("FlextWebServiceBase", "s"),
-    ".constants": ("FlextWebConstants", "c"),
-    ".models": ("FlextWebModels", "m"),
-    ".protocols": ("FlextWebProtocols", "p"),
-    ".typings": ("FlextWebTypes", "t"),
-    ".utilities": ("FlextWebUtilities", "u"),
-    ".services.app": ("FlextWebApp",),
-    ".services.auth": ("FlextWebAuth",),
-    ".services.entities": ("FlextWebEntities",),
-    ".services.handlers": ("FlextWebHandlers",),
-    ".services.health": ("FlextWebHealth",),
-    ".services.web": ("FlextWebServices",),
-    "flext_cli": ("d", "e", "h", "r", "x"),
-}
-
-
-_LAZY_ALIAS_GROUPS: dict[str, tuple[tuple[str, str], ...]] = {}
-
-
-_LAZY_IMPORTS = build_lazy_import_map(
-    _LAZY_MODULES, alias_groups=_LAZY_ALIAS_GROUPS, sort_keys=False
-)
-
-_PUBLIC_EXPORTS: tuple[str, ...] = (
+    from ._config import FlextWebConfig, config
+    from ._settings import FlextWebSettings, settings
+    from .api import FlextWeb, web
+    from .base import FlextWebServiceBase, FlextWebServiceBase as s
+    from .constants import FlextWebConstants, FlextWebConstants as c
+    from .models import FlextWebModels, FlextWebModels as m
+    from .protocols import FlextWebProtocols, FlextWebProtocols as p
+    from .services.app import FlextWebApp
+    from .services.auth import FlextWebAuth
+    from .services.entities import FlextWebEntities
+    from .services.handlers import FlextWebHandlers
+    from .services.health import FlextWebHealth
+    from .services.web import FlextWebServices
+    from .typings import FlextWebTypes, FlextWebTypes as t
+    from .utilities import FlextWebUtilities, FlextWebUtilities as u
+__all__: tuple[str, ...] = (
+    "ClassVar",
+    "Final",
     "FlextWeb",
+    "FlextWebApp",
+    "FlextWebAuth",
     "FlextWebConfig",
     "FlextWebConstants",
+    "FlextWebEntities",
+    "FlextWebHandlers",
+    "FlextWebHealth",
     "FlextWebModels",
     "FlextWebProtocols",
     "FlextWebServiceBase",
-    "FlextWebSettings",
     "FlextWebServices",
-    "FlextWebHealth",
-    "FlextWebHandlers",
-    "FlextWebEntities",
-    "FlextWebAuth",
-    "FlextWebApp",
+    "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
+    "IPv4Address",
+    "IntEnum",
+    "MappingProxyType",
+    "StrEnum",
     "__author__",
     "__author_email__",
     "__description__",
@@ -109,13 +79,43 @@ _PUBLIC_EXPORTS: tuple[str, ...] = (
     "p",
     "r",
     "s",
+    "services",
     "settings",
     "t",
     "u",
+    "unique",
     "web",
     "x",
 )
 
-__all__: tuple[str, ...] = tuple(_PUBLIC_EXPORTS)
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            "._config": ("FlextWebConfig", "config"),
+            "._settings": ("FlextWebSettings", "settings"),
+            ".api": ("FlextWeb", "web"),
+            ".base": ("FlextWebServiceBase", "s"),
+            ".constants": ("FlextWebConstants", "c"),
+            ".models": ("FlextWebModels", "m"),
+            ".protocols": ("FlextWebProtocols", "p"),
+            ".services": ("services",),
+            ".services.app": ("FlextWebApp",),
+            ".services.auth": ("FlextWebAuth",),
+            ".services.entities": ("FlextWebEntities",),
+            ".services.handlers": ("FlextWebHandlers",),
+            ".services.health": ("FlextWebHealth",),
+            ".services.web": ("FlextWebServices",),
+            ".typings": ("FlextWebTypes", "t"),
+            ".utilities": ("FlextWebUtilities", "u"),
+            "enum": ("IntEnum", "StrEnum", "unique"),
+            "flext_cli": ("d", "e", "h", "r", "x"),
+            "ipaddress": ("IPv4Address",),
+            "types": ("MappingProxyType",),
+            "typing": ("ClassVar", "Final"),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    )
+)
 
 install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

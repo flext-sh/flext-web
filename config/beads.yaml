@@ -1,0 +1,4 @@
+version: 1
+workspace: flext-web
+database: flext-web
+issue_prefix: flext-web
