@@ -11,8 +11,7 @@ import contextlib
 
 import pytest
 
-from flext_web import FlextWebSettings
-from flext_web import web
+from flext_web import FlextWebSettings, web
 from tests import u
 
 # Why: session-scoped env context replaces an autouse fixture (flext-1wjg1.16)
