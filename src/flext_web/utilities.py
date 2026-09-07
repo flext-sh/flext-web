@@ -15,7 +15,7 @@ from copy import deepcopy
 from importlib import import_module
 from threading import Thread
 from time import sleep
-from typing import cast, ClassVar, override
+from typing import ClassVar, cast, override
 from uuid import uuid4
 from wsgiref.simple_server import WSGIServer, make_server
 

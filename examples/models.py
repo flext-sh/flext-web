@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from flext_web import FlextWebModels
 
+
 class ExamplesFlextWebModels(FlextWebModels):
     """Domain models for flextweb."""
 

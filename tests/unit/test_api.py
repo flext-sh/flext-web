@@ -12,17 +12,6 @@ from tests import m
 class TestsFlextWebApi:
     """Tests for the public `web` facade and its class interface."""
 
-    def setup_method(self) -> None:
-        """Stop any running public runtime before each test."""
-        apps_result = web.list_apps()
-        if apps_result.success:
-            for app in apps_result.value:
-                if app.status == "running":
-                    _ = web.stop_app(app.id)
-        status_result = web.service_status()
-        if status_result.success and status_result.value.status == "operational":
-            _ = web.stop_service()
-
     def test_create_fastapi_app_success(self) -> None:
         """The facade creates FastAPI applications directly."""
         result = web.create_fastapi_app()

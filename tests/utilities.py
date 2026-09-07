@@ -175,7 +175,7 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                             m.Web.create_web_app(name=name, host=host, port=port)
                         )
                     except (e.ValidationError, ValueError, TypeError) as exc:
-                        return r[m.BaseModel].fail(str(exc))
+                        return r[m.BaseModel].fail(str(exc), exception=exc)
                 if entry_type == "http_request":
                     url = kwargs.get("url")
                     method = kwargs.get("method")
