@@ -20,10 +20,6 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from enum import IntEnum, StrEnum, unique
-    from ipaddress import IPv4Address
-    from typing import ClassVar, Final
-
     from flext_cli import d, e, h, r, x
 
     from . import services as services
@@ -43,8 +39,6 @@ if TYPE_CHECKING:
     from .typings import FlextWebTypes, FlextWebTypes as t
     from .utilities import FlextWebUtilities, FlextWebUtilities as u
 __all__: tuple[str, ...] = (
-    "ClassVar",
-    "Final",
     "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
@@ -60,10 +54,6 @@ __all__: tuple[str, ...] = (
     "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
-    "IPv4Address",
-    "IntEnum",
-    "MappingProxyType",
-    "StrEnum",
     "__author__",
     "__author_email__",
     "__description__",
@@ -85,7 +75,6 @@ __all__: tuple[str, ...] = (
     "settings",
     "t",
     "u",
-    "unique",
     "web",
     "x",
 )
@@ -109,11 +98,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.web": ("FlextWebServices",),
             ".typings": ("FlextWebTypes", "t"),
             ".utilities": ("FlextWebUtilities", "u"),
-            "enum": ("IntEnum", "StrEnum", "unique"),
             "flext_cli": ("d", "e", "h", "r", "x"),
-            "ipaddress": ("IPv4Address",),
-            "types": ("MappingProxyType",),
-            "typing": ("ClassVar", "Final"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

@@ -28,7 +28,8 @@ from werkzeug.serving import BaseWSGIServer
 
 from flext_cli import e, p, r, u
 from flext_web import c, m, settings, t
-from flext_web._settings import FlextWebSettings
+
+from ._settings import FlextWebSettings
 
 
 class FlextWebUtilities(u):

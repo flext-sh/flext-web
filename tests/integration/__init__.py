@@ -10,21 +10,12 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_tests import c, d, e, h, m, p, r, s, t, td, tf, tk, tm, tv, u, x
-
-    from .test_examples import (
-        ExamplesFullFunctionalityTest,
-        TestsFlextWebExamples,
-        main,
-    )
 __all__: tuple[str, ...] = (
-    "ExamplesFullFunctionalityTest",
-    "TestsFlextWebExamples",
     "c",
     "d",
     "e",
     "h",
     "m",
-    "main",
     "p",
     "r",
     "s",
@@ -41,11 +32,6 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".test_examples": (
-                "ExamplesFullFunctionalityTest",
-                "TestsFlextWebExamples",
-                "main",
-            ),
             "flext_tests": (
                 "c",
                 "d",
@@ -63,7 +49,7 @@ _LAZY_IMPORTS = MappingProxyType(
                 "tv",
                 "u",
                 "x",
-            ),
+            )
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
