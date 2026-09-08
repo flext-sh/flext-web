@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from flext_tests import FlextTestsConstants, d, e, h, r, td, tf, tk, tm, tv, x
     from flext_web import FlextWebConstants
 
-    from . import fixtures as fixtures, integration as integration, unit as unit
+    from . import fixtures, integration, unit
     from .base import TestsFlextWebServiceBase, TestsFlextWebServiceBase as s
     from .constants import TestsFlextWebConstants, TestsFlextWebConstants as c
     from .models import TestsFlextWebModels, TestsFlextWebModels as m
