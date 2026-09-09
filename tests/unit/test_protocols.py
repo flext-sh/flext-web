@@ -12,8 +12,8 @@ from __future__ import annotations
 import flask
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
-
 from flext_tests import tm
+
 from tests import c, u
 
 

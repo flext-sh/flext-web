@@ -6,6 +6,7 @@ import sys
 from typing import Annotated, override
 
 from flext_cli import cli, m as cli_m, p as cli_p, u as cli_u
+
 from flext_web import FlextWebSettings, p, r, s, settings, t, web
 
 

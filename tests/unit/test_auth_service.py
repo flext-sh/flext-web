@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from flext_tests import tm
+
 from flext_web import FlextWebAuth
 from tests import m
 from tests.fixtures import WebAuthFixture

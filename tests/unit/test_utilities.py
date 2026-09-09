@@ -8,8 +8,8 @@ from __future__ import annotations
 import contextlib
 
 import pytest
-
 from flext_tests import tm
+
 from tests import m, u
 
 

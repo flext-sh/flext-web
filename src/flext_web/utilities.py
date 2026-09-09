@@ -22,11 +22,11 @@ from wsgiref.simple_server import WSGIServer, make_server
 import flask
 import uvicorn
 from fastapi import FastAPI
+from flext_cli import e, p, r, u
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response as StarletteResponse
 from werkzeug.serving import BaseWSGIServer
 
-from flext_cli import e, p, r, u
 from flext_web import c, m, settings, t
 
 from ._settings import FlextWebSettings

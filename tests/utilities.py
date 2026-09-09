@@ -12,8 +12,8 @@ from threading import Lock
 from typing import TYPE_CHECKING, ClassVar
 
 import pytest
-
 from flext_tests import FlextTestsUtilities, e, r
+
 from flext_web import FlextWebUtilities
 from tests import c, m, t
 

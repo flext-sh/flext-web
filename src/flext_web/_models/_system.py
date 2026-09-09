@@ -11,8 +11,8 @@ from typing import Annotated, ClassVar
 from wsgiref.simple_server import WSGIServer
 
 import uvicorn
-
 from flext_cli import m, u
+
 from flext_web import t
 
 

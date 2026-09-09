@@ -9,8 +9,8 @@ import ipaddress
 from typing import TYPE_CHECKING
 
 import pytest
-
 from flext_tests import tm
+
 from flext_web import settings
 from tests import c, m, u
 
