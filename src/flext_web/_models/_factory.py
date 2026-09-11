@@ -10,6 +10,7 @@ from __future__ import annotations
 import uuid
 
 from flext_cli import u
+
 from flext_web import c, p, r, settings, t
 
 from ._entity import FlextWebModelsEntity

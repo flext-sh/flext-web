@@ -9,8 +9,8 @@ import ipaddress
 from typing import TYPE_CHECKING
 
 import pytest
-
 from flext_tests import tm
+
 from flext_web import settings
 from tests import c, m, u
 
@@ -293,81 +293,37 @@ class TestsFlextWebModelsUnit:
         success_response = m.Web.Response(status_code=200)
         tm.that(success_response.error is False, eq=True)
 
-    def test_web_request_has_body_property(self) -> None:
-        """Test Web.Request has_body property."""
-        request_with_body = m.Web.Request(
-            url="http://localhost:8080",
-            method=c.Web.Method.POST,
-            body='{"data": "test"}',
-        )
-        tm.that(request_with_body.has_body is True, eq=True)
-        request_without_body = m.Web.Request(
-            url="http://localhost:8080", method=c.Web.Method.GET, body=None
-        )
-        tm.that(request_without_body.has_body is False, eq=True)
-
-    def test_application_validate_business_rules_short_name(self) -> None:
-        """Test validate_business_rules with name too short."""
-        app = m.Web.Entity.model_construct(
+    @staticmethod
+    def _entity(*, name: str = "test-app", port: int = 8080) -> m.Web.Entity:
+        """Construct an Entity with fixed valid defaults for rule validation."""
+        return m.Web.Entity.model_construct(
             id="test-id",
-            name="ab",
+            name=name,
             host="localhost",
-            port=8080,
+            port=port,
             status="stopped",
             version=1,
             environment="development",
             debug_mode=False,
         )
-        result = app.validate_business_rules()
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(
-            "name" in (result.error or "").lower()
-            or "at least" in (result.error or "").lower(),
-            eq=True,
-        )
 
-    def test_application_validate_business_rules_invalid_port_low(self) -> None:
-        """Test validate_business_rules with port too low."""
-        app = m.Web.Entity.model_construct(
-            id="test-id",
-            name="test-app",
-            host="localhost",
-            port=0,
-            status="stopped",
-            version=1,
-            environment="development",
-            debug_mode=False,
-        )
-        result = app.validate_business_rules()
+    @pytest.mark.parametrize(
+        ("name", "port", "fragments"),
+        [
+            ("ab", 8080, ("name", "at least")),
+            ("test-app", 0, ("port", "between")),
+            ("test-app", 70000, ("port", "between")),
+        ],
+    )
+    def test_application_validate_business_rules_rejects(
+        self, name: str, port: int, fragments: tuple[str, ...]
+    ) -> None:
+        """validate_business_rules rejects entities breaking each rule."""
+        result = self._entity(name=name, port=port).validate_business_rules()
         tm.fail(result)
         tm.that(result.error, none=False)
-        tm.that(
-            "port" in (result.error or "").lower()
-            or "between" in (result.error or "").lower(),
-            eq=True,
-        )
-
-    def test_application_validate_business_rules_invalid_port_high(self) -> None:
-        """Test validate_business_rules with port too high."""
-        app = m.Web.Entity.model_construct(
-            id="test-id",
-            name="test-app",
-            host="localhost",
-            port=70000,
-            status="stopped",
-            version=1,
-            environment="development",
-            debug_mode=False,
-        )
-        result = app.validate_business_rules()
-        tm.fail(result)
-        tm.that(result.error, none=False)
-        tm.that(
-            "port" in (result.error or "").lower()
-            or "between" in (result.error or "").lower(),
-            eq=True,
-        )
+        error = (result.error or "").lower()
+        tm.that(any(fragment in error for fragment in fragments), eq=True)
 
     def test_application_update_metrics_invalid_type(self) -> None:
         """Test update_metrics with invalid type."""

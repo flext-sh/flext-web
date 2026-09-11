@@ -9,6 +9,7 @@ type checks, and implementation-line-coupled duplicates are prohibited and absen
 from __future__ import annotations
 
 from flext_tests import tm
+
 from flext_web import web
 from tests import c, m
 

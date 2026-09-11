@@ -6,9 +6,9 @@ following the canonical FlextVersion test pattern from flext-core.
 
 from __future__ import annotations
 
+from flext_tests import tm
 from packaging.version import Version
 
-from flext_tests import tm
 from flext_web import (
     __author__,
     __author_email__,

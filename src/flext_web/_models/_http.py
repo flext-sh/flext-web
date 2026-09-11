@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import Annotated
 
 from flext_cli import m, u
+
 from flext_web import c, p, r, t
 
 from ._base import FlextWebModelsBase
@@ -82,7 +83,7 @@ class FlextWebModelsHttp:
 
             @property
             def has_body(self) -> bool:
-                """Check if HTTP request has a message body.
+                """Whether HTTP request has a message body.
 
                 Returns:
                 True if body is not None, False otherwise
@@ -92,7 +93,7 @@ class FlextWebModelsHttp:
 
             @property
             def secure(self) -> bool:
-                """Check if HTTP request uses HTTPS protocol.
+                """Whether HTTP request uses HTTPS protocol.
 
                 Returns:
                 True if URL starts with 'https://', False otherwise
@@ -142,7 +143,7 @@ class FlextWebModelsHttp:
 
             @property
             def error(self) -> bool:
-                """Check if HTTP status indicates client or server error.
+                """Whether HTTP status indicates client or server error.
 
                 Returns:
                     True if status_code >= c.ERROR_MIN, False otherwise
@@ -153,7 +154,7 @@ class FlextWebModelsHttp:
 
             @property
             def success(self) -> bool:
-                """Check if HTTP status indicates success (2xx range).
+                """Whether HTTP status indicates success (2xx range).
 
                 Returns:
                     True if status code in range(*c.SUCCESS_RANGE), False otherwise

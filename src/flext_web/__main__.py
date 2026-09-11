@@ -6,6 +6,7 @@ import sys
 from typing import Annotated, override
 
 from flext_cli import cli, m as cli_m, p as cli_p, u as cli_u
+
 from flext_web import FlextWebSettings, p, r, s, settings, t, web
 
 
@@ -83,7 +84,7 @@ def main(argv: t.StrSequence | None = None) -> int:
         prog_name="flext-web",
         args=list(argv) if argv is not None else sys.argv[1:],
     )
-    return 0 if outcome.success else 1
+    return cli.finalize_result(outcome)
 
 
 if __name__ == "__main__":

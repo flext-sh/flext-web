@@ -11,8 +11,8 @@ from typing import Annotated, ClassVar
 from wsgiref.simple_server import WSGIServer
 
 import uvicorn
-
 from flext_cli import m, u
+
 from flext_web import t
 
 
@@ -56,7 +56,7 @@ class FlextWebModelsSystem:
             for each started application so it can be stopped cleanly.
             """
 
-            model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
+            model_config: ClassVar[t.ConfigDict] = m.ConfigDict(
                 arbitrary_types_allowed=True, frozen=True, extra="forbid"
             )
             runner: Annotated[

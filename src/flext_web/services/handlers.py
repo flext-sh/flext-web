@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import ClassVar, override
 
 from flext_web import c, m, p, r, s, settings, u
+from flext_web.__version__ import __version__
 
 
 class FlextWebHandlers(s):
@@ -118,7 +119,7 @@ class FlextWebHandlers(s):
             m.Web.HealthStatus(
                 status=c.Web.ResponseStatus.HEALTHY.value,
                 service=c.Web.SERVICE_NAME,
-                version="0.9.0",
+                version=__version__,
                 timestamp=u.generate_iso_timestamp(),
                 components={
                     "web_service": c.Web.ResponseStatus.OPERATIONAL.value,
