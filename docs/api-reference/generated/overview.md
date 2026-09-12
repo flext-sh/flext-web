@@ -14,7 +14,7 @@
   `Intended Audience :: Developers`, `Operating System :: OS Independent`,
   `Programming Language :: Python :: 3 :: Only`, `Programming Language :: Python
   :: 3.13` (+3 more)
-- Project class: `platform`
+- Project class: `domain`
 - Keywords: `enterprise`, `flask`, `flext`, `frontend`, `typed`, `web`
 - Main facades: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebConfig`,
   `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`, `FlextWebHealth`
