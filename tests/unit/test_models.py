@@ -296,7 +296,7 @@ class TestsFlextWebModelsUnit:
     @staticmethod
     def _entity(*, name: str = "test-app", port: int = 8080) -> m.Web.Entity:
         """Construct an Entity with fixed valid defaults for rule validation."""
-        return m.Web.Entity.model_construct(
+        entity = m.Web.Entity.model_construct(
             id="test-id",
             name=name,
             host="localhost",
@@ -306,6 +306,8 @@ class TestsFlextWebModelsUnit:
             environment="development",
             debug_mode=False,
         )
+        assert isinstance(entity, m.Web.Entity)
+        return entity
 
     @pytest.mark.parametrize(
         ("name", "port", "fragments"),
