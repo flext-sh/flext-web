@@ -114,10 +114,6 @@ class FlextWebConstants(c):
             OPERATIONAL = "operational"
             HEALTHY = "healthy"
 
-        # ===== Status/Code mappings =====
-        SUCCESS_RANGE: Final[tuple[int, int]] = (200, 299)
-        ERROR_MIN: Final[int] = 400
-
         # ===== Enum-derived frozensets (not tuples) =====
         ENVIRONMENTS: Final[frozenset[str]] = frozenset(
             member.value for member in Name.__members__.values()
