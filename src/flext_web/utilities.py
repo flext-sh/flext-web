@@ -7,6 +7,7 @@ from flext_cli import u
 from flext_web import t
 
 from ._utilities.base import FlextWebUtilitiesBase
+from ._utilities.web import FlextWebUtilitiesWeb
 
 
 class FlextWebUtilities(u):
@@ -18,8 +19,8 @@ class FlextWebUtilities(u):
     Uses advanced builder/DSL patterns for composition.
     """
 
-    class Web(FlextWebUtilitiesBase):
-        """Web domain-specific protocols."""
+    class Web(FlextWebUtilitiesBase, FlextWebUtilitiesWeb):
+        """Web domain-specific runtime utilities."""
 
 
 u = FlextWebUtilities

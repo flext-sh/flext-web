@@ -15,25 +15,14 @@ from __future__ import annotations
 
 from flext_cli import p
 
-from ._protocols.config import FlextWebProtocolsConfig
-from ._protocols.data import FlextWebProtocolsData
-from ._protocols.framework import FlextWebProtocolsFramework
-from ._protocols.lifecycle import FlextWebProtocolsLifecycle
-from ._protocols.monitoring import FlextWebProtocolsMonitoring
-from ._protocols.template import FlextWebProtocolsTemplate
+from ._protocols.base import FlextWebProtocolsBase
+from ._protocols.web import FlextWebProtocolsWeb
 
 
 class FlextWebProtocols(p):
     """Web-specific ``@runtime_checkable`` Protocol surface extending ``p``."""
 
-    class Web(
-        FlextWebProtocolsLifecycle.Web,
-        FlextWebProtocolsData.Web,
-        FlextWebProtocolsTemplate.Web,
-        FlextWebProtocolsMonitoring.Web,
-        FlextWebProtocolsConfig.Web,
-        FlextWebProtocolsFramework.Web,
-    ):
+    class Web(FlextWebProtocolsBase, FlextWebProtocolsWeb):
         """Web domain-specific Protocols."""
 
 

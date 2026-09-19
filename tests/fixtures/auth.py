@@ -9,23 +9,26 @@ place that encodes those contract literals so no test module repeats them.
 
 from __future__ import annotations
 
+from typing import Final
+
 from flext_web import m
 
-# Runtime contract literals owned by production (see bead mro-xpdh.4).
-_VALID_USERNAME = "admin"
-_VALID_PASSWORD = "test" + "_" + "password"  # mirrors production composition
-_REJECTED_USERNAME = "nonexistent"
 
-
-class WebAuthFixture:
+class TestsFlextWebAuthFixture:
     """Expose credentials that satisfy the real authenticate() contract."""
+
+    __test__ = False
+
+    _VALID_USERNAME: Final[str] = "admin"
+    _VALID_PASSWORD: Final[str] = "test" + "_" + "password"
+    _REJECTED_USERNAME: Final[str] = "nonexistent"
 
     def __init__(self) -> None:
         """Create credentials accepted by the current runtime contract."""
         self.credentials = m.Web.Credentials(
-            username=_VALID_USERNAME, password=_VALID_PASSWORD
+            username=self._VALID_USERNAME, password=self._VALID_PASSWORD
         )
-        self.rejected_username = _REJECTED_USERNAME
+        self.rejected_username = self._REJECTED_USERNAME
 
 
-__all__: list[str] = ["WebAuthFixture"]
+__all__: list[str] = ["TestsFlextWebAuthFixture"]

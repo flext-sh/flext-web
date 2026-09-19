@@ -20,11 +20,11 @@ class TestsFlextWebHandlers:
     def teardown_method(self) -> None:
         """Release ports reserved for each test method."""
         for port in self._allocated_ports:
-            u.Web.Tests.TestPortManager.release_port(port)
+            u.Tests.TestPortManager.release_port(port)
 
     def _next_port(self) -> int:
         """Reserve and return a unique port for the current test."""
-        port = u.Web.Tests.TestPortManager.allocate_port()
+        port = u.Tests.TestPortManager.allocate_port()
         self._allocated_ports.append(port)
         return port
 

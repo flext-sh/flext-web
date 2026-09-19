@@ -10,9 +10,10 @@ import uuid
 from collections.abc import MutableSequence
 from typing import Annotated, override
 
-from flext_cli import m
+from flext_cli import m, u
 
-from flext_web import c, p, r, settings, t, u
+from flext_core import r
+from flext_web import c, p, settings, t
 
 
 class FlextWebModelsEntity:

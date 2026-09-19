@@ -8,17 +8,14 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsTypes
 
-from flext_web import FlextWebTypes
+from flext_web import t
 
 
-class TestsFlextWebTypes(FlextTestsTypes, FlextWebTypes):
+class TestsFlextWebTypes(t, FlextTestsTypes):
     """Test type aliases for flext-web."""
 
-    class Web(FlextWebTypes.Web):
+    class Tests(FlextTestsTypes.Tests):
         """Web domain test type aliases."""
-
-        class Tests:
-            """Test-specific type aliases."""
 
 
 t = TestsFlextWebTypes

@@ -22,7 +22,7 @@ class TestsFlextWebMain:
 
     def test_run_command_execute(self) -> None:
         """The run command model executes and delegates to the web facade."""
-        cmd = __main__.FlextWebRunCommand(host="127.0.0.1", port=0, no_debug=True)
+        cmd = __main__.FlextWebCli.Run(host="127.0.0.1", port=0, no_debug=True)
         result = cmd.execute()
         tm.fail(result)
         tm.that(result.error, none=False)

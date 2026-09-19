@@ -16,13 +16,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import FlextCliSettings, m
-from pydantic_settings import SettingsConfigDict
 
 
 class FlextWebSettings(FlextCliSettings):
     """Web runtime settings; all project fields under ``settings.Web.*``."""
 
-    model_config = SettingsConfigDict(
+    model_config = m.SettingsConfigDict(
         env_prefix="FLEXT_WEB_", env_nested_delimiter="__", extra="ignore"
     )
 

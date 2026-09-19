@@ -1,30 +1,19 @@
-"""Base protocol facade for flext-web.
+"""FlextWeb protocols base — foundational contracts owner of the private family.
 
-Absorbs every protocol shard through MRO so the public ``protocols.py``
-facade composes a single ``Api`` namespace.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from . import (
-    FlextWebProtocolsConfig,
-    FlextWebProtocolsData,
-    FlextWebProtocolsFramework,
-    FlextWebProtocolsLifecycle,
-    FlextWebProtocolsMonitoring,
-    FlextWebProtocolsTemplate,
-)
 
+class FlextWebProtocolsBase:
+    """Base and foundational owner of the FlextWeb private protocols family.
 
-class FlextWebProtocolsBase(
-    FlextWebProtocolsConfig,
-    FlextWebProtocolsData,
-    FlextWebProtocolsFramework,
-    FlextWebProtocolsLifecycle,
-    FlextWebProtocolsMonitoring,
-    FlextWebProtocolsTemplate,
-):
-    """FLEXT Web protocol namespace."""
+    Every composed ``FlextWebProtocols*`` owner inherits from this base, so the
+    family MRO is explicit and the domain namespace composes all owners through
+    multiple inheritance.
+    """
 
 
 __all__: list[str] = ["FlextWebProtocolsBase"]
