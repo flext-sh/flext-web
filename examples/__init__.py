@@ -17,22 +17,10 @@ if TYPE_CHECKING:
     from .typings import ExamplesFlextWebTypes, ExamplesFlextWebTypes as t
     from .utilities import ExamplesFlextWebUtilities, ExamplesFlextWebUtilities as u
 __all__: tuple[str, ...] = (
-    "ExamplesFlextWebConstants",
-    "ExamplesFlextWebModels",
-    "ExamplesFlextWebProtocols",
-    "ExamplesFlextWebTypes",
-    "ExamplesFlextWebUtilities",
-    "FlextWebConstants",
-    "c",
-    "d",
-    "e",
-    "h",
-    "m",
-    "p",
-    "r",
-    "s",
-    "t",
-    "u",
+    "ExamplesFlextWebConstants", "ExamplesFlextWebModels", "ExamplesFlextWebProtocols", "ExamplesFlextWebTypes",
+    "ExamplesFlextWebUtilities", "FlextWebConstants", "c", "d",
+    "e", "h", "m", "p",
+    "r", "s", "t", "u",
     "x",
 )
 
