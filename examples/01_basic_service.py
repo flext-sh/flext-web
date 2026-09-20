@@ -21,14 +21,9 @@ class FlextWebExamples:
             },
             debug=True,
         )
-        try:
-            _ = web.start_service(
-                host=settings.Web.host, port=settings.Web.port, debug=settings.debug
-            )
-        except KeyboardInterrupt:
-            return
-        except (RuntimeError, OSError, ValueError):
-            raise
+        _ = web.start_service(
+            host=settings.Web.host, port=settings.Web.port, debug=settings.debug
+        )
 
 
 examples_flext_web = FlextWebExamples()

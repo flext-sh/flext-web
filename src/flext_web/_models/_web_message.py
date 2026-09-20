@@ -11,7 +11,8 @@ from typing import Annotated
 
 from flext_cli import u
 
-from flext_web import c, p, r, t
+from flext_core import r
+from flext_web import c, p, t
 
 from ._http import FlextWebModelsHttp
 
