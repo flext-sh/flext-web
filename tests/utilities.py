@@ -109,11 +109,13 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 """Wait until a TCP port becomes reachable."""
                 start_time = time.time()
                 while time.time() - start_time < timeout:
-                    with suppress(OSError):
-                        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                            sock.settimeout(0.1)
-                            if sock.connect_ex((host, port)) == 0:
-                                return True
+                    with (
+                        suppress(OSError),
+                        socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock,
+                    ):
+                        sock.settimeout(0.1)
+                        if sock.connect_ex((host, port)) == 0:
+                            return True
                     time.sleep(0.1)
                 return False
 

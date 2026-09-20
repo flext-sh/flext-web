@@ -114,11 +114,6 @@ class FlextWebConstants(c):
             OPERATIONAL = "operational"
             HEALTHY = "healthy"
 
-<<<<<<< HEAD
-        # ===== Status/Code mappings (owned by FlextWebConstantsValues) =====
-
-=======
->>>>>>> refs/remotes/origin/wip/stabilize-0.12-flext-web-20260919
         # ===== Enum-derived frozensets (not tuples) =====
         ENVIRONMENTS: Final[frozenset[str]] = frozenset(
             member.value for member in Name.__members__.values()
