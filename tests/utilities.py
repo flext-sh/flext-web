@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import socket
 import time
+from contextlib import suppress
 from threading import Lock
 from typing import TYPE_CHECKING, ClassVar
 
@@ -73,14 +74,14 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                                 cls._current_port = c.Web.Tests.PORT_START
                             if port in cls._allocated_ports:
                                 continue
-                            if cls._port_available(port):
+                            if cls.is_port_available(port):
                                 cls._allocated_ports.add(port)
                                 return port
                         msg = "No available TCP port in flext-web test range"
                         raise RuntimeError(msg)
 
                 @staticmethod
-                def _port_available(port: int) -> bool:
+                def is_port_available(port: int) -> bool:
                     """Return whether localhost can bind the candidate test port."""
                     try:
                         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -108,13 +109,13 @@ class TestsFlextWebUtilities(FlextTestsUtilities, FlextWebUtilities):
                 """Wait until a TCP port becomes reachable."""
                 start_time = time.time()
                 while time.time() - start_time < timeout:
-                    try:
-                        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                            sock.settimeout(0.1)
-                            if sock.connect_ex((host, port)) == 0:
-                                return True
-                    except OSError:
-                        pass
+                    with (
+                        suppress(OSError),
+                        socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock,
+                    ):
+                        sock.settimeout(0.1)
+                        if sock.connect_ex((host, port)) == 0:
+                            return True
                     time.sleep(0.1)
                 return False
 
