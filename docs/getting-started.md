@@ -13,28 +13,21 @@
 ## Install
 
 ```bash
-cd flext-web
-poetry install
 make setup
-python -c "from flext_web import web; u.Cli.print('Import successful')"
 ```
 
 ## Basic Usage
 
-````python
+```python
 from flext_web import web
 
-settings_result = web.settings.create_web_config(
-    host="localhost", port=8080, debug=True
-)
-assert settings_result.success
+app_result = web.create_fastapi_app()
+app = app_result.unwrap()
+```
 
-web.create_fastapi_app()
-web.get_service_status()```
 ## Working Pattern
 
-- Use `web.settings` for configuration access.
+- Import `settings` from `flext_web` and use `settings.Web` for runtime settings.
 - Use `web.create_fastapi_app()` and `web.create_flask_app()` for framework factories.
 - Use `web.start_service()` and `web.stop_service()` for lifecycle control.
 - Keep examples and tests on the public facade, not on service classes.
-````
