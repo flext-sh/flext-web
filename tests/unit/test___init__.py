@@ -28,49 +28,15 @@ class TestsFlextWebInit:
         tm.that(__version__.startswith(numeric_prefix), eq=True)
 
     def test_all_exports_match(self) -> None:
-        """The declared __all__ export set is exactly the public contract."""
-        expected_exports = {
-            "FlextWeb",
-            "FlextWebApp",
-            "FlextWebAuth",
-            "FlextWebConstants",
-            "FlextWebConfig",
-            "FlextWebEntities",
-            "FlextWebHandlers",
-            "FlextWebHealth",
-            "FlextWebModels",
-            "FlextWebProtocols",
-            "FlextWebServiceBase",
-            "FlextWebServices",
-            "FlextWebSettings",
-            "FlextWebTypes",
-            "FlextWebUtilities",
-            "__author__",
-            "__author_email__",
-            "__description__",
-            "__license__",
-            "__title__",
-            "__url__",
-            "__version__",
-            "__version_info__",
-            "c",
-            "config",
-            "d",
-            "e",
-            "h",
-            "m",
-            "p",
-            "r",
-            "s",
-            "services",
-            "settings",
-            "t",
-            "u",
-            "web",
-            "x",
-        }
+        """__all__ is the generated contract: sorted, duplicate-free, every name resolves.
+
+        The names themselves are a projection of what the package's modules
+        declare (ADR-018); a test never freezes a projection's values, only its
+        structure.
+        """
         module_all: t.StrSequence = getattr(flext_web, "__all__", [])
-        tm.that(set(module_all), eq=expected_exports)
+        tm.that(list(module_all), eq=sorted(set(module_all)))
+        tm.that(all(hasattr(flext_web, name) for name in module_all), eq=True)
 
     def test_public_web_surface_executes(self) -> None:
         """The `web` facade actually runs a real operation end to end."""
