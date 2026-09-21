@@ -24,9 +24,7 @@ class WebAuthFixture:
                 "test session must configure FLEXT_WEB_WEB__AUTH_USERNAME and "
                 "FLEXT_WEB_WEB__AUTH_PASSWORD"
             )
-            raise RuntimeError(
-                msg
-            )
+            raise RuntimeError(msg)
         self.credentials = m.Web.Credentials(
             username=auth_username, password=auth_password
         )
