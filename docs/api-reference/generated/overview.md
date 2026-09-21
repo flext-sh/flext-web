@@ -12,19 +12,19 @@
 - Version: `0.12.0`
 - Description: FLEXT Web - Modern Web Interface for FLEXT Platform
 - Doc summary: Flext Web package.
-- Classifiers: `Development Status :: 3 - Alpha`, `Framework :: Flask`,
-  `Intended Audience :: Developers`, `Operating System :: OS Independent`,
-  `Programming Language :: Python :: 3 :: Only`,
-  `Programming Language :: Python :: 3.13` (+3 more)
+- Classifiers: Development Status :: 3 - Alpha, Framework :: Flask, Intended Audience ::
+  Developers, Operating System :: OS Independent, Programming Language :: Python :: 3 ::
+  Only, Programming Language :: Python :: 3.13, Topic :: Internet :: WWW/HTTP :: Dynamic
+  Content, Topic :: Software Development :: Libraries :: Python Modules, Typing :: Typed
 - Project class: `domain`
 - Keywords: `enterprise`, `flask`, `flext`, `frontend`, `typed`, `web`
 - Main facades: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebConfig`,
-  `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`, `FlextWebHealth` (+7
+  `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`, `FlextWebHealth` (+9
   more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebConfig`,
   `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`, `FlextWebHealth`,
-  `FlextWebModels`, `FlextWebProtocols` (+8 more)
+  `FlextWebModels`, `FlextWebProtocols` (+11 more)
 - Exported module shortcuts: `services`
 - Generated module pages: `14`
 

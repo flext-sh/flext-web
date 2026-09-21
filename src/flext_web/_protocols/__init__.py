@@ -17,13 +17,8 @@ if TYPE_CHECKING:
     from .monitoring import FlextWebProtocolsMonitoring
     from .template import FlextWebProtocolsTemplate
 __all__: tuple[str, ...] = (
-    "FlextWebProtocolsBase",
-    "FlextWebProtocolsConfig",
-    "FlextWebProtocolsData",
-    "FlextWebProtocolsFramework",
-    "FlextWebProtocolsLifecycle",
-    "FlextWebProtocolsMonitoring",
-    "FlextWebProtocolsTemplate",
+    "FlextWebProtocolsBase", "FlextWebProtocolsConfig", "FlextWebProtocolsData", "FlextWebProtocolsFramework",
+    "FlextWebProtocolsLifecycle", "FlextWebProtocolsMonitoring", "FlextWebProtocolsTemplate",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
