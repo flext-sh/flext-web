@@ -9,42 +9,37 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_web import FlextWebConstants, d, e, h, r, s, x
+    from flext_web import (
+        FlextWebConstants, FlextWebConstants as c, d, e,
+        h, m, p, r,
+        s, t, u, x,
+    )
 
-    from .constants import ExamplesFlextWebConstants, ExamplesFlextWebConstants as c
-    from .models import ExamplesFlextWebModels, ExamplesFlextWebModels as m
-    from .protocols import ExamplesFlextWebProtocols, ExamplesFlextWebProtocols as p
-    from .typings import ExamplesFlextWebTypes, ExamplesFlextWebTypes as t
-    from .utilities import ExamplesFlextWebUtilities, ExamplesFlextWebUtilities as u
+    from .constants import ExamplesFlextWebConstants
+    from .models import ExamplesFlextWebModels
+    from .protocols import ExamplesFlextWebProtocols
+    from .typings import ExamplesFlextWebTypes
+    from .utilities import ExamplesFlextWebUtilities
 __all__: tuple[str, ...] = (
-    "ExamplesFlextWebConstants",
-    "ExamplesFlextWebModels",
-    "ExamplesFlextWebProtocols",
-    "ExamplesFlextWebTypes",
-    "ExamplesFlextWebUtilities",
-    "FlextWebConstants",
-    "c",
-    "d",
-    "e",
-    "h",
-    "m",
-    "p",
-    "r",
-    "s",
-    "t",
-    "u",
+    "ExamplesFlextWebConstants", "ExamplesFlextWebModels", "ExamplesFlextWebProtocols", "ExamplesFlextWebTypes",
+    "ExamplesFlextWebUtilities", "FlextWebConstants", "c", "d",
+    "e", "h", "m", "p",
+    "r", "s", "t", "u",
     "x",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".constants": ("ExamplesFlextWebConstants", "c"),
-            ".models": ("ExamplesFlextWebModels", "m"),
-            ".protocols": ("ExamplesFlextWebProtocols", "p"),
-            ".typings": ("ExamplesFlextWebTypes", "t"),
-            ".utilities": ("ExamplesFlextWebUtilities", "u"),
-            "flext_web": ("FlextWebConstants", "d", "e", "h", "r", "s", "x"),
+            ".constants": ("ExamplesFlextWebConstants",),
+            ".models": ("ExamplesFlextWebModels",),
+            ".protocols": ("ExamplesFlextWebProtocols",),
+            ".typings": ("ExamplesFlextWebTypes",),
+            ".utilities": ("ExamplesFlextWebUtilities",),
+            "flext_web": (
+                "FlextWebConstants", "c", "d", "e", "h", "m", "p", "r", "s", "t", "u",
+                "x",
+            ),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
