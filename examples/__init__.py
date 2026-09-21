@@ -10,9 +10,18 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_web import (
-        FlextWebConstants, FlextWebConstants as c, d, e,
-        h, m, p, r,
-        s, t, u, x,
+        FlextWebConstants,
+        FlextWebConstants as c,
+        d,
+        e,
+        h,
+        m,
+        p,
+        r,
+        s,
+        t,
+        u,
+        x,
     )
 
     from .constants import ExamplesFlextWebConstants
@@ -21,10 +30,22 @@ if TYPE_CHECKING:
     from .typings import ExamplesFlextWebTypes
     from .utilities import ExamplesFlextWebUtilities
 __all__: tuple[str, ...] = (
-    "ExamplesFlextWebConstants", "ExamplesFlextWebModels", "ExamplesFlextWebProtocols", "ExamplesFlextWebTypes",
-    "ExamplesFlextWebUtilities", "FlextWebConstants", "c", "d",
-    "e", "h", "m", "p",
-    "r", "s", "t", "u",
+    "ExamplesFlextWebConstants",
+    "ExamplesFlextWebModels",
+    "ExamplesFlextWebProtocols",
+    "ExamplesFlextWebTypes",
+    "ExamplesFlextWebUtilities",
+    "FlextWebConstants",
+    "c",
+    "d",
+    "e",
+    "h",
+    "m",
+    "p",
+    "r",
+    "s",
+    "t",
+    "u",
     "x",
 )
 
@@ -37,7 +58,17 @@ _LAZY_IMPORTS = MappingProxyType(
             ".typings": ("ExamplesFlextWebTypes",),
             ".utilities": ("ExamplesFlextWebUtilities",),
             "flext_web": (
-                "FlextWebConstants", "c", "d", "e", "h", "m", "p", "r", "s", "t", "u",
+                "FlextWebConstants",
+                "c",
+                "d",
+                "e",
+                "h",
+                "m",
+                "p",
+                "r",
+                "s",
+                "t",
+                "u",
                 "x",
             ),
         }),
