@@ -16,8 +16,12 @@ if TYPE_CHECKING:
     from .health import FlextWebHealth
     from .web import FlextWebServices
 __all__: tuple[str, ...] = (
-    "FlextWebApp", "FlextWebAuth", "FlextWebEntities", "FlextWebHandlers",
-    "FlextWebHealth", "FlextWebServices",
+    "FlextWebApp",
+    "FlextWebAuth",
+    "FlextWebEntities",
+    "FlextWebHandlers",
+    "FlextWebHealth",
+    "FlextWebServices",
 )
 
 _LAZY_IMPORTS = MappingProxyType(

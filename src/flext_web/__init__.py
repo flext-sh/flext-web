@@ -20,7 +20,7 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import d, e, h, r, x
+    from flext_core import d, e, h, r, x
 
     from . import services
     from .__main__ import FlextWebRunCommand, main
@@ -41,16 +41,46 @@ if TYPE_CHECKING:
     from .typings import FlextWebTypes, FlextWebTypes as t
     from .utilities import FlextWebUtilities, FlextWebUtilities as u
 __all__: tuple[str, ...] = (
-    "FlextWeb", "FlextWebApp", "FlextWebAuth", "FlextWebConfig",
-    "FlextWebConstants", "FlextWebEntities", "FlextWebHandlers", "FlextWebHealth",
-    "FlextWebModels", "FlextWebProtocols", "FlextWebRunCommand", "FlextWebServiceBase",
-    "FlextWebServices", "FlextWebSettings", "FlextWebTypes", "FlextWebUtilities",
-    "FlextWebVersion", "__author__", "__author_email__", "__description__",
-    "__license__", "__title__", "__url__", "__version__",
-    "__version_info__", "c", "config", "d",
-    "e", "h", "m", "main",
-    "p", "r", "s", "services",
-    "settings", "t", "u", "web",
+    "FlextWeb",
+    "FlextWebApp",
+    "FlextWebAuth",
+    "FlextWebConfig",
+    "FlextWebConstants",
+    "FlextWebEntities",
+    "FlextWebHandlers",
+    "FlextWebHealth",
+    "FlextWebModels",
+    "FlextWebProtocols",
+    "FlextWebRunCommand",
+    "FlextWebServiceBase",
+    "FlextWebServices",
+    "FlextWebSettings",
+    "FlextWebTypes",
+    "FlextWebUtilities",
+    "FlextWebVersion",
+    "__author__",
+    "__author_email__",
+    "__description__",
+    "__license__",
+    "__title__",
+    "__url__",
+    "__version__",
+    "__version_info__",
+    "c",
+    "config",
+    "d",
+    "e",
+    "h",
+    "m",
+    "main",
+    "p",
+    "r",
+    "s",
+    "services",
+    "settings",
+    "t",
+    "u",
+    "web",
     "x",
 )
 
@@ -75,7 +105,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.web": ("FlextWebServices",),
             ".typings": ("FlextWebTypes", "t"),
             ".utilities": ("FlextWebUtilities", "u"),
-            "flext_cli": ("d", "e", "h", "r", "x"),
+            "flext_core": ("d", "e", "h", "r", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
