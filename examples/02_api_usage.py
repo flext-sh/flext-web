@@ -106,7 +106,6 @@ class FlextWebExamples:
 
 examples_flext_web = FlextWebExamples()
 
-__all__: list[str] = ["FlextWebExamples", "examples_flext_web"]
 
 if __name__ == "__main__":
     examples_flext_web.main()
