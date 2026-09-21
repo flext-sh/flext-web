@@ -177,8 +177,13 @@ class FlextWebApp(s):
 
         """
         web_settings = settings or self.settings
+        secret_key = web_settings.Web.secret_key
+        if not secret_key:
+            return r[flask.Flask].fail(
+                "SECRET_KEY is not configured; set FLEXT_WEB_WEB__SECRET_KEY"
+            )
         app = flask.Flask(web_settings.Web.app_name)
-        app.config["SECRET_KEY"] = web_settings.Web.secret_key
+        app.config["SECRET_KEY"] = secret_key
         app.config["DEBUG"] = web_settings.debug
         app.config["TESTING"] = web_settings.Web.testing
 
