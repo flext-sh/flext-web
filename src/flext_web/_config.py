@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Self
+from typing import Annotated, Self
 
 from flext_cli import FlextCliConfig, m
 
@@ -47,7 +47,10 @@ class FlextWebConfig(FlextSettings, FlextCliConfig):
 
     __hash__ = object.__hash__
 
-    Web: _WebNamespace = _WebNamespace()
+    Web: Annotated[
+        _WebNamespace,
+        m.Field(description="Open namespace exposing ``config/*.yaml`` under ``Web``."),
+    ] = _WebNamespace()
 
 
 config: FlextWebConfig = FlextWebConfig.fetch_global()
