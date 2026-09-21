@@ -20,7 +20,7 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_cli import d, e, h, r, x
+    from flext_core import d, e, h, r, x
 
     from . import services
     from .__main__ import FlextWebRunCommand, main
@@ -105,7 +105,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.web": ("FlextWebServices",),
             ".typings": ("FlextWebTypes", "t"),
             ".utilities": ("FlextWebUtilities", "u"),
-            "flext_cli": ("d", "e", "h", "r", "x"),
+            "flext_core": ("d", "e", "h", "r", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
