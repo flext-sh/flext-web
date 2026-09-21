@@ -10,11 +10,7 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_core import d, e, h, r, x
-<<<<<<< HEAD
     from flext_web import FlextWebConstants, s
-=======
-    from flext_web import FlextWebConstants, FlextWebConstants as c, m, p, s, t, u
->>>>>>> refs/remotes/origin/0.12.0-dev
 
     from .constants import ExamplesFlextWebConstants, ExamplesFlextWebConstants as c
     from .models import ExamplesFlextWebModels, ExamplesFlextWebModels as m
@@ -44,7 +40,6 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-<<<<<<< HEAD
             ".constants": ("ExamplesFlextWebConstants", "c"),
             ".models": ("ExamplesFlextWebModels", "m"),
             ".protocols": ("ExamplesFlextWebProtocols", "p"),
@@ -52,15 +47,6 @@ _LAZY_IMPORTS = MappingProxyType(
             ".utilities": ("ExamplesFlextWebUtilities", "u"),
             "flext_core": ("d", "e", "h", "r", "x"),
             "flext_web": ("FlextWebConstants", "s"),
-=======
-            ".constants": ("ExamplesFlextWebConstants",),
-            ".models": ("ExamplesFlextWebModels",),
-            ".protocols": ("ExamplesFlextWebProtocols",),
-            ".typings": ("ExamplesFlextWebTypes",),
-            ".utilities": ("ExamplesFlextWebUtilities",),
-            "flext_core": ("d", "e", "h", "r", "x"),
-            "flext_web": ("FlextWebConstants", "c", "m", "p", "s", "t", "u"),
->>>>>>> refs/remotes/origin/0.12.0-dev
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
