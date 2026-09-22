@@ -48,11 +48,25 @@ class FlextWebSettings(FlextCliSettings):
         ]
         testing: Annotated[bool, m.Field(default=False, description="Testing flag")]
         secret_key: Annotated[
-            str,
+            str | None,
             m.Field(
-                default="default-secret-key-32-characters-long-for-security",
+                default=None,
                 min_length=32,
-                description="Application secret key",
+                description="Application secret key sourced from the environment; required at runtime.",
+            ),
+        ]
+        auth_username: Annotated[
+            str | None,
+            m.Field(
+                default=None,
+                description="Credential username sourced from the environment; required to authenticate.",
+            ),
+        ]
+        auth_password: Annotated[
+            str | None,
+            m.Field(
+                default=None,
+                description="Credential password sourced from the environment; required to authenticate.",
             ),
         ]
         ssl_enabled: Annotated[

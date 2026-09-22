@@ -115,9 +115,6 @@ class FlextWebConstants(c):
             HEALTHY = "healthy"
 
         # ===== Enum-derived frozensets (not tuples) =====
-        ENVIRONMENTS: Final[frozenset[str]] = frozenset(
-            member.value for member in Name.__members__.values()
-        )
         STATUSES: Final[frozenset[str]] = frozenset(
             member.value for member in Status.__members__.values()
         )

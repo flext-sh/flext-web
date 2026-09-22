@@ -10,7 +10,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from typing import Annotated, Self
+
 from flext_cli import FlextCliConfig, m
+
+from flext_core import FlextSettings
 
 
 class _WebNamespace(m.BaseModel):
@@ -19,10 +23,31 @@ class _WebNamespace(m.BaseModel):
     model_config = m.ConfigDict(extra="allow", frozen=True)
 
 
-class FlextWebConfig(FlextCliConfig):
-    """Web config auto-loaded model-less from ``config/*.yaml``."""
+class FlextWebConfig(FlextSettings, FlextCliConfig):
+    """Web config auto-loaded model-less from ``config/*.yaml``.
 
-    Web: _WebNamespace = _WebNamespace()
+    MRO carries ``FlextSettings`` FIRST (ENFORCE-042); the class stays a frozen,
+    YAML-validated config singleton.
+    """
+
+    # ENFORCE-042 namespace-holder contract: ``FlextSettings`` contributes
+    # namespacing only — instance machinery stays plain object semantics so the
+    # settings singleton ``__new__`` cannot leak into the config singleton.
+    # The inherited pydantic ``__init__`` still runs the frozen, YAML-validated
+    # construction, and the inherited pydantic ``__setattr__`` keeps the frozen
+    # guard.
+    def __new__(cls, *args: object, **kwargs: object) -> Self:
+        _ = args, kwargs
+        return object.__new__(cls)
+
+    __eq__ = object.__eq__
+
+    __hash__ = object.__hash__
+
+    Web: Annotated[
+        _WebNamespace,
+        m.Field(description="Open namespace exposing ``config/*.yaml`` under ``Web``."),
+    ] = _WebNamespace()
 
 
 config: FlextWebConfig = FlextWebConfig.fetch_global()
