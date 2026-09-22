@@ -10,25 +10,22 @@ from typing import Final
 
 from flext_tests import FlextTestsConstants
 
-from flext_web import FlextWebConstants
+from flext_web import c
 
 
-class TestsFlextWebConstants(FlextTestsConstants, FlextWebConstants):
+class TestsFlextWebConstants(c, FlextTestsConstants):
     """Test constants for flext-web."""
 
-    class Web(FlextWebConstants.Web):
+    class Tests(FlextTestsConstants.Tests):
         """Web domain test constants."""
 
-        class Tests(FlextTestsConstants.Tests):
-            """Test-specific constants."""
-
-            DEFAULT_HOST: Final[str] = "localhost"
-            DEFAULT_PORT: Final[int] = 8080
-            TEST_APP_NAME: Final[str] = "TestApplication"
-            PORT_START: Final[int] = 9000
-            PORT_END: Final[int] = 9999
-            TEST_METHOD: Final[str] = "GET"
-            TEST_CONTENT_TYPE: Final[str] = "application/json"
+        DEFAULT_HOST: Final[str] = "localhost"
+        DEFAULT_PORT: Final[int] = 8080
+        TEST_APP_NAME: Final[str] = "TestApplication"
+        PORT_START: Final[int] = 9000
+        PORT_END: Final[int] = 9999
+        TEST_METHOD: Final[str] = "GET"
+        TEST_CONTENT_TYPE: Final[str] = "application/json"
 
 
 c = TestsFlextWebConstants

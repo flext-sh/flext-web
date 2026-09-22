@@ -8,17 +8,14 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsModels
 
-from flext_web import FlextWebModels
+from flext_web import m
 
 
-class TestsFlextWebModels(FlextTestsModels, FlextWebModels):
+class TestsFlextWebModels(m, FlextTestsModels):
     """Test models for flext-web."""
 
-    class Web(FlextWebModels.Web):
+    class Tests(FlextTestsModels.Tests):
         """Web domain test models."""
-
-        class Tests:
-            """Test-specific models."""
 
 
 m = TestsFlextWebModels

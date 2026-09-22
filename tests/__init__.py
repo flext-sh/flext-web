@@ -9,12 +9,10 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_tests import FlextTestsConstants, d, e, h, r, td, tf, tk, tm, tv, x
-
-    from flext_web import FlextWebConstants
+    from flext_tests import FlextTestsConstants, d, e, h, r, s, td, tf, tk, tm, tv, x
 
     from . import fixtures, integration, unit
-    from .base import TestsFlextWebServiceBase, TestsFlextWebServiceBase as s
+    from .base import TestsFlextWebServiceBase
     from .constants import TestsFlextWebConstants, TestsFlextWebConstants as c
     from .models import TestsFlextWebModels, TestsFlextWebModels as m
     from .protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p
@@ -23,7 +21,6 @@ if TYPE_CHECKING:
     from .utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
 __all__: tuple[str, ...] = (
     "FlextTestsConstants",
-    "FlextWebConstants",
     "TestsFlextWebConstants",
     "TestsFlextWebModels",
     "TestsFlextWebProtocols",
@@ -55,7 +52,7 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".base": ("TestsFlextWebServiceBase", "s"),
+            ".base": ("TestsFlextWebServiceBase",),
             ".constants": ("TestsFlextWebConstants", "c"),
             ".fixtures": ("fixtures",),
             ".integration": ("integration",),
@@ -71,6 +68,7 @@ _LAZY_IMPORTS = MappingProxyType(
                 "e",
                 "h",
                 "r",
+                "s",
                 "td",
                 "tf",
                 "tk",
@@ -78,7 +76,6 @@ _LAZY_IMPORTS = MappingProxyType(
                 "tv",
                 "x",
             ),
-            "flext_web": ("FlextWebConstants",),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

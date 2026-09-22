@@ -23,12 +23,12 @@ if TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
 
     from . import services
-    from .__main__ import FlextWebRunCommand, main
     from .__version__ import FlextWebVersion
     from ._config import FlextWebConfig, config
     from ._settings import FlextWebSettings, settings
     from .api import FlextWeb, web
     from .base import FlextWebServiceBase, FlextWebServiceBase as s
+    from .cli import FlextWebCli, main
     from .constants import FlextWebConstants, FlextWebConstants as c
     from .models import FlextWebModels, FlextWebModels as m
     from .protocols import FlextWebProtocols, FlextWebProtocols as p
@@ -44,6 +44,7 @@ __all__: tuple[str, ...] = (
     "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
+    "FlextWebCli",
     "FlextWebConfig",
     "FlextWebConstants",
     "FlextWebEntities",
@@ -51,7 +52,6 @@ __all__: tuple[str, ...] = (
     "FlextWebHealth",
     "FlextWebModels",
     "FlextWebProtocols",
-    "FlextWebRunCommand",
     "FlextWebServiceBase",
     "FlextWebServices",
     "FlextWebSettings",
@@ -87,12 +87,12 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".__main__": ("FlextWebRunCommand", "main"),
             ".__version__": ("FlextWebVersion",),
             "._config": ("FlextWebConfig", "config"),
             "._settings": ("FlextWebSettings", "settings"),
             ".api": ("FlextWeb", "web"),
             ".base": ("FlextWebServiceBase", "s"),
+            ".cli": ("FlextWebCli", "main"),
             ".constants": ("FlextWebConstants", "c"),
             ".models": ("FlextWebModels", "m"),
             ".protocols": ("FlextWebProtocols", "p"),

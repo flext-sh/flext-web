@@ -9,12 +9,9 @@ from typing import TYPE_CHECKING
 from flext_tests import tm
 
 from flext_web import web
-from tests import u
 
 if TYPE_CHECKING:
     from types import ModuleType
-
-logger = u.fetch_logger(__name__)
 
 
 class ExamplesFullFunctionalityTest:
@@ -57,12 +54,12 @@ class ExamplesFullFunctionalityTest:
     def test_basic_service_example_exposes_main(self) -> None:
         """The basic service example stays importable and runnable."""
         module = self._load_example_module("01_basic_service.py", "basic_service")
-        tm.that(callable(module.examples_flext_web.main), eq=True)
+        tm.that(callable(module.FlextWebExamples().main), eq=True)
 
     def test_api_usage_example_uses_the_public_facade(self) -> None:
         """The API usage example delegates lifecycle operations to `web`."""
         module = self._load_example_module("02_api_usage.py", "api_usage")
-        example = module.examples_flext_web
+        example = module.FlextWebExamples()
 
         health_result = example.check_service_health()
         tm.ok(health_result)
@@ -92,7 +89,7 @@ class ExamplesFullFunctionalityTest:
     def test_api_usage_demo_runs_full_lifecycle(self) -> None:
         """The lifecycle demo returns the projected applications after execution."""
         module = self._load_example_module("02_api_usage.py", "api_usage_demo")
-        demo_result = module.examples_flext_web.demo_application_lifecycle()
+        demo_result = module.FlextWebExamples().demo_application_lifecycle()
         tm.ok(demo_result)
         tm.that(demo_result.value, length=2)
         tm.that(all(app.running is False for app in demo_result.value), eq=True)
@@ -100,8 +97,3 @@ class ExamplesFullFunctionalityTest:
 
 class TestsFlextWebExamples(ExamplesFullFunctionalityTest):
     """Collected integration tests for canonical examples."""
-
-
-def main() -> int:
-    """Provide the module entry point kept for the generated test exports."""
-    return 0

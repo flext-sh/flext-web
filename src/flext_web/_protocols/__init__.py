@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from .lifecycle import FlextWebProtocolsLifecycle
     from .monitoring import FlextWebProtocolsMonitoring
     from .template import FlextWebProtocolsTemplate
+    from .web import FlextWebProtocolsWeb
 __all__: tuple[str, ...] = (
     "FlextWebProtocolsBase",
     "FlextWebProtocolsConfig",
@@ -24,6 +25,7 @@ __all__: tuple[str, ...] = (
     "FlextWebProtocolsLifecycle",
     "FlextWebProtocolsMonitoring",
     "FlextWebProtocolsTemplate",
+    "FlextWebProtocolsWeb",
 )
 
 _LAZY_IMPORTS = MappingProxyType(
@@ -36,6 +38,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".lifecycle": ("FlextWebProtocolsLifecycle",),
             ".monitoring": ("FlextWebProtocolsMonitoring",),
             ".template": ("FlextWebProtocolsTemplate",),
+            ".web": ("FlextWebProtocolsWeb",),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

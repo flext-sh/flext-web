@@ -62,50 +62,47 @@ class FlextWebExamples:
         self,
     ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
         """Demonstrate the canonical public lifecycle flow for flext-web."""
-        created_apps: list[m.Web.ApplicationResponse] = []
         first_port = self._allocate_demo_port()
         second_port = self._allocate_demo_port(first_port)
-
-        for app_data in (
+        app_data: tuple[m.Web.AppData, ...] = (
             m.Web.AppData(name="web-service", host="127.0.0.1", port=first_port),
             m.Web.AppData(name="api-gateway", host="127.0.0.1", port=second_port),
-        ):
-            created_result = web.create_app(app_data)
-            if created_result.failure:
-                return r[Sequence[m.Web.ApplicationResponse]].fail(created_result.error)
-            created_apps.append(created_result.value)
-
-        for created_app in created_apps:
-            started_result = web.start_app(created_app.id)
-            if started_result.failure:
-                return r[Sequence[m.Web.ApplicationResponse]].fail(started_result.error)
-
-        listed_running_apps = web.list_apps()
-        if listed_running_apps.failure:
-            return r[Sequence[m.Web.ApplicationResponse]].fail(
-                listed_running_apps.error
+        )
+        return (
+            r
+            .traverse(app_data, web.create_app)
+            .flat_map(self._start_all)
+            .flat_map(lambda created: web.list_apps().map(lambda _: created))
+            .flat_map(self._stop_all)
+            .flat_map(
+                lambda created: r.traverse(created, lambda app: web.fetch_app(app.id))
             )
+        )
 
-        for created_app in created_apps:
-            stopped_result = web.stop_app(created_app.id)
-            if stopped_result.failure:
-                return r[Sequence[m.Web.ApplicationResponse]].fail(stopped_result.error)
+    @staticmethod
+    def _start_all(
+        created: Sequence[m.Web.ApplicationResponse],
+    ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+        """Start every created application, preserving the created projection."""
+        return r.traverse(created, lambda app: web.start_app(app.id)).map(
+            lambda _: created
+        )
 
-        final_apps: list[m.Web.ApplicationResponse] = []
-        for created_app in created_apps:
-            current_result = web.fetch_app(created_app.id)
-            if current_result.failure:
-                return r[Sequence[m.Web.ApplicationResponse]].fail(current_result.error)
-            final_apps.append(current_result.value)
-        return r[Sequence[m.Web.ApplicationResponse]].ok(final_apps)
+    @staticmethod
+    def _stop_all(
+        created: Sequence[m.Web.ApplicationResponse],
+    ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+        """Stop every created application, preserving the created projection."""
+        return r.traverse(created, lambda app: web.stop_app(app.id)).map(
+            lambda _: created
+        )
 
     def main(self) -> None:
         """Run the facade lifecycle demonstration."""
         _ = self.demo_application_lifecycle()
 
 
-examples_flext_web = FlextWebExamples()
-
+__all__: list[str] = ["FlextWebExamples"]
 
 if __name__ == "__main__":
-    examples_flext_web.main()
+    FlextWebExamples().main()

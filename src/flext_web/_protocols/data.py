@@ -18,56 +18,49 @@ if TYPE_CHECKING:
 class FlextWebProtocolsData:
     """Data-access protocol shard: repository and handler patterns."""
 
-    class Web:
-        """Web data protocols."""
+    @runtime_checkable
+    class WebRepository(Protocol):
+        """Protocol for web application persistence operations."""
 
-        @runtime_checkable
-        class WebRepository(Protocol):
-            """Protocol for web application persistence operations."""
+        @staticmethod
+        def fetch_by_id(entity_id: str) -> p.Result[t.Web.ResponseDict]:
+            """Fetch a single application record by id."""
+            ...
 
-            @staticmethod
-            def fetch_by_id(entity_id: str) -> p.Result[t.Web.ResponseDict]:
-                """Fetch a single application record by id."""
-                ...
+        @staticmethod
+        def save(entity: t.Web.ResponseDict) -> p.Result[t.Web.ResponseDict]:
+            """Persist an application record."""
+            ...
 
-            @staticmethod
-            def save(entity: t.Web.ResponseDict) -> p.Result[t.Web.ResponseDict]:
-                """Persist an application record."""
-                ...
+        @staticmethod
+        def delete(entity_id: str) -> p.Result[bool]:
+            """Delete an application record."""
+            ...
 
-            @staticmethod
-            def delete(entity_id: str) -> p.Result[bool]:
-                """Delete an application record."""
-                ...
+        @staticmethod
+        def find_all() -> p.Result[Sequence[t.Web.ResponseDict]]:
+            """Return all application records."""
+            ...
 
-            @staticmethod
-            def find_all() -> p.Result[Sequence[t.Web.ResponseDict]]:
-                """Return all application records."""
-                ...
+        @staticmethod
+        def find_by_criteria(
+            criteria: t.Web.RequestDict,
+        ) -> p.Result[Sequence[t.Web.ResponseDict]]:
+            """Return records matching the given criteria."""
+            ...
 
-            @staticmethod
-            def find_by_criteria(
-                criteria: t.Web.RequestDict,
-            ) -> p.Result[Sequence[t.Web.ResponseDict]]:
-                """Return records matching the given criteria."""
-                ...
+    @runtime_checkable
+    class WebHandler(Protocol):
+        """Protocol for request handling helpers."""
 
-        @runtime_checkable
-        class WebHandler(Protocol):
-            """Protocol for request handling helpers."""
+        @staticmethod
+        def handle_request(request: t.Web.RequestDict) -> p.Result[t.Web.ResponseDict]:
+            """Handle a web request payload."""
+            ...
 
-            @staticmethod
-            def handle_request(
-                request: t.Web.RequestDict,
-            ) -> p.Result[t.Web.ResponseDict]:
-                """Handle a web request payload."""
-                ...
-
-            def execute(
-                self, command: t.Web.RequestDict
-            ) -> p.Result[t.Web.ResponseDict]:
-                """Execute a handler command."""
-                ...
+        def execute(self, command: t.Web.RequestDict) -> p.Result[t.Web.ResponseDict]:
+            """Execute a handler command."""
+            ...
 
 
 __all__: list[str] = ["FlextWebProtocolsData"]

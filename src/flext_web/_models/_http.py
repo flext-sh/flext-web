@@ -97,9 +97,8 @@ class FlextWebModelsHttp:
             """
             return self.url.startswith("https://")
 
-        @classmethod
+        @staticmethod
         def create_http_request(
-            cls,
             url: str,
             method: str = c.Web.Method.GET,
             headers: t.StrMapping | None = None,
@@ -108,7 +107,7 @@ class FlextWebModelsHttp:
         ) -> p.Result[FlextWebModelsHttp.Request]:
             """Build a validated :class:`Request` from raw HTTP parameters."""
             return r[FlextWebModelsHttp.Request].create_from_callable(
-                lambda: cls.model_validate({
+                lambda: FlextWebModelsHttp.Request.model_validate({
                     "url": url,
                     "method": method,
                     "headers": dict(headers or {}),
