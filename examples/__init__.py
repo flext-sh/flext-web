@@ -9,8 +9,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_cli import cli
-    from pydantic_core import from_json, to_json, to_jsonable_python
+    from flext_cli import d, e, h, r, x
 
     from flext_core import (
         core,
@@ -64,36 +63,13 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".constants": ("FlextWebExamplesConstants",),
-            ".models": ("FlextWebExamplesModels",),
-            ".protocols": ("FlextWebExamplesProtocols",),
-            ".typings": ("FlextWebExamplesTypes",),
-            ".utilities": ("FlextWebExamplesUtilities",),
-            "flext_cli": ("cli",),
-            "flext_core": (
-                "core",
-                "d",
-                "e",
-                "h",
-                "lazy",
-                "lazy_attribute",
-                "normalize_lazy_imports",
-                "r",
-                "x",
-            ),
-            "flext_web": (
-                "c",
-                "config",
-                "m",
-                "main",
-                "p",
-                "s",
-                "settings",
-                "t",
-                "u",
-                "web",
-            ),
-            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
+            ".constants": ("ExamplesFlextWebConstants", "c"),
+            ".models": ("ExamplesFlextWebModels", "m"),
+            ".protocols": ("ExamplesFlextWebProtocols", "p"),
+            ".typings": ("ExamplesFlextWebTypes", "t"),
+            ".utilities": ("ExamplesFlextWebUtilities", "u"),
+            "flext_cli": ("d", "e", "h", "r", "x"),
+            "flext_web": ("FlextWebConstants", "s"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
