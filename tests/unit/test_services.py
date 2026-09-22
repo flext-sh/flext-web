@@ -6,7 +6,7 @@ from flext_tests import tm
 
 from flext_web import web
 from tests import m
-from tests.fixtures import WebAuthFixture
+from tests.fixtures import TestsFlextWebAuthFixture
 
 
 class TestsFlextWebService:
@@ -14,14 +14,14 @@ class TestsFlextWebService:
 
     def test_authenticate_success(self) -> None:
         """Authentication succeeds for the canonical test credentials."""
-        credentials = WebAuthFixture().credentials
+        credentials = TestsFlextWebAuthFixture().credentials
         result = web.authenticate(credentials)
         tm.ok(result)
         tm.that(result.value.user_id, eq=credentials.username)
 
     def test_authenticate_failure(self) -> None:
         """Authentication fails for invalid credentials."""
-        canonical = WebAuthFixture()
+        canonical = TestsFlextWebAuthFixture()
         credentials = canonical.credentials.model_copy(
             update={"username": canonical.rejected_username}
         )
@@ -31,7 +31,7 @@ class TestsFlextWebService:
 
     def test_register_user_success(self) -> None:
         """User registration succeeds for valid input."""
-        credentials = WebAuthFixture().credentials
+        credentials = TestsFlextWebAuthFixture().credentials
         result = web.register_user(
             m.Web.UserData(
                 username="newuser",
@@ -44,7 +44,7 @@ class TestsFlextWebService:
 
     def test_register_user_rejects_numeric_username(self) -> None:
         """Numeric-only usernames are rejected."""
-        credentials = WebAuthFixture().credentials
+        credentials = TestsFlextWebAuthFixture().credentials
         result = web.register_user(
             m.Web.UserData(
                 username="12345",

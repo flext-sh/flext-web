@@ -21,6 +21,4 @@ class TestsFlextWebServiceBase(tests_s):
         return m.RuntimeBootstrapOptions(settings_type=TestsFlextWebSettings)
 
 
-s = TestsFlextWebServiceBase
-
-__all__: list[str] = ["TestsFlextWebServiceBase", "s"]
+__all__: list[str] = ["TestsFlextWebServiceBase"]

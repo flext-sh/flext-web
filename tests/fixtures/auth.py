@@ -11,8 +11,10 @@ from __future__ import annotations
 from flext_web import FlextWebSettings, m
 
 
-class WebAuthFixture:
+class TestsFlextWebAuthFixture:
     """Expose credentials that satisfy the real authenticate() contract."""
+
+    __test__ = False
 
     def __init__(self) -> None:
         """Create credentials from the configured runtime contract."""
@@ -31,4 +33,4 @@ class WebAuthFixture:
         self.rejected_username = f"{auth_username}-rejected"
 
 
-__all__: list[str] = ["WebAuthFixture"]
+__all__: list[str] = ["TestsFlextWebAuthFixture"]

@@ -20,30 +20,33 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
-    from flext_core import d, e, h, r, x
+    from flext_cli import cli
+    from pydantic_core import from_json, to_json, to_jsonable_python
+
+    from flext_core import core, d, e, h, lazy_attribute, r, x
 
     from . import services
-    from .__main__ import FlextWebRunCommand, main
-    from .__version__ import FlextWebVersion
     from ._config import FlextWebConfig, config
     from ._settings import FlextWebSettings, settings
     from .api import FlextWeb, web
     from .base import FlextWebServiceBase, FlextWebServiceBase as s
-    from .constants import FlextWebConstants, FlextWebConstants as c
-    from .models import FlextWebModels, FlextWebModels as m
-    from .protocols import FlextWebProtocols, FlextWebProtocols as p
+    from .cli import FlextWebCli, main
+    from .constants import FlextWebConstants, c
+    from .models import FlextWebModels, m
+    from .protocols import FlextWebProtocols, p
     from .services.app import FlextWebApp
     from .services.auth import FlextWebAuth
     from .services.entities import FlextWebEntities
     from .services.handlers import FlextWebHandlers
     from .services.health import FlextWebHealth
     from .services.web import FlextWebServices
-    from .typings import FlextWebTypes, FlextWebTypes as t
-    from .utilities import FlextWebUtilities, FlextWebUtilities as u
+    from .typings import FlextWebTypes, t
+    from .utilities import FlextWebUtilities, u
 __all__: tuple[str, ...] = (
     "FlextWeb",
     "FlextWebApp",
     "FlextWebAuth",
+    "FlextWebCli",
     "FlextWebConfig",
     "FlextWebConstants",
     "FlextWebEntities",
@@ -51,13 +54,11 @@ __all__: tuple[str, ...] = (
     "FlextWebHealth",
     "FlextWebModels",
     "FlextWebProtocols",
-    "FlextWebRunCommand",
     "FlextWebServiceBase",
     "FlextWebServices",
     "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
-    "FlextWebVersion",
     "__author__",
     "__author_email__",
     "__description__",
@@ -67,10 +68,14 @@ __all__: tuple[str, ...] = (
     "__version__",
     "__version_info__",
     "c",
+    "cli",
     "config",
+    "core",
     "d",
     "e",
+    "from_json",
     "h",
+    "lazy_attribute",
     "m",
     "main",
     "p",
@@ -79,6 +84,8 @@ __all__: tuple[str, ...] = (
     "services",
     "settings",
     "t",
+    "to_json",
+    "to_jsonable_python",
     "u",
     "web",
     "x",
@@ -87,12 +94,11 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".__main__": ("FlextWebRunCommand", "main"),
-            ".__version__": ("FlextWebVersion",),
             "._config": ("FlextWebConfig", "config"),
             "._settings": ("FlextWebSettings", "settings"),
             ".api": ("FlextWeb", "web"),
             ".base": ("FlextWebServiceBase", "s"),
+            ".cli": ("FlextWebCli", "main"),
             ".constants": ("FlextWebConstants", "c"),
             ".models": ("FlextWebModels", "m"),
             ".protocols": ("FlextWebProtocols", "p"),
@@ -105,7 +111,9 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.web": ("FlextWebServices",),
             ".typings": ("FlextWebTypes", "t"),
             ".utilities": ("FlextWebUtilities", "u"),
-            "flext_core": ("d", "e", "h", "r", "x"),
+            "flext_cli": ("cli",),
+            "flext_core": ("core", "d", "e", "h", "lazy_attribute", "r", "x"),
+            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

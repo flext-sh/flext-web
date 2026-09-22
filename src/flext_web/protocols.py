@@ -16,12 +16,13 @@ from __future__ import annotations
 from flext_cli import p
 
 from ._protocols.base import FlextWebProtocolsBase
+from ._protocols.web import FlextWebProtocolsWeb
 
 
 class FlextWebProtocols(p):
     """Web-specific ``@runtime_checkable`` Protocol surface extending ``p``."""
 
-    class Web(FlextWebProtocolsBase.Web):
+    class Web(FlextWebProtocolsBase, FlextWebProtocolsWeb):
         """Web domain-specific Protocols."""
 
 

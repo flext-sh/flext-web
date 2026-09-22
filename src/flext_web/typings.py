@@ -9,17 +9,14 @@ from __future__ import annotations
 from flext_cli import t
 
 from ._typings.base import FlextWebTypingsBase
+from ._typings.web import FlextWebTypingsWeb
 
 
 class FlextWebTypes(t):
     """Web-specific type definitions extending t via MRO."""
 
-    class Web(FlextWebTypingsBase):
+    class Web(FlextWebTypingsWeb, FlextWebTypingsBase):
         """Web domain namespace (flat members per AGENTS.md §149)."""
-
-        type RequestDict = dict[str, t.Scalar | t.StrSequence | t.ConfigurationMapping]
-        type ResponseDict = dict[str, t.Scalar | t.StrSequence | t.ConfigurationMapping]
-        type FastApiEndpointPayload = t.MappingKV[str, str | bool]
 
 
 t = FlextWebTypes

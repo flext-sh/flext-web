@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import uuid
 
-from flext_cli import u
+from flext_cli import m, u
 
 from flext_core import r
 from flext_web import c, p, settings, t
@@ -61,37 +61,16 @@ class FlextWebModelsFactory:
         headers: t.StrMapping | None = None,
         body: str | t.JsonValue | None = None,
     ) -> p.Result[FlextWebModelsWebRequest.WebRequest]:
-        """Create a web request model.
-
-        Args:
-            method: HTTP method
-            url: Request URL
-            headers: Request headers (defaults to empty dict)
-            body: Request body
-
-        Returns:
-            r[WebRequest]: Success contains request model,
-                                    failure contains validation error
-
-        """
-        headers_validated: t.StrMapping = headers or {}
-
-        def create_request() -> FlextWebModelsWebRequest.WebRequest:
-            """Create request model."""
-            validated: FlextWebModelsWebRequest.WebRequest = (
-                FlextWebModelsWebRequest.WebRequest.model_validate({
-                    "method": method,
-                    "url": url,
-                    "headers": dict(headers_validated),
-                    "body": body,
-                    "request_id": str(uuid.uuid4()),
-                    "timestamp": u.now(),
-                })
-            )
-            return validated
-
-        result = u.try_(create_request, catch=Exception)
-        return result.map_error(lambda exc: f"Failed to create web request: {exc}")
+        """Create a validated web request model from direct parameters."""
+        payload: t.MutableMappingKV[str, t.JsonPayload] = {
+            "method": method,
+            "url": url,
+            "headers": dict(headers or {}),
+            "body": body,
+            "request_id": str(uuid.uuid4()),
+            "timestamp": u.now(),
+        }
+        return cls._build(FlextWebModelsWebRequest.WebRequest, payload, "web request")
 
     @classmethod
     def create_web_response(
@@ -101,37 +80,24 @@ class FlextWebModelsFactory:
         headers: t.StrMapping | None = None,
         body: str | t.JsonValue | None = None,
     ) -> p.Result[FlextWebModelsWebRequest.WebResponse]:
-        """Create a web response model.
+        """Create a validated web response model from direct parameters."""
+        payload: t.MutableMappingKV[str, t.JsonPayload] = {
+            "request_id": request_id,
+            "status_code": status_code,
+            "headers": dict(headers or {}),
+            "body": body,
+            "response_id": str(uuid.uuid4()),
+            "timestamp": u.now(),
+        }
+        return cls._build(FlextWebModelsWebRequest.WebResponse, payload, "web response")
 
-        Args:
-            request_id: Associated request identifier
-            status_code: HTTP status code
-            headers: Response headers (defaults to empty dict)
-            body: Response body
-
-        Returns:
-             r[WebResponse]: Success contains response model,
-                                      failure contains validation error
-
-        """
-        headers_validated: t.StrMapping = headers or {}
-
-        def create_response() -> FlextWebModelsWebRequest.WebResponse:
-            """Create response model."""
-            validated: FlextWebModelsWebRequest.WebResponse = (
-                FlextWebModelsWebRequest.WebResponse.model_validate({
-                    "request_id": request_id,
-                    "status_code": status_code,
-                    "headers": dict(headers_validated),
-                    "body": body,
-                    "response_id": str(uuid.uuid4()),
-                    "timestamp": u.now(),
-                })
-            )
-            return validated
-
-        result = u.try_(create_response, catch=Exception)
-        return result.map_error(lambda exc: f"Failed to create web response: {exc}")
+    @staticmethod
+    def _build[M: m.BaseModel](
+        model_cls: type[M], payload: t.MutableMappingKV[str, t.JsonPayload], label: str
+    ) -> p.Result[M]:
+        """Validate a payload into ``model_cls`` at the Result boundary."""
+        result = u.try_(lambda: model_cls.model_validate(payload), catch=Exception)
+        return result.map_error(lambda exc: f"Failed to create {label}: {exc}")
 
 
 __all__: list[str] = ["FlextWebModelsFactory"]

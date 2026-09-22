@@ -12,7 +12,6 @@ class FlextWebExamples:
 
     def main(self) -> None:
         """Start flext-web using validated namespaced settings and the facade."""
-        # Settings are validated at construction; overrides go through clone().
         settings = web.settings.clone(
             Web={
                 "host": "127.0.0.1",
@@ -26,8 +25,7 @@ class FlextWebExamples:
         )
 
 
-examples_flext_web = FlextWebExamples()
-
+__all__: list[str] = ["FlextWebExamples"]
 
 if __name__ == "__main__":
-    examples_flext_web.main()
+    FlextWebExamples().main()
