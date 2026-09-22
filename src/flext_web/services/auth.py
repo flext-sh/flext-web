@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import secrets
 from typing import override
 
 from flext_web import e, m, p, r, s
@@ -13,21 +14,28 @@ class FlextWebAuth(s):
     def authenticate(
         self, credentials: m.Web.Credentials
     ) -> p.Result[m.Web.AuthResponse]:
-        """Authenticate a user with explicit validation."""
-        if credentials.username == "nonexistent":
+        """Authenticate against the settings SSOT; fail loud when unconfigured."""
+        expected_username = self.settings.Web.auth_username
+        expected_password = self.settings.Web.auth_password
+        if not expected_username or not expected_password:
             return e.fail_auth(
-                "password",
+                "credentials",
                 credentials.username,
-                options=m.ExceptionFactoryOptions(error="invalid credentials"),
+                options=m.ExceptionFactoryOptions(
+                    error="authentication provider is not configured"
+                ),
             )
-        if credentials.password != "test" + "_" + "password":
+        if not (
+            secrets.compare_digest(credentials.username, expected_username)
+            and secrets.compare_digest(credentials.password, expected_password)
+        ):
             return e.fail_auth(
                 "password",
                 credentials.username,
                 options=m.ExceptionFactoryOptions(error="invalid credentials"),
             )
         auth_response = m.Web.AuthResponse(
-            token=f"token_{credentials.username}",
+            token=secrets.token_urlsafe(32),
             user_id=credentials.username,
             authenticated=True,
         )
