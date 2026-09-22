@@ -6,8 +6,6 @@
 - [Development Workflow](#development-workflow)
 - [Public API Rule](#public-api-rule)
 - [Settings Rule](#settings-rule)
-- [Service Rule](#service-rule)
-- [Quality Rule](#quality-rule)
 
 <!-- TOC END -->
 
@@ -58,7 +56,8 @@ from flext_web import FlextWebSettings, settings
 runtime_settings = FlextWebSettings(
     Web={"host": "localhost", "port": 8080}, debug=settings.debug
 )
-assert runtime_settings.Web.host == "localhost"```
+assert runtime_settings.Web.host == "localhost"
+```
 ## Service Rule
 
 Lifecycle operations stay on the facade:
@@ -68,12 +67,14 @@ from flext_web import web
 
 assert web.get_service_status().success
 assert web.start_service(host="127.0.0.1", port=8080).success
-assert web.stop_service().success```
+assert web.stop_service().success
+```
 ## Quality Rule
 
 Changes are not complete until both commands pass:
 
 ```bash
 make check PROJECT=flext-web
-make test PROJECT=flext-web```
+make test PROJECT=flext-web
+```
 ````

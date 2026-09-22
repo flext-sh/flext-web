@@ -4,8 +4,6 @@
 
 - [Import Errors](#import-errors)
 - [Settings Issues](#settings-issues)
-- [Runtime Issues](#runtime-issues)
-- [Quick Checks](#quick-checks)
 
 <!-- TOC END -->
 
@@ -28,7 +26,8 @@ Validate explicit overrides through the canonical settings model:
 from flext_web import FlextWebSettings, u
 
 runtime_settings = FlextWebSettings(Web={"host": "127.0.0.1", "port": 8080})
-assert u.Web.validate_settings(runtime_settings).unwrap()```
+assert u.Web.validate_settings(runtime_settings).unwrap()
+```
 If validation fails, inspect the field values being passed to the settings factory.
 
 ## Runtime Issues
@@ -40,7 +39,8 @@ from flext_web import web
 
 assert web.initialize_routes().success
 assert web.configure_middleware().success
-assert web.start_service(host="127.0.0.1", port=8080).success```
+assert web.start_service(host="127.0.0.1", port=8080).success
+```
 ## Quick Checks
 
 - Import `web` and `settings` from the package root.
