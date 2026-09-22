@@ -26,22 +26,23 @@ if TYPE_CHECKING:
     from flext_core import core, d, e, h, lazy_attribute, r, x
 
     from . import services
+    from .__version__ import FlextWebVersion
     from ._config import FlextWebConfig, config
     from ._settings import FlextWebSettings, settings
     from .api import FlextWeb, web
     from .base import FlextWebServiceBase, FlextWebServiceBase as s
     from .cli import FlextWebCli, main
-    from .constants import FlextWebConstants, c
-    from .models import FlextWebModels, m
-    from .protocols import FlextWebProtocols, p
+    from .constants import FlextWebConstants, FlextWebConstants as c
+    from .models import FlextWebModels, FlextWebModels as m
+    from .protocols import FlextWebProtocols, FlextWebProtocols as p
     from .services.app import FlextWebApp
     from .services.auth import FlextWebAuth
     from .services.entities import FlextWebEntities
     from .services.handlers import FlextWebHandlers
     from .services.health import FlextWebHealth
     from .services.web import FlextWebServices
-    from .typings import FlextWebTypes, t
-    from .utilities import FlextWebUtilities, u
+    from .typings import FlextWebTypes, FlextWebTypes as t
+    from .utilities import FlextWebUtilities, FlextWebUtilities as u
 __all__: tuple[str, ...] = (
     "FlextWeb",
     "FlextWebApp",
@@ -59,6 +60,7 @@ __all__: tuple[str, ...] = (
     "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
+    "FlextWebVersion",
     "__author__",
     "__author_email__",
     "__description__",
@@ -68,14 +70,10 @@ __all__: tuple[str, ...] = (
     "__version__",
     "__version_info__",
     "c",
-    "cli",
     "config",
-    "core",
     "d",
     "e",
-    "from_json",
     "h",
-    "lazy_attribute",
     "m",
     "main",
     "p",
@@ -84,8 +82,6 @@ __all__: tuple[str, ...] = (
     "services",
     "settings",
     "t",
-    "to_json",
-    "to_jsonable_python",
     "u",
     "web",
     "x",
@@ -94,6 +90,7 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
+            ".__version__": ("FlextWebVersion",),
             "._config": ("FlextWebConfig", "config"),
             "._settings": ("FlextWebSettings", "settings"),
             ".api": ("FlextWeb", "web"),
