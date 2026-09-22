@@ -20,10 +20,14 @@ from .__version__ import (
 )
 
 if TYPE_CHECKING:
+<<<<<<< HEAD
     from flext_cli import cli
     from pydantic_core import from_json, to_json, to_jsonable_python
 
     from flext_core import core, d, e, h, lazy_attribute, r, x
+=======
+    from flext_core import d, e, h, r, x
+>>>>>>> origin/0.12.0-dev
 
     from . import services
     from ._config import FlextWebConfig, config
@@ -111,9 +115,13 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.web": ("FlextWebServices",),
             ".typings": ("FlextWebTypes", "t"),
             ".utilities": ("FlextWebUtilities", "u"),
+<<<<<<< HEAD
             "flext_cli": ("cli",),
             "flext_core": ("core", "d", "e", "h", "lazy_attribute", "r", "x"),
             "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
+=======
+            "flext_core": ("d", "e", "h", "r", "x"),
+>>>>>>> origin/0.12.0-dev
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
