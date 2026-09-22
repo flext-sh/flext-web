@@ -10,7 +10,6 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_cli import cli
-    from pydantic_core import from_json, to_json, to_jsonable_python
 
     from flext_core import (
         core,
@@ -25,11 +24,11 @@ if TYPE_CHECKING:
     )
     from flext_web import c, config, m, main, p, s, settings, t, u, web
 
-    from .constants import FlextWebExamplesConstants, FlextWebExamplesConstants as c
-    from .models import FlextWebExamplesModels, FlextWebExamplesModels as m
-    from .protocols import FlextWebExamplesProtocols, FlextWebExamplesProtocols as p
-    from .typings import FlextWebExamplesTypes, FlextWebExamplesTypes as t
-    from .utilities import FlextWebExamplesUtilities, FlextWebExamplesUtilities as u
+    from .constants import FlextWebExamplesConstants
+    from .models import FlextWebExamplesModels
+    from .protocols import FlextWebExamplesProtocols
+    from .typings import FlextWebExamplesTypes
+    from .utilities import FlextWebExamplesUtilities
 __all__: tuple[str, ...] = (
     "FlextWebExamplesConstants",
     "FlextWebExamplesModels",
@@ -37,15 +36,24 @@ __all__: tuple[str, ...] = (
     "FlextWebExamplesTypes",
     "FlextWebExamplesUtilities",
     "c",
+    "cli",
+    "config",
+    "core",
     "d",
     "e",
     "h",
+    "lazy",
+    "lazy_attribute",
     "m",
+    "main",
+    "normalize_lazy_imports",
     "p",
     "r",
     "s",
+    "settings",
     "t",
     "u",
+    "web",
     "x",
 )
 
@@ -81,7 +89,6 @@ _LAZY_IMPORTS = MappingProxyType(
                 "u",
                 "web",
             ),
-            "pydantic_core": ("from_json", "to_json", "to_jsonable_python"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
