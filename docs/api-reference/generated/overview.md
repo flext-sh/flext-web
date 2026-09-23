@@ -19,12 +19,12 @@
 - Project class: `domain`
 - Keywords: `enterprise`, `flask`, `flext`, `frontend`, `typed`, `web`
 - Main facades: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebCli`,
-  `FlextWebConfig`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers` (+9
+  `FlextWebConfig`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers` (+8
   more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebCli`,
   `FlextWebConfig`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`,
-  `FlextWebHealth`, `FlextWebModels` (+11 more)
+  `FlextWebHealth`, `FlextWebModels` (+10 more)
 - Exported module shortcuts: `services`
 - Generated module pages: `15`
 
