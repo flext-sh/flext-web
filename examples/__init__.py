@@ -29,6 +29,8 @@ if TYPE_CHECKING:
     from .protocols import FlextWebExamplesProtocols
     from .typings import FlextWebExamplesTypes
     from .utilities import FlextWebExamplesUtilities
+
+
 __all__: tuple[str, ...] = (
     "FlextWebExamplesConstants",
     "FlextWebExamplesModels",

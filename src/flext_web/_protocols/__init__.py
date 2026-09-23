@@ -17,6 +17,8 @@ if TYPE_CHECKING:
     from .monitoring import FlextWebProtocolsMonitoring
     from .template import FlextWebProtocolsTemplate
     from .web import FlextWebProtocolsWeb
+
+
 __all__: tuple[str, ...] = (
     "FlextWebProtocolsBase",
     "FlextWebProtocolsConfig",

@@ -19,6 +19,8 @@ if TYPE_CHECKING:
     from ._system import FlextWebModelsSystem
     from ._web_message import FlextWebModelsWebMessage
     from ._web_request import FlextWebModelsWebRequest
+
+
 __all__: tuple[str, ...] = (
     "FlextWebModelsAuth",
     "FlextWebModelsBase",

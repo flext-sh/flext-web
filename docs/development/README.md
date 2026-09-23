@@ -6,7 +6,6 @@
 - [Implementation Map](#implementation-map)
 - [Development Commands](#development-commands)
 - [Runtime Surface](#runtime-surface)
-- [Contribution Guardrails](#contribution-guardrails)
 
 <!-- TOC END -->
 
@@ -47,7 +46,8 @@ web.create_flask_app()
 web.create_app(...)
 web.start_app(...)
 web.start_service(...)
-web.stop_service()```
+web.stop_service()
+```
 ## Contribution Guardrails
 
 - Keep `api.py` thin.

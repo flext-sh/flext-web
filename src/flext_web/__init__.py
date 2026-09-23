@@ -41,6 +41,8 @@ if TYPE_CHECKING:
     from .services.web import FlextWebServices
     from .typings import FlextWebTypes, t
     from .utilities import FlextWebUtilities, u
+
+
 __all__: tuple[str, ...] = (
     "FlextWeb",
     "FlextWebApp",

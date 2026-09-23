@@ -15,6 +15,8 @@ if TYPE_CHECKING:
     from .handlers import FlextWebHandlers
     from .health import FlextWebHealth
     from .web import FlextWebServices
+
+
 __all__: tuple[str, ...] = (
     "FlextWebApp",
     "FlextWebAuth",
