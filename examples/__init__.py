@@ -9,20 +9,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_cli import cli
-
-    from flext_core import (
-        core,
-        d,
-        e,
-        h,
-        lazy,
-        lazy_attribute,
-        normalize_lazy_imports,
-        r,
-        x,
-    )
-    from flext_web import c, config, m, main, p, s, settings, t, u, web
+    from flext_web import c, d, e, h, m, p, r, s, t, u, x
 
     from .constants import FlextWebExamplesConstants
     from .models import FlextWebExamplesModels
@@ -38,24 +25,15 @@ __all__: tuple[str, ...] = (
     "FlextWebExamplesTypes",
     "FlextWebExamplesUtilities",
     "c",
-    "cli",
-    "config",
-    "core",
     "d",
     "e",
     "h",
-    "lazy",
-    "lazy_attribute",
     "m",
-    "main",
-    "normalize_lazy_imports",
     "p",
     "r",
     "s",
-    "settings",
     "t",
     "u",
-    "web",
     "x",
 )
 
@@ -67,30 +45,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".protocols": ("FlextWebExamplesProtocols",),
             ".typings": ("FlextWebExamplesTypes",),
             ".utilities": ("FlextWebExamplesUtilities",),
-            "flext_cli": ("cli",),
-            "flext_core": (
-                "core",
-                "d",
-                "e",
-                "h",
-                "lazy",
-                "lazy_attribute",
-                "normalize_lazy_imports",
-                "r",
-                "x",
-            ),
-            "flext_web": (
-                "c",
-                "config",
-                "m",
-                "main",
-                "p",
-                "s",
-                "settings",
-                "t",
-                "u",
-                "web",
-            ),
+            "flext_web": ("c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
