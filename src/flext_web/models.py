@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flext_cli import m
+from flext_cli import FlextCliModels
 
 from flext_web import t
 
@@ -18,7 +18,7 @@ from ._models._web_message import FlextWebModelsWebMessage
 from ._models._web_request import FlextWebModelsWebRequest
 
 
-class FlextWebModels(m):
+class FlextWebModels(FlextCliModels):
     """HTTP domain models for flext-web."""
 
     class Web(

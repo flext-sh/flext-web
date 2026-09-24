@@ -15,12 +15,12 @@ if TYPE_CHECKING:
 
     from . import fixtures, integration, unit
     from .base import TestsFlextWebServiceBase
-    from .constants import TestsFlextWebConstants, c
-    from .models import TestsFlextWebModels, m
-    from .protocols import TestsFlextWebProtocols, p
+    from .constants import TestsFlextWebConstants, TestsFlextWebConstants as c
+    from .models import TestsFlextWebModels, TestsFlextWebModels as m
+    from .protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p
     from .settings import TestsFlextWebSettings
-    from .typings import TestsFlextWebTypes, t
-    from .utilities import TestsFlextWebUtilities, u
+    from .typings import TestsFlextWebTypes, TestsFlextWebTypes as t
+    from .utilities import TestsFlextWebUtilities, TestsFlextWebUtilities as u
 
 
 __all__: tuple[str, ...] = (

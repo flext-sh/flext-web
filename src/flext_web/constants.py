@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from flext_cli import c, t
+from flext_cli import FlextCliConstants, t
 
 from ._constants.base import FlextWebConstantsBase
 from ._constants.values import FlextWebConstantsValues
 
 
-class FlextWebConstants(c):
+class FlextWebConstants(FlextCliConstants):
     """Immutable project-specific constants organized by domain."""
 
     class Web(FlextWebConstantsBase, FlextWebConstantsValues):

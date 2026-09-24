@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsTypes
 
-from flext_web import t
+from flext_web import FlextWebTypes
 
 
-class TestsFlextWebTypes(t, FlextTestsTypes):
+class TestsFlextWebTypes(FlextWebTypes, FlextTestsTypes):
     """Test type aliases for flext-web."""
 
     class Tests(FlextTestsTypes.Tests):

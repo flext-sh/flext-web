@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsProtocols
 
-from flext_web import p
+from flext_web import FlextWebProtocols
 
 
-class TestsFlextWebProtocols(p, FlextTestsProtocols):
+class TestsFlextWebProtocols(FlextWebProtocols, FlextTestsProtocols):
     """Test protocols for flext-web."""
 
     class Tests(FlextTestsProtocols.Tests):

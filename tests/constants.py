@@ -6,26 +6,26 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Final
+from typing import ClassVar
 
 from flext_tests import FlextTestsConstants
 
-from flext_web import c
+from flext_web import FlextWebConstants
 
 
-class TestsFlextWebConstants(c, FlextTestsConstants):
+class TestsFlextWebConstants(FlextWebConstants, FlextTestsConstants):
     """Test constants for flext-web."""
 
     class Tests(FlextTestsConstants.Tests):
         """Web domain test constants."""
 
-        DEFAULT_HOST: Final[str] = "localhost"
-        DEFAULT_PORT: Final[int] = 8080
-        TEST_APP_NAME: Final[str] = "TestApplication"
-        PORT_START: Final[int] = 9000
-        PORT_END: Final[int] = 9999
-        TEST_METHOD: Final[str] = "GET"
-        TEST_CONTENT_TYPE: Final[str] = "application/json"
+        DEFAULT_HOST: ClassVar[str] = "localhost"
+        DEFAULT_PORT: ClassVar[int] = 8080
+        TEST_APP_NAME: ClassVar[str] = "TestApplication"
+        PORT_START: ClassVar[int] = 9000
+        PORT_END: ClassVar[int] = 9999
+        TEST_METHOD: ClassVar[str] = "GET"
+        TEST_CONTENT_TYPE: ClassVar[str] = "application/json"
 
 
 c = TestsFlextWebConstants
