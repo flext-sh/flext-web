@@ -316,26 +316,6 @@ class FlextWebModelsEntity:
                 return r[bool].fail(f"Port must be between {min_port} and {max_port}")
             return r[bool].ok(value=True)
 
-        @classmethod
-        def create_application(
-            cls, settings: FlextWebModelsEntity.EntityConfig
-        ) -> p.Result[FlextWebModelsEntity.Entity]:
-            """Build an :class:`Entity` from an ``EntityConfig`` snapshot."""
-            return r[FlextWebModelsEntity.Entity].create_from_callable(
-                lambda: cls(
-                    name=settings.app_name,
-                    host=settings.host,
-                    port=settings.port,
-                    status=getattr(settings, "status", c.Web.Status.STOPPED.value),
-                    environment=getattr(
-                        settings, "environment", c.Web.Name.DEVELOPMENT.value
-                    ),
-                    debug_mode=getattr(settings, "debug_mode", False),
-                    version=getattr(settings, "version", 0),
-                    domain_events=[],
-                )
-            )
-
     class EntityConfig(m.Value):
         """Application entity configuration (Value Object).
 

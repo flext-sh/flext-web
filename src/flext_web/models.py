@@ -10,7 +10,6 @@ from ._models._auth import FlextWebModelsAuth
 from ._models._base import FlextWebModelsBase
 from ._models._config import FlextWebModelsConfig
 from ._models._entity import FlextWebModelsEntity
-from ._models._factory import FlextWebModelsFactory
 from ._models._http import FlextWebModelsHttp
 from ._models._responses import FlextWebModelsResponses
 from ._models._system import FlextWebModelsSystem
@@ -25,7 +24,6 @@ class FlextWebModels(FlextCliModels):
         FlextWebModelsBase,
         FlextWebModelsConfig,
         FlextWebModelsEntity,
-        FlextWebModelsFactory,
         FlextWebModelsHttp,
         FlextWebModelsResponses,
         FlextWebModelsSystem,

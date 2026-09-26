@@ -11,8 +11,7 @@ from typing import Annotated
 
 from flext_cli import u
 
-from flext_core import r
-from flext_web import c, p, t
+from flext_web import c, t
 
 from ._http import FlextWebModelsHttp
 
@@ -49,15 +48,6 @@ class FlextWebModelsWebMessage:
         ] = u.Field(default_factory=dict)
         client_ip: Annotated[str, u.Field(description="Client IP address")] = ""
         user_agent: Annotated[str, u.Field(description="Client user agent")] = ""
-
-        @classmethod
-        def create_web_request(
-            cls, settings: FlextWebModelsWebMessage.AppRequest
-        ) -> p.Result[FlextWebModelsWebMessage.AppRequest]:
-            """Re-validate an :class:`AppRequest` snapshot."""
-            return r[FlextWebModelsWebMessage.AppRequest].create_from_callable(
-                lambda: cls.model_validate(settings)
-            )
 
     class AppResponse(FlextWebModelsHttp.Response):
         """Web response entity with tracking and performance metrics.
@@ -106,15 +96,6 @@ class FlextWebModelsWebMessage:
             """
             processing_time_seconds: float = self.processing_time_ms / 1000
             return processing_time_seconds
-
-        @classmethod
-        def create_web_response(
-            cls, settings: FlextWebModelsWebMessage.AppResponse
-        ) -> p.Result[FlextWebModelsWebMessage.AppResponse]:
-            """Re-validate an :class:`AppResponse` snapshot."""
-            return r[FlextWebModelsWebMessage.AppResponse].create_from_callable(
-                lambda: cls.model_validate(settings)
-            )
 
 
 __all__: list[str] = ["FlextWebModelsWebMessage"]
