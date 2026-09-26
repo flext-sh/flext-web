@@ -65,5 +65,20 @@ class FlextWebProtocolsLifecycle:
             """Stop the web service."""
             ...
 
+    @runtime_checkable
+    class WebServiceRules(p.Base, Protocol):
+        """Protocol for a web service that validates its own business rules.
+
+        Declares only the ``validate_business_rules`` capability this member
+        actually consumes, deliberately not extending ``p.Service`` while that
+        base still carries unimplemented members (``service_info``, ``ok``,
+        ``fail_op``) which would make this protocol structurally unsatisfiable
+        by real services.
+        """
+
+        def validate_business_rules(self) -> p.Result[bool]:
+            """Validate the service's own business rules."""
+            ...
+
 
 __all__: list[str] = ["FlextWebProtocolsLifecycle"]
