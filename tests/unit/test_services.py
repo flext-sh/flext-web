@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from flext_tests import tm
 
-from flext_web import web
+from flext_web import p, web
 from tests import m
 from tests.fixtures import TestsFlextWebAuthFixture
 
@@ -132,3 +132,15 @@ class TestsFlextWebService:
         tm.ok(result)
         tm.that(result.value.service, eq="flext-web-api")
         tm.that(result.value.capabilities, has="flask_support")
+
+    @staticmethod
+    def _is_service_rules(candidate: p.Base) -> bool:
+        """Report structural conformance without a type-narrowed argument."""
+        return isinstance(candidate, p.Web.WebServiceRules)
+
+    def test_web_satisfies_its_own_service_rules_protocol(self) -> None:
+        """The real composed facade structurally satisfies its own protocol."""
+        tm.that(self._is_service_rules(web), eq=True)
+        result = web.validate_business_rules()
+        tm.ok(result)
+        tm.that(result.value, eq=True)

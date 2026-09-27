@@ -12,11 +12,11 @@ from typing import ClassVar
 
 from flext_tests import FlextTestsUtilities
 
-from flext_web import u
+from flext_web import FlextWebUtilities
 from tests import c
 
 
-class TestsFlextWebUtilities(u, FlextTestsUtilities):
+class TestsFlextWebUtilities(FlextWebUtilities, FlextTestsUtilities):
     """Test utilities for flext-web."""
 
     class Tests(FlextTestsUtilities.Tests):
