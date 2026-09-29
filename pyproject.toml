@@ -31,11 +31,11 @@ dependencies = [
   "pydantic>=2.13.5",
   "pydantic-settings>=2.14.2,<2.16",
   "pyyaml>=6.0.3",
-  "starlette>=1.6.0",
+  "starlette>=1.7.0",
   "structlog>=25.5.0,<27",
   "typing-extensions>=4.16.0",
-  "uvicorn>=0.53.0",
-  "werkzeug>=3.1.8",
+  "uvicorn>=0.54.0",
+  "werkzeug>=3.1.9",
 ]
 description = "FLEXT Web - Modern Web Interface for FLEXT Platform"
 keywords = ["enterprise", "flask", "flext", "frontend", "typed", "web"]
@@ -83,6 +83,7 @@ dev = [
   "mkdocstrings>=1.0.6",
   "mkdocstrings-python>=2.0.8",
   "mypy>=2.3.1",
+  "platformdirs>=4.12.0",
   "pymdown-extensions",
   "pyrefly>=1.2.0",
   "pyright>=1.1.411",
@@ -412,7 +413,7 @@ addopts = [
   "--durations=10",
   "--timeout=10",
 ]
-flext_slow_timeout_seconds = "60"
+flext_slow_timeout_seconds = "30"
 asyncio_default_fixture_loop_scope = "function"
 filterwarnings = [
   "error",
