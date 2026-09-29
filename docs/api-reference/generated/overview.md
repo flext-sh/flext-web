@@ -8,14 +8,27 @@
 
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
+- Package: `flext_web`
 - Version: `0.12.0`
 - Description: FLEXT Web - Modern Web Interface for FLEXT Platform
-- Governed projects: `0`
-- Project classes: _none_
-
-Generated from workspace discovery, `pyproject.toml`, public exports, and docstrings.
+- Doc summary: Flext Web package.
+- Classifiers: Development Status :: 3 - Alpha, Framework :: Flask, Intended Audience ::
+  Developers, Operating System :: OS Independent, Programming Language :: Python :: 3 ::
+  Only, Programming Language :: Python :: 3.13, Topic :: Internet :: WWW/HTTP :: Dynamic
+  Content, Topic :: Software Development :: Libraries :: Python Modules, Typing :: Typed
+- Project class: `domain`
+- Keywords: `enterprise`, `flask`, `flext`, `frontend`, `typed`, `web`
+- Main facades: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebCli`,
+  `FlextWebConfig`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers` (+8
+  more)
+- Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
+- Public symbol exports: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebCli`,
+  `FlextWebConfig`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`,
+  `FlextWebHealth`, `FlextWebModels` (+10 more)
+- Exported module shortcuts: `services`
+- Generated module pages: `15`
 
 ## Next Pages
 
-- [Workspace Module Pages](projects/index.md)
-- [Project Catalog](../../projects/generated/catalog.md)
+- [Public API](public-api.md)
+- [Module Index](modules/index.md)
