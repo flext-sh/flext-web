@@ -26,7 +26,7 @@
   `FlextWebConfig`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`,
   `FlextWebHealth`, `FlextWebModels` (+10 more)
 - Exported module shortcuts: `services`
-- Generated module pages: `15`
+- Generated module pages: `8`
 
 ## Next Pages
 
