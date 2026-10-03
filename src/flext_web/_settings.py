@@ -52,21 +52,24 @@ class FlextWebSettings(FlextCliSettings):
             m.Field(
                 default=None,
                 min_length=32,
-                description="Application secret key sourced from the environment; required at runtime.",
+                description="Application secret key sourced from the environment; "
+                "required at runtime.",
             ),
         ]
         auth_username: Annotated[
             str | None,
             m.Field(
                 default=None,
-                description="Credential username sourced from the environment; required to authenticate.",
+                description="Credential username sourced from the environment; "
+                "required to authenticate.",
             ),
         ]
         auth_password: Annotated[
             str | None,
             m.Field(
                 default=None,
-                description="Credential password sourced from the environment; required to authenticate.",
+                description="Credential password sourced from the environment; "
+                "required to authenticate.",
             ),
         ]
         ssl_enabled: Annotated[

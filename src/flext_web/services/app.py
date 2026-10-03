@@ -10,18 +10,21 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import json as _json
-from collections.abc import Callable
-from typing import override
+from typing import TYPE_CHECKING, override
 
 import flask
 from fastapi import FastAPI
 
 from flext_web import FlextWebSettings, c, m, p, r, s, t, u
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
 
 class FlextWebApp(s):
-    """Generic web application coordinator using flext-core patterns and SOLID principles.
+    """Generic web application coordinator using flext-core patterns.
 
+    Follows SOLID principles.
     Single Responsibility: Coordinates web application creation and configuration.
     Delegates specific framework operations to specialized factory classes.
     Uses flext-web settings models for type-safe configuration management.
@@ -209,10 +212,16 @@ class FlextWebApp(s):
         return r[flask.Flask].ok(app)
 
     class HealthHandler:
-        """Health check handler with single responsibility for system health monitoring."""
+        """Health check handler with single responsibility.
+
+        Monitors system health.
+        """
 
         @staticmethod
-        def create_handler() -> Callable[[], t.Web.FastApiEndpointPayload]:
+        def create_handler() -> Callable[
+            [],
+            t.Web.FastApiEndpointPayload,
+        ]:
             """Create FastAPI health check handler function.
 
             Returns:

@@ -296,7 +296,7 @@ class FlextWebServices(s):
             return e.fail_validation(
                 "service_state", error="running without configured middleware",
             )
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
     @staticmethod
     def _application_response_from_payload(

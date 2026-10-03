@@ -6,14 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import m, u
 
 from flext_core import r
 from flext_web import c, p, t
 from flext_web._models._base import FlextWebModelsBase
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class FlextWebModelsHttp:
@@ -69,11 +71,13 @@ class FlextWebModelsHttp:
             c.Web.Method,
             u.PlainValidator(FlextWebModelsBase.coerce_method),
             u.Field(
-                description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
+                description="HTTP method (GET, POST, PUT, DELETE, "
+                "PATCH, HEAD, OPTIONS)",
             ),
         ] = c.Web.Method.GET
         timeout: Annotated[
-            t.PositiveTimeout, u.Field(description="Request timeout in seconds"),
+            t.PositiveTimeout,
+            u.Field(description="Request timeout in seconds"),
         ] = c.Web.DEFAULT_TIMEOUT_SECONDS
 
         @property

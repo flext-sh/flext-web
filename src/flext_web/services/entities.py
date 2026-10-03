@@ -38,7 +38,7 @@ class FlextWebEntities(s):
         Returns:
             The resulting ``p.Result[bool]``.
         """
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
     def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
         """Fetch an entity by identifier.
@@ -68,7 +68,7 @@ class FlextWebEntities(s):
         Returns:
             The resulting ``p.Result[bool]``.
         """
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
 
 __all__: list[str] = ["FlextWebEntities"]

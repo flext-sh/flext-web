@@ -63,7 +63,7 @@ class FlextWebUtilitiesWeb:
                 The resulting ``p.Result[bool]``.
             """
             FlextWebUtilitiesWeb.service_state["middleware_configured"] = True
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @classmethod
         def initialize_routes(cls) -> p.Result[bool]:
@@ -73,7 +73,7 @@ class FlextWebUtilitiesWeb:
                 The resulting ``p.Result[bool]``.
             """
             FlextWebUtilitiesWeb.service_state["routes_initialized"] = True
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @classmethod
         def start_service(cls) -> p.Result[bool]:
@@ -83,7 +83,7 @@ class FlextWebUtilitiesWeb:
                 The resulting ``p.Result[bool]``.
             """
             FlextWebUtilitiesWeb.service_state["service_running"] = True
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @classmethod
         def stop_service(cls) -> p.Result[bool]:
@@ -93,7 +93,7 @@ class FlextWebUtilitiesWeb:
                 The resulting ``p.Result[bool]``.
             """
             FlextWebUtilitiesWeb.service_state["service_running"] = False
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
     class WebAppManager:
         """Application registry lifecycle owner."""

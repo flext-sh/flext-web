@@ -154,7 +154,8 @@ class TestsFlextWebModelsUnit:
     def test_web_app_string_representation() -> None:
         """Test WebApp string representation."""
         app = m.Web.Entity(
-            id="test-id", name="test-app", host="localhost", port=8080, status="running",
+            id="test-id", name="test-app", host="localhost", port=8080,
+            status="running",
         )
         tm.that(str(app), has="test-app")
         tm.that(str(app), has="localhost:8080")
@@ -278,12 +279,14 @@ class TestsFlextWebModelsUnit:
         except m.ValidationError:
             if should_succeed:
                 pytest.fail(
-                    f"Unexpected validation failure for name={name}, host={host}, port={port}",
+                    "Unexpected validation failure for "
+                    f"name={name}, host={host}, port={port}",
                 )
             return
         if not should_succeed:
             pytest.fail(
-                f"Expected validation failure for name={name}, host={host}, port={port}",
+                "Expected validation failure for "
+                f"name={name}, host={host}, port={port}",
             )
         tm.that(app.name, eq=name)
         tm.that(app.host, eq=host)

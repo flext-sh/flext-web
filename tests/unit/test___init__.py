@@ -33,7 +33,9 @@ class TestsFlextWebInit:
 
     @staticmethod
     def test_all_exports_match() -> None:
-        """__all__ is the generated contract: sorted, duplicate-free, every name resolves.
+        """__all__ is the generated contract: sorted, duplicate-free.
+
+        Every name resolves.
 
         The names themselves are a projection of what the package's modules
         declare (ADR-018); a test never freezes a projection's values, only its

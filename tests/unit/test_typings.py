@@ -33,7 +33,8 @@ class TestsFlextWebTypesUnit:
     def test_app_data_functionality() -> None:
         """Entity exposes its fields and derives the running flag from status."""
         app = m.Web.Entity(
-            id="test-id", name="test-app", host="localhost", port=8080, status="running",
+            id="test-id", name="test-app", host="localhost", port=8080,
+            status="running",
         )
         tm.that(app.id, eq="test-id")
         tm.that(app.name, eq="test-app")

@@ -56,7 +56,7 @@ class FlextWebAuth(s):
         Returns:
             The resulting ``p.Result[bool]``.
         """
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
     @staticmethod
     def logout() -> p.Result[m.Web.EntityData]:
@@ -87,7 +87,7 @@ class FlextWebAuth(s):
         Returns:
             The resulting ``p.Result[bool]``.
         """
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
 
 __all__: list[str] = ["FlextWebAuth"]

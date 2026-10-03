@@ -56,7 +56,8 @@ class FlextWebModelsAuth:
         """Generic entity data model."""
 
         data: Annotated[
-            t.MutableConfigurationMapping, u.Field(description="Entity data dictionary"),
+            t.MutableConfigurationMapping,
+            u.Field(description="Entity data dictionary"),
         ] = u.Field(default_factory=dict)
 
 

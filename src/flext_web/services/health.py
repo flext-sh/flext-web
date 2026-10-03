@@ -21,7 +21,7 @@ class FlextWebHealth(s):
         Returns:
             The resulting ``p.Result[bool]``.
         """
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
     @staticmethod
     def metrics() -> p.Result[m.Web.MetricsResponse]:
@@ -67,7 +67,7 @@ class FlextWebHealth(s):
         Returns:
             The resulting ``p.Result[bool]``.
         """
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)
 
 
 __all__: list[str] = ["FlextWebHealth"]
