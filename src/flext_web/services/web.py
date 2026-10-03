@@ -26,14 +26,103 @@ from flext_web import (
 )
 
 
-class FlextWebServices(s):
+class FlextWebMonitoring:
+    """Monitoring and observability surface of the web service facade."""
+
+    _health_service: FlextWebHealth | None = u.PrivateAttr(default_factory=lambda: None)
+
+    @staticmethod
+    def api_capabilities() -> p.Result[t.Web.ResponseDict]:
+        """Expose the canonical capabilities of the public web facade.
+
+        Returns:
+            The resulting ``p.Result[t.Web.ResponseDict]``.
+        """
+        return r[t.Web.ResponseDict].ok({
+            "application_management": ["create_app", "fetch_app", "list_apps"],
+            "framework_management": ["create_fastapi_app", "create_flask_app"],
+            "service_management": ["start_service", "stop_service"],
+            "configuration_management": ["settings", "create_service"],
+            "monitoring": ["health_check", "health_status", "dashboard"],
+        })
+
+    def dashboard(self) -> p.Result[m.Web.DashboardResponse]:
+        """Return dashboard data projected from the protocol runtime state."""
+        state = u.Web.service_state
+        return self.list_apps().map(
+            lambda apps: m.Web.DashboardResponse(
+                total_applications=len(apps),
+                running_applications=sum(
+                    1 for app in apps if app.status == c.Web.Status.RUNNING.value
+                ),
+                service_status=self._service_status_label(),
+                routes_initialized=state["routes_initialized"],
+                middleware_configured=state["middleware_configured"],
+                timestamp=u.generate_iso_timestamp(),
+            ),
+        )
+
+    def dashboard_metrics(self) -> p.Result[m.Web.MetricsResponse]:
+        """Return health metrics for the dashboard."""
+        return self._health().metrics()
+
+    def health_check(self) -> p.Result[t.Web.ResponseDict]:
+        """Return a simple health payload for external consumers."""
+        return self.health_status().map(
+            lambda health_response: {
+                "status": health_response.status,
+                "service": health_response.service,
+                "timestamp": health_response.timestamp,
+            },
+        )
+
+    def health_status(self) -> p.Result[m.Web.HealthResponse]:
+        """Return structured health status."""
+        return self._health().status()
+
+    def service_status(self) -> p.Result[m.Web.ServiceResponse]:
+        """Return service status using protocol runtime state and settings."""
+        return r[m.Web.ServiceResponse].ok(
+            m.Web.ServiceResponse(
+                service=c.Web.SERVICE_NAME_API,
+                capabilities=[
+                    "http_services_available",
+                    "fastapi_support",
+                    "flask_support",
+                    "settings_namespace_registered",
+                ],
+                status=self._service_status_label(),
+                settings=True,
+            ),
+        )
+
+    @staticmethod
+    def _service_status_label() -> str:
+        """Return the canonical service status label from runtime state."""
+        state = u.Web.service_state
+        service_running: bool = state["service_running"]
+        if service_running:
+            operational_label: str = c.Web.ResponseStatus.OPERATIONAL.value
+            return operational_label
+        stopped_label: str = c.Web.Status.STOPPED.value
+        return stopped_label
+
+    def _health(self) -> FlextWebHealth:
+        """Return the lazily created health service."""
+        if self._health_service is None:
+            self._health_service = FlextWebHealth.with_settings(
+                self._runtime_settings_clone(),
+            )
+        return self._health_service
+
+
+class FlextWebServices(FlextWebMonitoring, s):
     """Public service layer backed by protocol runtime state."""
 
     _auth_service: FlextWebAuth | None = u.PrivateAttr(default_factory=lambda: None)
     _entity_service: FlextWebEntities | None = u.PrivateAttr(
         default_factory=lambda: None,
     )
-    _health_service: FlextWebHealth | None = u.PrivateAttr(default_factory=lambda: None)
 
     @classmethod
     def create_service(cls, settings: FlextWebSettings | None = None) -> p.Result[Self]:
@@ -89,26 +178,6 @@ class FlextWebServices(s):
         """
         return self._entities().create(data)
 
-    def dashboard(self) -> p.Result[m.Web.DashboardResponse]:
-        """Return dashboard data projected from the protocol runtime state."""
-        state = u.Web.service_state
-        return self.list_apps().map(
-            lambda apps: m.Web.DashboardResponse(
-                total_applications=len(apps),
-                running_applications=sum(
-                    1 for app in apps if app.status == c.Web.Status.RUNNING.value
-                ),
-                service_status=self._service_status_label(),
-                routes_initialized=state["routes_initialized"],
-                middleware_configured=state["middleware_configured"],
-                timestamp=u.generate_iso_timestamp(),
-            ),
-        )
-
-    def dashboard_metrics(self) -> p.Result[m.Web.MetricsResponse]:
-        """Return health metrics for the dashboard."""
-        return self._health().metrics()
-
     @override
     def execute(self) -> p.Result[bool]:
         """Execute the web service facade.
@@ -117,21 +186,6 @@ class FlextWebServices(s):
             The resulting ``p.Result[bool]``.
         """
         return self.validate_business_rules()
-
-    @staticmethod
-    def api_capabilities() -> p.Result[t.Web.ResponseDict]:
-        """Expose the canonical capabilities of the public web facade.
-
-        Returns:
-            The resulting ``p.Result[t.Web.ResponseDict]``.
-        """
-        return r[t.Web.ResponseDict].ok({
-            "application_management": ["create_app", "fetch_app", "list_apps"],
-            "framework_management": ["create_fastapi_app", "create_flask_app"],
-            "service_management": ["start_service", "stop_service"],
-            "configuration_management": ["settings", "create_service"],
-            "monitoring": ["health_check", "health_status", "dashboard"],
-        })
 
     def fetch_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
         """Return a registered application by identifier."""
@@ -145,36 +199,6 @@ class FlextWebServices(s):
     def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
         """Return a generic entity by identifier."""
         return self._entities().fetch_entity(entity_id)
-
-    def service_status(self) -> p.Result[m.Web.ServiceResponse]:
-        """Return service status using protocol runtime state and settings."""
-        return r[m.Web.ServiceResponse].ok(
-            m.Web.ServiceResponse(
-                service=c.Web.SERVICE_NAME_API,
-                capabilities=[
-                    "http_services_available",
-                    "fastapi_support",
-                    "flask_support",
-                    "settings_namespace_registered",
-                ],
-                status=self._service_status_label(),
-                settings=True,
-            ),
-        )
-
-    def health_check(self) -> p.Result[t.Web.ResponseDict]:
-        """Return a simple health payload for external consumers."""
-        return self.health_status().map(
-            lambda health_response: {
-                "status": health_response.status,
-                "service": health_response.service,
-                "timestamp": health_response.timestamp,
-            },
-        )
-
-    def health_status(self) -> p.Result[m.Web.HealthResponse]:
-        """Return structured health status."""
-        return self._health().status()
 
     @staticmethod
     def initialize_routes() -> p.Result[bool]:
@@ -348,17 +372,6 @@ class FlextWebServices(s):
         return r[Sequence[m.Web.ApplicationResponse]].ok(responses)
 
     @staticmethod
-    def _service_status_label() -> str:
-        """Return the canonical service status label from runtime state."""
-        state = u.Web.service_state
-        service_running: bool = state["service_running"]
-        if service_running:
-            operational_label: str = c.Web.ResponseStatus.OPERATIONAL.value
-            return operational_label
-        stopped_label: str = c.Web.Status.STOPPED.value
-        return stopped_label
-
-    @staticmethod
     def _validated_app_id(app_id: str) -> p.Result[str]:
         """Validate app_id and return the normalized identifier.
 
@@ -407,13 +420,5 @@ class FlextWebServices(s):
             m.Web.AppData(name=target_name, host=target_host, port=target_port),
         )
 
-    def _health(self) -> FlextWebHealth:
-        """Return the lazily created health service."""
-        if self._health_service is None:
-            self._health_service = FlextWebHealth.with_settings(
-                self._runtime_settings_clone(),
-            )
-        return self._health_service
 
-
-__all__: list[str] = ["FlextWebServices"]
+__all__: list[str] = ["FlextWebMonitoring", "FlextWebServices"]

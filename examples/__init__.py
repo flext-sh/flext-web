@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING
 from flext_core import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
+    from examples.api_usage import FlextWebExamplesApiUsage
+    from examples.basic_service import FlextWebExamplesBasicService
     from examples.constants import FlextWebExamplesConstants
     from examples.models import FlextWebExamplesModels
     from examples.protocols import FlextWebExamplesProtocols
@@ -22,6 +24,8 @@ if TYPE_CHECKING:
 
 
 __all__: tuple[str, ...] = (
+    "FlextWebExamplesApiUsage",
+    "FlextWebExamplesBasicService",
     "FlextWebExamplesConstants",
     "FlextWebExamplesModels",
     "FlextWebExamplesProtocols",
@@ -43,6 +47,8 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
+            ".api_usage": ("FlextWebExamplesApiUsage",),
+            ".basic_service": ("FlextWebExamplesBasicService",),
             ".constants": ("FlextWebExamplesConstants",),
             ".models": ("FlextWebExamplesModels",),
             ".protocols": ("FlextWebExamplesProtocols",),

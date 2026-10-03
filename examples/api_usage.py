@@ -11,7 +11,7 @@ from collections.abc import Sequence
 from flext_web import m, p, r, web
 
 
-class FlextWebExamples:
+class FlextWebExamplesApiUsage:
     """FlextWeb example facade for the application lifecycle demonstration."""
 
     @staticmethod
@@ -148,6 +148,6 @@ class FlextWebExamples:
 
 
 if __name__ == "__main__":
-    FlextWebExamples().main()
+    FlextWebExamplesApiUsage().main()
 
-__all__: list[str] = ["FlextWebExamples"]
+__all__: list[str] = ["FlextWebExamplesApiUsage"]
