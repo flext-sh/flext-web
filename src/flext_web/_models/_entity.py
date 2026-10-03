@@ -7,15 +7,13 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from typing import TYPE_CHECKING, Annotated, override
+from collections.abc import MutableSequence
+from typing import Annotated, override
 
 from flext_cli import m, u
 
 from flext_core import r
 from flext_web import c, p, settings, t
-
-if TYPE_CHECKING:
-    from collections.abc import MutableSequence
 
 
 class FlextWebModelsEntity:
@@ -56,15 +54,7 @@ class FlextWebModelsEntity:
         @u.field_validator("name", mode="before")
         @classmethod
         def validate_name(cls, v: str) -> str:
-            """Validate application name.
-
-            Returns:
-                The resulting ``str``.
-
-            Raises:
-                ValueError: If Name must be between; or if Name; or if Name contains
-                    dangerous pattern.
-            """
+            """Validate application name."""
             min_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[0]
             max_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[1]
             reserved_names = c.Web.SECURITY_RESERVED_NAMES
@@ -97,23 +87,16 @@ class FlextWebModelsEntity:
             ),
         ] = u.Field(default_factory=lambda: settings.Web.host)
         port: Annotated[
-            t.PortNumber, u.Field(description="Application port number"),
+            t.PortNumber, u.Field(description="Application port number")
         ] = u.Field(default_factory=lambda: settings.Web.port)
         status: Annotated[
-            c.Web.Status | str, u.Field(description="Current application status"),
+            c.Web.Status | str, u.Field(description="Current application status")
         ] = c.Web.Status.STOPPED.value
 
         @u.field_validator("status", mode="before")
         @classmethod
         def validate_status(cls, v: str) -> str:
-            """Validate application status against allowed values from constants.
-
-            Returns:
-                The resulting ``str``.
-
-            Raises:
-                ValueError: If Invalid status.
-            """
+            """Validate application status against allowed values from constants."""
             valid_statuses = set(c.Web.STATUSES)
             if v not in valid_statuses:
                 msg = f"Invalid status '{v}'. Must be one of: {sorted(valid_statuses)}"
@@ -127,7 +110,7 @@ class FlextWebModelsEntity:
             u.Field(default_factory=lambda: settings.debug)
         )
         metrics: Annotated[
-            t.MutableJsonMapping, u.Field(description="Application metrics"),
+            t.MutableJsonMapping, u.Field(description="Application metrics")
         ] = u.Field(default_factory=dict)
         web_events: Annotated[
             MutableSequence[str],
@@ -222,26 +205,18 @@ class FlextWebModelsEntity:
             event_type: str,
             data: m.ConfigMap | t.MappingKV[str, t.JsonPayload | None] | None = None,
         ) -> p.Result[m.Entry]:
-            """Create and buffer a domain event for this web application entity.
-
-            Returns:
-                The resulting ``p.Result[m.Entry]``.
-            """
+            """Create and buffer a domain event for this web application entity."""
             if not event_type.strip():
                 return r[m.Entry].fail("Domain event name must be a non-empty string")
             if event_type.isdigit():
                 return r[m.Entry].fail("Domain event name cannot be numeric-only")
             entry = u.add_domain_event(
-                self, event_type=event_type, data=data, aggregate_id=self.id,
+                self, event_type=event_type, data=data, aggregate_id=self.id
             )
             return r[m.Entry].ok(entry)
 
         def health_status(self) -> t.ConfigurationMapping:
-            """Get comprehensive health status.
-
-            Returns:
-                The resulting ``t.ConfigurationMapping``.
-            """
+            """Get comprehensive health status."""
             return {
                 "status": self.status,
                 "running": self.running,
@@ -252,15 +227,11 @@ class FlextWebModelsEntity:
             }
 
         def restart(self) -> p.Result[FlextWebModelsEntity.Entity]:
-            """Restart the application.
-
-            Returns:
-                The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
-            """
+            """Restart the application."""
             can_restart_validated = self.can_restart
             if not can_restart_validated:
                 return r[FlextWebModelsEntity.Entity].fail(
-                    "Cannot restart in current state",
+                    "Cannot restart in current state"
                 )
             starting_status = c.Web.Status.STARTING.value
             running_status = c.Web.Status.RUNNING.value
@@ -268,22 +239,18 @@ class FlextWebModelsEntity:
             restart_event_result = self.add_web_event("ApplicationRestarting")
             if restart_event_result.failure:  # pragma: no cover
                 return r[FlextWebModelsEntity.Entity].fail(
-                    f"Failed to add web event: {restart_event_result.error}",
+                    f"Failed to add web event: {restart_event_result.error}"
                 )
             self.status = running_status
             start_event_result = self.add_web_event("ApplicationStarted")
             if start_event_result.failure:  # pragma: no cover
                 return r[FlextWebModelsEntity.Entity].fail(
-                    f"Failed to add web event: {start_event_result.error}",
+                    f"Failed to add web event: {start_event_result.error}"
                 )
             return r[FlextWebModelsEntity.Entity].ok(self)
 
         def start(self) -> p.Result[FlextWebModelsEntity.Entity]:
-            """Start the application.
-
-            Returns:
-                The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
-            """
+            """Start the application."""
             running_status = c.Web.Status.RUNNING.value
             already_running = self.status == running_status
             if already_running:
@@ -292,16 +259,12 @@ class FlextWebModelsEntity:
             event_result = self.add_web_event("ApplicationStarted")
             if event_result.failure:  # pragma: no cover
                 return r[FlextWebModelsEntity.Entity].fail(
-                    f"Failed to add web event: {event_result.error}",
+                    f"Failed to add web event: {event_result.error}"
                 )
             return r[FlextWebModelsEntity.Entity].ok(self)
 
         def stop(self) -> p.Result[FlextWebModelsEntity.Entity]:
-            """Stop the application.
-
-            Returns:
-                The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
-            """
+            """Stop the application."""
             running_status = c.Web.Status.RUNNING.value
             stopped_status = c.Web.Status.STOPPED.value
             not_running = self.status != running_status
@@ -311,7 +274,7 @@ class FlextWebModelsEntity:
             event_result = self.add_web_event("ApplicationStopped")
             if event_result.failure:  # pragma: no cover
                 return r[FlextWebModelsEntity.Entity].fail(
-                    f"Failed to add web event: {event_result.error}",
+                    f"Failed to add web event: {event_result.error}"
                 )
             return r[FlextWebModelsEntity.Entity].ok(self)
 
@@ -344,7 +307,7 @@ class FlextWebModelsEntity:
             min_name_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[0]
             if len(self.name) < min_name_length:
                 return r[bool].fail(
-                    f"App name must be at least {min_name_length} characters",
+                    f"App name must be at least {min_name_length} characters"
                 )
 
             min_port = c.Web.VALIDATION_PORT_RANGE[0]
@@ -352,30 +315,6 @@ class FlextWebModelsEntity:
             if not (min_port <= self.port <= max_port):
                 return r[bool].fail(f"Port must be between {min_port} and {max_port}")
             return r[bool].ok(value=True)
-
-        @classmethod
-        def create_application(
-            cls, settings: FlextWebModelsEntity.EntityConfig,
-        ) -> p.Result[FlextWebModelsEntity.Entity]:
-            """Build an :class:`Entity` from an ``EntityConfig`` snapshot.
-
-            Returns:
-                The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
-            """
-            return r[FlextWebModelsEntity.Entity].create_from_callable(
-                lambda: cls(
-                    name=settings.app_name,
-                    host=settings.host,
-                    port=settings.port,
-                    status=getattr(settings, "status", c.Web.Status.STOPPED.value),
-                    environment=getattr(
-                        settings, "environment", c.Web.Name.DEVELOPMENT.value,
-                    ),
-                    debug_mode=getattr(settings, "debug_mode", False),
-                    version=getattr(settings, "version", 0),
-                    domain_events=[],
-                ),
-            )
 
     class EntityConfig(m.Value):
         """Application entity configuration (Value Object).
@@ -412,7 +351,7 @@ class FlextWebModelsEntity:
         debug: Annotated[
             bool,
             u.Field(
-                default_factory=lambda: settings.debug, description="Debug mode flag",
+                default_factory=lambda: settings.debug, description="Debug mode flag"
             ),
         ]
         secret_key: Annotated[
