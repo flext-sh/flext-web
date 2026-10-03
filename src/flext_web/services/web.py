@@ -1,4 +1,8 @@
-"""Canonical web service facade for flext-web."""
+"""Canonical web service facade for flext-web.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -27,13 +31,17 @@ class FlextWebServices(s):
 
     _auth_service: FlextWebAuth | None = u.PrivateAttr(default_factory=lambda: None)
     _entity_service: FlextWebEntities | None = u.PrivateAttr(
-        default_factory=lambda: None
+        default_factory=lambda: None,
     )
     _health_service: FlextWebHealth | None = u.PrivateAttr(default_factory=lambda: None)
 
     @classmethod
     def create_service(cls, settings: FlextWebSettings | None = None) -> p.Result[Self]:
-        """Create a service instance using optional settings overrides."""
+        """Create a service instance using optional settings overrides.
+
+        Returns:
+            The resulting ``p.Result[Self]``.
+        """
         instance = cls.with_settings(settings) if settings is not None else cls()
         ok_result: p.Result[Self] = r.ok(instance)
         return ok_result
@@ -43,25 +51,42 @@ class FlextWebServices(s):
         return FlextWebSettings.model_validate(self.settings.clone())
 
     def authenticate(
-        self, credentials: m.Web.Credentials
+        self, credentials: m.Web.Credentials,
     ) -> p.Result[m.Web.AuthResponse]:
-        """Delegate authentication to the canonical auth service."""
+        """Delegate authentication to the canonical auth service.
+
+        Returns:
+            The resulting ``p.Result[m.Web.AuthResponse]``.
+        """
         return self._auth().authenticate(credentials)
 
-    def configure_middleware(self) -> p.Result[bool]:
-        """Configure protocol-backed middleware state."""
+    @staticmethod
+    def configure_middleware() -> p.Result[bool]:
+        """Configure protocol-backed middleware state.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         return u.Web.WebService.configure_middleware()
 
     def create_app(
-        self, app_data: m.Web.AppData
+        self, app_data: m.Web.AppData,
     ) -> p.Result[m.Web.ApplicationResponse]:
-        """Create an application through the protocol runtime registry."""
+        """Create an application through the protocol runtime registry.
+
+        Returns:
+            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+        """
         return u.Web.WebAppManager.create_app(
-            name=app_data.name, port=app_data.port, host=app_data.host
+            name=app_data.name, port=app_data.port, host=app_data.host,
         ).flat_map(self._application_response_from_payload)
 
     def create_entity(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
-        """Create a generic entity through the entity service."""
+        """Create a generic entity through the entity service.
+
+        Returns:
+            The resulting ``p.Result[m.Web.EntityData]``.
+        """
         return self._entities().create(data)
 
     def dashboard(self) -> p.Result[m.Web.DashboardResponse]:
@@ -77,7 +102,7 @@ class FlextWebServices(s):
                 routes_initialized=state["routes_initialized"],
                 middleware_configured=state["middleware_configured"],
                 timestamp=u.generate_iso_timestamp(),
-            )
+            ),
         )
 
     def dashboard_metrics(self) -> p.Result[m.Web.MetricsResponse]:
@@ -86,11 +111,20 @@ class FlextWebServices(s):
 
     @override
     def execute(self) -> p.Result[bool]:
-        """Execute the web service facade."""
+        """Execute the web service facade.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         return self.validate_business_rules()
 
-    def api_capabilities(self) -> p.Result[t.Web.ResponseDict]:
-        """Expose the canonical capabilities of the public web facade."""
+    @staticmethod
+    def api_capabilities() -> p.Result[t.Web.ResponseDict]:
+        """Expose the canonical capabilities of the public web facade.
+
+        Returns:
+            The resulting ``p.Result[t.Web.ResponseDict]``.
+        """
         return r[t.Web.ResponseDict].ok({
             "application_management": ["create_app", "fetch_app", "list_apps"],
             "framework_management": ["create_fastapi_app", "create_flask_app"],
@@ -105,7 +139,7 @@ class FlextWebServices(s):
         if app_id_result.failure:
             return r[m.Web.ApplicationResponse].fail(app_id_result.error)
         return u.Web.WebRepository.fetch_by_id(app_id_result.value).flat_map(
-            self._application_response_from_payload
+            self._application_response_from_payload,
         )
 
     def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
@@ -125,7 +159,7 @@ class FlextWebServices(s):
                 ],
                 status=self._service_status_label(),
                 settings=True,
-            )
+            ),
         )
 
     def health_check(self) -> p.Result[t.Web.ResponseDict]:
@@ -135,38 +169,59 @@ class FlextWebServices(s):
                 "status": health_response.status,
                 "service": health_response.service,
                 "timestamp": health_response.timestamp,
-            }
+            },
         )
 
     def health_status(self) -> p.Result[m.Web.HealthResponse]:
         """Return structured health status."""
         return self._health().status()
 
-    def initialize_routes(self) -> p.Result[bool]:
-        """Initialize protocol-backed routes state."""
+    @staticmethod
+    def initialize_routes() -> p.Result[bool]:
+        """Initialize protocol-backed routes state.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         return u.Web.WebService.initialize_routes()
 
     def list_apps(self) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
-        """List all registered applications."""
+        """List all registered applications.
+
+        Returns:
+            The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+        """
         return u.Web.WebAppManager.list_apps().flat_map(
-            self._application_responses_from_payloads
+            self._application_responses_from_payloads,
         )
 
     def list_entities(self) -> p.Result[Sequence[m.Web.EntityData]]:
-        """List all generic entities."""
+        """List all generic entities.
+
+        Returns:
+            The resulting ``p.Result[Sequence[m.Web.EntityData]]``.
+        """
         return self._entities().list_all()
 
     def register_user(self, user_data: m.Web.UserData) -> p.Result[m.Web.UserResponse]:
-        """Delegate registration to the canonical auth service."""
+        """Delegate registration to the canonical auth service.
+
+        Returns:
+            The resulting ``p.Result[m.Web.UserResponse]``.
+        """
         return self._auth().register_user(user_data)
 
     def start_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
-        """Start a registered application and project its payload into a model."""
+        """Start a registered application and project its payload into a model.
+
+        Returns:
+            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+        """
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
             return r[m.Web.ApplicationResponse].fail(app_id_result.error)
         return u.Web.WebAppManager.start_app(app_id_result.value).flat_map(
-            self._application_response_from_payload
+            self._application_response_from_payload,
         )
 
     def start_service(
@@ -176,7 +231,11 @@ class FlextWebServices(s):
         *,
         debug: bool | None = None,
     ) -> p.Result[bool]:
-        """Start the service and ensure a runtime application exists."""
+        """Start the service and ensure a runtime application exists.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         _ = debug
         init_result = self.initialize_routes()
         if init_result.failure:
@@ -193,16 +252,24 @@ class FlextWebServices(s):
         return u.Web.WebService.start_service()
 
     def stop_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
-        """Stop a registered application and project its payload into a model."""
+        """Stop a registered application and project its payload into a model.
+
+        Returns:
+            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+        """
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
             return r[m.Web.ApplicationResponse].fail(app_id_result.error)
         return u.Web.WebAppManager.stop_app(app_id_result.value).flat_map(
-            self._application_response_from_payload
+            self._application_response_from_payload,
         )
 
     def stop_service(self) -> p.Result[bool]:
-        """Stop the service and all running applications."""
+        """Stop the service and all running applications.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         apps_result = self.list_apps()
         if apps_result.failure:
             return r[bool].fail(apps_result.error)
@@ -213,23 +280,33 @@ class FlextWebServices(s):
                     return r[bool].fail(stop_result.error)
         return u.Web.WebService.stop_service()
 
-    def validate_business_rules(self) -> p.Result[bool]:
-        """Validate protocol-backed service state invariants."""
+    @staticmethod
+    def validate_business_rules() -> p.Result[bool]:
+        """Validate protocol-backed service state invariants.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         state = u.Web.service_state
         if state["service_running"] and not state["routes_initialized"]:
             return e.fail_validation(
-                "service_state", error="running without initialized routes"
+                "service_state", error="running without initialized routes",
             )
         if state["service_running"] and not state["middleware_configured"]:
             return e.fail_validation(
-                "service_state", error="running without configured middleware"
+                "service_state", error="running without configured middleware",
             )
         return r[bool].ok(True)
 
+    @staticmethod
     def _application_response_from_payload(
-        self, payload: t.Web.ResponseDict
+        payload: t.Web.ResponseDict,
     ) -> p.Result[m.Web.ApplicationResponse]:
-        """Project a protocol payload into the canonical application response model."""
+        """Project a protocol payload into the canonical application response model.
+
+        Returns:
+            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+        """
         created_at_raw = payload.get("created_at")
         created_at = (
             created_at_raw
@@ -248,20 +325,24 @@ class FlextWebServices(s):
             response = m.Web.ApplicationResponse.model_validate(response_payload)
         except c.ValidationError as exc:
             return r[m.Web.ApplicationResponse].fail(
-                f"Invalid application payload: {exc}", exception=exc
+                f"Invalid application payload: {exc}", exception=exc,
             )
         return r[m.Web.ApplicationResponse].ok(response)
 
     def _application_responses_from_payloads(
-        self, payloads: t.SequenceOf[t.Web.ResponseDict]
+        self, payloads: t.SequenceOf[t.Web.ResponseDict],
     ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
-        """Project a sequence of payloads into response models."""
+        """Project a sequence of payloads into response models.
+
+        Returns:
+            The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+        """
         responses: list[m.Web.ApplicationResponse] = []
         for payload in payloads:
             response_result = self._application_response_from_payload(payload)
             if response_result.failure:
                 return r[Sequence[m.Web.ApplicationResponse]].fail(
-                    response_result.error
+                    response_result.error,
                 )
             responses.append(response_result.value)
         return r[Sequence[m.Web.ApplicationResponse]].ok(responses)
@@ -279,7 +360,11 @@ class FlextWebServices(s):
 
     @staticmethod
     def _validated_app_id(app_id: str) -> p.Result[str]:
-        """Validate app_id and return the normalized identifier."""
+        """Validate app_id and return the normalized identifier.
+
+        Returns:
+            The resulting ``p.Result[str]``.
+        """
         normalized_app_id = u.to_str(app_id)
         if not normalized_app_id:
             return e.fail_validation("app_id", error="cannot be empty")
@@ -289,7 +374,7 @@ class FlextWebServices(s):
         """Return the lazily created auth service."""
         if self._auth_service is None:
             self._auth_service = FlextWebAuth.with_settings(
-                self._runtime_settings_clone()
+                self._runtime_settings_clone(),
             )
         return self._auth_service
 
@@ -297,12 +382,12 @@ class FlextWebServices(s):
         """Return the lazily created entity service."""
         if self._entity_service is None:
             self._entity_service = FlextWebEntities.with_settings(
-                self._runtime_settings_clone()
+                self._runtime_settings_clone(),
             )
         return self._entity_service
 
     def _get_or_create_runtime_application(
-        self, host: str | None, port: int | None
+        self, host: str | None, port: int | None,
     ) -> p.Result[m.Web.ApplicationResponse]:
         """Return the configured runtime application, creating it when needed."""
         target_name = settings.Web.app_name
@@ -319,14 +404,14 @@ class FlextWebServices(s):
             ):
                 return r[m.Web.ApplicationResponse].ok(app)
         return self.create_app(
-            m.Web.AppData(name=target_name, host=target_host, port=target_port)
+            m.Web.AppData(name=target_name, host=target_host, port=target_port),
         )
 
     def _health(self) -> FlextWebHealth:
         """Return the lazily created health service."""
         if self._health_service is None:
             self._health_service = FlextWebHealth.with_settings(
-                self._runtime_settings_clone()
+                self._runtime_settings_clone(),
             )
         return self._health_service
 

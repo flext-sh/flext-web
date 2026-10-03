@@ -1,11 +1,15 @@
-"""FLEXT Web constants."""
+"""FLEXT Web constants.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from flext_cli import FlextCliConstants, t
 
-from ._constants.base import FlextWebConstantsBase
-from ._constants.values import FlextWebConstantsValues
+from flext_web._constants.base import FlextWebConstantsBase
+from flext_web._constants.values import FlextWebConstantsValues
 
 
 class FlextWebConstants(FlextCliConstants):

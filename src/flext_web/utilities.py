@@ -1,13 +1,16 @@
-"""FLEXT Web utilities facade."""
+"""FLEXT Web utilities facade.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from flext_cli import FlextCliUtilities
 
 from flext_web import t
-
-from ._utilities.base import FlextWebUtilitiesBase
-from ._utilities.web import FlextWebUtilitiesWeb
+from flext_web._utilities.base import FlextWebUtilitiesBase
+from flext_web._utilities.web import FlextWebUtilitiesWeb
 
 
 class FlextWebUtilities(FlextCliUtilities):

@@ -6,12 +6,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from .config import FlextWebProtocolsConfig
-from .data import FlextWebProtocolsData
-from .framework import FlextWebProtocolsFramework
-from .lifecycle import FlextWebProtocolsLifecycle
-from .monitoring import FlextWebProtocolsMonitoring
-from .template import FlextWebProtocolsTemplate
+from flext_web._protocols.config import FlextWebProtocolsConfig
+from flext_web._protocols.data import FlextWebProtocolsData
+from flext_web._protocols.framework import FlextWebProtocolsFramework
+from flext_web._protocols.lifecycle import FlextWebProtocolsLifecycle
+from flext_web._protocols.monitoring import FlextWebProtocolsMonitoring
+from flext_web._protocols.template import FlextWebProtocolsTemplate
 
 
 class FlextWebProtocolsWeb(

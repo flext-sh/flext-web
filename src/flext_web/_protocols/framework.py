@@ -38,7 +38,7 @@ class FlextWebProtocolsFramework:
             ...
 
         def middleware(
-            self, middleware_type: str
+            self, middleware_type: str,
         ) -> Callable[..., Callable[..., FlextWebProtocolsFramework.FrameworkResponse]]:
             """Register middleware."""
             ...
@@ -52,7 +52,7 @@ class FlextWebProtocolsFramework:
             ...
 
         def route(
-            self, rule: str, **options: t.Scalar
+            self, rule: str, **options: t.Scalar,
         ) -> Callable[..., Callable[..., t.Web.ResponseDict]]:
             """Register a URL route."""
             ...

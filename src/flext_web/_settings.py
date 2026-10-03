@@ -22,17 +22,17 @@ class FlextWebSettings(FlextCliSettings):
     """Web runtime settings; all project fields under ``settings.Web.*``."""
 
     model_config = m.SettingsConfigDict(
-        env_prefix="FLEXT_WEB_", env_nested_delimiter="__", extra="ignore"
+        env_prefix="FLEXT_WEB_", env_nested_delimiter="__", extra="ignore",
     )
 
     class _Web(m.BaseModel):
         """Namespaced web runtime settings (pure declaration)."""
 
         app_name: Annotated[
-            str, m.Field(default="FLEXT Web", description="Application name")
+            str, m.Field(default="FLEXT Web", description="Application name"),
         ]
         version: Annotated[
-            str, m.Field(default="1.0.0", description="Service semantic version")
+            str, m.Field(default="1.0.0", description="Service semantic version"),
         ]
         host: Annotated[
             str,
@@ -44,7 +44,7 @@ class FlextWebSettings(FlextCliSettings):
             ),
         ]
         port: Annotated[
-            int, m.Field(default=8080, ge=1, le=65535, description="Bind port")
+            int, m.Field(default=8080, ge=1, le=65535, description="Bind port"),
         ]
         testing: Annotated[bool, m.Field(default=False, description="Testing flag")]
         secret_key: Annotated[
@@ -70,20 +70,20 @@ class FlextWebSettings(FlextCliSettings):
             ),
         ]
         ssl_enabled: Annotated[
-            bool, m.Field(default=False, description="Enable TLS endpoints")
+            bool, m.Field(default=False, description="Enable TLS endpoints"),
         ]
         ssl_cert_path: Annotated[
-            str | None, m.Field(default=None, description="TLS certificate file path")
+            str | None, m.Field(default=None, description="TLS certificate file path"),
         ]
         ssl_key_path: Annotated[
-            str | None, m.Field(default=None, description="TLS key file path")
+            str | None, m.Field(default=None, description="TLS key file path"),
         ]
 
     if TYPE_CHECKING:
         Web: _Web
     else:
         Web: _Web = m.Field(
-            default_factory=_Web, description="Namespaced web settings."
+            default_factory=_Web, description="Namespaced web settings.",
         )
 
 

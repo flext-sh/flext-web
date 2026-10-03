@@ -27,10 +27,10 @@ class FlextWebModelsSystem:
         architecture: Annotated[str, u.Field(description="Architecture pattern")]
         patterns: Annotated[t.StrSequence, u.Field(description="Design patterns used")]
         integrations: Annotated[
-            t.StrSequence, u.Field(description="Integrated components")
+            t.StrSequence, u.Field(description="Integrated components"),
         ]
         capabilities: Annotated[
-            t.StrSequence, u.Field(description="Service capabilities")
+            t.StrSequence, u.Field(description="Service capabilities"),
         ]
 
     class HealthStatus(m.BaseModel):
@@ -50,17 +50,17 @@ class FlextWebModelsSystem:
         """
 
         model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
-            arbitrary_types_allowed=True, frozen=True, extra="forbid"
+            arbitrary_types_allowed=True, frozen=True, extra="forbid",
         )
         runner: Annotated[
-            str, u.Field(description="Runtime runner name (uvicorn, werkzeug)")
+            str, u.Field(description="Runtime runner name (uvicorn, werkzeug)"),
         ]
         server: Annotated[
             uvicorn.Server | WSGIServer,
             u.Field(description="Server instance for lifecycle management"),
         ]
         thread: Annotated[
-            Thread, u.Field(description="Daemon thread running the server")
+            Thread, u.Field(description="Daemon thread running the server"),
         ]
 
 

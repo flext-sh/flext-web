@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from flext_web.cli import FlextWebCli, main
 
-__all__: list[str] = ["FlextWebCli", "main"]
-
 if __name__ == "__main__":
     raise SystemExit(main())
+
+__all__: list[str] = ["FlextWebCli", "main"]
