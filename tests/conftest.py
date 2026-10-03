@@ -77,7 +77,7 @@ def pytest_configure(config: pytest.Config) -> None:
             "FLEXT_WEB_WEB__SECRET_KEY": long_enough_value,
             "FLEXT_WEB_WEB__AUTH_USERNAME": "testuser",
             "FLEXT_WEB_WEB__AUTH_PASSWORD": "p" + "0" * 24,
-        })
+        }),
     )
     config.stash[_ENV_CONTEXT_KEY] = stack
 
