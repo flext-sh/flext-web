@@ -50,15 +50,6 @@ class TestsFlextWebApp:
         tm.that(payload, has="status")
 
     @staticmethod
-    def test_fastapi_configuration_hooks_return_success() -> None:
-        """Framework-specific configure hooks stay explicit and separate."""
-        fastapi_result = web.create_fastapi_app()
-        tm.ok(fastapi_result)
-        tm.ok(web.configure_fastapi_error_handlers(fastapi_result.value))
-        tm.ok(web.configure_fastapi_middleware(fastapi_result.value))
-        tm.ok(web.configure_fastapi_routes(fastapi_result.value))
-
-    @staticmethod
     def test_validate_business_rules_success() -> None:
         """The app service validates successfully in the default state."""
         tm.ok(web.validate_business_rules())

@@ -140,15 +140,5 @@ class FlextWebHandlers(s):
         """
         return r[bool].ok(value=True)
 
-    @staticmethod
-    def validate_business_rules() -> p.Result[bool]:
-        """Validate business rules for web handlers (s requirement).
-
-        Returns:
-            r[bool]: Success contains True if valid, failure with error message
-
-        """
-        return r[bool].ok(value=True)
-
 
 __all__: list[str] = ["FlextWebHandlers"]
