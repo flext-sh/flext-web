@@ -1,4 +1,8 @@
-"""Entity service for flext-web."""
+"""Entity service for flext-web.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -13,11 +17,15 @@ class FlextWebEntities(s):
     """In-memory entity CRUD support for flext-web."""
 
     _storage: MutableMapping[str, m.Web.EntityData] = u.PrivateAttr(
-        default_factory=dict[str, m.Web.EntityData]
+        default_factory=dict[str, m.Web.EntityData],
     )
 
     def create(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
-        """Create an entity with generated identifier."""
+        """Create an entity with generated identifier.
+
+        Returns:
+            The resulting ``p.Result[m.Web.EntityData]``.
+        """
         entity_id = str(uuid.uuid4())
         entity = m.Web.EntityData(data={"id": entity_id, **data.data})
         self._storage[entity_id] = entity
@@ -25,11 +33,19 @@ class FlextWebEntities(s):
 
     @override
     def execute(self) -> p.Result[bool]:
-        """Execute the entity namespace service."""
-        return r[bool].ok(True)
+        """Execute the entity namespace service.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
+        return r[bool].ok(value=True)
 
     def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
-        """Fetch an entity by identifier."""
+        """Fetch an entity by identifier.
+
+        Returns:
+            The resulting ``p.Result[m.Web.EntityData]``.
+        """
         if not u.to_str(entity_id):
             return e.fail_validation("entity_id", error="cannot be empty")
         entity = self._storage.get(entity_id)
@@ -38,12 +54,21 @@ class FlextWebEntities(s):
         return r[m.Web.EntityData].ok(entity)
 
     def list_all(self) -> p.Result[Sequence[m.Web.EntityData]]:
-        """List all registered entities."""
+        """List all registered entities.
+
+        Returns:
+            The resulting ``p.Result[Sequence[m.Web.EntityData]]``.
+        """
         return r[Sequence[m.Web.EntityData]].ok(list(self._storage.values()))
 
-    def validate_business_rules(self) -> p.Result[bool]:
-        """Validate entity namespace invariants."""
-        return r[bool].ok(True)
+    @staticmethod
+    def validate_business_rules() -> p.Result[bool]:
+        """Validate entity namespace invariants.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
+        return r[bool].ok(value=True)
 
 
 __all__: list[str] = ["FlextWebEntities"]

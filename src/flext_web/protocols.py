@@ -15,8 +15,8 @@ from __future__ import annotations
 
 from flext_cli import FlextCliProtocols
 
-from ._protocols.base import FlextWebProtocolsBase
-from ._protocols.web import FlextWebProtocolsWeb
+from flext_web._protocols.base import FlextWebProtocolsBase
+from flext_web._protocols.web import FlextWebProtocolsWeb
 
 
 class FlextWebProtocols(FlextCliProtocols):

@@ -4,6 +4,9 @@ Tests assert observable behavior: the declared public export contract, the real
 relationship between version string and version tuple, and that the canonical
 `web` surface actually executes. Empty tests, facade-only type/callable checks,
 and no-op loops are prohibited and absent.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -22,13 +25,17 @@ if TYPE_CHECKING:
 class TestsFlextWebInit:
     """Behavior tests for flext_web package initialization."""
 
-    def test_version_string_matches_version_info(self) -> None:
+    @staticmethod
+    def test_version_string_matches_version_info() -> None:
         """__version__ is the dotted join of the numeric __version_info__ parts."""
         numeric_prefix = ".".join(str(part) for part in __version_info__)
         tm.that(__version__.startswith(numeric_prefix), eq=True)
 
-    def test_all_exports_match(self) -> None:
-        """__all__ is the generated contract: sorted, duplicate-free, every name resolves.
+    @staticmethod
+    def test_all_exports_match() -> None:
+        """__all__ is the generated contract: sorted, duplicate-free.
+
+        Every name resolves.
 
         The names themselves are a projection of what the package's modules
         declare (ADR-018); a test never freezes a projection's values, only its
@@ -38,13 +45,15 @@ class TestsFlextWebInit:
         tm.that(list(module_all), eq=sorted(set(module_all)))
         tm.that(all(hasattr(flext_web, name) for name in module_all), eq=True)
 
-    def test_public_web_surface_executes(self) -> None:
+    @staticmethod
+    def test_public_web_surface_executes() -> None:
         """The `web` facade actually runs a real operation end to end."""
         health = web.health_status()
         tm.ok(health)
         tm.that(health.value.service, eq="flext-web")
 
-    def test_facade_aliases_resolve_to_real_namespaces(self) -> None:
+    @staticmethod
+    def test_facade_aliases_resolve_to_real_namespaces() -> None:
         """Each alias resolves and exposes its Web namespace attribute."""
         for alias_name in ("c", "t", "p", "m", "u"):
             alias = getattr(flext_web, alias_name)

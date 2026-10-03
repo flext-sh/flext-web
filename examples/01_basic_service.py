@@ -1,4 +1,8 @@
-"""Basic flext-web startup via the canonical public facade."""
+"""Basic flext-web startup via the canonical public facade.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -10,7 +14,8 @@ from flext_web import web
 class FlextWebExamples:
     """FlextWeb example facade for the basic service startup."""
 
-    def main(self) -> None:
+    @staticmethod
+    def main() -> None:
         """Start flext-web using validated namespaced settings and the facade."""
         settings = web.settings.clone(
             Web={
@@ -21,11 +26,13 @@ class FlextWebExamples:
             debug=True,
         )
         _ = web.start_service(
-            host=settings.Web.host, port=settings.Web.port, debug=settings.debug
+            host=settings.Web.host,
+            port=settings.Web.port,
+            debug=settings.debug,
         )
 
 
-__all__: list[str] = ["FlextWebExamples"]
-
 if __name__ == "__main__":
     FlextWebExamples().main()
+
+__all__: list[str] = ["FlextWebExamples"]

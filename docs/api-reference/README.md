@@ -29,6 +29,6 @@ This section is generated from public exports and real docstrings.
 
 - Primary facades: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebCli`,
   `FlextWebConfig`, `FlextWebConstants` (+10 more)
-- Generated module pages: `15`
+- Generated module pages: `8`
 
 Back to [project docs](../index.md).

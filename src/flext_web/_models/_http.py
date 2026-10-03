@@ -6,15 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import m, u
 
 from flext_core import r
 from flext_web import c, p, t
+from flext_web._models._base import FlextWebModelsBase
 
-from ._base import FlextWebModelsBase
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class FlextWebModelsHttp:
@@ -34,7 +35,7 @@ class FlextWebModelsHttp:
         """
 
         headers: Annotated[
-            t.MutableStrMapping, u.Field(description="HTTP headers for message")
+            t.MutableStrMapping, u.Field(description="HTTP headers for message"),
         ] = u.Field(default_factory=dict)
         body: Annotated[
             str | t.ScalarMapping | None,
@@ -70,11 +71,13 @@ class FlextWebModelsHttp:
             c.Web.Method,
             u.PlainValidator(FlextWebModelsBase.coerce_method),
             u.Field(
-                description="HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)"
+                description="HTTP method (GET, POST, PUT, DELETE, "
+                "PATCH, HEAD, OPTIONS)",
             ),
         ] = c.Web.Method.GET
         timeout: Annotated[
-            t.PositiveTimeout, u.Field(description="Request timeout in seconds")
+            t.PositiveTimeout,
+            u.Field(description="Request timeout in seconds"),
         ] = c.Web.DEFAULT_TIMEOUT_SECONDS
 
         @property
@@ -105,7 +108,11 @@ class FlextWebModelsHttp:
             body: str | t.MappingKV[str, t.Scalar] | None = None,
             timeout: float = c.Web.DEFAULT_TIMEOUT_SECONDS,
         ) -> p.Result[FlextWebModelsHttp.Request]:
-            """Build a validated :class:`Request` from raw HTTP parameters."""
+            """Build a validated :class:`Request` from raw HTTP parameters.
+
+            Returns:
+                The resulting ``p.Result[FlextWebModelsHttp.Request]``.
+            """
             return r[FlextWebModelsHttp.Request].create_from_callable(
                 lambda: FlextWebModelsHttp.Request.model_validate({
                     "url": url,
@@ -113,7 +120,7 @@ class FlextWebModelsHttp:
                     "headers": dict(headers or {}),
                     "body": body,
                     "timeout": timeout,
-                })
+                }),
             )
 
     class Response(Message):
@@ -129,7 +136,7 @@ class FlextWebModelsHttp:
         """
 
         status_code: Annotated[
-            t.HttpStatusCode, u.Field(..., description="HTTP status code")
+            t.HttpStatusCode, u.Field(..., description="HTTP status code"),
         ]
         elapsed_time: Annotated[
             t.NonNegativeFloat | None,
@@ -167,14 +174,18 @@ class FlextWebModelsHttp:
             body: str | t.MappingKV[str, t.Scalar] | None = None,
             elapsed_time: float | None = None,
         ) -> p.Result[FlextWebModelsHttp.Response]:
-            """Build a validated :class:`Response` from raw HTTP fields."""
+            """Build a validated :class:`Response` from raw HTTP fields.
+
+            Returns:
+                The resulting ``p.Result[FlextWebModelsHttp.Response]``.
+            """
             return r[FlextWebModelsHttp.Response].create_from_callable(
                 lambda: cls.model_validate({
                     "status_code": status_code,
                     "headers": dict(headers or {}),
                     "body": body,
                     "elapsed_time": elapsed_time,
-                })
+                }),
             )
 
 

@@ -7,14 +7,15 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from flext_cli import m, u
 
 from flext_web import c, t
+from flext_web._models._base import FlextWebModelsBase
 
-from ._base import FlextWebModelsBase
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class FlextWebModelsWebRequest:
@@ -63,14 +64,14 @@ class FlextWebModelsWebRequest:
             ),
         ]
         headers: Annotated[
-            t.MutableStrMapping, u.Field(description="HTTP response headers")
+            t.MutableStrMapping, u.Field(description="HTTP response headers"),
         ] = u.Field(default_factory=dict)
         body: Annotated[
             str | t.JsonValue | None,
             u.Field(description="Response body (optional for 204 No Content)"),
         ] = None
         response_id: Annotated[
-            str, u.Field(description="Unique response identifier")
+            str, u.Field(description="Unique response identifier"),
         ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
         timestamp: Annotated[datetime, u.Field(description="Response timestamp")] = (
             u.Field(default_factory=u.now)

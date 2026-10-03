@@ -13,9 +13,8 @@ from flext_cli import m, u
 
 from flext_core import r
 from flext_web import c, p, settings, t
-
-from ._entity import FlextWebModelsEntity
-from ._web_request import FlextWebModelsWebRequest
+from flext_web._models._entity import FlextWebModelsEntity
+from flext_web._models._web_request import FlextWebModelsWebRequest
 
 
 class FlextWebModelsFactory:
@@ -23,7 +22,7 @@ class FlextWebModelsFactory:
 
     @classmethod
     def create_web_app(
-        cls, name: str, host: str = settings.Web.host, port: int = settings.Web.port
+        cls, name: str, host: str = settings.Web.host, port: int = settings.Web.port,
     ) -> p.Result[FlextWebModelsEntity.Entity]:
         """Create a web application from direct parameters.
 
@@ -61,7 +60,11 @@ class FlextWebModelsFactory:
         headers: t.StrMapping | None = None,
         body: str | t.JsonValue | None = None,
     ) -> p.Result[FlextWebModelsWebRequest.WebRequest]:
-        """Create a validated web request model from direct parameters."""
+        """Create a validated web request model from direct parameters.
+
+        Returns:
+            The resulting ``p.Result[FlextWebModelsWebRequest.WebRequest]``.
+        """
         payload: t.MutableMappingKV[str, t.JsonPayload] = {
             "method": method,
             "url": url,
@@ -80,7 +83,11 @@ class FlextWebModelsFactory:
         headers: t.StrMapping | None = None,
         body: str | t.JsonValue | None = None,
     ) -> p.Result[FlextWebModelsWebRequest.WebResponse]:
-        """Create a validated web response model from direct parameters."""
+        """Create a validated web response model from direct parameters.
+
+        Returns:
+            The resulting ``p.Result[FlextWebModelsWebRequest.WebResponse]``.
+        """
         payload: t.MutableMappingKV[str, t.JsonPayload] = {
             "request_id": request_id,
             "status_code": status_code,
@@ -93,9 +100,13 @@ class FlextWebModelsFactory:
 
     @staticmethod
     def _build[M: m.BaseModel](
-        model_cls: type[M], payload: t.MutableMappingKV[str, t.JsonPayload], label: str
+        model_cls: type[M], payload: t.MutableMappingKV[str, t.JsonPayload], label: str,
     ) -> p.Result[M]:
-        """Validate a payload into ``model_cls`` at the Result boundary."""
+        """Validate a payload into ``model_cls`` at the Result boundary.
+
+        Returns:
+            The resulting ``p.Result[M]``.
+        """
         result = u.try_(lambda: model_cls.model_validate(payload), catch=Exception)
         return result.map_error(lambda exc: f"Failed to create {label}: {exc}")
 

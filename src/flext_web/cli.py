@@ -29,15 +29,19 @@ class FlextWebCli:
             cli_u.Field(default=None, description="Bind port (overrides settings)."),
         ] = None
         debug: Annotated[
-            bool, cli_u.Field(default=False, description="Enable debug mode.")
+            bool, cli_u.Field(default=False, description="Enable debug mode."),
         ] = False
         no_debug: Annotated[
-            bool, cli_u.Field(default=False, description="Force disable debug mode.")
+            bool, cli_u.Field(default=False, description="Force disable debug mode."),
         ] = False
 
         @override
         def execute(self) -> p.Result[bool]:
-            """Apply CLI overrides and start the public web facade."""
+            """Apply CLI overrides and start the public web facade.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             debug_value = False if self.no_debug else self.debug
             web_overrides: t.MutableMappingKV[str, str | int] = {}
             if self.host is not None:
@@ -45,7 +49,7 @@ class FlextWebCli:
             if self.port is not None:
                 web_overrides["port"] = self.port
             settings_result = r[FlextWebSettings].create_from_callable(
-                lambda: settings.clone(Web=web_overrides, debug=debug_value)
+                lambda: settings.clone(Web=web_overrides, debug=debug_value),
             )
             if settings_result.failure:
                 return r[bool].fail(settings_result.error)
@@ -61,9 +65,13 @@ class FlextWebCli:
 
     @classmethod
     def build_app(cls) -> cli_p.Cli.Application:
-        """Build the CLI application with the canonical result routes."""
+        """Build the CLI application with the canonical result routes.
+
+        Returns:
+            The resulting ``cli_p.Cli.Application``.
+        """
         app = cli.create_app_with_common_params(
-            name="flext-web", help_text="flext-web HTTP service launcher."
+            name="flext-web", help_text="flext-web HTTP service launcher.",
         )
         cli.register_result_routes(
             app,
@@ -73,14 +81,18 @@ class FlextWebCli:
                     help_text="Start the flext-web service.",
                     model_cls=cls.Run,
                     handler=cls.execute_run_command,
-                )
+                ),
             ],
         )
         return app
 
     @staticmethod
     def execute_run_command(params: FlextWebCli.Run) -> p.Result[bool]:
-        """Execute the typed run command for the CLI route."""
+        """Execute the typed run command for the CLI route.
+
+        Returns:
+            The resulting ``p.Result[bool]``.
+        """
         return params.execute()
 
 

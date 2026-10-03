@@ -57,36 +57,56 @@ class FlextWebUtilitiesWeb:
 
         @classmethod
         def configure_middleware(cls) -> p.Result[bool]:
-            """Mark middleware as configured in the shared runtime state."""
+            """Mark middleware as configured in the shared runtime state.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             FlextWebUtilitiesWeb.service_state["middleware_configured"] = True
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @classmethod
         def initialize_routes(cls) -> p.Result[bool]:
-            """Mark routes as initialized in the shared runtime state."""
+            """Mark routes as initialized in the shared runtime state.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             FlextWebUtilitiesWeb.service_state["routes_initialized"] = True
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @classmethod
         def start_service(cls) -> p.Result[bool]:
-            """Mark the service as running in the shared runtime state."""
+            """Mark the service as running in the shared runtime state.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             FlextWebUtilitiesWeb.service_state["service_running"] = True
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @classmethod
         def stop_service(cls) -> p.Result[bool]:
-            """Mark the service as stopped in the shared runtime state."""
+            """Mark the service as stopped in the shared runtime state.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             FlextWebUtilitiesWeb.service_state["service_running"] = False
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
     class WebAppManager:
         """Application registry lifecycle owner."""
 
         @classmethod
         def create_app(
-            cls, name: str, port: int, host: str
+            cls, name: str, port: int, host: str,
         ) -> p.Result[t.Web.ResponseDict]:
-            """Register a stopped application and return its payload."""
+            """Register a stopped application and return its payload.
+
+            Returns:
+                The resulting ``p.Result[t.Web.ResponseDict]``.
+            """
             registry = FlextWebUtilitiesWeb.apps_registry
             app_id = u.format_app_id(name)
             if app_id in registry:
@@ -104,7 +124,11 @@ class FlextWebUtilitiesWeb:
 
         @classmethod
         def start_app(cls, app_id: str) -> p.Result[t.Web.ResponseDict]:
-            """Start a registered application and return its payload."""
+            """Start a registered application and return its payload.
+
+            Returns:
+                The resulting ``p.Result[t.Web.ResponseDict]``.
+            """
             payload_result = FlextWebUtilitiesWeb.WebRepository.fetch_by_id(app_id)
             if payload_result.failure:
                 return r[t.Web.ResponseDict].fail(payload_result.error)
@@ -115,7 +139,11 @@ class FlextWebUtilitiesWeb:
 
         @classmethod
         def stop_app(cls, app_id: str) -> p.Result[t.Web.ResponseDict]:
-            """Stop a registered application and return its payload."""
+            """Stop a registered application and return its payload.
+
+            Returns:
+                The resulting ``p.Result[t.Web.ResponseDict]``.
+            """
             payload_result = FlextWebUtilitiesWeb.WebRepository.fetch_by_id(app_id)
             if payload_result.failure:
                 return r[t.Web.ResponseDict].fail(payload_result.error)
@@ -128,7 +156,7 @@ class FlextWebUtilitiesWeb:
         def list_apps(cls) -> p.Result[Sequence[t.Web.ResponseDict]]:
             """Return every registered application payload."""
             return r[Sequence[t.Web.ResponseDict]].ok(
-                list(FlextWebUtilitiesWeb.apps_registry.values())
+                list(FlextWebUtilitiesWeb.apps_registry.values()),
             )
 
     class WebRepository:
@@ -140,13 +168,17 @@ class FlextWebUtilitiesWeb:
             payload = FlextWebUtilitiesWeb.apps_registry.get(entity_id)
             if payload is None:
                 return r[t.Web.ResponseDict].fail(
-                    f"Application '{entity_id}' not found"
+                    f"Application '{entity_id}' not found",
                 )
             return r[t.Web.ResponseDict].ok(payload)
 
         @classmethod
         def save(cls, entity: t.Web.ResponseDict) -> p.Result[t.Web.ResponseDict]:
-            """Persist an application payload under its identifier."""
+            """Persist an application payload under its identifier.
+
+            Returns:
+                The resulting ``p.Result[t.Web.ResponseDict]``.
+            """
             entity_id = entity.get("id")
             if not isinstance(entity_id, str) or not entity_id:
                 return r[t.Web.ResponseDict].fail("Application id is required")
@@ -155,9 +187,13 @@ class FlextWebUtilitiesWeb:
 
         @classmethod
         def delete(cls, entity_id: str) -> p.Result[bool]:
-            """Remove an application payload by identifier."""
+            """Remove an application payload by identifier.
+
+            Returns:
+                The resulting ``p.Result[bool]``.
+            """
             return r[bool].ok(
-                FlextWebUtilitiesWeb.apps_registry.pop(entity_id, None) is not None
+                FlextWebUtilitiesWeb.apps_registry.pop(entity_id, None) is not None,
             )
 
         @classmethod
@@ -167,7 +203,7 @@ class FlextWebUtilitiesWeb:
 
         @classmethod
         def find_by_criteria(
-            cls, criteria: t.Web.RequestDict
+            cls, criteria: t.Web.RequestDict,
         ) -> p.Result[Sequence[t.Web.ResponseDict]]:
             """Return payloads matching every requested criterion."""
             matched = [
@@ -201,7 +237,7 @@ class FlextWebUtilitiesWeb:
 
         @staticmethod
         def record_web_request(
-            request: t.Web.RequestDict, response_time: float
+            request: t.Web.RequestDict, response_time: float,
         ) -> None:
             """Record one request observation in the shared metrics registry."""
             metrics = FlextWebUtilitiesWeb.web_metrics
