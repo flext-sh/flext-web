@@ -18,8 +18,8 @@ from flext_web import settings
 from tests import c, m
 
 
-class TestsFlextWebModelsUnit:
-    """Test suite for m.Web models."""
+class TestsFlextWebAppModelsUnit:
+    """Test suite for Web application models."""
 
     @staticmethod
     def test_web_app_status_enum() -> None:
@@ -162,90 +162,6 @@ class TestsFlextWebModelsUnit:
         tm.that(str(app), has="running")
 
     @staticmethod
-    def test_web_request_initialization() -> None:
-        """Test WebRequest initialization."""
-        request = m.Web.WebRequest(
-            method=c.Web.Method.GET,
-            url="http://localhost:8080/api/test",
-            headers={"Content-Type": "application/json"},
-            body='{"test": "data"}',
-        )
-        tm.that(request.method, eq=c.Web.Method.GET)
-        tm.that(request.url, eq="http://localhost:8080/api/test")
-        tm.that(request.headers["Content-Type"], eq="application/json")
-        tm.that(request.body, is_=str)
-        tm.that(request.body, eq='{"test": "data"}')
-        tm.that(request.request_id, none=False)
-        tm.that(request.timestamp, none=False)
-
-    @staticmethod
-    def test_web_response_initialization() -> None:
-        """Test WebResponse initialization."""
-        response = m.Web.WebResponse(
-            request_id="req-123",
-            status_code=200,
-            headers={"Content-Type": "application/json"},
-            body='{"result": "success"}',
-        )
-        tm.that(response.request_id, eq="req-123")
-        tm.that(response.status_code, eq=200)
-        tm.that(response.headers["Content-Type"], eq="application/json")
-        tm.that(response.body, is_=str)
-        tm.that(response.body, eq='{"result": "success"}')
-        tm.that(response.response_id, none=False)
-        tm.that(response.timestamp, none=False)
-
-    @staticmethod
-    def test_http_request_has_body_property() -> None:
-        """Test Web.Request has_body property."""
-        request_with_body = m.Web.Request(
-            url="http://localhost:8080",
-            method=c.Web.Method.POST,
-            body='{"data": "test"}',
-        )
-        tm.that(request_with_body.has_body is True, eq=True)
-        request_without_body = m.Web.Request(
-            url="http://localhost:8080", method=c.Web.Method.GET, body=None,
-        )
-        tm.that(request_without_body.has_body is False, eq=True)
-
-    @staticmethod
-    def test_http_request_secure_property() -> None:
-        """Test Web.Request secure property."""
-        https_request = m.Web.Request(
-            url="https://localhost:8080", method=c.Web.Method.GET,
-        )
-        tm.that(https_request.secure is True, eq=True)
-        http_request = m.Web.Request(
-            url="http://localhost:8080", method=c.Web.Method.GET,
-        )
-        tm.that(http_request.secure is False, eq=True)
-
-    @staticmethod
-    def test_http_response_is_success_property() -> None:
-        """Test Web.Response is_success property."""
-        success_response = m.Web.Response(status_code=200)
-        tm.that(success_response.success is True, eq=True)
-        error_response = m.Web.Response(status_code=404)
-        tm.that(error_response.success is False, eq=True)
-
-    @staticmethod
-    def test_http_response_error_property() -> None:
-        """Test Web.Response error property."""
-        error_response = m.Web.Response(status_code=500)
-        tm.that(error_response.error is True, eq=True)
-        success_response = m.Web.Response(status_code=200)
-        tm.that(success_response.error is False, eq=True)
-
-    @staticmethod
-    def test_web_response_processing_time_seconds() -> None:
-        """Test Web.AppResponse processing_time_seconds property."""
-        response = m.Web.AppResponse(
-            status_code=200, request_id="test-123", processing_time_ms=1500.0,
-        )
-        tm.that(abs(response.processing_time_seconds - 1.5), lt=1e-9)
-
-    @staticmethod
     def test_application_validate_name_max_length() -> None:
         """Test validate_name with max_length validation."""
         max_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[1]
@@ -338,3 +254,91 @@ class TestsFlextWebModelsUnit:
                 _ = m.Web.Entity(
                     id="test-id", name=dangerous_name, host="localhost", port=8080,
                 )
+
+
+class TestsFlextWebHttpModelsUnit:
+    """Test suite for Web request/response models."""
+
+    @staticmethod
+    def test_web_request_initialization() -> None:
+        """Test WebRequest initialization."""
+        request = m.Web.WebRequest(
+            method=c.Web.Method.GET,
+            url="http://localhost:8080/api/test",
+            headers={"Content-Type": "application/json"},
+            body='{"test": "data"}',
+        )
+        tm.that(request.method, eq=c.Web.Method.GET)
+        tm.that(request.url, eq="http://localhost:8080/api/test")
+        tm.that(request.headers["Content-Type"], eq="application/json")
+        tm.that(request.body, is_=str)
+        tm.that(request.body, eq='{"test": "data"}')
+        tm.that(request.request_id, none=False)
+        tm.that(request.timestamp, none=False)
+
+    @staticmethod
+    def test_web_response_initialization() -> None:
+        """Test WebResponse initialization."""
+        response = m.Web.WebResponse(
+            request_id="req-123",
+            status_code=200,
+            headers={"Content-Type": "application/json"},
+            body='{"result": "success"}',
+        )
+        tm.that(response.request_id, eq="req-123")
+        tm.that(response.status_code, eq=200)
+        tm.that(response.headers["Content-Type"], eq="application/json")
+        tm.that(response.body, is_=str)
+        tm.that(response.body, eq='{"result": "success"}')
+        tm.that(response.response_id, none=False)
+        tm.that(response.timestamp, none=False)
+
+    @staticmethod
+    def test_http_request_has_body_property() -> None:
+        """Test Web.Request has_body property."""
+        request_with_body = m.Web.Request(
+            url="http://localhost:8080",
+            method=c.Web.Method.POST,
+            body='{"data": "test"}',
+        )
+        tm.that(request_with_body.has_body is True, eq=True)
+        request_without_body = m.Web.Request(
+            url="http://localhost:8080", method=c.Web.Method.GET, body=None,
+        )
+        tm.that(request_without_body.has_body is False, eq=True)
+
+    @staticmethod
+    def test_http_request_secure_property() -> None:
+        """Test Web.Request secure property."""
+        https_request = m.Web.Request(
+            url="https://localhost:8080", method=c.Web.Method.GET,
+        )
+        tm.that(https_request.secure is True, eq=True)
+        http_request = m.Web.Request(
+            url="http://localhost:8080", method=c.Web.Method.GET,
+        )
+        tm.that(http_request.secure is False, eq=True)
+
+    @staticmethod
+    def test_http_response_is_success_property() -> None:
+        """Test Web.Response is_success property."""
+        success_response = m.Web.Response(status_code=200)
+        tm.that(success_response.success is True, eq=True)
+        error_response = m.Web.Response(status_code=404)
+        tm.that(error_response.success is False, eq=True)
+
+    @staticmethod
+    def test_http_response_error_property() -> None:
+        """Test Web.Response error property."""
+        error_response = m.Web.Response(status_code=500)
+        tm.that(error_response.error is True, eq=True)
+        success_response = m.Web.Response(status_code=200)
+        tm.that(success_response.error is False, eq=True)
+
+    @staticmethod
+    def test_web_response_processing_time_seconds() -> None:
+        """Test Web.AppResponse processing_time_seconds property."""
+        response = m.Web.AppResponse(
+            status_code=200, request_id="test-123", processing_time_ms=1500.0,
+        )
+        tm.that(abs(response.processing_time_seconds - 1.5), lt=1e-9)

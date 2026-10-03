@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from flext_web.services.entities import FlextWebEntities
     from flext_web.services.handlers import FlextWebHandlers
     from flext_web.services.health import FlextWebHealth
-    from flext_web.services.web import FlextWebServices
+    from flext_web.services.web import FlextWebMonitoring, FlextWebServices
 
 
 __all__: tuple[str, ...] = (
@@ -27,6 +27,7 @@ __all__: tuple[str, ...] = (
     "FlextWebEntities",
     "FlextWebHandlers",
     "FlextWebHealth",
+    "FlextWebMonitoring",
     "FlextWebServices",
 )
 
@@ -38,7 +39,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".entities": ("FlextWebEntities",),
             ".handlers": ("FlextWebHandlers",),
             ".health": ("FlextWebHealth",),
-            ".web": ("FlextWebServices",),
+            ".web": ("FlextWebMonitoring", "FlextWebServices"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,

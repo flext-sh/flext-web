@@ -11,7 +11,7 @@ import os
 from flext_web import web
 
 
-class FlextWebExamples:
+class FlextWebExamplesBasicService:
     """FlextWeb example facade for the basic service startup."""
 
     @staticmethod
@@ -33,6 +33,6 @@ class FlextWebExamples:
 
 
 if __name__ == "__main__":
-    FlextWebExamples().main()
+    FlextWebExamplesBasicService().main()
 
-__all__: list[str] = ["FlextWebExamples"]
+__all__: list[str] = ["FlextWebExamplesBasicService"]

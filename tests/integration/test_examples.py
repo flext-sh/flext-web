@@ -57,12 +57,12 @@ class ExamplesFullFunctionalityTest:
 
     def test_basic_service_example_exposes_main(self) -> None:
         """The basic service example stays importable and runnable."""
-        module = self._load_example_module("01_basic_service.py", "basic_service")
+        module = self._load_example_module("basic_service.py", "basic_service")
         tm.that(callable(module.FlextWebExamples().main), eq=True)
 
     def test_api_usage_example_uses_the_public_facade(self) -> None:
         """The API usage example delegates lifecycle operations to `web`."""
-        module = self._load_example_module("02_api_usage.py", "api_usage")
+        module = self._load_example_module("api_usage.py", "api_usage")
         example = module.FlextWebExamples()
 
         health_result = example.check_service_health()
@@ -92,7 +92,7 @@ class ExamplesFullFunctionalityTest:
 
     def test_api_usage_demo_runs_full_lifecycle(self) -> None:
         """The lifecycle demo returns the projected applications after execution."""
-        module = self._load_example_module("02_api_usage.py", "api_usage_demo")
+        module = self._load_example_module("api_usage.py", "api_usage_demo")
         demo_result = module.FlextWebExamples().demo_application_lifecycle()
         tm.ok(demo_result)
         tm.that(demo_result.value, length=2)

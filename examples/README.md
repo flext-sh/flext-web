@@ -49,6 +49,6 @@ assert web.api_capabilities().success
 
 ```bash
 cd examples
-python 01_basic_service.py
-python 02_api_usage.py
+python basic_service.py
+python api_usage.py
 ```
