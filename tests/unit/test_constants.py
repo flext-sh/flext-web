@@ -12,7 +12,6 @@ import ipaddress
 from collections.abc import Mapping
 
 from flext_tests import tm
-
 from tests import c
 
 
