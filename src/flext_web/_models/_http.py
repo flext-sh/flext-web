@@ -35,7 +35,8 @@ class FlextWebModelsHttp:
         """
 
         headers: Annotated[
-            t.MutableStrMapping, u.Field(description="HTTP headers for message"),
+            t.MutableStrMapping,
+            u.Field(description="HTTP headers for message"),
         ] = u.Field(default_factory=dict)
         body: Annotated[
             str | t.ScalarMapping | None,
@@ -136,7 +137,8 @@ class FlextWebModelsHttp:
         """
 
         status_code: Annotated[
-            t.HttpStatusCode, u.Field(..., description="HTTP status code"),
+            t.HttpStatusCode,
+            u.Field(..., description="HTTP status code"),
         ]
         elapsed_time: Annotated[
             t.NonNegativeFloat | None,

@@ -33,7 +33,10 @@ class TestsFlextWebTypesUnit:
     def test_app_data_functionality() -> None:
         """Entity exposes its fields and derives the running flag from status."""
         app = m.Web.Entity(
-            id="test-id", name="test-app", host="localhost", port=8080,
+            id="test-id",
+            name="test-app",
+            host="localhost",
+            port=8080,
             status="running",
         )
         tm.that(app.id, eq="test-id")
@@ -77,7 +80,8 @@ class TestsFlextWebTypesUnit:
     def test_create_http_request_invalid_method() -> None:
         """An invalid HTTP method fails with a method-related error."""
         result = m.Web.Request.create_http_request(
-            url="http://localhost:8080", method="INVALID_METHOD",
+            url="http://localhost:8080",
+            method="INVALID_METHOD",
         )
         tm.fail(result)
         tm.that(result.error, has="method")
@@ -100,7 +104,10 @@ class TestsFlextWebTypesUnit:
     def test_create_http_response_exception_handling() -> None:
         """A negative elapsed_time fails validation."""
         result = m.Web.Response.create_http_response(
-            status_code=200, headers={}, body=None, elapsed_time=-1.0,
+            status_code=200,
+            headers={},
+            body=None,
+            elapsed_time=-1.0,
         )
         tm.fail(result)
         error = (result.error or "").lower()
@@ -112,7 +119,8 @@ class TestsFlextWebTypesUnit:
         valid_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
         for method in valid_methods:
             result = m.Web.Request.create_http_request(
-                url="http://localhost:8080", method=method,
+                url="http://localhost:8080",
+                method=method,
             )
             tm.ok(result)
             tm.that(result.value.method, eq=method)
@@ -121,7 +129,9 @@ class TestsFlextWebTypesUnit:
     def test_create_http_request_with_none_headers() -> None:
         """None headers normalize to an empty dict on the created request."""
         result = m.Web.Request.create_http_request(
-            url="http://localhost:8080", method="GET", headers=None,
+            url="http://localhost:8080",
+            method="GET",
+            headers=None,
         )
         tm.ok(result)
         tm.that(result.value.headers, eq={})

@@ -64,14 +64,16 @@ class FlextWebModelsWebRequest:
             ),
         ]
         headers: Annotated[
-            t.MutableStrMapping, u.Field(description="HTTP response headers"),
+            t.MutableStrMapping,
+            u.Field(description="HTTP response headers"),
         ] = u.Field(default_factory=dict)
         body: Annotated[
             str | t.JsonValue | None,
             u.Field(description="Response body (optional for 204 No Content)"),
         ] = None
         response_id: Annotated[
-            str, u.Field(description="Unique response identifier"),
+            str,
+            u.Field(description="Unique response identifier"),
         ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
         timestamp: Annotated[datetime, u.Field(description="Response timestamp")] = (
             u.Field(default_factory=u.now)

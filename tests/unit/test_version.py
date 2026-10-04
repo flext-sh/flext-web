@@ -74,7 +74,9 @@ class TestsFlextWebVersion:
             "url",
         ]
         tm.that(
-            info, has=required_keys, msg="Package info must contain all required keys",
+            info,
+            has=required_keys,
+            msg="Package info must contain all required keys",
         )
         for key in required_keys:
             tm.that(
@@ -93,7 +95,11 @@ class TestsFlextWebVersion:
     def test_module_level_exports() -> None:
         """Test module-level version exports are consistent with class."""
         tm.that(
-            __version__, is_=str, none=False, empty=False, match="^\\d+\\.\\d+\\.\\d+",
+            __version__,
+            is_=str,
+            none=False,
+            empty=False,
+            match="^\\d+\\.\\d+\\.\\d+",
         )
         tm.that(__version_info__, is_=tuple, none=False, empty=False, len=3)
         tm.that(

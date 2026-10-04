@@ -140,7 +140,8 @@ class FlextWebServices(FlextWebMonitoring, s):
         return FlextWebSettings.model_validate(self.settings.clone())
 
     def authenticate(
-        self, credentials: m.Web.Credentials,
+        self,
+        credentials: m.Web.Credentials,
     ) -> p.Result[m.Web.AuthResponse]:
         """Delegate authentication to the canonical auth service.
 
@@ -159,7 +160,8 @@ class FlextWebServices(FlextWebMonitoring, s):
         return u.Web.WebService.configure_middleware()
 
     def create_app(
-        self, app_data: m.Web.AppData,
+        self,
+        app_data: m.Web.AppData,
     ) -> p.Result[m.Web.ApplicationResponse]:
         """Create an application through the protocol runtime registry.
 
@@ -167,7 +169,9 @@ class FlextWebServices(FlextWebMonitoring, s):
             The resulting ``p.Result[m.Web.ApplicationResponse]``.
         """
         return u.Web.WebAppManager.create_app(
-            name=app_data.name, port=app_data.port, host=app_data.host,
+            name=app_data.name,
+            port=app_data.port,
+            host=app_data.host,
         ).flat_map(self._application_response_from_payload)
 
     def create_entity(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
@@ -314,11 +318,13 @@ class FlextWebServices(FlextWebMonitoring, s):
         state = u.Web.service_state
         if state["service_running"] and not state["routes_initialized"]:
             return e.fail_validation(
-                "service_state", error="running without initialized routes",
+                "service_state",
+                error="running without initialized routes",
             )
         if state["service_running"] and not state["middleware_configured"]:
             return e.fail_validation(
-                "service_state", error="running without configured middleware",
+                "service_state",
+                error="running without configured middleware",
             )
         return r[bool].ok(value=True)
 
@@ -349,12 +355,14 @@ class FlextWebServices(FlextWebMonitoring, s):
             response = m.Web.ApplicationResponse.model_validate(response_payload)
         except c.ValidationError as exc:
             return r[m.Web.ApplicationResponse].fail(
-                f"Invalid application payload: {exc}", exception=exc,
+                f"Invalid application payload: {exc}",
+                exception=exc,
             )
         return r[m.Web.ApplicationResponse].ok(response)
 
     def _application_responses_from_payloads(
-        self, payloads: t.SequenceOf[t.Web.ResponseDict],
+        self,
+        payloads: t.SequenceOf[t.Web.ResponseDict],
     ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
         """Project a sequence of payloads into response models.
 
@@ -400,7 +408,9 @@ class FlextWebServices(FlextWebMonitoring, s):
         return self._entity_service
 
     def _get_or_create_runtime_application(
-        self, host: str | None, port: int | None,
+        self,
+        host: str | None,
+        port: int | None,
     ) -> p.Result[m.Web.ApplicationResponse]:
         """Return the configured runtime application, creating it when needed."""
         target_name = settings.Web.app_name
