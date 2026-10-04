@@ -9,7 +9,7 @@
 <!-- AUTO-GENERATED — DO NOT EDIT MANUALLY -->
 
 - Package: `flext_web`
-- Version: `0.20.0`
+- Version: `0.12.0`
 - Description: FLEXT Web - Modern Web Interface for FLEXT Platform
 - Doc summary: Flext Web package.
 - Classifiers: Development Status :: 3 - Alpha, Framework :: Flask, Intended Audience ::
