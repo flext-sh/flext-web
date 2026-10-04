@@ -1,7 +1,7 @@
 # FLEXT Web - Usage Examples
 
 This directory shows the current public usage pattern for `flext-web`:
-`from flext_web import web, c, t, p, m, u`.
+`from flext_web import web, c, t, p, m, p, u`.
 
 ## Basic Usage
 
