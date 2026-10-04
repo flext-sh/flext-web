@@ -15,27 +15,24 @@ if TYPE_CHECKING:
 class FlextWebProtocolsConfig:
     """Configuration scalar protocol shard."""
 
-    class Web:
-        """Web configuration protocols."""
+    @runtime_checkable
+    class ConfigValue(Protocol):
+        """Protocol for configuration scalar wrappers."""
 
-        @runtime_checkable
-        class ConfigValue(Protocol):
-            """Protocol for configuration scalar wrappers."""
+        value: t.Scalar
 
-            value: t.Scalar
+        @override
+        def __str__(self) -> str:
+            """Convert the value to string."""
+            ...
 
-            @override
-            def __str__(self) -> str:
-                """Convert the value to string."""
-                ...
+        def __bool__(self) -> bool:
+            """Convert the value to boolean."""
+            ...
 
-            def __bool__(self) -> bool:
-                """Convert the value to boolean."""
-                ...
-
-            def __int__(self) -> int:
-                """Convert the value to integer."""
-                ...
+        def __int__(self) -> int:
+            """Convert the value to integer."""
+            ...
 
 
 __all__: list[str] = ["FlextWebProtocolsConfig"]

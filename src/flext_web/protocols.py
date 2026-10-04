@@ -4,8 +4,8 @@ Per AGENTS.md §2.7 (Library Abstraction) + python.md §5a: this module
 contains ONLY Protocol class definitions. All runtime/implementation code
 lives in ``flext_web.utilities`` (``FlextWebUtilities.Web``).
 
-The protocols are composed from shards under ``_protocols/`` via MRO mixin
-parts, following FLEXT namespace rules (``c/m/t/p/u`` facades).
+The composed ``Web`` namespace is owned once by ``_protocols.base`` and
+delegated to here, following FLEXT namespace rules (``c/m/t/p/u`` facades).
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -13,26 +13,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import p
-from flext_web._protocols.config import FlextWebProtocolsConfig
-from flext_web._protocols.data import FlextWebProtocolsData
-from flext_web._protocols.framework import FlextWebProtocolsFramework
-from flext_web._protocols.lifecycle import FlextWebProtocolsLifecycle
-from flext_web._protocols.monitoring import FlextWebProtocolsMonitoring
-from flext_web._protocols.template import FlextWebProtocolsTemplate
+from flext_cli import FlextCliProtocols
+
+from flext_web._protocols.base import FlextWebProtocolsBase
+from flext_web._protocols.web import FlextWebProtocolsWeb
 
 
-class FlextWebProtocols(p):
+class FlextWebProtocols(FlextCliProtocols):
     """Web-specific ``@runtime_checkable`` Protocol surface extending ``p``."""
 
-    class Web(
-        FlextWebProtocolsLifecycle.Web,
-        FlextWebProtocolsData.Web,
-        FlextWebProtocolsTemplate.Web,
-        FlextWebProtocolsMonitoring.Web,
-        FlextWebProtocolsConfig.Web,
-        FlextWebProtocolsFramework.Web,
-    ):
+    class Web(FlextWebProtocolsBase, FlextWebProtocolsWeb):
         """Web domain-specific Protocols."""
 
 

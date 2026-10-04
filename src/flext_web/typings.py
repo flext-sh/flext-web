@@ -2,23 +2,21 @@
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
-
 """
 
 from __future__ import annotations
 
-from flext_cli import t
+from flext_cli import FlextCliTypes
+
+from flext_web._typings.base import FlextWebTypingsBase
+from flext_web._typings.web import FlextWebTypingsWeb
 
 
-class FlextWebTypes(t):
+class FlextWebTypes(FlextCliTypes):
     """Web-specific type definitions extending t via MRO."""
 
-    class Web:
+    class Web(FlextWebTypingsWeb, FlextWebTypingsBase):
         """Web domain namespace (flat members per AGENTS.md §149)."""
-
-        type RequestDict = dict[str, t.Scalar | t.StrSequence | t.ConfigurationMapping]
-        type ResponseDict = dict[str, t.Scalar | t.StrSequence | t.ConfigurationMapping]
-        type FastApiEndpointPayload = t.MappingKV[str, str | bool]
 
 
 t = FlextWebTypes

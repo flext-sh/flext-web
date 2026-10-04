@@ -3,8 +3,8 @@
 `flext_web` exposes one canonical public surface:
 `from flext_web import web, c, t, p, m, p, u`.
 
-Everything operational goes through `web`. Structural contracts stay under
-`c.Web`, `t.Web`, `u.Web`, `m.Web` and `u.Web`.
+Everything operational goes through `web`. Structural contracts stay under `c.Web`,
+`t.Web`, `u.Web`, `m.Web` and `u.Web`.
 
 ## Current Structure
 
@@ -41,8 +41,8 @@ flask_result = web.create_flask_app()
 
 ## Settings
 
-The package-level `settings.Web` namespace is the runtime SSOT. Use the settings
-model only when an external boundary provides explicit overrides.
+The package-level `settings.Web` namespace is the runtime SSOT. Use the settings model
+only when an external boundary provides explicit overrides.
 
 ```python
 from flext_web import FlextWebSettings, u
@@ -53,5 +53,5 @@ assert u.Web.validate_settings(runtime_settings).unwrap()
 
 ## Services
 
-The service surface is intentionally narrow and should stay behind `web`.
-Consumers should not reach into internal modules for lifecycle operations.
+The service surface is intentionally narrow and should stay behind `web`. Consumers
+should not reach into internal modules for lifecycle operations.

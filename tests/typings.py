@@ -10,14 +10,11 @@ from flext_tests import FlextTestsTypes
 from flext_web import FlextWebTypes
 
 
-class TestsFlextWebTypes(FlextTestsTypes, FlextWebTypes):
+class TestsFlextWebTypes(FlextWebTypes, FlextTestsTypes):
     """Test type aliases for flext-web."""
 
-    class Web(FlextWebTypes.Web):
+    class Tests(FlextTestsTypes.Tests):
         """Web domain test type aliases."""
-
-        class Tests:
-            """Test-specific type aliases."""
 
 
 t = TestsFlextWebTypes

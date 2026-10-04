@@ -1,65 +1,72 @@
-"""Unit tests for the public service surface exposed by `web`."""
+"""Unit tests for the public service surface exposed by `web`.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from flext_tests import tm
-from flext_web import web
+
+from flext_web import p, web
 from tests import m
+from tests.fixtures import TestsFlextWebAuthFixture
 
 
 class TestsFlextWebService:
     """Tests for the canonical web service layer through `web`."""
 
-    def setup_method(self) -> None:
-        """Stop any running service before each test."""
-        apps_result = web.list_apps()
-        if apps_result.success:
-            for app in apps_result.value:
-                if app.status == "running":
-                    _ = web.stop_app(app.id)
-        status_result = web.service_status()
-        if status_result.success and status_result.value.status == "operational":
-            _ = web.stop_service()
-
-    def test_authenticate_success(self) -> None:
+    @staticmethod
+    def test_authenticate_success() -> None:
         """Authentication succeeds for the canonical test credentials."""
-        credentials = m.Web.Credentials(username="testuser", password="test_password")
+        credentials = TestsFlextWebAuthFixture().credentials
         result = web.authenticate(credentials)
         tm.ok(result)
-        tm.that(result.value.user_id, eq="testuser")
+        tm.that(result.value.user_id, eq=credentials.username)
 
-    def test_authenticate_failure(self) -> None:
+    @staticmethod
+    def test_authenticate_failure() -> None:
         """Authentication fails for invalid credentials."""
-        credentials = m.Web.Credentials(
-            username="nonexistent", password="wrong-password"
+        canonical = TestsFlextWebAuthFixture()
+        credentials = canonical.credentials.model_copy(
+            update={"username": canonical.rejected_username},
         )
         result = web.authenticate(credentials)
         tm.fail(result)
         tm.that(result.error, has="authenticate")
 
-    def test_register_user_success(self) -> None:
+    @staticmethod
+    def test_register_user_success() -> None:
         """User registration succeeds for valid input."""
+        credentials = TestsFlextWebAuthFixture().credentials
         result = web.register_user(
             m.Web.UserData(
-                username="newuser", email="newuser@example.com", password="password123"
-            )
+                username="newuser",
+                email="newuser@example.com",
+                password=credentials.password,
+            ),
         )
         tm.ok(result)
         tm.that(result.value.created, eq=True)
 
-    def test_register_user_rejects_numeric_username(self) -> None:
+    @staticmethod
+    def test_register_user_rejects_numeric_username() -> None:
         """Numeric-only usernames are rejected."""
+        credentials = TestsFlextWebAuthFixture().credentials
         result = web.register_user(
             m.Web.UserData(
-                username="12345", email="numeric@example.com", password="password123"
-            )
+                username="12345",
+                email="numeric@example.com",
+                password=credentials.password,
+            ),
         )
         tm.fail(result)
 
-    def test_create_get_list_app_cycle(self) -> None:
+    @staticmethod
+    def test_create_get_list_app_cycle() -> None:
         """Applications are created through protocol-backed runtime state."""
         create_result = web.create_app(
-            m.Web.AppData(name="test-app", host="127.0.0.1", port=8182)
+            m.Web.AppData(name="test-app", host="127.0.0.1", port=8182),
         )
         tm.ok(create_result)
         app = create_result.value
@@ -69,13 +76,14 @@ class TestsFlextWebService:
         tm.ok(list_result)
         tm.that(get_result.value.id, eq=app.id)
         tm.that(
-            any(listed_app.id == app.id for listed_app in list_result.value), eq=True
+            any(listed_app.id == app.id for listed_app in list_result.value), eq=True,
         )
 
-    def test_start_and_stop_app_cycle(self) -> None:
+    @staticmethod
+    def test_start_and_stop_app_cycle() -> None:
         """Applications transition through running and stopped states."""
         create_result = web.create_app(
-            m.Web.AppData(name="runtime-app", host="127.0.0.1", port=8183)
+            m.Web.AppData(name="runtime-app", host="127.0.0.1", port=8183),
         )
         tm.ok(create_result)
         app_id = create_result.value.id
@@ -86,7 +94,8 @@ class TestsFlextWebService:
         tm.ok(stop_result)
         tm.that(stop_result.value.status, eq="stopped")
 
-    def test_entity_crud_cycle(self) -> None:
+    @staticmethod
+    def test_entity_crud_cycle() -> None:
         """Generic entity CRUD remains available on the canonical service."""
         create_result = web.create_entity(m.Web.EntityData(data={"key": "value"}))
         tm.ok(create_result)
@@ -98,7 +107,8 @@ class TestsFlextWebService:
         tm.that(get_result.value.data["key"], eq="value")
         tm.that(list_result.value, length=1)
 
-    def test_health_dashboard_and_capabilities(self) -> None:
+    @staticmethod
+    def test_health_dashboard_and_capabilities() -> None:
         """Health, dashboard and capability projections stay coherent."""
         tm.ok(web.initialize_routes())
         tm.ok(web.configure_middleware())
@@ -112,7 +122,8 @@ class TestsFlextWebService:
         tm.that(dashboard_result.value.routes_initialized, eq=True)
         tm.that(capabilities_result.value, has="framework_management")
 
-    def test_start_and_stop_service(self) -> None:
+    @staticmethod
+    def test_start_and_stop_service() -> None:
         """Service start bootstraps a runtime application and stop tears it down."""
         start_result = web.start_service(host="127.0.0.1", port=8184)
         tm.ok(start_result)
@@ -128,9 +139,26 @@ class TestsFlextWebService:
         tm.ok(stopped_status)
         tm.that(stopped_status.value.status, eq="stopped")
 
-    def test_get_service_status(self) -> None:
+    @staticmethod
+    def test_get_service_status() -> None:
         """Structured service status is exposed by the service layer itself."""
         result = web.service_status()
         tm.ok(result)
         tm.that(result.value.service, eq="flext-web-api")
         tm.that(result.value.capabilities, has="flask_support")
+
+    @staticmethod
+    def _is_service_rules(candidate: p.Base) -> bool:
+        """Report structural conformance without a type-narrowed argument.
+
+        Returns:
+            The resulting ``bool``.
+        """
+        return isinstance(candidate, p.Web.WebServiceRules)
+
+    def test_web_satisfies_its_own_service_rules_protocol(self) -> None:
+        """The real composed facade structurally satisfies its own protocol."""
+        tm.that(self._is_service_rules(web), eq=True)
+        result = web.validate_business_rules()
+        tm.ok(result)
+        tm.that(result.value, eq=True)

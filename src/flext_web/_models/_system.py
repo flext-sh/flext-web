@@ -9,7 +9,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Annotated, ClassVar
 
 from flext_cli import m, u
-from flext_web import t
 
 if TYPE_CHECKING:
     from threading import Thread
@@ -17,60 +16,55 @@ if TYPE_CHECKING:
 
     import uvicorn
 
+    from flext_web import t
+
 
 class FlextWebModelsSystem:
-    """System, health, and runtime models namespace."""
+    """System, health, and runtime models."""
 
-    class Web:
-        """System, health, and runtime models."""
+    class SystemInfo(m.BaseModel):
+        """System information response model."""
 
-        class SystemInfo(m.BaseModel):
-            """System information response model."""
+        service_name: Annotated[str, u.Field(description="Service name")]
+        service_type: Annotated[str, u.Field(description="Service type")]
+        architecture: Annotated[str, u.Field(description="Architecture pattern")]
+        patterns: Annotated[t.StrSequence, u.Field(description="Design patterns used")]
+        integrations: Annotated[
+            t.StrSequence, u.Field(description="Integrated components"),
+        ]
+        capabilities: Annotated[
+            t.StrSequence, u.Field(description="Service capabilities"),
+        ]
 
-            service_name: Annotated[str, u.Field(description="Service name")]
-            service_type: Annotated[str, u.Field(description="Service type")]
-            architecture: Annotated[str, u.Field(description="Architecture pattern")]
-            patterns: Annotated[
-                t.StrSequence, u.Field(description="Design patterns used")
-            ]
-            integrations: Annotated[
-                t.StrSequence, u.Field(description="Integrated components")
-            ]
-            capabilities: Annotated[
-                t.StrSequence, u.Field(description="Service capabilities")
-            ]
+    class HealthStatus(m.BaseModel):
+        """Health status response model."""
 
-        class HealthStatus(m.BaseModel):
-            """Health status response model."""
+        status: Annotated[str, u.Field(description="Health status")]
+        service: Annotated[str, u.Field(description="Service name")]
+        version: Annotated[str, u.Field(description="Service version")]
+        timestamp: Annotated[str, u.Field(description="Status timestamp")]
+        components: Annotated[t.StrMapping, u.Field(description="Component statuses")]
 
-            status: Annotated[str, u.Field(description="Health status")]
-            service: Annotated[str, u.Field(description="Service name")]
-            version: Annotated[str, u.Field(description="Service version")]
-            timestamp: Annotated[str, u.Field(description="Status timestamp")]
-            components: Annotated[
-                t.StrMapping, u.Field(description="Component statuses")
-            ]
+    class AppRuntimeInfo(m.ArbitraryTypesModel):
+        """Runtime information for a running web application.
 
-        class AppRuntimeInfo(m.ArbitraryTypesModel):
-            """Runtime information for a running web application.
+        Tracks the server instance, daemon thread, and runner type
+        for each started application so it can be stopped cleanly.
+        """
 
-            Tracks the server instance, daemon thread, and runner type
-            for each started application so it can be stopped cleanly.
-            """
-
-            model_config: ClassVar[t.ConfigDict] = t.ConfigDict(
-                arbitrary_types_allowed=True, frozen=True, extra="forbid"
-            )
-            runner: Annotated[
-                str, u.Field(description="Runtime runner name (uvicorn, werkzeug)")
-            ]
-            server: Annotated[
-                uvicorn.Server | WSGIServer,
-                u.Field(description="Server instance for lifecycle management"),
-            ]
-            thread: Annotated[
-                Thread, u.Field(description="Daemon thread running the server")
-            ]
+        model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
+            arbitrary_types_allowed=True, frozen=True, extra="forbid",
+        )
+        runner: Annotated[
+            str, u.Field(description="Runtime runner name (uvicorn, werkzeug)"),
+        ]
+        server: Annotated[
+            uvicorn.Server | WSGIServer,
+            u.Field(description="Server instance for lifecycle management"),
+        ]
+        thread: Annotated[
+            Thread, u.Field(description="Daemon thread running the server"),
+        ]
 
 
 __all__: list[str] = ["FlextWebModelsSystem"]

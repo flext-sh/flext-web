@@ -1,27 +1,79 @@
-# AUTO-GENERATED FILE — canonical lazy tests facade. Regenerate with: make gen
-"""Test package facade exposing the project test aliases lazily."""
+# AUTO-GENERATED FILE — Regenerate with: make gen
+"""Tests package.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
+from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import build_lazy_import_map, install_lazy_exports
+from flext_core import build_lazy_import_map, install_lazy_exports
 
 if TYPE_CHECKING:
-    from tests.base import TestsFlextWebServiceBase as TestsFlextWebServiceBase, s as s
-    from tests.constants import TestsFlextWebConstants as TestsFlextWebConstants, c as c
-    from tests.models import TestsFlextWebModels as TestsFlextWebModels, m as m
-    from tests.protocols import TestsFlextWebProtocols as TestsFlextWebProtocols, p
-    from tests.typings import TestsFlextWebTypes as TestsFlextWebTypes, t as t
-    from tests.utilities import TestsFlextWebUtilities as TestsFlextWebUtilities, u
+    from flext_tests import api, td, tf, tk, tm
 
-_LAZY_IMPORTS = build_lazy_import_map({
-    ".constants": ("TestsFlextWebConstants", "c"),
-    ".typings": ("TestsFlextWebTypes", "t"),
-    ".protocols": ("TestsFlextWebProtocols", "p"),
-    ".models": ("TestsFlextWebModels", "m"),
-    ".utilities": ("TestsFlextWebUtilities", "u"),
-    ".base": ("TestsFlextWebServiceBase", "s"),
-})
+    from flext_web import d, e, h, r, s, x
+    from tests import fixtures, integration, unit
+    from tests.base import TestsFlextWebServiceBase
+    from tests.constants import TestsFlextWebConstants, c
+    from tests.models import TestsFlextWebModels, m
+    from tests.protocols import TestsFlextWebProtocols, p
+    from tests.settings import TestsFlextWebSettings
+    from tests.typings import TestsFlextWebTypes, t
+    from tests.utilities import TestsFlextWebUtilities, u
 
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, publish_all=False)
+
+__all__: tuple[str, ...] = (
+    "TestsFlextWebConstants",
+    "TestsFlextWebModels",
+    "TestsFlextWebProtocols",
+    "TestsFlextWebServiceBase",
+    "TestsFlextWebSettings",
+    "TestsFlextWebTypes",
+    "TestsFlextWebUtilities",
+    "api",
+    "c",
+    "d",
+    "e",
+    "fixtures",
+    "h",
+    "integration",
+    "m",
+    "p",
+    "r",
+    "s",
+    "t",
+    "td",
+    "tf",
+    "tk",
+    "tm",
+    "u",
+    "unit",
+    "x",
+)
+
+_LAZY_IMPORTS = MappingProxyType(
+    build_lazy_import_map(
+        MappingProxyType({
+            ".base": ("TestsFlextWebServiceBase",),
+            ".constants": ("TestsFlextWebConstants", "c"),
+            ".fixtures": ("fixtures",),
+            ".integration": ("integration",),
+            ".models": ("TestsFlextWebModels", "m"),
+            ".protocols": ("TestsFlextWebProtocols", "p"),
+            ".settings": ("TestsFlextWebSettings",),
+            ".typings": ("TestsFlextWebTypes", "t"),
+            ".unit": ("unit",),
+            ".utilities": ("TestsFlextWebUtilities", "u"),
+            "flext_tests": ("api", "td", "tf", "tk", "tm"),
+            "flext_web": ("d", "e", "h", "r", "s", "x"),
+        }),
+        alias_groups=MappingProxyType({}),
+        sort_keys=False,
+    ),
+)
+
+install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

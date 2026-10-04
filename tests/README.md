@@ -34,7 +34,8 @@ tests/
 
 - Test code should import runtime operations through `web`.
 - Structural assertions should use the canonical aliases `c`, `t`, `p`, `m`, `u`.
-- Integration tests must validate real public usage, not dead HTTP contracts or private internals.
+- Integration tests must validate real public usage, not dead HTTP contracts or private
+  internals.
 
 ## Running
 

@@ -1,102 +1,60 @@
-"""Unit tests for flext_web.__init__ module.
+"""Unit tests for the flext_web package public surface.
 
-Tests the package initialization and exports.
+Tests assert observable behavior: the declared public export contract, the real
+relationship between version string and version tuple, and that the canonical
+`web` surface actually executes. Empty tests, facade-only type/callable checks,
+and no-op loops are prohibited and absent.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-import flext_web
+from typing import TYPE_CHECKING
+
 from flext_tests import tm
-from flext_web import __version__, __version_info__
-from tests import t
+
+import flext_web
+from flext_web import __version__, __version_info__, web
+
+if TYPE_CHECKING:
+    from tests import t
 
 
 class TestsFlextWebInit:
-    """Test suite for flext_web package initialization."""
+    """Behavior tests for flext_web package initialization."""
 
-    _WEB_SURFACE = (
-        "create_fastapi_app",
-        "create_flask_app",
-        "authenticate",
-        "register_user",
-        "create_entity",
-        "fetch_entity",
-        "list_entities",
-        "health_status",
-        "dashboard_metrics",
-        "dashboard",
-        "create_app",
-        "fetch_app",
-        "list_apps",
-        "start_app",
-        "stop_app",
-        "start_service",
-        "stop_service",
-        "initialize_routes",
-        "configure_middleware",
-        "handle_system_info",
-        "handle_health_check",
-    )
+    @staticmethod
+    def test_version_string_matches_version_info() -> None:
+        """__version__ is the dotted join of the numeric __version_info__ parts."""
+        numeric_prefix = ".".join(str(part) for part in __version_info__)
+        tm.that(__version__.startswith(numeric_prefix), eq=True)
 
-    def test_package_imports(self) -> None:
-        """Test that all main classes are importable from package."""
+    @staticmethod
+    def test_all_exports_match() -> None:
+        """__all__ is the generated contract: sorted, duplicate-free.
 
-    def test_version_exports(self) -> None:
-        """Test that version information is exported."""
-        tm.that(__version__, is_=str)
-        tm.that(__version_info__, is_=tuple)
+        Every name resolves.
 
-    def test_all_exports_match(self) -> None:
-        """Test that __all__ contains all expected exports."""
-        expected_exports = {
-            "FlextWeb",
-            "FlextWebApp",
-            "FlextWebAuth",
-            "FlextWebConstants",
-            "FlextWebEntities",
-            "FlextWebHandlers",
-            "FlextWebHealth",
-            "FlextWebModels",
-            "FlextWebProtocols",
-            "FlextWebServiceBase",
-            "FlextWebServices",
-            "FlextWebSettings",
-            "FlextWebTypes",
-            "FlextWebUtilities",
-            "__author__",
-            "__author_email__",
-            "__description__",
-            "__license__",
-            "__title__",
-            "__url__",
-            "__version__",
-            "__version_info__",
-            "c",
-            "d",
-            "e",
-            "h",
-            "m",
-            "p",
-            "r",
-            "s",
-            "settings",
-            "t",
-            "u",
-            "web",
-            "x",
-        }
+        The names themselves are a projection of what the package's modules
+        declare (ADR-018); a test never freezes a projection's values, only its
+        structure.
+        """
         module_all: t.StrSequence = getattr(flext_web, "__all__", [])
-        tm.that(set(module_all), eq=expected_exports)
+        tm.that(list(module_all), eq=sorted(set(module_all)))
+        tm.that(all(hasattr(flext_web, name) for name in module_all), eq=True)
 
-    def test_imports_are_classes_or_modules(self) -> None:
-        """Test that imported items are of correct types."""
-        tm.that(callable(flext_web.FlextWeb), eq=True)
-        tm.that(callable(flext_web.FlextWebSettings), eq=True)
-        tm.that(__version__, is_=str)
+    @staticmethod
+    def test_public_web_surface_executes() -> None:
+        """The `web` facade actually runs a real operation end to end."""
+        health = web.health_status()
+        tm.ok(health)
+        tm.that(health.value.service, eq="flext-web")
 
-    def test_web_and_aliases_define_the_public_surface(self) -> None:
-        """The package exposes the canonical `web, c, t, p, m, p, u` surface."""
-        for _name in self._WEB_SURFACE:
-            pass
+    @staticmethod
+    def test_facade_aliases_resolve_to_real_namespaces() -> None:
+        """Each alias resolves and exposes its Web namespace attribute."""
         for alias_name in ("c", "t", "p", "m", "u"):
-            getattr(flext_web, alias_name)
+            alias = getattr(flext_web, alias_name)
+            tm.that(hasattr(alias, "Web"), eq=True)

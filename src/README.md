@@ -1,7 +1,7 @@
 # flext-web source
 
-`src/flext_web` is organized around one public operational facade and five
-public structural namespaces:
+`src/flext_web` is organized around one public operational facade and five public
+structural namespaces:
 
 ```python
 from flext_web import web, c, t, p, m, p, u
@@ -9,7 +9,8 @@ from flext_web import web, c, t, p, m, p, u
 
 ## Public contract
 
-- `web`: operational entrypoint for runtime, app lifecycle, auth, entities, health, handlers, and framework factories.
+- `web`: operational entrypoint for runtime, app lifecycle, auth, entities, health,
+  handlers, and framework factories.
 - `c.Web`: constants and enums.
 - `t.Web`: public type contracts.
 - `u.Web`: public protocol contracts and runtime registries.

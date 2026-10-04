@@ -10,14 +10,11 @@ from flext_tests import FlextTestsModels
 from flext_web import FlextWebModels
 
 
-class TestsFlextWebModels(FlextTestsModels, FlextWebModels):
+class TestsFlextWebModels(FlextWebModels, FlextTestsModels):
     """Test models for flext-web."""
 
-    class Web(FlextWebModels.Web):
+    class Tests(FlextTestsModels.Tests):
         """Web domain test models."""
-
-        class Tests:
-            """Test-specific models."""
 
 
 m = TestsFlextWebModels

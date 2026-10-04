@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import ClassVar, override
 
 from flext_web import c, m, p, r, s, settings, u
+from flext_web.__version__ import __version__
 
 
 class FlextWebHandlers(s):
@@ -23,13 +24,13 @@ class FlextWebHandlers(s):
     "one class per module" architectural requirement.
     """
 
-    SystemInfo: ClassVar[type[p.Web.SystemInfo]] = m.Web.SystemInfo
-    HealthStatus: ClassVar[type[p.Web.HealthStatus]] = m.Web.HealthStatus
+    SystemInfo: ClassVar[type[m.Web.SystemInfo]] = m.Web.SystemInfo
+    HealthStatus: ClassVar[type[m.Web.HealthStatus]] = m.Web.HealthStatus
 
     @classmethod
     def handle_create_app(
-        cls, name: str, port: int = settings.Web.port, host: str = settings.Web.host
-    ) -> p.Result[p.Web.Entity]:
+        cls, name: str, port: int = settings.Web.port, host: str = settings.Web.host,
+    ) -> p.Result[m.Web.Entity]:
         """Handle application creation requests.
 
         Args:
@@ -54,10 +55,10 @@ class FlextWebHandlers(s):
             web_events=[],
             domain_events=[],
         )
-        return app.validate_business_rules().flat_map(lambda _: r[p.Web.Entity].ok(app))
+        return app.validate_business_rules().flat_map(lambda _: r[m.Web.Entity].ok(app))
 
     @classmethod
-    def handle_start_app(cls, app: p.Web.Entity) -> p.Result[p.Web.Entity]:
+    def handle_start_app(cls, app: m.Web.Entity) -> p.Result[m.Web.Entity]:
         """Handle application start requests.
 
         Args:
@@ -70,7 +71,7 @@ class FlextWebHandlers(s):
         return app.start()
 
     @classmethod
-    def handle_stop_app(cls, app: p.Web.Entity) -> p.Result[p.Web.Entity]:
+    def handle_stop_app(cls, app: m.Web.Entity) -> p.Result[m.Web.Entity]:
         """Handle application stop requests.
 
         Args:
@@ -83,14 +84,14 @@ class FlextWebHandlers(s):
         return app.stop()
 
     @classmethod
-    def handle_system_info(cls) -> p.Result[p.Web.SystemInfo]:
+    def handle_system_info(cls) -> p.Result[m.Web.SystemInfo]:
         """Handle system information requests.
 
         Returns:
         r containing detailed system information.
 
         """
-        return r[p.Web.SystemInfo].ok(
+        return r[m.Web.SystemInfo].ok(
             m.Web.SystemInfo(
                 service_name="FLEXT Web Interface",
                 service_type="web_api",
@@ -103,29 +104,29 @@ class FlextWebHandlers(s):
                     "api_endpoints",
                     "web_dashboard",
                 ],
-            )
+            ),
         )
 
     @staticmethod
-    def handle_health_check() -> p.Result[p.Web.HealthStatus]:
+    def handle_health_check() -> p.Result[m.Web.HealthStatus]:
         """Handle health check requests with system status.
 
         Returns:
         r containing health status information.
 
         """
-        return r[p.Web.HealthStatus].ok(
+        return r[m.Web.HealthStatus].ok(
             m.Web.HealthStatus(
                 status=c.Web.ResponseStatus.HEALTHY.value,
                 service=c.Web.SERVICE_NAME,
-                version="0.9.0",
+                version=__version__,
                 timestamp=u.generate_iso_timestamp(),
                 components={
                     "web_service": c.Web.ResponseStatus.OPERATIONAL.value,
                     "configuration": c.Web.MESSAGE_CONFIG_LOADED,
                     "handlers": c.Web.MESSAGE_HANDLERS_REGISTERED,
                 },
-            )
+            ),
         )
 
     @override
@@ -139,7 +140,8 @@ class FlextWebHandlers(s):
         """
         return r[bool].ok(value=True)
 
-    def validate_business_rules(self) -> p.Result[bool]:
+    @staticmethod
+    def validate_business_rules() -> p.Result[bool]:
         """Validate business rules for web handlers (s requirement).
 
         Returns:

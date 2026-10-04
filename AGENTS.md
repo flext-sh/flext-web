@@ -1,113 +1,159 @@
-# AGENTS.md — Project Pointer
+# AGENTS.md — flext-web
 
-<!-- BEGIN UNIVERSAL AGENT LAW (portable; regenerable; do not edit inside) -->
-## Universal Agent Law (portable core)
+> **Parent workspace law** lives in [`../AGENTS.md`](../AGENTS.md) — read it first.
+> Universal engineering core: `~/.agents/UNIVERSAL_CORE.md`. Composition: global
+> skills + parent/root `AGENTS.md` + this scope delta. Do not re-embed universal law.
+>
+> **Standalone / independent mode:** when `../AGENTS.md` does not resolve, pin the
+> parent raw `AGENTS.md` URL to the same branch/release as this package (never
+> `main`): <https://raw.githubusercontent.com/flext-sh/flext/0.12.0-dev/AGENTS.md>
 
-**This block is the inviolable, agent-agnostic core of engineering conduct for this repository.** It is
-self-contained: it binds any AI agent — Claude, Codex, Gemini, Cursor, Cline, GitHub Copilot, or any other —
-and any user, with or without access to the author's personal configuration. The live user's explicit
-instructions override this block; nothing else does. These rules apply to every project type and every
-session, and may not be relaxed, reinterpreted, or scoped-out for convenience, speed, or perceived triviality.
+<!-- AIHUB-AGENTS-SCOPE-LOCAL-BEGIN -->
 
-### 1. Zero-Tolerance / Strict-Total
+**Package:** `flext_web` · deps: `flext-cli`, `flext-core`
 
-- **Always** fix the root cause — generically, cleanly, via reuse of existing canonical code — and validate it
-  in the same turn with the actual command, its exit code, and the relevant output line.
-- **Always** remove superseded code in the same cycle the replacement lands. No dead code "for later".
-- **Always** fail loud when the single source of truth (identity, config, contract, version) is absent — never
-  substitute a guess, a local copy, or an alternative path.
-- **Never** use a fallback, compatibility wrapper, legacy branch, allowlist/carve-out, skip, suppression,
-  hardcode, stub, fake, `TODO`/`FIXME`, or a side-script to make a gate pass.
-- **Never** classify a failure surfaced by the current task as "pre-existing", "cosmetic", "unrelated", or
-  "acceptable legacy". If it appears in your flow, you own it.
+## Overview
 
-### 2. Fix-Forward-Only
+Modern web interface for the FLEXT platform.
 
-Multiple agents may share one working tree. Reverting to a past state silently destroys another agent's
-in-flight work. **Accept the current state and fix forward.** Discarding changes via `git checkout -- <path>`,
-`git restore`, `git reset --hard`, `git reset <path>`, `git stash` (hiding others' work), `git clean`, or
-`git revert` of another's commit is **forbidden**. If you think you must revert → **STOP and ask the user**;
-never unilaterally revert shared work.
+## Structure
 
-### 3. Root Cause Only — No Workarounds
+```text
+src/flext_web/
+├── api.py __main__.py    # FlextWeb facade (inherits FlextService)
+├── base.py utilities.py
+├── services/
+├── constants.py typings.py protocols.py models.py               # AUTO-GENERATED facets
+└── _settings.py _models/ _protocols/
+```
 
-No TODOs, stubs, fakes, fallbacks, compat wrappers, or "temporary" workarounds. No suppression directives
-(`# type: ignore`, blanket `# noqa`, `@ts-ignore`, `eslint-disable`, etc.) and no escape-hatch typing
-(`Any`, bare `object`, unchecked casts) unless carrying a one-line documented justification. A bypass that
-hides a symptom is a defect even when the gate turns green.
+## Code Map
 
-### 4. Stay In Scope
+| Symbol     | Kind  | Location | Role                                                        |
+| ---------- | ----- | -------- | ----------------------------------------------------------- |
+| `FlextWeb` | class | `api.py` | facade; inherits `FlextService` → `FlextWeb.fetch_global()` |
 
-Do exactly what the user asked — nothing more. No unrequested refactors, renames, cleanups, "obvious
-improvements", or adjacent fixes. Found something unrelated? Mention it in one sentence; do not touch it.
+## Conventions (specific to this package)
 
-### 5. Evidence Before Done — Report Honesty Is 100% Mandatory
+- Keep web behavior in the service/facade layer; treat generated declaration facets as
+  data-only.
+- Response payloads typed via `t.Web.*` aliases (never raw dict / `m.Dict`);
+  `_start_app_runtime` narrows the interface via `isinstance` guards.
+- Config/settings canonical pattern: ADR-012.
+- Codemod governance (ast-grep + make mod): ADR-014.
 
-"Done" means the **complete chain validated** with objective evidence (command + exit code + output), not
-conclusion-by-sample. **Never** present partial, assumed, speculative, or unverified results as verified.
-State explicitly when a step was skipped, when a check failed (paste the output), and when a result is
-unverified. If something only worked via a workaround, say so — it is not "done".
+## Commands
 
-### 6. Execute As Planned, Else Stop And Ask
+Run from the workspace root (selector-free; the root dispatcher routes to every
+member — `PROJECT=` is not a root Make variable):
 
-Execute the agreed plan exactly. On anything that cannot be done cleanly — a blocked tool, a missing source of
-truth, a real ambiguity, or a step that would require a bad practice — **STOP and ask**, presenting concrete
-options. **Every option must be a clean, root-cause solution.** Fallback, hack, hardcode, suppression, skip,
-or stub are **forbidden as suggestions** — never offer one, even labelled "quick" or "temporary". Any
-mid-execution deviation from the plan requires explicit user confirmation **before** applying.
+```bash
+make check
+make test
+```
 
-### 7. Blocked-Operation Protocol
+<!-- AIHUB-AGENTS-SCOPE-LOCAL-END -->
 
-When a tool, command, or edit is blocked (deny rule, security hook, sandbox, missing permission, unavailable
-integration): (1) **Stop** — do not retry a variation or seek a bypass; (2) **diagnose in one sentence** what
-was blocked and why; (3) **hand the exact command or edit to the user** to run on their side; (4) **wait for
-their output** before continuing; (5) **never claim done because a substitute ran** — a successful bypass is
-still a violation. Forbidden bypass techniques include `bash -c`/`sh -c` subshell wrapping, `eval`/`exec`,
-`env <blocked>`, `xargs <blocked>`, absolute-path swaps to dodge prefix deny rules, pipes/command-chains into a
-blocked command, and invoking it via a `subprocess` call.
+<!-- AIHUB-GOVERNANCE-INSTRUCTIONS-BEGIN -->
+<!-- AIHUB-GOVERNANCE-CAPSULE v1 sha256:5888ee9f8147f63364a4f7cd6906e9d837f58cb8a8546844760c526ecb1a303b -->
 
-### 8. Strict, Most-Restrictive Typing
+# Generated session governance capsule
 
-Use the most restrictive type that compiles. No `Any`, no bare `object`, no suppression of type errors. Fix
-types at the source; depend on declared contracts, not loosely-typed escape hatches.
+This projection is derived by `agentsctl sync`; edit canonical `AGENTS.md`, `rules/`,
+`skills/`, or `commands/`, never this output. The operator's newest request has
+precedence. Provider hooks are delivery mechanisms, not policy owners.
 
-### 9. Universal Engineering Principles (always, no exception)
+## Rule `architecture/engineering-core`
 
-- **SSOT** — one authoritative source per fact; reference it, never duplicate or restate it; fail loud when
-  absent.
-- **SOLID** — SRP / OCP / LSP / ISP / DIP respected. Type-switching where polymorphism applies, fat
-  interfaces, and god-objects are defects.
-- **YAGNI** — no speculative params, dead branches, future-hooks, or single-implementation abstractions.
-  Build only what the task needs now; delete the rest.
-- **DI / DIP** — depend on abstractions (protocols/interfaces); inject collaborators; no hidden globals or
-  hard-wired construction inside business logic.
+# Engineering core
 
-### 10. Land Scoped Work Immediately
+For every implementation:
 
-After scoped green validation, run `git add`/`commit`/fast-forward `push` for the active bead lane using explicit pathspecs. The operator grants durable authorization for normal scoped landing; never leave verified work only in the working tree. Write commits as the user with no agent/bot attribution — no `Co-Authored-By`, no "Generated with …" trailer, and never override author/committer identity. Escalate only destructive, non-fast-forward, history-rewrite, rollback, tag, or cross-lane ambiguity.
+1. Research repository owners, dependencies, and canonical documentation.
+2. Remove scope without a current requirement or consumer (YAGNI).
+3. Elect one writable authority; every other copy is a generated projection (SSOT).
+4. Apply SOLID only to a responsibility or dependency boundary under change.
+5. Implement through the owner and simplify without weakening behavior.
+6. Remove duplication and god components; recheck YAGNI, SSOT, SOLID.
+7. Exercise runtime behavior, run every applicable native gate, and complete the
+   approved landing cycle before changing phase.
 
-### 11. Multi-Agent Coordination
+At a cross-boundary failure, prove the producer contract and output. Fix its owner when
+invalid or the receiver when it conforms. Never alter a correct adjacent owner for an
+invalid consumer; symptom workarounds are defects.
 
-Agents may share one working tree. Coordinate through a committed task board (e.g.
-`<repo>/.agents/coordination/tasks.md`): claim a task with an ownership + lease entry before editing, heartbeat
-the lease, set `done`/`blocked` on finish, and recover stale tasks from git history. Commit small and often so
-a fresh agent rebuilds state from `git log`. **Never overwrite or discard another agent's work** (see Rule 2);
-on a divergent approach, stop and escalate to the user.
+Hardcodes, normalized failure, failover, retry, fallback, compatibility, partial
+execution, keyring, and unevidenced success are defects. Typed owners keep defaults. The
+first exception escapes its CLI with traceback and cause.
 
-### 12. When Unsure — Ask
+Git, runtime, build, and tests are baseline. Auxiliary tracking is a capability.
+Auxiliary capabilities apply only when authorized and selected; installation never
+selects. Do not load, probe, or gate dormant capabilities. Invalid selected
+authorization, configuration, readiness, or result fails without fallback. Require only
+non-derivable values.
 
-If a task is unclear, ambiguous, or would expand scope → ask one focused question. If an action is hard to
-reverse, affects shared state, or could surprise the user → confirm first. Normal scoped Git landing has durable operator authorization after validation. Confirm only destructive, non-fast-forward, cross-lane, or ambiguous actions.
+An external token validation without its token is not executed and is recorded as
+`NOT EXECUTED`, never green; it does not block offline gates, landing, or post-merge
+proof. Direct invocation selects it: the token becomes required and any failure escapes
+without skip, catch, fallback, or normalization.
 
-### 13. Destructive Commands — Archive, Don't Destroy
+Compose with `generalized ownership` (rule file), `strict execution` (rule file),
+`runtime evidence` (rule file), `storage isolation` (rule file), `security closure`
+(rule file).
 
-Prefer non-destructive moves: archive a file as `<file>.bak` instead of deleting it. Do not escalate privileges (`sudo`/`su`), change ownership/permissions, force-push, rewrite history, tag releases, or fetch arbitrary network resources without explicit user confirmation. Normal scoped fast-forward push after validation is required by Rule 10. Use the agent's structured file/search/edit tools over raw destructive
-shell commands.
-<!-- END UNIVERSAL AGENT LAW -->
+## Rule `coordination/operator-precedence`
 
-Canonical source: [../AGENTS.md](../AGENTS.md).
+# Newest operator instruction wins; adjust artifacts to it
 
-- Read and follow [../AGENTS.md](../AGENTS.md) first.
-- Load scoped rules only from [../.agents/skills/](../.agents/skills/).
-- Never use fallback instruction paths.
-- Keep this file pointer-only and concise.
+Authority order: operator request > declared orchestration contract > canonical
+tracker > ADRs > skills > docs, and newest supersedes oldest. On conflict, adjust the
+lower or older artifact to match; never override the operator to satisfy stale guidance.
+
+While orchestration and tracker runtimes are suspended, do not invoke them. Create no
+substitute tracker or ledger, preserve implementation evidence only in separately
+authorized Git/PR/CI, and leave phase closure open.
+
+Exact operator authorization naming targets, disposition, recovery, and validation
+survives interruption, divergence, and red gates; re-preflight and continue. Ask only
+when the effect expands beyond it or two evidenced current intentions conflict. State
+alone proves no intention, actor, or process.
+
+## Rule `ethics/professional-integrity`
+
+# Professional integrity is absolute
+
+Never lie, fabricate evidence, hide a blocker, bypass a gate, or patch a symptom only to
+make a check pass. Fix the generalized root cause with full context and report exact
+command, working directory, exit code and decisive output.
+
+## Rule `runtime/strict-execution`
+
+# Strict execution is universal and non-optional
+
+Every project and projected agent applies all of these policies together:
+
+- `fail loud` (rule file);
+- `no fallback` (rule file);
+- `preflight before effects` (rule file);
+- `required environment` (rule file);
+- `atomic effects` (rule file);
+- `causal subprocess propagation` (rule file);
+- `no keyring` (rule file);
+- `zero residue` (rule file).
+
+The policies are cumulative. A project rule may make them narrower or reject more
+inputs; it cannot relax, catch, normalize, skip, defer, or route around any of them.
+Existing opposing behavior is a blocking violation to exterminate at its owner, never
+grandfathered compatibility.
+
+Resolve gate applicability before invocation. A dormant external-token gate is not
+executed; selecting or invoking it applies every policy above.
+
+## Capability indexes
+
+Skills: caveman, context-canary, fix-forward-collaboration, governance-audit,
+operator-correction-learning, plan-focus-recovery, sprint-closure, strategic-compact,
+verification-loop Commands: add-language-rules, database-migration, feature-development,
+ghi-list, pr-list, ralph-loop, security-triage, synthesize-governance
+
+<!-- AIHUB-GOVERNANCE-INSTRUCTIONS-END -->

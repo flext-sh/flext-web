@@ -1,49 +1,25 @@
-"""Integration tests for the canonical flext-web examples."""
+"""Integration tests for the canonical flext-web examples.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
-from types import ModuleType
+from typing import TYPE_CHECKING
 
-import pytest
+from flext_tests import tm
 
-from flext_tests import r, tm
-from flext_web import FlextWebUtilities, web
-from tests import p, t, u
+from flext_web import web
 
-logger = u.fetch_logger(__name__)
+if TYPE_CHECKING:
+    from types import ModuleType
 
 
 class ExamplesFullFunctionalityTest:
     """Shared example assertions exercised through collected subclasses."""
-
-    @pytest.fixture
-    def _mock_runtime_lifecycle(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        def _start_runtime(
-            app_id: str,
-            app_data: t.Web.ResponseDict,
-            app_instance: p.Web.FastApiLikeApp | p.Web.FlaskLikeApp,
-        ) -> p.Result[t.Web.ResponseDict]:
-            _ = (app_data, app_instance)
-            return r[t.Web.ResponseDict].ok({"runner": "mock", "app_id": app_id})
-
-        def _stop_runtime(app_id: str, runtime: t.Web.ResponseDict) -> p.Result[bool]:
-            _ = (app_id, runtime)
-            return r[bool].ok(True)
-
-        monkeypatch.setattr(
-            FlextWebUtilities.Web, "_start_app_runtime", staticmethod(_start_runtime)
-        )
-        monkeypatch.setattr(
-            FlextWebUtilities.Web, "_stop_app_runtime", staticmethod(_stop_runtime)
-        )
-        monkeypatch.setattr(
-            FlextWebUtilities.Web, "start_app_runtime", staticmethod(_start_runtime)
-        )
-        monkeypatch.setattr(
-            FlextWebUtilities.Web, "stop_app_runtime", staticmethod(_stop_runtime)
-        )
 
     @staticmethod
     def _example_path(file_name: str) -> Path:
@@ -81,42 +57,43 @@ class ExamplesFullFunctionalityTest:
 
     def test_basic_service_example_exposes_main(self) -> None:
         """The basic service example stays importable and runnable."""
-        module = self._load_example_module("01_basic_service.py", "basic_service")
-        tm.that(callable(module.main), eq=True)
+        module = self._load_example_module("basic_service.py", "basic_service")
+        tm.that(callable(module.FlextWebExamples().main), eq=True)
 
     def test_api_usage_example_uses_the_public_facade(self) -> None:
         """The API usage example delegates lifecycle operations to `web`."""
-        module = self._load_example_module("02_api_usage.py", "api_usage")
+        module = self._load_example_module("api_usage.py", "api_usage")
+        example = module.FlextWebExamples()
 
-        health_result = module.check_service_health()
+        health_result = example.check_service_health()
         tm.ok(health_result)
         tm.that(health_result.value.service, eq="flext-web")
 
-        create_result = module.create_application("example-app", 8191)
+        create_result = example.create_application("example-app", 8191)
         tm.ok(create_result)
 
-        start_result = module.start_application(create_result.value.id)
+        start_result = example.start_application(create_result.value.id)
         tm.ok(start_result)
         tm.that(start_result.value.running, eq=True)
 
-        get_result = module.fetch_application_status(create_result.value.id)
+        get_result = example.fetch_application_status(create_result.value.id)
         tm.ok(get_result)
         tm.that(get_result.value.id, eq=create_result.value.id)
 
-        list_result = module.list_applications()
+        list_result = example.list_applications()
         tm.ok(list_result)
         tm.that(
-            any(app.id == create_result.value.id for app in list_result.value), eq=True
+            any(app.id == create_result.value.id for app in list_result.value), eq=True,
         )
 
-        stop_result = module.stop_application(create_result.value.id)
+        stop_result = example.stop_application(create_result.value.id)
         tm.ok(stop_result)
         tm.that(stop_result.value.running, eq=False)
 
     def test_api_usage_demo_runs_full_lifecycle(self) -> None:
         """The lifecycle demo returns the projected applications after execution."""
-        module = self._load_example_module("02_api_usage.py", "api_usage_demo")
-        demo_result = module.demo_application_lifecycle()
+        module = self._load_example_module("api_usage.py", "api_usage_demo")
+        demo_result = module.FlextWebExamples().demo_application_lifecycle()
         tm.ok(demo_result)
         tm.that(demo_result.value, length=2)
         tm.that(all(app.running is False for app in demo_result.value), eq=True)
@@ -124,8 +101,3 @@ class ExamplesFullFunctionalityTest:
 
 class TestsFlextWebExamples(ExamplesFullFunctionalityTest):
     """Collected integration tests for canonical examples."""
-
-
-def main() -> int:
-    """Provide the module entry point kept for the generated test exports."""
-    return 0
