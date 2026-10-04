@@ -222,23 +222,25 @@ class FlextWebModelsEntity:
             self,
             event_type: str,
             data: m.ConfigMap | t.MappingKV[str, t.JsonPayload | None] | None = None,
-        ) -> p.Result[m.Entry]:
+        ) -> p.Result[m.DomainEvent]:
             """Create and buffer a domain event for this web application entity.
 
             Returns:
-                The resulting ``p.Result[m.Entry]``.
+                The resulting ``p.Result[m.DomainEvent]``.
             """
             if not event_type.strip():
-                return r[m.Entry].fail("Domain event name must be a non-empty string")
+                return r[m.DomainEvent].fail(
+                    "Domain event name must be a non-empty string",
+                )
             if event_type.isdigit():
-                return r[m.Entry].fail("Domain event name cannot be numeric-only")
+                return r[m.DomainEvent].fail("Domain event name cannot be numeric-only")
             entry = u.add_domain_event(
                 self,
                 event_type=event_type,
                 data=data,
                 aggregate_id=self.id,
             )
-            return r[m.Entry].ok(entry)
+            return r[m.DomainEvent].ok(entry)
 
         def health_status(self) -> t.ConfigurationMapping:
             """Get comprehensive health status.

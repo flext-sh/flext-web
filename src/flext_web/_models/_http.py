@@ -6,16 +6,14 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated
+from datetime import datetime
+from typing import Annotated
 
 from flext_cli import m, u
 
 from flext_core import r
 from flext_web import c, p, t
 from flext_web._models._base import FlextWebModelsBase
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 
 class FlextWebModelsHttp:
