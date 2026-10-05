@@ -10,7 +10,7 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core import build_lazy_import_map, install_lazy_exports
+from flext_core import install_lazy_exports
 from flext_web.__version__ import (
     __author__,
     __author_email__,
@@ -89,32 +89,43 @@ __all__: tuple[str, ...] = (
     "x",
 )
 
-_LAZY_IMPORTS = MappingProxyType(
-    build_lazy_import_map(
-        MappingProxyType({
-            "._config": ("FlextWebConfig", "config"),
-            "._settings": ("FlextWebSettings", "settings"),
-            ".api": ("FlextWeb", "web"),
-            ".base": ("FlextWebServiceBase", "s"),
-            ".cli": ("FlextWebCli", "main"),
-            ".constants": ("FlextWebConstants", "c"),
-            ".models": ("FlextWebModels", "m"),
-            ".protocols": ("FlextWebProtocols", "p"),
-            ".services": ("services",),
-            ".services.app": ("FlextWebApp",),
-            ".services.auth": ("FlextWebAuth",),
-            ".services.entities": ("FlextWebEntities",),
-            ".services.handlers": ("FlextWebHandlers",),
-            ".services.health": ("FlextWebHealth",),
-            ".services.monitoring": ("FlextWebMonitoring",),
-            ".services.web": ("FlextWebServices",),
-            ".typings": ("FlextWebTypes", "t"),
-            ".utilities": ("FlextWebUtilities", "u"),
-            "flext_cli": ("d", "e", "h", "r", "x"),
-        }),
-        alias_groups=MappingProxyType({}),
-        sort_keys=False,
-    ),
+install_lazy_exports(
+    __name__,
+    globals(),
+    MappingProxyType({
+        "FlextWeb": ".api",
+        "FlextWebApp": ".services.app",
+        "FlextWebAuth": ".services.auth",
+        "FlextWebCli": ".cli",
+        "FlextWebConfig": "._config",
+        "FlextWebConstants": ".constants",
+        "FlextWebEntities": ".services.entities",
+        "FlextWebHandlers": ".services.handlers",
+        "FlextWebHealth": ".services.health",
+        "FlextWebModels": ".models",
+        "FlextWebMonitoring": ".services.monitoring",
+        "FlextWebProtocols": ".protocols",
+        "FlextWebServiceBase": ".base",
+        "FlextWebServices": ".services.web",
+        "FlextWebSettings": "._settings",
+        "FlextWebTypes": ".typings",
+        "FlextWebUtilities": ".utilities",
+        "c": ".constants",
+        "config": "._config",
+        "d": "flext_cli",
+        "e": "flext_cli",
+        "h": "flext_cli",
+        "m": ".models",
+        "main": ".cli",
+        "p": ".protocols",
+        "r": "flext_cli",
+        "s": ".base",
+        "services": ".services",
+        "settings": "._settings",
+        "t": ".typings",
+        "u": ".utilities",
+        "web": ".api",
+        "x": "flext_cli",
+    }),
+    public_exports=__all__,
 )
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
