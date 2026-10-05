@@ -10,7 +10,7 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core import build_lazy_import_map, install_lazy_exports
+from flext_core import install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_web._models._auth import FlextWebModelsAuth
@@ -36,22 +36,19 @@ __all__: tuple[str, ...] = (
     "FlextWebModelsWebRequest",
 )
 
-_LAZY_IMPORTS = MappingProxyType(
-    build_lazy_import_map(
-        MappingProxyType({
-            "._auth": ("FlextWebModelsAuth",),
-            "._base": ("FlextWebModelsBase",),
-            "._config": ("FlextWebModelsConfig",),
-            "._entity": ("FlextWebModelsEntity",),
-            "._http": ("FlextWebModelsHttp",),
-            "._responses": ("FlextWebModelsResponses",),
-            "._system": ("FlextWebModelsSystem",),
-            "._web_message": ("FlextWebModelsWebMessage",),
-            "._web_request": ("FlextWebModelsWebRequest",),
-        }),
-        alias_groups=MappingProxyType({}),
-        sort_keys=False,
-    ),
+install_lazy_exports(
+    __name__,
+    globals(),
+    MappingProxyType({
+        "FlextWebModelsAuth": "._auth",
+        "FlextWebModelsBase": "._base",
+        "FlextWebModelsConfig": "._config",
+        "FlextWebModelsEntity": "._entity",
+        "FlextWebModelsHttp": "._http",
+        "FlextWebModelsResponses": "._responses",
+        "FlextWebModelsSystem": "._system",
+        "FlextWebModelsWebMessage": "._web_message",
+        "FlextWebModelsWebRequest": "._web_request",
+    }),
+    public_exports=__all__,
 )
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)

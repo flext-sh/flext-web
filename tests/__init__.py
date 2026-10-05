@@ -10,7 +10,7 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core import build_lazy_import_map, install_lazy_exports
+from flext_core import install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_tests import api, td, tf, tk, tm
@@ -55,25 +55,36 @@ __all__: tuple[str, ...] = (
     "x",
 )
 
-_LAZY_IMPORTS = MappingProxyType(
-    build_lazy_import_map(
-        MappingProxyType({
-            ".base": ("TestsFlextWebServiceBase", "s"),
-            ".constants": ("TestsFlextWebConstants", "c"),
-            ".fixtures": ("fixtures",),
-            ".integration": ("integration",),
-            ".models": ("TestsFlextWebModels", "m"),
-            ".protocols": ("TestsFlextWebProtocols", "p"),
-            ".settings": ("TestsFlextWebSettings",),
-            ".typings": ("TestsFlextWebTypes", "t"),
-            ".unit": ("unit",),
-            ".utilities": ("TestsFlextWebUtilities", "u"),
-            "flext_tests": ("api", "td", "tf", "tk", "tm"),
-            "flext_web": ("d", "e", "h", "r", "x"),
-        }),
-        alias_groups=MappingProxyType({}),
-        sort_keys=False,
-    ),
+install_lazy_exports(
+    __name__,
+    globals(),
+    MappingProxyType({
+        "TestsFlextWebConstants": ".constants",
+        "TestsFlextWebModels": ".models",
+        "TestsFlextWebProtocols": ".protocols",
+        "TestsFlextWebServiceBase": ".base",
+        "TestsFlextWebSettings": ".settings",
+        "TestsFlextWebTypes": ".typings",
+        "TestsFlextWebUtilities": ".utilities",
+        "api": "flext_tests",
+        "c": ".constants",
+        "d": "flext_web",
+        "e": "flext_web",
+        "fixtures": ".fixtures",
+        "h": "flext_web",
+        "integration": ".integration",
+        "m": ".models",
+        "p": ".protocols",
+        "r": "flext_web",
+        "s": ".base",
+        "t": ".typings",
+        "td": "flext_tests",
+        "tf": "flext_tests",
+        "tk": "flext_tests",
+        "tm": "flext_tests",
+        "u": ".utilities",
+        "unit": ".unit",
+        "x": "flext_web",
+    }),
+    public_exports=__all__,
 )
-
-install_lazy_exports(__name__, globals(), _LAZY_IMPORTS, public_exports=__all__)
