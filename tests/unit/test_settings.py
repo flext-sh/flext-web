@@ -9,8 +9,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-
 from flext_tests import tm
+
 from flext_web import FlextWebSettings, c, u
 
 if TYPE_CHECKING:
@@ -114,7 +114,8 @@ class TestsFlextWebSettings:
     def test_clone_applies_namespaced_overrides() -> None:
         """Clone applies validated overrides inside the Web namespace."""
         settings = FlextWebSettings().clone(
-            Web={"host": "127.0.0.1", "port": 9090, "secret_key": "a" * 32}, debug=True,
+            Web={"host": "127.0.0.1", "port": 9090, "secret_key": "a" * 32},
+            debug=True,
         )
         tm.that(settings.Web.host, eq="127.0.0.1")
         tm.that(settings.Web.port, eq=9090)

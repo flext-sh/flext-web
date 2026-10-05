@@ -29,10 +29,12 @@ class FlextWebCli:
             cli_u.Field(default=None, description="Bind port (overrides settings)."),
         ] = None
         debug: Annotated[
-            bool, cli_u.Field(default=False, description="Enable debug mode."),
+            bool,
+            cli_u.Field(default=False, description="Enable debug mode."),
         ] = False
         no_debug: Annotated[
-            bool, cli_u.Field(default=False, description="Force disable debug mode."),
+            bool,
+            cli_u.Field(default=False, description="Force disable debug mode."),
         ] = False
 
         @override
@@ -71,7 +73,8 @@ class FlextWebCli:
             The resulting ``cli_p.Cli.Application``.
         """
         app = cli.create_app_with_common_params(
-            name="flext-web", help_text="flext-web HTTP service launcher.",
+            name="flext-web",
+            help_text="flext-web HTTP service launcher.",
         )
         cli.register_result_routes(
             app,

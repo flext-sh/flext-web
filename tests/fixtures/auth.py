@@ -36,7 +36,8 @@ class TestsFlextWebAuthFixture:
             )
             raise RuntimeError(msg)
         self.credentials = m.Web.Credentials(
-            username=auth_username, password=auth_password,
+            username=auth_username,
+            password=auth_password,
         )
         self.rejected_username = f"{auth_username}-rejected"
 

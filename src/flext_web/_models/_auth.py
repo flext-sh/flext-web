@@ -28,7 +28,8 @@ class FlextWebModelsAuth:
         username: Annotated[str, u.Field(min_length=1, description="Username")]
         email: Annotated[str, u.Field(min_length=1, description="Email address")]
         password: Annotated[
-            str, u.Field(description="Password (empty string if not provided)"),
+            str,
+            u.Field(description="Password (empty string if not provided)"),
         ] = ""
 
     class AppData(m.Value):

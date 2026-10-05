@@ -64,7 +64,8 @@ class FlextWebModelsConfig:
         debug: Annotated[bool, u.Field(description="FastAPI debug mode")] = False
         testing: Annotated[bool, u.Field(description="FastAPI testing mode")] = False
         middlewares: Annotated[
-            t.StrSequence, u.Field(description="List of middleware objects"),
+            t.StrSequence,
+            u.Field(description="List of middleware objects"),
         ] = u.Field(default_factory=list)
         docs_url: Annotated[str, u.Field(description="Documentation URL")] = (
             c.Web.API_DOCS_URL

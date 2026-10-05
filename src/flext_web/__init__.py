@@ -39,7 +39,8 @@ if TYPE_CHECKING:
     from flext_web.services.entities import FlextWebEntities
     from flext_web.services.handlers import FlextWebHandlers
     from flext_web.services.health import FlextWebHealth
-    from flext_web.services.web import FlextWebMonitoring, FlextWebServices
+    from flext_web.services.monitoring import FlextWebMonitoring
+    from flext_web.services.web import FlextWebServices
     from flext_web.typings import FlextWebTypes, t
     from flext_web.utilities import FlextWebUtilities, u
 
@@ -105,7 +106,8 @@ _LAZY_IMPORTS = MappingProxyType(
             ".services.entities": ("FlextWebEntities",),
             ".services.handlers": ("FlextWebHandlers",),
             ".services.health": ("FlextWebHealth",),
-            ".services.web": ("FlextWebMonitoring", "FlextWebServices"),
+            ".services.monitoring": ("FlextWebMonitoring",),
+            ".services.web": ("FlextWebServices",),
             ".typings": ("FlextWebTypes", "t"),
             ".utilities": ("FlextWebUtilities", "u"),
             "flext_cli": ("d", "e", "h", "r", "x"),
