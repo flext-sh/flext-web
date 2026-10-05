@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_tests import FlextTestsServiceBase
+from flext_tests import s as tests_s
 
 from flext_web import m
 from tests import TestsFlextWebSettings
 
 
-class TestsFlextWebServiceBase(FlextTestsServiceBase):
+class TestsFlextWebServiceBase(tests_s):
     """Web test service base with source and test settings namespaces."""
 
     # NOTE (multi-agent): flext-tests owns fetch_settings; this project

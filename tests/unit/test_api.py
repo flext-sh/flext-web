@@ -26,8 +26,7 @@ class TestsFlextWebApi:
     def test_settings_factory_success() -> None:
         """Validated settings can be built through the settings class."""
         settings = web.settings.clone(
-            Web={"host": "localhost", "port": 8080},
-            debug=True,
+            Web={"host": "localhost", "port": 8080}, debug=True,
         )
         tm.that(settings.Web.host, eq="localhost")
         tm.that(settings.Web.port, eq=8080)

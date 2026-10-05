@@ -136,10 +136,7 @@ class TestsFlextWebAppModelsUnit:
         app = m.Web.Entity(id="test-id", name="test-app", host="localhost", port=8080)
         tm.that(app.url, eq="http://localhost:8080")
         app_https = m.Web.Entity(
-            id="test-id",
-            name="test-app",
-            host="localhost",
-            port=443,
+            id="test-id", name="test-app", host="localhost", port=443,
         )
         tm.that(app_https.url, eq="https://localhost:443")
 
@@ -157,10 +154,7 @@ class TestsFlextWebAppModelsUnit:
     def test_web_app_string_representation() -> None:
         """Test WebApp string representation."""
         app = m.Web.Entity(
-            id="test-id",
-            name="test-app",
-            host="localhost",
-            port=8080,
+            id="test-id", name="test-app", host="localhost", port=8080,
             status="running",
         )
         tm.that(str(app), has="test-app")
@@ -193,11 +187,7 @@ class TestsFlextWebAppModelsUnit:
         ],
     )
     def test_application_parametrized_creation(
-        *,
-        name: str,
-        host: str,
-        port: int,
-        should_succeed: bool,
+        *, name: str, host: str, port: int, should_succeed: bool,
     ) -> None:
         """Test application creation with parametrized edge cases."""
         try:
@@ -262,10 +252,7 @@ class TestsFlextWebAppModelsUnit:
         for dangerous_name in dangerous_patterns:
             with pytest.raises(m.ValidationError):
                 _ = m.Web.Entity(
-                    id="test-id",
-                    name=dangerous_name,
-                    host="localhost",
-                    port=8080,
+                    id="test-id", name=dangerous_name, host="localhost", port=8080,
                 )
 
 
@@ -316,9 +303,7 @@ class TestsFlextWebHttpModelsUnit:
         )
         tm.that(request_with_body.has_body is True, eq=True)
         request_without_body = m.Web.Request(
-            url="http://localhost:8080",
-            method=c.Web.Method.GET,
-            body=None,
+            url="http://localhost:8080", method=c.Web.Method.GET, body=None,
         )
         tm.that(request_without_body.has_body is False, eq=True)
 
@@ -326,13 +311,11 @@ class TestsFlextWebHttpModelsUnit:
     def test_http_request_secure_property() -> None:
         """Test Web.Request secure property."""
         https_request = m.Web.Request(
-            url="https://localhost:8080",
-            method=c.Web.Method.GET,
+            url="https://localhost:8080", method=c.Web.Method.GET,
         )
         tm.that(https_request.secure is True, eq=True)
         http_request = m.Web.Request(
-            url="http://localhost:8080",
-            method=c.Web.Method.GET,
+            url="http://localhost:8080", method=c.Web.Method.GET,
         )
         tm.that(http_request.secure is False, eq=True)
 
@@ -356,8 +339,6 @@ class TestsFlextWebHttpModelsUnit:
     def test_web_response_processing_time_seconds() -> None:
         """Test Web.AppResponse processing_time_seconds property."""
         response = m.Web.AppResponse(
-            status_code=200,
-            request_id="test-123",
-            processing_time_ms=1500.0,
+            status_code=200, request_id="test-123", processing_time_ms=1500.0,
         )
         tm.that(abs(response.processing_time_seconds - 1.5), lt=1e-9)

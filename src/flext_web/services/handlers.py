@@ -29,10 +29,7 @@ class FlextWebHandlers(s):
 
     @classmethod
     def handle_create_app(
-        cls,
-        name: str,
-        port: int = settings.Web.port,
-        host: str = settings.Web.host,
+        cls, name: str, port: int = settings.Web.port, host: str = settings.Web.host,
     ) -> p.Result[m.Web.Entity]:
         """Handle application creation requests.
 
