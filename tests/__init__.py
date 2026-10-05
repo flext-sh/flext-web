@@ -11,10 +11,10 @@ from flext_core.lazy import build_lazy_import_map, install_lazy_exports
 if TYPE_CHECKING:
     from flext_tests import api, td, tf, tk, tm, tv
 
-    from flext_web import d, e, h, r, s, x
+    from flext_web import d, e, h, r, x
 
     from . import fixtures, integration, unit
-    from .base import TestsFlextWebServiceBase
+    from .base import TestsFlextWebServiceBase, TestsFlextWebServiceBase as s
     from .constants import TestsFlextWebConstants, TestsFlextWebConstants as c
     from .models import TestsFlextWebModels, TestsFlextWebModels as m
     from .protocols import TestsFlextWebProtocols, TestsFlextWebProtocols as p
@@ -56,7 +56,7 @@ __all__: tuple[str, ...] = (
 _LAZY_IMPORTS = MappingProxyType(
     build_lazy_import_map(
         MappingProxyType({
-            ".base": ("TestsFlextWebServiceBase",),
+            ".base": ("TestsFlextWebServiceBase", "s"),
             ".constants": ("TestsFlextWebConstants", "c"),
             ".fixtures": ("fixtures",),
             ".integration": ("integration",),
@@ -67,7 +67,7 @@ _LAZY_IMPORTS = MappingProxyType(
             ".unit": ("unit",),
             ".utilities": ("TestsFlextWebUtilities", "u"),
             "flext_tests": ("api", "td", "tf", "tk", "tm", "tv"),
-            "flext_web": ("d", "e", "h", "r", "s", "x"),
+            "flext_web": ("d", "e", "h", "r", "x"),
         }),
         alias_groups=MappingProxyType({}),
         sort_keys=False,
