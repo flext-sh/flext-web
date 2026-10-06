@@ -99,7 +99,8 @@ class FlextWebApp(s):
 
     @staticmethod
     def _configure_fastapi_endpoints(
-        app: FastAPI, settings: m.Web.FastAPIAppConfig,
+        app: FastAPI,
+        settings: m.Web.FastAPIAppConfig,
     ) -> FastAPI:
         """Configure FastAPI endpoints.
 
@@ -169,7 +170,8 @@ class FlextWebApp(s):
         return result
 
     def create_flask_app(
-        self, settings: FlextWebSettings | None = None,
+        self,
+        settings: FlextWebSettings | None = None,
     ) -> p.Result[flask.Flask]:
         """Create Flask app with flext-core integration and configuration.
 
@@ -209,7 +211,8 @@ class FlextWebApp(s):
         app.add_url_rule("/health", "health_check", health_check)
 
         self.logger.info(
-            "Flask application created", app_name=web_settings.Web.app_name,
+            "Flask application created",
+            app_name=web_settings.Web.app_name,
         )
         return r[flask.Flask].ok(app)
 

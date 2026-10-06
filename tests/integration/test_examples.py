@@ -83,7 +83,8 @@ class ExamplesFullFunctionalityTest:
         list_result = example.list_applications()
         tm.ok(list_result)
         tm.that(
-            any(app.id == create_result.value.id for app in list_result.value), eq=True,
+            any(app.id == create_result.value.id for app in list_result.value),
+            eq=True,
         )
 
         stop_result = example.stop_application(create_result.value.id)

@@ -30,10 +30,12 @@ class FlextWebCli:
             cli_u.Field(default=None, description="Bind port (overrides settings)."),
         ] = None
         debug: Annotated[
-            bool, cli_u.Field(default=False, description="Enable debug mode."),
+            bool,
+            cli_u.Field(default=False, description="Enable debug mode."),
         ] = False
         no_debug: Annotated[
-            bool, cli_u.Field(default=False, description="Force disable debug mode."),
+            bool,
+            cli_u.Field(default=False, description="Force disable debug mode."),
         ] = False
 
         @override
@@ -74,10 +76,14 @@ class FlextWebCli:
                 port=web_settings.Web.port,
                 log_level=web_settings.log_level.lower(),
                 ssl_keyfile=(
-                    web_settings.Web.ssl_key_path if web_settings.Web.ssl_enabled else None
+                    web_settings.Web.ssl_key_path
+                    if web_settings.Web.ssl_enabled
+                    else None
                 ),
                 ssl_certfile=(
-                    web_settings.Web.ssl_cert_path if web_settings.Web.ssl_enabled else None
+                    web_settings.Web.ssl_cert_path
+                    if web_settings.Web.ssl_enabled
+                    else None
                 ),
             )
             return service_result.value.stop_service()
@@ -90,7 +96,8 @@ class FlextWebCli:
             The resulting ``cli_p.Cli.Application``.
         """
         app = cli.create_app_with_common_params(
-            name="flext-web", help_text="flext-web HTTP service launcher.",
+            name="flext-web",
+            help_text="flext-web HTTP service launcher.",
         )
         cli.register_result_routes(
             app,

@@ -100,7 +100,10 @@ class FlextWebUtilitiesWeb:
 
         @classmethod
         def create_app(
-            cls, name: str, port: int, host: str,
+            cls,
+            name: str,
+            port: int,
+            host: str,
         ) -> p.Result[t.Web.ResponseDict]:
             """Register a stopped application and return its payload.
 
@@ -203,7 +206,8 @@ class FlextWebUtilitiesWeb:
 
         @classmethod
         def find_by_criteria(
-            cls, criteria: t.Web.RequestDict,
+            cls,
+            criteria: t.Web.RequestDict,
         ) -> p.Result[Sequence[t.Web.ResponseDict]]:
             """Return payloads matching every requested criterion."""
             matched = [
@@ -237,7 +241,8 @@ class FlextWebUtilitiesWeb:
 
         @staticmethod
         def record_web_request(
-            request: t.Web.RequestDict, response_time: float,
+            request: t.Web.RequestDict,
+            response_time: float,
         ) -> None:
             """Record one request observation in the shared metrics registry."""
             metrics = FlextWebUtilitiesWeb.web_metrics
