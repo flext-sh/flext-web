@@ -2,6 +2,13 @@
 
 <!-- TOC START -->
 
+- [Canonical Access](#canonical-access)
+- [Settings Model](#settings-model)
+- [Validation](#validation)
+- [Environment Variables](#environment-variables)
+- [Service Bootstrap](#service-bootstrap)
+- [Operational Rules](#operational-rules)
+
 <!-- TOC END -->
 
 `flext-web` exposes its validated singleton directly through the package root:
@@ -11,6 +18,7 @@ from flext_web import settings
 
 host = settings.Web.host
 ```
+
 ## Canonical Access
 
 Use `settings.Web` for live values and construct `FlextWebSettings` at an
@@ -30,6 +38,7 @@ assert (
     == "http://127.0.0.1:8080"
 )
 ```
+
 ## Settings Model
 
 The canonical model is `FlextWebSettings(FlextSettings)` and it is registered
@@ -65,10 +74,11 @@ runtime_settings = FlextWebSettings(
         "host": "localhost",
         "port": 8080,
         "secret_key": "development-secret-key-32-characters-long",
-    }
+    },
 )
 assert u.Web.validate_settings(runtime_settings).unwrap()
 ```
+
 Invalid values fail during boundary validation:
 
 ```python
@@ -81,7 +91,8 @@ try:
 except ValidationError:
     pass
 else:
-    raise AssertionError("invalid web settings must fail validation")
+    msg = "invalid web settings must fail validation"
+    raise AssertionError(msg)
 ```
 
 ## Environment Variables
@@ -109,7 +120,6 @@ from flext_web import FlextWebSettings, web
 
 runtime_settings = FlextWebSettings(
     Web={
-        "host": "0.0.0.0",
         "port": 8080,
         "secret_key": "production-secret-key-32-characters-long",
     },
@@ -123,6 +133,7 @@ start_result = web.start_service(
 )
 assert start_result.success
 ```
+
 ## Operational Rules
 
 - Do not create parallel settings helpers outside `FlextWebSettings`.
@@ -130,4 +141,3 @@ assert start_result.success
   or `validate_config`.
 - Read the direct `settings.Web` singleton and validate explicit overrides with
   `FlextWebSettings`.
-
