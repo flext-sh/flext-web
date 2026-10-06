@@ -1,4 +1,3 @@
-# Copyright (c) 2026 FLEXT. All rights reserved.
 # Copyright 2026 FLEXT
 """Publish a Mise lock with its native sidecars from one physical stage.
 
@@ -557,7 +556,7 @@ class MiseLockTransaction:
     def _recover_prior_stages(cls, project: Path, stage: Path) -> None:
         """Settle every earlier publication before this one starts."""
         for prior in sorted(project.parent.glob(f".{project.name}.mise-lock-stage.*")):
-            if prior != stage:
+            if prior != stage and cls._read_journal(prior) is not None:
                 cls.recover(project, prior)
         for retired in sorted(
             project.parent.glob(f".{project.name}.mise-lock-cleanup.*"),

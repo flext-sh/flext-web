@@ -91,7 +91,7 @@ class FlextWebSettings(FlextCliSettings):
         ]
 
     if TYPE_CHECKING:
-        Web: _Web
+        Web: _Web = _Web()
     else:
         Web: _Web = m.Field(
             default_factory=_Web,

@@ -51,7 +51,7 @@ class FlextWebModelsEntity:
             ),
         ]
 
-        @u.field_validator("name", mode="before")
+        @m.field_validator("name", mode="before")
         @classmethod
         def validate_name(cls, v: str) -> str:
             """Validate application name.
@@ -103,7 +103,7 @@ class FlextWebModelsEntity:
             u.Field(description="Current application status"),
         ] = c.Web.Status.STOPPED.value
 
-        @u.field_validator("status", mode="before")
+        @m.field_validator("status", mode="before")
         @classmethod
         def validate_status(cls, v: str) -> str:
             """Validate application status against allowed values from constants.
@@ -133,6 +133,12 @@ class FlextWebModelsEntity:
         web_events: Annotated[
             MutableSequence[str],
             u.Field(description="Web-specific events (application lifecycle)"),
+        ] = u.Field(default_factory=list)
+        # Assignment form is required so type checkers see the inherited
+        # ``domain_events`` default (the core declares it Annotated-only).
+        domain_events: Annotated[
+            MutableSequence[m.DomainEvent],
+            u.Field(description="Uncommitted domain events for event sourcing"),
         ] = u.Field(default_factory=list)
 
         @override
@@ -222,23 +228,23 @@ class FlextWebModelsEntity:
             self,
             event_type: str,
             data: m.ConfigMap | t.MappingKV[str, t.JsonPayload | None] | None = None,
-        ) -> p.Result[m.Entry]:
+        ) -> p.Result[m.DomainEvent]:
             """Create and buffer a domain event for this web application entity.
 
             Returns:
-                The resulting ``p.Result[m.Entry]``.
+                The resulting ``p.Result[m.DomainEvent]``.
             """
             if not event_type.strip():
-                return r[m.Entry].fail("Domain event name must be a non-empty string")
+                return r[m.DomainEvent].fail("Domain event name must be a non-empty string")
             if event_type.isdigit():
-                return r[m.Entry].fail("Domain event name cannot be numeric-only")
+                return r[m.DomainEvent].fail("Domain event name cannot be numeric-only")
             entry = u.add_domain_event(
                 self,
                 event_type=event_type,
                 data=data,
                 aggregate_id=self.id,
             )
-            return r[m.Entry].ok(entry)
+            return r[m.DomainEvent].ok(entry)
 
         def health_status(self) -> t.ConfigurationMapping:
             """Get comprehensive health status.

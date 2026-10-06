@@ -12,11 +12,10 @@ from __future__ import annotations
 
 from typing import Annotated, Self
 
-from flext_cli import FlextCliConfig
+from flext_cli import FlextCliConfig, m
 
 from flext_core import FlextSettings
-from flext_web import m
-from flext_web._models._web_namespace import WebNamespace
+from flext_web._models import WebNamespace
 
 
 class FlextWebConfig(FlextSettings, FlextCliConfig):
@@ -32,13 +31,17 @@ class FlextWebConfig(FlextSettings, FlextCliConfig):
     # The inherited pydantic ``__init__`` still runs the frozen, YAML-validated
     # construction, and the inherited pydantic ``__setattr__`` keeps the frozen
     # guard.
-    def __new__(cls, *args: object, **kwargs: object) -> Self:
-        _ = args, kwargs
+    def __new__(cls, **kwargs: object) -> Self:
+        _ = kwargs
         return object.__new__(cls)
 
-    __eq__ = object.__eq__
+    def __eq__(self, other: object) -> bool:
+        """Identity equality for the frozen config singleton."""
+        return object.__eq__(self, other)
 
-    __hash__ = object.__hash__
+    def __hash__(self) -> int:
+        """Identity hash for the frozen config singleton."""
+        return object.__hash__(self)
 
     Web: Annotated[
         WebNamespace,
