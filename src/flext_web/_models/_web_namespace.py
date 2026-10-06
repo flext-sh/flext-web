@@ -1,3 +1,10 @@
+"""Web namespace module.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+src/flext_web/_models/_web_namespace
+SPDX-License-Identifier: MIT
+"""
+
 from __future__ import annotations
 
 from flext_web import m
