@@ -24,26 +24,23 @@ class FlextWebHealth(s):
         return r[bool].ok(value=True)
 
     @staticmethod
-    def metrics() -> p.Result[m.Web.MetricsResponse]:
+    def dashboard_metrics() -> p.Result[m.Web.MetricsResponse]:
         """Return metrics projected from the protocol runtime registry."""
         metrics = u.Web.WebMonitoring.web_metrics()
-        state = u.Web.service_state
-        service_status = (
-            c.Web.ResponseStatus.OPERATIONAL.value
-            if state["service_running"]
-            else c.Web.Status.STOPPED.value
-        )
         components = list(metrics.keys()) or [
             "requests",
             "errors",
             "avg_response_time_ms",
         ]
         return r[m.Web.MetricsResponse].ok(
-            m.Web.MetricsResponse(service_status=service_status, components=components),
+            m.Web.MetricsResponse(
+                service_status=FlextWebHealth.service_status_label(),
+                components=components,
+            ),
         )
 
     @staticmethod
-    def status() -> p.Result[m.Web.HealthResponse]:
+    def health_status() -> p.Result[m.Web.HealthResponse]:
         """Return health status from the protocol runtime registry."""
         payload = u.Web.WebMonitoring.web_health_status()
         service_value = payload.get("service")
@@ -61,13 +58,13 @@ class FlextWebHealth(s):
         )
 
     @staticmethod
-    def validate_business_rules() -> p.Result[bool]:
-        """Validate health namespace invariants.
-
-        Returns:
-            The resulting ``p.Result[bool]``.
-        """
-        return r[bool].ok(value=True)
+    def service_status_label() -> str:
+        """Return the canonical service status label from runtime state."""
+        if u.Web.service_state["service_running"]:
+            operational_label: str = c.Web.ResponseStatus.OPERATIONAL.value
+            return operational_label
+        stopped_label: str = c.Web.Status.STOPPED.value
+        return stopped_label
 
 
 __all__: list[str] = ["FlextWebHealth"]

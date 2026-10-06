@@ -80,14 +80,5 @@ class FlextWebAuth(s):
         )
         return r[m.Web.UserResponse].ok(user_response)
 
-    @staticmethod
-    def validate_business_rules() -> p.Result[bool]:
-        """Validate auth namespace invariants.
-
-        Returns:
-            The resulting ``p.Result[bool]``.
-        """
-        return r[bool].ok(value=True)
-
 
 __all__: list[str] = ["FlextWebAuth"]
