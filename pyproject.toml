@@ -170,7 +170,6 @@ include = ["/src/flext_web/**"]
 mypy_path = ["src"]
 plugins = ["pydantic.mypy"]
 disable_error_code = ["prop-decorator", "call-arg", "attr-defined"]
-disable_error_code = ["prop-decorator", "call-arg", "attr-defined"]
 python_version = "3.13"
 allow_redefinition = true
 check_untyped_defs = true
@@ -328,7 +327,6 @@ extraPaths = ["src", "."]
 pythonPlatform = "Linux"
 pythonVersion = "3.13"
 reportCallIssue = "none"
-reportCallIssue = "none"
 reportConstantRedefinition = "error"
 reportIncompatibleMethodOverride = "error"
 reportInconsistentConstructor = "error"
@@ -350,9 +348,6 @@ extraPaths = ["src"]
 reportPrivateUsage = "error"
 
 [[tool.pyright.executionEnvironments]]
-root = "tests"
-extraPaths = [".", "src"]
-reportPrivateUsage = "error"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -385,7 +380,6 @@ markers = [
   "discovery: catalog and stream discovery tests",
   "singer: Singer protocol contract tests",
   "requires_engine: native check engine required by this test",
-  "requires_engine: native check engine required by this test",
 ]
 minversion = "8.0"
 python_classes = ["Test*"]
@@ -416,16 +410,10 @@ extend-safe-fixes = [
   "relative-imports",
   "typing-only-first-party-import",
 ]
-extend-safe-fixes = [
-  "camelcase-imported-as-lowercase",
-  "relative-imports",
-  "typing-only-first-party-import",
-]
 ignore = [
   "camelcase-imported-as-lowercase",
   "implicit-namespace-package",
   "missing-required-import",
-  "runtime-import-in-type-checking-block",
   "runtime-import-in-type-checking-block",
   "typing-only-first-party-import",
   "typing-only-standard-library-import",
@@ -509,21 +497,12 @@ split-on-trailing-comma = false
 "**/framework.py" = ["banned-api", "import-outside-top-level"]
 "**/pptx.py" = ["import-outside-top-level"]
 "**/test_public_contracts_cov.py" = ["line-too-long"]
-"**/__init__.py" = ["line-too-long", "non-empty-init-module", "unused-import"]
-"**/_config.py" = ["invalid-function-name"]
-"**/docx.py" = ["import-outside-top-level"]
-"**/file_test_helpers.py" = ["line-too-long"]
-"**/flextcliutilitiesfiletesthelpersmixin_part_03.py" = ["line-too-long"]
-"**/framework.py" = ["banned-api", "import-outside-top-level"]
-"**/pptx.py" = ["import-outside-top-level"]
-"**/test_public_contracts_cov.py" = ["line-too-long"]
 "**/tests/python/**" = [
   "raise-vanilla-args",
   "start-process-with-partial-path",
   "subprocess-without-shell-equals-true",
   "suspicious-subprocess-import",
 ]
-"**/xlsx.py" = ["import-outside-top-level"]
 "**/xlsx.py" = ["import-outside-top-level"]
 "scripts/**" = [
   "any-type",
