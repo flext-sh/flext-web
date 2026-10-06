@@ -41,4 +41,8 @@ class FlextWebModels(FlextCliModels):
 
 m = FlextWebModels
 
-__all__: t.MutableSequenceOf[str] = ["FlextWebModels", "FlextWebModelsWebNamespace", "m"]
+__all__: t.MutableSequenceOf[str] = [
+    "FlextWebModels",
+    "FlextWebModelsWebNamespace",
+    "m",
+]

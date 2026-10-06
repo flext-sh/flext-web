@@ -34,8 +34,8 @@ __all__: tuple[str, ...] = (
     "FlextWebModelsResponses",
     "FlextWebModelsSystem",
     "FlextWebModelsWebMessage",
-    "FlextWebModelsWebRequest",
     "FlextWebModelsWebNamespace",
+    "FlextWebModelsWebRequest",
 )
 
 install_lazy_exports(
@@ -43,15 +43,15 @@ install_lazy_exports(
     globals(),
     MappingProxyType({
         "FlextWebModelsAuth": "._auth",
-        "FlextWebModelsBase": "._base",
+        "FlextWebModelsBase": ".base",
         "FlextWebModelsConfig": "._config",
         "FlextWebModelsEntity": "._entity",
         "FlextWebModelsHttp": "._http",
         "FlextWebModelsResponses": "._responses",
         "FlextWebModelsSystem": "._system",
         "FlextWebModelsWebMessage": "._web_message",
-        "FlextWebModelsWebRequest": "._web_request",
         "FlextWebModelsWebNamespace": "._web_namespace",
+        "FlextWebModelsWebRequest": "._web_request",
     }),
     public_exports=__all__,
 )

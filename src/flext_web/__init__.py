@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from flext_web.base import FlextWebServiceBase, s
     from flext_web.cli import FlextWebCli, main
     from flext_web.constants import FlextWebConstants, c
-    from flext_web.models import FlextWebModels, m
+    from flext_web.models import FlextWebModels, FlextWebModelsWebNamespace, m
     from flext_web.protocols import FlextWebProtocols, p
     from flext_web.services.app import FlextWebApp
     from flext_web.services.auth import FlextWebAuth
@@ -56,6 +56,7 @@ __all__: tuple[str, ...] = (
     "FlextWebHandlers",
     "FlextWebHealth",
     "FlextWebModels",
+    "FlextWebModelsWebNamespace",
     "FlextWebMonitoring",
     "FlextWebProtocols",
     "FlextWebServiceBase",
@@ -103,6 +104,7 @@ install_lazy_exports(
         "FlextWebHandlers": ".services.handlers",
         "FlextWebHealth": ".services.health",
         "FlextWebModels": ".models",
+        "FlextWebModelsWebNamespace": ".models",
         "FlextWebMonitoring": ".services.monitoring",
         "FlextWebProtocols": ".protocols",
         "FlextWebServiceBase": ".base",
