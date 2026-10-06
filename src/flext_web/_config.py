@@ -12,15 +12,11 @@ from __future__ import annotations
 
 from typing import Annotated, Self
 
-from flext_cli import FlextCliConfig, m
+from flext_cli import FlextCliConfig
 
+import flext_web._models._web_namespace
 from flext_core import FlextSettings
-
-
-class _WebNamespace(m.BaseModel):
-    """Open, frozen namespace exposing every ``config/*.yaml`` domain model-less."""
-
-    model_config = m.ConfigDict(extra="allow", frozen=True)
+from flext_web import m
 
 
 class FlextWebConfig(FlextSettings, FlextCliConfig):
@@ -45,9 +41,9 @@ class FlextWebConfig(FlextSettings, FlextCliConfig):
     __hash__ = object.__hash__
 
     Web: Annotated[
-        _WebNamespace,
+        flext_web._models._web_namespace._WebNamespace,
         m.Field(description="Open namespace exposing ``config/*.yaml`` under ``Web``."),
-    ] = _WebNamespace()
+    ] = flext_web._models._web_namespace._WebNamespace()
 
 
 config: FlextWebConfig = FlextWebConfig.fetch_global()

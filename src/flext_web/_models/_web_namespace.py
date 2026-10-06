@@ -1,0 +1,16 @@
+"""Web namespace module.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+src/flext_web/_models/_web_namespace
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
+
+from flext_web import m
+
+
+class _WebNamespace(m.BaseModel):
+    """Open, frozen namespace exposing every ``config/*.yaml`` domain model-less."""
+
+    model_config = m.ConfigDict(extra="allow", frozen=True)
