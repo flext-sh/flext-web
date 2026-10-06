@@ -456,6 +456,7 @@ runtime-evaluated-base-classes = [
   "flext_web._models._http.FlextWebModelsHttp.Request",
   "flext_web._models._http.FlextWebModelsHttp.Response",
   "flext_web._models._http.Message",
+  "flext_web.m.BaseModel",
   "flext_web.s",
   "flext_web.services.app.FlextWebApp",
   "flext_web.services.auth.FlextWebAuth",
