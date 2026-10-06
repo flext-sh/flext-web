@@ -461,6 +461,7 @@ mise_exec() { \
 'MISE_LOCKED=true' \
 'MISE_MINIMUM_RELEASE_AGE=7d' \
 'MISE_NPM_PACKAGE_MANAGER=bun' \
+'MISE_NPM_PACKAGE_MANAGER=bun' \
 $${mise_lockfile_platforms:+"MISE_LOCKFILE_PLATFORMS=$$mise_lockfile_platforms"} \
 "HOME=$$scratch/home" \
 "USERPROFILE=$$scratch/home" \
@@ -722,6 +723,7 @@ mise_exec() { \
 'MISE_LOCKED=true' \
 'MISE_MINIMUM_RELEASE_AGE=7d' \
 'MISE_NPM_PACKAGE_MANAGER=bun' \
+'MISE_NPM_PACKAGE_MANAGER=bun' \
 $${mise_lockfile_platforms:+"MISE_LOCKFILE_PLATFORMS=$$mise_lockfile_platforms"} \
 "HOME=$$scratch/home" \
 "USERPROFILE=$$scratch/home" \
@@ -789,6 +791,7 @@ $${mise_config_argument:+"$$mise_config_argument"} \
 		else mise_status=$$?; cat "$$mise_log"; printf 'setup probe: failed stage=%s exit=%s\n' "$${mise_log##*/}" "$$mise_status" >&2; return "$$mise_status"; fi; \
 		cat "$$mise_log"; \
 		if mise_has_blocking_warning "$$mise_log"; then \
+		if mise_has_blocking_warning "$$mise_log"; then \
 			printf 'ERROR: Mise emitted a warning; setup stopped (see %s)\n' "$$mise_log" >&2; return 2; \
 		fi; \
 		printf 'setup probe: end stage=%s exit=0\n' "$${mise_log##*/}" >&2; \
@@ -798,6 +801,7 @@ $${mise_config_argument:+"$$mise_config_argument"} \
 		if "$$@" >"$$mise_stdout_log" 2>"$$mise_stderr_log"; then :; \
 		else mise_status=$$?; cat "$$mise_stderr_log" >&2; cat "$$mise_stdout_log"; return "$$mise_status"; fi; \
 		cat "$$mise_stderr_log" >&2; cat "$$mise_stdout_log"; \
+		if mise_has_blocking_warning "$$mise_stderr_log" || mise_has_blocking_warning "$$mise_stdout_log"; then \
 		if mise_has_blocking_warning "$$mise_stderr_log" || mise_has_blocking_warning "$$mise_stdout_log"; then \
 			printf 'ERROR: Mise emitted a warning; setup stopped (see %s)\n' "$$mise_stderr_log" >&2; return 2; \
 		fi; \
@@ -922,6 +926,8 @@ mise_receipt launcher-version "$$lock_stage/artifacts/bin/mise"; \
 	else \
 		# Setup consumes the declared lock policy in one install. An invalid \
 		# lock stops here with its original cause; only make upg repairs it. \
+		# Setup consumes the declared lock policy in one install. An invalid \
+		# lock stops here with its original cause; only make upg repairs it. \
 		mise_checked "$$scratch/install.log" mise_exec project "$$pinned_mise" -C "$$project_root" install --yes; \
 	fi; \
 	mise_checked_stdout "$$scratch/ast-grep-version.stdout" "$$scratch/ast-grep-version.stderr" mise_offline project "$$pinned_mise" -C "$$project_root" exec -- ast-grep --version; \
@@ -954,7 +960,14 @@ mise_receipt launcher-version "$$lock_stage/artifacts/bin/mise"; \
 	# A restored tool cache keeps the shims bound to the Mise release that built \
 	# them, and Mise never replaces a shim bound to another binary, so CI rebuilds \
 	# the farm from the pinned release before publishing it. \
+	# A restored tool cache keeps the shims bound to the Mise release that built \
+	# them, and Mise never replaces a shim bound to another binary, so CI rebuilds \
+	# the farm from the pinned release before publishing it. \
 	if [ -n "$${GITHUB_PATH:-}" ]; then \
+shim_farm="$$mise_storage_root/shims"; \
+		rm -rf "$$shim_farm"; \
+		mise_checked "$$scratch/reshim.log" mise_offline project "$$pinned_mise" -C "$$project_root" reshim; \
+		printf '%s\n' "$$shim_farm" >> "$$GITHUB_PATH"; \
 shim_farm="$$mise_storage_root/shims"; \
 		rm -rf "$$shim_farm"; \
 		mise_checked "$$scratch/reshim.log" mise_offline project "$$pinned_mise" -C "$$project_root" reshim; \
@@ -963,8 +976,11 @@ fi; \
 	printf 'setup: entering lifecycle (submodules, environment, hooks) make=%s\n' "$(SELF_MAKE_EXECUTABLE)"; \
 	scratch_present=0; if [ -d "$$scratch" ]; then scratch_present=1; fi; \
 	printf 'mise scratch: before lifecycle path=%s present=%s\n' "$$scratch" "$$scratch_present" >&2; \
+	scratch_present=0; if [ -d "$$scratch" ]; then scratch_present=1; fi; \
+	printf 'mise scratch: before lifecycle path=%s present=%s\n' "$$scratch" "$$scratch_present" >&2; \
 	mise_runtime_path="$$mise_storage_root/bootstrap/mise-$${runtime_release}"; \
 	if [ "$(OS)" = "Windows_NT" ]; then mise_runtime_path="$$mise_runtime_path.exe"; fi; \
+	if env \
 	if env \
 "MISE_DATA_DIR=$$mise_storage_root" \
 "MISE_CACHE_DIR=$$mise_storage_root/cache" \
@@ -982,6 +998,12 @@ fi; \
 		"SETUP_DIRENV=$$direnv_executable" \
 		"SETUP_PYTHON=$$python_executable" \
 		"SETUP_DIRENV_XDG_DATA_HOME=$$caller_xdg_data_home" \
+		"CI=$(CI)" $(SELF_MAKE) $(TOOL_BOOTSTRAP_LIFECYCLE); then lifecycle_status=0; \
+	else lifecycle_status=$$?; fi; \
+	scratch_present=0; if [ -d "$$scratch" ]; then scratch_present=1; fi; \
+	if printf 'mise scratch: after lifecycle path=%s present=%s status=%s\n' "$$scratch" "$$scratch_present" "$$lifecycle_status" >&2; then :; \
+	else lifecycle_diagnostic_status=$$?; if [ "$$lifecycle_status" -eq 0 ]; then lifecycle_status=$$lifecycle_diagnostic_status; fi; fi; \
+	exit "$$lifecycle_status"
 		"CI=$(CI)" $(SELF_MAKE) $(TOOL_BOOTSTRAP_LIFECYCLE); then lifecycle_status=0; \
 	else lifecycle_status=$$?; fi; \
 	scratch_present=0; if [ -d "$$scratch" ]; then scratch_present=1; fi; \
@@ -1127,6 +1149,13 @@ endef
 
 .PHONY: $(PUBLIC_VERBS) $(addprefix _builtin-,$(PUBLIC_VERBS))
 .PHONY: _builtin_gen_init _builtin_gen_all
+
+# OPTIONS=Y (or HELP=Y) displays a built-in verb's contract without effects:
+# no prerequisite, hook or handler of that verb runs. A script verb keeps its
+# entry, and the promoted dispatcher renders its contract per WHAT.
+VERB_CONTRACT := $(filter 1 TRUE Y YES true y yes True Yes,$(OPTIONS) $(HELP))
+ifeq ($(VERB_CONTRACT),)
+$(filter-out help clean upg,$(BUILTIN_VERBS)): _builtin_require_mise_pin
 
 # OPTIONS=Y (or HELP=Y) displays a built-in verb's contract without effects:
 # no prerequisite, hook or handler of that verb runs. A script verb keeps its
@@ -1766,6 +1795,8 @@ _builtin-help:
 
 	@printf '  %-16s %s\n' 'file-gate' 'Run the fast per-file gates (ruff check, ruff format --check, pyrefly, pyright, ast-grep scan, typos) on FILE=<repository-relative path>; empty FILE fails loud.';
 
+	@printf '  %-16s %s\n' 'file-gate' 'Run the fast per-file gates (ruff check, ruff format --check, pyrefly, pyright, ast-grep scan, typos) on FILE=<repository-relative path>; empty FILE fails loud.';
+
 	@printf '  %-16s %s\n' 'profile-test' 'Profile the canonical pytest entry and its collection children on the same persistent testmon database, without the outer bounded-gate wrapper.';
 
 	@printf '  %-16s %s\n' 'profile-test-report' 'Render the parent pytest profile and the aggregated child profiles from that run.';
@@ -1835,6 +1866,10 @@ _builtin-help:
 #       VERIFIES an established checkout. An initial clone has no physical index,
 #       no worktree content, and only its clone reflog entry. Established work
 #       is never destroyed: git checkout, git reset,
+# Rule: setup PROVISIONS an absent or proven unfinished initial clone and
+#       VERIFIES an established checkout. An initial clone has no physical index,
+#       no worktree content, and only its clone reflog entry. Established work
+#       is never destroyed: git checkout, git reset,
 #       fetch, and branch attachment are forbidden. Pin validity is HEAD contains
 #       gitlink. Declared branch is the named integration line;
 #       legacy branch=. still resolves to the superproject named branch if present.
@@ -1850,6 +1885,8 @@ _builtin-help:
 # init uses. Setup's contract is the recorded commit, and a full history
 # cannot finish inside submodule_timeout_seconds when the object database
 # is large.
+# Derive the physical index from its Git directory: --git-path resolves
+# a final symlink and cannot prove that the index entry itself is absent.
 # Derive the physical index from its Git directory: --git-path resolves
 # a final symlink and cannot prove that the index entry itself is absent.
 _builtin_setup_submodules:
@@ -1885,6 +1922,10 @@ _builtin_setup_submodules:
 	fi; \
 	managed=$$(printf '%s' "$$managed" | tr ' ' '\n' | sort -u | tr '\n' ' '); \
 	if [ -z "$$managed" ]; then exit 0; fi; \
+	if [ "$${GIT_INDEX_FILE+x}" = x ]; then \
+		printf 'ERROR: submodule setup cannot authenticate a relocated Git index\n' >&2; \
+		exit 2; \
+	fi; \
 	if [ "$${GIT_INDEX_FILE+x}" = x ]; then \
 		printf 'ERROR: submodule setup cannot authenticate a relocated Git index\n' >&2; \
 		exit 2; \
@@ -1942,12 +1983,64 @@ _builtin_setup_submodules:
 		fi; \
 		printf 'setup: resuming unfinished initial clone: %s\n' "$$path"; \
 		absent="$$absent $$path"; \
+		child="$$root/$$path"; \
+		if [ ! -e "$$child/.git" ]; then \
+			absent="$$absent $$path"; \
+			continue; \
+		fi; \
+		owner=$$(git -C "$$child" rev-parse --show-superproject-working-tree); \
+		checkout_root=$$(git -C "$$child" rev-parse --show-toplevel); \
+		if [ "$$owner" != "$$root" ] || [ "$$checkout_root" != "$$child" ]; then \
+			printf 'ERROR: %s: checkout identity does not match the governed child\n' "$$path" >&2; \
+			exit 2; \
+		fi; \
+		git_dir=$$(git -C "$$child" rev-parse --absolute-git-dir); \
+		index="$$git_dir/index"; \
+		if [ -e "$$index" ] || [ -L "$$index" ]; then continue; fi; \
+		content=$$(git -C "$$child" ls-files --others --directory); \
+		reflog=$$(git -C "$$child" reflog show --format=%gs HEAD); \
+		initial=$$(git -C "$$child" reflog show --format=%gs -1 HEAD); \
+		if [ -n "$$content" ] || [ "$$reflog" != "$$initial" ]; then \
+			printf 'ERROR: %s: missing index with unproven initial-clone state; preserve and review\n' "$$path" >&2; \
+			exit 2; \
+		fi; \
+		case "$$initial" in \
+			'clone: from '*) ;; \
+			*) printf 'ERROR: %s: missing index without initial clone receipt\n' "$$path" >&2; exit 2 ;; \
+		esac; \
+		local_refs=$$(git -C "$$child" for-each-ref --format='%(refname)' refs/heads refs/stash); \
+		if active_ref=$$(git -C "$$child" symbolic-ref -q HEAD); then \
+			:; \
+		else \
+			ref_status=$$?; \
+			[ "$$ref_status" -eq 1 ] || exit "$$ref_status"; \
+		fi; \
+		if [ "$$local_refs" != "$$active_ref" ]; then \
+			printf 'ERROR: %s: missing index with local branch or stash work; preserve and review\n' "$$path" >&2; \
+			exit 2; \
+		fi; \
+		entry=$$(git -C "$$root" ls-files --stage -- "$$path"); \
+		set -- $$entry; \
+		if [ "$$#" -ne 4 ] || [ "$$1" != 160000 ] || [ "$$3" != 0 ] || [ "$$4" != "$$path" ]; then \
+			printf 'ERROR: governed path is not a gitlink: %s\n' "$$path" >&2; \
+			exit 2; \
+		fi; \
+		head=$$(git -C "$$child" rev-parse HEAD); \
+		if [ "$$head" = "$$2" ]; then \
+			printf 'setup: materializing unfinished initial clone at recorded pin: %s\n' "$$path"; \
+			GIT_TERMINAL_PROMPT=0 timeout --signal=TERM --kill-after=5s "120s" \
+				git -C "$$child" -c submodule.recurse=false checkout --detach --no-overwrite-ignore "$$head"; \
+			continue; \
+		fi; \
+		printf 'setup: resuming unfinished initial clone: %s\n' "$$path"; \
+		absent="$$absent $$path"; \
 	done; \
 	if [ -n "$$absent" ]; then \
 		credential_helper='!f() { if [ "$$1" = get ]; then printf "username=x-access-token\npassword=%s\n" "$$GITHUB_TOKEN"; fi; }; f'; \
 		GIT_TERMINAL_PROMPT=0 timeout --signal=TERM --kill-after=5s "120s" \
 			git -C "$$root" -c credential.helper= \
 			-c "credential.https://$${GH_HOST:-github.com}.helper=$$credential_helper" \
+			submodule update --init --checkout --depth 1 --jobs "$${FLEXT_SUBMODULE_JOBS:-8}" -- $$absent; \
 			submodule update --init --checkout --depth 1 --jobs "$${FLEXT_SUBMODULE_JOBS:-8}" -- $$absent; \
 	fi; \
 	validate_submodule() { \
@@ -2198,6 +2291,7 @@ _builtin_build_artifacts:
 _builtin_check_all: _builtin_require_environment
 	@set -eu; \
 		gates="lint,security,markdown,markdown-format,duplication,pyrefly,mypy,pyright,loc-cap,runtime-census,fresh-import,index-declarations,codemod,layout,direnv"; \
+		gates="lint,security,markdown,markdown-format,duplication,pyrefly,mypy,pyright,loc-cap,runtime-census,fresh-import,index-declarations,codemod,layout,direnv"; \
 		if [ "$(strip $(CI))" = "Y" ]; then \
 			gates="lint,security,markdown,markdown-format,duplication,loc-cap,runtime-census,fresh-import,index-declarations,layout,direnv"; \
 			printf 'INFO: CI=Y runs check gates: lint security markdown markdown-format duplication loc-cap runtime-census fresh-import index-declarations layout direnv\n'; \
@@ -2205,6 +2299,7 @@ _builtin_check_all: _builtin_require_environment
 			gates="pyrefly,mypy,pyright,codemod"; \
 			printf 'INFO: CI=N runs check gates: pyrefly mypy pyright codemod\n'; \
 		else \
+			printf 'INFO: default context runs check gates: lint security markdown markdown-format duplication pyrefly mypy pyright loc-cap runtime-census fresh-import index-declarations codemod layout direnv\n'; \
 			printf 'INFO: default context runs check gates: lint security markdown markdown-format duplication pyrefly mypy pyright loc-cap runtime-census fresh-import index-declarations codemod layout direnv\n'; \
 		fi; \
 		if [ -z "$$gates" ]; then \
@@ -2220,6 +2315,16 @@ case "$$database" in /*) ;; *) printf 'ERROR: persistent testmon database requir
 case "$$database" in "$(PROJECT_ROOT)"/*) printf 'ERROR: persistent testmon database must be outside the checkout: %s\n' "$$database" >&2; exit 2 ;; esac; \
 case "$$database" in "$${TMPDIR:-/tmp}"/*|/tmp/*) printf 'ERROR: persistent testmon database must not live under the temporary directory: %s\n' "$$database" >&2; exit 2 ;; esac; \
 mkdir -p "$$(dirname "$$database")"; \
+project_root="$(PROJECT_ROOT)"; \
+project_parent="$${project_root%/*}"; \
+if [ -z "$$project_parent" ]; then project_parent=/; fi; \
+scratch="$$(mktemp -d "$$project_parent/.$${project_root##*/}.pytest-scratch.XXXXXX")"; \
+trap 'find "$$scratch" -depth -delete' EXIT; \
+mkdir -p "$$scratch/tmp"; \
+scratch_tmp="$$(cd "$$scratch/tmp" && pwd -P)"; \
+TMPDIR="$$scratch_tmp"; TMP="$$scratch_tmp"; TEMP="$$scratch_tmp"; \
+export TMPDIR TMP TEMP; \
+TESTMON_DATAFILE="$$database" $(PYTEST_BOUNDED) $(PROJECT_TOOL_EXEC) $(UV_RUN) python -m flext_infra._pytest_entry
 project_root="$(PROJECT_ROOT)"; \
 project_parent="$${project_root%/*}"; \
 if [ -z "$$project_parent" ]; then project_parent=/; fi; \
@@ -2247,6 +2352,15 @@ mkdir -p "$$scratch/tmp"; \
 scratch_tmp="$$(cd "$$scratch/tmp" && pwd -P)"; \
 TMPDIR="$$scratch_tmp"; TMP="$$scratch_tmp"; TEMP="$$scratch_tmp"; \
 export TMPDIR TMP TEMP; \
+project_root="$(PROJECT_ROOT)"; \
+project_parent="$${project_root%/*}"; \
+if [ -z "$$project_parent" ]; then project_parent=/; fi; \
+scratch="$$(mktemp -d "$$project_parent/.$${project_root##*/}.pytest-scratch.XXXXXX")"; \
+trap 'find "$$scratch" -depth -delete' EXIT; \
+mkdir -p "$$scratch/tmp"; \
+scratch_tmp="$$(cd "$$scratch/tmp" && pwd -P)"; \
+TMPDIR="$$scratch_tmp"; TMP="$$scratch_tmp"; TEMP="$$scratch_tmp"; \
+export TMPDIR TMP TEMP; \
 TESTMON_DATAFILE="$$database" $(PYTEST_BOUNDED) $(PROJECT_TOOL_EXEC) $(UV_RUN) python -m flext_infra._pytest_entry full; \
 TESTMON_DATAFILE="$$database" $(PYTEST_BOUNDED) $(PROJECT_TOOL_EXEC) $(UV_RUN) python -m flext_infra._pytest_entry full-slow
 
@@ -2260,6 +2374,44 @@ case "$$database" in /*) ;; *) printf 'ERROR: persistent testmon database requir
 case "$$database" in "$(PROJECT_ROOT)"/*) printf 'ERROR: persistent testmon database must be outside the checkout: %s\n' "$$database" >&2; exit 2 ;; esac; \
 case "$$database" in "$${TMPDIR:-/tmp}"/*|/tmp/*) printf 'ERROR: persistent testmon database must not live under the temporary directory: %s\n' "$$database" >&2; exit 2 ;; esac; \
 mkdir -p "$$(dirname "$$database")"; \
+project_root="$(PROJECT_ROOT)"; \
+project_parent="$${project_root%/*}"; \
+if [ -z "$$project_parent" ]; then project_parent=/; fi; \
+scratch="$$(mktemp -d "$$project_parent/.$${project_root##*/}.pytest-scratch.XXXXXX")"; \
+trap 'find "$$scratch" -depth -delete' EXIT; \
+mkdir -p "$$scratch/tmp"; \
+scratch_tmp="$$(cd "$$scratch/tmp" && pwd -P)"; \
+TMPDIR="$$scratch_tmp"; TMP="$$scratch_tmp"; TEMP="$$scratch_tmp"; \
+export TMPDIR TMP TEMP; \
+export FLEXT_PYTEST_TARGET_FILE="$(FILE)"; TESTMON_DATAFILE="$$database" $(PYTEST_BOUNDED) $(PROJECT_TOOL_EXEC) $(UV_RUN) python -m flext_infra._pytest_entry file
+
+# The fast per-file pre-gate (operator P0, val2026100417xx): `make file-gate
+# FILE=<repository-relative path>` gates exactly one file with the fast gates
+# (ruff lint, ruff format, pyrefly, pyright, ast-grep, typos) before the file
+# ever reaches the tree-wide `make mod`/`make check` pipeline. Ruff lint and
+# format are the hard gates; the type and spelling scanners report advisories.
+# Empty or non-relative FILE fails loud. This pre-gate never substitutes the
+# tree-wide verbs: code is accepted only after `make mod`, with fmt/fix/check/
+# mod/spells green (ADR-004 §3, ADR-018).
+_builtin_file_gate_all: _builtin_require_environment
+	@set -eu; \
+	if [ -z "$(strip $(FILE))" ]; then printf 'ERROR: file-gate requires FILE=<repository-relative path>\n' >&2; exit 2; fi; \
+	case "$(FILE)" in /*|*..*) printf 'ERROR: FILE must stay a repository-relative path: %s\n' "$(FILE)" >&2; exit 2 ;; esac; \
+	if [ ! -f "$(PROJECT_ROOT)/$(FILE)" ]; then printf 'ERROR: FILE is not an existing repository file: %s\n' "$(FILE)" >&2; exit 2; fi; \
+	file="$(PROJECT_ROOT)/$(FILE)"; \
+	echo "file-gate: ruff check $(FILE)"; \
+	$(RUNTIME_PYTHON) -m ruff check "$$file"; \
+	echo "file-gate: ruff format --check $(FILE)"; \
+	$(RUNTIME_PYTHON) -m ruff format --check "$$file"; \
+	echo "file-gate: pyrefly $(FILE)"; \
+	$(RUNTIME_PYTHON) -m pyrefly check "$$file" || true; \
+	echo "file-gate: pyright $(FILE)"; \
+	$(RUNTIME_PYTHON) -m pyright "$$file" || true; \
+	echo "file-gate: ast-grep scan $(FILE)"; \
+	ast-grep scan "$$file" || true; \
+	echo "file-gate: typos $(FILE)"; \
+	typos "$$file" || true; \
+	echo "file-gate: OK (pre-gate only; tree-wide make mod/check remain the acceptance gates)"
 project_root="$(PROJECT_ROOT)"; \
 project_parent="$${project_root%/*}"; \
 if [ -z "$$project_parent" ]; then project_parent=/; fi; \
@@ -2382,6 +2534,9 @@ profile-gen-report: _builtin_require_environment
 # The parent adapter starts profiling before runner/model/pytest imports; each
 # child runs under a stdlib-only launcher, so pytest imports before any plugin
 # package. The runner binds every child profile to the exact run;
+# The parent adapter starts profiling before runner/model/pytest imports; each
+# child runs under a stdlib-only launcher, so pytest imports before any plugin
+# package. The runner binds every child profile to the exact run;
 # reports never combine a parent profile with the mutable latest.txt pointer.
 # Public names come from make.verbs; these targets are the implementations.
 _builtin-profile-test: _builtin_require_environment
@@ -2392,6 +2547,15 @@ case "$$database" in /*) ;; *) printf 'ERROR: persistent testmon database requir
 case "$$database" in "$(PROJECT_ROOT)"/*) printf 'ERROR: persistent testmon database must be outside the checkout: %s\n' "$$database" >&2; exit 2 ;; esac; \
 case "$$database" in "$${TMPDIR:-/tmp}"/*|/tmp/*) printf 'ERROR: persistent testmon database must not live under the temporary directory: %s\n' "$$database" >&2; exit 2 ;; esac; \
 mkdir -p "$$(dirname "$$database")"; \
+project_root="$(PROJECT_ROOT)"; \
+project_parent="$${project_root%/*}"; \
+if [ -z "$$project_parent" ]; then project_parent=/; fi; \
+scratch="$$(mktemp -d "$$project_parent/.$${project_root##*/}.pytest-scratch.XXXXXX")"; \
+trap 'find "$$scratch" -depth -delete' EXIT; \
+mkdir -p "$$scratch/tmp"; \
+scratch_tmp="$$(cd "$$scratch/tmp" && pwd -P)"; \
+TMPDIR="$$scratch_tmp"; TMP="$$scratch_tmp"; TEMP="$$scratch_tmp"; \
+export TMPDIR TMP TEMP; \
 project_root="$(PROJECT_ROOT)"; \
 project_parent="$${project_root%/*}"; \
 if [ -z "$$project_parent" ]; then project_parent=/; fi; \
@@ -2524,6 +2688,7 @@ _builtin-test: _builtin_test_all
 _builtin-test-full: _builtin_test_full_all
 _builtin-test-file: _builtin_test_file_all
 _builtin-file-gate: _builtin_file_gate_all
+_builtin-file-gate: _builtin_file_gate_all
 _builtin-fmt: _builtin_fmt_all
 _builtin-fix: _builtin_fix_all
 _builtin-fix-namespace: _builtin_fix_namespace
@@ -2559,4 +2724,5 @@ _builtin-smells:
 _builtin-duplication:
 	@$(PROJECT_FLEXT_INFRA) check run --repository-root "$(PROJECT_ROOT)" --gates "duplication"
 _builtin-sonarcloud-sync: _builtin_sonarcloud_sync_all
+_builtin-sonarcloud-issues: _builtin_sonarcloud_issues_all
 _builtin-sonarcloud-issues: _builtin_sonarcloud_issues_all
