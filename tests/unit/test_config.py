@@ -32,8 +32,7 @@ class TestsFlextWebConfig:
         """Validated overrides are created through the namespaced clone API."""
         bind_host = str(ipaddress.IPv4Address(0))
         settings = web.settings.clone(
-            Web={"host": bind_host, "port": 3000, "app_name": "Test App"},
-            debug=True,
+            Web={"host": bind_host, "port": 3000, "app_name": "Test App"}, debug=True,
         )
         tm.that(settings.Web.host, eq=bind_host)
         tm.that(settings.Web.port, eq=3000)

@@ -16,8 +16,7 @@ class FlextWebAuth(s):
     """Authentication operations for the public web facade."""
 
     def authenticate(
-        self,
-        credentials: m.Web.Credentials,
+        self, credentials: m.Web.Credentials,
     ) -> p.Result[m.Web.AuthResponse]:
         """Authenticate against the settings SSOT; fail loud when unconfigured.
 

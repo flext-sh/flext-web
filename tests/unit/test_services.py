@@ -76,8 +76,7 @@ class TestsFlextWebService:
         tm.ok(list_result)
         tm.that(get_result.value.id, eq=app.id)
         tm.that(
-            any(listed_app.id == app.id for listed_app in list_result.value),
-            eq=True,
+            any(listed_app.id == app.id for listed_app in list_result.value), eq=True,
         )
 
     @staticmethod
