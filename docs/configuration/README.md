@@ -6,7 +6,7 @@
 
 `flext-web` exposes its validated singleton directly through the package root:
 
-````python
+```python
 from flext_web import settings
 
 host = settings.Web.host
@@ -82,7 +82,8 @@ except ValidationError:
     pass
 else:
     raise AssertionError("invalid web settings must fail validation")
-    ```
+```
+
 ## Environment Variables
 
 The settings namespace follows the `FLEXT_WEB_` environment prefix inherited
@@ -129,4 +130,4 @@ assert start_result.success
   or `validate_config`.
 - Read the direct `settings.Web` singleton and validate explicit overrides with
   `FlextWebSettings`.
-````
+
