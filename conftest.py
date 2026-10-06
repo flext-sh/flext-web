@@ -1,9 +1,3 @@
-"""Pytest bootstrap for flext-web local package resolution."""
-
-from __future__ import annotations
-
-from pathlib import Path
-
-from flext_tests.pytest_bootstrap import install_local_packages
-
-install_local_packages(Path(__file__).resolve().parent)
+# Copyright (c) 2026 FLEXT. All rights reserved.
+"""Doc."""
+x = 1

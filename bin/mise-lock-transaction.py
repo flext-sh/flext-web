@@ -1,3 +1,4 @@
+# Copyright (c) 2026 FLEXT. All rights reserved.
 # Copyright 2026 FLEXT
 """Publish a Mise lock with its native sidecars from one physical stage.
 
