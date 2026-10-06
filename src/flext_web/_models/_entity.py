@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import MutableMapping, MutableSequence
-from typing import Annotated, override
+from typing import TYPE_CHECKING, Annotated, override
 
 from flext_cli import m, u
 
@@ -102,12 +102,12 @@ class FlextWebModelsEntity:
             c.Web.Status | str,
             u.Field(description="Current application status"),
         ] = c.Web.Status.STOPPED.value
-        # Assignment-form re-declaration: type checkers lose the inherited
-        # mixin default through the facade MRO (same pattern as domain_events).
-        version: Annotated[
-            t.NonNegativeInt,
-            u.Field(description="Version number for optimistic locking"),
-        ] = c.DEFAULT_RETRY_DELAY_SECONDS
+
+        if TYPE_CHECKING:
+            # Checkers lose the inherited ``VersionableMixin`` default through
+            # the facade MRO; declared type-only so pydantic never re-collects
+            # the field (a runtime re-declaration would shadow the parent).
+            version: t.NonNegativeInt = 1
 
         @m.field_validator("status", mode="before")
         @classmethod
@@ -133,7 +133,7 @@ class FlextWebModelsEntity:
             u.Field(default_factory=lambda: settings.debug)
         )
         metrics: Annotated[
-            MutableMapping[str, t.JsonValue],
+            MutableMapping[str, t.Scalar],
             u.Field(description="Application metrics"),
         ] = u.Field(default_factory=dict)
         web_events: Annotated[
@@ -333,7 +333,10 @@ class FlextWebModelsEntity:
                 )
             return r[FlextWebModelsEntity.Entity].ok(self)
 
-        def update_metrics(self, new_metrics: t.JsonMapping) -> p.Result[bool]:
+        def update_metrics(
+            self,
+            new_metrics: MutableMapping[str, t.Scalar] | t.StrMapping,
+        ) -> p.Result[bool]:
             """Update application metrics.
 
             Returns:
