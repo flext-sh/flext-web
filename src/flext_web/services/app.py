@@ -138,6 +138,8 @@ class FlextWebApp(s):
 
         """
         fastapi_config = settings or m.Web.FastAPIAppConfig(
+            title=self.settings.Web.app_name,
+            version=self.settings.Web.version,
             description=c.Web.API_DEFAULT_DESCRIPTION,
             docs_url=c.Web.API_DOCS_URL,
             redoc_url=c.Web.API_REDOC_URL,
