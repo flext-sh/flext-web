@@ -6,11 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web import u
-
-
-class FlextWebExamplesUtilities(u):
-    """Examples utilities facade extending flext-web utilities."""
-
+from flext_web._utilities import FlextWebExamplesUtilities
 
 __all__: list[str] = ["FlextWebExamplesUtilities"]

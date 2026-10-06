@@ -1,3 +1,6 @@
 #!/usr/bin/env python3
-# Copyright (c) 2026 FLEXT. All rights reserved.
-"""AI Hub provider governance hook projection placeholder."""
+"""AI Hub provider governance hook projection placeholder.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""

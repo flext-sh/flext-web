@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import MutableSequence
+from collections.abc import MutableMapping, MutableSequence
 from typing import Annotated, override
 
 from flext_cli import m, u
@@ -102,6 +102,12 @@ class FlextWebModelsEntity:
             c.Web.Status | str,
             u.Field(description="Current application status"),
         ] = c.Web.Status.STOPPED.value
+        # Assignment-form re-declaration: type checkers lose the inherited
+        # mixin default through the facade MRO (same pattern as domain_events).
+        version: Annotated[
+            t.NonNegativeInt,
+            u.Field(description="Version number for optimistic locking"),
+        ] = c.DEFAULT_RETRY_DELAY_SECONDS
 
         @m.field_validator("status", mode="before")
         @classmethod
@@ -127,7 +133,7 @@ class FlextWebModelsEntity:
             u.Field(default_factory=lambda: settings.debug)
         )
         metrics: Annotated[
-            t.MutableJsonMapping,
+            MutableMapping[str, t.JsonValue],
             u.Field(description="Application metrics"),
         ] = u.Field(default_factory=dict)
         web_events: Annotated[
@@ -235,7 +241,9 @@ class FlextWebModelsEntity:
                 The resulting ``p.Result[m.DomainEvent]``.
             """
             if not event_type.strip():
-                return r[m.DomainEvent].fail("Domain event name must be a non-empty string")
+                return r[m.DomainEvent].fail(
+                    "Domain event name must be a non-empty string",
+                )
             if event_type.isdigit():
                 return r[m.DomainEvent].fail("Domain event name cannot be numeric-only")
             entry = u.add_domain_event(

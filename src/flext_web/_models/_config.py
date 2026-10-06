@@ -45,7 +45,9 @@ class FlextWebModelsConfig:
                 max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                 description="FastAPI application title",
             ),
-        ] = u.Field(default_factory=lambda: FlextWebSettings.fetch_global().Web.app_name)
+        ] = u.Field(
+            default_factory=lambda: FlextWebSettings.fetch_global().Web.app_name,
+        )
         version: Annotated[
             str,
             u.Field(

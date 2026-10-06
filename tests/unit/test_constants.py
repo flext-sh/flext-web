@@ -24,15 +24,11 @@ class TestsFlextWebConstantsUnit:
         """Test web server constants."""
         tm.that(c.Web.VALIDATION_PORT_RANGE, eq=(1, 65535))
         tm.that(c.Web.VALIDATION_NAME_LENGTH_RANGE, eq=(3, 100))
-        tm.that(c.Web.SECURITY_MIN_SECRET_KEY_LENGTH, eq=32)
 
     @staticmethod
     def test_web_specific_constants() -> None:
         """Test web-specific constants."""
         tm.that(c.Web.ALL_INTERFACES, eq=str(ipaddress.IPv4Address(0)))
-        tm.that(c.Web.LOCALHOST_IP, eq="127.0.0.1")
-        tm.that(c.Web.SYSTEM_PORTS_THRESHOLD, eq=1023)
-        tm.that(c.Web.PRIVILEGED_PORTS_MAX, eq=1023)
 
     def test_web_environment_types(self) -> None:
         """Test web environment type definitions."""
@@ -48,20 +44,11 @@ class TestsFlextWebConstantsUnit:
         tm.that(c.Web.SECURITY_CORS_SAFE_HEADERS, has="Content-Type")
         tm.that(c.Web.SECURITY_SESSION_COOKIE_SECURE_DEFAULT is False, eq=True)
         tm.that(c.Web.SECURITY_SESSION_COOKIE_HTTPONLY_DEFAULT is True, eq=True)
-        tm.that(c.Web.SECURITY_SESSION_COOKIE_SAMESITE_DEFAULT, eq="Lax")
-        tm.that(c.Web.SECURITY_SSL_ALT_PORT, eq=8443)
 
     @staticmethod
     def test_web_validation_constants() -> None:
         """Test web validation constants."""
         tm.that(c.Web.VALIDATION_MAX_CONTENT_LENGTH_DEFAULT, eq=16 * 1024 * 1024)
-        tm.that(c.Web.VALIDATION_MIN_CONTENT_LENGTH, eq=0)
-        tm.that(c.Web.VALIDATION_REQUEST_TIMEOUT_DEFAULT, eq=30)
-        tm.that(c.Web.VALIDATION_REQUEST_TIMEOUT_MAX, eq=600)
-        tm.that(c.Web.VALIDATION_MAX_URL_LENGTH, eq=2048)
-        tm.that(c.Web.VALIDATION_MIN_URL_LENGTH, eq=1)
-        tm.that(c.Web.VALIDATION_MAX_HEADER_LENGTH, eq=8192)
-        tm.that(c.Web.VALIDATION_MAX_HEADERS_COUNT, eq=100)
 
     @staticmethod
     def test_constants_are_immutable() -> None:

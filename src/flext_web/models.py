@@ -10,9 +10,8 @@ from __future__ import annotations
 from flext_cli import FlextCliModels
 
 from flext_web import t
-from flext_web._models import WebNamespace
+from flext_web._models import FlextWebModelsWebNamespace
 from flext_web._models._auth import FlextWebModelsAuth
-from flext_web._models.base import FlextWebModelsBase
 from flext_web._models._config import FlextWebModelsConfig
 from flext_web._models._entity import FlextWebModelsEntity
 from flext_web._models._http import FlextWebModelsHttp
@@ -20,6 +19,7 @@ from flext_web._models._responses import FlextWebModelsResponses
 from flext_web._models._system import FlextWebModelsSystem
 from flext_web._models._web_message import FlextWebModelsWebMessage
 from flext_web._models._web_request import FlextWebModelsWebRequest
+from flext_web._models.base import FlextWebModelsBase
 
 
 class FlextWebModels(FlextCliModels):
@@ -41,4 +41,4 @@ class FlextWebModels(FlextCliModels):
 
 m = FlextWebModels
 
-__all__: t.MutableSequenceOf[str] = ["FlextWebModels", "WebNamespace", "m"]
+__all__: t.MutableSequenceOf[str] = ["FlextWebModels", "FlextWebModelsWebNamespace", "m"]

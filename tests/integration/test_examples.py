@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
 
-class ExamplesFullFunctionalityTest:
+class TestsFlextWebExamplesFullFunctionality:
     """Shared example assertions exercised through collected subclasses."""
 
     @staticmethod
@@ -100,5 +100,5 @@ class ExamplesFullFunctionalityTest:
         tm.that(all(app.running is False for app in demo_result.value), eq=True)
 
 
-class TestsFlextWebExamples(ExamplesFullFunctionalityTest):
+class TestsFlextWebExamples(TestsFlextWebExamplesFullFunctionality):
     """Collected integration tests for canonical examples."""
