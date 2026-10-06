@@ -20,7 +20,7 @@ class FlextWebEntities(s):
         default_factory=dict[str, m.Web.EntityData],
     )
 
-    def create(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
+    def create_entity(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
         """Create an entity with generated identifier.
 
         Returns:
@@ -53,22 +53,13 @@ class FlextWebEntities(s):
             return e.fail_not_found("entity", entity_id)
         return r[m.Web.EntityData].ok(entity)
 
-    def list_all(self) -> p.Result[Sequence[m.Web.EntityData]]:
+    def list_entities(self) -> p.Result[Sequence[m.Web.EntityData]]:
         """List all registered entities.
 
         Returns:
             The resulting ``p.Result[Sequence[m.Web.EntityData]]``.
         """
         return r[Sequence[m.Web.EntityData]].ok(list(self._storage.values()))
-
-    @staticmethod
-    def validate_business_rules() -> p.Result[bool]:
-        """Validate entity namespace invariants.
-
-        Returns:
-            The resulting ``p.Result[bool]``.
-        """
-        return r[bool].ok(value=True)
 
 
 __all__: list[str] = ["FlextWebEntities"]

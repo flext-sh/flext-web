@@ -139,6 +139,8 @@ class FlextWebApp(s):
 
         """
         fastapi_config = settings or m.Web.FastAPIAppConfig(
+            title=self.settings.Web.app_name,
+            version=self.settings.Web.version,
             description=c.Web.API_DEFAULT_DESCRIPTION,
             docs_url=c.Web.API_DOCS_URL,
             redoc_url=c.Web.API_REDOC_URL,
@@ -264,61 +266,6 @@ class FlextWebApp(s):
                 }
 
             return info_handler
-
-    @staticmethod
-    def configure_fastapi_error_handlers(app: FastAPI) -> p.Result[bool]:
-        """Configure FastAPI error handlers (extensible for future needs).
-
-        Args:
-            app: FastAPI application instance
-
-        Returns:
-            r[bool]: Success contains True if error handlers configured,
-                              failure contains error message
-
-        """
-        _ = app
-        return r[bool].ok(value=True)
-
-    @staticmethod
-    def configure_fastapi_middleware(app: FastAPI) -> p.Result[bool]:
-        """Configure FastAPI middleware (extensible for future needs).
-
-        Args:
-            app: FastAPI application instance
-
-        Returns:
-            r[bool]: Success contains True if middleware configured,
-                              failure contains error message
-
-        """
-        _ = app
-        return r[bool].ok(value=True)
-
-    @staticmethod
-    def configure_fastapi_routes(app: FastAPI) -> p.Result[bool]:
-        """Configure FastAPI routes (extensible for future needs).
-
-        Args:
-            app: FastAPI application instance
-
-        Returns:
-            r[bool]: Success contains True if routes configured,
-                              failure contains error message
-
-        """
-        _ = app
-        return r[bool].ok(value=True)
-
-    @staticmethod
-    def validate_business_rules() -> p.Result[bool]:
-        """Validate business rules for web app service (s requirement).
-
-        Returns:
-            r[bool]: Success contains True if valid, failure with error message
-
-        """
-        return r[bool].ok(value=True)
 
 
 __all__: list[str] = ["FlextWebApp"]

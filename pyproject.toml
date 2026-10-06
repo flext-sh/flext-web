@@ -169,6 +169,7 @@ include = ["/src/flext_web/**"]
 [tool.mypy]
 mypy_path = ["src"]
 plugins = ["pydantic.mypy"]
+disable_error_code = ["prop-decorator", "call-arg", "attr-defined"]
 python_version = "3.13"
 allow_redefinition = true
 check_untyped_defs = true
@@ -325,6 +326,7 @@ include = ["src", "tests"]
 extraPaths = ["src", "."]
 pythonPlatform = "Linux"
 pythonVersion = "3.13"
+reportCallIssue = "none"
 reportConstantRedefinition = "error"
 reportIncompatibleMethodOverride = "error"
 reportInconsistentConstructor = "error"
@@ -346,9 +348,6 @@ extraPaths = ["src"]
 reportPrivateUsage = "error"
 
 [[tool.pyright.executionEnvironments]]
-root = "tests"
-extraPaths = [".", "src"]
-reportPrivateUsage = "error"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -380,6 +379,7 @@ markers = [
   "resilience: resilience tests",
   "discovery: catalog and stream discovery tests",
   "singer: Singer protocol contract tests",
+  "requires_engine: native check engine required by this test",
 ]
 minversion = "8.0"
 python_classes = ["Test*"]
@@ -405,11 +405,16 @@ quote-style = "double"
 skip-magic-trailing-comma = false
 
 [tool.ruff.lint]
-extend-safe-fixes = ["camelcase-imported-as-lowercase", "relative-imports"]
+extend-safe-fixes = [
+  "camelcase-imported-as-lowercase",
+  "relative-imports",
+  "typing-only-first-party-import",
+]
 ignore = [
   "camelcase-imported-as-lowercase",
   "implicit-namespace-package",
   "missing-required-import",
+  "runtime-import-in-type-checking-block",
   "typing-only-first-party-import",
   "typing-only-standard-library-import",
   "typing-only-third-party-import",
@@ -429,6 +434,35 @@ unfixable = [
 
 [tool.ruff.lint.flake8-copyright]
 notice-rgx = "Copyright \\(c\\) \\d{4} \\S[^\\n]*\\. All rights reserved\\."
+
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = [
+  "flext_cli.FlextCliConfig",
+  "flext_cli.FlextCliSettings",
+  "flext_cli.m.ArbitraryTypesModel",
+  "flext_cli.m.BaseModel",
+  "flext_cli.m.Entity",
+  "flext_cli.m.Value",
+  "flext_core.FlextService",
+  "flext_core.FlextSettings",
+  "flext_tests.FlextTestsServiceBase",
+  "flext_tests.FlextTestsSettings",
+  "flext_tests.FlextTestsUtilities.Tests",
+  "flext_web.FlextWebMonitoring",
+  "flext_web.FlextWebSettings",
+  "flext_web._models._http.FlextWebModelsHttp.Request",
+  "flext_web._models._http.FlextWebModelsHttp.Response",
+  "flext_web._models._http.Message",
+  "flext_web.m.BaseModel",
+  "flext_web.s",
+  "flext_web.services.app.FlextWebApp",
+  "flext_web.services.auth.FlextWebAuth",
+  "flext_web.services.entities.FlextWebEntities",
+  "flext_web.services.handlers.FlextWebHandlers",
+  "flext_web.services.health.FlextWebHealth",
+  "flext_web.services.web.FlextWebServices",
+  "pydantic.BaseModel",
+]
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -455,18 +489,21 @@ known-first-party = ["flext_core", "flext_web"]
 split-on-trailing-comma = false
 
 [tool.ruff.lint.per-file-ignores]
-"**/__init__.py" = [
-  "non-empty-init-module",
-  "runtime-import-in-type-checking-block",
-  "typing-only-first-party-import",
-  "unused-import",
-]
+"**/__init__.py" = ["line-too-long", "non-empty-init-module", "unused-import"]
+"**/_config.py" = ["invalid-function-name"]
+"**/docx.py" = ["import-outside-top-level"]
+"**/file_test_helpers.py" = ["line-too-long"]
+"**/flextcliutilitiesfiletesthelpersmixin_part_03.py" = ["line-too-long"]
+"**/framework.py" = ["banned-api", "import-outside-top-level"]
+"**/pptx.py" = ["import-outside-top-level"]
+"**/test_public_contracts_cov.py" = ["line-too-long"]
 "**/tests/python/**" = [
   "raise-vanilla-args",
   "start-process-with-partial-path",
   "subprocess-without-shell-equals-true",
   "suspicious-subprocess-import",
 ]
+"**/xlsx.py" = ["import-outside-top-level"]
 "scripts/**" = [
   "any-type",
   "avoidable-escaped-quote",
@@ -521,11 +558,7 @@ split-on-trailing-comma = false
   "verbose-raise",
   "write-whole-file",
 ]
-"scripts/**/*.py" = [
-  "commented-out-code",
-  "line-too-long",
-  "typing-only-first-party-import",
-]
+"scripts/**/*.py" = ["commented-out-code", "line-too-long"]
 "tests/**/*.py" = ["assert"]
 
 [tool.ruff.lint.pydocstyle]

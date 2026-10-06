@@ -25,29 +25,8 @@ from flext_web import (
 )
 
 
-class FlextWebServices(FlextWebMonitoring):
-    """Public service layer backed by protocol runtime state."""
-
-    def dashboard(self) -> p.Result[m.Web.DashboardResponse]:
-        """Return dashboard data projected from the protocol runtime state."""
-        state = u.Web.service_state
-        return self.list_apps().map(
-            lambda apps: m.Web.DashboardResponse(
-                total_applications=len(apps),
-                running_applications=sum(
-                    1 for app in apps if app.status == c.Web.Status.RUNNING.value
-                ),
-                service_status=self._service_status_label(),
-                routes_initialized=state["routes_initialized"],
-                middleware_configured=state["middleware_configured"],
-                timestamp=u.generate_iso_timestamp(),
-            ),
-        )
-
-    _auth_service: FlextWebAuth | None = u.PrivateAttr(default_factory=lambda: None)
-    _entity_service: FlextWebEntities | None = u.PrivateAttr(
-        default_factory=lambda: None,
-    )
+class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
+    """Public service layer composing the auth, entity and health services."""
 
     @classmethod
     def create_service(cls, settings: FlextWebSettings | None = None) -> p.Result[Self]:
@@ -60,16 +39,21 @@ class FlextWebServices(FlextWebMonitoring):
         ok_result: p.Result[Self] = r.ok(instance)
         return ok_result
 
-    def authenticate(
-        self,
-        credentials: m.Web.Credentials,
-    ) -> p.Result[m.Web.AuthResponse]:
-        """Delegate authentication to the canonical auth service.
-
-        Returns:
-            The resulting ``p.Result[m.Web.AuthResponse]``.
-        """
-        return self._auth().authenticate(credentials)
+    def dashboard(self) -> p.Result[m.Web.DashboardResponse]:
+        """Return dashboard data projected from the protocol runtime state."""
+        state = u.Web.service_state
+        return self.list_apps().map(
+            lambda apps: m.Web.DashboardResponse(
+                total_applications=len(apps),
+                running_applications=sum(
+                    1 for app in apps if app.status == c.Web.Status.RUNNING.value
+                ),
+                service_status=self.service_status_label(),
+                routes_initialized=state["routes_initialized"],
+                middleware_configured=state["middleware_configured"],
+                timestamp=u.generate_iso_timestamp(),
+            ),
+        )
 
     @staticmethod
     def configure_middleware() -> p.Result[bool]:
@@ -95,14 +79,6 @@ class FlextWebServices(FlextWebMonitoring):
             host=app_data.host,
         ).flat_map(self._application_response_from_payload)
 
-    def create_entity(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
-        """Create a generic entity through the entity service.
-
-        Returns:
-            The resulting ``p.Result[m.Web.EntityData]``.
-        """
-        return self._entities().create(data)
-
     @override
     def execute(self) -> p.Result[bool]:
         """Execute the web service facade.
@@ -120,10 +96,6 @@ class FlextWebServices(FlextWebMonitoring):
         return u.Web.WebRepository.fetch_by_id(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
-
-    def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
-        """Return a generic entity by identifier."""
-        return self._entities().fetch_entity(entity_id)
 
     @staticmethod
     def initialize_routes() -> p.Result[bool]:
@@ -143,22 +115,6 @@ class FlextWebServices(FlextWebMonitoring):
         return u.Web.WebAppManager.list_apps().flat_map(
             self._application_responses_from_payloads,
         )
-
-    def list_entities(self) -> p.Result[Sequence[m.Web.EntityData]]:
-        """List all generic entities.
-
-        Returns:
-            The resulting ``p.Result[Sequence[m.Web.EntityData]]``.
-        """
-        return self._entities().list_all()
-
-    def register_user(self, user_data: m.Web.UserData) -> p.Result[m.Web.UserResponse]:
-        """Delegate registration to the canonical auth service.
-
-        Returns:
-            The resulting ``p.Result[m.Web.UserResponse]``.
-        """
-        return self._auth().register_user(user_data)
 
     def start_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
         """Start a registered application and project its payload into a model.
@@ -311,22 +267,6 @@ class FlextWebServices(FlextWebMonitoring):
         if not normalized_app_id:
             return e.fail_validation("app_id", error="cannot be empty")
         return r[str].ok(normalized_app_id)
-
-    def _auth(self) -> FlextWebAuth:
-        """Return the lazily created auth service."""
-        if self._auth_service is None:
-            self._auth_service = FlextWebAuth.with_settings(
-                self._runtime_settings_clone(),
-            )
-        return self._auth_service
-
-    def _entities(self) -> FlextWebEntities:
-        """Return the lazily created entity service."""
-        if self._entity_service is None:
-            self._entity_service = FlextWebEntities.with_settings(
-                self._runtime_settings_clone(),
-            )
-        return self._entity_service
 
     def _get_or_create_runtime_application(
         self,

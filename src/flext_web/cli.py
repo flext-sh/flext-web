@@ -9,6 +9,7 @@ from __future__ import annotations
 import sys
 from typing import Annotated, override
 
+import uvicorn
 from flext_cli import cli, m as cli_m, p as cli_p, u as cli_u
 
 from flext_web import FlextWebSettings, p, r, s, settings, t, web
@@ -59,11 +60,33 @@ class FlextWebCli:
             service_result = web.create_service(web_settings)
             if service_result.failure:
                 return r[bool].fail(service_result.error)
-            return service_result.value.start_service(
+            started = service_result.value.start_service(
                 host=web_settings.Web.host,
                 port=web_settings.Web.port,
                 debug=debug_value,
             )
+            if started.failure:
+                return started
+            application = service_result.value.create_fastapi_app()
+            if application.failure:
+                return r[bool].from_failure(application)
+            uvicorn.run(
+                application.value,
+                host=web_settings.Web.host,
+                port=web_settings.Web.port,
+                log_level=web_settings.log_level.lower(),
+                ssl_keyfile=(
+                    web_settings.Web.ssl_key_path
+                    if web_settings.Web.ssl_enabled
+                    else None
+                ),
+                ssl_certfile=(
+                    web_settings.Web.ssl_cert_path
+                    if web_settings.Web.ssl_enabled
+                    else None
+                ),
+            )
+            return service_result.value.stop_service()
 
     @classmethod
     def build_app(cls) -> cli_p.Cli.Application:

@@ -12,8 +12,12 @@ from flext_cli import t
 class FlextWebTypingsWeb:
     """Web-domain aliases composed into the public typings facade."""
 
-    type RequestDict = dict[str, t.Scalar | t.StrSequence | t.ConfigurationMapping]
-    type ResponseDict = dict[str, t.Scalar | t.StrSequence | t.ConfigurationMapping]
+    type RequestDict = t.MutableMappingKV[
+        str, t.Scalar | t.StrSequence | t.ConfigurationMapping
+    ]
+    type ResponseDict = t.MutableMappingKV[
+        str, t.Scalar | t.StrSequence | t.ConfigurationMapping
+    ]
     type FastApiEndpointPayload = t.MappingKV[str, str | bool]
 
 
