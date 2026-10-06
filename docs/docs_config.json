@@ -8,10 +8,12 @@
       "No sections found"
     ],
     "forbidden_terms": [
-      "make sync",
       "check_changed_projects",
       "text_rules.yml",
       "scripts/hooks"
-    ]
+    ],
+    "stale_symbols": [],
+    "stale_symbol_exempt_paths": [],
+    "historical_evidence_files": []
   }
 }

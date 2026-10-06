@@ -28,7 +28,7 @@ dependencies = [
   "flext-cli @ git+https://github.com/flext-sh/flext-cli.git@0.12.0-dev",
   "flext-core @ git+https://github.com/flext-sh/flext-core.git@0.12.0-dev",
   "packaging>=26.3",
-  "pydantic>=2.13.5",
+  "pydantic>=2.13.5,<3",
   "pydantic-settings>=2.15.0",
   "pyyaml>=6.0.3",
   "starlette>=1.7.0",
@@ -169,7 +169,7 @@ include = ["/src/flext_web/**"]
 [tool.mypy]
 mypy_path = ["src"]
 plugins = ["pydantic.mypy"]
-disable_error_code = ["prop-decorator", "call-arg", "attr-defined"]
+disable_error_code = ["prop-decorator", "call-arg"]
 python_version = "3.13"
 allow_redefinition = true
 check_untyped_defs = true
@@ -326,7 +326,7 @@ include = ["src", "tests"]
 extraPaths = ["src", "."]
 pythonPlatform = "Linux"
 pythonVersion = "3.13"
-reportCallIssue = "none"
+reportCallIssue = "error"
 reportConstantRedefinition = "error"
 reportIncompatibleMethodOverride = "error"
 reportInconsistentConstructor = "error"
@@ -348,6 +348,9 @@ extraPaths = ["src"]
 reportPrivateUsage = "error"
 
 [[tool.pyright.executionEnvironments]]
+root = "tests"
+extraPaths = [".", "src"]
+reportPrivateUsage = "error"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -445,9 +448,12 @@ runtime-evaluated-base-classes = [
   "flext_cli.m.Value",
   "flext_core.FlextService",
   "flext_core.FlextSettings",
-  "flext_tests.FlextTestsServiceBase",
   "flext_tests.FlextTestsSettings",
   "flext_tests.FlextTestsUtilities.Tests",
+  "flext_tests.s",
+  "flext_web.FlextWebAuth",
+  "flext_web.FlextWebEntities",
+  "flext_web.FlextWebHealth",
   "flext_web.FlextWebMonitoring",
   "flext_web.FlextWebSettings",
   "flext_web._models._http.FlextWebModelsHttp.Request",
@@ -456,10 +462,7 @@ runtime-evaluated-base-classes = [
   "flext_web.m.BaseModel",
   "flext_web.s",
   "flext_web.services.app.FlextWebApp",
-  "flext_web.services.auth.FlextWebAuth",
-  "flext_web.services.entities.FlextWebEntities",
   "flext_web.services.handlers.FlextWebHandlers",
-  "flext_web.services.health.FlextWebHealth",
   "flext_web.services.web.FlextWebServices",
   "pydantic.BaseModel",
 ]
@@ -558,7 +561,11 @@ split-on-trailing-comma = false
   "verbose-raise",
   "write-whole-file",
 ]
-"scripts/**/*.py" = ["commented-out-code", "line-too-long"]
+"scripts/**/*.py" = [
+  "commented-out-code",
+  "line-too-long",
+  "typing-only-first-party-import",
+]
 "tests/**/*.py" = ["assert"]
 
 [tool.ruff.lint.pydocstyle]
