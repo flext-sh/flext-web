@@ -10,13 +10,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Annotated, Self
+from typing import Annotated
 
 from flext_cli import FlextCliConfig
 
-import flext_web._models._web_namespace
 from flext_core import FlextSettings
 from flext_web import m
+from flext_web._models import FlextWebModelsWebNamespace
 
 
 class FlextWebConfig(FlextSettings, FlextCliConfig):
@@ -26,24 +26,10 @@ class FlextWebConfig(FlextSettings, FlextCliConfig):
     YAML-validated config singleton.
     """
 
-    # ENFORCE-042 namespace-holder contract: ``FlextSettings`` contributes
-    # namespacing only — instance machinery stays plain object semantics so the
-    # settings singleton ``__new__`` cannot leak into the config singleton.
-    # The inherited pydantic ``__init__`` still runs the frozen, YAML-validated
-    # construction, and the inherited pydantic ``__setattr__`` keeps the frozen
-    # guard.
-    def __new__(cls, *args: object, **kwargs: object) -> Self:
-        _ = args, kwargs
-        return object.__new__(cls)
-
-    __eq__ = object.__eq__
-
-    __hash__ = object.__hash__
-
     Web: Annotated[
-        flext_web._models._web_namespace._WebNamespace,
+        FlextWebModelsWebNamespace,
         m.Field(description="Open namespace exposing ``config/*.yaml`` under ``Web``."),
-    ] = flext_web._models._web_namespace._WebNamespace()
+    ] = FlextWebModelsWebNamespace()
 
 
 config: FlextWebConfig = FlextWebConfig.fetch_global()

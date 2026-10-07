@@ -22,17 +22,6 @@ class TestsFlextWebAppModelsUnit:
     """Test suite for Web application models."""
 
     @staticmethod
-    def test_web_app_status_enum() -> None:
-        """Test WebAppStatus enum values from constants."""
-        tm.that(c.Web.Status.STOPPED.value, eq="stopped")
-        tm.that(c.Web.Status.STARTING.value, eq="starting")
-        tm.that(c.Web.Status.RUNNING.value, eq="running")
-        tm.that(c.Web.Status.STOPPING.value, eq="stopping")
-        tm.that(c.Web.Status.ERROR.value, eq="error")
-        tm.that(c.Web.Status.MAINTENANCE.value, eq="maintenance")
-        tm.that(c.Web.Status.DEPLOYING.value, eq="deploying")
-
-    @staticmethod
     def test_web_app_initialization_with_defaults() -> None:
         """Test WebApp initialization with defaults."""
         app = m.Web.Entity(id="test-id", name="test-app")

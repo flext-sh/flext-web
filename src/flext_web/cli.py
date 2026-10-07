@@ -123,12 +123,17 @@ class FlextWebCli:
 
 
 def main(argv: t.StrSequence | None = None) -> int:
-    """Return the process exit code for the flext-web console entry point."""
+    """Return the process exit code for the flext-web console entry point.
+
+    Bare invocation renders the help panel and succeeds, matching the fleet
+    console-script contract.
+    """
+    args = list(argv) if argv is not None else sys.argv[1:]
     app = FlextWebCli.build_app()
     outcome = cli.execute_app(
         app,
         prog_name="flext-web",
-        args=list(argv) if argv is not None else sys.argv[1:],
+        args=args or ["--help"],
     )
     return cli.finalize_result(outcome)
 
