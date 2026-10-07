@@ -69,7 +69,7 @@ class FlextWebModelsWebMessage:
         """
 
         elapsed_time: Annotated[
-            t.NonNegativeFloat,
+            t.NonNegativeFloat | None,
             u.Field(description="Response elapsed time in seconds"),
         ] = 0.0
         response_id: Annotated[

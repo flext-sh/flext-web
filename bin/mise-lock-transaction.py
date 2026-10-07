@@ -1,4 +1,3 @@
-# Copyright 2026 FLEXT
 """Publish a Mise lock with its native sidecars from one physical stage.
 
 This bootstrap runs with the Python selected by the staged Mise lock, before
@@ -6,6 +5,9 @@ the project's virtual environment exists. It intentionally uses only stdlib.
 Its journal and project-scoped mutex recover process interruption on every
 platform. Directory fsync is POSIX-only; Windows power-loss durability is not
 promised by this transaction.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -556,7 +558,7 @@ class MiseLockTransaction:
     def _recover_prior_stages(cls, project: Path, stage: Path) -> None:
         """Settle every earlier publication before this one starts."""
         for prior in sorted(project.parent.glob(f".{project.name}.mise-lock-stage.*")):
-            if prior != stage:
+            if prior != stage and cls._read_journal(prior) is not None:
                 cls.recover(project, prior)
         for retired in sorted(
             project.parent.glob(f".{project.name}.mise-lock-cleanup.*"),
