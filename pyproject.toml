@@ -392,6 +392,8 @@ testpaths = ["tests"]
 
 [tool.ruff]
 extend-exclude = [
+  "**/.archive/**",
+  "**/protos/**",
   "**/.agents/aihub-hooks/**",
   "**/.claude/aihub-hooks/**",
   "**/.codex/aihub-hooks/**",
@@ -466,7 +468,6 @@ runtime-evaluated-base-classes = [
   "flext_web._models._http.FlextWebModelsHttp.Request",
   "flext_web._models._http.FlextWebModelsHttp.Response",
   "flext_web._models._http.Message",
-  "flext_web.m.BaseModel",
   "flext_web.s",
   "flext_web.services.app.FlextWebApp",
   "flext_web.services.handlers.FlextWebHandlers",
