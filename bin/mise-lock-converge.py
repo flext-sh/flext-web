@@ -143,8 +143,10 @@ class MiseLockConverge:
         environment = dict(cls.FIXED_ENVIRONMENT)
         environment.update(
             (name, str(scratch / relative))
-            for name, relative in cls.TRANSIENT_ENVIRONMENT
-            (name, str(scratch / relative))
+            for name, relative in cls.TRANSIENT_ENVIRONMENT(
+                name,
+                str(scratch / relative),
+            )
             for name, relative in cls.TRANSIENT_ENVIRONMENT
         )
         environment.update(
@@ -207,11 +209,6 @@ class MiseLockConverge:
         return completed.stdout.strip()
 
     @staticmethod
-    def _probe(
-        runtime: Path,
-        stage: Path,
-        environment: dict[str, str],
-    ) -> tuple[bool, str]:
     def _probe(
         runtime: Path,
         stage: Path,
