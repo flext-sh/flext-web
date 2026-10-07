@@ -13,10 +13,12 @@ class FlextWebTypingsWeb:
     """Web-domain aliases composed into the public typings facade."""
 
     type RequestDict = t.MutableMappingKV[
-        str, t.Scalar | t.StrSequence | t.ConfigurationMapping
+        str,
+        t.Scalar | t.StrSequence | t.ConfigurationMapping,
     ]
     type ResponseDict = t.MutableMappingKV[
-        str, t.Scalar | t.StrSequence | t.ConfigurationMapping
+        str,
+        t.Scalar | t.StrSequence | t.ConfigurationMapping,
     ]
     type FastApiEndpointPayload = t.MappingKV[str, str | bool]
 

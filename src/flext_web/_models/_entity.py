@@ -95,10 +95,12 @@ class FlextWebModelsEntity:
             ),
         ] = u.Field(default_factory=lambda: settings.Web.host)
         port: Annotated[
-            t.PortNumber, u.Field(description="Application port number"),
+            t.PortNumber,
+            u.Field(description="Application port number"),
         ] = u.Field(default_factory=lambda: settings.Web.port)
         status: Annotated[
-            c.Web.Status | str, u.Field(description="Current application status"),
+            c.Web.Status | str,
+            u.Field(description="Current application status"),
         ] = c.Web.Status.STOPPED.value
 
         @u.field_validator("status", mode="before")
@@ -125,7 +127,8 @@ class FlextWebModelsEntity:
             u.Field(default_factory=lambda: settings.debug)
         )
         metrics: Annotated[
-            t.MutableJsonMapping, u.Field(description="Application metrics"),
+            t.MutableJsonMapping,
+            u.Field(description="Application metrics"),
         ] = u.Field(default_factory=dict)
         web_events: Annotated[
             MutableSequence[str],
@@ -230,7 +233,10 @@ class FlextWebModelsEntity:
             if event_type.isdigit():
                 return r[m.Entry].fail("Domain event name cannot be numeric-only")
             entry = u.add_domain_event(
-                self, event_type=event_type, data=data, aggregate_id=self.id,
+                self,
+                event_type=event_type,
+                data=data,
+                aggregate_id=self.id,
             )
             return r[m.Entry].ok(entry)
 
@@ -386,7 +392,8 @@ class FlextWebModelsEntity:
         debug: Annotated[
             bool,
             u.Field(
-                default_factory=lambda: settings.debug, description="Debug mode flag",
+                default_factory=lambda: settings.debug,
+                description="Debug mode flag",
             ),
         ]
         secret_key: Annotated[
