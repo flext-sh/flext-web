@@ -143,10 +143,6 @@ class MiseLockConverge:
         environment = dict(cls.FIXED_ENVIRONMENT)
         environment.update(
             (name, str(scratch / relative))
-            for name, relative in cls.TRANSIENT_ENVIRONMENT(
-                name,
-                str(scratch / relative),
-            )
             for name, relative in cls.TRANSIENT_ENVIRONMENT
         )
         environment.update(
