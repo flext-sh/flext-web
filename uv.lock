@@ -504,7 +504,7 @@ dependencies = [
 [[package]]
 name = "flext-infra"
 version = "0.12.0"
-source = { git = "https://github.com/flext-sh/flext-infra.git?rev=0.12.0-dev#11b0042a1f017e8c2c7d663e63e2fc678575f7b4" }
+source = { git = "https://github.com/flext-sh/flext-infra.git?rev=0.12.0-dev#0a73cf2e1cf5e1180efed82f11348520e4aac4d8" }
 dependencies = [
     { name = "annotated-types" },
     { name = "beartype" },
@@ -531,7 +531,7 @@ dependencies = [
 [[package]]
 name = "flext-tests"
 version = "0.12.0"
-source = { git = "https://github.com/flext-sh/flext-tests.git?rev=0.12.0-dev#0129dae0a8aeda5e7de79d1f4b409755d1b35076" }
+source = { git = "https://github.com/flext-sh/flext-tests.git?rev=0.12.0-dev#09f8a0f9097a1d487e043b5047cc193fed515501" }
 dependencies = [
     { name = "annotated-types" },
     { name = "beartype" },
@@ -653,7 +653,7 @@ requires-dist = [
     { name = "annotated-types", specifier = ">=0.8.0" },
     { name = "beartype", specifier = ">=0.22.9" },
     { name = "dependency-injector", specifier = ">=4.49.1" },
-    { name = "fastapi", specifier = ">=0.142.2" },
+    { name = "fastapi", specifier = ">=0.142.4" },
     { name = "flask", specifier = ">=3.1.3" },
     { name = "flext-cli", git = "https://github.com/flext-sh/flext-cli.git?rev=0.12.0-dev" },
     { name = "flext-core", git = "https://github.com/flext-sh/flext-core.git?rev=0.12.0-dev" },
