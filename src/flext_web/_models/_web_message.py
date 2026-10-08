@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
+from types import MappingProxyType
 from typing import Annotated
 
 from flext_cli import u
@@ -42,9 +43,9 @@ class FlextWebModelsWebMessage:
             u.Field(default_factory=lambda: str(uuid.uuid4()))
         )
         query_params: Annotated[
-            t.MutableConfigurationMapping,
+            t.ConfigurationMapping,
             u.Field(description="Query string parameters"),
-        ] = u.Field(default_factory=dict[str, t.Scalar])
+        ] = u.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
         client_ip: Annotated[str, u.Field(description="Client IP address")] = ""
         user_agent: Annotated[str, u.Field(description="Client user agent")] = ""
 

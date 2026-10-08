@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from datetime import datetime
+from types import MappingProxyType
 from typing import Annotated
 
 from flext_cli import m, u
@@ -33,9 +34,9 @@ class FlextWebModelsHttp:
         """
 
         headers: Annotated[
-            t.MutableStrMapping,
+            t.StrMapping,
             u.Field(description="HTTP headers for message"),
-        ] = u.Field(default_factory=dict[str, str])
+        ] = u.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         body: Annotated[
             str | t.ScalarMapping | None,
             u.Field(description="Message body content (optional for GET/HEAD)"),

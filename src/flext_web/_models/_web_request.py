@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from types import MappingProxyType
 from typing import Annotated
 
 from flext_cli import m, u
@@ -35,8 +36,8 @@ class FlextWebModelsWebRequest:
                 description="Request URL",
             ),
         ]
-        headers: Annotated[t.MutableStrMapping, u.Field(description="HTTP headers")] = (
-            u.Field(default_factory=dict[str, str])
+        headers: Annotated[t.StrMapping, u.Field(description="HTTP headers")] = u.Field(
+            default_factory=lambda: MappingProxyType[str, str]({})
         )
         body: Annotated[
             str | t.JsonValue | None,
@@ -62,9 +63,9 @@ class FlextWebModelsWebRequest:
             ),
         ]
         headers: Annotated[
-            t.MutableStrMapping,
+            t.StrMapping,
             u.Field(description="HTTP response headers"),
-        ] = u.Field(default_factory=dict[str, str])
+        ] = u.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         body: Annotated[
             str | t.JsonValue | None,
             u.Field(description="Response body (optional for 204 No Content)"),
