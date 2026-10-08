@@ -59,7 +59,7 @@ class FlextWebModelsAuth:
         data: Annotated[
             t.MutableConfigurationMapping,
             u.Field(description="Entity data dictionary"),
-        ] = u.Field(default_factory=dict)
+        ] = u.Field(default_factory=dict[str, t.Scalar])
 
 
 __all__: list[str] = ["FlextWebModelsAuth"]

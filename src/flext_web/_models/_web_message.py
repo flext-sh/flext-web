@@ -44,7 +44,7 @@ class FlextWebModelsWebMessage:
         query_params: Annotated[
             t.MutableConfigurationMapping,
             u.Field(description="Query string parameters"),
-        ] = u.Field(default_factory=dict)
+        ] = u.Field(default_factory=dict[str, t.Scalar])
         client_ip: Annotated[str, u.Field(description="Client IP address")] = ""
         user_agent: Annotated[str, u.Field(description="Client user agent")] = ""
 

@@ -36,7 +36,7 @@ class FlextWebModelsWebRequest:
             ),
         ]
         headers: Annotated[t.MutableStrMapping, u.Field(description="HTTP headers")] = (
-            u.Field(default_factory=dict)
+            u.Field(default_factory=dict[str, str])
         )
         body: Annotated[
             str | t.JsonValue | None,
@@ -64,7 +64,7 @@ class FlextWebModelsWebRequest:
         headers: Annotated[
             t.MutableStrMapping,
             u.Field(description="HTTP response headers"),
-        ] = u.Field(default_factory=dict)
+        ] = u.Field(default_factory=dict[str, str])
         body: Annotated[
             str | t.JsonValue | None,
             u.Field(description="Response body (optional for 204 No Content)"),

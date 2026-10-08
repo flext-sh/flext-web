@@ -35,7 +35,7 @@ class FlextWebModelsHttp:
         headers: Annotated[
             t.MutableStrMapping,
             u.Field(description="HTTP headers for message"),
-        ] = u.Field(default_factory=dict)
+        ] = u.Field(default_factory=dict[str, str])
         body: Annotated[
             str | t.ScalarMapping | None,
             u.Field(description="Message body content (optional for GET/HEAD)"),
