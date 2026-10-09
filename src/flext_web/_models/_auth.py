@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from types import MappingProxyType
 from typing import Annotated
 
 from flext_cli import m, u
@@ -57,9 +58,9 @@ class FlextWebModelsAuth:
         """Generic entity data model."""
 
         data: Annotated[
-            t.MutableConfigurationMapping,
+            t.ConfigurationMapping,
             u.Field(description="Entity data dictionary"),
-        ] = u.Field(default_factory=dict)
+        ] = u.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
 
 
 __all__: list[str] = ["FlextWebModelsAuth"]

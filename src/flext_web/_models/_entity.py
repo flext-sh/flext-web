@@ -135,17 +135,17 @@ class FlextWebModelsEntity:
         metrics: Annotated[
             MutableMapping[str, t.Scalar],
             u.Field(description="Application metrics"),
-        ] = u.Field(default_factory=dict)
+        ] = u.Field(default_factory=dict[str, t.Scalar])
         web_events: Annotated[
             MutableSequence[str],
             u.Field(description="Web-specific events (application lifecycle)"),
-        ] = u.Field(default_factory=list)
+        ] = u.Field(default_factory=list[str])
         # Assignment form is required so type checkers see the inherited
         # ``domain_events`` default (the core declares it Annotated-only).
         domain_events: Annotated[
             MutableSequence[m.DomainEvent],
             u.Field(description="Uncommitted domain events for event sourcing"),
-        ] = u.Field(default_factory=list)
+        ] = u.Field(default_factory=list[m.DomainEvent])
 
         @override
         def __str__(self) -> str:
