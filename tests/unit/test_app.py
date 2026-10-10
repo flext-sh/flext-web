@@ -45,7 +45,8 @@ class TestsFlextWebApp:
         tm.ok(result)
         client = result.value.test_client()
         response = client.get("/health")
-        payload = cli_u.Cli.json_loads(response.get_data(as_text=True)).unwrap()
+        body: str = response.get_data(as_text=True)
+        payload = cli_u.Cli.json_loads(body).unwrap()
         tm.that(response.status_code, eq=200)
         tm.that(payload, has="status")
 
