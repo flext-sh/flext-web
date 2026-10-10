@@ -10,7 +10,7 @@ from typing import Annotated
 
 from flext_cli import m, u
 
-from flext_web import FlextWebSettings, c, t
+from flext_web import FlextWebSettings, c
 
 
 class FlextWebModelsConfig:
@@ -28,7 +28,6 @@ class FlextWebModelsConfig:
             description: Application description
             debug: Debug mode flag
             testing: Testing mode flag
-            middlewares: List of middleware objects to apply
             docs_url: Swagger UI docs URL
             redoc_url: ReDoc URL
             openapi_url: OpenAPI schema URL
@@ -45,14 +44,16 @@ class FlextWebModelsConfig:
                 max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                 description="FastAPI application title",
             ),
-        ]
+        ] = u.Field(
+            default_factory=lambda: FlextWebSettings.fetch_global().Web.app_name,
+        )
         version: Annotated[
             str,
             u.Field(
                 default_factory=lambda: FlextWebSettings.fetch_global().Web.version,
                 description="Application version",
             ),
-        ]
+        ] = u.Field(default_factory=lambda: FlextWebSettings.fetch_global().Web.version)
         description: Annotated[
             str,
             u.Field(
@@ -63,9 +64,6 @@ class FlextWebModelsConfig:
         ] = c.Web.API_DEFAULT_DESCRIPTION
         debug: Annotated[bool, u.Field(description="FastAPI debug mode")] = False
         testing: Annotated[bool, u.Field(description="FastAPI testing mode")] = False
-        middlewares: Annotated[
-            t.StrSequence, u.Field(description="List of middleware objects")
-        ] = u.Field(default_factory=list)
         docs_url: Annotated[str, u.Field(description="Documentation URL")] = (
             c.Web.API_DOCS_URL
         )

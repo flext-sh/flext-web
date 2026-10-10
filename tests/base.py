@@ -1,16 +1,20 @@
-"""Service base for flext-web tests."""
+"""Service base for flext-web tests.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
 from typing import override
 
-from flext_tests import s as tests_s
+from flext_tests import FlextTestsServiceBase
 
 from flext_web import m
 from tests import TestsFlextWebSettings
 
 
-class TestsFlextWebServiceBase(tests_s):
+class TestsFlextWebServiceBase(FlextTestsServiceBase):
     """Web test service base with source and test settings namespaces."""
 
     # NOTE (multi-agent): flext-tests owns fetch_settings; this project

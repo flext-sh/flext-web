@@ -2,6 +2,9 @@
 
 Tests the FlextWebVersion class methods and module-level exports
 following the canonical FlextVersion test pattern from flext-core.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
@@ -25,7 +28,8 @@ from flext_web.__version__ import FlextWebVersion
 class TestsFlextWebVersion:
     """Test suite for FlextWebVersion class."""
 
-    def test_class_version_string(self) -> None:
+    @staticmethod
+    def test_class_version_string() -> None:
         """The MRO-derived class version is a semantic version string."""
         version = FlextWebVersion.__version__
         tm.that(version, is_=str, none=False, empty=False)
@@ -35,7 +39,8 @@ class TestsFlextWebVersion:
             msg="Version must match semantic versioning",
         )
 
-    def test_class_version_info(self) -> None:
+    @staticmethod
+    def test_class_version_info() -> None:
         """The MRO-derived class version info is a three-integer release tuple."""
         version_info = FlextWebVersion.__version_info__
         tm.that(version_info, is_=tuple, none=False, empty=False, len=3)
@@ -46,7 +51,8 @@ class TestsFlextWebVersion:
             msg="Major version must be non-negative integer",
         )
 
-    def test_class_package_metadata(self) -> None:
+    @staticmethod
+    def test_class_package_metadata() -> None:
         """The version facade publishes every package metadata field."""
         info = {
             "name": FlextWebVersion.__title__,
@@ -68,7 +74,9 @@ class TestsFlextWebVersion:
             "url",
         ]
         tm.that(
-            info, has=required_keys, msg="Package info must contain all required keys"
+            info,
+            has=required_keys,
+            msg="Package info must contain all required keys",
         )
         for key in required_keys:
             tm.that(
@@ -78,14 +86,20 @@ class TestsFlextWebVersion:
                 msg=f"Key {key} must be non-empty string",
             )
 
-    def test_version_format(self) -> None:
+    @staticmethod
+    def test_version_format() -> None:
         """The exported version info matches the PEP 440 release triple."""
         tm.that(__version_info__, eq=Version(__version__).release)
 
-    def test_module_level_exports(self) -> None:
+    @staticmethod
+    def test_module_level_exports() -> None:
         """Test module-level version exports are consistent with class."""
         tm.that(
-            __version__, is_=str, none=False, empty=False, match="^\\d+\\.\\d+\\.\\d+"
+            __version__,
+            is_=str,
+            none=False,
+            empty=False,
+            match="^\\d+\\.\\d+\\.\\d+",
         )
         tm.that(__version_info__, is_=tuple, none=False, empty=False, len=3)
         tm.that(
@@ -99,7 +113,8 @@ class TestsFlextWebVersion:
             msg="Module export must match the version facade",
         )
 
-    def test_metadata_constants(self) -> None:
+    @staticmethod
+    def test_metadata_constants() -> None:
         """Test that metadata constants are properly defined."""
         tm.that(__title__, is_=str)
         tm.that(__description__, is_=str)

@@ -1,7 +1,7 @@
 # FLEXT Web - Usage Examples
 
 This directory shows the current public usage pattern for `flext-web`:
-`from flext_web import web, c, t, p, m, u`.
+`from flext_web import web, c, t, p, m, p, u`.
 
 ## Basic Usage
 
@@ -49,6 +49,6 @@ assert web.api_capabilities().success
 
 ```bash
 cd examples
-python 01_basic_service.py
-python 02_api_usage.py
+python basic_service.py
+python api_usage.py
 ```

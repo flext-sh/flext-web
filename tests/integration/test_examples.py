@@ -1,4 +1,8 @@
-"""Integration tests for the canonical flext-web examples."""
+"""Integration tests for the canonical flext-web examples.
+
+Copyright (c) 2026 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
 
 from __future__ import annotations
 
@@ -14,7 +18,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
 
-class ExamplesFullFunctionalityTest:
+class TestsFlextWebExamplesFullFunctionality:
     """Shared example assertions exercised through collected subclasses."""
 
     @staticmethod
@@ -53,13 +57,13 @@ class ExamplesFullFunctionalityTest:
 
     def test_basic_service_example_exposes_main(self) -> None:
         """The basic service example stays importable and runnable."""
-        module = self._load_example_module("01_basic_service.py", "basic_service")
-        tm.that(callable(module.FlextWebExamples().main), eq=True)
+        module = self._load_example_module("basic_service.py", "basic_service")
+        tm.that(callable(module.FlextWebExamplesBasicService.main), eq=True)
 
     def test_api_usage_example_uses_the_public_facade(self) -> None:
         """The API usage example delegates lifecycle operations to `web`."""
-        module = self._load_example_module("02_api_usage.py", "api_usage")
-        example = module.FlextWebExamples()
+        module = self._load_example_module("api_usage.py", "api_usage")
+        example = module.FlextWebExamplesApiUsage
 
         health_result = example.check_service_health()
         tm.ok(health_result)
@@ -79,7 +83,8 @@ class ExamplesFullFunctionalityTest:
         list_result = example.list_applications()
         tm.ok(list_result)
         tm.that(
-            any(app.id == create_result.value.id for app in list_result.value), eq=True
+            any(app.id == create_result.value.id for app in list_result.value),
+            eq=True,
         )
 
         stop_result = example.stop_application(create_result.value.id)
@@ -88,12 +93,12 @@ class ExamplesFullFunctionalityTest:
 
     def test_api_usage_demo_runs_full_lifecycle(self) -> None:
         """The lifecycle demo returns the projected applications after execution."""
-        module = self._load_example_module("02_api_usage.py", "api_usage_demo")
-        demo_result = module.FlextWebExamples().demo_application_lifecycle()
+        module = self._load_example_module("api_usage.py", "api_usage_demo")
+        demo_result = module.FlextWebExamplesApiUsage().demo_application_lifecycle()
         tm.ok(demo_result)
         tm.that(demo_result.value, length=2)
         tm.that(all(app.running is False for app in demo_result.value), eq=True)
 
 
-class TestsFlextWebExamples(ExamplesFullFunctionalityTest):
+class TestsFlextWebExamples(TestsFlextWebExamplesFullFunctionality):
     """Collected integration tests for canonical examples."""

@@ -22,68 +22,65 @@ class FlextWebSettings(FlextCliSettings):
     """Web runtime settings; all project fields under ``settings.Web.*``."""
 
     model_config = m.SettingsConfigDict(
-        env_prefix="FLEXT_WEB_", env_nested_delimiter="__", extra="ignore"
+        env_prefix="FLEXT_WEB_",
+        env_nested_delimiter="__",
+        extra="ignore",
     )
 
     class _Web(m.BaseModel):
         """Namespaced web runtime settings (pure declaration)."""
 
-        app_name: Annotated[
-            str, m.Field(default="FLEXT Web", description="Application name")
-        ]
-        version: Annotated[
-            str, m.Field(default="1.0.0", description="Service semantic version")
-        ]
+        app_name: Annotated[str, m.Field(description="Application name")] = "FLEXT Web"
+        version: Annotated[str, m.Field(description="Service semantic version")] = (
+            "1.0.0"
+        )
         host: Annotated[
             str,
-            m.Field(
-                default="localhost",
-                min_length=1,
-                pattern=r"\S",
-                description="Bind host",
-            ),
-        ]
-        port: Annotated[
-            int, m.Field(default=8080, ge=1, le=65535, description="Bind port")
-        ]
-        testing: Annotated[bool, m.Field(default=False, description="Testing flag")]
+            m.Field(min_length=1, pattern=r"\S", description="Bind host"),
+        ] = "localhost"
+        port: Annotated[int, m.Field(ge=1, le=65535, description="Bind port")] = 8080
+        testing: Annotated[bool, m.Field(description="Testing flag")] = False
         secret_key: Annotated[
             str | None,
             m.Field(
-                default=None,
                 min_length=32,
-                description="Application secret key sourced from the environment; required at runtime.",
+                description="Application secret key sourced from the environment; "
+                "required at runtime.",
             ),
-        ]
+        ] = None
         auth_username: Annotated[
             str | None,
             m.Field(
-                default=None,
-                description="Credential username sourced from the environment; required to authenticate.",
+                description="Credential username sourced from the environment; "
+                "required to authenticate.",
             ),
-        ]
+        ] = None
         auth_password: Annotated[
             str | None,
             m.Field(
-                default=None,
-                description="Credential password sourced from the environment; required to authenticate.",
+                description="Credential password sourced from the environment; "
+                "required to authenticate.",
             ),
-        ]
+        ] = None
         ssl_enabled: Annotated[
-            bool, m.Field(default=False, description="Enable TLS endpoints")
-        ]
+            bool,
+            m.Field(description="Enable TLS endpoints"),
+        ] = False
         ssl_cert_path: Annotated[
-            str | None, m.Field(default=None, description="TLS certificate file path")
-        ]
+            str | None,
+            m.Field(description="TLS certificate file path"),
+        ] = None
         ssl_key_path: Annotated[
-            str | None, m.Field(default=None, description="TLS key file path")
-        ]
+            str | None,
+            m.Field(description="TLS key file path"),
+        ] = None
 
     if TYPE_CHECKING:
-        Web: _Web
+        Web: _Web = _Web()
     else:
         Web: _Web = m.Field(
-            default_factory=_Web, description="Namespaced web settings."
+            default_factory=_Web,
+            description="Namespaced web settings.",
         )
 
 

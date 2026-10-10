@@ -9,22 +9,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from .services.app import FlextWebApp
-from .services.auth import FlextWebAuth
-from .services.entities import FlextWebEntities
-from .services.handlers import FlextWebHandlers
-from .services.health import FlextWebHealth
-from .services.web import FlextWebServices
+from flext_web.services.app import FlextWebApp
+from flext_web.services.handlers import FlextWebHandlers
+from flext_web.services.web import FlextWebServices
 
 
-class FlextWeb(
-    FlextWebApp,
-    FlextWebServices,
-    FlextWebAuth,
-    FlextWebEntities,
-    FlextWebHealth,
-    FlextWebHandlers,
-):
+class FlextWeb(FlextWebApp, FlextWebServices, FlextWebHandlers):
     """Canonical public facade composed via MRO."""
 
 

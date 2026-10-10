@@ -8,13 +8,13 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from types import MappingProxyType
 from typing import Annotated
 
 from flext_cli import m, u
 
 from flext_web import c, t
-
-from ._base import FlextWebModelsBase
+from flext_web._models.base import FlextWebModelsBase
 
 
 class FlextWebModelsWebRequest:
@@ -36,8 +36,8 @@ class FlextWebModelsWebRequest:
                 description="Request URL",
             ),
         ]
-        headers: Annotated[t.MutableStrMapping, u.Field(description="HTTP headers")] = (
-            u.Field(default_factory=dict)
+        headers: Annotated[t.StrMapping, u.Field(description="HTTP headers")] = u.Field(
+            default_factory=lambda: MappingProxyType[str, str]({})
         )
         body: Annotated[
             str | t.JsonValue | None,
@@ -63,14 +63,16 @@ class FlextWebModelsWebRequest:
             ),
         ]
         headers: Annotated[
-            t.MutableStrMapping, u.Field(description="HTTP response headers")
-        ] = u.Field(default_factory=dict)
+            t.StrMapping,
+            u.Field(description="HTTP response headers"),
+        ] = u.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         body: Annotated[
             str | t.JsonValue | None,
             u.Field(description="Response body (optional for 204 No Content)"),
         ] = None
         response_id: Annotated[
-            str, u.Field(description="Unique response identifier")
+            str,
+            u.Field(description="Unique response identifier"),
         ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
         timestamp: Annotated[datetime, u.Field(description="Response timestamp")] = (
             u.Field(default_factory=u.now)

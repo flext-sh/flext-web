@@ -29,7 +29,10 @@ class FlextWebHandlers(s):
 
     @classmethod
     def handle_create_app(
-        cls, name: str, port: int = settings.Web.port, host: str = settings.Web.host
+        cls,
+        name: str,
+        port: int = settings.Web.port,
+        host: str = settings.Web.host,
     ) -> p.Result[m.Web.Entity]:
         """Handle application creation requests.
 
@@ -104,7 +107,7 @@ class FlextWebHandlers(s):
                     "api_endpoints",
                     "web_dashboard",
                 ],
-            )
+            ),
         )
 
     @staticmethod
@@ -126,7 +129,7 @@ class FlextWebHandlers(s):
                     "configuration": c.Web.MESSAGE_CONFIG_LOADED,
                     "handlers": c.Web.MESSAGE_HANDLERS_REGISTERED,
                 },
-            )
+            ),
         )
 
     @override
@@ -136,15 +139,6 @@ class FlextWebHandlers(s):
         Returns:
             r[bool]: Success contains True if handlers are operational,
             failure contains error message
-
-        """
-        return r[bool].ok(value=True)
-
-    def validate_business_rules(self) -> p.Result[bool]:
-        """Validate business rules for web handlers (s requirement).
-
-        Returns:
-            r[bool]: Success contains True if valid, failure with error message
 
         """
         return r[bool].ok(value=True)

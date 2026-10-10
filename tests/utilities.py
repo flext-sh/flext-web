@@ -31,7 +31,14 @@ class TestsFlextWebUtilities(FlextWebUtilities, FlextTestsUtilities):
 
             @classmethod
             def allocate_port(cls) -> int:
-                """Allocate a unique port for testing."""
+                """Allocate a unique port for testing.
+
+                Returns:
+                    The resulting ``int``.
+
+                Raises:
+                    RuntimeError: If No available TCP port in flext-web test range.
+                """
                 with cls._lock:
                     for _ in range(c.Tests.PORT_START, c.Tests.PORT_END + 1):
                         port = cls._current_port

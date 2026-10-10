@@ -1,34 +1,28 @@
-"""Base model facade for flext-web.
+"""Base helpers for flext-web models.
 
-Absorbs every model shard through MRO so the public ``models.py`` facade
-composes a single ``Api`` namespace.
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from ._auth import FlextWebModelsAuth
-from ._config import FlextWebModelsConfig
-from ._entity import FlextWebModelsEntity
-from ._factory import FlextWebModelsFactory
-from ._http import FlextWebModelsHttp
-from ._responses import FlextWebModelsResponses
-from ._system import FlextWebModelsSystem
-from ._web_message import FlextWebModelsWebMessage
-from ._web_request import FlextWebModelsWebRequest
+from flext_web import c, t
 
 
-class FlextWebModelsBase(
-    FlextWebModelsAuth,
-    FlextWebModelsConfig,
-    FlextWebModelsEntity,
-    FlextWebModelsFactory,
-    FlextWebModelsHttp,
-    FlextWebModelsResponses,
-    FlextWebModelsSystem,
-    FlextWebModelsWebMessage,
-    FlextWebModelsWebRequest,
-):
-    """FLEXT Web model namespace."""
+class FlextWebModelsBase:
+    """Shared model helpers for flext-web model namespaces."""
+
+    @classmethod
+    def coerce_method(cls, value: t.Scalar) -> c.Web.Method:
+        """Coerce user-provided HTTP method values into the Web method enum.
+
+        Returns:
+            The resulting ``c.Web.Method``.
+        """
+        # A method is a string token; any other scalar is compared by its text
+        # form and rejected by the enum when it names no method.
+        normalized_value = (value if isinstance(value, str) else str(value)).upper()
+        return c.Web.Method(normalized_value)
 
 
 __all__: list[str] = ["FlextWebModelsBase"]

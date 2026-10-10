@@ -39,18 +39,6 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
     _ = item
     FlextWebSettings.reset_for_testing()
     _reset_web_runtime_state()
-
-
-def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None) -> None:
-    """Reset the web runtime state and settings singleton after each test."""
-    _ = item, nextitem
-    _reset_web_runtime_state()
-    FlextWebSettings.reset_for_testing()
-
-
-@pytest.fixture(autouse=True)
-def reset_web_runtime() -> None:
-    """Stop any running public runtime through the facade before each test."""
     apps_result = web.list_apps()
     if apps_result.success:
         for app in apps_result.value:
@@ -59,6 +47,13 @@ def reset_web_runtime() -> None:
     status_result = web.service_status()
     if status_result.success and status_result.value.status == "operational":
         _ = web.stop_service()
+
+
+def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None) -> None:
+    """Reset the web runtime state and settings singleton after each test."""
+    _ = item, nextitem
+    _reset_web_runtime_state()
+    FlextWebSettings.reset_for_testing()
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -77,7 +72,7 @@ def pytest_configure(config: pytest.Config) -> None:
             "FLEXT_WEB_WEB__SECRET_KEY": long_enough_value,
             "FLEXT_WEB_WEB__AUTH_USERNAME": "testuser",
             "FLEXT_WEB_WEB__AUTH_PASSWORD": "p" + "0" * 24,
-        })
+        }),
     )
     config.stash[_ENV_CONTEXT_KEY] = stack
 
