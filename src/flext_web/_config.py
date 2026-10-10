@@ -14,8 +14,7 @@ from typing import Annotated
 
 from flext_cli import FlextCliConfig
 
-from flext_core import FlextSettings
-from flext_core import m
+from flext_core import FlextSettings, m
 from flext_web._models import FlextWebModelsWebNamespace
 
 
