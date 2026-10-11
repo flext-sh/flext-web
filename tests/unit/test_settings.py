@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from flext_web import FlextWebSettings
-from tests import c, u, tm
+from tests import c, tm, u
 
 if TYPE_CHECKING:
     from pathlib import Path
