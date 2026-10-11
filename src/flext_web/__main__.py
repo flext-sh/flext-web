@@ -6,7 +6,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web.cli import FlextWebCli, main
+from typing import TYPE_CHECKING
+
+from flext_web import main
+
+if TYPE_CHECKING:
+    from flext_web import FlextWebCli
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

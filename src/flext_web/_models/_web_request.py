@@ -14,7 +14,7 @@ from typing import Annotated
 from flext_cli import m, u
 
 from flext_web import c, t
-from flext_web._models.base import FlextWebModelsBase
+from flext_web._models import FlextWebModelsBase
 
 
 class FlextWebModelsWebRequest:

@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import pytest
 
-from flext_web import c, web
-from tests import m, tm
+from flext_web import web
+from tests import c, m, tm
 
 
 class TestsFlextWebApi:

@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from flext_web import m, p, r, web
+from examples import m, p, r
+from flext_web import web
 
 
 class FlextWebExamplesApiUsage:

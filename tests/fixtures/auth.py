@@ -11,7 +11,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web import FlextWebSettings, m
+from flext_web import FlextWebSettings
+from tests import m
 
 
 class TestsFlextWebAuthFixture:

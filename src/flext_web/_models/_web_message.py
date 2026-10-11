@@ -13,7 +13,7 @@ from typing import Annotated
 from flext_cli import u
 
 from flext_web import c, t
-from flext_web._models._http import FlextWebModelsHttp
+from flext_web._models import FlextWebModelsHttp
 
 
 class FlextWebModelsWebMessage:

@@ -10,8 +10,8 @@ import ipaddress
 
 import pytest
 
-from flext_web import c, u, web
-from tests import tm
+from flext_web import web
+from tests import c, tm, u
 
 
 class TestsFlextWebConfig:
