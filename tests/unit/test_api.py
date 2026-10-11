@@ -70,5 +70,11 @@ class TestsFlextWebApi:
         tm.that(capabilities, has="framework_management")
         tm.that(capabilities, has="service_management")
 
-    def test_settings_property_uses_registered_namespace(self) -> None:
+    @staticmethod
+    def test_settings_property_uses_registered_namespace() -> None:
         """The facade exposes typed settings through `web.settings`."""
+        runtime_settings = web.settings
+        application = web.create_fastapi_app()
+        tm.ok(application)
+        tm.that(application.value.title, eq=runtime_settings.Web.app_name)
+        tm.that(application.value.version, eq=runtime_settings.Web.version)
