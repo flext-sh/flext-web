@@ -13,10 +13,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_tests import tm
-
 import flext_web
 from flext_web import __version__, __version_info__, web
+from tests import tm
 
 if TYPE_CHECKING:
     from tests import t

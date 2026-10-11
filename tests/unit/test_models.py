@@ -12,10 +12,9 @@ from __future__ import annotations
 import ipaddress
 
 import pytest
-from flext_tests import tm
 
 from flext_web import settings
-from tests import c, m
+from tests import c, m, tm
 
 
 class TestsFlextWebAppModelsUnit:
