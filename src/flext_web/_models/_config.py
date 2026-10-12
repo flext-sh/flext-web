@@ -10,7 +10,7 @@ from typing import Annotated
 
 from flext_cli import m, u
 
-from flext_web._constants.base import FlextWebConstantsBase
+from flext_web import c
 from flext_web._settings import FlextWebSettings
 
 
@@ -41,8 +41,8 @@ class FlextWebModelsConfig:
                 # Resolve the current global singleton lazily (the module-level
                 # `settings` capture goes stale when the singleton is replaced).
                 default_factory=lambda: FlextWebSettings.fetch_global().Web.app_name,
-                min_length=FlextWebConstantsBase.VALIDATION_NAME_LENGTH_RANGE[0],
-                max_length=FlextWebConstantsBase.VALIDATION_NAME_LENGTH_RANGE[1],
+                min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
+                max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                 description="FastAPI application title",
             ),
         ] = u.Field(
@@ -59,20 +59,20 @@ class FlextWebModelsConfig:
             str,
             u.Field(
                 min_length=1,
-                max_length=FlextWebConstantsBase.SECURITY_MAX_DESCRIPTION_LENGTH,
+                max_length=c.Web.SECURITY_MAX_DESCRIPTION_LENGTH,
                 description="Application description",
             ),
-        ] = FlextWebConstantsBase.API_DEFAULT_DESCRIPTION
+        ] = c.Web.API_DEFAULT_DESCRIPTION
         debug: Annotated[bool, u.Field(description="FastAPI debug mode")] = False
         testing: Annotated[bool, u.Field(description="FastAPI testing mode")] = False
         docs_url: Annotated[str, u.Field(description="Documentation URL")] = (
-            FlextWebConstantsBase.API_DOCS_URL
+            c.Web.API_DOCS_URL
         )
         redoc_url: Annotated[str, u.Field(description="ReDoc URL")] = (
-            FlextWebConstantsBase.API_REDOC_URL
+            c.Web.API_REDOC_URL
         )
         openapi_url: Annotated[str, u.Field(description="OpenAPI URL")] = (
-            FlextWebConstantsBase.API_OPENAPI_URL
+            c.Web.API_OPENAPI_URL
         )
 
 
