@@ -284,13 +284,13 @@ class FlextWebModelsEntity:
             running_status = c.Web.Status.RUNNING.value
             self.status = starting_status
             restart_event_result = self.add_web_event("ApplicationRestarting")
-            if restart_event_result.failure:  # pragma: no cover
+            if restart_event_result.failure:
                 return r[FlextWebModelsEntity.Entity].fail(
                     f"Failed to add web event: {restart_event_result.error}",
                 )
             self.status = running_status
             start_event_result = self.add_web_event("ApplicationStarted")
-            if start_event_result.failure:  # pragma: no cover
+            if start_event_result.failure:
                 return r[FlextWebModelsEntity.Entity].fail(
                     f"Failed to add web event: {start_event_result.error}",
                 )
@@ -308,7 +308,7 @@ class FlextWebModelsEntity:
                 return r[FlextWebModelsEntity.Entity].fail("already running")
             self.status = running_status
             event_result = self.add_web_event("ApplicationStarted")
-            if event_result.failure:  # pragma: no cover
+            if event_result.failure:
                 return r[FlextWebModelsEntity.Entity].fail(
                     f"Failed to add web event: {event_result.error}",
                 )
@@ -327,7 +327,7 @@ class FlextWebModelsEntity:
                 return r[FlextWebModelsEntity.Entity].fail("not running")
             self.status = stopped_status
             event_result = self.add_web_event("ApplicationStopped")
-            if event_result.failure:  # pragma: no cover
+            if event_result.failure:
                 return r[FlextWebModelsEntity.Entity].fail(
                     f"Failed to add web event: {event_result.error}",
                 )
@@ -349,7 +349,7 @@ class FlextWebModelsEntity:
                 return r[bool].fail("Metrics must be a dict of supported metric keys")
             self.metrics.update(new_metrics)
             event_result = self.add_web_event("MetricsUpdated")
-            if event_result.failure:  # pragma: no cover
+            if event_result.failure:
                 return r[bool].fail(f"Failed to add web event: {event_result.error}")
             return r[bool].ok(value=True)
 
