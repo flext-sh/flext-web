@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from flext_tests import api, td, tf, tk, tm
 
     from flext_web import d, e, h, r, x
-    from tests import fixtures, integration, unit
     from tests.base import TestsFlextWebServiceBase, s
     from tests.constants import TestsFlextWebConstants, c
     from tests.models import TestsFlextWebModels, m
@@ -38,7 +37,6 @@ __all__: tuple[str, ...] = (
     "c",
     "d",
     "e",
-    "fixtures",
     "h",
     "m",
     "p",
@@ -68,9 +66,7 @@ install_lazy_exports(
         "c": ".constants",
         "d": "flext_web",
         "e": "flext_web",
-        "fixtures": ".fixtures",
         "h": "flext_web",
-        "integration": ".integration",
         "m": ".models",
         "p": ".protocols",
         "r": "flext_web",
@@ -81,7 +77,6 @@ install_lazy_exports(
         "tk": "flext_tests",
         "tm": "flext_tests",
         "u": ".utilities",
-        "unit": ".unit",
         "x": "flext_web",
     }),
     public_exports=__all__,

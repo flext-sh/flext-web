@@ -26,7 +26,7 @@ class FlextWebModels(FlextCliModels):
     """HTTP domain models for flext-web."""
 
     class Web(
-        FlextWebModelsBase,
+        FlextWebModelsAuth,
         FlextWebModelsConfig,
         FlextWebModelsEntity,
         FlextWebModelsHttp,
@@ -34,7 +34,7 @@ class FlextWebModels(FlextCliModels):
         FlextWebModelsSystem,
         FlextWebModelsWebMessage,
         FlextWebModelsWebRequest,
-        FlextWebModelsAuth,
+        FlextWebModelsBase,
         FlextWebModelsWebNamespace,
     ):
         """Web domain models namespace."""
