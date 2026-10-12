@@ -9,20 +9,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Self, override
 
-from flext_web import (
-    FlextWebAuth,
-    FlextWebEntities,
-    FlextWebMonitoring,
-    FlextWebSettings,
-    c,
-    e,
-    m,
-    p,
-    r,
-    settings,
-    t,
-    u,
-)
+from flext_web import FlextWebSettings, c, e, m, p, r, settings, t, u
+from flext_web.services import FlextWebAuth, FlextWebEntities, FlextWebMonitoring
 
 
 class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):

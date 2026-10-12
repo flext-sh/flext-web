@@ -15,7 +15,7 @@ from typing import Annotated
 from flext_cli import FlextCliConfig
 
 from flext_core import FlextSettings, m
-from flext_web._models import FlextWebModelsWebNamespace
+from flext_web._models.config import FlextWebModelsWebNamespace
 
 
 class FlextWebConfig(FlextSettings, FlextCliConfig):

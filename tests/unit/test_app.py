@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import u as cli_u
+import flext_cli
 
 from flext_web import FlextWebSettings, web
 from tests import tm
@@ -36,7 +36,10 @@ class TestsFlextWebApp:
         )
         result = web.create_flask_app(settings)
         tm.ok(result)
-        tm.that(result.value.config["SECRET_KEY"], eq=settings.Web.secret_key)
+        tm.that(
+            result.value.secret_key == settings.Web.secret_key,
+            eq=True,
+        )
 
     @staticmethod
     def test_create_flask_app_health_route() -> None:
@@ -46,7 +49,7 @@ class TestsFlextWebApp:
         client = result.value.test_client()
         response = client.get("/health")
         body: str = response.get_data(as_text=True)
-        payload = cli_u.Cli.json_loads(body).unwrap()
+        payload = flext_cli.u.Cli.json_loads(body).unwrap()
         tm.that(response.status_code, eq=200)
         tm.that(payload, has="status")
 

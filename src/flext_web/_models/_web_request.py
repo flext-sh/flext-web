@@ -14,7 +14,6 @@ from typing import Annotated
 from flext_cli import m, u
 
 from flext_web import c, t
-from flext_web._models import FlextWebModelsBase
 
 
 class FlextWebModelsWebRequest:
@@ -25,7 +24,7 @@ class FlextWebModelsWebRequest:
 
         method: Annotated[
             c.Web.Method,
-            u.PlainValidator(FlextWebModelsBase.coerce_method),
+            u.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
             u.Field(description="HTTP method"),
         ] = c.Web.Method.GET
         url: Annotated[

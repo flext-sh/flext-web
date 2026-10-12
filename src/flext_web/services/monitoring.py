@@ -6,7 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web import FlextWebHealth, c, m, p, r, t
+from flext_web import c, m, p, r, t
+from flext_web.services import FlextWebHealth
 
 
 class FlextWebMonitoring(FlextWebHealth):

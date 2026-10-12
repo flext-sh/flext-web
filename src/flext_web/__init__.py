@@ -11,21 +11,29 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING
 
 from flext_core import install_lazy_exports
-from flext_web.__version__ import (
-    __author__,
-    __author_email__,
-    __description__,
-    __license__,
-    __title__,
-    __url__,
-    __version__,
-    __version_info__,
-)
+from flext_web.__version__ import __version__
 
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
 
-    from flext_web import services
+    from flext_web import (
+        _constants,
+        _models,
+        _protocols,
+        _typings,
+        _utilities,
+        services,
+    )
+    from flext_web.__version__ import (
+        FlextWebVersion,
+        __author__,
+        __author_email__,
+        __description__,
+        __license__,
+        __title__,
+        __url__,
+        __version_info__,
+    )
     from flext_web._config import FlextWebConfig, config
     from flext_web._settings import FlextWebSettings, settings
     from flext_web.api import FlextWeb, web
@@ -34,36 +42,23 @@ if TYPE_CHECKING:
     from flext_web.constants import FlextWebConstants, c
     from flext_web.models import FlextWebModels, FlextWebModelsWebNamespace, m
     from flext_web.protocols import FlextWebProtocols, p
-    from flext_web.services.app import FlextWebApp
-    from flext_web.services.auth import FlextWebAuth
-    from flext_web.services.entities import FlextWebEntities
-    from flext_web.services.handlers import FlextWebHandlers
-    from flext_web.services.health import FlextWebHealth
-    from flext_web.services.monitoring import FlextWebMonitoring
-    from flext_web.services.web import FlextWebServices
     from flext_web.typings import FlextWebTypes, t
     from flext_web.utilities import FlextWebUtilities, u
 
 
 __all__: tuple[str, ...] = (
     "FlextWeb",
-    "FlextWebApp",
-    "FlextWebAuth",
     "FlextWebCli",
     "FlextWebConfig",
     "FlextWebConstants",
-    "FlextWebEntities",
-    "FlextWebHandlers",
-    "FlextWebHealth",
     "FlextWebModels",
     "FlextWebModelsWebNamespace",
-    "FlextWebMonitoring",
     "FlextWebProtocols",
     "FlextWebServiceBase",
-    "FlextWebServices",
     "FlextWebSettings",
     "FlextWebTypes",
     "FlextWebUtilities",
+    "FlextWebVersion",
     "__author__",
     "__author_email__",
     "__description__",
@@ -72,6 +67,11 @@ __all__: tuple[str, ...] = (
     "__url__",
     "__version__",
     "__version_info__",
+    "_constants",
+    "_models",
+    "_protocols",
+    "_typings",
+    "_utilities",
     "c",
     "config",
     "d",
@@ -95,23 +95,29 @@ install_lazy_exports(
     globals(),
     MappingProxyType({
         "FlextWeb": ".api",
-        "FlextWebApp": ".services.app",
-        "FlextWebAuth": ".services.auth",
         "FlextWebCli": ".cli",
         "FlextWebConfig": "._config",
         "FlextWebConstants": ".constants",
-        "FlextWebEntities": ".services.entities",
-        "FlextWebHandlers": ".services.handlers",
-        "FlextWebHealth": ".services.health",
         "FlextWebModels": ".models",
         "FlextWebModelsWebNamespace": ".models",
-        "FlextWebMonitoring": ".services.monitoring",
         "FlextWebProtocols": ".protocols",
         "FlextWebServiceBase": ".base",
-        "FlextWebServices": ".services.web",
         "FlextWebSettings": "._settings",
         "FlextWebTypes": ".typings",
         "FlextWebUtilities": ".utilities",
+        "FlextWebVersion": ".__version__",
+        "__author__": ".__version__",
+        "__author_email__": ".__version__",
+        "__description__": ".__version__",
+        "__license__": ".__version__",
+        "__title__": ".__version__",
+        "__url__": ".__version__",
+        "__version_info__": ".__version__",
+        "_constants": "._constants",
+        "_models": "._models",
+        "_protocols": "._protocols",
+        "_typings": "._typings",
+        "_utilities": "._utilities",
         "c": ".constants",
         "config": "._config",
         "d": "flext_cli",

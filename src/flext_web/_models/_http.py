@@ -14,7 +14,6 @@ from flext_cli import m, u
 
 from flext_core import r
 from flext_web import c, p, t
-from flext_web._models import FlextWebModelsBase
 
 
 class FlextWebModelsHttp:
@@ -69,7 +68,7 @@ class FlextWebModelsHttp:
         ]
         method: Annotated[
             c.Web.Method,
-            u.PlainValidator(FlextWebModelsBase.coerce_method),
+            u.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
             u.Field(
                 description="HTTP method (GET, POST, PUT, DELETE, "
                 "PATCH, HEAD, OPTIONS)",

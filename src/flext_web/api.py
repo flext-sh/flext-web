@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web import FlextWebApp, FlextWebHandlers, FlextWebServices
+from flext_web.services import FlextWebApp, FlextWebHandlers, FlextWebServices
 
 
 class FlextWeb(FlextWebApp, FlextWebServices, FlextWebHandlers):
