@@ -359,6 +359,7 @@ addopts = [
   "--strict-markers",
   "--markdown-docs",
   "--durations=10",
+  "--flext-enforce-strict",
   "--timeout=10",
 ]
 flext_slow_timeout_seconds = "30"
@@ -432,6 +433,7 @@ ignore = [
   "typing-only-first-party-import",
   "typing-only-standard-library-import",
   "typing-only-third-party-import",
+  "unsorted-imports",
 ]
 select = ["ALL"]
 unfixable = [
@@ -463,11 +465,11 @@ runtime-evaluated-base-classes = [
   "flext_tests.FlextTestsServiceBase",
   "flext_tests.FlextTestsSettings",
   "flext_tests.FlextTestsUtilities.Tests",
+  "flext_web.FlextWebSettings",
   "flext_web._models.FlextWebModelsHttp.Request",
   "flext_web._models.FlextWebModelsHttp.Response",
   "flext_web._models._http.Message",
   "flext_web._models.config.FlextWebModelsWebNamespace",
-  "flext_web._settings.FlextWebSettings",
   "flext_web.s",
   "flext_web.services.FlextWebApp",
   "flext_web.services.FlextWebAuth",
