@@ -2,7 +2,7 @@
 # @flext-owner: flext-infra/config/codegen.yaml + flext-infra/src/flext_infra/templates/project/base/pyproject.toml.j2
 # @flext-adjust: MANAGED=conflict_sections + overwrite_project_keys. CUSTOM=preserve_project_keys and [tool.*] outside conflict_sections. Never edit this projection.
 # @flext-regenerate: make gen
-
+# @flext-rendered-by: flext-infra 0.12.0
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
@@ -31,7 +31,7 @@ dependencies = [
   "pydantic>=2.14.1,<3",
   "pydantic-settings>=2.15.0",
   "pyyaml>=6.0.3",
-  "starlette>=1.7.0",
+  "starlette>=1.8.0",
   "structlog>=25.5.0,<27",
   "typing-extensions>=4.16.0",
   "uvicorn>=0.54.0",
@@ -604,7 +604,6 @@ whitelines = 1
 constraint-dependencies = ["mypy<2.4.0"]
 environments = ["sys_platform == 'linux'", "sys_platform == 'darwin'"]
 link-mode = "copy"
-override-dependencies = ["flext-web"]
 
 [tool.uv.sources.flext-web]
 workspace = true
