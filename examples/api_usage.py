@@ -44,6 +44,7 @@ class FlextWebExamplesApiUsage:
 
         Returns:
             The resulting ``p.Result[m.Web.ApplicationResponse]``.
+
         """
         create_result: p.Result[m.Web.ApplicationResponse] = web.create_app(
             m.Web.AppData(name=name, host=host, port=port),
@@ -56,6 +57,7 @@ class FlextWebExamplesApiUsage:
 
         Returns:
             The resulting ``p.Result[m.Web.ApplicationResponse]``.
+
         """
         start_result: p.Result[m.Web.ApplicationResponse] = web.start_app(app_id)
         return start_result
@@ -68,6 +70,7 @@ class FlextWebExamplesApiUsage:
 
         Returns:
             The resulting ``p.Result[m.Web.ApplicationResponse]``.
+
         """
         fetch_result: p.Result[m.Web.ApplicationResponse] = web.fetch_app(app_id)
         return fetch_result
@@ -78,6 +81,7 @@ class FlextWebExamplesApiUsage:
 
         Returns:
             The resulting ``p.Result[m.Web.ApplicationResponse]``.
+
         """
         stop_result: p.Result[m.Web.ApplicationResponse] = web.stop_app(app_id)
         return stop_result
@@ -88,6 +92,7 @@ class FlextWebExamplesApiUsage:
 
         Returns:
             The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+
         """
         list_result: p.Result[Sequence[m.Web.ApplicationResponse]] = web.list_apps()
         return list_result
@@ -99,6 +104,7 @@ class FlextWebExamplesApiUsage:
 
         Returns:
             The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+
         """
         first_port = self._allocate_demo_port()
         second_port = self._allocate_demo_port(first_port)
@@ -125,6 +131,7 @@ class FlextWebExamplesApiUsage:
 
         Returns:
             The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+
         """
         return r.traverse(created, lambda app: web.start_app(app.id)).map(
             lambda _: created,
@@ -138,6 +145,7 @@ class FlextWebExamplesApiUsage:
 
         Returns:
             The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+
         """
         return r.traverse(created, lambda app: web.stop_app(app.id)).map(
             lambda _: created,

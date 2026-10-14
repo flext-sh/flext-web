@@ -19,6 +19,7 @@ class FlextWebMonitoring(FlextWebHealth):
 
         Returns:
             The resulting ``p.Result[t.Web.ResponseDict]``.
+
         """
         return r[t.Web.ResponseDict].ok({
             "application_management": ["create_app", "fetch_app", "list_apps"],

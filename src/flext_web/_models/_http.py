@@ -111,6 +111,7 @@ class FlextWebModelsHttp:
 
             Returns:
                 The resulting ``p.Result[FlextWebModelsHttp.Request]``.
+
             """
             return r[FlextWebModelsHttp.Request].create_from_callable(
                 lambda: FlextWebModelsHttp.Request.model_validate({
@@ -178,6 +179,7 @@ class FlextWebModelsHttp:
 
             Returns:
                 The resulting ``p.Result[FlextWebModelsHttp.Response]``.
+
             """
             return r[FlextWebModelsHttp.Response].create_from_callable(
                 lambda: cls.model_validate({

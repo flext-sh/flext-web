@@ -152,6 +152,7 @@ class TestsFlextWebService:
 
         Returns:
             The resulting ``bool``.
+
         """
         return isinstance(candidate, p.Web.WebServiceRules)
 

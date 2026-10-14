@@ -62,6 +62,7 @@ class FlextWebModelsEntity:
             Raises:
                 ValueError: If Name must be between; or if Name; or if Name contains
                     dangerous pattern.
+
             """
             min_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[0]
             max_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[1]
@@ -119,6 +120,7 @@ class FlextWebModelsEntity:
 
             Raises:
                 ValueError: If Invalid status.
+
             """
             valid_statuses = set(c.Web.STATUSES)
             if v not in valid_statuses:
@@ -239,6 +241,7 @@ class FlextWebModelsEntity:
 
             Returns:
                 The resulting ``p.Result[m.DomainEvent]``.
+
             """
             if not event_type.strip():
                 return r[m.DomainEvent].fail(
@@ -259,6 +262,7 @@ class FlextWebModelsEntity:
 
             Returns:
                 The resulting ``t.ConfigurationMapping``.
+
             """
             return {
                 "status": self.status,
@@ -274,6 +278,7 @@ class FlextWebModelsEntity:
 
             Returns:
                 The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
+
             """
             can_restart_validated = self.can_restart
             if not can_restart_validated:
@@ -301,6 +306,7 @@ class FlextWebModelsEntity:
 
             Returns:
                 The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
+
             """
             running_status = c.Web.Status.RUNNING.value
             already_running = self.status == running_status
@@ -319,6 +325,7 @@ class FlextWebModelsEntity:
 
             Returns:
                 The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
+
             """
             running_status = c.Web.Status.RUNNING.value
             stopped_status = c.Web.Status.STOPPED.value

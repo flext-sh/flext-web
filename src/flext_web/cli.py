@@ -49,6 +49,7 @@ class FlextWebCli:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             debug_value = False if self.no_debug else self.debug
             web_overrides: t.MutableMappingKV[str, str | int] = {}
@@ -99,6 +100,7 @@ class FlextWebCli:
 
         Returns:
             The resulting ``cli_p.Cli.Application``.
+
         """
         app = cli.create_app_with_common_params(
             name="flext-web",
@@ -123,6 +125,7 @@ class FlextWebCli:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return params.execute()
 

@@ -25,17 +25,42 @@ class FlextWebProtocolsData:
 
         @staticmethod
         def fetch_by_id(entity_id: str) -> p.Result[t.Web.ResponseDict]:
-            """Fetch a single application record by id."""
+            """Fetch a single application record by id.
+
+            Args:
+                entity_id: Identifier of the record to fetch.
+
+            Returns:
+                Ok with the stored record, or Fail when no record exists.
+
+            """
             ...
 
         @staticmethod
         def save(entity: t.Web.ResponseDict) -> p.Result[t.Web.ResponseDict]:
-            """Persist an application record."""
+            """Persist an application record.
+
+            Args:
+                entity: Record payload to store.
+
+            Returns:
+                Ok with the stored record, or Fail when persistence fails.
+
+            """
             ...
 
         @staticmethod
         def delete(entity_id: str) -> p.Result[bool]:
-            """Delete an application record."""
+            """Delete an application record.
+
+            Args:
+                entity_id: Identifier of the record to delete.
+
+            Returns:
+                Ok with ``True`` when a record was removed, ``False``
+                when the identifier is unknown.
+
+            """
             ...
 
         @staticmethod
@@ -47,7 +72,15 @@ class FlextWebProtocolsData:
         def find_by_criteria(
             criteria: t.Web.RequestDict,
         ) -> p.Result[Sequence[t.Web.ResponseDict]]:
-            """Return records matching the given criteria."""
+            """Return records matching the given criteria.
+
+            Args:
+                criteria: Field/value pairs every record must satisfy.
+
+            Returns:
+                Ok with the matching records.
+
+            """
             ...
 
     @runtime_checkable
@@ -56,11 +89,29 @@ class FlextWebProtocolsData:
 
         @staticmethod
         def handle_request(request: t.Web.RequestDict) -> p.Result[t.Web.ResponseDict]:
-            """Handle a web request payload."""
+            """Handle a web request payload.
+
+            Args:
+                request: Request payload to process.
+
+            Returns:
+                Ok with the response payload, or Fail with the handling
+                error.
+
+            """
             ...
 
         def execute(self, command: t.Web.RequestDict) -> p.Result[t.Web.ResponseDict]:
-            """Execute a handler command."""
+            """Execute a handler command.
+
+            Args:
+                command: Command payload to execute.
+
+            Returns:
+                Ok with the response payload, or Fail with the execution
+                error.
+
+            """
             ...
 
 

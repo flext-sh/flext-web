@@ -29,6 +29,7 @@ class TestsFlextWebHandlers:
 
         Returns:
             The resulting ``int``.
+
         """
         port = u.Tests.TestPortManager.allocate_port()
         self._allocated_ports.append(port)
