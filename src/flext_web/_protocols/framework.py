@@ -36,14 +36,29 @@ class FlextWebProtocolsFramework:
             endpoint: Callable[..., t.Web.ResponseDict],
             **kwargs: t.Scalar,
         ) -> None:
-            """Register an API route."""
+            """Register an API route.
+
+            Args:
+                path: URL path served by the route.
+                endpoint: Callable producing the route response.
+                **kwargs: Framework-specific route options.
+
+            """
             ...
 
         def middleware(
             self,
             middleware_type: str,
         ) -> Callable[..., Callable[..., FlextWebProtocolsFramework.FrameworkResponse]]:
-            """Register middleware."""
+            """Register middleware.
+
+            Args:
+                middleware_type: Framework middleware class name.
+
+            Returns:
+                Decorator wrapping the middleware handler.
+
+            """
             ...
 
     @runtime_checkable
@@ -51,7 +66,15 @@ class FlextWebProtocolsFramework:
         """Duck-type protocol for Flask-like framework apps."""
 
         def before_request(self, f: Callable[..., None]) -> Callable[..., None]:
-            """Register a before-request hook."""
+            """Register a before-request hook.
+
+            Args:
+                f: Callable invoked before each request.
+
+            Returns:
+                The registered callable.
+
+            """
             ...
 
         def route(
@@ -59,7 +82,16 @@ class FlextWebProtocolsFramework:
             rule: str,
             **options: t.Scalar,
         ) -> Callable[..., Callable[..., t.Web.ResponseDict]]:
-            """Register a URL route."""
+            """Register a URL route.
+
+            Args:
+                rule: URL rule served by the route.
+                **options: Framework-specific route options.
+
+            Returns:
+                Decorator wrapping the route handler.
+
+            """
             ...
 
 

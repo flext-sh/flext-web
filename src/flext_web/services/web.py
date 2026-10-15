@@ -9,20 +9,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Self, override
 
-from flext_web import (
-    FlextWebAuth,
-    FlextWebEntities,
-    FlextWebMonitoring,
-    FlextWebSettings,
-    c,
-    e,
-    m,
-    p,
-    r,
-    settings,
-    t,
-    u,
-)
+from flext_web import FlextWebSettings, c, e, m, p, r, settings, t, u
+from flext_web.services import FlextWebAuth, FlextWebEntities, FlextWebMonitoring
 
 
 class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
@@ -34,6 +22,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[Self]``.
+
         """
         instance = cls.with_settings(settings) if settings is not None else cls()
         ok_result: p.Result[Self] = r.ok(instance)
@@ -61,6 +50,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return u.Web.WebService.configure_middleware()
 
@@ -72,6 +62,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[m.Web.ApplicationResponse]``.
+
         """
         return u.Web.WebAppManager.create_app(
             name=app_data.name,
@@ -85,11 +76,21 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return self.validate_business_rules()
 
     def fetch_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
-        """Return a registered application by identifier."""
+        """Return a registered application by identifier.
+
+        Args:
+            app_id: Identifier of the application to fetch.
+
+        Returns:
+            Ok with the application response, or Fail when the identifier
+            is invalid or the application is unknown.
+
+        """
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
             return r[m.Web.ApplicationResponse].fail(app_id_result.error)
@@ -103,6 +104,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return u.Web.WebService.initialize_routes()
 
@@ -111,6 +113,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+
         """
         return u.Web.WebAppManager.list_apps().flat_map(
             self._application_responses_from_payloads,
@@ -121,6 +124,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[m.Web.ApplicationResponse]``.
+
         """
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
@@ -140,6 +144,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         _ = debug
         init_result = self.initialize_routes()
@@ -161,6 +166,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[m.Web.ApplicationResponse]``.
+
         """
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
@@ -174,6 +180,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         apps_result = self.list_apps()
         if apps_result.failure:
@@ -191,6 +198,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         state = u.Web.service_state
         if state["service_running"] and not state["routes_initialized"]:
@@ -213,6 +221,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[m.Web.ApplicationResponse]``.
+
         """
         created_at_raw = payload.get("created_at")
         created_at = (
@@ -245,6 +254,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+
         """
         responses: list[m.Web.ApplicationResponse] = []
         for payload in payloads:
@@ -262,6 +272,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
         Returns:
             The resulting ``p.Result[str]``.
+
         """
         normalized_app_id = u.to_str(app_id)
         if not normalized_app_id:

@@ -9,8 +9,7 @@ from __future__ import annotations
 
 from typing import ClassVar, override
 
-from flext_web import c, m, p, r, s, settings, u
-from flext_web.__version__ import __version__
+from flext_web import __version__, c, m, p, r, s, settings, u
 
 
 class FlextWebHandlers(s):

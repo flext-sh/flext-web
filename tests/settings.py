@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsSettings
 
-from flext_web._settings import FlextWebSettings
+from flext_web import FlextWebSettings
 
 
 class TestsFlextWebSettings(FlextWebSettings, FlextTestsSettings):

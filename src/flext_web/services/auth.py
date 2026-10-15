@@ -23,6 +23,7 @@ class FlextWebAuth(s):
 
         Returns:
             The resulting ``p.Result[m.Web.AuthResponse]``.
+
         """
         expected_username = self.settings.Web.auth_username
         expected_password = self.settings.Web.auth_password
@@ -56,6 +57,7 @@ class FlextWebAuth(s):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return r[bool].ok(value=True)
 
@@ -70,6 +72,7 @@ class FlextWebAuth(s):
 
         Returns:
             The resulting ``p.Result[m.Web.UserResponse]``.
+
         """
         if user_data.username.isdigit():
             return e.fail_validation("username", error="cannot be numeric-only")

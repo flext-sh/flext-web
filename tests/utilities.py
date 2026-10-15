@@ -38,6 +38,7 @@ class TestsFlextWebUtilities(FlextWebUtilities, FlextTestsUtilities):
 
                 Raises:
                     RuntimeError: If No available TCP port in flext-web test range.
+
                 """
                 with cls._lock:
                     for _ in range(c.Tests.PORT_START, c.Tests.PORT_END + 1):

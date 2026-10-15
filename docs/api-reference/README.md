@@ -27,8 +27,8 @@ This section is generated from public exports and real docstrings.
 
 ## Surface Summary
 
-- Primary facades: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebCli`,
-  `FlextWebConfig`, `FlextWebConstants` (+12 more)
+- Primary facades: `FlextWeb`, `FlextWebCli`, `FlextWebConfig`, `FlextWebConstants`,
+  `FlextWebModels`, `FlextWebModelsWebNamespace` (+6 more)
 - Generated module pages: `8`
 
 Back to [project docs](../index.md).

@@ -9,10 +9,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import tm
 from packaging.version import Version
 
 from flext_web import (
+    FlextWebVersion,
     __author__,
     __author_email__,
     __description__,
@@ -22,7 +22,7 @@ from flext_web import (
     __version__,
     __version_info__,
 )
-from flext_web.__version__ import FlextWebVersion
+from tests import tm
 
 
 class TestsFlextWebVersion:

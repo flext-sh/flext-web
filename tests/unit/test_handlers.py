@@ -6,10 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import tm
-
 from flext_web import web
-from tests import m, u
+from tests import m, tm, u
 
 
 class TestsFlextWebHandlers:
@@ -31,6 +29,7 @@ class TestsFlextWebHandlers:
 
         Returns:
             The resulting ``int``.
+
         """
         port = u.Tests.TestPortManager.allocate_port()
         self._allocated_ports.append(port)

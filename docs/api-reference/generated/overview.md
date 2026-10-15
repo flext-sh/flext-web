@@ -18,13 +18,14 @@
   Content, Topic :: Software Development :: Libraries :: Python Modules, Typing :: Typed
 - Project class: `domain`
 - Keywords: `enterprise`, `flask`, `flext`, `frontend`, `typed`, `web`
-- Main facades: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebCli`,
-  `FlextWebConfig`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers` (+10
-  more)
+- Main facades: `FlextWeb`, `FlextWebCli`, `FlextWebConfig`, `FlextWebConstants`,
+  `FlextWebModels`, `FlextWebModelsWebNamespace`, `FlextWebProtocols`,
+  `FlextWebServiceBase` (+4 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
-- Public symbol exports: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`, `FlextWebCli`,
-  `FlextWebConfig`, `FlextWebConstants`, `FlextWebEntities`, `FlextWebHandlers`,
-  `FlextWebHealth`, `FlextWebModels` (+12 more)
+- Public symbol exports: `FlextWeb`, `FlextWebCli`, `FlextWebConfig`,
+  `FlextWebConstants`, `FlextWebModels`, `FlextWebModelsWebNamespace`,
+  `FlextWebProtocols`, `FlextWebServiceBase`, `FlextWebSettings`, `FlextWebTypes` (+6
+  more)
 - Exported module shortcuts: `services`
 - Generated module pages: `8`
 

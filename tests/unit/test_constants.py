@@ -11,9 +11,7 @@ from __future__ import annotations
 import ipaddress
 from collections.abc import Mapping
 
-from flext_tests import tm
-
-from tests import c
+from tests import c, tm
 
 
 class TestsFlextWebConstantsUnit:

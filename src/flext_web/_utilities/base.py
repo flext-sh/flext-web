@@ -9,3 +9,6 @@ from __future__ import annotations
 
 class FlextWebUtilitiesBase:
     """Base utilities for flext-web."""
+
+
+__all__: list[str] = ["FlextWebUtilitiesBase"]

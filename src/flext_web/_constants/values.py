@@ -113,7 +113,6 @@ class FlextWebConstantsValues:
     PRIVILEGED_PORTS_MAX: Final[int] = 1023
 
     VALIDATION_PORT_RANGE: Final[tuple[int, int]] = (1, 65535)
-    VALIDATION_NAME_LENGTH_RANGE: Final[tuple[int, int]] = (3, 100)
     VALIDATION_MAX_CONTENT_LENGTH_DEFAULT: Final[int] = 16 * 1024 * 1024
     VALIDATION_MIN_CONTENT_LENGTH: Final[int] = 0
     VALIDATION_REQUEST_TIMEOUT_DEFAULT: Final[int] = c.DEFAULT_TIMEOUT_SECONDS
@@ -175,7 +174,6 @@ class FlextWebConstantsValues:
     SECURITY_SESSION_COOKIE_SECURE_DEFAULT: Final[bool] = False
     SECURITY_SESSION_COOKIE_HTTPONLY_DEFAULT: Final[bool] = True
     SECURITY_SESSION_COOKIE_SAMESITE_DEFAULT: Final[str] = "Lax"
-    SECURITY_MAX_DESCRIPTION_LENGTH: Final[int] = 500
     SECURITY_MAX_HOST_LENGTH: Final[int] = 255
 
     FRAMEWORK_INTERFACE_ASGI: Final[str] = "asgi"
@@ -192,11 +190,6 @@ class FlextWebConstantsValues:
 
     MESSAGE_CONFIG_LOADED: Final[str] = "loaded"
     MESSAGE_HANDLERS_REGISTERED: Final[str] = "registered"
-
-    API_DOCS_URL: Final[str] = "/docs"
-    API_REDOC_URL: Final[str] = "/redoc"
-    API_OPENAPI_URL: Final[str] = "/openapi.json"
-    API_DEFAULT_DESCRIPTION: Final[str] = "Generic HTTP Service"
 
 
 __all__: list[str] = ["FlextWebConstantsValues"]
