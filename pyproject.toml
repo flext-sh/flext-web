@@ -60,6 +60,8 @@ flext-web = "flext_web.__main__:main"
 Documentation = "https://github.com/flext-sh/flext/blob/main/README.md"
 Homepage = "https://github.com/flext-sh/flext"
 
+[project.optional-dependencies]
+
 [dependency-groups]
 dev = [
   "actionlint-py>=1.7.12.24",
