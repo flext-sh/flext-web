@@ -13,6 +13,7 @@ from abc import ABC
 from typing import ClassVar, override
 
 from flext_core import FlextService
+
 from flext_web import FlextWebSettings
 
 

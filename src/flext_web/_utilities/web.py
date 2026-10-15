@@ -10,8 +10,8 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, ClassVar
 
 from flext_cli import u
-
 from flext_core import r
+
 from flext_web import c, t
 
 if TYPE_CHECKING:
