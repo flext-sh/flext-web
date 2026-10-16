@@ -55,8 +55,9 @@ verification).
 - Parent FLEXT chain: read this project's `pyproject.toml` `dependencies` array filtered
   by `flext-*`. The FLEXT cascade is encoded in the inheritance lists of the facade
   classes listed under Module Map above.
-- Public extensions exposed by this project: `FlextWeb`, `FlextWebApp`, `FlextWebAuth`,
-  `FlextWebCli`, `FlextWebConfig`, `FlextWebConstants` (+12 more).
+- Public extensions exposed by this project: `FlextWeb`, `FlextWebCli`,
+  `FlextWebConfig`, `FlextWebConstants`, `FlextWebModels`, `FlextWebModelsWebNamespace`
+  (+6 more).
 - Library abstraction boundaries: see AGENTS.md §2.7.
 
 ## Quality Gates

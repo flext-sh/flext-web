@@ -12,6 +12,7 @@ from flext_cli import FlextCliUtilities
 
 from flext_web._utilities.base import FlextWebUtilitiesBase
 from flext_web._utilities.web import FlextWebUtilitiesWeb
+from flext_web._utilities.flext_web_examples_utilities import FlextWebExamplesUtilities
 
 if TYPE_CHECKING:
     from flext_web import t
@@ -26,7 +27,7 @@ class FlextWebUtilities(FlextCliUtilities):
     Uses advanced builder/DSL patterns for composition.
     """
 
-    class Web(FlextWebUtilitiesBase, FlextWebUtilitiesWeb):
+    class Web(FlextWebUtilitiesBase, FlextWebExamplesUtilities, FlextWebUtilitiesWeb):
         """Web domain-specific runtime utilities."""
 
 

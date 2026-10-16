@@ -25,6 +25,7 @@ class FlextWebEntities(s):
 
         Returns:
             The resulting ``p.Result[m.Web.EntityData]``.
+
         """
         entity_id = str(uuid.uuid4())
         entity = m.Web.EntityData(data={"id": entity_id, **data.data})
@@ -37,6 +38,7 @@ class FlextWebEntities(s):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return r[bool].ok(value=True)
 
@@ -45,6 +47,7 @@ class FlextWebEntities(s):
 
         Returns:
             The resulting ``p.Result[m.Web.EntityData]``.
+
         """
         if not u.to_str(entity_id):
             return e.fail_validation("entity_id", error="cannot be empty")
@@ -58,6 +61,7 @@ class FlextWebEntities(s):
 
         Returns:
             The resulting ``p.Result[Sequence[m.Web.EntityData]]``.
+
         """
         return r[Sequence[m.Web.EntityData]].ok(list(self._storage.values()))
 

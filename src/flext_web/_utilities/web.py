@@ -10,8 +10,8 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, ClassVar
 
 from flext_cli import u
-
 from flext_core import r
+
 from flext_web import c, t
 
 if TYPE_CHECKING:
@@ -61,6 +61,7 @@ class FlextWebUtilitiesWeb:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             FlextWebUtilitiesWeb.service_state["middleware_configured"] = True
             return r[bool].ok(value=True)
@@ -71,6 +72,7 @@ class FlextWebUtilitiesWeb:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             FlextWebUtilitiesWeb.service_state["routes_initialized"] = True
             return r[bool].ok(value=True)
@@ -81,6 +83,7 @@ class FlextWebUtilitiesWeb:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             FlextWebUtilitiesWeb.service_state["service_running"] = True
             return r[bool].ok(value=True)
@@ -91,6 +94,7 @@ class FlextWebUtilitiesWeb:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             FlextWebUtilitiesWeb.service_state["service_running"] = False
             return r[bool].ok(value=True)
@@ -109,6 +113,7 @@ class FlextWebUtilitiesWeb:
 
             Returns:
                 The resulting ``p.Result[t.Web.ResponseDict]``.
+
             """
             registry = FlextWebUtilitiesWeb.apps_registry
             app_id = u.format_app_id(name)
@@ -131,6 +136,7 @@ class FlextWebUtilitiesWeb:
 
             Returns:
                 The resulting ``p.Result[t.Web.ResponseDict]``.
+
             """
             payload_result = FlextWebUtilitiesWeb.WebRepository.fetch_by_id(app_id)
             if payload_result.failure:
@@ -146,6 +152,7 @@ class FlextWebUtilitiesWeb:
 
             Returns:
                 The resulting ``p.Result[t.Web.ResponseDict]``.
+
             """
             payload_result = FlextWebUtilitiesWeb.WebRepository.fetch_by_id(app_id)
             if payload_result.failure:
@@ -181,6 +188,7 @@ class FlextWebUtilitiesWeb:
 
             Returns:
                 The resulting ``p.Result[t.Web.ResponseDict]``.
+
             """
             entity_id = entity.get("id")
             if not isinstance(entity_id, str) or not entity_id:
@@ -194,6 +202,7 @@ class FlextWebUtilitiesWeb:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             return r[bool].ok(
                 FlextWebUtilitiesWeb.apps_registry.pop(entity_id, None) is not None,
@@ -209,7 +218,15 @@ class FlextWebUtilitiesWeb:
             cls,
             criteria: t.Web.RequestDict,
         ) -> p.Result[Sequence[t.Web.ResponseDict]]:
-            """Return payloads matching every requested criterion."""
+            """Return payloads matching every requested criterion.
+
+            Args:
+                criteria: Field/value pairs every payload must satisfy.
+
+            Returns:
+                Ok with the matching payloads.
+
+            """
             matched = [
                 payload
                 for payload in FlextWebUtilitiesWeb.apps_registry.values()

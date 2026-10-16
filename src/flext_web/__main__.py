@@ -6,9 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web.cli import FlextWebCli, main
+from flext_web import main
 
 if __name__ == "__main__":
     raise SystemExit(main())
 
-__all__: list[str] = ["FlextWebCli", "main"]
+__all__: list[str] = []

@@ -6,10 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_tests import tm
-
-from flext_web import p, web
-from tests import m
+from flext_web import web
+from tests import m, p, tm
 from tests.fixtures import TestsFlextWebAuthFixture
 
 
@@ -154,6 +152,7 @@ class TestsFlextWebService:
 
         Returns:
             The resulting ``bool``.
+
         """
         return isinstance(candidate, p.Web.WebServiceRules)
 

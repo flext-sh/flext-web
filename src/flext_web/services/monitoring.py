@@ -6,7 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web import FlextWebHealth, c, m, p, r, t
+from flext_web import c, m, p, r, t
+from flext_web.services import FlextWebHealth
 
 
 class FlextWebMonitoring(FlextWebHealth):
@@ -18,6 +19,7 @@ class FlextWebMonitoring(FlextWebHealth):
 
         Returns:
             The resulting ``p.Result[t.Web.ResponseDict]``.
+
         """
         return r[t.Web.ResponseDict].ok({
             "application_management": ["create_app", "fetch_app", "list_apps"],

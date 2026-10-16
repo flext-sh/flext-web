@@ -9,8 +9,9 @@ from __future__ import annotations
 import sys
 from typing import Annotated, override
 
+import flext_cli
 import uvicorn
-from flext_cli import cli, m as cli_m, p as cli_p, u as cli_u
+from flext_cli import cli
 
 from flext_web import FlextWebSettings, p, r, s, settings, t, web
 
@@ -23,19 +24,23 @@ class FlextWebCli:
 
         host: Annotated[
             str | None,
-            cli_u.Field(default=None, description="Bind host (overrides settings)."),
+            flext_cli.u.Field(
+                default=None, description="Bind host (overrides settings)."
+            ),
         ] = None
         port: Annotated[
             int | None,
-            cli_u.Field(default=None, description="Bind port (overrides settings)."),
+            flext_cli.u.Field(
+                default=None, description="Bind port (overrides settings)."
+            ),
         ] = None
         debug: Annotated[
             bool,
-            cli_u.Field(default=False, description="Enable debug mode."),
+            flext_cli.u.Field(default=False, description="Enable debug mode."),
         ] = False
         no_debug: Annotated[
             bool,
-            cli_u.Field(default=False, description="Force disable debug mode."),
+            flext_cli.u.Field(default=False, description="Force disable debug mode."),
         ] = False
 
         @override
@@ -44,6 +49,7 @@ class FlextWebCli:
 
             Returns:
                 The resulting ``p.Result[bool]``.
+
             """
             debug_value = False if self.no_debug else self.debug
             web_overrides: t.MutableMappingKV[str, str | int] = {}
@@ -89,11 +95,12 @@ class FlextWebCli:
             return service_result.value.stop_service()
 
     @classmethod
-    def build_app(cls) -> cli_p.Cli.Application:
+    def build_app(cls) -> flext_cli.p.Cli.Application:
         """Build the CLI application with the canonical result routes.
 
         Returns:
             The resulting ``cli_p.Cli.Application``.
+
         """
         app = cli.create_app_with_common_params(
             name="flext-web",
@@ -102,7 +109,7 @@ class FlextWebCli:
         cli.register_result_routes(
             app,
             [
-                cli_m.Cli.ResultCommandRoute(
+                flext_cli.m.Cli.ResultCommandRoute(
                     name="run",
                     help_text="Start the flext-web service.",
                     model_cls=cls.Run,
@@ -118,6 +125,7 @@ class FlextWebCli:
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return params.execute()
 

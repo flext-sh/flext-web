@@ -8,8 +8,7 @@ from __future__ import annotations
 
 from flext_cli import FlextCliTypes
 
-from flext_web._typings.base import FlextWebTypingsBase
-from flext_web._typings.web import FlextWebTypingsWeb
+from flext_web._typings import FlextWebTypingsBase, FlextWebTypingsWeb
 
 
 class FlextWebTypes(FlextCliTypes):

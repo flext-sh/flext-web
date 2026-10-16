@@ -25,17 +25,46 @@ class FlextWebProtocolsLifecycle:
 
         @staticmethod
         def create_app(name: str, port: int, host: str) -> p.Result[t.Web.ResponseDict]:
-            """Create a new web application."""
+            """Create a new web application.
+
+            Args:
+                name: Application name.
+                port: TCP port to serve the application on.
+                host: Bind address for the application server.
+
+            Returns:
+                Ok with the created application payload, or Fail with the
+                creation error.
+
+            """
             ...
 
         @staticmethod
         def start_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
-            """Start a web application."""
+            """Start a web application.
+
+            Args:
+                app_id: Identifier of the application to start.
+
+            Returns:
+                Ok with the application payload, or Fail when the
+                application is unknown or cannot start.
+
+            """
             ...
 
         @staticmethod
         def stop_app(app_id: str) -> p.Result[t.Web.ResponseDict]:
-            """Stop a web application."""
+            """Stop a web application.
+
+            Args:
+                app_id: Identifier of the application to stop.
+
+            Returns:
+                Ok with the application payload, or Fail when the
+                application is unknown or cannot stop.
+
+            """
             ...
 
         @staticmethod

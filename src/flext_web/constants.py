@@ -10,8 +10,7 @@ from typing import TYPE_CHECKING
 
 from flext_cli import FlextCliConstants
 
-from flext_web._constants.base import FlextWebConstantsBase
-from flext_web._constants.values import FlextWebConstantsValues
+from flext_web._constants import FlextWebConstantsBase, FlextWebConstantsValues
 
 if TYPE_CHECKING:
     from flext_web import t

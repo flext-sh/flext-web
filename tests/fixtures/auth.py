@@ -11,7 +11,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web import FlextWebSettings, m
+from flext_web import FlextWebSettings
+from tests import m
 
 
 class TestsFlextWebAuthFixture:
@@ -25,6 +26,7 @@ class TestsFlextWebAuthFixture:
         Raises:
             RuntimeError: If test session must configure FLEXT_WEB_WEB__AUTH_USERNAME
                 and FLEXT_WEB_WEB__AUTH_PASSWORD.
+
         """
         web_settings = FlextWebSettings.fetch_global()
         auth_username = web_settings.Web.auth_username

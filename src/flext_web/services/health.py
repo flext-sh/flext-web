@@ -20,6 +20,7 @@ class FlextWebHealth(s):
 
         Returns:
             The resulting ``p.Result[bool]``.
+
         """
         return r[bool].ok(value=True)
 

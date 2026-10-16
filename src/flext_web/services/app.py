@@ -106,12 +106,25 @@ class FlextWebApp(s):
 
         Returns:
             The resulting ``FastAPI``.
+
         """
 
         def health_check() -> t.Web.FastApiEndpointPayload:
+            """Serve the health endpoint payload.
+
+            Returns:
+                The health payload with status, service name, and timestamp.
+
+            """
             return FlextWebApp.HealthHandler.create_handler()()
 
         def info_endpoint() -> t.Web.FastApiEndpointPayload:
+            """Serve the info endpoint payload.
+
+            Returns:
+                The info payload with service metadata from the settings.
+
+            """
             return FlextWebApp.InfoHandler.create_handler(settings)()
 
         app.add_api_route("/health", health_check, methods=["GET"])
@@ -199,6 +212,13 @@ class FlextWebApp(s):
         app.config["TESTING"] = web_settings.Web.testing
 
         def health_check() -> flask.Response:
+            """Serve the Flask health endpoint response.
+
+            Returns:
+                A JSON response with healthy status, service name, and
+                timestamp.
+
+            """
             body: str = _json.dumps({
                 "status": c.Web.ResponseStatus.HEALTHY.value,
                 "service": c.Web.SERVICE_NAME_FLASK,
@@ -231,9 +251,17 @@ class FlextWebApp(s):
 
             Returns:
                 The resulting ``Callable[[], t.Web.FastApiEndpointPayload]``.
+
             """
 
             def health_check() -> t.Web.FastApiEndpointPayload:
+                """Build the health endpoint payload.
+
+                Returns:
+                    The payload with healthy status, service name, and
+                    timestamp.
+
+                """
                 return {
                     "status": c.Web.ResponseStatus.HEALTHY.value,
                     "service": c.Web.SERVICE_NAME,
@@ -253,9 +281,16 @@ class FlextWebApp(s):
 
             Returns:
                 The resulting ``Callable[[], t.Web.FastApiEndpointPayload]``.
+
             """
 
             def info_handler() -> t.Web.FastApiEndpointPayload:
+                """Build the info endpoint payload.
+
+                Returns:
+                    The payload with service metadata from the settings.
+
+                """
                 return {
                     "service": c.Web.SERVICE_NAME,
                     "title": settings.title,

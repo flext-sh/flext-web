@@ -18,3 +18,6 @@ class FlextWebExamplesUtilities(u):
 
     class WebExamples(u.Web, WebExamplesBase):
         """Web-domain utilities composed for example workflows."""
+
+
+__all__: list[str] = ["FlextWebExamplesUtilities"]

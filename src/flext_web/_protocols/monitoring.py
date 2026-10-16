@@ -35,7 +35,13 @@ class FlextWebProtocolsMonitoring:
             request: t.Web.RequestDict,
             response_time: float,
         ) -> None:
-            """Record a request observation."""
+            """Record a request observation.
+
+            Args:
+                request: Request payload that was served.
+                response_time: Wall-clock handling time in seconds.
+
+            """
             ...
 
 
