@@ -1,16 +1,15 @@
-"""Flext web examples utilities module.
+"""Utilities for the flext-web examples.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
-src/flext_web/_utilities/flext_web_examples_utilities
 SPDX-License-Identifier: MIT
 """
 
 from __future__ import annotations
 
-from flext_web import u
+from examples import u
 
 
-class FlextWebExamplesUtilities(u):
+class ExamplesFlextWebUtilities(u):
     """Utilities facade for the flext-web examples."""
 
     class WebExamplesBase:
@@ -20,4 +19,4 @@ class FlextWebExamplesUtilities(u):
         """Web-domain utilities composed for example workflows."""
 
 
-__all__: list[str] = ["FlextWebExamplesUtilities"]
+__all__: list[str] = ["ExamplesFlextWebUtilities"]
