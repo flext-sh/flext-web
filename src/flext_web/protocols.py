@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Web protocols — pure ``@runtime_checkable`` Protocol surface.
 
 Per AGENTS.md §2.7 (Library Abstraction) + python.md §5a: this module
