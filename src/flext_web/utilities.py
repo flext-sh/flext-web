@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Web utilities facade.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -10,8 +11,7 @@ from typing import TYPE_CHECKING
 
 from flext_cli import FlextCliUtilities
 
-from flext_web._utilities.base import FlextWebUtilitiesBase
-from flext_web._utilities.web import FlextWebUtilitiesWeb
+from flext_web._utilities import FlextWebUtilitiesBase, FlextWebUtilitiesWeb
 
 if TYPE_CHECKING:
     from flext_web import t
