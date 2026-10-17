@@ -64,6 +64,8 @@ Homepage = "https://github.com/flext-sh/flext"
 
 [dependency-groups]
 dev = [
+  "flext-infra @ git+https://github.com/flext-sh/flext-infra.git@0.12.0-dev",
+  "mkdocstrings-python>=2.0.9",
   "actionlint-py>=1.7.12.24",
   "bandit>=1.9.4",
   "deptry",
@@ -80,7 +82,6 @@ dev = [
   "mkdocs-redirects>=1.2.3",
   "mkdocs-section-index>=0.3.12",
   "mkdocstrings>=1.0.6",
-  "mkdocstrings-python>=2.0.8",
   "msgpack-types",
   "mypy>=2.3.1",
   "platformdirs>=4.12.0",
@@ -152,7 +153,6 @@ omit = [
 
 [tool.deptry]
 known_first_party = ["flext_web"]
-optional_dependencies_dev_groups = ["dev"]
 
 [tool.flext.docs]
 package_name = "flext_web"
@@ -161,7 +161,7 @@ package_name = "flext_web"
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-include = ["/src/flext_web/**"]
+only-include = ["src/flext_web"]
 
 [tool.hatch.build.targets.wheel.sources]
 "src/flext_web" = "flext_web"
@@ -170,7 +170,7 @@ include = ["/src/flext_web/**"]
 "pyproject.toml" = "flext_web/pyproject.toml"
 
 [tool.hatch.build.targets.sdist]
-include = ["/src/flext_web/**"]
+only-include = ["src/flext_web"]
 
 [tool.hatch.build.targets.sdist.force-include]
 "pyproject.toml" = "pyproject.toml"
@@ -331,7 +331,7 @@ exclude = [
   ".venv",
   "vendor",
 ]
-include = ["src", "tests"]
+include = ["examples", "src", "tests"]
 extraPaths = ["src", "."]
 pythonPlatform = "Linux"
 pythonVersion = "3.13"
@@ -350,6 +350,11 @@ reportUnusedFunction = "error"
 reportUnusedImport = "error"
 reportUnusedVariable = "error"
 typeCheckingMode = "strict"
+
+[[tool.pyright.executionEnvironments]]
+root = "examples"
+extraPaths = [".", "src"]
+reportPrivateUsage = "error"
 
 [[tool.pyright.executionEnvironments]]
 root = "src"
@@ -465,14 +470,15 @@ runtime-evaluated-base-classes = [
   "flext_cli.m.Value",
   "flext_core.FlextService",
   "flext_core.FlextSettings",
+  "flext_tests.FlextTestsModels.Tests",
   "flext_tests.FlextTestsServiceBase",
   "flext_tests.FlextTestsSettings",
   "flext_tests.FlextTestsUtilities.Tests",
   "flext_web.FlextWebSettings",
   "flext_web._models.FlextWebModelsHttp.Request",
   "flext_web._models.FlextWebModelsHttp.Response",
+  "flext_web._models.FlextWebModelsWebNamespace",
   "flext_web._models._http.Message",
-  "flext_web._models.config.FlextWebModelsWebNamespace",
   "flext_web.s",
   "flext_web.services.FlextWebApp",
   "flext_web.services.FlextWebAuth",
