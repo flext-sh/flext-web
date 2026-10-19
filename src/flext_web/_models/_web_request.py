@@ -25,37 +25,37 @@ class FlextWebModelsWebRequest:
         method: Annotated[
             c.Web.Method,
             u.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
-            u.Field(description="HTTP method"),
+            m.Field(description="HTTP method"),
         ] = c.Web.Method.GET
         url: Annotated[
             str,
-            u.Field(
+            m.Field(
                 min_length=1,
                 max_length=c.Web.VALIDATION_MAX_URL_LENGTH,
                 description="Request URL",
             ),
         ]
-        headers: Annotated[t.StrMapping, u.Field(description="HTTP headers")] = u.Field(
+        headers: Annotated[t.StrMapping, m.Field(description="HTTP headers")] = m.Field(
             default_factory=lambda: MappingProxyType[str, str]({})
         )
         body: Annotated[
             str | t.JsonValue | None,
-            u.Field(description="Request body (optional for GET/HEAD)"),
+            m.Field(description="Request body (optional for GET/HEAD)"),
         ] = None
-        request_id: Annotated[str, u.Field(description="Unique request identifier")] = (
-            u.Field(default_factory=lambda: str(uuid.uuid4()))
+        request_id: Annotated[str, m.Field(description="Unique request identifier")] = (
+            m.Field(default_factory=lambda: str(uuid.uuid4()))
         )
-        timestamp: Annotated[datetime, u.Field(description="Request timestamp")] = (
-            u.Field(default_factory=u.now)
+        timestamp: Annotated[datetime, m.Field(description="Request timestamp")] = (
+            m.Field(default_factory=u.now)
         )
 
     class WebResponse(m.Value):
         """Web response model with status tracking."""
 
-        request_id: Annotated[str, u.Field(description="Associated request identifier")]
+        request_id: Annotated[str, m.Field(description="Associated request identifier")]
         status_code: Annotated[
             int,
-            u.Field(
+            m.Field(
                 ge=c.Web.StatusCode.CONTINUE.value,
                 le=c.Web.StatusCode.GATEWAY_TIMEOUT.value,
                 description="HTTP status code",
@@ -63,18 +63,18 @@ class FlextWebModelsWebRequest:
         ]
         headers: Annotated[
             t.StrMapping,
-            u.Field(description="HTTP response headers"),
-        ] = u.Field(default_factory=lambda: MappingProxyType[str, str]({}))
+            m.Field(description="HTTP response headers"),
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         body: Annotated[
             str | t.JsonValue | None,
-            u.Field(description="Response body (optional for 204 No Content)"),
+            m.Field(description="Response body (optional for 204 No Content)"),
         ] = None
         response_id: Annotated[
             str,
-            u.Field(description="Unique response identifier"),
-        ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
-        timestamp: Annotated[datetime, u.Field(description="Response timestamp")] = (
-            u.Field(default_factory=u.now)
+            m.Field(description="Unique response identifier"),
+        ] = m.Field(default_factory=lambda: str(uuid.uuid4()))
+        timestamp: Annotated[datetime, m.Field(description="Response timestamp")] = (
+            m.Field(default_factory=u.now)
         )
 
 

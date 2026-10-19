@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_cli import m, u
+from flext_cli import m
 
 from flext_web import c, t
 
@@ -19,27 +19,27 @@ class FlextWebModelsResponses:
     class AuthResponse(m.Value):
         """Authentication response model."""
 
-        token: Annotated[str, u.Field(description="Authentication token")]
-        user_id: Annotated[str, u.Field(description="User identifier")]
-        authenticated: Annotated[bool, u.Field(description="Authentication status")]
+        token: Annotated[str, m.Field(description="Authentication token")]
+        user_id: Annotated[str, m.Field(description="User identifier")]
+        authenticated: Annotated[bool, m.Field(description="Authentication status")]
 
     class UserResponse(m.Value):
         """User registration response model."""
 
-        id: Annotated[str, u.Field(description="User identifier")]
-        username: Annotated[str, u.Field(description="Username")]
-        email: Annotated[str, u.Field(description="Email address")]
-        created: Annotated[bool, u.Field(description="Creation status")]
+        id: Annotated[str, m.Field(description="User identifier")]
+        username: Annotated[str, m.Field(description="Username")]
+        email: Annotated[str, m.Field(description="Email address")]
+        created: Annotated[bool, m.Field(description="Creation status")]
 
     class ApplicationResponse(m.Value):
         """Application management response model."""
 
-        id: Annotated[str, u.Field(description="Application identifier")]
-        name: Annotated[str, u.Field(description="Application name")]
-        host: Annotated[str, u.Field(description="Application host")]
-        port: Annotated[t.PortNumber, u.Field(description="Application port")]
-        status: Annotated[str, u.Field(description="Application status")]
-        created_at: Annotated[str, u.Field(description="Creation timestamp")]
+        id: Annotated[str, m.Field(description="Application identifier")]
+        name: Annotated[str, m.Field(description="Application name")]
+        host: Annotated[str, m.Field(description="Application host")]
+        port: Annotated[t.PortNumber, m.Field(description="Application port")]
+        status: Annotated[str, m.Field(description="Application status")]
+        created_at: Annotated[str, m.Field(description="Creation timestamp")]
 
         @property
         def running(self) -> bool:
@@ -50,45 +50,45 @@ class FlextWebModelsResponses:
     class HealthResponse(m.Value):
         """Health check response model."""
 
-        status: Annotated[str, u.Field(description="Health status")]
-        service: Annotated[str, u.Field(description="Service name")]
-        timestamp: Annotated[str, u.Field(description="Timestamp")]
+        status: Annotated[str, m.Field(description="Health status")]
+        service: Annotated[str, m.Field(description="Service name")]
+        timestamp: Annotated[str, m.Field(description="Timestamp")]
 
     class MetricsResponse(m.Value):
         """Metrics response model."""
 
-        service_status: Annotated[str, u.Field(description="Service status")]
-        components: Annotated[t.StrSequence, u.Field(description="Service components")]
+        service_status: Annotated[str, m.Field(description="Service status")]
+        components: Annotated[t.StrSequence, m.Field(description="Service components")]
 
     class DashboardResponse(m.Value):
         """Dashboard response model."""
 
-        total_applications: Annotated[int, u.Field(description="Total applications")]
+        total_applications: Annotated[int, m.Field(description="Total applications")]
         running_applications: Annotated[
             int,
-            u.Field(description="Running applications"),
+            m.Field(description="Running applications"),
         ]
-        service_status: Annotated[str, u.Field(description="Service status")]
+        service_status: Annotated[str, m.Field(description="Service status")]
         routes_initialized: Annotated[
             bool,
-            u.Field(description="Routes initialization status"),
+            m.Field(description="Routes initialization status"),
         ]
         middleware_configured: Annotated[
             bool,
-            u.Field(description="Middleware configuration status"),
+            m.Field(description="Middleware configuration status"),
         ]
-        timestamp: Annotated[str, u.Field(description="Timestamp")]
+        timestamp: Annotated[str, m.Field(description="Timestamp")]
 
     class ServiceResponse(m.Value):
         """Generic service response model."""
 
-        service: Annotated[str, u.Field(description="Service name")]
+        service: Annotated[str, m.Field(description="Service name")]
         capabilities: Annotated[
             t.StrSequence,
-            u.Field(description="Service capabilities"),
+            m.Field(description="Service capabilities"),
         ]
-        status: Annotated[str, u.Field(description="Service status")]
-        settings: Annotated[bool, u.Field(description="Configuration status")]
+        status: Annotated[str, m.Field(description="Service status")]
+        settings: Annotated[bool, m.Field(description="Configuration status")]
 
 
 __all__: list[str] = ["FlextWebModelsResponses"]

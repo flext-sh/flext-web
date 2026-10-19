@@ -34,16 +34,16 @@ class FlextWebModelsHttp:
 
         headers: Annotated[
             t.StrMapping,
-            u.Field(description="HTTP headers for message"),
-        ] = u.Field(default_factory=lambda: MappingProxyType[str, str]({}))
+            m.Field(description="HTTP headers for message"),
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         body: Annotated[
             str | t.ScalarMapping | None,
-            u.Field(description="Message body content (optional for GET/HEAD)"),
+            m.Field(description="Message body content (optional for GET/HEAD)"),
         ] = None
         timestamp: Annotated[
             datetime,
-            u.Field(description="Timestamp of message creation (configured timezone)"),
-        ] = u.Field(default_factory=u.now)
+            m.Field(description="Timestamp of message creation (configured timezone)"),
+        ] = m.Field(default_factory=u.now)
 
     class Request(Message):
         """HTTP request model with complete validation.
@@ -60,7 +60,7 @@ class FlextWebModelsHttp:
 
         url: Annotated[
             str,
-            u.Field(
+            m.Field(
                 min_length=1,
                 max_length=c.Web.VALIDATION_URL_LENGTH_RANGE[1],
                 description="Request URL",
@@ -69,14 +69,14 @@ class FlextWebModelsHttp:
         method: Annotated[
             c.Web.Method,
             u.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
-            u.Field(
+            m.Field(
                 description="HTTP method (GET, POST, PUT, DELETE, "
                 "PATCH, HEAD, OPTIONS)",
             ),
         ] = c.Web.Method.GET
         timeout: Annotated[
             t.PositiveTimeout,
-            u.Field(description="Request timeout in seconds"),
+            m.Field(description="Request timeout in seconds"),
         ] = c.Web.DEFAULT_TIMEOUT_SECONDS
 
         @property
@@ -137,11 +137,11 @@ class FlextWebModelsHttp:
 
         status_code: Annotated[
             t.HttpStatusCode,
-            u.Field(..., description="HTTP status code"),
+            m.Field(..., description="HTTP status code"),
         ]
         elapsed_time: Annotated[
             t.NonNegativeFloat | None,
-            u.Field(description="Response processing time in seconds"),
+            m.Field(description="Response processing time in seconds"),
         ] = None
 
         @property
