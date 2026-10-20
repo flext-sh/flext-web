@@ -24,7 +24,7 @@ class FlextWebModelsWebRequest:
 
         method: Annotated[
             c.Web.Method,
-            u.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
+            m.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
             m.Field(description="HTTP method"),
         ] = c.Web.Method.GET
         url: Annotated[

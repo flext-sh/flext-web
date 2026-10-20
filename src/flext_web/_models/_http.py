@@ -68,7 +68,7 @@ class FlextWebModelsHttp:
         ]
         method: Annotated[
             c.Web.Method,
-            u.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
+            m.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
             m.Field(
                 description="HTTP method (GET, POST, PUT, DELETE, "
                 "PATCH, HEAD, OPTIONS)",
