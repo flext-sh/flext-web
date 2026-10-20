@@ -30,7 +30,7 @@ class TestsFlextWebApi:
         )
         tm.that(settings.Web.host, eq="localhost")
         tm.that(settings.Web.port, eq=8080)
-        tm.that(settings.debug, eq=True)
+        tm.ok(settings.debug)
 
     @staticmethod
     def test_settings_factory_rejects_invalid_values() -> None:

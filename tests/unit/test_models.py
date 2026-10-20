@@ -31,7 +31,7 @@ class TestsFlextWebAppModelsUnit:
         tm.that(app.status, eq="stopped")
         tm.that(app.version, eq=1)
         tm.that(app.environment, eq="development")
-        tm.that(app.debug_mode is False, eq=True)
+        tm.ok(app.debug_mode is False)
 
     @staticmethod
     def test_web_app_initialization_with_custom_values() -> None:
@@ -52,7 +52,7 @@ class TestsFlextWebAppModelsUnit:
         tm.that(app.status, eq="running")
         tm.that(app.version, eq=2)
         tm.that(app.environment, eq="production")
-        tm.that(app.debug_mode is True, eq=True)
+        tm.ok(app.debug_mode is True)
 
     @staticmethod
     def test_web_app_name_validation() -> None:
@@ -107,16 +107,16 @@ class TestsFlextWebAppModelsUnit:
     def test_web_app_computed_fields() -> None:
         """Test WebApp computed fields."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
-        tm.that(app.running is True, eq=True)
-        tm.that(app.healthy is True, eq=True)
-        tm.that(app.can_start is False, eq=True)
-        tm.that(app.can_stop is True, eq=True)
-        tm.that(app.can_restart is True, eq=True)
+        tm.ok(app.running is True)
+        tm.ok(app.healthy is True)
+        tm.ok(app.can_start is False)
+        tm.ok(app.can_stop is True)
+        tm.ok(app.can_restart is True)
 
         stopped_app = m.Web.Entity(id="test-id", name="test-app", status="stopped")
-        tm.that(stopped_app.running is False, eq=True)
-        tm.that(stopped_app.can_start is True, eq=True)
-        tm.that(stopped_app.can_stop is False, eq=True)
+        tm.ok(stopped_app.running is False)
+        tm.ok(stopped_app.can_start is True)
+        tm.ok(stopped_app.can_stop is False)
 
     @staticmethod
     def test_web_app_url_generation() -> None:
@@ -302,13 +302,13 @@ class TestsFlextWebHttpModelsUnit:
             method=c.Web.Method.POST,
             body='{"data": "test"}',
         )
-        tm.that(request_with_body.has_body is True, eq=True)
+        tm.ok(request_with_body.has_body is True)
         request_without_body = m.Web.Request(
             url="http://localhost:8080",
             method=c.Web.Method.GET,
             body=None,
         )
-        tm.that(request_without_body.has_body is False, eq=True)
+        tm.ok(request_without_body.has_body is False)
 
     @staticmethod
     def test_http_request_secure_property() -> None:
@@ -317,28 +317,28 @@ class TestsFlextWebHttpModelsUnit:
             url="https://localhost:8080",
             method=c.Web.Method.GET,
         )
-        tm.that(https_request.secure is True, eq=True)
+        tm.ok(https_request.secure is True)
         http_request = m.Web.Request(
             url="http://localhost:8080",
             method=c.Web.Method.GET,
         )
-        tm.that(http_request.secure is False, eq=True)
+        tm.ok(http_request.secure is False)
 
     @staticmethod
     def test_http_response_is_success_property() -> None:
         """Test Web.Response is_success property."""
         success_response = m.Web.Response(status_code=200)
-        tm.that(success_response.success is True, eq=True)
+        tm.ok(success_response.success is True)
         error_response = m.Web.Response(status_code=404)
-        tm.that(error_response.success is False, eq=True)
+        tm.ok(error_response.success is False)
 
     @staticmethod
     def test_http_response_error_property() -> None:
         """Test Web.Response error property."""
         error_response = m.Web.Response(status_code=500)
-        tm.that(error_response.error is True, eq=True)
+        tm.ok(error_response.error is True)
         success_response = m.Web.Response(status_code=200)
-        tm.that(success_response.error is False, eq=True)
+        tm.ok(success_response.error is False)
 
     @staticmethod
     def test_web_response_processing_time_seconds() -> None:
