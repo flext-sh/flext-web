@@ -102,7 +102,7 @@ class FlextWebModelsEntity:
         status: Annotated[
             c.Web.Status | str,
             m.Field(description="Current application status"),
-        ] = c.Web.Status.STOPPED.value
+        ] = m.Field(default=c.Web.Status.STOPPED.value)
 
         if TYPE_CHECKING:
             # Checkers lose the inherited ``VersionableMixin`` default through
@@ -129,7 +129,7 @@ class FlextWebModelsEntity:
             return v
 
         environment: Annotated[str, m.Field(description="Deployment environment")] = (
-            c.Web.Name.DEVELOPMENT.value
+            m.Field(default=c.Web.Name.DEVELOPMENT.value)
         )
         debug_mode: Annotated[bool, m.Field(description="Debug mode enabled flag")] = (
             m.Field(default_factory=lambda: settings.debug)
