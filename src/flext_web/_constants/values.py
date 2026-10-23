@@ -60,7 +60,7 @@ class FlextWebConstantsValues:
     class ApplicationType(StrEnum):
         """Supported application classifications."""
 
-        APPLICATION = "application"
+        APPLICATION = c.ContextScope.APPLICATION
         SERVICE = "service"
         API = "api"
         DASHBOARD = "dashboard"

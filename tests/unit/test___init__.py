@@ -11,14 +11,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import flext_web
 from flext_web import __version__, __version_info__, web
-from tests import tm
-
-if TYPE_CHECKING:
-    from tests import t
+from tests import t, tm
 
 
 class TestsFlextWebInit:

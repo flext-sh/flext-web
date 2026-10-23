@@ -52,7 +52,8 @@ Configuration access is namespaced and direct:
 
 ````python
 from flext_web import FlextWebSettings, settings
-from tests import tm
+from tests import c, r
+from tests import c, tm
 
 runtime_settings = FlextWebSettings(
     Web={"host": "localhost", "port": 8080}, debug=settings.debug
