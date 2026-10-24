@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Web Types.
 
 Copyright (c) 2025 FLEXT Team. All rights reserved.
@@ -14,7 +15,7 @@ from flext_web._typings import FlextWebTypingsBase, FlextWebTypingsWeb
 class FlextWebTypes(FlextCliTypes):
     """Web-specific type definitions extending t via MRO."""
 
-    class Web(FlextWebTypingsWeb, FlextWebTypingsBase):
+    class Web(FlextWebTypingsBase, FlextWebTypingsWeb):
         """Web domain namespace (flat members per AGENTS.md §149)."""
 
 

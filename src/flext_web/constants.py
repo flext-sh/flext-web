@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Web constants.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
