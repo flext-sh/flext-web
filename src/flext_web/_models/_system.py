@@ -6,17 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, ClassVar
+from typing import Annotated
 
-from flext_cli import m
-
-if TYPE_CHECKING:
-    from threading import Thread
-    from wsgiref.simple_server import WSGIServer
-
-    import uvicorn
-
-    from flext_web import t
+from flext_cli import m, t
 
 
 class FlextWebModelsSystem:
@@ -46,31 +38,6 @@ class FlextWebModelsSystem:
         version: Annotated[str, m.Field(description="Service version")]
         timestamp: Annotated[str, m.Field(description="Status timestamp")]
         components: Annotated[t.StrMapping, m.Field(description="Component statuses")]
-
-    class AppRuntimeInfo(m.ArbitraryTypesModel):
-        """Runtime information for a running web application.
-
-        Tracks the server instance, daemon thread, and runner type
-        for each started application so it can be stopped cleanly.
-        """
-
-        model_config: ClassVar[m.ConfigDict] = m.ConfigDict(
-            arbitrary_types_allowed=True,
-            frozen=True,
-            extra="forbid",
-        )
-        runner: Annotated[
-            str,
-            m.Field(description="Runtime runner name (uvicorn, werkzeug)"),
-        ]
-        server: Annotated[
-            uvicorn.Server | WSGIServer,
-            m.Field(description="Server instance for lifecycle management"),
-        ]
-        thread: Annotated[
-            Thread,
-            m.Field(description="Daemon thread running the server"),
-        ]
 
 
 __all__: list[str] = ["FlextWebModelsSystem"]
