@@ -410,7 +410,7 @@ exclude = [
   "**/venv/**",
 ]
 extraPaths = ["src", "."]
-include = ["examples", "src", "tests"]
+include = ["conftest.py", "examples", "src", "tests"]
 pythonPlatform = "Linux"
 pythonVersion = "3.13"
 reportCallIssue = "error"
@@ -604,35 +604,6 @@ msg = "Use cli.render_table from flext_cli."
 [tool.ruff.lint.flake8-tidy-imports.banned-api.typer]
 msg = "Use cli.create_app_with_common_params / cli.register_command from flext_cli."
 
-[tool.ruff.lint.flake8-type-checking]
-runtime-evaluated-base-classes = [
-  "examples.m.Web",
-  "flext_cli.FlextCliConfig",
-  "flext_cli.FlextCliSettings",
-  "flext_cli.m.BaseModel",
-  "flext_cli.m.Entity",
-  "flext_cli.m.Value",
-  "flext_core.FlextService",
-  "flext_core.FlextSettings",
-  "flext_tests.FlextTestsModels.Tests",
-  "flext_tests.FlextTestsServiceBase",
-  "flext_tests.FlextTestsSettings",
-  "flext_web.FlextWebSettings",
-  "flext_web._models.FlextWebModelsHttp.Request",
-  "flext_web._models.FlextWebModelsHttp.Response",
-  "flext_web._models.FlextWebModelsWebNamespace",
-  "flext_web._models._http.Message",
-  "flext_web.s",
-  "flext_web.services.FlextWebApp",
-  "flext_web.services.FlextWebAuth",
-  "flext_web.services.FlextWebEntities",
-  "flext_web.services.FlextWebHandlers",
-  "flext_web.services.FlextWebHealth",
-  "flext_web.services.FlextWebMonitoring",
-  "flext_web.services.FlextWebServices",
-  "pydantic.BaseModel",
-]
-
 [tool.ruff.lint.isort]
 combine-as-imports = true
 force-single-line = false
@@ -664,6 +635,14 @@ section_whitelines = 1
 whitelines = 1
 
 [tool.uv]
+constraint-dependencies = [
+  "pillow>=13.0.0",
+  "certifi>=2026.10.19",
+  "setuptools>=84.1.0",
+  "virtualenv>=21.14.13",
+  "filelock>=4.2.1",
+  "uv>=0.13.4",
+]
 environments = ["sys_platform == 'linux'", "sys_platform == 'darwin'"]
 link-mode = "copy"
 override-dependencies = [
