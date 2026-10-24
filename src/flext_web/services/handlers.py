@@ -97,9 +97,9 @@ class FlextWebHandlers(s):
             m.Web.SystemInfo(
                 service_name="FLEXT Web Interface",
                 service_type="web_api",
-                architecture="flask_clean_architecture",
+                architecture="fastapi_clean_architecture",
                 patterns=["CQRS", "Clean Architecture", "Domain-Driven Design"],
-                integrations=["flext-core", "pydantic", "flask"],
+                integrations=["flext-core", "pydantic", c.Web.FRAMEWORK_FASTAPI],
                 capabilities=[
                     "application_management",
                     "health_monitoring",

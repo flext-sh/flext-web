@@ -39,6 +39,6 @@ application state; they do not themselves open a network listener.
 ## Working Pattern
 
 - Import `settings` from `flext_web` and use `settings.Web` for runtime settings.
-- Use `web.create_fastapi_app()` and `web.create_flask_app()` for framework factories.
+- Use `web.create_fastapi_app()` for the framework factory.
 - Use `web.start_service()` and `web.stop_service()` for lifecycle control.
 - Keep examples and tests on the public facade, not on service classes.

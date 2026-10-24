@@ -10,7 +10,7 @@ requires = ["hatchling"]
 [project]
 classifiers = [
   "Development Status :: 3 - Alpha",
-  "Framework :: Flask",
+  "Framework :: FastAPI",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
@@ -24,7 +24,6 @@ dependencies = [
   "beartype>=0.22.9",
   "dependency-injector>=4.49.1",
   "fastapi>=0.143.0",
-  "flask>=3.1.3",
   "flext-cli @ git+https://github.com/flext-sh/flext-cli.git@0.12.0-dev",
   "flext-core @ git+https://github.com/flext-sh/flext-core.git@0.12.0-dev",
   "packaging>=26.3",
@@ -35,10 +34,9 @@ dependencies = [
   "structlog>=25.5.0,<27",
   "typing-extensions>=4.16.0",
   "uvicorn>=0.54.0",
-  "werkzeug>=3.1.9",
 ]
 description = "FLEXT Web - Modern Web Interface for FLEXT Platform"
-keywords = ["enterprise", "flask", "flext", "frontend", "typed", "web"]
+keywords = ["enterprise", "fastapi", "flext", "frontend", "typed", "web"]
 license = "MIT"
 name = "flext-web"
 readme = "README.md"

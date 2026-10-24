@@ -30,9 +30,7 @@ class FlextWebUtilitiesWeb:
     }
     apps_registry: ClassVar[t.MutableMappingKV[str, t.Web.ResponseDict]] = {}
     app_runtimes: ClassVar[t.MutableMappingKV[str, t.Web.ResponseDict]] = {}
-    framework_instances: ClassVar[
-        t.MutableMappingKV[str, p.Web.FastApiLikeApp | p.Web.FlaskLikeApp]
-    ] = {}
+    framework_instances: ClassVar[t.MutableMappingKV[str, p.Web.FastApiLikeApp]] = {}
     template_config: ClassVar[t.MutableMappingKV[str, t.JsonValue]] = {}
     template_filters: ClassVar[t.MutableMappingKV[str, Callable[[str], str]]] = {}
     template_globals: ClassVar[t.MutableMappingKV[str, t.JsonValue]] = {}

@@ -20,7 +20,7 @@
 Current source layout:
 
 - `api.py`: thin public facade and shared `web` instance
-- `app.py`: FastAPI and Flask app factories
+- `app.py`: FastAPI app factory
 - `base.py`: common service base with typed runtime settings
 - `_settings.py`: direct namespaced settings singleton and model
 - `services/`: canonical service implementations

@@ -25,17 +25,6 @@ started = web.start_app(created.value.id)
 assert started.success
 ```
 
-## Flask Integration
-
-```python
-from flask import Flask
-from flext_web import web
-
-app_result = web.create_flask_app()
-assert app_result.success
-app: Flask = app_result.value
-```
-
 ## Testing
 
 ```python

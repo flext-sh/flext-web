@@ -36,7 +36,6 @@ app_identifier = u.format_app_id("demo")
 from flext_web import web
 
 fastapi_result = web.create_fastapi_app()
-flask_result = web.create_flask_app()
 ```
 
 ## Settings

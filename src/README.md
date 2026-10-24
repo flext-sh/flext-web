@@ -25,7 +25,7 @@ src/flext_web/
 ├── base.py             # shared service base with typed web settings access
 ├── settings.py         # registered web settings namespace
 ├── services/
-│   ├── app.py          # FastAPI/Flask factories
+│   ├── app.py          # FastAPI factory
 │   ├── auth.py         # auth operations
 │   ├── entities.py     # entity CRUD support
 │   ├── handlers.py     # handler-oriented projections exposed by the facade

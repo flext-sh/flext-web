@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_web import web
-from tests import m, p, tm
+from tests import c, m, p, tm
 from tests.fixtures import TestsFlextWebAuthFixture
 
 
@@ -143,8 +143,8 @@ class TestsFlextWebService:
         """Structured service status is exposed by the service layer itself."""
         result = web.service_status()
         tm.ok(result)
-        tm.that(result.value.service, eq="flext-web-api")
-        tm.that(result.value.capabilities, has="flask_support")
+        tm.that(result.value.service, eq=c.Web.SERVICE_NAME_API)
+        tm.that(result.value.capabilities, has="fastapi_support")
 
     @staticmethod
     def _is_service_rules(candidate: p.Base) -> bool:
