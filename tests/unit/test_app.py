@@ -9,7 +9,7 @@ from __future__ import annotations
 import flext_cli
 
 from flext_web import FlextWebSettings, web
-from tests import tm
+from tests import c, tm
 
 
 class TestsFlextWebApp:
@@ -30,7 +30,7 @@ class TestsFlextWebApp:
                 "app_name": "flext-web-test",
                 "host": "127.0.0.1",
                 "port": 8123,
-                "secret_key": "f" + "0" * 40,
+                "secret_key": "f" + c.ParserBooleanToken.ZERO * 40,
             },
             debug=True,
         )

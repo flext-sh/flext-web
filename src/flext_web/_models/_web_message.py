@@ -10,7 +10,7 @@ import uuid
 from types import MappingProxyType
 from typing import Annotated
 
-from flext_cli import u
+from flext_cli import m
 
 from flext_web import c, t
 from flext_web._models import FlextWebModelsHttp
@@ -39,15 +39,15 @@ class FlextWebModelsWebMessage:
 
         """
 
-        request_id: Annotated[str, u.Field(description="Unique request identifier")] = (
-            u.Field(default_factory=lambda: str(uuid.uuid4()))
+        request_id: Annotated[str, m.Field(description="Unique request identifier")] = (
+            m.Field(default_factory=lambda: str(uuid.uuid4()))
         )
         query_params: Annotated[
             t.ConfigurationMapping,
-            u.Field(description="Query string parameters"),
-        ] = u.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
-        client_ip: Annotated[str, u.Field(description="Client IP address")] = ""
-        user_agent: Annotated[str, u.Field(description="Client user agent")] = ""
+            m.Field(description="Query string parameters"),
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, t.Scalar]({}))
+        client_ip: Annotated[str, m.Field(description="Client IP address")] = ""
+        user_agent: Annotated[str, m.Field(description="Client user agent")] = ""
 
     class AppResponse(FlextWebModelsHttp.Response):
         """Web response entity with tracking and performance metrics.
@@ -71,23 +71,23 @@ class FlextWebModelsWebMessage:
 
         elapsed_time: Annotated[
             t.NonNegativeFloat | None,
-            u.Field(description="Response elapsed time in seconds"),
+            m.Field(description="Response elapsed time in seconds"),
         ] = 0.0
         response_id: Annotated[
             str,
-            u.Field(description="Unique response identifier"),
-        ] = u.Field(default_factory=lambda: str(uuid.uuid4()))
-        request_id: Annotated[str, u.Field(description="Associated request identifier")]
-        content_type: Annotated[str, u.Field(description="Response content type")] = (
+            m.Field(description="Unique response identifier"),
+        ] = m.Field(default_factory=lambda: str(uuid.uuid4()))
+        request_id: Annotated[str, m.Field(description="Associated request identifier")]
+        content_type: Annotated[str, m.Field(description="Response content type")] = (
             c.Web.HTTP_CONTENT_TYPE_JSON
         )
         content_length: Annotated[
             t.NonNegativeInt,
-            u.Field(description="Response body length in bytes"),
+            m.Field(description="Response body length in bytes"),
         ] = 0
         processing_time_ms: Annotated[
             t.NonNegativeFloat,
-            u.Field(description="Processing time in milliseconds"),
+            m.Field(description="Processing time in milliseconds"),
         ] = 0.0
 
         @property

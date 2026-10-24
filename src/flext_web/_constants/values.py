@@ -60,7 +60,7 @@ class FlextWebConstantsValues:
     class ApplicationType(StrEnum):
         """Supported application classifications."""
 
-        APPLICATION = "application"
+        APPLICATION = c.ContextScope.APPLICATION
         SERVICE = "service"
         API = "api"
         DASHBOARD = "dashboard"
@@ -186,7 +186,7 @@ class FlextWebConstantsValues:
     ACTION_CREATE: Final[str] = "create"
     ACTION_START: Final[str] = "start"
     ACTION_STOP: Final[str] = "stop"
-    ACTION_LIST: Final[str] = "list"
+    ACTION_LIST: Final[str] = c.Action.LIST
 
     MESSAGE_CONFIG_LOADED: Final[str] = "loaded"
     MESSAGE_HANDLERS_REGISTERED: Final[str] = "registered"

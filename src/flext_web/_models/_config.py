@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from flext_cli import m, u
+from flext_cli import m
 
 from flext_web import c
 from flext_web._settings import FlextWebSettings
@@ -37,7 +37,7 @@ class FlextWebModelsConfig:
 
         title: Annotated[
             str,
-            u.Field(
+            m.Field(
                 # Resolve the current global singleton lazily (the module-level
                 # `settings` capture goes stale when the singleton is replaced).
                 default_factory=lambda: FlextWebSettings.fetch_global().Web.app_name,
@@ -45,33 +45,33 @@ class FlextWebModelsConfig:
                 max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                 description="FastAPI application title",
             ),
-        ] = u.Field(
+        ] = m.Field(
             default_factory=lambda: FlextWebSettings.fetch_global().Web.app_name,
         )
         version: Annotated[
             str,
-            u.Field(
+            m.Field(
                 default_factory=lambda: FlextWebSettings.fetch_global().Web.version,
                 description="Application version",
             ),
-        ] = u.Field(default_factory=lambda: FlextWebSettings.fetch_global().Web.version)
+        ] = m.Field(default_factory=lambda: FlextWebSettings.fetch_global().Web.version)
         description: Annotated[
             str,
-            u.Field(
+            m.Field(
                 min_length=1,
                 max_length=c.Web.SECURITY_MAX_DESCRIPTION_LENGTH,
                 description="Application description",
             ),
         ] = c.Web.API_DEFAULT_DESCRIPTION
-        debug: Annotated[bool, u.Field(description="FastAPI debug mode")] = False
-        testing: Annotated[bool, u.Field(description="FastAPI testing mode")] = False
-        docs_url: Annotated[str, u.Field(description="Documentation URL")] = (
+        debug: Annotated[bool, m.Field(description="FastAPI debug mode")] = False
+        testing: Annotated[bool, m.Field(description="FastAPI testing mode")] = False
+        docs_url: Annotated[str, m.Field(description="Documentation URL")] = (
             c.Web.API_DOCS_URL
         )
-        redoc_url: Annotated[str, u.Field(description="ReDoc URL")] = (
+        redoc_url: Annotated[str, m.Field(description="ReDoc URL")] = (
             c.Web.API_REDOC_URL
         )
-        openapi_url: Annotated[str, u.Field(description="OpenAPI URL")] = (
+        openapi_url: Annotated[str, m.Field(description="OpenAPI URL")] = (
             c.Web.API_OPENAPI_URL
         )
 

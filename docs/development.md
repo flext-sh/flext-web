@@ -52,11 +52,13 @@ Configuration access is namespaced and direct:
 
 ````python
 from flext_web import FlextWebSettings, settings
+from tests import c, r
+from tests import c, tm
 
 runtime_settings = FlextWebSettings(
     Web={"host": "localhost", "port": 8080}, debug=settings.debug
 )
-assert runtime_settings.Web.host == "localhost"
+tm.that(runtime_settings.Web.host, eq="localhost")
 ```
 ## Service Rule
 

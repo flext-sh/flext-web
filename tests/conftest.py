@@ -12,7 +12,7 @@ import contextlib
 import pytest
 
 from flext_web import FlextWebSettings, web
-from tests import u
+from tests import c, u
 
 # Why: session-scoped env context replaces an autouse fixture (flext-1wjg1.16)
 _ENV_CONTEXT_KEY: pytest.StashKey[contextlib.ExitStack] = pytest.StashKey()
@@ -61,17 +61,17 @@ def pytest_configure(config: pytest.Config) -> None:
     # Why: literal kept off the dict-key line to avoid a gitleaks false
     # positive on the "SECRET_KEY" keyword (flext-1wjg1.16); values are
     # synthetic non-credential tokens, never real secrets.
-    long_enough_value = "t" + "0" * 40
+    long_enough_value = "t" + c.ParserBooleanToken.ZERO * 40
     stack = contextlib.ExitStack()
     stack.enter_context(
         u.Tests.env_vars_context({
             "FLEXT_ENV": "test",
             "FLEXT_LOG_LEVEL": "INFO",
-            "FLEXT_WEB_DEBUG_MODE": "true",
+            "FLEXT_WEB_DEBUG_MODE": c.ParserBooleanToken.TRUE,
             "FLEXT_WEB_WEB__HOST": "localhost",
             "FLEXT_WEB_WEB__SECRET_KEY": long_enough_value,
             "FLEXT_WEB_WEB__AUTH_USERNAME": "testuser",
-            "FLEXT_WEB_WEB__AUTH_PASSWORD": "p" + "0" * 24,
+            "FLEXT_WEB_WEB__AUTH_PASSWORD": "p" + c.ParserBooleanToken.ZERO * 24,
         }),
     )
     config.stash[_ENV_CONTEXT_KEY] = stack

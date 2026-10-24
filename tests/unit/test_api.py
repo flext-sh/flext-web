@@ -30,7 +30,7 @@ class TestsFlextWebApi:
         )
         tm.that(settings.Web.host, eq="localhost")
         tm.that(settings.Web.port, eq=8080)
-        tm.that(settings.debug, eq=True)
+        tm.ok(settings.debug)
 
     @staticmethod
     def test_settings_factory_rejects_invalid_values() -> None:
@@ -44,7 +44,11 @@ class TestsFlextWebApi:
     def test_validate_settings_success() -> None:
         """Settings validation succeeds for a valid namespaced instance."""
         settings = web.settings.clone(
-            Web={"host": "localhost", "port": 8080, "secret_key": "k" + "0" * 40},
+            Web={
+                "host": "localhost",
+                "port": 8080,
+                "secret_key": "k" + c.ParserBooleanToken.ZERO * 40,
+            },
             debug=True,
         )
         validated = type(settings).model_validate(settings.model_dump())

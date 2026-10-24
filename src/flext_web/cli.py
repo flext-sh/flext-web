@@ -24,23 +24,23 @@ class FlextWebCli:
 
         host: Annotated[
             str | None,
-            flext_cli.u.Field(
+            flext_cli.m.Field(
                 default=None, description="Bind host (overrides settings)."
             ),
         ] = None
         port: Annotated[
             int | None,
-            flext_cli.u.Field(
+            flext_cli.m.Field(
                 default=None, description="Bind port (overrides settings)."
             ),
         ] = None
         debug: Annotated[
             bool,
-            flext_cli.u.Field(default=False, description="Enable debug mode."),
+            flext_cli.m.Field(default=False, description="Enable debug mode."),
         ] = False
         no_debug: Annotated[
             bool,
-            flext_cli.u.Field(default=False, description="Force disable debug mode."),
+            flext_cli.m.Field(default=False, description="Force disable debug mode."),
         ] = False
 
         @override

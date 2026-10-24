@@ -11,14 +11,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import flext_web
 from flext_web import __version__, __version_info__, web
-from tests import tm
-
-if TYPE_CHECKING:
-    from tests import t
+from tests import t, tm
 
 
 class TestsFlextWebInit:
@@ -28,7 +23,7 @@ class TestsFlextWebInit:
     def test_version_string_matches_version_info() -> None:
         """__version__ is the dotted join of the numeric __version_info__ parts."""
         numeric_prefix = ".".join(str(part) for part in __version_info__)
-        tm.that(__version__.startswith(numeric_prefix), eq=True)
+        tm.ok(__version__.startswith(numeric_prefix))
 
     @staticmethod
     def test_all_exports_match() -> None:
@@ -42,7 +37,7 @@ class TestsFlextWebInit:
         """
         module_all: t.StrSequence = getattr(flext_web, "__all__", [])
         tm.that(list(module_all), eq=sorted(set(module_all)))
-        tm.that(all(hasattr(flext_web, name) for name in module_all), eq=True)
+        tm.ok(all(hasattr(flext_web, name) for name in module_all))
 
     @staticmethod
     def test_public_web_surface_executes() -> None:
@@ -56,4 +51,4 @@ class TestsFlextWebInit:
         """Each alias resolves and exposes its Web namespace attribute."""
         for alias_name in ("c", "t", "p", "m", "u"):
             alias = getattr(flext_web, alias_name)
-            tm.that(hasattr(alias, "Web"), eq=True)
+            tm.ok(hasattr(alias, "Web"))
