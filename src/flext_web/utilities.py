@@ -7,14 +7,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from flext_cli import FlextCliUtilities
 
 from flext_web._utilities import FlextWebUtilitiesBase, FlextWebUtilitiesWeb
-
-if TYPE_CHECKING:
-    from flext_web import t
 
 
 class FlextWebUtilities(FlextCliUtilities):
@@ -31,5 +26,4 @@ class FlextWebUtilities(FlextCliUtilities):
 
 
 u = FlextWebUtilities
-
-__all__: t.MutableSequenceOf[str] = ["FlextWebUtilities", "u"]
+__all__: list[str] = ["FlextWebUtilities", "u"]

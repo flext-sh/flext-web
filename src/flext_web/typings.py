@@ -20,5 +20,4 @@ class FlextWebTypes(FlextCliTypes):
 
 
 t = FlextWebTypes
-
 __all__: list[str] = ["FlextWebTypes", "t"]

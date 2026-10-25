@@ -27,5 +27,4 @@ class FlextWebProtocols(FlextCliProtocols):
 
 
 p = FlextWebProtocols
-
 __all__: list[str] = ["FlextWebProtocols", "p"]

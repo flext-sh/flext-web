@@ -7,14 +7,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from flext_cli import FlextCliConstants
 
 from flext_web._constants import FlextWebConstantsBase, FlextWebConstantsValues
-
-if TYPE_CHECKING:
-    from flext_web import t
 
 
 class FlextWebConstants(FlextCliConstants):
@@ -25,5 +20,4 @@ class FlextWebConstants(FlextCliConstants):
 
 
 c = FlextWebConstants
-
-__all__: t.StrSequence = ("FlextWebConstants", "c")
+__all__: list[str] = ["FlextWebConstants", "c"]

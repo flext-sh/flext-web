@@ -9,10 +9,13 @@ from __future__ import annotations
 from flext_cli import m
 
 
-class FlextWebModelsWebNamespace(m.BaseModel):
-    """Open, frozen namespace exposing every ``config/*.yaml`` domain model-less."""
+class FlextWebModelsNamespace:
+    """Config models for flext-web."""
 
-    model_config = m.ConfigDict(extra="allow", frozen=True)
+    class ConfigNamespace(m.BaseModel):
+        """Open, frozen namespace exposing every ``config/*.yaml`` domain."""
+
+        model_config = m.ConfigDict(extra="allow", frozen=True)
 
 
-__all__: list[str] = ["FlextWebModelsWebNamespace"]
+__all__: list[str] = ["FlextWebModelsNamespace"]

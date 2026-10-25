@@ -10,17 +10,16 @@ from __future__ import annotations
 
 from flext_cli import FlextCliModels
 
-from flext_web import t
 from flext_web._models import (
     FlextWebModelsAuth,
     FlextWebModelsBase,
     FlextWebModelsConfig,
     FlextWebModelsEntity,
     FlextWebModelsHttp,
+    FlextWebModelsNamespace,
     FlextWebModelsResponses,
     FlextWebModelsSystem,
     FlextWebModelsWebMessage,
-    FlextWebModelsWebNamespace,
     FlextWebModelsWebRequest,
 )
 
@@ -38,15 +37,10 @@ class FlextWebModels(FlextCliModels):
         FlextWebModelsWebMessage,
         FlextWebModelsWebRequest,
         FlextWebModelsBase,
-        FlextWebModelsWebNamespace,
+        FlextWebModelsNamespace,
     ):
         """Web domain models namespace."""
 
 
 m = FlextWebModels
-
-__all__: t.MutableSequenceOf[str] = [
-    "FlextWebModels",
-    "FlextWebModelsWebNamespace",
-    "m",
-]
+__all__: list[str] = ["FlextWebModels", "FlextWebModelsNamespace", "m"]

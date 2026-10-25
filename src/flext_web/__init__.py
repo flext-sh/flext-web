@@ -15,7 +15,6 @@ from flext_core.lazy import install_lazy_exports
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
 
-    from flext_web import services as services
     from flext_web.__version__ import (
         FlextWebVersion,
         __author__,
@@ -33,7 +32,7 @@ if TYPE_CHECKING:
     from flext_web.base import FlextWebServiceBase, s
     from flext_web.cli import FlextWebCli, main
     from flext_web.constants import FlextWebConstants, c
-    from flext_web.models import FlextWebModels, FlextWebModelsWebNamespace, m
+    from flext_web.models import FlextWebModels, FlextWebModelsNamespace, m
     from flext_web.protocols import FlextWebProtocols, p
     from flext_web.typings import FlextWebTypes, t
     from flext_web.utilities import FlextWebUtilities, u
@@ -45,7 +44,7 @@ __all__: tuple[str, ...] = (
     "FlextWebConfig",
     "FlextWebConstants",
     "FlextWebModels",
-    "FlextWebModelsWebNamespace",
+    "FlextWebModelsNamespace",
     "FlextWebProtocols",
     "FlextWebServiceBase",
     "FlextWebSettings",
@@ -70,7 +69,6 @@ __all__: tuple[str, ...] = (
     "p",
     "r",
     "s",
-    "services",
     "settings",
     "t",
     "u",
@@ -87,7 +85,7 @@ install_lazy_exports(
         "FlextWebConfig": "._config",
         "FlextWebConstants": ".constants",
         "FlextWebModels": ".models",
-        "FlextWebModelsWebNamespace": ".models",
+        "FlextWebModelsNamespace": ".models",
         "FlextWebProtocols": ".protocols",
         "FlextWebServiceBase": ".base",
         "FlextWebSettings": "._settings",
@@ -111,7 +109,6 @@ install_lazy_exports(
         "p": ".protocols",
         "r": "flext_cli",
         "s": ".base",
-        "services": ".services",
         "settings": "._settings",
         "t": ".typings",
         "u": ".utilities",
