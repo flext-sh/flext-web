@@ -25,7 +25,10 @@ class FlextWebConfig(FlextSettings, FlextCliConfig):
     YAML-validated config singleton.
     """
 
-    Web: Annotated[FlextWebModelsNamespace.ConfigNamespace, m.Field(description="Open namespace exposing ``config/*.yaml`` under ``Web``.")] = FlextWebModelsNamespace.ConfigNamespace()
+    Web: Annotated[
+        FlextWebModelsNamespace.ConfigNamespace,
+        m.Field(description="Open namespace exposing ``config/*.yaml`` under ``Web``."),
+    ] = FlextWebModelsNamespace.ConfigNamespace()
 
 
 config: FlextWebConfig = FlextWebConfig.fetch_global()
