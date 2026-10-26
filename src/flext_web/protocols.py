@@ -14,12 +14,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliProtocols
+from flext_cli import p
 
 from flext_web._protocols import FlextWebProtocolsBase, FlextWebProtocolsWeb
 
 
-class FlextWebProtocols(FlextCliProtocols):
+class FlextWebProtocols(p):
     """Web-specific ``@runtime_checkable`` Protocol surface extending ``p``."""
 
     class Web(FlextWebProtocolsBase, FlextWebProtocolsWeb):

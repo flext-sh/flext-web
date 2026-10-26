@@ -7,12 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliUtilities
+from flext_cli import u
 
 from flext_web._utilities import FlextWebUtilitiesBase, FlextWebUtilitiesWeb
 
 
-class FlextWebUtilities(FlextCliUtilities):
+class FlextWebUtilities(u):
     """Web-specific utilities delegating to flext-core.
 
     Inherits from u and ensures consistency.
@@ -21,7 +21,7 @@ class FlextWebUtilities(FlextCliUtilities):
     Uses advanced builder/DSL patterns for composition.
     """
 
-    class Web(FlextWebUtilitiesBase, FlextWebUtilitiesWeb):
+    class Web(FlextWebUtilitiesWeb, FlextWebUtilitiesBase):
         """Web domain-specific runtime utilities."""
 
 

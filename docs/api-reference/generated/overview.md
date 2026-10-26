@@ -20,13 +20,12 @@
 - Project class: `domain`
 - Keywords: `enterprise`, `fastapi`, `flext`, `frontend`, `typed`, `web`
 - Main facades: `FlextWeb`, `FlextWebCli`, `FlextWebConfig`, `FlextWebConstants`,
-  `FlextWebModels`, `FlextWebModelsWebNamespace`, `FlextWebProtocols`,
+  `FlextWebModels`, `FlextWebModelsNamespace`, `FlextWebProtocols`,
   `FlextWebServiceBase` (+4 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextWeb`, `FlextWebCli`, `FlextWebConfig`,
-  `FlextWebConstants`, `FlextWebModels`, `FlextWebModelsWebNamespace`,
-  `FlextWebProtocols`, `FlextWebServiceBase`, `FlextWebSettings`, `FlextWebTypes` (+6
-  more)
+  `FlextWebConstants`, `FlextWebModels`, `FlextWebModelsNamespace`, `FlextWebProtocols`,
+  `FlextWebServiceBase`, `FlextWebSettings`, `FlextWebTypes` (+6 more)
 - Exported module shortcuts: _none_
 - Generated module pages: `8`
 

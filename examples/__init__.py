@@ -20,7 +20,24 @@ if TYPE_CHECKING:
     from examples.protocols import FlextWebExamplesProtocols
     from examples.typings import FlextWebExamplesTypes
     from examples.utilities import ExamplesFlextWebUtilities
-    from flext_web import c, d, e, h, m, p, r, s, t, u, x
+    from flext_web import (
+        c,
+        cli,
+        config,
+        d,
+        e,
+        h,
+        m,
+        main,
+        p,
+        r,
+        s,
+        settings,
+        t,
+        u,
+        web,
+        x,
+    )
 
 
 __all__: tuple[str, ...] = (
@@ -32,15 +49,20 @@ __all__: tuple[str, ...] = (
     "FlextWebExamplesProtocols",
     "FlextWebExamplesTypes",
     "c",
+    "cli",
+    "config",
     "d",
     "e",
     "h",
     "m",
+    "main",
     "p",
     "r",
     "s",
+    "settings",
     "t",
     "u",
+    "web",
     "x",
 )
 
@@ -56,15 +78,20 @@ install_lazy_exports(
         "FlextWebExamplesProtocols": ".protocols",
         "FlextWebExamplesTypes": ".typings",
         "c": "flext_web",
+        "cli": "flext_web",
+        "config": "flext_web",
         "d": "flext_web",
         "e": "flext_web",
         "h": "flext_web",
         "m": "flext_web",
+        "main": "flext_web",
         "p": "flext_web",
         "r": "flext_web",
         "s": "flext_web",
+        "settings": "flext_web",
         "t": "flext_web",
         "u": "flext_web",
+        "web": "flext_web",
         "x": "flext_web",
     }),
     public_exports=__all__,
