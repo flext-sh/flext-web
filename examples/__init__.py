@@ -16,9 +16,9 @@ if TYPE_CHECKING:
     from examples.api_usage import FlextWebExamplesApiUsage
     from examples.basic_service import FlextWebExamplesBasicService
     from examples.constants import FlextWebExamplesConstants
-    from examples.models import FlextWebExamplesModels
-    from examples.protocols import FlextWebExamplesProtocols
-    from examples.typings import FlextWebExamplesTypes
+    from examples.models import FlextWebModelsExamples
+    from examples.protocols import FlextWebProtocolsExamples
+    from examples.typings import FlextWebTypesExamples
     from examples.utilities import ExamplesFlextWebUtilities
     from flext_web import (
         c,
@@ -45,9 +45,9 @@ __all__: tuple[str, ...] = (
     "FlextWebExamplesApiUsage",
     "FlextWebExamplesBasicService",
     "FlextWebExamplesConstants",
-    "FlextWebExamplesModels",
-    "FlextWebExamplesProtocols",
-    "FlextWebExamplesTypes",
+    "FlextWebModelsExamples",
+    "FlextWebProtocolsExamples",
+    "FlextWebTypesExamples",
     "c",
     "cli",
     "config",
@@ -74,9 +74,9 @@ install_lazy_exports(
         "FlextWebExamplesApiUsage": ".api_usage",
         "FlextWebExamplesBasicService": ".basic_service",
         "FlextWebExamplesConstants": ".constants",
-        "FlextWebExamplesModels": ".models",
-        "FlextWebExamplesProtocols": ".protocols",
-        "FlextWebExamplesTypes": ".typings",
+        "FlextWebModelsExamples": ".models",
+        "FlextWebProtocolsExamples": ".protocols",
+        "FlextWebTypesExamples": ".typings",
         "c": "flext_web",
         "cli": "flext_web",
         "config": "flext_web",
