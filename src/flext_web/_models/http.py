@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import datetime
 from types import MappingProxyType
 from typing import Annotated
@@ -33,11 +34,11 @@ class FlextWebModelsHttp:
         """
 
         headers: Annotated[
-            t.StrMapping,
+            Mapping[str, str],
             m.Field(description="HTTP headers for message"),
         ] = m.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         body: Annotated[
-            str | t.ScalarMapping | None,
+            str | Mapping[str, t.Scalar] | None,
             m.Field(description="Message body content (optional for GET/HEAD)"),
         ] = None
         timestamp: Annotated[
@@ -103,8 +104,8 @@ class FlextWebModelsHttp:
         def create_http_request(
             url: str,
             method: str = c.Web.Method.GET,
-            headers: t.StrMapping | None = None,
-            body: str | t.MappingKV[str, t.Scalar] | None = None,
+            headers: Mapping[str, str] | None = None,
+            body: str | Mapping[str, t.Scalar] | None = None,
             timeout: float = c.Web.DEFAULT_TIMEOUT_SECONDS,
         ) -> p.Result[FlextWebModelsHttp.Request]:
             """Build a validated :class:`Request` from raw HTTP parameters.
@@ -171,8 +172,8 @@ class FlextWebModelsHttp:
         def create_http_response(
             cls,
             status_code: int,
-            headers: t.StrMapping | None = None,
-            body: str | t.MappingKV[str, t.Scalar] | None = None,
+            headers: Mapping[str, str] | None = None,
+            body: str | Mapping[str, t.Scalar] | None = None,
             elapsed_time: float | None = None,
         ) -> p.Result[FlextWebModelsHttp.Response]:
             """Build a validated :class:`Response` from raw HTTP fields.

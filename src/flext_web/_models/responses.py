@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Annotated
 
 from flext_cli import m
@@ -58,7 +59,7 @@ class FlextWebModelsResponses:
         """Metrics response model."""
 
         service_status: Annotated[str, m.Field(description="Service status")]
-        components: Annotated[t.StrSequence, m.Field(description="Service components")]
+        components: Annotated[Sequence[str], m.Field(description="Service components")]
 
     class DashboardResponse(m.Value):
         """Dashboard response model."""
@@ -84,7 +85,7 @@ class FlextWebModelsResponses:
 
         service: Annotated[str, m.Field(description="Service name")]
         capabilities: Annotated[
-            t.StrSequence,
+            Sequence[str],
             m.Field(description="Service capabilities"),
         ]
         status: Annotated[str, m.Field(description="Service status")]

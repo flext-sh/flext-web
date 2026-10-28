@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import MutableMapping, Sequence
 from typing import TYPE_CHECKING, ClassVar
 
 from flext_cli import u
@@ -23,18 +23,18 @@ if TYPE_CHECKING:
 class FlextWebUtilitiesWeb:
     """Web runtime registries and protocol-backing utilities."""
 
-    service_state: ClassVar[t.MutableMappingKV[str, bool]] = {
+    service_state: ClassVar[MutableMapping[str, bool]] = {
         "routes_initialized": False,
         "middleware_configured": False,
         "service_running": False,
     }
-    apps_registry: ClassVar[t.MutableMappingKV[str, t.Web.ResponseDict]] = {}
-    app_runtimes: ClassVar[t.MutableMappingKV[str, t.Web.ResponseDict]] = {}
-    framework_instances: ClassVar[t.MutableMappingKV[str, p.Web.FastApiLikeApp]] = {}
-    template_config: ClassVar[t.MutableMappingKV[str, t.JsonValue]] = {}
-    template_filters: ClassVar[t.MutableMappingKV[str, Callable[[str], str]]] = {}
-    template_globals: ClassVar[t.MutableMappingKV[str, t.JsonValue]] = {}
-    web_metrics: ClassVar[t.MutableMappingKV[str, t.Scalar]] = {}
+    apps_registry: ClassVar[MutableMapping[str, t.Web.ResponseDict]] = {}
+    app_runtimes: ClassVar[MutableMapping[str, t.Web.ResponseDict]] = {}
+    framework_instances: ClassVar[MutableMapping[str, p.Web.FastApiLikeApp]] = {}
+    template_config: ClassVar[MutableMapping[str, t.JsonValue]] = {}
+    template_filters: ClassVar[MutableMapping[str, Callable[[str], str]]] = {}
+    template_globals: ClassVar[MutableMapping[str, t.JsonValue]] = {}
+    web_metrics: ClassVar[MutableMapping[str, t.Scalar]] = {}
 
     @staticmethod
     def protocol(*, ssl_enabled: bool) -> str:

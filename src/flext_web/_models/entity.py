@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import MutableMapping, MutableSequence
+from collections.abc import Mapping, MutableMapping, MutableSequence
 from typing import TYPE_CHECKING, Annotated, override
 
 from flext_cli import m, u
@@ -235,7 +235,7 @@ class FlextWebModelsEntity:
         def add_domain_event(
             self,
             event_type: str,
-            data: m.ConfigMap | t.MappingKV[str, t.JsonPayload | None] | None = None,
+            data: m.ConfigMap | Mapping[str, t.JsonPayload | None] | None = None,
         ) -> p.Result[m.DomainEvent]:
             """Create and buffer a domain event for this web application entity.
 
@@ -342,7 +342,7 @@ class FlextWebModelsEntity:
 
         def update_metrics(
             self,
-            new_metrics: MutableMapping[str, t.Scalar] | t.StrMapping,
+            new_metrics: MutableMapping[str, t.Scalar] | Mapping[str, str],
         ) -> p.Result[bool]:
             """Update application metrics.
 

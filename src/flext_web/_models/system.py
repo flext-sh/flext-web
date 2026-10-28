@@ -6,9 +6,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from typing import Annotated
 
-from flext_cli import m, t
+from flext_cli import m
 
 
 class FlextWebModelsSystem:
@@ -20,13 +21,13 @@ class FlextWebModelsSystem:
         service_name: Annotated[str, m.Field(description="Service name")]
         service_type: Annotated[str, m.Field(description="Service type")]
         architecture: Annotated[str, m.Field(description="Architecture pattern")]
-        patterns: Annotated[t.StrSequence, m.Field(description="Design patterns used")]
+        patterns: Annotated[Sequence[str], m.Field(description="Design patterns used")]
         integrations: Annotated[
-            t.StrSequence,
+            Sequence[str],
             m.Field(description="Integrated components"),
         ]
         capabilities: Annotated[
-            t.StrSequence,
+            Sequence[str],
             m.Field(description="Service capabilities"),
         ]
 
@@ -37,7 +38,9 @@ class FlextWebModelsSystem:
         service: Annotated[str, m.Field(description="Service name")]
         version: Annotated[str, m.Field(description="Service version")]
         timestamp: Annotated[str, m.Field(description="Status timestamp")]
-        components: Annotated[t.StrMapping, m.Field(description="Component statuses")]
+        components: Annotated[
+            Mapping[str, str], m.Field(description="Component statuses")
+        ]
 
 
 __all__: list[str] = ["FlextWebModelsSystem"]

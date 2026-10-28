@@ -7,13 +7,14 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import sys
+from collections.abc import MutableMapping, Sequence
 from typing import Annotated, override
 
 import flext_cli
 import uvicorn
 from flext_cli import cli
 
-from flext_web import FlextWebSettings, p, r, s, settings, t, web
+from flext_web import FlextWebSettings, p, r, s, settings, web
 
 
 class FlextWebCli:
@@ -52,7 +53,7 @@ class FlextWebCli:
 
             """
             debug_value = False if self.no_debug else self.debug
-            web_overrides: t.MutableMappingKV[str, str | int] = {}
+            web_overrides: MutableMapping[str, str | int] = {}
             if self.host is not None:
                 web_overrides["host"] = self.host
             if self.port is not None:
@@ -130,7 +131,7 @@ class FlextWebCli:
         return params.execute()
 
 
-def main(argv: t.StrSequence | None = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     """Return the process exit code for the flext-web console entry point.
 
     Bare invocation renders the help panel and succeeds, matching the fleet

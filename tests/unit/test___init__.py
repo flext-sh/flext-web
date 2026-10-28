@@ -11,9 +11,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 import flext_web
 from flext_web import __version__, __version_info__, web
-from tests import t, tm
+from tests import tm
 
 
 class TestsFlextWebInit:
@@ -35,7 +37,7 @@ class TestsFlextWebInit:
         declare (ADR-018); a test never freezes a projection's values, only its
         structure.
         """
-        module_all: t.StrSequence = getattr(flext_web, "__all__", [])
+        module_all: Sequence[str] = getattr(flext_web, "__all__", [])
         tm.that(list(module_all), eq=sorted(set(module_all)))
         tm.ok(all(hasattr(flext_web, name) for name in module_all))
 

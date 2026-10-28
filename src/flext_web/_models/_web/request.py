@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
+from collections.abc import Mapping
 from datetime import datetime
 from types import MappingProxyType
 from typing import Annotated
@@ -35,8 +36,8 @@ class FlextWebModelsWebRequest:
                 description="Request URL",
             ),
         ]
-        headers: Annotated[t.StrMapping, m.Field(description="HTTP headers")] = m.Field(
-            default_factory=lambda: MappingProxyType[str, str]({})
+        headers: Annotated[Mapping[str, str], m.Field(description="HTTP headers")] = (
+            m.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         )
         body: Annotated[
             str | t.JsonValue | None,
@@ -62,7 +63,7 @@ class FlextWebModelsWebRequest:
             ),
         ]
         headers: Annotated[
-            t.StrMapping,
+            Mapping[str, str],
             m.Field(description="HTTP response headers"),
         ] = m.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         body: Annotated[
