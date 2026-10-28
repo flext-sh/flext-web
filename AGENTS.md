@@ -38,6 +38,8 @@ src/flext_web/
 - Keep web behavior in the service/facade layer; treat generated declaration facets as
   data-only.
 - Response payloads typed via `t.Web.*` aliases (never raw dict / `m.Dict`).
+- Model components moved into `_models/_web` are composed through that package's
+  declared exports; the parent `_models` package does not promote nested leaves.
 - HTTP routes derive from core service operations through `web.application` /
   `web.serve` (ADR-019 Decision 5, epic `flext-itpd1.11.8`); FastAPI, Starlette and
   uvicorn stay private to `u.Web`/`t.Web`, never imported by consumers.

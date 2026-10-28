@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_web._models import FlextWebModelsWebMessage, FlextWebModelsWebRequest
+from flext_web._models._web import FlextWebModelsWebMessage, FlextWebModelsWebRequest
 
 
 class FlextWebModelsWeb(
