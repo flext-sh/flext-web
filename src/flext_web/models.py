@@ -19,8 +19,7 @@ from flext_web._models import (
     FlextWebModelsNamespace,
     FlextWebModelsResponses,
     FlextWebModelsSystem,
-    FlextWebModelsWebMessage,
-    FlextWebModelsWebRequest,
+    FlextWebModelsWeb,
 )
 
 
@@ -34,8 +33,7 @@ class FlextWebModels(m):
         FlextWebModelsHttp,
         FlextWebModelsResponses,
         FlextWebModelsSystem,
-        FlextWebModelsWebMessage,
-        FlextWebModelsWebRequest,
+        FlextWebModelsWeb,
         FlextWebModelsBase,
         FlextWebModelsNamespace,
     ):
