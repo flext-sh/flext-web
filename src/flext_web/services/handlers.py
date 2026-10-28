@@ -7,6 +7,15 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from typing import ClassVar, override
 
 from flext_web import __version__, c, m, p, r, s, settings, u
