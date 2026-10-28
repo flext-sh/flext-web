@@ -15,7 +15,7 @@ from flext_core.lazy import install_lazy_exports
 if TYPE_CHECKING:
     from examples.api_usage import FlextWebExamplesApiUsage
     from examples.basic_service import FlextWebExamplesBasicService
-    from examples.constants import FlextWebExamplesConstants
+    from examples.constants import FlextWebConstantsExamples
     from examples.models import FlextWebModelsExamples
     from examples.protocols import FlextWebProtocolsExamples
     from examples.typings import FlextWebTypesExamples
@@ -42,9 +42,9 @@ if TYPE_CHECKING:
 
 __all__: tuple[str, ...] = (
     "ExamplesFlextWebUtilities",
+    "FlextWebConstantsExamples",
     "FlextWebExamplesApiUsage",
     "FlextWebExamplesBasicService",
-    "FlextWebExamplesConstants",
     "FlextWebModelsExamples",
     "FlextWebProtocolsExamples",
     "FlextWebTypesExamples",
@@ -73,7 +73,7 @@ install_lazy_exports(
         "ExamplesFlextWebUtilities": ".utilities",
         "FlextWebExamplesApiUsage": ".api_usage",
         "FlextWebExamplesBasicService": ".basic_service",
-        "FlextWebExamplesConstants": ".constants",
+        "FlextWebConstantsExamples": ".constants",
         "FlextWebModelsExamples": ".models",
         "FlextWebProtocolsExamples": ".protocols",
         "FlextWebTypesExamples": ".typings",

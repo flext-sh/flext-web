@@ -17,7 +17,7 @@ from flext_web import settings
 from tests import c, m, tm
 
 
-class TestsFlextWebAppModelsUnit:
+class TestsFlextWebModelsAppUnit:
     """Test suite for Web application models."""
 
     @staticmethod
@@ -257,7 +257,7 @@ class TestsFlextWebAppModelsUnit:
                 )
 
 
-class TestsFlextWebHttpModelsUnit:
+class TestsFlextWebModelsHttpUnit:
     """Test suite for Web request/response models."""
 
     @staticmethod
