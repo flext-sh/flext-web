@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import uuid
-from collections.abc import MutableMapping, MutableSequence
+from collections.abc import Mapping, MutableMapping, MutableSequence
 from typing import TYPE_CHECKING, Annotated, override
 
 from flext_cli import m, u
@@ -39,12 +39,12 @@ class FlextWebModelsEntity:
 
         """
 
-        id: Annotated[str, u.Field(description="Unique application identifier")] = (
-            u.Field(default_factory=lambda: str(uuid.uuid4()))
+        id: Annotated[str, m.Field(description="Unique application identifier")] = (
+            m.Field(default_factory=lambda: str(uuid.uuid4()))
         )
         name: Annotated[
             str,
-            u.Field(
+            m.Field(
                 min_length=1,
                 max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
                 description="Application name",
@@ -84,25 +84,25 @@ class FlextWebModelsEntity:
 
             return v
 
-        # Assignment form (= u.Field(default_factory=...)) is required on
+        # Assignment form (= m.Field(default_factory=...)) is required on
         # m.Entity subclasses: pyrefly loses Annotated-only defaults through
         # the TimestampedModel chain (same pattern as the `id` field above).
         host: Annotated[
             str,
-            u.Field(
+            m.Field(
                 min_length=1,
                 max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
                 description="Application host address",
             ),
-        ] = u.Field(default_factory=lambda: settings.Web.host)
+        ] = m.Field(default_factory=lambda: settings.Web.host)
         port: Annotated[
             t.PortNumber,
-            u.Field(description="Application port number"),
-        ] = u.Field(default_factory=lambda: settings.Web.port)
+            m.Field(description="Application port number"),
+        ] = m.Field(default_factory=lambda: settings.Web.port)
         status: Annotated[
             c.Web.Status | str,
-            u.Field(description="Current application status"),
-        ] = c.Web.Status.STOPPED.value
+            m.Field(description="Current application status"),
+        ] = m.Field(default=c.Web.Status.STOPPED.value)
 
         if TYPE_CHECKING:
             # Checkers lose the inherited ``VersionableMixin`` default through
@@ -128,26 +128,26 @@ class FlextWebModelsEntity:
                 raise ValueError(msg)
             return v
 
-        environment: Annotated[str, u.Field(description="Deployment environment")] = (
-            c.Web.Name.DEVELOPMENT.value
+        environment: Annotated[str, m.Field(description="Deployment environment")] = (
+            m.Field(default=c.Web.Name.DEVELOPMENT.value)
         )
-        debug_mode: Annotated[bool, u.Field(description="Debug mode enabled flag")] = (
-            u.Field(default_factory=lambda: settings.debug)
+        debug_mode: Annotated[bool, m.Field(description="Debug mode enabled flag")] = (
+            m.Field(default_factory=lambda: settings.debug)
         )
         metrics: Annotated[
             MutableMapping[str, t.Scalar],
-            u.Field(description="Application metrics"),
-        ] = u.Field(default_factory=dict[str, t.Scalar])
+            m.Field(description="Application metrics"),
+        ] = m.Field(default_factory=dict[str, t.Scalar])
         web_events: Annotated[
             MutableSequence[str],
-            u.Field(description="Web-specific events (application lifecycle)"),
-        ] = u.Field(default_factory=list[str])
+            m.Field(description="Web-specific events (application lifecycle)"),
+        ] = m.Field(default_factory=list[str])
         # Assignment form is required so type checkers see the inherited
         # ``domain_events`` default (the core declares it Annotated-only).
         domain_events: Annotated[
             MutableSequence[m.DomainEvent],
-            u.Field(description="Uncommitted domain events for event sourcing"),
-        ] = u.Field(default_factory=list[m.DomainEvent])
+            m.Field(description="Uncommitted domain events for event sourcing"),
+        ] = m.Field(default_factory=list[m.DomainEvent])
 
         @override
         def __str__(self) -> str:
@@ -235,7 +235,7 @@ class FlextWebModelsEntity:
         def add_domain_event(
             self,
             event_type: str,
-            data: m.ConfigMap | t.MappingKV[str, t.JsonPayload | None] | None = None,
+            data: m.ConfigMap | Mapping[str, t.JsonPayload | None] | None = None,
         ) -> p.Result[m.DomainEvent]:
             """Create and buffer a domain event for this web application entity.
 
@@ -342,7 +342,7 @@ class FlextWebModelsEntity:
 
         def update_metrics(
             self,
-            new_metrics: MutableMapping[str, t.Scalar] | t.StrMapping,
+            new_metrics: MutableMapping[str, t.Scalar] | Mapping[str, str],
         ) -> p.Result[bool]:
             """Update application metrics.
 
@@ -390,7 +390,7 @@ class FlextWebModelsEntity:
 
         app_name: Annotated[
             str,
-            u.Field(
+            m.Field(
                 default_factory=lambda: settings.Web.app_name,
                 min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
                 max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
@@ -399,7 +399,7 @@ class FlextWebModelsEntity:
         ]
         host: Annotated[
             str,
-            u.Field(
+            m.Field(
                 default_factory=lambda: settings.Web.host,
                 min_length=1,
                 max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
@@ -408,21 +408,21 @@ class FlextWebModelsEntity:
         ]
         port: Annotated[
             t.PortNumber,
-            u.Field(
+            m.Field(
                 default_factory=lambda: settings.Web.port,
                 description="Application port number",
             ),
         ]
         debug: Annotated[
             bool,
-            u.Field(
+            m.Field(
                 default_factory=lambda: settings.debug,
                 description="Debug mode flag",
             ),
         ]
         secret_key: Annotated[
             str,
-            u.Field(
+            m.Field(
                 default_factory=lambda: settings.Web.secret_key,
                 min_length=c.Web.SECURITY_MIN_SECRET_KEY_LENGTH,
                 description="Application secret key",

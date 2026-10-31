@@ -156,7 +156,7 @@ class ProjectConstants(FlextConstants):
 ### 🔄 Remaining Projects (Apply Same Patterns)
 
 - [ ] flext-auth: FlextAuthConfig, FlextAuthModels, FlextAuthConstants
-- [ ] flext-db-oracle: FlextOracleConfig, FlextOracleModels, FlextOracleConstants
+- [ ] flext-db-oracle: FlextOracleConfig, FlextModelsOracle, FlextOracleConstants
 - [ ] flext-ldap: FlextLdapConfig, FlextLdapModels, FlextLdapConstants
 - [ ] flext-meltano: FlextMeltanoConfig, FlextMeltanoModels, FlextMeltanoConstants
 - [ ] flext-observability: FlextObservabilityConfig, FlextObservabilityModels,
@@ -164,25 +164,25 @@ class ProjectConstants(FlextConstants):
 - [ ] flext-grpc: FlextGrpcConfig, FlextGrpcModels, FlextGrpcConstants
 - [ ] flext-quality: FlextQualityConfig, FlextQualityModels, FlextQualityConstants
 - [ ] flext-plugin: FlextPluginConfig, FlextPluginModels, FlextPluginConstants
-- [ ] flext-tools: FlextToolsConfig, FlextToolsModels, FlextToolsConstants
+- [ ] flext-tools: FlextToolsConfig, FlextModelsTools, FlextToolsConstants
 
 ### 🔄 Data Pipeline Projects
 
-- [ ] flext-dbt-ldap: FlextDbtLdapConfig, FlextDbtLdapModels, FlextDbtLdapConstants
+- [ ] flext-dbt-ldap: FlextDbtLdapConfig, FlextModelsDbtLdap, FlextDbtLdapConstants
 - [ ] flext-dbt-oracle: FlextDbtOracleConfig, FlextDbtOracleModels,
       FlextDbtOracleConstants
-- [ ] flext-tap-ldap: FlextTapLdapConfig, FlextTapLdapModels, FlextTapLdapConstants
+- [ ] flext-tap-ldap: FlextTapLdapConfig, FlextModelsTapLdap, FlextTapLdapConstants
 - [ ] flext-tap-oracle: FlextTapOracleConfig, FlextTapOracleModels,
       FlextTapOracleConstants
-- [ ] flext-target-ldap: FlextTargetLdapConfig, FlextTargetLdapModels,
+- [ ] flext-target-ldap: FlextTargetLdapConfig, FlextModelsTargetLdap,
       FlextTargetLdapConstants
 - [ ] flext-target-oracle: FlextTargetOracleConfig, FlextTargetOracleModels,
       FlextTargetOracleConstants
 
 ### 🔄 Migration Projects
 
-- [ ] flext-oud-mig: FlextOudMigConfig, FlextOudMigModels, FlextOudMigConstants
-- [ ] flext-meltano-native: flextMeltanoConfig, flextMeltanoModels,
+- [ ] flext-oud-mig: FlextOudMigConfig, FlextModelsOudMig, FlextOudMigConstants
+- [ ] flext-meltano-native: flextMeltanoConfig, FlextMeltanoModels,
       flextMeltanoConstants
 
 ## 🚀 NEXT STEPS

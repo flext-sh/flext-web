@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import datetime
 from types import MappingProxyType
 from typing import Annotated
@@ -33,17 +34,17 @@ class FlextWebModelsHttp:
         """
 
         headers: Annotated[
-            t.StrMapping,
-            u.Field(description="HTTP headers for message"),
-        ] = u.Field(default_factory=lambda: MappingProxyType[str, str]({}))
+            Mapping[str, str],
+            m.Field(description="HTTP headers for message"),
+        ] = m.Field(default_factory=lambda: MappingProxyType[str, str]({}))
         body: Annotated[
-            str | t.ScalarMapping | None,
-            u.Field(description="Message body content (optional for GET/HEAD)"),
+            str | Mapping[str, t.Scalar] | None,
+            m.Field(description="Message body content (optional for GET/HEAD)"),
         ] = None
         timestamp: Annotated[
             datetime,
-            u.Field(description="Timestamp of message creation (configured timezone)"),
-        ] = u.Field(default_factory=u.now)
+            m.Field(description="Timestamp of message creation (configured timezone)"),
+        ] = m.Field(default_factory=u.now)
 
     class Request(Message):
         """HTTP request model with complete validation.
@@ -60,7 +61,7 @@ class FlextWebModelsHttp:
 
         url: Annotated[
             str,
-            u.Field(
+            m.Field(
                 min_length=1,
                 max_length=c.Web.VALIDATION_URL_LENGTH_RANGE[1],
                 description="Request URL",
@@ -68,15 +69,15 @@ class FlextWebModelsHttp:
         ]
         method: Annotated[
             c.Web.Method,
-            u.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
-            u.Field(
+            m.BeforeValidator(lambda value: c.Web.Method(str(value).upper())),
+            m.Field(
                 description="HTTP method (GET, POST, PUT, DELETE, "
                 "PATCH, HEAD, OPTIONS)",
             ),
         ] = c.Web.Method.GET
         timeout: Annotated[
             t.PositiveTimeout,
-            u.Field(description="Request timeout in seconds"),
+            m.Field(description="Request timeout in seconds"),
         ] = c.Web.DEFAULT_TIMEOUT_SECONDS
 
         @property
@@ -103,8 +104,8 @@ class FlextWebModelsHttp:
         def create_http_request(
             url: str,
             method: str = c.Web.Method.GET,
-            headers: t.StrMapping | None = None,
-            body: str | t.MappingKV[str, t.Scalar] | None = None,
+            headers: Mapping[str, str] | None = None,
+            body: str | Mapping[str, t.Scalar] | None = None,
             timeout: float = c.Web.DEFAULT_TIMEOUT_SECONDS,
         ) -> p.Result[FlextWebModelsHttp.Request]:
             """Build a validated :class:`Request` from raw HTTP parameters.
@@ -137,11 +138,11 @@ class FlextWebModelsHttp:
 
         status_code: Annotated[
             t.HttpStatusCode,
-            u.Field(..., description="HTTP status code"),
+            m.Field(..., description="HTTP status code"),
         ]
         elapsed_time: Annotated[
             t.NonNegativeFloat | None,
-            u.Field(description="Response processing time in seconds"),
+            m.Field(description="Response processing time in seconds"),
         ] = None
 
         @property
@@ -171,8 +172,8 @@ class FlextWebModelsHttp:
         def create_http_response(
             cls,
             status_code: int,
-            headers: t.StrMapping | None = None,
-            body: str | t.MappingKV[str, t.Scalar] | None = None,
+            headers: Mapping[str, str] | None = None,
+            body: str | Mapping[str, t.Scalar] | None = None,
             elapsed_time: float | None = None,
         ) -> p.Result[FlextWebModelsHttp.Response]:
             """Build a validated :class:`Response` from raw HTTP fields.

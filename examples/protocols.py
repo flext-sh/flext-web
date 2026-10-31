@@ -9,7 +9,7 @@ from __future__ import annotations
 from examples import p
 
 
-class FlextWebExamplesProtocols(p):
+class FlextWebProtocolsExamples(p):
     """Protocols facade for the flext-web examples."""
 
     class WebExamplesBase:
@@ -19,4 +19,4 @@ class FlextWebExamplesProtocols(p):
         """Web-domain protocols composed for example workflows."""
 
 
-__all__: list[str] = ["FlextWebExamplesProtocols"]
+__all__: list[str] = ["FlextWebProtocolsExamples"]

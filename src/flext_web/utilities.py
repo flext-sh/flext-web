@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Web utilities facade.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -6,18 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from flext_cli import u
 
-from flext_cli import FlextCliUtilities
-
-from flext_web._utilities.base import FlextWebUtilitiesBase
-from flext_web._utilities.web import FlextWebUtilitiesWeb
-
-if TYPE_CHECKING:
-    from flext_web import t
+from flext_web._utilities import FlextWebUtilitiesBase, FlextWebUtilitiesWeb
 
 
-class FlextWebUtilities(FlextCliUtilities):
+class FlextWebUtilities(u):
     """Web-specific utilities delegating to flext-core.
 
     Inherits from u and ensures consistency.
@@ -26,10 +21,9 @@ class FlextWebUtilities(FlextCliUtilities):
     Uses advanced builder/DSL patterns for composition.
     """
 
-    class Web(FlextWebUtilitiesBase, FlextWebUtilitiesWeb):
+    class Web(FlextWebUtilitiesWeb, FlextWebUtilitiesBase):
         """Web domain-specific runtime utilities."""
 
 
 u = FlextWebUtilities
-
-__all__: t.MutableSequenceOf[str] = ["FlextWebUtilities", "u"]
+__all__: list[str] = ["FlextWebUtilities", "u"]

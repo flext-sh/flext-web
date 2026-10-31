@@ -1,6 +1,6 @@
 """Application factories for flext-web.
 
-Provides the framework-facing creation and configuration of FastAPI/Flask apps
+Provides the framework-facing creation and configuration of the FastAPI app
 without duplicating runtime/service orchestration concerns from the public API.
 
 Copyright (c) 2025 FLEXT Contributors. All rights reserved.
@@ -9,13 +9,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import json as _json
 from typing import TYPE_CHECKING, override
 
-import flask
 from fastapi import FastAPI
 
-from flext_web import FlextWebSettings, c, m, p, r, s, t, u
+from flext_web import c, m, p, r, s, t, u
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -181,60 +179,6 @@ class FlextWebApp(s):
                 version=fastapi_config.version,
             )
         return result
-
-    def create_flask_app(
-        self,
-        settings: FlextWebSettings | None = None,
-    ) -> p.Result[flask.Flask]:
-        """Create Flask app with flext-core integration and configuration.
-
-        Single Responsibility: Creates and configures Flask application only.
-        Uses Pydantic models for configuration validation and type safety.
-        Delegates logging and error handling to flext-core patterns.
-
-        Args:
-        settings: Flask configuration model or None for defaults
-
-        Returns:
-        r[flask.Flask]: Success contains configured Flask app,
-        failure contains detailed error message
-
-        """
-        web_settings = settings or self.settings
-        secret_key = web_settings.Web.secret_key
-        if not secret_key:
-            return r[flask.Flask].fail(
-                "SECRET_KEY is not configured; set FLEXT_WEB_WEB__SECRET_KEY",
-            )
-        app = flask.Flask(web_settings.Web.app_name)
-        app.config["SECRET_KEY"] = secret_key
-        app.config["DEBUG"] = web_settings.debug
-        app.config["TESTING"] = web_settings.Web.testing
-
-        def health_check() -> flask.Response:
-            """Serve the Flask health endpoint response.
-
-            Returns:
-                A JSON response with healthy status, service name, and
-                timestamp.
-
-            """
-            body: str = _json.dumps({
-                "status": c.Web.ResponseStatus.HEALTHY.value,
-                "service": c.Web.SERVICE_NAME_FLASK,
-                "timestamp": u.generate_iso_timestamp(),
-            })
-            response = flask.make_response(body, 200)
-            response.content_type = "application/json"
-            return response
-
-        app.add_url_rule("/health", "health_check", health_check)
-
-        self.logger.info(
-            "Flask application created",
-            app_name=web_settings.Web.app_name,
-        )
-        return r[flask.Flask].ok(app)
 
     class HealthHandler:
         """Health check handler with single responsibility.

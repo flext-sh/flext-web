@@ -15,32 +15,54 @@ from flext_core.lazy import install_lazy_exports
 if TYPE_CHECKING:
     from examples.api_usage import FlextWebExamplesApiUsage
     from examples.basic_service import FlextWebExamplesBasicService
-    from examples.constants import FlextWebExamplesConstants
-    from examples.models import FlextWebExamplesModels
-    from examples.protocols import FlextWebExamplesProtocols
-    from examples.typings import FlextWebExamplesTypes
+    from examples.constants import FlextWebConstantsExamples
+    from examples.models import FlextWebModelsExamples
+    from examples.protocols import FlextWebProtocolsExamples
+    from examples.typings import FlextWebTypesExamples
     from examples.utilities import ExamplesFlextWebUtilities
-    from flext_web import c, d, e, h, m, p, r, s, t, u, x
+    from flext_web import (
+        c,
+        cli,
+        config,
+        d,
+        e,
+        h,
+        m,
+        main,
+        p,
+        r,
+        s,
+        settings,
+        t,
+        u,
+        web,
+        x,
+    )
 
 
 __all__: tuple[str, ...] = (
     "ExamplesFlextWebUtilities",
+    "FlextWebConstantsExamples",
     "FlextWebExamplesApiUsage",
     "FlextWebExamplesBasicService",
-    "FlextWebExamplesConstants",
-    "FlextWebExamplesModels",
-    "FlextWebExamplesProtocols",
-    "FlextWebExamplesTypes",
+    "FlextWebModelsExamples",
+    "FlextWebProtocolsExamples",
+    "FlextWebTypesExamples",
     "c",
+    "cli",
+    "config",
     "d",
     "e",
     "h",
     "m",
+    "main",
     "p",
     "r",
     "s",
+    "settings",
     "t",
     "u",
+    "web",
     "x",
 )
 
@@ -51,20 +73,25 @@ install_lazy_exports(
         "ExamplesFlextWebUtilities": ".utilities",
         "FlextWebExamplesApiUsage": ".api_usage",
         "FlextWebExamplesBasicService": ".basic_service",
-        "FlextWebExamplesConstants": ".constants",
-        "FlextWebExamplesModels": ".models",
-        "FlextWebExamplesProtocols": ".protocols",
-        "FlextWebExamplesTypes": ".typings",
+        "FlextWebConstantsExamples": ".constants",
+        "FlextWebModelsExamples": ".models",
+        "FlextWebProtocolsExamples": ".protocols",
+        "FlextWebTypesExamples": ".typings",
         "c": "flext_web",
+        "cli": "flext_web",
+        "config": "flext_web",
         "d": "flext_web",
         "e": "flext_web",
         "h": "flext_web",
         "m": "flext_web",
+        "main": "flext_web",
         "p": "flext_web",
         "r": "flext_web",
         "s": "flext_web",
+        "settings": "flext_web",
         "t": "flext_web",
         "u": "flext_web",
+        "web": "flext_web",
         "x": "flext_web",
     }),
     public_exports=__all__,

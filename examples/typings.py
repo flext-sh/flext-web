@@ -9,7 +9,7 @@ from __future__ import annotations
 from examples import t
 
 
-class FlextWebExamplesTypes(t):
+class FlextWebTypesExamples(t):
     """Type aliases facade for the flext-web examples."""
 
     class WebExamplesBase:
@@ -19,4 +19,4 @@ class FlextWebExamplesTypes(t):
         """Web-domain type aliases composed for example workflows."""
 
 
-__all__: list[str] = ["FlextWebExamplesTypes"]
+__all__: list[str] = ["FlextWebTypesExamples"]

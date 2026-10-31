@@ -42,7 +42,7 @@ class TestsFlextWebTypesUnit:
         tm.that(app.host, eq="localhost")
         tm.that(app.port, eq=8080)
         tm.that(app.status, eq="running")
-        tm.that(app.running is True, eq=True)
+        tm.ok(app.running is True)
 
     @staticmethod
     def test_request_context_functionality() -> None:
@@ -96,7 +96,7 @@ class TestsFlextWebTypesUnit:
         )
         tm.fail(result)
         error = (result.error or "").lower()
-        tm.that("timeout" in error or "validation" in error, eq=True)
+        tm.ok("timeout" in error or "validation" in error)
 
     @staticmethod
     def test_create_http_response_exception_handling() -> None:
@@ -109,7 +109,7 @@ class TestsFlextWebTypesUnit:
         )
         tm.fail(result)
         error = (result.error or "").lower()
-        tm.that("elapsed_time" in error or "validation" in error, eq=True)
+        tm.ok("elapsed_time" in error or "validation" in error)
 
     @staticmethod
     def test_create_http_request_all_methods() -> None:

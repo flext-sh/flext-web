@@ -37,9 +37,13 @@ src/flext_web/
 
 - Keep web behavior in the service/facade layer; treat generated declaration facets as
   data-only.
-- Response payloads typed via `t.Web.*` aliases (never raw dict / `m.Dict`);
-  `_start_app_runtime` narrows the interface via `isinstance` guards.
-- Config/settings canonical pattern: ADR-012.
+- Response payloads typed via `t.Web.*` aliases (never raw dict / `m.Dict`).
+- Model components moved into `_models/_web` are composed through that package's
+  declared exports; the parent `_models` package does not promote nested leaves.
+- HTTP routes derive from core service operations through `web.application` /
+  `web.serve` (ADR-019 Decision 5, epic `flext-itpd1.11.8`); FastAPI, Starlette and
+  uvicorn stay private to `u.Web`/`t.Web`, never imported by consumers.
+- Config/settings canonical pattern: ADR-005 (SSOT) and ADR-024 (DI config contract).
 - Codemod governance (ast-grep + make mod): ADR-014.
 
 ## Commands
@@ -49,7 +53,7 @@ member — `PROJECT=` is not a root Make variable):
 
 ```bash
 make check
-make test
+make tests
 ```
 
 <!-- AIHUB-AGENTS-SCOPE-LOCAL-END -->

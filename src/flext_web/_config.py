@@ -15,7 +15,7 @@ from typing import Annotated
 from flext_cli import FlextCliConfig
 from flext_core import FlextSettings, m
 
-from flext_web._models.config import FlextWebModelsWebNamespace
+from flext_web._models import FlextWebModelsNamespace
 
 
 class FlextWebConfig(FlextSettings, FlextCliConfig):
@@ -26,9 +26,9 @@ class FlextWebConfig(FlextSettings, FlextCliConfig):
     """
 
     Web: Annotated[
-        FlextWebModelsWebNamespace,
+        FlextWebModelsNamespace.ConfigNamespace,
         m.Field(description="Open namespace exposing ``config/*.yaml`` under ``Web``."),
-    ] = FlextWebModelsWebNamespace()
+    ] = FlextWebModelsNamespace.ConfigNamespace()
 
 
 config: FlextWebConfig = FlextWebConfig.fetch_global()

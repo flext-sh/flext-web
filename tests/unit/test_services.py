@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_web import web
-from tests import m, p, tm
+from tests import c, m, p, tm
 from tests.fixtures import TestsFlextWebAuthFixture
 
 
@@ -45,7 +45,7 @@ class TestsFlextWebService:
             ),
         )
         tm.ok(result)
-        tm.that(result.value.created, eq=True)
+        tm.ok(result.value.created)
 
     @staticmethod
     def test_register_user_rejects_numeric_username() -> None:
@@ -118,7 +118,7 @@ class TestsFlextWebService:
         tm.ok(dashboard_result)
         tm.ok(capabilities_result)
         tm.that(health_result.value.service, eq="flext-web")
-        tm.that(dashboard_result.value.routes_initialized, eq=True)
+        tm.ok(dashboard_result.value.routes_initialized)
         tm.that(capabilities_result.value, has="framework_management")
 
     @staticmethod
@@ -131,7 +131,7 @@ class TestsFlextWebService:
         tm.that(status_result.value.status, eq="operational")
         apps_result = web.list_apps()
         tm.ok(apps_result)
-        tm.that(any(app.status == "running" for app in apps_result.value), eq=True)
+        tm.ok(any(app.status == "running" for app in apps_result.value))
         stop_result = web.stop_service()
         tm.ok(stop_result)
         stopped_status = web.service_status()
@@ -143,8 +143,8 @@ class TestsFlextWebService:
         """Structured service status is exposed by the service layer itself."""
         result = web.service_status()
         tm.ok(result)
-        tm.that(result.value.service, eq="flext-web-api")
-        tm.that(result.value.capabilities, has="flask_support")
+        tm.that(result.value.service, eq=c.Web.SERVICE_NAME_API)
+        tm.that(result.value.capabilities, has="fastapi_support")
 
     @staticmethod
     def _is_service_rules(candidate: p.Base) -> bool:
@@ -158,7 +158,7 @@ class TestsFlextWebService:
 
     def test_web_satisfies_its_own_service_rules_protocol(self) -> None:
         """The real composed facade structurally satisfies its own protocol."""
-        tm.that(self._is_service_rules(web), eq=True)
+        tm.ok(self._is_service_rules(web))
         result = web.validate_business_rules()
         tm.ok(result)
-        tm.that(result.value, eq=True)
+        tm.ok(result.value)

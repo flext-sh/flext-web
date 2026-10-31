@@ -60,7 +60,7 @@ class FlextWebConstantsValues:
     class ApplicationType(StrEnum):
         """Supported application classifications."""
 
-        APPLICATION = "application"
+        APPLICATION = c.ContextScope.APPLICATION
         SERVICE = "service"
         API = "api"
         DASHBOARD = "dashboard"
@@ -104,7 +104,6 @@ class FlextWebConstantsValues:
     DEFAULT_HTTPS_PROTOCOL: Final[str] = "https"
 
     SERVICE_NAME: Final[str] = "flext-web"
-    SERVICE_NAME_FLASK: Final[str] = "flext-web-flask"
     SERVICE_NAME_API: Final[str] = "flext-web-api"
 
     ALL_INTERFACES: Final[str] = str(IPv4Address(0))
@@ -179,14 +178,12 @@ class FlextWebConstantsValues:
     FRAMEWORK_INTERFACE_ASGI: Final[str] = "asgi"
     FRAMEWORK_INTERFACE_WSGI: Final[str] = "wsgi"
     FRAMEWORK_RUNNER_UVICORN: Final[str] = "uvicorn"
-    FRAMEWORK_RUNNER_WERKZEUG: Final[str] = "werkzeug"
     FRAMEWORK_FASTAPI: Final[str] = "fastapi"
-    FRAMEWORK_FLASK: Final[str] = "flask"
 
     ACTION_CREATE: Final[str] = "create"
     ACTION_START: Final[str] = "start"
     ACTION_STOP: Final[str] = "stop"
-    ACTION_LIST: Final[str] = "list"
+    ACTION_LIST: Final[str] = c.Action.LIST
 
     MESSAGE_CONFIG_LOADED: Final[str] = "loaded"
     MESSAGE_HANDLERS_REGISTERED: Final[str] = "registered"

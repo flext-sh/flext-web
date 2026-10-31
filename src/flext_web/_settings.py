@@ -39,7 +39,6 @@ class FlextWebSettings(FlextCliSettings):
             m.Field(min_length=1, pattern=r"\S", description="Bind host"),
         ] = "localhost"
         port: Annotated[int, m.Field(ge=1, le=65535, description="Bind port")] = 8080
-        testing: Annotated[bool, m.Field(description="Testing flag")] = False
         secret_key: Annotated[
             str | None,
             m.Field(

@@ -6,9 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import flext_cli
-
-from flext_web import FlextWebSettings, web
+from flext_web import web
 from tests import tm
 
 
@@ -21,37 +19,6 @@ class TestsFlextWebApp:
         result = web.create_fastapi_app()
         tm.ok(result)
         tm.that(result.value.title, eq=web.settings.Web.app_name)
-
-    @staticmethod
-    def test_create_flask_app_success() -> None:
-        """The service creates Flask apps from typed settings."""
-        settings = FlextWebSettings().clone(
-            Web={
-                "app_name": "flext-web-test",
-                "host": "127.0.0.1",
-                "port": 8123,
-                "secret_key": "f" + "0" * 40,
-            },
-            debug=True,
-        )
-        result = web.create_flask_app(settings)
-        tm.ok(result)
-        tm.that(
-            result.value.secret_key == settings.Web.secret_key,
-            eq=True,
-        )
-
-    @staticmethod
-    def test_create_flask_app_health_route() -> None:
-        """The Flask health endpoint returns JSON over the public HTTP interface."""
-        result = web.create_flask_app()
-        tm.ok(result)
-        client = result.value.test_client()
-        response = client.get("/health")
-        body: str = response.get_data(as_text=True)
-        payload = flext_cli.u.Cli.json_loads(body).unwrap()
-        tm.that(response.status_code, eq=200)
-        tm.that(payload, has="status")
 
     @staticmethod
     def test_validate_business_rules_success() -> None:

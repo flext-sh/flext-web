@@ -20,7 +20,7 @@
 Current source layout:
 
 - `api.py`: thin public facade and shared `web` instance
-- `app.py`: FastAPI and Flask app factories
+- `app.py`: FastAPI app factory
 - `base.py`: common service base with typed runtime settings
 - `_settings.py`: direct namespaced settings singleton and model
 - `services/`: canonical service implementations
@@ -52,11 +52,13 @@ Configuration access is namespaced and direct:
 
 ````python
 from flext_web import FlextWebSettings, settings
+from tests import c, r
+from tests import c, tm
 
 runtime_settings = FlextWebSettings(
     Web={"host": "localhost", "port": 8080}, debug=settings.debug
 )
-assert runtime_settings.Web.host == "localhost"
+tm.that(runtime_settings.Web.host, eq="localhost")
 ```
 ## Service Rule
 

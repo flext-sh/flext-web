@@ -16,7 +16,7 @@ from flext_web import e, m, p, r, s, u
 class FlextWebEntities(s):
     """In-memory entity CRUD support for flext-web."""
 
-    _storage: MutableMapping[str, m.Web.EntityData] = u.PrivateAttr(
+    _storage: MutableMapping[str, m.Web.EntityData] = m.PrivateAttr(
         default_factory=dict[str, m.Web.EntityData],
     )
 

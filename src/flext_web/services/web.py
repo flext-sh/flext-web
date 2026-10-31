@@ -248,7 +248,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
     def _application_responses_from_payloads(
         self,
-        payloads: t.SequenceOf[t.Web.ResponseDict],
+        payloads: Sequence[t.Web.ResponseDict],
     ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
         """Project a sequence of payloads into response models.
 

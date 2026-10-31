@@ -81,7 +81,7 @@ class TestsFlextWebSettings:
     def test_debug_flag() -> None:
         """The universal debug flag is settable on construction."""
         settings = FlextWebSettings(debug=True)
-        tm.that(settings.debug is True, eq=True)
+        tm.ok(settings.debug is True)
 
     @staticmethod
     def test_protocol_derived_from_tls_flag() -> None:
@@ -119,7 +119,7 @@ class TestsFlextWebSettings:
         )
         tm.that(settings.Web.host, eq="127.0.0.1")
         tm.that(settings.Web.port, eq=9090)
-        tm.that(settings.debug is True, eq=True)
+        tm.ok(settings.debug is True)
 
     @staticmethod
     def test_clone_rejects_invalid_overrides() -> None:
