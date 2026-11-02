@@ -10,10 +10,9 @@ import uuid
 from collections.abc import Mapping, MutableMapping, MutableSequence
 from typing import TYPE_CHECKING, Annotated, override
 
-from flext_cli import m, p, u
-from flext_core import r
+from flext_cli import m, u
 
-from flext_web import c, p, settings, t
+from flext_web import c, p, r, settings, t
 
 
 class FlextWebModelsEntity:

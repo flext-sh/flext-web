@@ -11,10 +11,9 @@ from datetime import datetime
 from types import MappingProxyType
 from typing import Annotated
 
-from flext_cli import m, p, u
-from flext_core import r
+from flext_cli import u
 
-from flext_web import c, p, t
+from flext_web import c, m, p, r, t
 
 
 class FlextWebModelsHttp:
