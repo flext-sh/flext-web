@@ -10,7 +10,7 @@ import uuid
 from collections.abc import Mapping, MutableMapping, MutableSequence
 from typing import TYPE_CHECKING, Annotated, override
 
-from flext_cli import m, u
+from flext_cli import m, p, u
 from flext_core import r
 
 from flext_web import c, p, settings, t
@@ -145,9 +145,9 @@ class FlextWebModelsEntity:
         # Assignment form is required so type checkers see the inherited
         # ``domain_events`` default (the core declares it Annotated-only).
         domain_events: Annotated[
-            MutableSequence[m.DomainEvent],
+            MutableSequence[p.DomainEvent],
             m.Field(description="Uncommitted domain events for event sourcing"),
-        ] = m.Field(default_factory=list[m.DomainEvent])
+        ] = m.Field(default_factory=list[p.DomainEvent])
 
         @override
         def __str__(self) -> str:
@@ -236,26 +236,26 @@ class FlextWebModelsEntity:
             self,
             event_type: str,
             data: m.ConfigMap | Mapping[str, t.JsonPayload | None] | None = None,
-        ) -> p.Result[m.DomainEvent]:
+        ) -> p.Result[p.DomainEvent]:
             """Create and buffer a domain event for this web application entity.
 
             Returns:
-                The resulting ``p.Result[m.DomainEvent]``.
+                The resulting ``p.Result[p.DomainEvent]``.
 
             """
             if not event_type.strip():
-                return r[m.DomainEvent].fail(
+                return r[p.DomainEvent].fail(
                     "Domain event name must be a non-empty string",
                 )
             if event_type.isdigit():
-                return r[m.DomainEvent].fail("Domain event name cannot be numeric-only")
+                return r[p.DomainEvent].fail("Domain event name cannot be numeric-only")
             entry = u.add_domain_event(
                 self,
                 event_type=event_type,
                 data=data,
                 aggregate_id=self.id,
             )
-            return r[m.DomainEvent].ok(entry)
+            return r[p.DomainEvent].ok(entry)
 
         def health_status(self) -> t.ConfigurationMapping:
             """Get comprehensive health status.

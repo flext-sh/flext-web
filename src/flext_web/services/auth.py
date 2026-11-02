@@ -17,12 +17,12 @@ class FlextWebAuth(s):
 
     def authenticate(
         self,
-        credentials: m.Web.Credentials,
-    ) -> p.Result[m.Web.AuthResponse]:
+        credentials: p.Web.Credentials,
+    ) -> p.Result[p.Web.AuthResponse]:
         """Authenticate against the settings SSOT; fail loud when unconfigured.
 
         Returns:
-            The resulting ``p.Result[m.Web.AuthResponse]``.
+            The resulting ``p.Result[p.Web.AuthResponse]``.
 
         """
         expected_username = self.settings.Web.auth_username
@@ -49,7 +49,7 @@ class FlextWebAuth(s):
             user_id=credentials.username,
             authenticated=True,
         )
-        return r[m.Web.AuthResponse].ok(auth_response)
+        return r[p.Web.AuthResponse].ok(auth_response)
 
     @override
     def execute(self) -> p.Result[bool]:
@@ -62,16 +62,16 @@ class FlextWebAuth(s):
         return r[bool].ok(value=True)
 
     @staticmethod
-    def logout() -> p.Result[m.Web.EntityData]:
+    def logout() -> p.Result[p.Web.EntityData]:
         """Return a successful logout payload."""
-        return r[m.Web.EntityData].ok(m.Web.EntityData(data={"success": True}))
+        return r[p.Web.EntityData].ok(m.Web.EntityData(data={"success": True}))
 
     @staticmethod
-    def register_user(user_data: m.Web.UserData) -> p.Result[m.Web.UserResponse]:
+    def register_user(user_data: p.Web.UserData) -> p.Result[p.Web.UserResponse]:
         """Register a user with explicit domain validation.
 
         Returns:
-            The resulting ``p.Result[m.Web.UserResponse]``.
+            The resulting ``p.Result[p.Web.UserResponse]``.
 
         """
         if user_data.username.isdigit():
@@ -82,7 +82,7 @@ class FlextWebAuth(s):
             email=user_data.email,
             created=True,
         )
-        return r[m.Web.UserResponse].ok(user_response)
+        return r[p.Web.UserResponse].ok(user_response)
 
 
 __all__: list[str] = ["FlextWebAuth"]

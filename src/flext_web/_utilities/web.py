@@ -12,12 +12,10 @@ from typing import TYPE_CHECKING, ClassVar
 from flext_cli import u
 from flext_core import r
 
-from flext_web import c, t
+from flext_web import c, p, t
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
-    from flext_web import p
 
 
 class FlextWebUtilitiesWeb:

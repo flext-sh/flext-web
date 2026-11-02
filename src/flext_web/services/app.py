@@ -53,7 +53,7 @@ class FlextWebApp(s):
 
         @staticmethod
         def create_instance(
-            settings: m.Web.FastAPIAppConfig | None = None,
+            settings: p.Web.FastAPIAppConfig | None = None,
         ) -> p.Result[FastAPI]:
             """Create FastAPI application instance with validated configuration.
 
@@ -98,7 +98,7 @@ class FlextWebApp(s):
     @staticmethod
     def _configure_fastapi_endpoints(
         app: FastAPI,
-        settings: m.Web.FastAPIAppConfig,
+        settings: p.Web.FastAPIAppConfig,
     ) -> FastAPI:
         """Configure FastAPI endpoints.
 
@@ -131,8 +131,8 @@ class FlextWebApp(s):
 
     def create_fastapi_app(
         self,
-        settings: m.Web.FastAPIAppConfig | None = None,
-        factory_config: m.Web.FastAPIAppConfig | None = None,
+        settings: p.Web.FastAPIAppConfig | None = None,
+        factory_config: p.Web.FastAPIAppConfig | None = None,
     ) -> p.Result[FastAPI]:
         """Create FastAPI app with flext-core integration and Pydantic validation.
 
@@ -219,7 +219,7 @@ class FlextWebApp(s):
 
         @staticmethod
         def create_handler(
-            settings: m.Web.FastAPIAppConfig,
+            settings: p.Web.FastAPIAppConfig,
         ) -> Callable[[], t.Web.FastApiEndpointPayload]:
             """Create FastAPI info handler function.
 

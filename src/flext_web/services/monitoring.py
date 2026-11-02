@@ -39,9 +39,9 @@ class FlextWebMonitoring(FlextWebHealth):
             },
         )
 
-    def service_status(self) -> p.Result[m.Web.ServiceResponse]:
+    def service_status(self) -> p.Result[p.Web.ServiceResponse]:
         """Return service status using protocol runtime state and settings."""
-        return r[m.Web.ServiceResponse].ok(
+        return r[p.Web.ServiceResponse].ok(
             m.Web.ServiceResponse(
                 service=c.Web.SERVICE_NAME_API,
                 capabilities=[
