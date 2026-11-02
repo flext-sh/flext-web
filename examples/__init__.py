@@ -20,24 +20,7 @@ if TYPE_CHECKING:
     from examples.protocols import FlextWebProtocolsExamples
     from examples.typings import FlextWebTypesExamples
     from examples.utilities import ExamplesFlextWebUtilities
-    from flext_web import (
-        c,
-        cli,
-        config,
-        d,
-        e,
-        h,
-        m,
-        main,
-        p,
-        r,
-        s,
-        settings,
-        t,
-        u,
-        web,
-        x,
-    )
+    from flext_web import c, config, d, e, h, m, main, p, r, s, settings, t, u, web, x
 
 
 __all__: tuple[str, ...] = (
@@ -49,7 +32,6 @@ __all__: tuple[str, ...] = (
     "FlextWebProtocolsExamples",
     "FlextWebTypesExamples",
     "c",
-    "cli",
     "config",
     "d",
     "e",
@@ -71,14 +53,13 @@ install_lazy_exports(
     globals(),
     MappingProxyType({
         "ExamplesFlextWebUtilities": ".utilities",
+        "FlextWebConstantsExamples": ".constants",
         "FlextWebExamplesApiUsage": ".api_usage",
         "FlextWebExamplesBasicService": ".basic_service",
-        "FlextWebConstantsExamples": ".constants",
         "FlextWebModelsExamples": ".models",
         "FlextWebProtocolsExamples": ".protocols",
         "FlextWebTypesExamples": ".typings",
         "c": "flext_web",
-        "cli": "flext_web",
         "config": "flext_web",
         "d": "flext_web",
         "e": "flext_web",

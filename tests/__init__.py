@@ -13,9 +13,9 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_tests import api, install_local_packages, td, tf, tk, tm
+    from flext_tests import api, td, tf, tk, tm
 
-    from flext_web import cli, config, d, e, h, main, r, settings, web, x
+    from flext_web import config, d, e, h, main, r, settings, web, x
     from tests.base import TestsFlextWebServiceBase, s
     from tests.constants import TestsFlextWebConstants, c
     from tests.models import TestsFlextWebModels, m
@@ -35,12 +35,10 @@ __all__: tuple[str, ...] = (
     "TestsFlextWebUtilities",
     "api",
     "c",
-    "cli",
     "config",
     "d",
     "e",
     "h",
-    "install_local_packages",
     "m",
     "main",
     "p",
@@ -70,12 +68,10 @@ install_lazy_exports(
         "TestsFlextWebUtilities": ".utilities",
         "api": "flext_tests",
         "c": ".constants",
-        "cli": "flext_web",
         "config": "flext_web",
         "d": "flext_web",
         "e": "flext_web",
         "h": "flext_web",
-        "install_local_packages": "flext_tests",
         "m": ".models",
         "main": "flext_web",
         "p": ".protocols",

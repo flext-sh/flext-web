@@ -1,5 +1,5 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Internal package for web.
+"""Flext Web. Models. Web package.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -16,10 +16,8 @@ if TYPE_CHECKING:
     from flext_web._models._web.message import FlextWebModelsWebMessage
     from flext_web._models._web.request import FlextWebModelsWebRequest
 
-__all__: tuple[str, ...] = (
-    "FlextWebModelsWebMessage",
-    "FlextWebModelsWebRequest",
-)
+
+__all__: tuple[str, ...] = ("FlextWebModelsWebMessage", "FlextWebModelsWebRequest")
 
 install_lazy_exports(
     __name__,

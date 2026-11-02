@@ -1,5 +1,5 @@
 # AUTO-GENERATED FILE — Regenerate with: make gen
-"""Internal package for models.
+"""Flext Web. Models package.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from flext_web._models.responses import FlextWebModelsResponses
     from flext_web._models.system import FlextWebModelsSystem
     from flext_web._models.web import FlextWebModelsWeb
+
 
 __all__: tuple[str, ...] = (
     "FlextWebModelsAuth",
