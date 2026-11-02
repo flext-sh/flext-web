@@ -235,7 +235,7 @@ class FlextWebModelsEntity:
         def add_domain_event(
             self,
             event_type: str,
-            data: m.ConfigMap | Mapping[str, t.JsonPayload | None] | None = None,
+            data: p.ConfigMap | Mapping[str, t.JsonPayload | None] | None = None,
         ) -> p.Result[p.DomainEvent]:
             """Create and buffer a domain event for this web application entity.
 
