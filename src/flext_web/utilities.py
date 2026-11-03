@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from flext_cli import u
 
-from flext_web._utilities import FlextWebUtilitiesBase, FlextWebUtilitiesWeb
+from flext_web._utilities import FlextWebUtilitiesWeb
 
 
 class FlextWebUtilities(u):
@@ -21,7 +21,9 @@ class FlextWebUtilities(u):
     Uses advanced builder/DSL patterns for composition.
     """
 
-    class Web(FlextWebUtilitiesWeb, FlextWebUtilitiesBase):
+    class Web(
+        FlextWebUtilitiesWeb,
+    ):
         """Web domain-specific runtime utilities."""
 
 

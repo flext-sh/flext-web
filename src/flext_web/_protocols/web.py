@@ -14,9 +14,15 @@ from flext_web._protocols import (
     FlextWebProtocolsMonitoring,
     FlextWebProtocolsTemplate,
 )
+from flext_web._protocols._web import (
+    FlextWebProtocolsWebMessage,
+    FlextWebProtocolsWebRequest,
+)
 
 
 class FlextWebProtocolsWeb(
+    FlextWebProtocolsWebMessage,
+    FlextWebProtocolsWebRequest,
     FlextWebProtocolsConfig,
     FlextWebProtocolsData,
     FlextWebProtocolsFramework,
