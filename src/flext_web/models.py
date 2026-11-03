@@ -28,14 +28,14 @@ class FlextWebModels(m):
 
     class Web(
         FlextWebModelsAuth,
+        FlextWebModelsBase,
         FlextWebModelsConfig,
         FlextWebModelsEntity,
         FlextWebModelsHttp,
+        FlextWebModelsNamespace,
         FlextWebModelsResponses,
         FlextWebModelsSystem,
         FlextWebModelsWeb,
-        FlextWebModelsBase,
-        FlextWebModelsNamespace,
     ):
         """Web domain models namespace."""
 

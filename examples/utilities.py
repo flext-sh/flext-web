@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from examples import u
+from flext_web import u
 
 
 class ExamplesFlextWebUtilities(u):

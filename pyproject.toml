@@ -543,20 +543,9 @@ quote-style = "double"
 skip-magic-trailing-comma = false
 
 [tool.ruff.lint]
-extend-safe-fixes = [
-  "relative-imports",
-  "typing-only-first-party-import",
-  "camelcase-imported-as-lowercase",
-]
+extend-safe-fixes = ["relative-imports", "camelcase-imported-as-lowercase"]
 extend-select = ["missing-blank-line-after-last-section"]
-ignore = [
-  "missing-trailing-comma",
-  "non-empty-init-module",
-  "runtime-import-in-type-checking-block",
-  "typing-only-first-party-import",
-  "typing-only-standard-library-import",
-  "typing-only-third-party-import",
-]
+ignore = ["TC", "missing-trailing-comma", "non-empty-init-module"]
 select = ["ALL"]
 unfixable = [
   "multi-value-repeated-key-literal",
@@ -588,40 +577,11 @@ msg = "Use cli.render_table from flext_cli."
 [tool.ruff.lint.flake8-tidy-imports.banned-api.typer]
 msg = "Use cli.create_app_with_common_params / cli.register_command from flext_cli."
 
-[tool.ruff.lint.flake8-type-checking]
-runtime-evaluated-base-classes = [
-  "flext_cli.FlextCliConfig",
-  "flext_cli.FlextCliSettings",
-  "flext_cli.m.BaseModel",
-  "flext_cli.m.Entity",
-  "flext_cli.m.Value",
-  "flext_core.FlextService",
-  "flext_core.FlextSettings",
-  "flext_tests.FlextTestsServiceBase",
-  "flext_tests.FlextTestsSettings",
-  "flext_web.FlextWebSettings",
-  "flext_web._models.FlextWebModelsHttp.Request",
-  "flext_web._models.FlextWebModelsHttp.Response",
-  "flext_web._models.http.Message",
-  "flext_web.s",
-  "flext_web.services.FlextWebApp",
-  "flext_web.services.FlextWebAuth",
-  "flext_web.services.FlextWebEntities",
-  "flext_web.services.FlextWebHandlers",
-  "flext_web.services.FlextWebHealth",
-  "flext_web.services.FlextWebMonitoring",
-  "flext_web.services.FlextWebServices",
-  "pydantic.BaseModel",
-]
-
 [tool.ruff.lint.isort]
 combine-as-imports = true
 force-single-line = false
 known-first-party = ["flext_web"]
 split-on-trailing-comma = false
-
-[tool.ruff.lint.pep8-naming]
-ignore-names = ["Ldif"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
