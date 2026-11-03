@@ -17,7 +17,7 @@ class FlextWebProtocolsNamespace:
     """Own the structural contracts declared by its model source."""
 
     @runtime_checkable
-    class ConfigNamespace(FlextCliProtocols.Model, Protocol):
+    class ConfigNamespace(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
 

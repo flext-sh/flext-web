@@ -18,67 +18,25 @@ class FlextWebProtocolsSystem:
     """Own the structural contracts declared by its model source."""
 
     @runtime_checkable
-    class SystemInfo(FlextCliProtocols.Model, Protocol):
+    class SystemInfo(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def service_name(self) -> str:
-            """Service name."""
-            ...
-
-        @property
-        def service_type(self) -> str:
-            """Service type."""
-            ...
-
-        @property
-        def architecture(self) -> str:
-            """Architecture pattern."""
-            ...
-
-        @property
-        def patterns(self) -> Sequence[str]:
-            """Design patterns used."""
-            ...
-
-        @property
-        def integrations(self) -> Sequence[str]:
-            """Integrated components."""
-            ...
-
-        @property
-        def capabilities(self) -> Sequence[str]:
-            """Service capabilities."""
-            ...
+        service_name: str
+        service_type: str
+        architecture: str
+        patterns: Sequence[str]
+        integrations: Sequence[str]
+        capabilities: Sequence[str]
 
     @runtime_checkable
-    class HealthStatus(FlextCliProtocols.Model, Protocol):
+    class HealthStatus(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def status(self) -> str:
-            """Health status."""
-            ...
-
-        @property
-        def service(self) -> str:
-            """Service name."""
-            ...
-
-        @property
-        def version(self) -> str:
-            """Service version."""
-            ...
-
-        @property
-        def timestamp(self) -> str:
-            """Status timestamp."""
-            ...
-
-        @property
-        def components(self) -> Mapping[str, str]:
-            """Component statuses."""
-            ...
+        status: str
+        service: str
+        version: str
+        timestamp: str
+        components: Mapping[str, str]
 
 
 __all__: list[str] = [

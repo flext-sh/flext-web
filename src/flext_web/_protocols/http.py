@@ -14,9 +14,8 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import FlextCliProtocols
 
-from flext_web import t
-
 if TYPE_CHECKING:
+    from flext_web import t
     from flext_web._constants import FlextWebConstantsValues
 
 
@@ -24,7 +23,7 @@ class FlextWebProtocolsHttp:
     """Own the structural contracts declared by its model source."""
 
     @runtime_checkable
-    class Message(FlextCliProtocols.Model, Protocol):
+    class Message(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -43,23 +42,8 @@ class FlextWebProtocolsHttp:
             ...
 
     @runtime_checkable
-    class Request(FlextCliProtocols.Model, Protocol):
+    class Request(Message, Protocol):
         """Structural data contract projected from the owning model."""
-
-        @property
-        def headers(self) -> Mapping[str, str]:
-            """HTTP headers for message."""
-            ...
-
-        @property
-        def body(self) -> str | Mapping[str, t.Scalar] | None:
-            """Message body content (optional for GET/HEAD)."""
-            ...
-
-        @property
-        def timestamp(self) -> datetime:
-            """Timestamp of message creation (configured timezone)."""
-            ...
 
         @property
         def url(self) -> str:
@@ -87,23 +71,8 @@ class FlextWebProtocolsHttp:
             ...
 
     @runtime_checkable
-    class Response(FlextCliProtocols.Model, Protocol):
+    class Response(Message, Protocol):
         """Structural data contract projected from the owning model."""
-
-        @property
-        def headers(self) -> Mapping[str, str]:
-            """HTTP headers for message."""
-            ...
-
-        @property
-        def body(self) -> str | Mapping[str, t.Scalar] | None:
-            """Message body content (optional for GET/HEAD)."""
-            ...
-
-        @property
-        def timestamp(self) -> datetime:
-            """Timestamp of message creation (configured timezone)."""
-            ...
 
         @property
         def status_code(self) -> t.HttpStatusCode:

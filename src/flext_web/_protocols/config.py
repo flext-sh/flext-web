@@ -37,48 +37,17 @@ class FlextWebProtocolsConfig:
             ...
 
     @runtime_checkable
-    class FastAPIAppConfig(FlextCliProtocols.Model, Protocol):
+    class FastAPIAppConfig(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def title(self) -> str:
-            """FastAPI application title."""
-            ...
-
-        @property
-        def version(self) -> str:
-            """Application version."""
-            ...
-
-        @property
-        def description(self) -> str:
-            """Application description."""
-            ...
-
-        @property
-        def debug(self) -> bool:
-            """FastAPI debug mode."""
-            ...
-
-        @property
-        def testing(self) -> bool:
-            """FastAPI testing mode."""
-            ...
-
-        @property
-        def docs_url(self) -> str:
-            """Documentation URL."""
-            ...
-
-        @property
-        def redoc_url(self) -> str:
-            """ReDoc URL."""
-            ...
-
-        @property
-        def openapi_url(self) -> str:
-            """OpenAPI URL."""
-            ...
+        title: str
+        version: str
+        description: str
+        debug: bool
+        testing: bool
+        docs_url: str
+        redoc_url: str
+        openapi_url: str
 
 
 __all__: list[str] = ["FlextWebProtocolsConfig"]

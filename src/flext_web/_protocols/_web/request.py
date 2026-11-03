@@ -14,9 +14,8 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import FlextCliProtocols
 
-from flext_web import t
-
 if TYPE_CHECKING:
+    from flext_web import t
     from flext_web._constants import FlextWebConstantsValues
 
 
@@ -24,7 +23,7 @@ class FlextWebProtocolsWebRequest:
     """Own the structural contracts declared by its model source."""
 
     @runtime_checkable
-    class WebRequest(FlextCliProtocols.Model, Protocol):
+    class WebRequest(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -58,7 +57,7 @@ class FlextWebProtocolsWebRequest:
             ...
 
     @runtime_checkable
-    class WebResponse(FlextCliProtocols.Model, Protocol):
+    class WebResponse(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property

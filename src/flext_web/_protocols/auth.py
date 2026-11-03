@@ -8,18 +8,19 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import FlextCliProtocols
 
-from flext_web import t
+if TYPE_CHECKING:
+    from flext_web import t
 
 
 class FlextWebProtocolsAuth:
     """Own the structural contracts declared by its model source."""
 
     @runtime_checkable
-    class Credentials(FlextCliProtocols.Model, Protocol):
+    class Credentials(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -33,7 +34,7 @@ class FlextWebProtocolsAuth:
             ...
 
     @runtime_checkable
-    class UserData(FlextCliProtocols.Model, Protocol):
+    class UserData(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -52,7 +53,7 @@ class FlextWebProtocolsAuth:
             ...
 
     @runtime_checkable
-    class AppData(FlextCliProtocols.Model, Protocol):
+    class AppData(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -71,7 +72,7 @@ class FlextWebProtocolsAuth:
             ...
 
     @runtime_checkable
-    class EntityData(FlextCliProtocols.Model, Protocol):
+    class EntityData(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property

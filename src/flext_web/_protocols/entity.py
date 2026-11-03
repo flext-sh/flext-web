@@ -13,11 +13,10 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import FlextCliProtocols
 
-from flext_web import t
-
 if TYPE_CHECKING:
     from flext_cli import p
 
+    from flext_web import t
     from flext_web._constants import FlextWebConstantsValues
 
 
@@ -25,7 +24,7 @@ class FlextWebProtocolsEntity:
     """Own the structural contracts declared by its model source."""
 
     @runtime_checkable
-    class Entity(FlextCliProtocols.Model, Protocol):
+    class Entity(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -33,50 +32,20 @@ class FlextWebProtocolsEntity:
             """Uncommitted domain events for event sourcing."""
             ...
 
-        @property
-        def id(self) -> str:
-            """Unique application identifier."""
-            ...
-
-        @property
-        def name(self) -> str:
-            """Application name."""
-            ...
-
-        @property
-        def host(self) -> str:
-            """Application host address."""
-            ...
-
-        @property
-        def port(self) -> t.PortNumber:
-            """Application port number."""
-            ...
+        id: str
+        name: str
+        host: str
+        port: t.PortNumber
 
         @property
         def status(self) -> FlextWebConstantsValues.Status | str:
             """Current application status."""
             ...
 
-        @property
-        def environment(self) -> str:
-            """Deployment environment."""
-            ...
-
-        @property
-        def debug_mode(self) -> bool:
-            """Debug mode enabled flag."""
-            ...
-
-        @property
-        def metrics(self) -> MutableMapping[str, t.Scalar]:
-            """Application metrics."""
-            ...
-
-        @property
-        def web_events(self) -> MutableSequence[str]:
-            """Web-specific events (application lifecycle)."""
-            ...
+        environment: str
+        debug_mode: bool
+        metrics: MutableMapping[str, t.Scalar]
+        web_events: MutableSequence[str]
 
         @property
         def can_restart(self) -> bool:
@@ -147,7 +116,7 @@ class FlextWebProtocolsEntity:
             ...
 
     @runtime_checkable
-    class EntityConfig(FlextCliProtocols.Model, Protocol):
+    class EntityConfig(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property

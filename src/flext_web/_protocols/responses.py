@@ -9,18 +9,19 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import FlextCliProtocols
 
-from flext_web import t
+if TYPE_CHECKING:
+    from flext_web import t
 
 
 class FlextWebProtocolsResponses:
     """Own the structural contracts declared by its model source."""
 
     @runtime_checkable
-    class AuthResponse(FlextCliProtocols.Model, Protocol):
+    class AuthResponse(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -39,7 +40,7 @@ class FlextWebProtocolsResponses:
             ...
 
     @runtime_checkable
-    class UserResponse(FlextCliProtocols.Model, Protocol):
+    class UserResponse(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -63,7 +64,7 @@ class FlextWebProtocolsResponses:
             ...
 
     @runtime_checkable
-    class ApplicationResponse(FlextCliProtocols.Model, Protocol):
+    class ApplicationResponse(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -102,7 +103,7 @@ class FlextWebProtocolsResponses:
             ...
 
     @runtime_checkable
-    class HealthResponse(FlextCliProtocols.Model, Protocol):
+    class HealthResponse(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -121,7 +122,7 @@ class FlextWebProtocolsResponses:
             ...
 
     @runtime_checkable
-    class MetricsResponse(FlextCliProtocols.Model, Protocol):
+    class MetricsResponse(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -135,7 +136,7 @@ class FlextWebProtocolsResponses:
             ...
 
     @runtime_checkable
-    class DashboardResponse(FlextCliProtocols.Model, Protocol):
+    class DashboardResponse(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -169,7 +170,7 @@ class FlextWebProtocolsResponses:
             ...
 
     @runtime_checkable
-    class ServiceResponse(FlextCliProtocols.Model, Protocol):
+    class ServiceResponse(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
