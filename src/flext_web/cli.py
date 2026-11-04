@@ -10,11 +10,10 @@ import sys
 from collections.abc import MutableMapping, Sequence
 from typing import Annotated, override
 
-import flext_cli
 import uvicorn
 from flext_cli import cli
 
-from flext_web import FlextWebSettings, p, r, s, settings, web
+from flext_web import FlextWebSettings, m, p, r, s, settings, web
 
 
 class FlextWebCli:
@@ -25,23 +24,19 @@ class FlextWebCli:
 
         host: Annotated[
             str | None,
-            flext_cli.m.Field(
-                default=None, description="Bind host (overrides settings)."
-            ),
+            m.Field(default=None, description="Bind host (overrides settings)."),
         ] = None
         port: Annotated[
             int | None,
-            flext_cli.m.Field(
-                default=None, description="Bind port (overrides settings)."
-            ),
+            m.Field(default=None, description="Bind port (overrides settings)."),
         ] = None
         debug: Annotated[
             bool,
-            flext_cli.m.Field(default=False, description="Enable debug mode."),
+            m.Field(default=False, description="Enable debug mode."),
         ] = False
         no_debug: Annotated[
             bool,
-            flext_cli.m.Field(default=False, description="Force disable debug mode."),
+            m.Field(default=False, description="Force disable debug mode."),
         ] = False
 
         @override
@@ -96,7 +91,7 @@ class FlextWebCli:
             return service_result.value.stop_service()
 
     @classmethod
-    def build_app(cls) -> flext_cli.p.Cli.Application:
+    def build_app(cls) -> p.Cli.Application:
         """Build the CLI application with the canonical result routes.
 
         Returns:
@@ -110,7 +105,7 @@ class FlextWebCli:
         cli.register_result_routes(
             app,
             [
-                flext_cli.m.Cli.ResultCommandRoute(
+                m.Cli.ResultCommandRoute(
                     name="run",
                     help_text="Start the flext-web service.",
                     model_cls=cls.Run,

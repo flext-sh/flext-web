@@ -32,7 +32,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
         """Return dashboard data projected from the protocol runtime state."""
         state = u.Web.service_state
         return self.list_apps().map(
-            lambda apps: p.Web.DashboardResponse(
+            lambda apps: m.Web.DashboardResponse(
                 total_applications=len(apps),
                 running_applications=sum(
                     1 for app in apps if app.status == c.Web.Status.RUNNING.value
