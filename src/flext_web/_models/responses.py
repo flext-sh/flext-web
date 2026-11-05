@@ -11,8 +11,7 @@ from typing import Annotated
 
 from flext_cli import m
 
-from flext_web.constants import c
-from flext_web.typings import t
+from flext_web import c, t
 
 
 class FlextWebModelsResponses:

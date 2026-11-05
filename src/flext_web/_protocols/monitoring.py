@@ -10,7 +10,7 @@ from typing import Protocol, runtime_checkable
 
 from flext_cli import p
 
-from flext_web.typings import t
+from flext_web import t
 
 
 class FlextWebProtocolsMonitoring:
