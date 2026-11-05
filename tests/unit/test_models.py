@@ -164,7 +164,7 @@ class TestsFlextWebModelsAppUnit:
             _ = m.Web.Entity(id="test-id", name=long_name, host="localhost", port=8080)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("name", "host", "port", "should_succeed"),
         [
             ("test-app", "localhost", 8080, True),

@@ -13,13 +13,7 @@ from typing import TYPE_CHECKING, override
 
 from fastapi import FastAPI
 
-from flext_web.constants import c
-from flext_web.models import m
-from flext_web.protocols import p
-from flext_web.result import r
-from flext_web.service import s
-from flext_web.typings import t
-from flext_web.utilities import u
+from flext_web import c, m, p, r, s, t, u
 
 if TYPE_CHECKING:
     from collections.abc import Callable
