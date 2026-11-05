@@ -39,7 +39,7 @@ from collections.abc import (
     Sequence,
 )
 from flext_web import FlextWebSettings
-from tests import m, p
+from tests import c, m, p
 
 
 class TestsFlextWebAuthFixture:

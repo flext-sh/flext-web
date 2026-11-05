@@ -10,9 +10,11 @@ from collections.abc import MutableMapping, Sequence
 from typing import TYPE_CHECKING, ClassVar
 
 from flext_cli import u
-from flext_core import r
 
-from flext_web import c, p, t
+from flext_web.constants import c
+from flext_web.protocols import p
+from flext_web.result import r
+from flext_web.typings import t
 
 if TYPE_CHECKING:
     from collections.abc import Callable

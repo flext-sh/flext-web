@@ -8,8 +8,6 @@ from __future__ import annotations
 
 import ipaddress
 
-import pytest
-
 from flext_web import web
 from tests import c, tm, u
 
@@ -49,7 +47,7 @@ class TestsFlextWebConfig:
     @staticmethod
     def test_validation_host_empty() -> None:
         """Empty hosts fail namespaced validation."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = web.settings.clone(Web={"host": ""})
 
     @staticmethod
@@ -61,13 +59,13 @@ class TestsFlextWebConfig:
     @staticmethod
     def test_validation_port_out_of_range() -> None:
         """Invalid ports fail namespaced validation."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = web.settings.clone(Web={"port": 70000})
 
     @staticmethod
     def test_validation_secret_key_too_short() -> None:
         """Short secret keys fail namespaced validation."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = web.settings.clone(Web={"secret_key": "short"})
 
     @staticmethod

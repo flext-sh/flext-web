@@ -8,7 +8,12 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_web import c, m, p, r, s, u
+from flext_web.constants import c
+from flext_web.models import m
+from flext_web.protocols import p
+from flext_web.result import r
+from flext_web.service import s
+from flext_web.utilities import u
 
 
 class FlextWebHealth(s):

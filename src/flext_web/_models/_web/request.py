@@ -12,9 +12,11 @@ from datetime import datetime
 from types import MappingProxyType
 from typing import Annotated
 
-from flext_cli import m, u
+from flext_cli import m
 
-from flext_web import c, t
+from flext_web.constants import c
+from flext_web.typings import t
+from flext_web.utilities import u
 
 
 class FlextWebModelsWebRequest:

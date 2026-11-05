@@ -14,7 +14,7 @@ import ipaddress
 import pytest
 
 from flext_web import settings
-from tests import c, m, tm
+from tests import c, m, tm, u
 
 
 class TestsFlextWebModelsAppUnit:
@@ -59,9 +59,9 @@ class TestsFlextWebModelsAppUnit:
         """Test WebApp name validation."""
         app = m.Web.Entity(id="test-id", name="valid-app-name")
         tm.that(app.name, eq="valid-app-name")
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="ab")
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="a" * 101)
 
     @staticmethod
@@ -69,7 +69,7 @@ class TestsFlextWebModelsAppUnit:
         """Test WebApp name validation for reserved names."""
         reserved_names = ["root", "api", "system", "settings", "health"]
         for name in reserved_names:
-            with pytest.raises(m.ValidationError):
+            with u.Tests.raises(m.ValidationError):
                 _ = m.Web.Entity(id="test-id", name=name)
 
     @staticmethod
@@ -82,7 +82,7 @@ class TestsFlextWebModelsAppUnit:
             "'; DROP TABLE users; --",
         ]
         for name in dangerous_names:
-            with pytest.raises(m.ValidationError):
+            with u.Tests.raises(m.ValidationError):
                 _ = m.Web.Entity(id="test-id", name=name)
 
     @staticmethod
@@ -90,9 +90,9 @@ class TestsFlextWebModelsAppUnit:
         """Test WebApp port validation."""
         app = m.Web.Entity(id="test-id", name="test-app", port=8080)
         tm.that(app.port, eq=8080)
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", port=0)
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", port=70000)
 
     @staticmethod
@@ -100,7 +100,7 @@ class TestsFlextWebModelsAppUnit:
         """Test WebApp status validation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         tm.that(app.status, eq="running")
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", status="invalid")
 
     @staticmethod
@@ -160,7 +160,7 @@ class TestsFlextWebModelsAppUnit:
         """Test validate_name with max_length validation."""
         max_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[1]
         long_name = "a" * (max_length + 1)
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name=long_name, host="localhost", port=8080)
 
     @staticmethod
@@ -224,14 +224,14 @@ class TestsFlextWebModelsAppUnit:
         app = m.Web.Entity(id="test-id", name="test", host=long_hostname, port=8080)
         tm.that(app.host, eq=long_hostname)
 
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="x", host="localhost", port=8080)
 
         max_name = "x" * 100
         app = m.Web.Entity(id="test-id", name=max_name, host="localhost", port=8080)
         tm.that(app.name, eq=max_name)
 
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="x" * 101, host="localhost", port=8080)
 
     @staticmethod
@@ -248,7 +248,7 @@ class TestsFlextWebModelsAppUnit:
             "system",
         ]
         for dangerous_name in dangerous_patterns:
-            with pytest.raises(m.ValidationError):
+            with u.Tests.raises(m.ValidationError):
                 _ = m.Web.Entity(
                     id="test-id",
                     name=dangerous_name,

@@ -6,10 +6,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
 from flext_web import web
-from tests import c, m, tm
+from tests import c, m, tm, u
 
 
 class TestsFlextWebApi:
@@ -35,9 +33,9 @@ class TestsFlextWebApi:
     @staticmethod
     def test_settings_factory_rejects_invalid_values() -> None:
         """Invalid settings fail validation without xfail wrappers."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = web.settings.clone(Web={"host": "localhost", "port": -1}, debug=True)
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = web.settings.clone(Web={"host": "", "port": 8080})
 
     @staticmethod

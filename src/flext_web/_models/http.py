@@ -13,7 +13,9 @@ from typing import Annotated
 
 from flext_cli import m, r, u
 
-from flext_web import c, p, t
+from flext_web.constants import c
+from flext_web.protocols import p
+from flext_web.typings import t
 
 
 class FlextWebModelsHttp:

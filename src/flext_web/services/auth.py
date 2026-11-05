@@ -9,7 +9,11 @@ from __future__ import annotations
 import secrets
 from typing import override
 
-from flext_web import e, m, p, r, s
+from flext_web.exceptions import e
+from flext_web.models import m
+from flext_web.protocols import p
+from flext_web.result import r
+from flext_web.service import s
 
 
 class FlextWebAuth(s):
