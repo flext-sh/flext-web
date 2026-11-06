@@ -16,8 +16,7 @@ from flext_cli import FlextCliProtocols
 if TYPE_CHECKING:
     from flext_cli import p
 
-    from flext_web import t
-    from flext_web._constants import FlextWebConstantsValues
+    from flext_web import c, t
 
 
 class FlextWebProtocolsEntity:
@@ -36,12 +35,7 @@ class FlextWebProtocolsEntity:
         name: str
         host: str
         port: t.PortNumber
-
-        @property
-        def status(self) -> FlextWebConstantsValues.Status | str:
-            """Current application status."""
-            ...
-
+        status: c.Web.Status | str
         environment: str
         debug_mode: bool
         metrics: MutableMapping[str, t.Scalar]
