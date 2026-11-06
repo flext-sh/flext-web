@@ -15,8 +15,7 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 from flext_cli import FlextCliProtocols
 
 if TYPE_CHECKING:
-    from flext_web import t
-    from flext_web._constants import FlextWebConstantsValues
+    from flext_web import c, t
 
 
 class FlextWebProtocolsHttp:
@@ -51,7 +50,7 @@ class FlextWebProtocolsHttp:
             ...
 
         @property
-        def method(self) -> FlextWebConstantsValues.Method:
+        def method(self) -> c.Web.Method:
             """HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)."""
             ...
 
