@@ -23,7 +23,7 @@ class FlextWebMonitoring(FlextWebHealth):
         """
         return r[t.Web.ResponseDict].ok({
             "application_management": ["create_app", "fetch_app", "list_apps"],
-            "framework_management": ["create_fastapi_app", "create_flask_app"],
+            "framework_management": ["create_fastapi_app"],
             "service_management": ["start_service", "stop_service"],
             "configuration_management": ["settings", "create_service"],
             "monitoring": ["health_check", "health_status", "dashboard"],
@@ -39,15 +39,14 @@ class FlextWebMonitoring(FlextWebHealth):
             },
         )
 
-    def service_status(self) -> p.Result[m.Web.ServiceResponse]:
+    def service_status(self) -> p.Result[p.Web.ServiceResponse]:
         """Return service status using protocol runtime state and settings."""
-        return r[m.Web.ServiceResponse].ok(
+        return r[p.Web.ServiceResponse].ok(
             m.Web.ServiceResponse(
                 service=c.Web.SERVICE_NAME_API,
                 capabilities=[
                     "http_services_available",
                     "fastapi_support",
-                    "flask_support",
                     "settings_namespace_registered",
                 ],
                 status=self.service_status_label(),

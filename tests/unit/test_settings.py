@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pytest
-
 from flext_web import FlextWebSettings
 from tests import c, tm, u
 
@@ -36,25 +34,25 @@ class TestsFlextWebSettings:
     @staticmethod
     def test_host_validator_rejects_empty() -> None:
         """Host field constraint rejects blank strings."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = FlextWebSettings().clone(Web={"host": "   "})
 
     @staticmethod
     def test_port_validator_rejects_out_of_range() -> None:
         """Port field constraint rejects out-of-range values."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = FlextWebSettings().clone(Web={"port": 70000})
 
     @staticmethod
     def test_port_constraint_lower_bound() -> None:
         """Port field constraint rejects zero."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = FlextWebSettings().clone(Web={"port": 0})
 
     @staticmethod
     def test_secret_key_validator_rejects_short() -> None:
         """Secret key field constraint rejects short values."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = FlextWebSettings().clone(Web={"secret_key": "short"})
 
     @staticmethod
@@ -81,7 +79,7 @@ class TestsFlextWebSettings:
     def test_debug_flag() -> None:
         """The universal debug flag is settable on construction."""
         settings = FlextWebSettings(debug=True)
-        tm.that(settings.debug is True, eq=True)
+        tm.ok(settings.debug is True)
 
     @staticmethod
     def test_protocol_derived_from_tls_flag() -> None:
@@ -119,12 +117,12 @@ class TestsFlextWebSettings:
         )
         tm.that(settings.Web.host, eq="127.0.0.1")
         tm.that(settings.Web.port, eq=9090)
-        tm.that(settings.debug is True, eq=True)
+        tm.ok(settings.debug is True)
 
     @staticmethod
     def test_clone_rejects_invalid_overrides() -> None:
         """Clone raises a validation error for invalid overrides."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = FlextWebSettings().clone(Web={"port": 0})
 
     @staticmethod
@@ -138,5 +136,5 @@ class TestsFlextWebSettings:
     @staticmethod
     def test_model_validate_rejects_invalid_payload() -> None:
         """model_validate rejects payloads violating field constraints."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = FlextWebSettings.model_validate({"Web": {"port": 0}})

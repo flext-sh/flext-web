@@ -126,4 +126,4 @@ class TestsFlextWebVersion:
         tm.that(__description__, empty=False)
         tm.that(__license__, is_=str)
         if __url__:
-            tm.that("://" in __url__ or __url__.startswith("http"), eq=True)
+            tm.ok("://" in __url__ or __url__.startswith("http"))

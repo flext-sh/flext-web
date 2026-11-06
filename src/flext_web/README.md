@@ -1,7 +1,7 @@
 # FLEXT Web Source Guide
 
 `flext_web` exposes one canonical public surface:
-`from flext_web import web, c, t, p, m, p, u`.
+`from flext_web import web, c, p, t, p, m, p, u`.
 
 Everything operational goes through `web`. Structural contracts stay under `c.Web`,
 `t.Web`, `u.Web`, `m.Web` and `u.Web`.
@@ -36,7 +36,6 @@ app_identifier = u.format_app_id("demo")
 from flext_web import web
 
 fastapi_result = web.create_fastapi_app()
-flask_result = web.create_flask_app()
 ```
 
 ## Settings

@@ -7,13 +7,13 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import sys
+from collections.abc import MutableMapping, Sequence
 from typing import Annotated, override
 
-import flext_cli
 import uvicorn
 from flext_cli import cli
 
-from flext_web import FlextWebSettings, p, r, s, settings, t, web
+from flext_web import FlextWebSettings, m, p, r, s, settings, web
 
 
 class FlextWebCli:
@@ -24,23 +24,19 @@ class FlextWebCli:
 
         host: Annotated[
             str | None,
-            flext_cli.u.Field(
-                default=None, description="Bind host (overrides settings)."
-            ),
+            m.Field(default=None, description="Bind host (overrides settings)."),
         ] = None
         port: Annotated[
             int | None,
-            flext_cli.u.Field(
-                default=None, description="Bind port (overrides settings)."
-            ),
+            m.Field(default=None, description="Bind port (overrides settings)."),
         ] = None
         debug: Annotated[
             bool,
-            flext_cli.u.Field(default=False, description="Enable debug mode."),
+            m.Field(default=False, description="Enable debug mode."),
         ] = False
         no_debug: Annotated[
             bool,
-            flext_cli.u.Field(default=False, description="Force disable debug mode."),
+            m.Field(default=False, description="Force disable debug mode."),
         ] = False
 
         @override
@@ -52,7 +48,7 @@ class FlextWebCli:
 
             """
             debug_value = False if self.no_debug else self.debug
-            web_overrides: t.MutableMappingKV[str, str | int] = {}
+            web_overrides: MutableMapping[str, str | int] = {}
             if self.host is not None:
                 web_overrides["host"] = self.host
             if self.port is not None:
@@ -95,7 +91,7 @@ class FlextWebCli:
             return service_result.value.stop_service()
 
     @classmethod
-    def build_app(cls) -> flext_cli.p.Cli.Application:
+    def build_app(cls) -> p.Cli.Application:
         """Build the CLI application with the canonical result routes.
 
         Returns:
@@ -109,7 +105,7 @@ class FlextWebCli:
         cli.register_result_routes(
             app,
             [
-                flext_cli.m.Cli.ResultCommandRoute(
+                m.Cli.ResultCommandRoute(
                     name="run",
                     help_text="Start the flext-web service.",
                     model_cls=cls.Run,
@@ -130,7 +126,7 @@ class FlextWebCli:
         return params.execute()
 
 
-def main(argv: t.StrSequence | None = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     """Return the process exit code for the flext-web console entry point.
 
     Bare invocation renders the help panel and succeeds, matching the fleet

@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol, override, runtime_checkable
 
+from flext_cli import FlextCliProtocols
+
 if TYPE_CHECKING:
     from flext_web import t
 
@@ -33,6 +35,19 @@ class FlextWebProtocolsConfig:
         def __int__(self) -> int:
             """Convert the value to integer."""
             ...
+
+    @runtime_checkable
+    class FastAPIAppConfig(FlextCliProtocols.BaseModel, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        title: str
+        version: str
+        description: str
+        debug: bool
+        testing: bool
+        docs_url: str
+        redoc_url: str
+        openapi_url: str
 
 
 __all__: list[str] = ["FlextWebProtocolsConfig"]

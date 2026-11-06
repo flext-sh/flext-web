@@ -14,10 +14,10 @@ import ipaddress
 import pytest
 
 from flext_web import settings
-from tests import c, m, tm
+from tests import c, m, tm, u
 
 
-class TestsFlextWebAppModelsUnit:
+class TestsFlextWebModelsAppUnit:
     """Test suite for Web application models."""
 
     @staticmethod
@@ -31,7 +31,7 @@ class TestsFlextWebAppModelsUnit:
         tm.that(app.status, eq="stopped")
         tm.that(app.version, eq=1)
         tm.that(app.environment, eq="development")
-        tm.that(app.debug_mode is False, eq=True)
+        tm.ok(app.debug_mode is False)
 
     @staticmethod
     def test_web_app_initialization_with_custom_values() -> None:
@@ -52,16 +52,16 @@ class TestsFlextWebAppModelsUnit:
         tm.that(app.status, eq="running")
         tm.that(app.version, eq=2)
         tm.that(app.environment, eq="production")
-        tm.that(app.debug_mode is True, eq=True)
+        tm.ok(app.debug_mode is True)
 
     @staticmethod
     def test_web_app_name_validation() -> None:
         """Test WebApp name validation."""
         app = m.Web.Entity(id="test-id", name="valid-app-name")
         tm.that(app.name, eq="valid-app-name")
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="ab")
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="a" * 101)
 
     @staticmethod
@@ -69,7 +69,7 @@ class TestsFlextWebAppModelsUnit:
         """Test WebApp name validation for reserved names."""
         reserved_names = ["root", "api", "system", "settings", "health"]
         for name in reserved_names:
-            with pytest.raises(m.ValidationError):
+            with u.Tests.raises(m.ValidationError):
                 _ = m.Web.Entity(id="test-id", name=name)
 
     @staticmethod
@@ -82,7 +82,7 @@ class TestsFlextWebAppModelsUnit:
             "'; DROP TABLE users; --",
         ]
         for name in dangerous_names:
-            with pytest.raises(m.ValidationError):
+            with u.Tests.raises(m.ValidationError):
                 _ = m.Web.Entity(id="test-id", name=name)
 
     @staticmethod
@@ -90,9 +90,9 @@ class TestsFlextWebAppModelsUnit:
         """Test WebApp port validation."""
         app = m.Web.Entity(id="test-id", name="test-app", port=8080)
         tm.that(app.port, eq=8080)
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", port=0)
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", port=70000)
 
     @staticmethod
@@ -100,23 +100,23 @@ class TestsFlextWebAppModelsUnit:
         """Test WebApp status validation."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
         tm.that(app.status, eq="running")
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="test-app", status="invalid")
 
     @staticmethod
     def test_web_app_computed_fields() -> None:
         """Test WebApp computed fields."""
         app = m.Web.Entity(id="test-id", name="test-app", status="running")
-        tm.that(app.running is True, eq=True)
-        tm.that(app.healthy is True, eq=True)
-        tm.that(app.can_start is False, eq=True)
-        tm.that(app.can_stop is True, eq=True)
-        tm.that(app.can_restart is True, eq=True)
+        tm.ok(app.running is True)
+        tm.ok(app.healthy is True)
+        tm.ok(app.can_start is False)
+        tm.ok(app.can_stop is True)
+        tm.ok(app.can_restart is True)
 
         stopped_app = m.Web.Entity(id="test-id", name="test-app", status="stopped")
-        tm.that(stopped_app.running is False, eq=True)
-        tm.that(stopped_app.can_start is True, eq=True)
-        tm.that(stopped_app.can_stop is False, eq=True)
+        tm.ok(stopped_app.running is False)
+        tm.ok(stopped_app.can_start is True)
+        tm.ok(stopped_app.can_stop is False)
 
     @staticmethod
     def test_web_app_url_generation() -> None:
@@ -160,11 +160,11 @@ class TestsFlextWebAppModelsUnit:
         """Test validate_name with max_length validation."""
         max_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[1]
         long_name = "a" * (max_length + 1)
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name=long_name, host="localhost", port=8080)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("name", "host", "port", "should_succeed"),
         [
             ("test-app", "localhost", 8080, True),
@@ -224,14 +224,14 @@ class TestsFlextWebAppModelsUnit:
         app = m.Web.Entity(id="test-id", name="test", host=long_hostname, port=8080)
         tm.that(app.host, eq=long_hostname)
 
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="x", host="localhost", port=8080)
 
         max_name = "x" * 100
         app = m.Web.Entity(id="test-id", name=max_name, host="localhost", port=8080)
         tm.that(app.name, eq=max_name)
 
-        with pytest.raises(m.ValidationError):
+        with u.Tests.raises(m.ValidationError):
             _ = m.Web.Entity(id="test-id", name="x" * 101, host="localhost", port=8080)
 
     @staticmethod
@@ -248,7 +248,7 @@ class TestsFlextWebAppModelsUnit:
             "system",
         ]
         for dangerous_name in dangerous_patterns:
-            with pytest.raises(m.ValidationError):
+            with u.Tests.raises(m.ValidationError):
                 _ = m.Web.Entity(
                     id="test-id",
                     name=dangerous_name,
@@ -257,7 +257,7 @@ class TestsFlextWebAppModelsUnit:
                 )
 
 
-class TestsFlextWebHttpModelsUnit:
+class TestsFlextWebModelsHttpUnit:
     """Test suite for Web request/response models."""
 
     @staticmethod
@@ -302,13 +302,13 @@ class TestsFlextWebHttpModelsUnit:
             method=c.Web.Method.POST,
             body='{"data": "test"}',
         )
-        tm.that(request_with_body.has_body is True, eq=True)
+        tm.ok(request_with_body.has_body is True)
         request_without_body = m.Web.Request(
             url="http://localhost:8080",
             method=c.Web.Method.GET,
             body=None,
         )
-        tm.that(request_without_body.has_body is False, eq=True)
+        tm.ok(request_without_body.has_body is False)
 
     @staticmethod
     def test_http_request_secure_property() -> None:
@@ -317,28 +317,28 @@ class TestsFlextWebHttpModelsUnit:
             url="https://localhost:8080",
             method=c.Web.Method.GET,
         )
-        tm.that(https_request.secure is True, eq=True)
+        tm.ok(https_request.secure is True)
         http_request = m.Web.Request(
             url="http://localhost:8080",
             method=c.Web.Method.GET,
         )
-        tm.that(http_request.secure is False, eq=True)
+        tm.ok(http_request.secure is False)
 
     @staticmethod
     def test_http_response_is_success_property() -> None:
         """Test Web.Response is_success property."""
         success_response = m.Web.Response(status_code=200)
-        tm.that(success_response.success is True, eq=True)
+        tm.ok(success_response.success is True)
         error_response = m.Web.Response(status_code=404)
-        tm.that(error_response.success is False, eq=True)
+        tm.ok(error_response.success is False)
 
     @staticmethod
     def test_http_response_error_property() -> None:
         """Test Web.Response error property."""
         error_response = m.Web.Response(status_code=500)
-        tm.that(error_response.error is True, eq=True)
+        tm.ok(error_response.error is True)
         success_response = m.Web.Response(status_code=200)
-        tm.that(success_response.error is False, eq=True)
+        tm.ok(success_response.error is False)
 
     @staticmethod
     def test_web_response_processing_time_seconds() -> None:

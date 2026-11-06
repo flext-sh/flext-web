@@ -8,8 +8,6 @@ from __future__ import annotations
 
 import ipaddress
 
-import pytest
-
 from flext_web import web
 from tests import c, tm, u
 
@@ -37,19 +35,19 @@ class TestsFlextWebConfig:
         )
         tm.that(settings.Web.host, eq=bind_host)
         tm.that(settings.Web.port, eq=3000)
-        tm.that(settings.debug is True, eq=True)
+        tm.ok(settings.debug is True)
         tm.that(settings.Web.app_name, eq="Test App")
 
     @staticmethod
     def test_debug_flag_settable() -> None:
         """The universal debug flag is applied through clone."""
         settings = web.settings.clone(debug=True)
-        tm.that(settings.debug is True, eq=True)
+        tm.ok(settings.debug is True)
 
     @staticmethod
     def test_validation_host_empty() -> None:
         """Empty hosts fail namespaced validation."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = web.settings.clone(Web={"host": ""})
 
     @staticmethod
@@ -61,13 +59,13 @@ class TestsFlextWebConfig:
     @staticmethod
     def test_validation_port_out_of_range() -> None:
         """Invalid ports fail namespaced validation."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = web.settings.clone(Web={"port": 70000})
 
     @staticmethod
     def test_validation_secret_key_too_short() -> None:
         """Short secret keys fail namespaced validation."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             _ = web.settings.clone(Web={"secret_key": "short"})
 
     @staticmethod
@@ -85,7 +83,7 @@ class TestsFlextWebConfig:
         settings = web.settings.clone(
             Web={"ssl_enabled": False, "ssl_cert_path": None, "ssl_key_path": None},
         )
-        tm.that(settings.Web.ssl_enabled is False, eq=True)
+        tm.ok(settings.Web.ssl_enabled is False)
 
     @staticmethod
     def test_derived_protocol() -> None:

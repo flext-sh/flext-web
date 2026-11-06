@@ -4,7 +4,7 @@
 structural namespaces:
 
 ```python
-from flext_web import web, c, t, p, m, p, u
+from flext_web import web, c, p, t, p, m, p, u
 ```
 
 ## Public contract
@@ -25,7 +25,7 @@ src/flext_web/
 ├── base.py             # shared service base with typed web settings access
 ├── settings.py         # registered web settings namespace
 ├── services/
-│   ├── app.py          # FastAPI/Flask factories
+│   ├── app.py          # FastAPI factory
 │   ├── auth.py         # auth operations
 │   ├── entities.py     # entity CRUD support
 │   ├── handlers.py     # handler-oriented projections exposed by the facade

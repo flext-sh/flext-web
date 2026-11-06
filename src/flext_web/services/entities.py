@@ -16,21 +16,21 @@ from flext_web import e, m, p, r, s, u
 class FlextWebEntities(s):
     """In-memory entity CRUD support for flext-web."""
 
-    _storage: MutableMapping[str, m.Web.EntityData] = u.PrivateAttr(
+    _storage: MutableMapping[str, m.Web.EntityData] = m.PrivateAttr(
         default_factory=dict[str, m.Web.EntityData],
     )
 
-    def create_entity(self, data: m.Web.EntityData) -> p.Result[m.Web.EntityData]:
+    def create_entity(self, data: p.Web.EntityData) -> p.Result[p.Web.EntityData]:
         """Create an entity with generated identifier.
 
         Returns:
-            The resulting ``p.Result[m.Web.EntityData]``.
+            The resulting ``p.Result[p.Web.EntityData]``.
 
         """
         entity_id = str(uuid.uuid4())
         entity = m.Web.EntityData(data={"id": entity_id, **data.data})
         self._storage[entity_id] = entity
-        return r[m.Web.EntityData].ok(entity)
+        return r[p.Web.EntityData].ok(entity)
 
     @override
     def execute(self) -> p.Result[bool]:
@@ -42,11 +42,11 @@ class FlextWebEntities(s):
         """
         return r[bool].ok(value=True)
 
-    def fetch_entity(self, entity_id: str) -> p.Result[m.Web.EntityData]:
+    def fetch_entity(self, entity_id: str) -> p.Result[p.Web.EntityData]:
         """Fetch an entity by identifier.
 
         Returns:
-            The resulting ``p.Result[m.Web.EntityData]``.
+            The resulting ``p.Result[p.Web.EntityData]``.
 
         """
         if not u.to_str(entity_id):
@@ -54,16 +54,16 @@ class FlextWebEntities(s):
         entity = self._storage.get(entity_id)
         if entity is None:
             return e.fail_not_found("entity", entity_id)
-        return r[m.Web.EntityData].ok(entity)
+        return r[p.Web.EntityData].ok(entity)
 
-    def list_entities(self) -> p.Result[Sequence[m.Web.EntityData]]:
+    def list_entities(self) -> p.Result[Sequence[p.Web.EntityData]]:
         """List all registered entities.
 
         Returns:
-            The resulting ``p.Result[Sequence[m.Web.EntityData]]``.
+            The resulting ``p.Result[Sequence[p.Web.EntityData]]``.
 
         """
-        return r[Sequence[m.Web.EntityData]].ok(list(self._storage.values()))
+        return r[Sequence[p.Web.EntityData]].ok(list(self._storage.values()))
 
 
 __all__: list[str] = ["FlextWebEntities"]

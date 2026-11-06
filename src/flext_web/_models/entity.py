@@ -1,0 +1,434 @@
+"""Application entity models for flext-web.
+
+Copyright (c) 2025 FLEXT Team. All rights reserved.
+SPDX-License-Identifier: MIT
+"""
+
+from __future__ import annotations
+
+import uuid
+from collections.abc import Mapping, MutableMapping, MutableSequence
+from typing import TYPE_CHECKING, Annotated, override
+
+from flext_cli import m, u
+
+from flext_web import c, p, r, settings, t
+
+
+class FlextWebModelsEntity:
+    """Web application entity and configuration models."""
+
+    class Entity(m.Entity):
+        """Application entity with identity and lifecycle (Aggregate Root).
+
+        Represents a web application as a domain entity with identity,
+        state management, and event sourcing capabilities.
+
+        Attributes:
+            id: Unique application identifier
+            name: Application name
+            host: Application host address
+            port: Application port number
+            status: Current application status
+            environment: Deployment environment
+            debug_mode: Debug mode flag
+            version: Application version
+            metrics: Application metrics dictionary
+            domain_events: List of domain events
+
+        """
+
+        id: Annotated[str, m.Field(description="Unique application identifier")] = (
+            m.Field(default_factory=lambda: str(uuid.uuid4()))
+        )
+        name: Annotated[
+            str,
+            m.Field(
+                min_length=1,
+                max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
+                description="Application name",
+            ),
+        ]
+
+        @m.field_validator("name", mode="before")
+        @classmethod
+        def validate_name(cls, v: str) -> str:
+            """Validate application name.
+
+            Returns:
+                The resulting ``str``.
+
+            Raises:
+                ValueError: If Name must be between; or if Name; or if Name contains
+                    dangerous pattern.
+
+            """
+            min_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[0]
+            max_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[1]
+            reserved_names = c.Web.SECURITY_RESERVED_NAMES
+
+            if not (min_length <= len(v) <= max_length):
+                msg = f"Name must be between {min_length} and {max_length} characters"
+                raise ValueError(msg)
+
+            if v.lower() in reserved_names:
+                msg = f"Name '{v}' is reserved and cannot be used"
+                raise ValueError(msg)
+
+            dangerous_patterns = c.Web.SECURITY_DANGEROUS_PATTERNS
+            for pattern in dangerous_patterns:
+                if pattern.lower() in v.lower():
+                    msg = f"Name contains dangerous pattern: {pattern}"
+                    raise ValueError(msg)
+
+            return v
+
+        # Assignment form (= m.Field(default_factory=...)) is required on
+        # m.Entity subclasses: pyrefly loses Annotated-only defaults through
+        # the TimestampedModel chain (same pattern as the `id` field above).
+        host: Annotated[
+            str,
+            m.Field(
+                min_length=1,
+                max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
+                description="Application host address",
+            ),
+        ] = m.Field(default_factory=lambda: settings.Web.host)
+        port: Annotated[
+            t.PortNumber,
+            m.Field(description="Application port number"),
+        ] = m.Field(default_factory=lambda: settings.Web.port)
+        status: Annotated[
+            c.Web.Status | str,
+            m.Field(description="Current application status"),
+        ] = m.Field(default=c.Web.Status.STOPPED.value)
+
+        if TYPE_CHECKING:
+            # Checkers lose the inherited ``VersionableMixin`` default through
+            # the facade MRO; declared type-only so pydantic never re-collects
+            # the field (a runtime re-declaration would shadow the parent).
+            version: t.NonNegativeInt = 1
+
+        @m.field_validator("status", mode="before")
+        @classmethod
+        def validate_status(cls, v: str) -> str:
+            """Validate application status against allowed values from constants.
+
+            Returns:
+                The resulting ``str``.
+
+            Raises:
+                ValueError: If Invalid status.
+
+            """
+            valid_statuses = set(c.Web.STATUSES)
+            if v not in valid_statuses:
+                msg = f"Invalid status '{v}'. Must be one of: {sorted(valid_statuses)}"
+                raise ValueError(msg)
+            return v
+
+        environment: Annotated[str, m.Field(description="Deployment environment")] = (
+            m.Field(default=c.Web.Name.DEVELOPMENT.value)
+        )
+        debug_mode: Annotated[bool, m.Field(description="Debug mode enabled flag")] = (
+            m.Field(default_factory=lambda: settings.debug)
+        )
+        metrics: Annotated[
+            MutableMapping[str, t.Scalar],
+            m.Field(description="Application metrics"),
+        ] = m.Field(default_factory=dict[str, t.Scalar])
+        web_events: Annotated[
+            MutableSequence[str],
+            m.Field(description="Web-specific events (application lifecycle)"),
+        ] = m.Field(default_factory=list[str])
+        # Assignment form is required so type checkers see the inherited
+        # ``domain_events`` default (the core declares it Annotated-only).
+        domain_events: Annotated[
+            MutableSequence[
+                Annotated[p.DomainEvent, t.schema_for_model(m.DomainEvent)]
+            ],
+            m.Field(description="Uncommitted domain events for event sourcing"),
+        ] = m.Field(default_factory=list)
+
+        @override
+        def __str__(self) -> str:
+            """Return string representation of the application."""
+            return f"{self.name} ({self.url}) - {self.status}"
+
+        @property
+        def can_restart(self) -> bool:
+            """Whether application can be restarted using u.in_() DSL pattern."""
+            running = c.Web.Status.RUNNING.value
+            stopped = c.Web.Status.STOPPED.value
+            error = c.Web.Status.ERROR.value
+            restartable: bool = self.status in {running, stopped, error}
+            return restartable
+
+        @property
+        def can_start(self) -> bool:
+            """Whether application can be started."""
+            can_start: bool = self.status == c.Web.Status.STOPPED.value
+            return can_start
+
+        @property
+        def can_stop(self) -> bool:
+            """Whether application can be stopped."""
+            can_stop: bool = self.status == c.Web.Status.RUNNING.value
+            return can_stop
+
+        @property
+        def healthy(self) -> bool:
+            """Whether application is healthy and operational."""
+            running = c.Web.Status.RUNNING.value
+            maintenance = c.Web.Status.MAINTENANCE.value
+            is_healthy: bool = self.status in {running, maintenance}
+            return is_healthy
+
+        @property
+        def running(self) -> bool:
+            """Whether application is currently running."""
+            is_running: bool = self.status == c.Web.Status.RUNNING.value
+            return is_running
+
+        @property
+        def url(self) -> str:
+            """Full URL with conditional protocol selection."""
+            ssl_ports = c.Web.SECURITY_SSL_PORTS
+            protocol = (
+                c.Web.DEFAULT_HTTPS_PROTOCOL
+                if u.in_(self.port, ssl_ports)
+                else c.Web.DEFAULT_HTTP_PROTOCOL
+            )
+            return f"{protocol}://{self.host}:{self.port}"
+
+        @classmethod
+        def format_id_from_name(cls, name: str) -> str:
+            """Format application ID from name using web utilities.
+
+            This method uses u.format_app_id directly,
+            ensuring consistent ID formatting across the codebase.
+
+            Args:
+                name: Application name to format
+
+            Returns:
+                Formatted application ID
+
+            """
+            return u.format_app_id(name)
+
+        def add_web_event(self, event_name: str) -> p.Result[bool]:
+            """Add web-specific event (not domain event).
+
+            This is for web application lifecycle events, not DDD domain events.
+            Use parent's add_domain_event() for actual domain events.
+
+            Returns:
+                r[bool]: Success contains True if event added,
+                                failure contains error message
+
+            """
+            if not event_name.strip():
+                return r[bool].fail("Event name cannot be empty")
+            self.web_events.append(event_name)
+            return r[bool].ok(value=True)
+
+        def add_domain_event(
+            self,
+            event_type: str,
+            data: p.ConfigMap | Mapping[str, t.JsonPayload | None] | None = None,
+        ) -> p.Result[p.DomainEvent]:
+            """Create and buffer a domain event for this web application entity.
+
+            Returns:
+                The resulting ``p.Result[p.DomainEvent]``.
+
+            """
+            if not event_type.strip():
+                return r[p.DomainEvent].fail(
+                    "Domain event name must be a non-empty string",
+                )
+            if event_type.isdigit():
+                return r[p.DomainEvent].fail("Domain event name cannot be numeric-only")
+            entry = u.add_domain_event(
+                self,
+                event_type=event_type,
+                data=data,
+                aggregate_id=self.id,
+            )
+            return r[p.DomainEvent].ok(entry)
+
+        def health_status(self) -> t.ConfigurationMapping:
+            """Get comprehensive health status.
+
+            Returns:
+                The resulting ``t.ConfigurationMapping``.
+
+            """
+            return {
+                "status": self.status,
+                "running": self.running,
+                "healthy": self.healthy,
+                "url": self.url,
+                "version": self.version,
+                "environment": self.environment,
+            }
+
+        def restart(self) -> p.Result[FlextWebModelsEntity.Entity]:
+            """Restart the application.
+
+            Returns:
+                The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
+
+            """
+            can_restart_validated = self.can_restart
+            if not can_restart_validated:
+                return r[FlextWebModelsEntity.Entity].fail(
+                    "Cannot restart in current state",
+                )
+            starting_status = c.Web.Status.STARTING.value
+            running_status = c.Web.Status.RUNNING.value
+            self.status = starting_status
+            restart_event_result = self.add_web_event("ApplicationRestarting")
+            if restart_event_result.failure:
+                return r[FlextWebModelsEntity.Entity].fail(
+                    f"Failed to add web event: {restart_event_result.error}",
+                )
+            self.status = running_status
+            start_event_result = self.add_web_event("ApplicationStarted")
+            if start_event_result.failure:
+                return r[FlextWebModelsEntity.Entity].fail(
+                    f"Failed to add web event: {start_event_result.error}",
+                )
+            return r[FlextWebModelsEntity.Entity].ok(self)
+
+        def start(self) -> p.Result[FlextWebModelsEntity.Entity]:
+            """Start the application.
+
+            Returns:
+                The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
+
+            """
+            running_status = c.Web.Status.RUNNING.value
+            already_running = self.status == running_status
+            if already_running:
+                return r[FlextWebModelsEntity.Entity].fail("already running")
+            self.status = running_status
+            event_result = self.add_web_event("ApplicationStarted")
+            if event_result.failure:
+                return r[FlextWebModelsEntity.Entity].fail(
+                    f"Failed to add web event: {event_result.error}",
+                )
+            return r[FlextWebModelsEntity.Entity].ok(self)
+
+        def stop(self) -> p.Result[FlextWebModelsEntity.Entity]:
+            """Stop the application.
+
+            Returns:
+                The resulting ``p.Result[FlextWebModelsEntity.Entity]``.
+
+            """
+            running_status = c.Web.Status.RUNNING.value
+            stopped_status = c.Web.Status.STOPPED.value
+            not_running = self.status != running_status
+            if not_running:
+                return r[FlextWebModelsEntity.Entity].fail("not running")
+            self.status = stopped_status
+            event_result = self.add_web_event("ApplicationStopped")
+            if event_result.failure:
+                return r[FlextWebModelsEntity.Entity].fail(
+                    f"Failed to add web event: {event_result.error}",
+                )
+            return r[FlextWebModelsEntity.Entity].ok(self)
+
+        def update_metrics(
+            self,
+            new_metrics: MutableMapping[str, t.Scalar] | Mapping[str, str],
+        ) -> p.Result[bool]:
+            """Update application metrics.
+
+            Returns:
+                r[bool]: Success contains True if metrics updated,
+                                failure contains error message
+
+            """
+            supported_metrics = {"requests", "errors", "uptime", "avg_response_time_ms"}
+            if not all(key in supported_metrics for key in new_metrics):
+                return r[bool].fail("Metrics must be a dict of supported metric keys")
+            self.metrics.update(new_metrics)
+            event_result = self.add_web_event("MetricsUpdated")
+            if event_result.failure:
+                return r[bool].fail(f"Failed to add web event: {event_result.error}")
+            return r[bool].ok(value=True)
+
+        def validate_business_rules(self) -> p.Result[bool]:
+            """Validate application business rules (Aggregate validation).
+
+            Fast-fail validation - no fallbacks, explicit checks only.
+
+            Returns:
+                r[bool]: Success contains True if valid, failure with error message
+
+            """
+            min_name_length = c.Web.VALIDATION_NAME_LENGTH_RANGE[0]
+            if len(self.name) < min_name_length:
+                return r[bool].fail(
+                    f"App name must be at least {min_name_length} characters",
+                )
+
+            min_port = c.Web.VALIDATION_PORT_RANGE[0]
+            max_port = c.Web.VALIDATION_PORT_RANGE[1]
+            if not (min_port <= self.port <= max_port):
+                return r[bool].fail(f"Port must be between {min_port} and {max_port}")
+            return r[bool].ok(value=True)
+
+    class EntityConfig(m.Value):
+        """Application entity configuration (Value Object).
+
+        Represents configuration settings for application entities.
+        Uses Constants for defaults - Config has priority when provided.
+        """
+
+        app_name: Annotated[
+            str,
+            m.Field(
+                default_factory=lambda: settings.Web.app_name,
+                min_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[0],
+                max_length=c.Web.VALIDATION_NAME_LENGTH_RANGE[1],
+                description="Application name",
+            ),
+        ]
+        host: Annotated[
+            str,
+            m.Field(
+                default_factory=lambda: settings.Web.host,
+                min_length=1,
+                max_length=c.Web.SECURITY_MAX_HOST_LENGTH,
+                description="Application host address",
+            ),
+        ]
+        port: Annotated[
+            t.PortNumber,
+            m.Field(
+                default_factory=lambda: settings.Web.port,
+                description="Application port number",
+            ),
+        ]
+        debug: Annotated[
+            bool,
+            m.Field(
+                default_factory=lambda: settings.debug,
+                description="Debug mode flag",
+            ),
+        ]
+        secret_key: Annotated[
+            str,
+            m.Field(
+                default_factory=lambda: settings.Web.secret_key,
+                min_length=c.Web.SECURITY_MIN_SECRET_KEY_LENGTH,
+                description="Application secret key",
+            ),
+        ]
+
+
+__all__: list[str] = ["FlextWebModelsEntity"]

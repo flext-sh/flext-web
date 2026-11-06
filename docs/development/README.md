@@ -42,7 +42,6 @@ from flext_web import web
 
 web.settings
 web.create_fastapi_app()
-web.create_flask_app()
 web.create_app(...)
 web.start_app(...)
 web.start_service(...)

@@ -66,49 +66,49 @@ class TestsFlextWebFields:
         """Test HTTP status field creation."""
         response = m.Web.Response(status_code=200)
         tm.that(response.status_code, eq=200)
-        tm.that(response.success is True, eq=True)
+        tm.ok(response.success is True)
 
     @staticmethod
     def test_http_status_field_ok() -> None:
         """Test HTTP 200 OK status field creation."""
         response = m.Web.Response(status_code=200)
         tm.that(response.status_code, eq=200)
-        tm.that(response.success is True, eq=True)
+        tm.ok(response.success is True)
 
     @staticmethod
     def test_http_status_field_created() -> None:
         """Test HTTP 201 Created status field creation."""
         response = m.Web.Response(status_code=201)
         tm.that(response.status_code, eq=201)
-        tm.that(response.success is True, eq=True)
+        tm.ok(response.success is True)
 
     @staticmethod
     def test_http_status_field_bad_request() -> None:
         """Test HTTP 400 Bad Request status field creation."""
         response = m.Web.Response(status_code=400)
         tm.that(response.status_code, eq=400)
-        tm.that(response.error is True, eq=True)
+        tm.ok(response.error is True)
 
     @staticmethod
     def test_http_status_field_not_found() -> None:
         """Test HTTP 404 Not Found status field creation."""
         response = m.Web.Response(status_code=404)
         tm.that(response.status_code, eq=404)
-        tm.that(response.error is True, eq=True)
+        tm.ok(response.error is True)
 
     @staticmethod
     def test_http_status_field_server_error() -> None:
         """Test HTTP 500 Internal Server Error status field creation."""
         response = m.Web.Response(status_code=500)
         tm.that(response.status_code, eq=500)
-        tm.that(response.error is True, eq=True)
+        tm.ok(response.error is True)
 
     @staticmethod
     def test_http_status_field_create_field() -> None:
         """Test HTTP status field creation."""
         response = m.Web.Response(status_code=200)
         tm.that(response.status_code, eq=200)
-        tm.that(response.success is True, eq=True)
+        tm.ok(response.success is True)
 
     @staticmethod
     def test_field_constraints() -> None:
@@ -130,7 +130,7 @@ class TestsFlextWebFields:
         """Test HTTP status field with additional kwargs."""
         response_model = m.Web.Response(status_code=200)
         tm.that(response_model.status_code, eq=200)
-        tm.that(response_model.success is True, eq=True)
+        tm.ok(response_model.success is True)
 
     @staticmethod
     def test_field_creation_with_kwargs() -> None:

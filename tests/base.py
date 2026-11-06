@@ -10,7 +10,7 @@ from typing import override
 
 from flext_tests import FlextTestsServiceBase
 
-from tests import TestsFlextWebSettings, m
+from tests import TestsFlextWebSettings, m, p
 
 
 class TestsFlextWebServiceBase(FlextTestsServiceBase):
@@ -20,7 +20,7 @@ class TestsFlextWebServiceBase(FlextTestsServiceBase):
     # declares only its more-specific bootstrap settings type.
     @classmethod
     @override
-    def runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
+    def runtime_bootstrap_options(cls) -> p.RuntimeBootstrapOptions:
         return m.RuntimeBootstrapOptions(settings_type=TestsFlextWebSettings)
 
 

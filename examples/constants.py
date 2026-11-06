@@ -9,7 +9,7 @@ from __future__ import annotations
 from examples import c
 
 
-class FlextWebExamplesConstants(c):
+class FlextWebConstantsExamples(c):
     """Constants facade for the flext-web examples."""
 
     class WebExamplesBase:
@@ -19,4 +19,4 @@ class FlextWebExamplesConstants(c):
         """Web-domain constants composed for example workflows."""
 
 
-__all__: list[str] = ["FlextWebExamplesConstants"]
+__all__: list[str] = ["FlextWebConstantsExamples"]

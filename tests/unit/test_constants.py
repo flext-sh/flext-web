@@ -40,8 +40,8 @@ class TestsFlextWebConstantsUnit:
         tm.that(c.Web.SECURITY_CORS_SAFE_METHODS, has="GET")
         tm.that(c.Web.SECURITY_CORS_SAFE_HEADERS, is_=frozenset)
         tm.that(c.Web.SECURITY_CORS_SAFE_HEADERS, has="Content-Type")
-        tm.that(c.Web.SECURITY_SESSION_COOKIE_SECURE_DEFAULT is False, eq=True)
-        tm.that(c.Web.SECURITY_SESSION_COOKIE_HTTPONLY_DEFAULT is True, eq=True)
+        tm.ok(c.Web.SECURITY_SESSION_COOKIE_SECURE_DEFAULT is False)
+        tm.ok(c.Web.SECURITY_SESSION_COOKIE_HTTPONLY_DEFAULT is True)
 
     @staticmethod
     def test_web_validation_constants() -> None:

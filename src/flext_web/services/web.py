@@ -28,7 +28,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
         ok_result: p.Result[Self] = r.ok(instance)
         return ok_result
 
-    def dashboard(self) -> p.Result[m.Web.DashboardResponse]:
+    def dashboard(self) -> p.Result[p.Web.DashboardResponse]:
         """Return dashboard data projected from the protocol runtime state."""
         state = u.Web.service_state
         return self.list_apps().map(
@@ -56,12 +56,12 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
 
     def create_app(
         self,
-        app_data: m.Web.AppData,
-    ) -> p.Result[m.Web.ApplicationResponse]:
+        app_data: p.Web.AppData,
+    ) -> p.Result[p.Web.ApplicationResponse]:
         """Create an application through the protocol runtime registry.
 
         Returns:
-            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+            The resulting ``p.Result[p.Web.ApplicationResponse]``.
 
         """
         return u.Web.WebAppManager.create_app(
@@ -80,7 +80,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
         """
         return self.validate_business_rules()
 
-    def fetch_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
+    def fetch_app(self, app_id: str) -> p.Result[p.Web.ApplicationResponse]:
         """Return a registered application by identifier.
 
         Args:
@@ -93,7 +93,7 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
         """
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
-            return r[m.Web.ApplicationResponse].fail(app_id_result.error)
+            return r[p.Web.ApplicationResponse].fail(app_id_result.error)
         return u.Web.WebRepository.fetch_by_id(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
@@ -108,27 +108,27 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
         """
         return u.Web.WebService.initialize_routes()
 
-    def list_apps(self) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+    def list_apps(self) -> p.Result[Sequence[p.Web.ApplicationResponse]]:
         """List all registered applications.
 
         Returns:
-            The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+            The resulting ``p.Result[Sequence[p.Web.ApplicationResponse]]``.
 
         """
         return u.Web.WebAppManager.list_apps().flat_map(
             self._application_responses_from_payloads,
         )
 
-    def start_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
+    def start_app(self, app_id: str) -> p.Result[p.Web.ApplicationResponse]:
         """Start a registered application and project its payload into a model.
 
         Returns:
-            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+            The resulting ``p.Result[p.Web.ApplicationResponse]``.
 
         """
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
-            return r[m.Web.ApplicationResponse].fail(app_id_result.error)
+            return r[p.Web.ApplicationResponse].fail(app_id_result.error)
         return u.Web.WebAppManager.start_app(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
@@ -161,16 +161,16 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
             return r[bool].fail(running_app.error)
         return u.Web.WebService.start_service()
 
-    def stop_app(self, app_id: str) -> p.Result[m.Web.ApplicationResponse]:
+    def stop_app(self, app_id: str) -> p.Result[p.Web.ApplicationResponse]:
         """Stop a registered application and project its payload into a model.
 
         Returns:
-            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+            The resulting ``p.Result[p.Web.ApplicationResponse]``.
 
         """
         app_id_result = self._validated_app_id(app_id)
         if app_id_result.failure:
-            return r[m.Web.ApplicationResponse].fail(app_id_result.error)
+            return r[p.Web.ApplicationResponse].fail(app_id_result.error)
         return u.Web.WebAppManager.stop_app(app_id_result.value).flat_map(
             self._application_response_from_payload,
         )
@@ -216,11 +216,11 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
     @staticmethod
     def _application_response_from_payload(
         payload: t.Web.ResponseDict,
-    ) -> p.Result[m.Web.ApplicationResponse]:
+    ) -> p.Result[p.Web.ApplicationResponse]:
         """Project a protocol payload into the canonical application response model.
 
         Returns:
-            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+            The resulting ``p.Result[p.Web.ApplicationResponse]``.
 
         """
         created_at_raw = payload.get("created_at")
@@ -240,31 +240,31 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
         try:
             response = m.Web.ApplicationResponse.model_validate(response_payload)
         except c.ValidationError as exc:
-            return r[m.Web.ApplicationResponse].fail(
+            return r[p.Web.ApplicationResponse].fail(
                 f"Invalid application payload: {exc}",
                 exception=exc,
             )
-        return r[m.Web.ApplicationResponse].ok(response)
+        return r[p.Web.ApplicationResponse].ok(response)
 
     def _application_responses_from_payloads(
         self,
-        payloads: t.SequenceOf[t.Web.ResponseDict],
-    ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+        payloads: Sequence[t.Web.ResponseDict],
+    ) -> p.Result[Sequence[p.Web.ApplicationResponse]]:
         """Project a sequence of payloads into response models.
 
         Returns:
-            The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+            The resulting ``p.Result[Sequence[p.Web.ApplicationResponse]]``.
 
         """
-        responses: list[m.Web.ApplicationResponse] = []
+        responses: list[p.Web.ApplicationResponse] = []
         for payload in payloads:
             response_result = self._application_response_from_payload(payload)
             if response_result.failure:
-                return r[Sequence[m.Web.ApplicationResponse]].fail(
+                return r[Sequence[p.Web.ApplicationResponse]].fail(
                     response_result.error,
                 )
             responses.append(response_result.value)
-        return r[Sequence[m.Web.ApplicationResponse]].ok(responses)
+        return r[Sequence[p.Web.ApplicationResponse]].ok(responses)
 
     @staticmethod
     def _validated_app_id(app_id: str) -> p.Result[str]:
@@ -283,21 +283,21 @@ class FlextWebServices(FlextWebMonitoring, FlextWebAuth, FlextWebEntities):
         self,
         host: str | None,
         port: int | None,
-    ) -> p.Result[m.Web.ApplicationResponse]:
+    ) -> p.Result[p.Web.ApplicationResponse]:
         """Return the configured runtime application, creating it when needed."""
         target_name = settings.Web.app_name
         target_host = host if host is not None else settings.Web.host
         target_port = port if port is not None else settings.Web.port
         apps_result = self.list_apps()
         if apps_result.failure:
-            return r[m.Web.ApplicationResponse].fail(apps_result.error)
+            return r[p.Web.ApplicationResponse].fail(apps_result.error)
         for app in apps_result.value:
             if (
                 app.name == target_name
                 and app.host == target_host
                 and app.port == target_port
             ):
-                return r[m.Web.ApplicationResponse].ok(app)
+                return r[p.Web.ApplicationResponse].ok(app)
         return self.create_app(
             m.Web.AppData(name=target_name, host=target_host, port=target_port),
         )

@@ -29,9 +29,9 @@ class FlextWebExamplesApiUsage:
         return candidate
 
     @staticmethod
-    def check_service_health() -> p.Result[m.Web.HealthResponse]:
+    def check_service_health() -> p.Result[p.Web.HealthResponse]:
         """Return structured health information through the public facade."""
-        health_result: p.Result[m.Web.HealthResponse] = web.health_status()
+        health_result: p.Result[p.Web.HealthResponse] = web.health_status()
         return health_result
 
     @staticmethod
@@ -39,76 +39,76 @@ class FlextWebExamplesApiUsage:
         name: str,
         port: int,
         host: str = "127.0.0.1",
-    ) -> p.Result[m.Web.ApplicationResponse]:
+    ) -> p.Result[p.Web.ApplicationResponse]:
         """Create an application through the canonical `web` facade.
 
         Returns:
-            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+            The resulting ``p.Result[p.Web.ApplicationResponse]``.
 
         """
-        create_result: p.Result[m.Web.ApplicationResponse] = web.create_app(
+        create_result: p.Result[p.Web.ApplicationResponse] = web.create_app(
             m.Web.AppData(name=name, host=host, port=port),
         )
         return create_result
 
     @staticmethod
-    def start_application(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
+    def start_application(app_id: str) -> p.Result[p.Web.ApplicationResponse]:
         """Start an application through the canonical `web` facade.
 
         Returns:
-            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+            The resulting ``p.Result[p.Web.ApplicationResponse]``.
 
         """
-        start_result: p.Result[m.Web.ApplicationResponse] = web.start_app(app_id)
+        start_result: p.Result[p.Web.ApplicationResponse] = web.start_app(app_id)
         return start_result
 
     @staticmethod
     def fetch_application_status(
         app_id: str,
-    ) -> p.Result[m.Web.ApplicationResponse]:
+    ) -> p.Result[p.Web.ApplicationResponse]:
         """Load a single application projection through the canonical `web` facade.
 
         Returns:
-            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+            The resulting ``p.Result[p.Web.ApplicationResponse]``.
 
         """
-        fetch_result: p.Result[m.Web.ApplicationResponse] = web.fetch_app(app_id)
+        fetch_result: p.Result[p.Web.ApplicationResponse] = web.fetch_app(app_id)
         return fetch_result
 
     @staticmethod
-    def stop_application(app_id: str) -> p.Result[m.Web.ApplicationResponse]:
+    def stop_application(app_id: str) -> p.Result[p.Web.ApplicationResponse]:
         """Stop an application through the canonical `web` facade.
 
         Returns:
-            The resulting ``p.Result[m.Web.ApplicationResponse]``.
+            The resulting ``p.Result[p.Web.ApplicationResponse]``.
 
         """
-        stop_result: p.Result[m.Web.ApplicationResponse] = web.stop_app(app_id)
+        stop_result: p.Result[p.Web.ApplicationResponse] = web.stop_app(app_id)
         return stop_result
 
     @staticmethod
-    def list_applications() -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+    def list_applications() -> p.Result[Sequence[p.Web.ApplicationResponse]]:
         """List application projections through the canonical `web` facade.
 
         Returns:
-            The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+            The resulting ``p.Result[Sequence[p.Web.ApplicationResponse]]``.
 
         """
-        list_result: p.Result[Sequence[m.Web.ApplicationResponse]] = web.list_apps()
+        list_result: p.Result[Sequence[p.Web.ApplicationResponse]] = web.list_apps()
         return list_result
 
     def demo_application_lifecycle(
         self,
-    ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+    ) -> p.Result[Sequence[p.Web.ApplicationResponse]]:
         """Demonstrate the canonical public lifecycle flow for flext-web.
 
         Returns:
-            The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+            The resulting ``p.Result[Sequence[p.Web.ApplicationResponse]]``.
 
         """
         first_port = self._allocate_demo_port()
         second_port = self._allocate_demo_port(first_port)
-        app_data: tuple[m.Web.AppData, ...] = (
+        app_data: tuple[p.Web.AppData, ...] = (
             m.Web.AppData(name="web-service", host="127.0.0.1", port=first_port),
             m.Web.AppData(name="api-gateway", host="127.0.0.1", port=second_port),
         )
@@ -125,12 +125,12 @@ class FlextWebExamplesApiUsage:
 
     @staticmethod
     def _start_all(
-        created: Sequence[m.Web.ApplicationResponse],
-    ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+        created: Sequence[p.Web.ApplicationResponse],
+    ) -> p.Result[Sequence[p.Web.ApplicationResponse]]:
         """Start every created application, preserving the created projection.
 
         Returns:
-            The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+            The resulting ``p.Result[Sequence[p.Web.ApplicationResponse]]``.
 
         """
         return r.traverse(created, lambda app: web.start_app(app.id)).map(
@@ -139,12 +139,12 @@ class FlextWebExamplesApiUsage:
 
     @staticmethod
     def _stop_all(
-        created: Sequence[m.Web.ApplicationResponse],
-    ) -> p.Result[Sequence[m.Web.ApplicationResponse]]:
+        created: Sequence[p.Web.ApplicationResponse],
+    ) -> p.Result[Sequence[p.Web.ApplicationResponse]]:
         """Stop every created application, preserving the created projection.
 
         Returns:
-            The resulting ``p.Result[Sequence[m.Web.ApplicationResponse]]``.
+            The resulting ``p.Result[Sequence[p.Web.ApplicationResponse]]``.
 
         """
         return r.traverse(created, lambda app: web.stop_app(app.id)).map(

@@ -44,7 +44,7 @@ class TestsFlextWebHandlers:
         result = web.list_apps()
         tm.ok(result)
         tm.that(result.value, is_=list)
-        tm.that(any(app.name == "test-app" for app in result.value), eq=True)
+        tm.ok(any(app.name == "test-app" for app in result.value))
 
     @staticmethod
     def test_health_check_projection() -> None:
@@ -134,14 +134,14 @@ class TestsFlextWebHandlers:
         """The public facade remains executable."""
         result = web.execute()
         tm.ok(result)
-        tm.that(result.value is True, eq=True)
+        tm.ok(result.value is True)
 
     @staticmethod
     def test_handlers_validate_business_rules() -> None:
         """Business-rule validation is exposed through the public facade."""
         result = web.validate_business_rules()
         tm.ok(result)
-        tm.that(result.value is True, eq=True)
+        tm.ok(result.value is True)
 
     def test_handle_start_app(self) -> None:
         """Starting a created app works through the public facade."""

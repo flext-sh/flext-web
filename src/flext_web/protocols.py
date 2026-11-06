@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Web protocols — pure ``@runtime_checkable`` Protocol surface.
 
 Per AGENTS.md §2.7 (Library Abstraction) + python.md §5a: this module
@@ -13,18 +14,35 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import FlextCliProtocols
+from flext_cli import p
 
-from flext_web._protocols import FlextWebProtocolsBase, FlextWebProtocolsWeb
+from flext_web._protocols import (
+    FlextWebProtocolsAuth,
+    FlextWebProtocolsBase,
+    FlextWebProtocolsEntity,
+    FlextWebProtocolsHttp,
+    FlextWebProtocolsNamespace,
+    FlextWebProtocolsResponses,
+    FlextWebProtocolsSystem,
+    FlextWebProtocolsWeb,
+)
 
 
-class FlextWebProtocols(FlextCliProtocols):
+class FlextWebProtocols(p):
     """Web-specific ``@runtime_checkable`` Protocol surface extending ``p``."""
 
-    class Web(FlextWebProtocolsBase, FlextWebProtocolsWeb):
+    class Web(
+        FlextWebProtocolsAuth,
+        FlextWebProtocolsBase,
+        FlextWebProtocolsEntity,
+        FlextWebProtocolsHttp,
+        FlextWebProtocolsNamespace,
+        FlextWebProtocolsResponses,
+        FlextWebProtocolsSystem,
+        FlextWebProtocolsWeb,
+    ):
         """Web domain-specific Protocols."""
 
 
 p = FlextWebProtocols
-
 __all__: list[str] = ["FlextWebProtocols", "p"]

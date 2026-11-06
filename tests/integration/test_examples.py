@@ -57,7 +57,7 @@ class TestsFlextWebExamplesFullFunctionality:
     def test_basic_service_example_exposes_main(self) -> None:
         """The basic service example stays importable and runnable."""
         module = self._load_example_module("basic_service.py", "basic_service")
-        tm.that(callable(module.FlextWebExamplesBasicService.main), eq=True)
+        tm.ok(callable(module.FlextWebExamplesBasicService.main))
 
     def test_api_usage_example_uses_the_public_facade(self) -> None:
         """The API usage example delegates lifecycle operations to `web`."""
@@ -73,7 +73,7 @@ class TestsFlextWebExamplesFullFunctionality:
 
         start_result = example.start_application(create_result.value.id)
         tm.ok(start_result)
-        tm.that(start_result.value.running, eq=True)
+        tm.ok(start_result.value.running)
 
         get_result = example.fetch_application_status(create_result.value.id)
         tm.ok(get_result)
@@ -88,7 +88,7 @@ class TestsFlextWebExamplesFullFunctionality:
 
         stop_result = example.stop_application(create_result.value.id)
         tm.ok(stop_result)
-        tm.that(stop_result.value.running, eq=False)
+        tm.fail(stop_result.value.running)
 
     def test_api_usage_demo_runs_full_lifecycle(self) -> None:
         """The lifecycle demo returns the projected applications after execution."""
@@ -96,7 +96,7 @@ class TestsFlextWebExamplesFullFunctionality:
         demo_result = module.FlextWebExamplesApiUsage().demo_application_lifecycle()
         tm.ok(demo_result)
         tm.that(demo_result.value, length=2)
-        tm.that(all(app.running is False for app in demo_result.value), eq=True)
+        tm.ok(all(app.running is False for app in demo_result.value))
 
 
 class TestsFlextWebExamples(TestsFlextWebExamplesFullFunctionality):
