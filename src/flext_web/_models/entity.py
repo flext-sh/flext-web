@@ -144,7 +144,7 @@ class FlextWebModelsEntity:
         # Assignment form is required so type checkers see the inherited
         # ``domain_events`` default (the core declares it Annotated-only).
         domain_events: Annotated[
-            MutableSequence[m.DomainEvent],
+            MutableSequence[p.DomainEvent],
             m.Field(description="Uncommitted domain events for event sourcing"),
         ] = m.Field(default_factory=list)
 
