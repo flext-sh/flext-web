@@ -141,12 +141,6 @@ class FlextWebModelsEntity:
             MutableSequence[str],
             m.Field(description="Web-specific events (application lifecycle)"),
         ] = m.Field(default_factory=list[str])
-        # Assignment form is required so type checkers see the inherited
-        # ``domain_events`` default (the core declares it Annotated-only).
-        domain_events: Annotated[
-            MutableSequence[p.DomainEvent],
-            m.Field(description="Uncommitted domain events for event sourcing"),
-        ] = m.Field(default_factory=list)
 
         @override
         def __str__(self) -> str:

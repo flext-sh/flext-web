@@ -21,6 +21,26 @@ class TestsFlextWebModelsAppUnit:
     """Test suite for Web application models."""
 
     @staticmethod
+    def test_domain_events_inherit_native_schema_and_independent_buffers() -> None:
+        """Core owns event validation and defaults; Web buffers native events."""
+        inherited = m.Entity.model_fields["domain_events"]
+        field = m.Web.Entity.model_fields["domain_events"]
+        tm.that(field.annotation, eq=inherited.annotation)
+        tm.ok(field.default_factory is inherited.default_factory)
+        tm.that(field.validate_default, eq=inherited.validate_default)
+        first = m.Web.Entity(id="test-id", name="test-app")
+        second = m.Web.Entity(id="test-id", name="test-app")
+        tm.fail(first.domain_events is second.domain_events)
+        tm.that(len(first.domain_events), eq=0)
+        event = tm.ok(first.add_domain_event("application.created"))
+        tm.ok(isinstance(event, m.DomainEvent))
+        tm.that(event.aggregate_id, eq=first.id)
+        tm.that(first.domain_events, eq=[event])
+        tm.that(len(second.domain_events), eq=0)
+        restored = m.Web.Entity.model_validate(first.model_dump())
+        tm.that(restored.domain_events, eq=first.domain_events)
+
+    @staticmethod
     def test_web_app_initialization_with_defaults() -> None:
         """Test WebApp initialization with defaults."""
         app = m.Web.Entity(id="test-id", name="test-app")
