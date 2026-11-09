@@ -7,12 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import t
+from flext_cli import FlextCliTypes
 
 from flext_web._typings import FlextWebTypingsBase, FlextWebTypingsWeb
 
 
-class FlextWebTypes(t):
+class FlextWebTypes(FlextCliTypes):
     """Web-specific type definitions extending t via MRO."""
 
     class Web(FlextWebTypingsBase, FlextWebTypingsWeb):

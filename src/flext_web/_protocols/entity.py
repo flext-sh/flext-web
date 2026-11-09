@@ -39,7 +39,7 @@ class FlextWebProtocolsEntity:
 
         @property
         def domain_events(self) -> Sequence[p.DomainEvent]:
-            """Uncommitted domain events for event sourcing."""
+            """List of uncommitted domain events for event sourcing."""
             ...
 
         id: str

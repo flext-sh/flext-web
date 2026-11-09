@@ -14,7 +14,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import p
+from flext_cli import FlextCliProtocols
 
 from flext_web._protocols import (
     FlextWebProtocolsAuth,
@@ -28,7 +28,7 @@ from flext_web._protocols import (
 )
 
 
-class FlextWebProtocols(p):
+class FlextWebProtocols(FlextCliProtocols):
     """Web-specific ``@runtime_checkable`` Protocol surface extending ``p``."""
 
     class Web(
