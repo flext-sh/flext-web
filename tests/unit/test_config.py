@@ -66,7 +66,9 @@ class TestsFlextWebConfig:
     def test_validation_secret_key_too_short() -> None:
         """Short secret keys fail namespaced validation."""
         with u.Tests.raises(c.ValidationError):
-            _ = web.settings.clone(Web={"secret_key": "short"})
+            _ = web.settings.clone(
+                Web={"secret_key": "x" * (c.Web.SECURITY_MIN_SECRET_KEY_LENGTH - 1)},
+            )
 
     @staticmethod
     def test_validation_secret_key_valid() -> None:
