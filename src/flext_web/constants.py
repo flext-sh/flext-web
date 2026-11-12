@@ -7,12 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import c
+from flext_cli import FlextCliConstants
 
 from flext_web._constants import FlextWebConstantsBase, FlextWebConstantsValues
 
 
-class FlextWebConstants(c):
+class FlextWebConstants(FlextCliConstants):
     """Immutable project-specific constants organized by domain."""
 
     class Web(FlextWebConstantsBase, FlextWebConstantsValues):

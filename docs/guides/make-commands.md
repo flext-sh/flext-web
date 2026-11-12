@@ -535,8 +535,9 @@ The markdown standard lives once in `flext-infra/src/flext_infra/config/tooling.
 The public test operations and their selected modes are declared in the
 [Public Verb Matrix](#public-verb-matrix) and
 ADR-029.
-Each operation retains the complete applicable inventory, its declared selection
-and same-scope green-check prerequisite. A run does not switch modes, prepend an
+Tests run independently of quality-check receipts. Each operation retains the
+complete applicable inventory and its declared selection. A run does not switch
+modes, prepend an
 undeclared execution, clear a cache or accept a file selector. CI and Git hooks
 consume their declared operation.
 
@@ -605,6 +606,8 @@ the CLI, never the shared base or an implicitly selected latest run.
 
 Root `make check` checks the root and governed members through the existing
 `--scope all` checker selection. A standalone checkout selects its own repository.
+The checker reads managed operation targets from `.gitmodules`; ordinary gate
+execution does not require Beads ledger configuration or a Git origin.
 The approved campaign uses selector-free public verbs from the workspace root.
 Missing governed-member coverage is corrected at the existing dispatcher
 owner, not through a member Makefile or a new selector.
