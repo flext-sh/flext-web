@@ -53,13 +53,16 @@ class TestsFlextWebSettings:
     def test_secret_key_validator_rejects_short() -> None:
         """Secret key field constraint rejects short values."""
         with u.Tests.raises(c.ValidationError):
-            _ = FlextWebSettings().clone(Web={"secret_key": "short"})
+            _ = FlextWebSettings().clone(
+                Web={"secret_key": "x" * (c.Web.SECURITY_MIN_SECRET_KEY_LENGTH - 1)},
+            )
 
     @staticmethod
     def test_secret_key_minimum_length_accepted() -> None:
-        """A 32-character secret key satisfies the field constraint."""
-        settings = FlextWebSettings().clone(Web={"secret_key": "a" * 32})
-        tm.that(settings.Web.secret_key, eq="a" * 32)
+        """A minimum-length secret key satisfies the field constraint."""
+        minimum_key = "a" * c.Web.SECURITY_MIN_SECRET_KEY_LENGTH
+        settings = FlextWebSettings().clone(Web={"secret_key": minimum_key})
+        tm.that(settings.Web.secret_key, eq=minimum_key)
 
     @staticmethod
     def test_optional_ssl_paths(tmp_path: Path) -> None:
