@@ -26,7 +26,7 @@
 - Public symbol exports: `FlextWeb`, `FlextWebCli`, `FlextWebConfig`,
   `FlextWebConstants`, `FlextWebModels`, `FlextWebModelsNamespace`, `FlextWebProtocols`,
   `FlextWebServiceBase`, `FlextWebSettings`, `FlextWebTypes` (+6 more)
-- Exported module shortcuts: _none_
+- Exported module shortcuts: *none*
 - Generated module pages: `8`
 
 ## Next Pages
