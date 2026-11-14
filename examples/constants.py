@@ -6,16 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from examples import c
+from flext_web import FlextWebConstants
 
 
-class FlextWebConstantsExamples(c):
+class FlextWebConstantsExamples(FlextWebConstants):
     """Constants facade for the flext-web examples."""
 
     class WebExamplesBase:
         """Explicit composition base for the example constants namespace."""
 
-    class WebExamples(c.Web, WebExamplesBase):
+    class WebExamples(FlextWebConstants.Web, WebExamplesBase):
         """Web-domain constants composed for example workflows."""
 
 
