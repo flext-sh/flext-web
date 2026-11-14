@@ -6,16 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from examples import u
+from flext_web import FlextWebUtilities
 
 
-class ExamplesFlextWebUtilities(u):
+class ExamplesFlextWebUtilities(FlextWebUtilities):
     """Utilities facade for the flext-web examples."""
 
     class WebExamplesBase:
         """Explicit composition base for the example utilities namespace."""
 
-    class WebExamples(u.Web, WebExamplesBase):
+    class WebExamples(FlextWebUtilities.Web, WebExamplesBase):
         """Web-domain utilities composed for example workflows."""
 
 

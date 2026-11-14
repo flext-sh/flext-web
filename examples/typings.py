@@ -6,16 +6,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from examples import t
+from flext_web import FlextWebTypes
 
 
-class FlextWebTypesExamples(t):
+class FlextWebTypesExamples(FlextWebTypes):
     """Type aliases facade for the flext-web examples."""
 
     class WebExamplesBase:
         """Explicit composition base for the example typings namespace."""
 
-    class WebExamples(t.Web, WebExamplesBase):
+    class WebExamples(FlextWebTypes.Web, WebExamplesBase):
         """Web-domain type aliases composed for example workflows."""
 
 
