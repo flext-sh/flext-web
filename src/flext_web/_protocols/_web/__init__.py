@@ -29,4 +29,14 @@ install_lazy_exports(
         "FlextWebProtocolsWebRequest": ".request",
     },
     public_exports=__all__,
+    deferred_members={
+        "FlextWebProtocolsWebMessage": (
+            "AppRequest",
+            "AppResponse",
+        ),
+        "FlextWebProtocolsWebRequest": (
+            "WebRequest",
+            "WebResponse",
+        ),
+    },
 )

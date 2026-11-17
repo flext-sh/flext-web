@@ -23,4 +23,14 @@ install_lazy_exports(
     globals(),
     {"FlextWebModelsWebMessage": ".message", "FlextWebModelsWebRequest": ".request"},
     public_exports=__all__,
+    deferred_members={
+        "FlextWebModelsWebMessage": (
+            "AppRequest",
+            "AppResponse",
+        ),
+        "FlextWebModelsWebRequest": (
+            "WebRequest",
+            "WebResponse",
+        ),
+    },
 )
