@@ -23,4 +23,11 @@ install_lazy_exports(
     globals(),
     {"FlextWebTypingsBase": ".base", "FlextWebTypingsWeb": ".web"},
     public_exports=__all__,
+    deferred_members={
+        "FlextWebTypingsWeb": (
+            "RequestDict",
+            "ResponseDict",
+            "FastApiEndpointPayload",
+        ),
+    },
 )

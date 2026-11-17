@@ -23,4 +23,22 @@ install_lazy_exports(
     globals(),
     {"FlextWebUtilitiesBase": ".base", "FlextWebUtilitiesWeb": ".web"},
     public_exports=__all__,
+    deferred_members={
+        "FlextWebUtilitiesWeb": (
+            "service_state",
+            "apps_registry",
+            "app_runtimes",
+            "framework_instances",
+            "template_config",
+            "template_filters",
+            "template_globals",
+            "web_metrics",
+            "protocol",
+            "base_url",
+            "WebService",
+            "WebAppManager",
+            "WebRepository",
+            "WebMonitoring",
+        ),
+    },
 )
