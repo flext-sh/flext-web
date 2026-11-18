@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import defer_lazy_bases, install_lazy_exports
+from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_web._protocols.auth import FlextWebProtocolsAuth
@@ -65,71 +65,19 @@ install_lazy_exports(
         "FlextWebProtocolsWeb": ".web",
     },
     public_exports=__all__,
-    deferred_members={
-        "FlextWebProtocolsAuth": (
-            "Credentials",
-            "UserData",
-            "AppData",
-            "EntityData",
-        ),
-        "FlextWebProtocolsConfig": (
-            "ConfigValue",
-            "FastAPIAppConfig",
-        ),
-        "FlextWebProtocolsData": (
-            "WebRepository",
-            "WebHandler",
-        ),
-        "FlextWebProtocolsEntity": (
-            "Entity",
-            "EntityConfig",
-        ),
-        "FlextWebProtocolsFramework": (
-            "FrameworkResponse",
-            "FastApiLikeApp",
-        ),
-        "FlextWebProtocolsHttp": (
-            "Message",
-            "Request",
-            "Response",
-        ),
-        "FlextWebProtocolsLifecycle": (
-            "WebAppManager",
-            "WebService",
-            "WebServiceRules",
-        ),
-        "FlextWebProtocolsMonitoring": ("WebMonitoring",),
-        "FlextWebProtocolsNamespace": ("ConfigNamespace",),
-        "FlextWebProtocolsResponses": (
-            "AuthResponse",
-            "UserResponse",
-            "ApplicationResponse",
-            "HealthResponse",
-            "MetricsResponse",
-            "DashboardResponse",
-            "ServiceResponse",
-        ),
-        "FlextWebProtocolsSystem": (
-            "SystemInfo",
-            "HealthStatus",
-        ),
-        "FlextWebProtocolsTemplate": ("WebTemplateEngine",),
-        "FlextWebProtocolsWeb": (),
-    },
-)
-
-defer_lazy_bases(
-    __name__,
-    {
-        "FlextWebProtocolsWeb": (
-            ("flext_web._protocols._web", "FlextWebProtocolsWebMessage"),
-            ("flext_web._protocols._web", "FlextWebProtocolsWebRequest"),
-            (".", "FlextWebProtocolsConfig"),
-            (".", "FlextWebProtocolsData"),
-            (".", "FlextWebProtocolsFramework"),
-            (".", "FlextWebProtocolsLifecycle"),
-            (".", "FlextWebProtocolsMonitoring"),
-            (".", "FlextWebProtocolsTemplate"),
-        ),
-    },
+    deferred_members=(
+        "FlextWebProtocolsAuth",
+        "FlextWebProtocolsConfig",
+        "FlextWebProtocolsData",
+        "FlextWebProtocolsEntity",
+        "FlextWebProtocolsFramework",
+        "FlextWebProtocolsHttp",
+        "FlextWebProtocolsLifecycle",
+        "FlextWebProtocolsMonitoring",
+        "FlextWebProtocolsNamespace",
+        "FlextWebProtocolsResponses",
+        "FlextWebProtocolsSystem",
+        "FlextWebProtocolsTemplate",
+        "FlextWebProtocolsWeb",
+    ),
 )
