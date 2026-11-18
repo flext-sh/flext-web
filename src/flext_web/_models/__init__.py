@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import defer_lazy_bases, install_lazy_exports
+from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_web._models.auth import FlextWebModelsAuth
@@ -50,47 +50,14 @@ install_lazy_exports(
         "FlextWebModelsWeb": ".web",
     },
     public_exports=__all__,
-    deferred_members={
-        "FlextWebModelsAuth": (
-            "Credentials",
-            "UserData",
-            "AppData",
-            "EntityData",
-        ),
-        "FlextWebModelsConfig": ("FastAPIAppConfig",),
-        "FlextWebModelsEntity": (
-            "Entity",
-            "EntityConfig",
-        ),
-        "FlextWebModelsHttp": (
-            "Message",
-            "Request",
-            "Response",
-        ),
-        "FlextWebModelsNamespace": ("ConfigNamespace",),
-        "FlextWebModelsResponses": (
-            "AuthResponse",
-            "UserResponse",
-            "ApplicationResponse",
-            "HealthResponse",
-            "MetricsResponse",
-            "DashboardResponse",
-            "ServiceResponse",
-        ),
-        "FlextWebModelsSystem": (
-            "SystemInfo",
-            "HealthStatus",
-        ),
-        "FlextWebModelsWeb": (),
-    },
-)
-
-defer_lazy_bases(
-    __name__,
-    {
-        "FlextWebModelsWeb": (
-            ("flext_web._models._web", "FlextWebModelsWebMessage"),
-            ("flext_web._models._web", "FlextWebModelsWebRequest"),
-        ),
-    },
+    deferred_members=(
+        "FlextWebModelsAuth",
+        "FlextWebModelsConfig",
+        "FlextWebModelsEntity",
+        "FlextWebModelsHttp",
+        "FlextWebModelsNamespace",
+        "FlextWebModelsResponses",
+        "FlextWebModelsSystem",
+        "FlextWebModelsWeb",
+    ),
 )
