@@ -10,8 +10,7 @@ from typing import Annotated
 
 from flext_cli import m
 
-from flext_web import c
-from flext_web._settings import FlextWebSettings
+from flext_web import FlextWebSettings, c
 
 
 class FlextWebModelsConfig:
