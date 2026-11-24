@@ -12,15 +12,6 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from examples import (
-        ExamplesFlextWebUtilities,
-        FlextWebConstantsExamples,
-        FlextWebExamplesApiUsage,
-        FlextWebExamplesBasicService,
-        FlextWebModelsExamples,
-        FlextWebProtocolsExamples,
-        FlextWebTypesExamples,
-    )
     from flext_tests import api, td, tf, tk, tm
 
     from flext_web import (
@@ -46,9 +37,17 @@ if TYPE_CHECKING:
         web,
         x,
     )
+    from flext_web.services import (
+        FlextWebApp,
+        FlextWebAuth,
+        FlextWebEntities,
+        FlextWebHandlers,
+        FlextWebHealth,
+        FlextWebMonitoring,
+        FlextWebServices,
+    )
     from tests.base import TestsFlextWebServiceBase, s
     from tests.constants import TestsFlextWebConstants, c
-    from tests.fixtures import TestsFlextWebAuthFixture
     from tests.models import TestsFlextWebModels, m
     from tests.protocols import TestsFlextWebProtocols, p
     from tests.settings import TestsFlextWebSettings
@@ -57,26 +56,25 @@ if TYPE_CHECKING:
 
 
 __all__: tuple[str, ...] = (
-    "ExamplesFlextWebUtilities",
     "FlextWeb",
+    "FlextWebApp",
+    "FlextWebAuth",
     "FlextWebCli",
     "FlextWebConfig",
     "FlextWebConstants",
-    "FlextWebConstantsExamples",
-    "FlextWebExamplesApiUsage",
-    "FlextWebExamplesBasicService",
+    "FlextWebEntities",
+    "FlextWebHandlers",
+    "FlextWebHealth",
     "FlextWebModels",
-    "FlextWebModelsExamples",
     "FlextWebModelsNamespace",
+    "FlextWebMonitoring",
     "FlextWebProtocols",
-    "FlextWebProtocolsExamples",
     "FlextWebServiceBase",
+    "FlextWebServices",
     "FlextWebSettings",
     "FlextWebTypes",
-    "FlextWebTypesExamples",
     "FlextWebUtilities",
     "FlextWebVersion",
-    "TestsFlextWebAuthFixture",
     "TestsFlextWebConstants",
     "TestsFlextWebModels",
     "TestsFlextWebProtocols",
@@ -110,26 +108,25 @@ install_lazy_exports(
     __name__,
     globals(),
     {
-        "ExamplesFlextWebUtilities": "examples",
         "FlextWeb": "flext_web",
+        "FlextWebApp": "flext_web.services",
+        "FlextWebAuth": "flext_web.services",
         "FlextWebCli": "flext_web",
         "FlextWebConfig": "flext_web",
         "FlextWebConstants": "flext_web",
-        "FlextWebConstantsExamples": "examples",
-        "FlextWebExamplesApiUsage": "examples",
-        "FlextWebExamplesBasicService": "examples",
+        "FlextWebEntities": "flext_web.services",
+        "FlextWebHandlers": "flext_web.services",
+        "FlextWebHealth": "flext_web.services",
         "FlextWebModels": "flext_web",
-        "FlextWebModelsExamples": "examples",
         "FlextWebModelsNamespace": "flext_web",
+        "FlextWebMonitoring": "flext_web.services",
         "FlextWebProtocols": "flext_web",
-        "FlextWebProtocolsExamples": "examples",
         "FlextWebServiceBase": "flext_web",
+        "FlextWebServices": "flext_web.services",
         "FlextWebSettings": "flext_web",
         "FlextWebTypes": "flext_web",
-        "FlextWebTypesExamples": "examples",
         "FlextWebUtilities": "flext_web",
         "FlextWebVersion": "flext_web",
-        "TestsFlextWebAuthFixture": ".fixtures",
         "TestsFlextWebConstants": ".constants",
         "TestsFlextWebModels": ".models",
         "TestsFlextWebProtocols": ".protocols",
