@@ -22,7 +22,7 @@ make check PROJECT=flext-web FILES="src/flext_web/api.py src/flext_web/settings.
 
 Validate explicit overrides through the canonical settings model:
 
-````python
+```python
 from flext_web import FlextWebSettings, u
 
 runtime_settings = FlextWebSettings(Web={"host": "127.0.0.1", "port": 8080})
@@ -47,4 +47,3 @@ assert web.start_service(host="127.0.0.1", port=8080).success
 - Use `settings.Web` for configuration.
 - Use `web.get_service_status()` for lifecycle state.
 - Use `make test PROJECT=flext-web` after code changes.
-````

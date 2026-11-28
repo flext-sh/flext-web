@@ -50,7 +50,7 @@ Use `make gen` when exports or lazy initialization need regeneration.
 
 Configuration access is namespaced and direct:
 
-````python
+```python
 from flext_web import FlextWebSettings, settings
 from tests import c, r
 from tests import c, p, tm
@@ -79,4 +79,3 @@ Changes are not complete until both commands pass:
 make check PROJECT=flext-web
 make test PROJECT=flext-web
 ```
-````

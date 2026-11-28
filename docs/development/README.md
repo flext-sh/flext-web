@@ -37,7 +37,7 @@ make gen PROJECT=flext-web
 
 ## Runtime Surface
 
-````python
+```python
 from flext_web import web
 
 web.settings
@@ -55,4 +55,3 @@ web.stop_service()
 - Do not document or reintroduce obsolete helpers such as
   `create_web_service`, `get_web_settings`, `reset_web_settings`,
   `validate_config` or direct `service.run()` flows.
-````
