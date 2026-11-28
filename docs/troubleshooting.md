@@ -9,13 +9,15 @@
 
 ## Import Errors
 
-If importing the public facade fails, verify the workspace and generated exports:
+If importing the public facade fails, verify the workspace and generated exports.
+Run from the active workspace/worktree root. For a standalone checkout, this is
+the repository root. In a physical FLEXT workspace, stay at the workspace root;
+use `ALL=Y` with test verbs when the run must include every governed member.
 
 ```bash
-cd flext-web
-python -c "from flext_web import web; u.Cli.print(web.get_service_status())"
-make gen
-make check PROJECT=flext-web FILES="src/flext_web/api.py src/flext_web/settings.py"
+make setup
+make check CHECK_PHASE=complete
+python -c "from flext_web import u, web; u.Cli.print(web.get_service_status())"
 ```
 
 ## Settings Issues
@@ -23,12 +25,14 @@ make check PROJECT=flext-web FILES="src/flext_web/api.py src/flext_web/settings.
 Validate explicit overrides through the canonical settings model:
 
 ```python
-from flext_web import FlextWebSettings, u
+from flext_web import FlextWebSettings
 
 runtime_settings = FlextWebSettings(Web={"host": "127.0.0.1", "port": 8080})
-assert u.Web.validate_settings(runtime_settings).unwrap()
+assert runtime_settings.Web.host == "127.0.0.1"
+assert runtime_settings.Web.port == 8080
 ```
-If validation fails, inspect the field values being passed to the settings factory.
+The constructor validates the declared fields. If it raises a validation error,
+inspect the values passed to the settings model.
 
 ## Runtime Issues
 
@@ -46,4 +50,4 @@ assert web.start_service(host="127.0.0.1", port=8080).success
 - Import `web` and `settings` from the package root.
 - Use `settings.Web` for configuration.
 - Use `web.get_service_status()` for lifecycle state.
-- Use `make test PROJECT=flext-web` after code changes.
+- Run `make check CHECK_PHASE=complete` and `make tests` after code changes.

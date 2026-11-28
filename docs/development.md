@@ -14,7 +14,7 @@
 `flext-web` is centered on one canonical public facade:
 
 ```python
-
+from flext_web import web
 ```
 
 Current source layout:
@@ -29,15 +29,19 @@ Current source layout:
 
 ## Development Workflow
 
-Use only repository `make` targets:
+Run from the active workspace/worktree root. For a standalone checkout, this is
+the repository root. In a physical FLEXT workspace, stay at the workspace root;
+use `ALL=Y` with test verbs when the run must include every governed member.
 
 ```bash
-make check PROJECT=flext-web
-make test PROJECT=flext-web
-make gen PROJECT=flext-web
+make setup
+make check CHECK_PHASE=complete
+make tests
 ```
 
-Use `make gen` when exports or lazy initialization need regeneration.
+In a normal local invocation, `make check CHECK_PHASE=complete` regenerates exports and lazy
+initialization, applies repairs and formatting, and validates the result. CI and commit hooks
+validate committed output without applying those repairs.
 
 ## Public API Rule
 
@@ -52,8 +56,7 @@ Configuration access is namespaced and direct:
 
 ```python
 from flext_web import FlextWebSettings, settings
-from tests import c, r
-from tests import c, p, tm
+from tests import tm
 
 runtime_settings = FlextWebSettings(
     Web={"host": "localhost", "port": 8080}, debug=settings.debug
@@ -73,9 +76,13 @@ assert web.stop_service().success
 ```
 ## Quality Rule
 
-Changes are not complete until both commands pass:
+Run complete checks and the native incremental Testmon route:
 
 ```bash
-make check PROJECT=flext-web
-make test PROJECT=flext-web
+make check CHECK_PHASE=complete
+make tests
 ```
+
+Use `make tests-full` when complete test-inventory qualification is required.
+In a physical workspace, `make tests ALL=Y` and `make tests-full ALL=Y` include
+every governed member.
